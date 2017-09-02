@@ -1,0 +1,53 @@
+diff --git a/mce.py b/mce.py
+index 59f3605..25af847 100644
+--- a/mce.py
++++ b/mce.py
+@@ -842,43 +842,14 @@ class mce(object):
+         removedEntities = {}
+         match_words = []
+ 
+-        if len(command):
+-            if command[0].lower() == "except":
+-                command.pop(0)
+-                print "Removing all entities except ", command
+-                match_type = ENT_MATCHTYPE_EXCEPT
+-            else:
+-                print "Removing {0}...".format(", ".join(command))
+-                match_type = ENT_MATCHTYPE_ANY
+-
+-            match_words = map(lambda x: x.lower(), command)
++        match_type = ENT_MATCHTYPE_ANY
+ 
++        if len(command):
++            box = self.readBox(command)
+         else:
+-            print "Removing all entities except Painting..."
+-            match_type = ENT_MATCHTYPE_NONPAINTING
+-
+-        for cx, cz in self.level.allChunks:
+-            chunk = self.level.getChunk(cx, cz)
+-            entitiesRemoved = 0
+-
+-            for entity in list(chunk.Entities):
+-                entityID = entity["id"].value
+-
+-                if match(entityID, match_type, match_words):
+-                    removedEntities[entityID] = removedEntities.get(entityID, 0) + 1
+-
+-                    chunk.Entities.remove(entity)
+-                    entitiesRemoved += 1
+-
+-            if entitiesRemoved:
+-                chunk.chunkChanged(False)
++            box = None
+ 
+-        if len(removedEntities) == 0:
+-            print "No entities to remove."
+-        else:
+-            print "Removed entities:"
+-            for entityID in sorted(removedEntities.keys()):
+-                print "  {0}: {1:6}".format(entityID, removedEntities[entityID])
++        self.level.removeEntitiesInBox(box)
+ 
+         self.needsSave = True
+ 

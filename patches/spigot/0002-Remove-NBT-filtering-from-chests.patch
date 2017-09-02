@@ -1,0 +1,28 @@
+From addff48af39e6e7ead0927badabf61cf39cedb30 Mon Sep 17 00:00:00 2001
+From: BuildTools <unconfigured@null.spigotmc.org>
+Date: Fri, 18 Aug 2017 21:48:22 -0700
+Subject: [PATCH 2/2] Remove NBT filtering from chests
+
+Signed-off-by: BuildTools <unconfigured@null.spigotmc.org>
+---
+ src/main/java/net/minecraft/server/TileEntityChest.java | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/TileEntityChest.java b/src/main/java/net/minecraft/server/TileEntityChest.java
+index 3b5af47..e8a3cef 100644
+--- a/src/main/java/net/minecraft/server/TileEntityChest.java
++++ b/src/main/java/net/minecraft/server/TileEntityChest.java
+@@ -362,10 +362,4 @@ public class TileEntityChest extends TileEntityLootable implements ITickable {
+         return this.items;
+     }
+ 
+-    // CraftBukkit start
+-    @Override
+-    public boolean isFilteredNBT() {
+-        return true;
+-    }
+-    // CraftBukkit end
+ }
+-- 
+2.7.4
+
