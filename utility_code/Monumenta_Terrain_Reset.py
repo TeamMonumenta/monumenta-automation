@@ -128,6 +128,12 @@ def movePlayers(world,point):
     for player in world.players:
         world.setPlayerPosition(newPos, player)
 
+def resetRegionalDifficulty(world):
+    """ Resets the play time for the world, and the time in each chunk. """
+    world.root_tag["Data"]["Time"].value = 0
+    for aChunk in dstWorld.getChunks():
+        aChunk.root_tag["Level"]["InhabitedTime"].value = 0
+
 ################################################################################
 # Functions that display stuff while they work
 
