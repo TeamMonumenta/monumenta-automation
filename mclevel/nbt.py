@@ -1,5 +1,5 @@
 
-# vim:set sw=2 sts=2 ts=2:
+# vim:set sw=4 sts=4 ts=4:
 
 """
 Named Binary Tag library. Serializes and deserializes TAG_* objects
@@ -112,6 +112,26 @@ class TAG_Byte(TAG_Value):
     tagID = TAG_BYTE
     fmt = struct.Struct(">b")
     data_type = int
+    
+    @property
+    def json(self):
+        """ Convert a TAG_Byte to a JSON string """
+        if self.name == "":
+            prefix = ""
+        else:
+            prefix = self.name + ":"
+        return prefix + str(self.value) + "b"
+
+    @json.setter
+    def json(self, newVal):
+        """ Parse a string into a TAG_Byte """
+        # Trim the type inidicator character, if found
+        if newVal[-1].lower() == "b":
+            valStr = newVal[:-1]
+        else:
+            valStr = newVal
+        
+        self.value = valStr
 
 
 class TAG_Short(TAG_Value):
@@ -119,6 +139,26 @@ class TAG_Short(TAG_Value):
     tagID = TAG_SHORT
     fmt = struct.Struct(">h")
     data_type = int
+    
+    @property
+    def json(self):
+        """ Convert a TAG_Short to a JSON string """
+        if self.name == "":
+            prefix = ""
+        else:
+            prefix = self.name + ":"
+        return prefix + str(self.value) + "s"
+    
+    @json.setter
+    def json(self, newVal):
+        """ Parse a string into a TAG_Short """
+        # Trim the type inidicator character, if found
+        if newVal[-1].lower() == "s":
+            valStr = newVal[:-1]
+        else:
+            valStr = newVal
+        
+        self.value = valStr
 
 
 class TAG_Int(TAG_Value):
@@ -126,6 +166,20 @@ class TAG_Int(TAG_Value):
     tagID = TAG_INT
     fmt = struct.Struct(">i")
     data_type = int
+    
+    @property
+    def json(self):
+        """ Convert a TAG_Int to a JSON string """
+        if self.name == "":
+            prefix = ""
+        else:
+            prefix = self.name + ":"
+        return prefix + str(self.value)
+    
+    @json.setter
+    def json(self, newVal):
+        """ Parse a string into a TAG_Int """
+        self.value = newVal
 
 
 class TAG_Long(TAG_Value):
@@ -133,6 +187,26 @@ class TAG_Long(TAG_Value):
     tagID = TAG_LONG
     fmt = struct.Struct(">q")
     data_type = long
+    
+    @property
+    def json(self):
+        """ Convert a TAG_Long to a JSON string """
+        if self.name == "":
+            prefix = ""
+        else:
+            prefix = self.name + ":"
+        return prefix + str(self.value) + "l"
+    
+    @json.setter
+    def json(self, newVal):
+        """ Parse a string into a TAG_Long """
+        # Trim the type inidicator character, if found
+        if newVal[-1].lower() == "l":
+            valStr = newVal[:-1]
+        else:
+            valStr = newVal
+        
+        self.value = valStr
 
 
 class TAG_Float(TAG_Value):
@@ -140,6 +214,27 @@ class TAG_Float(TAG_Value):
     tagID = TAG_FLOAT
     fmt = struct.Struct(">f")
     data_type = float
+    
+    @property
+    def json(self):
+        """ Convert a TAG_Float to a JSON string """
+        if self.name == "":
+            prefix = ""
+        else:
+            prefix = self.name + ":"
+        
+        return prefix + str(self.value) + "f"
+    
+    @json.setter
+    def json(self, newVal):
+        """ Parse a string into a TAG_Float """
+        # Trim the type inidicator character, if found
+        if newVal[-1].lower() == "f":
+            valStr = newVal[:-1]
+        else:
+            valStr = newVal
+        
+        self.value = valStr
 
 
 class TAG_Double(TAG_Value):
@@ -147,6 +242,27 @@ class TAG_Double(TAG_Value):
     tagID = TAG_DOUBLE
     fmt = struct.Struct(">d")
     data_type = float
+    
+    @property
+    def json(self):
+        """ Convert a TAG_Double to a JSON string """
+        if self.name == "":
+            prefix = ""
+        else:
+            prefix = self.name + ":"
+        
+        return prefix + str(self.value) + "d"
+    
+    @json.setter
+    def json(self, newVal):
+        """ Parse a string into a TAG_Double """
+        # Trim the type inidicator character, if found
+        if newVal[-1].lower() == "d":
+            valStr = newVal[:-1]
+        else:
+            valStr = newVal
+        
+        self.value = valStr
 
 
 class TAG_Byte_Array(TAG_Value):
@@ -226,6 +342,31 @@ class TAG_String(TAG_Value):
                 self._decodeCache[value] = decoded
 
             return decoded
+    
+    @property
+    def json(self):
+        """ Convert a TAG_String to a JSON string """
+        try:
+            ownName = self.name
+            if ownName == "":
+                prefix = '"'
+            else:
+                prefix = self.name + ':"'
+        except AttributeError:
+            prefix = '"'
+        
+        return prefix + self.value + '"'
+    
+    @json.setter
+    def json(self, newVal):
+        """ Parse a string into a TAG_Double """
+        # Trim the type inidicator character, if found
+        if newVal[0] == ur'"':
+            valStr = newVal[1:-1]
+        else:
+            valStr = newVal
+        
+        self._value = unicode(valStr)
 
 
     @classmethod
@@ -389,6 +530,18 @@ class TAG_Compound(TAG_Value, collections.MutableMapping):
 
     def get_all(self, key):
         return [v for v in self._value if v.name == key]
+    
+    @property
+    def json(self):
+        """ Convert a TAG_List to a JSON string """
+        if self.name == "":
+            result = "{"
+        else:
+            result = self.name + ":{"
+        # TODO parsing needs to be double checked
+        for i in self.value:
+            result += i.json + ","
+        return result[:-1] + "}"
 
 class TAG_List(TAG_Value, collections.MutableSequence):
     """A homogenous list of unnamed data of a single TAG_* type.
@@ -485,6 +638,18 @@ class TAG_List(TAG_Value, collections.MutableSequence):
 
         value.name = ""
         self.value.insert(index, value)
+    
+    @property
+    def json(self):
+        """ Convert a TAG_List to a JSON string """
+        if self.name == "":
+            result = "["
+        else:
+            result = self.name + ":["
+        # TODO parsing needs to be double checked
+        for i in self.value:
+            result += i.json + ","
+        return result[:-1] + "]"
 
 
 tag_classes = { c.tagID: c for c in (TAG_Byte, TAG_Short, TAG_Int, TAG_Long, TAG_Float, TAG_Double, TAG_String,

@@ -17,6 +17,10 @@ materials/ - because if I can convert minecraft.yaml to a .py file and not need 
 
 changed:
 minecraft.yaml - added blocks that were not in this version
+nbt.py - adding json string support (not yet complete)
+
+todo:
+_nbt.pyx - is unchanged, faster version of nbt.py that is loaded if possible
 ```
 
 Also note that I don't know how to properly fork a repository yet, so I cloned the repository and copied the files. Probably not the right way, but good enough for now.

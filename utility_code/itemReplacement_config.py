@@ -134,7 +134,8 @@ itemReplacements = [
     [
         {"id":264},
         [
-            "scoreboard", "operation", "@s", "illegal_diamonds", "+=", "@i", "count"
+            "scoreboard", "operation", "@s", "illegal_diamonds", "+=", "@i", "count",
+            "remove",
         ]
     ],
     # Remove any iron nuggets that are present
@@ -142,6 +143,7 @@ itemReplacements = [
         {"id":452},
         [
             "scoreboard", "operation", "@s", "illegal_iron", "+=", "@i", "count"
+            "remove",
         ]
     ],
     # Remove any iron ingots that are present
@@ -151,6 +153,7 @@ itemReplacements = [
             
             "count","*","9",
             "scoreboard", "operation", "@s", "illegal_iron", "+=", "@i", "count"
+            "remove",
         ]
     ],
     # Remove any iron blocks that are present
@@ -160,6 +163,7 @@ itemReplacements = [
             
             "count","*","81",
             "scoreboard", "operation", "@s", "illegal_iron", "+=", "@i", "count"
+            "remove",
         ]
     ],
     # Remove any gold nuggets that are present
@@ -167,6 +171,7 @@ itemReplacements = [
         {"id":371},
         [
             "scoreboard", "operation", "@s", "illegal_gold", "+=", "@i", "count"
+            "remove",
         ]
     ],
     # Remove any gold ingots that are present
@@ -176,6 +181,7 @@ itemReplacements = [
             
             "count","*","9",
             "scoreboard", "operation", "@s", "illegal_gold", "+=", "@i", "count"
+            "remove",
         ]
     ],
     # Remove any gold blocks that are present
@@ -185,6 +191,7 @@ itemReplacements = [
             
             "count","*","81",
             "scoreboard", "operation", "@s", "illegal_gold", "+=", "@i", "count"
+            "remove",
         ]
     ],
 ]
