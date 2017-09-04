@@ -231,6 +231,9 @@ def copyBoxes(coordinatesToCopy):
     print "Moving players..."
     movePlayers(dstWorld,SafetyTpLocation)
     
+    print "Resetting difficulty..."
+    resetRegionalDifficulty(dstWorld)
+    
     print "Saving...."
     dstWorld.generateLights()
     dstWorld.saveInPlace()
