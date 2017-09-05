@@ -91,6 +91,7 @@ class MCMaterials(object):
         self.opacity = self.lightAbsorption
 
         self.Air = self.addBlock(0,
+            idStr="air",
             name="Air",
             texture=(0x80, 0xB0),
             opacity=0,

@@ -5,332 +5,106 @@ This takes a build world (terrain), a main world (play area), and
 merges them into a new world, dstWorld (destination).
 
 This does so as directly as possible while providing many features.
-Entities within the build world that are in areas copied from the
-main world are removed.
-Scoreboard values are maintained from the play area.
-Players are teleported to safety
 
 Fair warning, some of the optimization is done by removing error handling.
 Python will tell you if/when the script crashes.
 If it's going to crash, it won't damage the original worlds.
 Just fix what broke, and run again.
-
-In progress:
-Universal item replacement/deletion, for when an item is outdated.
-
-Current task:
-convert MCEdit's NBT notation to string and vice versa (vanilla command style)
-
-Planned:
-Preservation of map items from both worlds (requires item replacement).
-1.13 support (will start writing changes during snapshots)
-
-Unused features:
-A block replacement list and functions to use them
-are provided, and were used for testing.
-
-Known bugs:
-When testing this on single player worlds, the inventory from
-    the build world is seemingly kept over the main one.
-    This is because single player keeps track of the only player
-    differently from multiplayer (level.dat I think).
-    Player data is still transfered correctly, but is overwritten
-    by the single player player data.
-    This will not occur for server files.
 """
-# Required libraries have links where not part of a standard Python install.
-import os
-import warnings
-import shutil
-
-import numpy
-from numpy import zeros, bincount
-import itertools
-
-# These are expected in your site-packages folder, see:
-# https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory
-import mclevel # from https://github.com/mcedit/pymclevel
-from mclevel import mclevelbase
-from mclevel import materials
-from mclevel.box import BoundingBox, Vector
-
-import Monumenta_Terrain_Reset_config
+import mclevel
+import TerrainResetLib
+import ItemReplaceLib
 
 ################################################################################
 # Config section
 
-localMainFolder = Monumenta_Terrain_Reset_config.localMainFolder
-localBuildFolder = Monumenta_Terrain_Reset_config.localBuildFolder
-localDstFolder = Monumenta_Terrain_Reset_config.localDstFolder
-SafetyTpLocation = Monumenta_Terrain_Reset_config.SafetyTpLocation
-coordinatesToCopy = Monumenta_Terrain_Reset_config.coordinatesToCopy
-blocksToReplace = Monumenta_Terrain_Reset_config.blocksToReplace
-blocksToReplaceB = Monumenta_Terrain_Reset_config.blocksToReplaceB
+# Dst is the destination world, which gets overwritten by the build world.
+# Then, data from the main world replaces the relevant parts of the dst world.
+# Please note that no special care need be taken with whitespace in filenames.
+localMainFolder = "/home/rock/tmp/Project Epic Source"
+localBuildFolder = "/home/rock/tmp/Project Epic"
+localDstFolder = "/home/rock/tmp/Project Epic Updated"
+
+# No 0.5 offset here, add it yourself if you like.
+# (x,y,z,ry,rx)
+SafetyTpLocation = (-734.0, 105.5, 50.0, 0.0, 0.0)
+
+coordinatesToCopy = (
+    # ("a unique name",        (lowerCoordinate),  (upperCoordinate), ( id, dmg), "block name (comment)"),
+    ("Apartments_buying_room", ( -809,  99,   47), (-874,  96,    4), (  41, 0 ), "gold"),
+    ("Apartments_units",       ( -817, 113,   87), (-859, 164,   16), (  41, 0 ), "gold"),
+    ("Plot_Pressure_Plates",   ( -719, 106, -118), (-665, 106,  -74), (  41, 0 ), "gold"),
+    ("Guild_Room",             ( -800, 109,  -75), (-758, 104, -102), (  41, 0 ), "gold"),
+    ("Section_1",              (-1120,   0, -267), (-897, 255,  318), (  41, 0 ), "gold"),
+    ("Section_2",              ( -896,   0,  208), (-512, 255,  318), (  57, 0 ), "diamond"),
+    ("Section_3",              ( -896,   0,  207), (-788, 255,  119), (  42, 0 ), "iron"),
+    ("Section_4",              ( -896,   0, -267), (-825, 255,  -28), (  22, 0 ), "lapis"),
+    ("Section_5",              ( -512,   0,  207), (-640, 255, -273), (  24, 0 ), "sandstone"),
+    ("Section_6",              ( -824,   0, -169), (-641, 255, -272), ( 152, 0 ), "redstone"),
+    ("Section_7",              ( -641,   0, -168), (-677, 255, -132), ( 155, 0 ), "quartz"),
+    ("Section_8",              ( -774,   0, -168), (-813, 255, -150), (  17, 14), "birch wood"),
+    ("Section_9",              ( -641,   0,  -25), (-655, 255,  -52), (  17, 15), "jungle wood"),
+    ("Section_10",             ( -680,   0,  183), (-641, 255,  207), (  19, 0 ), "sponge"),
+    ("Section_11",             ( -668,   0,  -14), (-641, 255,   25), (   1, 1 ), "granite"),
+    ("Lowtide",                (  672,  60,  416), ( 751, 255,  517), (   1, 3 ), "diorite"),
+)
+
+"""
+List of blocks to not copy over for the regions above
+"""
+blocksToReplace = (
+    ("iron_block", "air"),
+    ("iron_ore", "air"),
+    ("gold_block", "air"),
+    ("gold_ore", "air"),
+    ("lapis_block", "air"),
+    ("lapis_ore", "air"),
+    ("diamond_block", "air"),
+    ("diamond_ore", "air"),
+    ("emerald_block", "air"),
+    ("emerald_ore", "air"),
+    
+    ("beacon", "air"),
+    
+    # Not sure about this section
+    #("enchanting_Table", "air"),
+    #("quartz_ore", "air"),
+    #("hopper", "air"),
+    
+    # anvils
+    ((145,0), "air"),
+    ((145,1), "air"),
+    ((145,2), "air"),
+    ((145,4), "air"),
+    ((145,5), "air"),
+    ((145,6), "air"),
+    ((145,8), "air"),
+    ((145,9), "air"),
+    ((145,10), "air"),
+    ((145,12), "air"),
+    ((145,13), "air"),
+    ((145,14), "air"),
+)
 
 ################################################################################
-# Function definitions
+# In development:
 
-def getBoxSize(aMovingBox):
-    # Get the size of a box from
-    # an element of coordinatesToCopy
-    sizeFix   = Vector(*(1,1,1))
-    origin = Vector(*aMovingBox[1])
-    pos2   = Vector(*aMovingBox[2])
-    return pos2 - origin + sizeFix
+#ItemReplaceLib.replaceItemsOnPlayers("/home/tim/MCserver/1.12.1/world",None)
 
-def getBoxPos(aMovingBox):
-    # Get the origin of a box from
-    # an element of coordinatesToCopy
-    return Vector(*aMovingBox[1])
-  
-def getBox(aMovingBox):
-    # Returns a box around from
-    # an element of coordinatesToCopy
-    origin = getBoxPos(aMovingBox)
-    size   = getBoxSize(aMovingBox)
-    
-    return BoundingBox(origin,size)
+#world = mclevel.loadWorld("/home/tim/MCserver/1.12.1/world")
+#ItemReplaceLib.replaceItemsInWorld(world,None)
 
-def getBoxList(movingBoxList):
-    boxList = []
-    for aMovingBox in movingBoxList:
-        boxList.append(getBox(aMovingBox))
-    return tuple(boxList) # turn the list into a tuple, write-protecting it
-
-def filesInBox(aBox):
-    # returns a list of (x,z) pairs in terms of .mca files
-    # Useful for reducing the number of files being transfered.
-    # Untested, but should work.
-    
-    return itertools.product( xrange(self.minx >> 9, self.maxx >> 9),
-                              xrange(self.minz >> 9, self.maxz >> 9))
-
-def replace(world,oldBlock,newBlock,box=None):
-    world.fillBlocks(box, newBlock, blocksToReplace=[oldBlock])
-
-def replaceSeveral(world,replaceList,boxList):
-    # replace everything in replaceList within all boxes in boxList
-    # For materials, see levl.materials[] in materials.py, line 119
-    # "Let's be magic." - finds the right material from several formats
-    # For whatever reason, does not take idStr (ie minecraft:log)
-    for aBox in boxList:
-        for replacePair in replaceList:
-            oldBlock = world.materials[replacePair[0]]
-            newBlock = world.materials[replacePair[1]]
-            replace(world,oldBlock,newBlock,aBox)
-
-def movePlayers(world,point):
-    """ Moves all players to the same location """
-    # For some reason, this command works by eye height.
-    eyeHeight = Vector(*(0.0,1.62,0.0))
-    newPos = Vector(*point) + eyeHeight
-    # Move all players to a point
-    for player in world.players:
-        world.setPlayerPosition(newPos, player)
-
-def resetRegionalDifficulty(world):
-    """ Resets the play time for the world, and the time in each chunk. """
-    world.root_tag["Data"]["Time"].value = 0
-    for aChunk in dstWorld.getChunks():
-        aChunk.root_tag["Level"]["InhabitedTime"].value = 0
-
-################################################################################
-# Functions that display stuff while they work
-
-def copyFile(old,new):
-    os.remove(new)
-    shutil.copy2(old, new)
-
-def copyFolder(old,new):
-    shutil.rmtree(new, True)
-    shutil.copytree(old, new)
-
-def copyFolders(old,new,subfolders):
-    for folder in subfolders:
-        print "Copying " + folder + "..."
-        copyFolder(old+folder, new+folder)
-
-def replaceBlocksInBoxList(replaceList,coordinatesToCopy,worldStr):
-    print "Opening world..."
-    if worldStr == "main":
-        world = mclevel.loadWorld(localMainFolder)
-    elif worldStr == "build":
-        world = mclevel.loadWorld(localBuildFolder)
-    else:
-        return
-    
-    boxList = getBoxList(coordinatesToCopy)
-    
-    print "Replacing blocks..."
-    replaceSeveral(world,replaceList,boxList)
-    
-    print "Saving..."
-    world.generateLights()
-    world.saveInPlace()
-    
-    print "Done."
-
-def replaceBlocksGlobally(replaceList,worldStr):
-    print "Opening world..."
-    if worldStr == "main":
-        world = mclevel.loadWorld(localMainFolder)
-    elif worldStr == "build":
-        world = mclevel.loadWorld(localBuildFolder)
-    else:
-        return
-    
-    print "Replacing blocks..."
-    
-    replaceNum = 1 # used only for display
-    replaceMax = len(replaceList)
-    
-    for replacePair in replaceList:
-        oldBlock = world.materials[replacePair[0]]
-        newBlock = world.materials[replacePair[1]]
-        
-        print "[{0}/{1}]: {2} -> {3}".format(replaceNum,replaceMax,
-                                             replacePair[0],replacePair[1])
-        replaceNum += 1
-        
-        replace(world,oldBlock,newBlock)
-    
-    print "Saving..."
-    world.generateLights()
-    world.saveInPlace()
-    
-    print "Done."
-
-def copyBoxes(coordinatesToCopy):
-    print "Opening Source World..."
-    srcWorld = mclevel.loadWorld(localMainFolder)
-    
-    print "Opening Destination World..."
-    dstWorld = mclevel.loadWorld(localDstFolder)
-    
-    print "Beginning transfer..."
-    copyNum = 1
-    copyMax = len(coordinatesToCopy)
-    blocksToCopy = range(materials.id_limit)
-    
-    # This is fine. The warning is known and can be ignored.
-    warnings.filterwarnings("ignore", category=numpy.VisibleDeprecationWarning)
-    
-    for aCopy in coordinatesToCopy:
-        print "[{0}/{1}] Copying {2}...".format(copyNum,copyMax,aCopy[0])
-        
-        pos = getBoxPos(aCopy)
-        box = getBox(aCopy)
-        
-        tempSchematic = srcWorld.extractSchematic(box)
-        dstWorld.removeEntitiesInBox(box)
-        dstWorld.copyBlocksFrom(tempSchematic, BoundingBox((0, 0, 0), pos),
-                                pos, blocksToCopy)
-        
-        copyNum+=1
-    
-    print "Moving players..."
-    movePlayers(dstWorld,SafetyTpLocation)
-    
-    print "Resetting difficulty..."
-    resetRegionalDifficulty(dstWorld)
-    
-    print "Saving...."
-    dstWorld.generateLights()
-    dstWorld.saveInPlace()
-    
-    print "Done."
-
-def fillRegions():
-    """ Fill all regions with specified blocks to demonstrate coordinates """
-    
-    # Delete the dst world for a clean slate to start from
-    shutil.rmtree(localDstFolder,True)
-    
-    # Copy the build world to the dst world
-    shutil.copytree(localBuildFolder,localDstFolder)
-    
-    dstWorld = mclevel.loadWorld(localDstFolder)
-    
-    # Fill the selected regions for debugging reasons
-    for fillRegion in coordinatesToCopy:
-        print "Filling " + fillRegion[0] + " with " + fillRegion[4] + "..."
-        box = getBox(fillRegion)
-        block = world.materials[fillRegion[3]]
-        dstWorld.fillBlocks(box, block)
-    
-    print "Saving...."
-    dstWorld.generateLights()
-    dstWorld.saveInPlace()
-
-def terrainReset():
-    """
-    This is it! I'll try to improve this when I can. Ideas welcome!
-    - NickNackGus
-    """
-    keepPlayerMapItems = False # Working on it!
-    
-    # Copy the build world to the dst world
-    print "Copying build world as base..."
-    copyFolder(localBuildFolder,localDstFolder)
-    
-    # Copy various bits of player data from the main world
-    folderList = [
-        "advancements/",
-        "playerdata/",
-        "stats/",
-    ]
-    print "Copying files from main world..."
-    copyFolders(localMainFolder, localDstFolder, folderList)
-    
-    if keepPlayerMapItems:
-        # Copy various bits of player data from the main world
-        folderList = [
-            "data/",
-        ]
-        copyFolders(localMainFolder, localDstFolder, folderList)
-        
-        # Copy data/functions and data/advancements from the build world
-        folderList = [
-            "data/advancements",
-            "data/functions",
-        ]
-        print "Copying files from build world..."
-        copyFolders(localBuildFolder, localDstFolder, folderList)
-    else: # Remove player map item data
-        # Copy scoreboard from the main world
-        print "Copying data/scoreboard.dat from main world..."
-        copyFile(localMainFolder+"data/scoreboard.dat",
-                 localDstFolder+"data/scoreboard.dat")
-    
-    # Copy plots, apartments, etc
-    copyBoxes(coordinatesToCopy)
 
 ################################################################################
 # Main Code
 
-""" Testing an item replacement implementation with some old world data.
-world = mclevel.loadWorld("/home/tim/MCserver/BTeam_Server_v1.0.10b/world/")
-print len(world.players)
-player = world.players[0]
-playerNBT = world.getPlayerTag(player)
-print player
-for i in range(len(playerNBT["Inventory"])):
-  item = playerNBT["Inventory"][i]
-  if "tag" in item:
-    itemTag = item["tag"].value
-  else:
-    itemTag = ""
-  print "{0}[{1}]{{{2}}} * {3} in slot {4}".format(item["id"].value,item["Damage"].value,itemTag,item["Count"].value,item["Slot"].value)
-"""
-
-#replaceBlocksInBoxList(blocksToReplace,coordinatesToCopy,"main")
-#replaceBlocksGlobally(blocksToReplaceB,"build")
+#TerrainResetLib.replaceBlocksInBoxList(blocksToReplace,coordinatesToCopy,"main")
+#TerrainResetLib.replaceBlocksGlobally(blocksToReplaceB,"build")
 
 # This shows where the selected regions are, as your old script does.
-#fillRegions()
+#TerrainResetLib.fillRegions()
 
 # This does the move itself - copy areas, entities, scoreboard, etc.
-terrainReset()
-
+TerrainResetLib.terrainReset()
 
 

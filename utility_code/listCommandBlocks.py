@@ -1,175 +1,27 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-"""
-This lists the tile entities that lack
-a loot table within a box, filtering by type.
-"""
-# Required libraries have links where not part of a standard Python install.
-import os
-import warnings
-import shutil
 
-import numpy
-from numpy import zeros, bincount
-import itertools
-
-# These are expected in your site-packages folder, see:
-# https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory
-import mclevel # from https://github.com/mcedit/pymclevel
-from mclevel import mclevelbase
-from mclevel import materials
-from mclevel.box import BoundingBox, Vector
-from mclevel import nbt
-
-# config file
-import listCommandBlocks_config
+import listCommandBlocksLib
 
 ################################################################################
 # Config section
 
-worldFolder = listCommandBlocks_config.worldFolder
-logFolder = listCommandBlocks_config.logFolder
-coordinatesToScan = listCommandBlocks_config.coordinatesToScan
+worldFolder = "/home/rock/tmp/Project Epic"
+logFolder = "/home/rock/tmp/Project Epic Command Blocks"
 
-################################################################################
-# Function definitions
-
-def getBoxSize(aScaningBox):
-    # Get the size of a box from
-    # an element of coordinatesToScan
-    sizeFix   = Vector(*(1,1,1))
-    origin = Vector(*aScaningBox[1])
-    pos2   = Vector(*aScaningBox[2])
-    return pos2 - origin + sizeFix
-
-def getBoxPos(aScaningBox):
-    # Get the origin of a box from
-    # an element of coordinatesToScan
-    return Vector(*aScaningBox[1])
-  
-def getBox(aScaningBox):
-    # Returns a box around from
-    # an element of coordinatesToScan
-    origin = getBoxPos(aScaningBox)
-    size   = getBoxSize(aScaningBox)
-    
-    return BoundingBox(origin,size)
-
-def getBoxList(movingBoxList):
-    boxList = []
-    for aScaningBox in movingBoxList:
-        boxList.append(getBox(aScaningBox))
-    return tuple(boxList) # turn the list into a tuple, write-protecting it
-
-################################################################################
-# Functions that display stuff while they work
-
-def fillRegions():
-    """ Fill all regions with specified blocks to demonstrate coordinates """
-    world = mclevel.loadWorld(worldFolder)
-    
-    # Fill the selected regions for debugging reasons
-    for fillRegion in coordinatesToScan:
-        print "Filling " + fillRegion[0] + " with " + fillRegion[4] + "..."
-        box = getBox(fillRegion)
-        block = world.materials[fillRegion[3]]
-        world.fillBlocks(box, block)
-    
-    print "Saving...."
-    world.generateLights()
-    world.saveInPlace()
-
-def listCommandBlocks():
-    print "Beginning scan..."
-    world = mclevel.loadWorld(worldFolder)
-    
-    # Create/empty the log folder, containing all command blocks
-    shutil.rmtree(logFolder, True)
-    os.makedirs(logFolder)
-    
-    idCmdBlockImpulse = 137
-    idCmdBlockRepeat = 210
-    idCmdBlockChain = 211
-    
-    commandBlocks = {
-        "impulse":[],
-        "repeat":[],
-        "chain":[],
-        "other":[],
-    }
-    
-    scanNum = 1
-    scanMax = len(coordinatesToScan)
-    
-    for aScanBox in coordinatesToScan:
-        print "[{0}/{1}] Scaning {2}...".format(scanNum,scanMax,aScanBox[0])
-        
-        scanBox = getBox(aScanBox)
-        
-        # The function world.getTileEntitiesInBox() does not work.
-        # Working around it, since it works for chunks but not worlds.
-        for cx,cz in scanBox.chunkPositions:
-            if (cx,cz) not in world.allChunks:
-                continue
-            
-            # Get and loop through entities within chunk and box
-            aChunk = world.getChunk(cx,cz)
-            newTileEntities = aChunk.getTileEntitiesInBox(scanBox)
-            for aTileEntity in newTileEntities:
-                # Check if tileEntity is being scanned
-                if aTileEntity["id"].value == "minecraft:command_block":
-                    x = aTileEntity["x"].value
-                    y = aTileEntity["y"].value
-                    z = aTileEntity["z"].value
-                    
-                    block = world.blockAt(x,y,z)
-                    command = aTileEntity["Command"].value.decode("unicode-escape")
-                    
-                    if block == idCmdBlockImpulse:
-                        commandBlocks["impulse"].append((x,y,z,command))
-                    elif block == idCmdBlockRepeat:
-                        commandBlocks["repeat"].append((x,y,z,command))
-                    elif block == idCmdBlockChain:
-                        commandBlocks["chain"].append((x,y,z,command))
-                    else:
-                        # Unknown command block tile entity - bug?
-                        commandBlocks["other"].append((x,y,z,command))
-        
-        # Make appropriate folder
-        subFolder = logFolder+"/"+aScanBox[0]
-        os.makedirs(subFolder)
-        
-        for cmdBlockType in ["impulse","repeat","chain","other"]:
-            if len(commandBlocks[cmdBlockType]):
-                strBuffer = ""
-                
-                if cmdBlockType == "other":
-                    strBuffer += "These command block tile entities do not appear to be in the same block as a command block - might be a bug?\n\n"
-                
-                strBuffer += "x, y, z, command\n\n"
-                
-                for aCmdBlock in commandBlocks[cmdBlockType]:
-                    x = aCmdBlock[0]
-                    y = aCmdBlock[1]
-                    z = aCmdBlock[2]
-                    cmd = str(aCmdBlock[3])
-                    strBuffer += "{0}, {1}, {2}, {3}\n".format(x,y,z,cmd)
-                
-                f = open(subFolder+"/"+cmdBlockType+".txt","w")
-                f.write(strBuffer)
-                f.close()
-    
-    print "Done."
+coordinatesToScan = (
+    # ("region name",        (lowerCoordinate),  (upperCoordinate),  ( id, dmg), "block name (comment)"),
+    ("main template region", (-30000, 0, -30000), (30000, 255,30000), (   7, 0 ), "bedrock"),
+)
 
 ################################################################################
 # Main Code
 
 # This shows where the selected regions are, as your old script does.
 # WARNING: This version saves in place!
-#fillRegions()
+#listCommandBlocksLib.fillRegions(worldFolder,coordinatesToScan)
 
 # This scans for tile entities are command blocks
-listCommandBlocks()
-
+listCommandBlocksLib.listCommandBlocks(worldFolder,coordinatesToScan,logFolder)
 
 
