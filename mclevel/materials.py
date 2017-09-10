@@ -125,11 +125,19 @@ class MCMaterials(object):
                 level.materials["Air"]  # also returns Air
                 level.materials["Powered Rail"]  # returns Powered Rail
                 level.materials["Lapis Lazuli Block"]  # in Classic
+                level.materials["emerald_block"]  # by id string
+                level.materials["minecraft:emerald_block"]  # with namespace
 
            """
         if isinstance(key, basestring):
+            # Oh, I am NOT handling namespaces right...
+            if "minecraft:" in key:
+                key = key[10:]
             for b in self.allBlocks:
-                if b.name == key:
+                if (
+                   ( b.name == key )
+                or ( b.idStr == key )
+                ):
                     return b
             raise KeyError("No blocks named: " + key)
         if isinstance(key, (tuple, list)):
@@ -249,6 +257,7 @@ class MCMaterials(object):
     def addBlock(self, blockID, blockData=0, **kw):
         name = kw.pop('name', self.names[blockID][blockData])
 
+        self.idStr[blockID] = kw.pop('idStr', "")
         self.lightEmission[blockID] = kw.pop('brightness', self.defaultBrightness)
         self.lightAbsorption[blockID] = kw.pop('opacity', self.defaultOpacity)
         self.aka[blockID][blockData] = kw.pop('aka', "")

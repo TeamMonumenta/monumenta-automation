@@ -533,7 +533,7 @@ class TAG_Compound(TAG_Value, collections.MutableMapping):
     
     @property
     def json(self):
-        """ Convert a TAG_List to a JSON string """
+        """ Convert a TAG_Compound to a JSON string """
         if self.name == "":
             result = "{"
         else:
@@ -541,7 +541,9 @@ class TAG_Compound(TAG_Value, collections.MutableMapping):
         # TODO parsing needs to be double checked
         for i in self.value:
             result += i.json + ","
-        return result[:-1] + "}"
+        if len(result) > 1:
+            result = result[:-1]
+        return result + "}"
 
 class TAG_List(TAG_Value, collections.MutableSequence):
     """A homogenous list of unnamed data of a single TAG_* type.
@@ -649,7 +651,9 @@ class TAG_List(TAG_Value, collections.MutableSequence):
         # TODO parsing needs to be double checked
         for i in self.value:
             result += i.json + ","
-        return result[:-1] + "]"
+        if len(result) > 1:
+            result = result[:-1]
+        return result + "]"
 
 
 tag_classes = { c.tagID: c for c in (TAG_Byte, TAG_Short, TAG_Int, TAG_Long, TAG_Float, TAG_Double, TAG_String,

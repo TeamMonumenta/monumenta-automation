@@ -16,6 +16,7 @@ materials/ - because if I can convert minecraft.yaml to a .py file and not need 
 *.pyc because .gitignore is ignoring my rule about *.pyc files
 
 changed:
+materials.py - now access block ID strings, such as "minecraft:stone"
 minecraft.yaml - added blocks that were not in this version
 nbt.py - adding json string support (not yet complete)
 

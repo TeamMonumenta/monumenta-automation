@@ -55,6 +55,9 @@ from mclevel import materials
 from mclevel import nbt
 from mclevel.box import BoundingBox, Vector
 
+import itemReplaceLib
+import itemReplaceList
+
 ################################################################################
 # Function definitions
 
@@ -118,32 +121,32 @@ def movePlayers(worldFolder,point):
         aPlayer = nbt.load(aPlayerFile)
         
         # Set they players' position
-        aPlayer["Pos"][0] = point[0]
-        aPlayer["Pos"][1] = point[1]
-        aPlayer["Pos"][2] = point[2]
+        aPlayer["Pos"][0].value = point[0]
+        aPlayer["Pos"][1].value = point[1]
+        aPlayer["Pos"][2].value = point[2]
         
         # Face players the right way
-        aPlayer["Rotation"][0] = point[3]
-        aPlayer["Rotation"][1] = point[4]
+        aPlayer["Rotation"][0].value = point[3]
+        aPlayer["Rotation"][1].value = point[4]
         
         # We don't want players being flung around after a terrain reset
-        aPlayer["FallDistance"] = 0.0
-        aPlayer["Motion"][0] = 0.0
-        aPlayer["Motion"][1] = 0.0
-        aPlayer["Motion"][2] = 0.0
+        aPlayer["FallDistance"].value = 0.0
+        aPlayer["Motion"][0].value = 0.0
+        aPlayer["Motion"][1].value = 0.0
+        aPlayer["Motion"][2].value = 0.0
         
         # What if they reached the end dimention?
         # Yes....let them fall into the void...yes... >:D ....nah, I'll be nice.
-        aPlayer["Dimension"] = 0
+        aPlayer["Dimension"].value = 0
         
         # Welcome to the ultimate healthcare service, here's your weekly checkup
-        aPlayer["Fire"] = -20
-        aPlayer["Air"] = 300
-        aPlayer["foodLevel"] = 20
-        aPlayer["foodSaturationLevel"] = 5.0
-        aPlayer["foodExhaustionLevel"] = 0.0
-        aPlayer["Health"] = 20.0
-        aPlayer["DeathTime"] = 0
+        aPlayer["Fire"].value = -20
+        aPlayer["Air"].value = 300
+        aPlayer["foodLevel"].value = 20
+        aPlayer["foodSaturationLevel"].value = 5.0
+        aPlayer["foodExhaustionLevel"].value = 0.0
+        aPlayer["Health"].value = 20.0
+        aPlayer["DeathTime"].value = 0
         
         # save
         aPlayer.save(aPlayerFile)
@@ -151,7 +154,7 @@ def movePlayers(worldFolder,point):
 def resetRegionalDifficulty(world):
     """ Resets the play time for the world, and the time in each chunk. """
     world.root_tag["Data"]["Time"].value = 0
-    for aChunk in dstWorld.getChunks():
+    for aChunk in world.getChunks():
         aChunk.root_tag["Level"]["InhabitedTime"].value = 0
 
 ################################################################################
@@ -170,7 +173,13 @@ def copyFolders(old,new,subfolders):
         print "Copying " + folder + "..."
         copyFolder(old+folder, new+folder)
 
-def replaceBlocksInBoxList(replaceList,coordinatesToCopy,worldStr):
+def replaceBlocksInBoxList(config,replaceList,coordinatesToCopy,worldStr):
+    localMainFolder = config["localMainFolder"]
+    localBuildFolder = config["localBuildFolder"]
+    localDstFolder = config["localDstFolder"]
+    SafetyTpLocation = config["SafetyTpLocation"]
+    coordinatesToCopy = config["coordinatesToCopy"]
+    
     print "Opening world..."
     if worldStr == "main":
         world = mclevel.loadWorld(localMainFolder)
@@ -190,7 +199,13 @@ def replaceBlocksInBoxList(replaceList,coordinatesToCopy,worldStr):
     
     print "Done."
 
-def replaceBlocksGlobally(replaceList,worldStr):
+def replaceBlocksGlobally(config,replaceList,worldStr):
+    localMainFolder = config["localMainFolder"]
+    localBuildFolder = config["localBuildFolder"]
+    localDstFolder = config["localDstFolder"]
+    SafetyTpLocation = config["SafetyTpLocation"]
+    coordinatesToCopy = config["coordinatesToCopy"]
+    
     print "Opening world..."
     if worldStr == "main":
         world = mclevel.loadWorld(localMainFolder)
@@ -220,9 +235,18 @@ def replaceBlocksGlobally(replaceList,worldStr):
     
     print "Done."
 
-def copyBoxes(coordinatesToCopy):
+def copyBoxes(config,blockReplaceList,itemReplaceList):
+    localMainFolder = config["localMainFolder"]
+    localBuildFolder = config["localBuildFolder"]
+    localDstFolder = config["localDstFolder"]
+    SafetyTpLocation = config["SafetyTpLocation"]
+    coordinatesToCopy = config["coordinatesToCopy"]
+    
     print "Opening Source World..."
     srcWorld = mclevel.loadWorld(localMainFolder)
+    
+    print "Handling item replacements for tile entities..."
+    itemReplaceLib.replaceItemsInWorld(srcWorld,itemReplaceList)
     
     print "Opening Destination World..."
     dstWorld = mclevel.loadWorld(localDstFolder)
@@ -242,14 +266,21 @@ def copyBoxes(coordinatesToCopy):
         box = getBox(aCopy)
         
         tempSchematic = srcWorld.extractSchematic(box)
+        
+        # Edit the schematic while copying
+        for blockReplacement in blockReplaceList:
+            oldBlock = tempSchematic.materials[blockReplacement[0]]
+            newBlock = tempSchematic.materials[blockReplacement[1]]
+            replace(tempSchematic,oldBlock,newBlock)
+        
+        # Remove entities in destination
         dstWorld.removeEntitiesInBox(box)
+        
+        # Copy the schematic with edits in place
         dstWorld.copyBlocksFrom(tempSchematic, BoundingBox((0, 0, 0), pos),
                                 pos, blocksToCopy)
         
         copyNum+=1
-    
-    print "Moving players..."
-    movePlayers(dstWorld,SafetyTpLocation)
     
     print "Resetting difficulty..."
     resetRegionalDifficulty(dstWorld)
@@ -260,8 +291,12 @@ def copyBoxes(coordinatesToCopy):
     
     print "Done."
 
-def fillRegions():
+def fillRegions(config):
     """ Fill all regions with specified blocks to demonstrate coordinates """
+    
+    localBuildFolder = config["localBuildFolder"]
+    localDstFolder = config["localDstFolder"]
+    coordinatesToCopy = config["coordinatesToCopy"]
     
     # Delete the dst world for a clean slate to start from
     shutil.rmtree(localDstFolder,True)
@@ -275,19 +310,28 @@ def fillRegions():
     for fillRegion in coordinatesToCopy:
         print "Filling " + fillRegion[0] + " with " + fillRegion[4] + "..."
         box = getBox(fillRegion)
-        block = world.materials[fillRegion[3]]
+        block = dstWorld.materials[fillRegion[3]]
         dstWorld.fillBlocks(box, block)
     
     print "Saving...."
     dstWorld.generateLights()
     dstWorld.saveInPlace()
 
-def terrainReset():
+def terrainReset(config,blockReplaceList):
     """
     This is it! I'll try to improve this when I can. Ideas welcome!
     - NickNackGus
     """
     keepPlayerMapItems = False # Working on it!
+    
+    localMainFolder = config["localMainFolder"]
+    localBuildFolder = config["localBuildFolder"]
+    localDstFolder = config["localDstFolder"]
+    SafetyTpLocation = config["SafetyTpLocation"]
+    coordinatesToCopy = config["coordinatesToCopy"]
+    
+    print "Compiling item replacement list..."
+    itemReplacementList = itemReplaceLib.allReplacements( itemReplaceList.itemReplacements )
     
     # Copy the build world to the dst world
     print "Copying build world as base..."
@@ -322,6 +366,15 @@ def terrainReset():
         copyFile(localMainFolder+"data/scoreboard.dat",
                  localDstFolder+"data/scoreboard.dat")
     
-    # Copy plots, apartments, etc
-    copyBoxes(coordinatesToCopy)
+    print "Copying needed terrain from the main world..."
+    copyBoxes(config,blockReplaceList,itemReplacementList)
+    
+    print "Moving players..."
+    movePlayers(localDstFolder,SafetyTpLocation)
+    
+    print "Handling item replacements for players..."
+    itemReplaceLib.replaceItemsOnPlayers(localDstFolder,itemReplacementList)
+    
+    print "Done!"
+
 

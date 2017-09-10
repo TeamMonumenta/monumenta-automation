@@ -16,39 +16,36 @@ Each replacement definition is a list that contains a
     pattern matching list and a list of actions to perform
 
 Pattern matching lists appear like so:
-    Match stone and its variants (NYI):
-    {"id":"stone"}
-    
-    Same, but specify namespace (good for modded, NYI):
+    Match stone and its variants:
     {"id":"minecraft:stone"}
     
-    Match stone and its variants by ID (NYI):
-    {"id":1}
+    Match smooth andesite by damage:
+    {"id":"minecraft:stone","damage":6}
     
-    Match smooth andesite by damage (NYI):
-    {"id":"stone","damage":6}
+    Match certain damage values:
+    {"id":"minecraft:wool","damage":[4,7,12,13]}
     
     Match colored beds with NBT (NYI):
-    {"id":"bed","nbt":{"color":"red"}}
+    {"id":"bed","nbt":"{color:14}"}
     This will not check if the NBT matches perfectly,
     only if the specified NBT matches. Other tags are
     ignored.
     
     To specify strict NBT (NYI):
-    {"id":"bed","nbt":{"color":"red"},"nbtStrict":True}
+    {"id":"bed","nbt":"{color:14}","nbtStrict":True}
     This matches NBT exactly as specified.
 
     To specify no NBT:
-    {"id":"log","nbt":None}
+    {"id":"minecraft:log","nbt":None}
     This matches NBT exactly as specified.
     
     To specify an item count:
-    {"id":"stick","count":5}
+    {"id":"minecraft:stick","count":5}
     
     To specify an item count range:
-    {"id":"stick","count":[12,24]}
+    {"id":"minecraft:stick","count":range(12,24+1)}
 
-Action lists appear like so (NYI):
+Action lists appear like so:
     Action lists are lists that contain actions, and
     are run from top to bottom. They look like this:
     [
@@ -79,7 +76,7 @@ Action lists appear like so (NYI):
             max - set damage to max if max is exceeded
             min - set damage to min if min is exceeded
         
-        nbt - alter an item's damage
+        nbt - alter an item's damage (NYI) - only clear is implemented
             replace - replace an item's NBT data entirely
             set - set specified NBT without altering other NBT
                     existing lists and compounds will not have items removed
@@ -87,6 +84,7 @@ Action lists appear like so (NYI):
         
         scoreboard - if on a player, in an ender chest, or in a shulker box
                     in one of those places, affect that player's scoreboard
+                    (NYI)
                     
                     @s - the player to target
                     @i - item's details
@@ -130,67 +128,130 @@ itemReplacements = [
 ]
 """
 itemReplacements = [
-    # Remove any diamonds that are present
+    # Remove any iron ore that is present
     [
-        {"id":264},
+        {"id":"minecraft:iron_ore"},
         [
-            "scoreboard", "operation", "@s", "illegal_diamonds", "+=", "@i", "count",
             "remove",
         ]
     ],
     # Remove any iron nuggets that are present
     [
-        {"id":452},
+        {"id":"minecraft:iron_nugget"},
         [
-            "scoreboard", "operation", "@s", "illegal_iron", "+=", "@i", "count"
             "remove",
         ]
     ],
     # Remove any iron ingots that are present
     [
-        {"id":265},
+        {"id":"minecraft:iron_ingot"},
         [
             
-            "count","*","9",
-            "scoreboard", "operation", "@s", "illegal_iron", "+=", "@i", "count"
             "remove",
         ]
     ],
     # Remove any iron blocks that are present
     [
-        {"id":42},
+        {"id":"minecraft:iron_block"},
         [
-            
-            "count","*","81",
-            "scoreboard", "operation", "@s", "illegal_iron", "+=", "@i", "count"
+            "remove",
+        ]
+    ],
+    # Remove any gold ore that is present
+    [
+        {"id":"minecraft:gold_ore"},
+        [
             "remove",
         ]
     ],
     # Remove any gold nuggets that are present
     [
-        {"id":371},
+        {"id":"minecraft:gold_nugget"},
         [
-            "scoreboard", "operation", "@s", "illegal_gold", "+=", "@i", "count"
             "remove",
         ]
     ],
     # Remove any gold ingots that are present
     [
-        {"id":266},
+        {"id":"minecraft:gold_ingot"},
         [
-            
-            "count","*","9",
-            "scoreboard", "operation", "@s", "illegal_gold", "+=", "@i", "count"
             "remove",
         ]
     ],
     # Remove any gold blocks that are present
     [
-        {"id":41},
+        {"id":"minecraft:gold_block"},
         [
-            
-            "count","*","81",
-            "scoreboard", "operation", "@s", "illegal_gold", "+=", "@i", "count"
+            "remove",
+        ]
+    ],
+    # Remove any diamond ore that is present
+    [
+        {"id":"minecraft:diamond_ore"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any diamonds that are present
+    [
+        {"id":"minecraft:diamond"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any diamond blocks that are present
+    [
+        {"id":"minecraft:diamond_block"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any emerald ore that is present
+    [
+        {"id":"minecraft:emerald_ore"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any emeralds that are present
+    [
+        {"id":"minecraft:emerald"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any emerald blocks that are present
+    [
+        {"id":"minecraft:emerald_block"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any lapis ore that is present
+    [
+        {"id":"minecraft:lapis_ore"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any lapis that is present
+    [
+        {"id":"minecraft:dye","damage":4},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any lapis blocks that are present
+    [
+        {"id":"minecraft:lapis_block"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any anvils that are present
+    [
+        {"id":"minecraft:anvil"},
+        [
             "remove",
         ]
     ],
