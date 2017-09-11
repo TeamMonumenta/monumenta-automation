@@ -61,25 +61,25 @@ import itemReplaceList
 ################################################################################
 # Function definitions
 
-def getBoxSize(aMovingBox):
+def getBoxSize(box):
     # Get the size of a box from
-    # an element of coordinatesToCopy
-    sizeFix   = Vector(*(1,1,1))
-    origin = Vector(*aMovingBox[1])
-    pos2   = Vector(*aMovingBox[2])
-    return pos2 - origin + sizeFix
+    # an element of coordinatesToScan
+    sizeFix = Vector(*(1,1,1))
+    min_pos = Vector(*map(min, zip(box[1], box[2])))
+    max_pos = Vector(*map(max, zip(box[1], box[2])))
+    return max_pos - min_pos + sizeFix
 
-def getBoxPos(aMovingBox):
+def getBoxPos(box):
     # Get the origin of a box from
-    # an element of coordinatesToCopy
-    return Vector(*aMovingBox[1])
-  
-def getBox(aMovingBox):
+    # an element of coordinatesToScan
+    return Vector(*map(min, zip(box[1], box[2])))
+
+def getBox(box):
     # Returns a box around from
-    # an element of coordinatesToCopy
-    origin = getBoxPos(aMovingBox)
-    size   = getBoxSize(aMovingBox)
-    
+    # an element of coordinatesToScan
+    origin = getBoxPos(box)
+    size   = getBoxSize(box)
+
     return BoundingBox(origin,size)
 
 def getBoxList(movingBoxList):

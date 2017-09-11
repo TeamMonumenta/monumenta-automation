@@ -19,25 +19,25 @@ from mclevel import nbt
 ################################################################################
 # Function definitions
 
-def getBoxSize(aScaningBox):
+def getBoxSize(box):
     # Get the size of a box from
     # an element of coordinatesToScan
-    sizeFix   = Vector(*(1,1,1))
-    origin = Vector(*aScaningBox[1])
-    pos2   = Vector(*aScaningBox[2])
-    return pos2 - origin + sizeFix
+    sizeFix = Vector(*(1,1,1))
+    min_pos = Vector(*map(min, zip(box[1], box[2])))
+    max_pos = Vector(*map(max, zip(box[1], box[2])))
+    return max_pos - min_pos + sizeFix
 
-def getBoxPos(aScaningBox):
+def getBoxPos(box):
     # Get the origin of a box from
     # an element of coordinatesToScan
-    return Vector(*aScaningBox[1])
-  
-def getBox(aScaningBox):
+    return Vector(*map(min, zip(box[1], box[2])))
+
+def getBox(box):
     # Returns a box around from
     # an element of coordinatesToScan
-    origin = getBoxPos(aScaningBox)
-    size   = getBoxSize(aScaningBox)
-    
+    origin = getBoxPos(box)
+    size   = getBoxSize(box)
+
     return BoundingBox(origin,size)
 
 def getBoxList(movingBoxList):
