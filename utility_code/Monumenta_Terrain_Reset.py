@@ -26,7 +26,7 @@ config = {
     "localMainFolder":"/home/rock/tmp/Project Epic Source/",
     "localBuildFolder":"/home/rock/tmp/Project Epic/",
     "localDstFolder":"/home/rock/tmp/Project Epic Updated/",
-    
+
     # No 0.5 offset here, add it yourself if you like.
     # (x,y,z,ry,rx)
     "SafetyTpLocation":(-734.0, 105.5, 50.0, 0.0, 0.0),
@@ -37,7 +37,7 @@ config = {
         ("Apartments_units",       ( -817, 113,   87), (-859, 164,   16), (  41, 0 ), "gold"),
         ("Plot_Pressure_Plates",   ( -719, 106, -118), (-665, 106,  -74), (  41, 0 ), "gold"),
         ("Guild_Room",             ( -800, 109,  -75), (-758, 104, -102), (  41, 0 ), "gold"),
-        ("Section_1",              (-1120,   0, -267), (-897, 255,  318), (  41, 0 ), "gold"),
+        ("Section_1",              (-1130,   0, -267), (-897, 255,  318), (  41, 0 ), "gold"),
         ("Section_2",              ( -896,   0,  208), (-512, 255,  318), (  57, 0 ), "diamond"),
         ("Section_3",              ( -896,   0,  207), (-788, 255,  119), (  42, 0 ), "iron"),
         ("Section_4",              ( -896,   0, -267), (-825, 255,  -28), (  22, 0 ), "lapis"),
@@ -48,7 +48,6 @@ config = {
         ("Section_9",              ( -641,   0,  -25), (-655, 255,  -52), (  17, 15), "jungle wood"),
         ("Section_10",             ( -680,   0,  183), (-641, 255,  207), (  19, 0 ), "sponge"),
         ("Section_11",             ( -668,   0,  -14), (-641, 255,   25), (   1, 1 ), "granite"),
-        ("Lowtide",                (  672,  60,  416), ( 751, 255,  517), (   1, 3 ), "diorite"),
     )
 }
 
@@ -94,14 +93,14 @@ blocksToReplace = (
     ("minecraft:diamond_ore", "air"),
     ("minecraft:emerald_block", "air"),
     ("minecraft:emerald_ore", "air"),
-    
+
     ("minecraft:beacon", "air"),
-    
+
     # Not sure about this section
     #("enchanting_Table", "air"),
     #("quartz_ore", "air"),
     #("hopper", "air"),
-    
+
     # anvils
     ((145,0), "air"),
     ((145,1), "air"),
