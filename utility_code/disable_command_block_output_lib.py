@@ -6,7 +6,10 @@ a loot table within a box, filtering by type.
 """
 # Required libraries have links where not part of a standard Python install.
 import os
-import shutil
+
+import numpy
+from numpy import zeros, bincount
+import itertools
 
 # These are expected in your site-packages folder, see:
 # https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory
@@ -46,21 +49,6 @@ def getBoxList(movingBoxList):
         boxList.append(getBox(aScaningBox))
     return tuple(boxList) # turn the list into a tuple, write-protecting it
 
-def hasLootTable(aTileEntity):
-    emptyLootTables = ("", "empty", "minecraft:", "minecraft:empty")
-    if "LootTable" not in aTileEntity:
-        return False
-    elif aTileEntity["LootTable"].value in emptyLootTables:
-        return False
-    return True
-
-def hasLootTableSeed(aTileEntity):
-    if "LootTableSeed" not in aTileEntity:
-        return False
-    elif aTileEntity["LootTableSeed"].value == 0:
-        return False
-    return True
-
 ################################################################################
 # Functions that display stuff while they work
 
@@ -79,23 +67,10 @@ def fillRegions(worldFolder,coordinatesToScan):
     world.generateLights()
     world.saveInPlace()
 
-def listLootlessTileEntities(worldFolder,coordinatesToScan,tileEntitiesToCheck,logFolder):
+def run(worldFolder,coordinatesToScan,logFolder):
     print "Beginning scan..."
     world = mclevel.loadWorld(worldFolder)
     
-    # Create/empty the log folder, containing all command blocks
-    shutil.rmtree(logFolder, True)
-    os.makedirs(logFolder)
-    
-    # Build tile ID list, adding default namespace if needed
-    tileIDList = []
-    for tileID in tileEntitiesToCheck:
-        if ":" in tileID:
-            tileIDList.append(tileID)
-        else:
-            tileIDList.append("minecraft:"+tileID)
-    
-    lootless = []
     scanNum = 1
     scanMax = len(coordinatesToScan)
     
@@ -103,66 +78,29 @@ def listLootlessTileEntities(worldFolder,coordinatesToScan,tileEntitiesToCheck,l
     for aScanBox in coordinatesToScan:
         print "[{0}/{1}] Scaning {2}...".format(scanNum,scanMax,aScanBox[0])
         
-        # Make appropriate folder
-        logFile = logFolder+"/"+aScanBox[0]+".txt"
-        
         scanBox = getBox(aScanBox)
-        
-        for cmdBlockType in tileEntitiesToCheck:
-            strBuffer = ""
-            
-            if cmdBlockType == "other":
-                strBuffer += "These command block tile entities do not appear to be in the same block as a command block - might be a bug?\n\n"
-            
-            f = open(logFile,"w")
-            f.write(strBuffer)
-            f.close()
         
         # The function world.getTileEntitiesInBox() does not work.
         # Working around it, since it works for chunks but not worlds.
         selectedChunks = set(scanBox.chunkPositions)
         chunksToScan = list(selectedChunks.intersection(allChunks))
         for cx,cz in chunksToScan:
+            chunkDirty = False
             
             # Get and loop through entities within chunk and box
             aChunk = world.getChunk(cx,cz)
             newTileEntities = aChunk.getTileEntitiesInBox(scanBox)
             for aTileEntity in newTileEntities:
-                
                 # Check if tileEntity is being scanned
-                if aTileEntity["id"].value in tileIDList:
-                    
-                    # Detect missing loot table
-                    if not hasLootTable(aTileEntity):
-                        lootless.append(aTileEntity)
-                    
-                    # Detect fixed loot table seeds
-                    elif hasLootTableSeed(aTileEntity):
-                        print aTileEntity.json
-                        lootless.append(aTileEntity)
-                    
-                    elif "LootTableSeed" in aTileEntity:
-                        print aTileEntity
-            
-            if len(lootless):
-                strBuffer = ""
-                
-                while len(lootless):
-                    aTileEntity = lootless.pop()
-                    
-                    tileEntityID = aTileEntity["id"].value
-                    x = aTileEntity["x"].value
-                    y = aTileEntity["y"].value
-                    z = aTileEntity["z"].value
-                    
-                    strBuffer += "{0} at ({1},{2},{3}) ".format(tileEntityID,x,y,z)
-                    if not hasLootTable(aTileEntity):
-                        strBuffer += "has no loot table set.\n"
-                    elif hasLootTableSeed(aTileEntity):
-                        strBuffer += "has a fixed loot table seed.\n"
-                
-                f = open(logFile,"a")
-                f.write(strBuffer)
-                f.close()
+                if aTileEntity["id"].value == "minecraft:command_block":
+                    chunkDirty = True
+                    aTileEntity["TrackOutput"].value = 0
+                    aTileEntity["LastOutput"].value = "-"
+        
+        if chunkDirty:
+            aChunk.chunkChanged(False) # needsLighting=False
     
+    print "Saving..."
+    world.saveInPlace()
+    print "Done."
 

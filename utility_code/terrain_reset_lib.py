@@ -55,8 +55,8 @@ from mclevel import materials
 from mclevel import nbt
 from mclevel.box import BoundingBox, Vector
 
-import itemReplaceLib
-import itemReplaceList
+import item_replace_lib
+import item_replace_list
 
 ################################################################################
 # Function definitions
@@ -235,7 +235,7 @@ def replaceBlocksGlobally(config,replaceList,worldStr):
     
     print "Done."
 
-def copyBoxes(config,blockReplaceList,itemReplaceList):
+def copyBoxes(config,blockReplaceList,item_replace_list):
     localMainFolder = config["localMainFolder"]
     localBuildFolder = config["localBuildFolder"]
     localDstFolder = config["localDstFolder"]
@@ -246,7 +246,7 @@ def copyBoxes(config,blockReplaceList,itemReplaceList):
     srcWorld = mclevel.loadWorld(localMainFolder)
     
     print "Handling item replacements for tile entities..."
-    itemReplaceLib.replaceItemsInWorld(srcWorld,itemReplaceList)
+    item_replace_lib.replaceItemsInWorld(srcWorld,item_replace_list)
     
     print "Opening Destination World..."
     dstWorld = mclevel.loadWorld(localDstFolder)
@@ -331,7 +331,7 @@ def terrainReset(config,blockReplaceList):
     coordinatesToCopy = config["coordinatesToCopy"]
     
     print "Compiling item replacement list..."
-    itemReplacementList = itemReplaceLib.allReplacements( itemReplaceList.itemReplacements )
+    itemReplacementList = item_replace_lib.allReplacements( item_replace_list.itemReplacements )
     
     # Copy the build world to the dst world
     print "Copying build world as base..."
@@ -373,7 +373,7 @@ def terrainReset(config,blockReplaceList):
     movePlayers(localDstFolder,SafetyTpLocation)
     
     print "Handling item replacements for players..."
-    itemReplaceLib.replaceItemsOnPlayers(localDstFolder,itemReplacementList)
+    item_replace_lib.replaceItemsOnPlayers(localDstFolder,itemReplacementList)
     
     print "Done!"
 

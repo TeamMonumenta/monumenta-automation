@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import listLootlessTileEntitiesLib
+import list_lootless_tile_entities_lib
 
 ################################################################################
 # Config section
@@ -26,10 +26,10 @@ tileEntitiesToCheck = ("chest",)
 
 # This shows where the selected regions are, as your old script does.
 # WARNING: This version saves in place!
-#listLootlessTileEntitiesLib.fillRegions(worldFolder,coordinatesToScan)
+#list_lootless_tile_entities_lib.fillRegions(worldFolder,coordinatesToScan)
 
 # This scans for tile entities that don't have a loot table
-listLootlessTileEntitiesLib.listLootlessTileEntities(worldFolder,coordinatesToScan,tileEntitiesToCheck,logFolder)
+list_lootless_tile_entities_lib.run(worldFolder,coordinatesToScan,tileEntitiesToCheck,logFolder)
 
 
 

@@ -68,7 +68,7 @@ def fillRegions(worldFolder,coordinatesToScan):
     world.generateLights()
     world.saveInPlace()
 
-def listCommandBlocks(worldFolder,coordinatesToScan,logFolder):
+def run(worldFolder,coordinatesToScan,logFolder):
     print "Beginning scan..."
     world = mclevel.loadWorld(worldFolder)
     
