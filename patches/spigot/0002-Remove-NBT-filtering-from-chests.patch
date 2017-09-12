@@ -1,7 +1,7 @@
-From addff48af39e6e7ead0927badabf61cf39cedb30 Mon Sep 17 00:00:00 2001
+From 025a6443eacce946f7e68ab063019ce905595453 Mon Sep 17 00:00:00 2001
 From: BuildTools <unconfigured@null.spigotmc.org>
 Date: Fri, 18 Aug 2017 21:48:22 -0700
-Subject: [PATCH 2/2] Remove NBT filtering from chests
+Subject: [PATCH 2/3] Remove NBT filtering from chests
 
 Signed-off-by: BuildTools <unconfigured@null.spigotmc.org>
 ---
