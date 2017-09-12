@@ -67,7 +67,7 @@ def fillRegions(worldFolder,coordinatesToScan):
     world.generateLights()
     world.saveInPlace()
 
-def run(worldFolder,coordinatesToScan,logFolder):
+def run(worldFolder,coordinatesToScan):
     print "Beginning scan..."
     world = mclevel.loadWorld(worldFolder)
     
@@ -95,10 +95,11 @@ def run(worldFolder,coordinatesToScan,logFolder):
                 if aTileEntity["id"].value == "minecraft:command_block":
                     chunkDirty = True
                     aTileEntity["TrackOutput"].value = 0
-                    aTileEntity["LastOutput"].value = "-"
-        
-        if chunkDirty:
-            aChunk.chunkChanged(False) # needsLighting=False
+                    if "LastOutput" in aTileEntity:
+                        aTileEntity.pop("LastOutput")
+            
+            if chunkDirty:
+                aChunk.chunkChanged(False) # needsLighting=False
     
     print "Saving..."
     world.saveInPlace()

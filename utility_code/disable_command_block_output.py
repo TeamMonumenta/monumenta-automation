@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import disable_command_block_output
+import disable_command_block_output_lib
 
 ################################################################################
 # Config section
@@ -18,9 +18,9 @@ coordinatesToScan = (
 
 # This shows where the selected regions are, as your old script does.
 # WARNING: This version saves in place!
-#disable_command_block_output.fillRegions(worldFolder,coordinatesToScan)
+#disable_command_block_output_lib.fillRegions(worldFolder,coordinatesToScan)
 
 # This scans for tile entities are command blocks
-disable_command_block_output.run(worldFolder,coordinatesToScan)
+disable_command_block_output_lib.run(worldFolder,coordinatesToScan)
 
 
