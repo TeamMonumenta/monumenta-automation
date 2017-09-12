@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os
 from mclevel import nbt
 
-worldDir = "/home/rock/tmp/Project Epic/"
+worldDir = "/home/rock/project_epic/region_1/Project_Epic/"
 
 maxID = -1
 for f in os.listdir(worldDir+"data"):

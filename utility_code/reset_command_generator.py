@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 print "load"
 print "/home/rock/tmp/region_1_beta_old/Project_Epic"
