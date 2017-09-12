@@ -26,7 +26,7 @@ config = {
     "localMainFolder":"/home/rock/tmp/Project Epic Source/",
     "localBuildFolder":"/home/rock/tmp/Project Epic/",
     "localDstFolder":"/home/rock/tmp/Project Epic Updated/",
-
+    
     # No 0.5 offset here, add it yourself if you like.
     # (x,y,z,ry,rx)
     "SafetyTpLocation":(-734.0, 105.5, 50.0, 0.0, 0.0),
@@ -93,14 +93,14 @@ blocksToReplace = (
     ("minecraft:diamond_ore", "air"),
     ("minecraft:emerald_block", "air"),
     ("minecraft:emerald_ore", "air"),
-
+    
     ("minecraft:beacon", "air"),
-
+    
     # Not sure about this section
     #("enchanting_Table", "air"),
     #("quartz_ore", "air"),
     #("hopper", "air"),
-
+    
     # anvils
     ((145,0), "air"),
     ((145,1), "air"),

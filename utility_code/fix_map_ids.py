@@ -1,0 +1,19 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import os
+from mclevel import nbt
+
+worldDir = "/home/rock/tmp/Project Epic/"
+
+maxID = -1
+for f in os.listdir(worldDir+"data"):
+    if (f[:4] == "map_") and (f[-4:] == ".dat"):
+        maxID += 1
+
+if maxID >= 0:
+    idCountsTag = nbt.TAG_Compound()
+    idCountsTag["map"] = nbt.TAG_Short(maxID)
+    idCountsTag.save(worldDir+"data/idcounts.dat",compressed=False)
+
+

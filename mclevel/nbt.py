@@ -33,6 +33,9 @@ from numpy import array, zeros, fromstring
 log = logging.getLogger(__name__)
 
 
+class JSONFormatError(RuntimeError):
+    pass
+
 class NBTFormatError(RuntimeError):
     pass
 
@@ -656,6 +659,10 @@ class TAG_List(TAG_Value, collections.MutableSequence):
         return result + "]"
 
 
+def json_to_tag(json):
+    # TODO drafting this!
+    "!"
+
 tag_classes = { c.tagID: c for c in (TAG_Byte, TAG_Short, TAG_Int, TAG_Long, TAG_Float, TAG_Double, TAG_String,
     TAG_Byte_Array, TAG_List, TAG_Compound, TAG_Int_Array, TAG_Short_Array) }
 
@@ -727,4 +734,237 @@ try:
     TAG_Byte_Array, TAG_List, TAG_Compound, TAG_Int_Array, TAG_Short_Array, NBTFormatError)
 except ImportError:
     pass
+
+
+################################################################################
+# BEGIN JSON TO TAG PARSER
+
+"""
+Oh dear, this is one big mess of code. It used to be much worse. It works for
+strict json to nbt parsing, but doesn't handle some of the more leniant uses
+that Minecraft allows; for instance, raw json text starting like:
+
+["",{...}]
+
+This isn't read right, as NBT only allows list elements to be the same type.
+In this case, the starting quotes should be ignored, but aren't atm.
+
+Anyways, good enough for my needs for now.
+"""
+
+def _jsonParser_resetCurState(state):
+    state["name"] = ''
+    state["native"] = None
+    state["tag"] = None
+
+def _jsonParser_storeValue(state):
+    # Ensure we have a value to store
+    if state["native"] is None:
+        return
+    
+    # Determine how to index where the new value goes,
+    # and put it there.
+    if type(state["tag"]) is TAG_Compound:
+        state["tag"].name = state["name"]
+    elif type(state["tag"]) is TAG_List:
+        state["tag"].name = state["name"]
+    else:
+        # type and value must be determined
+        state["tag"] = _jsonParser_jsonToTag(state["native"])
+        state["tag"].name = state["name"]
+    
+    # Determine and use the correct function
+    # to store the new tag in its container
+    if type(state["stackTag"][-1]) is TAG_Compound:
+        state["stackTag"][-1].add(state["tag"])
+    elif type(state["stackTag"][-1]) is TAG_List:
+        state["stackTag"][-1].append(state["tag"])
+    else:
+        raise JSONFormatError("Invalid tag container type.")
+    
+    # If the new value is a container, go inside it.
+    if ( ( type(state["tag"]) is TAG_Compound ) or
+         ( type(state["tag"]) is TAG_List ) ):
+        state["stackTag"].append(state["tag"])
+    
+    # Reset the current state.
+    _jsonParser_resetCurState(state)
+
+def _jsonParser_exitNestLevel(state):
+    _jsonParser_storeValue(state)
+    state["stackTag"].pop()
+
+def _jsonParser_jsonToTag(json):
+    """
+    Converts a command-ready json string into an NBT tag.
+    The NBT tag returned may contain other NBT tags.
+    Default type assumptions taken from:
+    https://minecraft.gamepedia.com/Commands#Data_tags
+    """
+    # Handle the special case of booleans, which are really bytes
+    if json.lower() == "true":
+        json = "1b"
+    if json.lower() == "false":
+        json = "0b"
+    
+    # Grab the last character
+    tailChar = json[-1]
+    sansTail = json[:-1]
+    sansQuotes = json
+    if (
+    ( json[0] == '"' )
+    and ( json[-1] == '"' )
+    ):
+        sansQuotes = json[1:-1]
+    
+    # Split these by type
+    if tailChar.lower() == "b":
+        try:
+            return TAG_Byte(sansTail)
+        except:
+            return TAG_String(sansQuotes)
+    elif tailChar.lower() == "s":
+        try:
+            return TAG_Short(sansTail)
+        except:
+            return TAG_String(sansQuotes)
+    elif tailChar.lower() == "l":
+        try:
+            return TAG_Long(sansTail)
+        except:
+            return TAG_String(sansQuotes)
+    elif tailChar.lower() == "f":
+        try:
+            return TAG_Float(sansTail)
+        except:
+            return TAG_String(sansQuotes)
+    elif tailChar.lower() == "d":
+        try:
+            return TAG_Double(sansTail)
+        except:
+            return TAG_String(sansQuotes)
+    elif tailChar == '"':
+        return TAG_String(sansQuotes)
+    #elif determine from context
+    #    ie, if we know that "Pos" is a list of doubles,
+    #    but they have no decimal point or d suffix
+    elif '.' in json:
+        try:
+            return TAG_Double(json)
+        except:
+            return TAG_String(sansQuotes)
+    else:
+        try:
+            return TAG_Int(json)
+        except:
+            return TAG_String(sansQuotes)
+
+def json_to_tag(json):
+    startQuote = None
+    backslashFound = False
+    
+    state = {}
+    
+    state["name"]  = ''
+    state["native"] = None
+    state["tag"] = None
+    
+    result = TAG_Compound()
+    debug = ''
+    
+    # This stack points to a container tag
+    state["stackTag"] = [result]
+    
+    # Begin parse
+    for i,c in enumerate(json):
+        # i is the index of character c in json
+        if backslashFound:
+            # Previous character was \, ignore this character
+            debug += '?'
+            backslashFound = False
+            continue
+        elif c == '\\':
+            # This charcter is a \, ignore next character
+            debug += '\\'
+            backslashFound = True
+            continue
+        elif c == '"':
+            # Quote found, is it start or end?
+            if startQuote is not None:
+                # It is an end quote, accept the value
+                # Include the quote marks to identify type
+                
+                # Note that this might in fact be the tag NAME,
+                # not the tag VALUE. This will be updated when a
+                # colon signifies the value starts next, or when
+                # it is clear the end of the tag has arrived.
+                debug += '"'
+                stringValue = json[startQuote: i + 1]
+                state["native"] = stringValue
+                startQuote = None
+                continue
+            else:
+                # It is a start quote, record the location
+                debug += "'"
+                startQuote = i
+                continue
+        elif startQuote is not None:
+            # We're inside quotes; other cases should be ignored.
+            debug += '~'
+            continue
+        elif c == '{':
+            # New compound tag
+            if i == 0:
+                # This is the starting tag, and accounted for.
+                continue
+            else:
+                # This tag is not accounted for.
+                debug += '{'
+                state["native"] = {}
+                state["tag"] = TAG_Compound()
+                _jsonParser_storeValue(state)
+                continue
+        elif c == '[':
+            # New list tag
+            debug += '['
+            state["native"] = []
+            state["tag"] = TAG_List()
+            _jsonParser_storeValue(state)
+            continue
+        elif c == ']':
+            # End of list tag
+            debug += ']'
+            _jsonParser_exitNestLevel(state)
+            continue
+        elif c == '}':
+            # End of compound tag
+            debug += '}'
+            _jsonParser_exitNestLevel(state)
+            continue
+        elif c == ':':
+            # LHS is name, RHS is value.
+            # If missing, name is not present.
+            debug += ':'
+            if state["name"] == '':
+                state["name"] = state["native"]
+            else:
+                state["name"] += ":" + state["native"]
+            state["native"] = None
+            continue
+        elif c == ',':
+            # Tag separator for lists and compounds
+            debug += ','
+            _jsonParser_storeValue(state)
+            continue
+        else:
+            # Non-string non-container tag
+            debug += '-'
+            if state["native"] is None:
+                state["native"] = ""
+            state["native"] += c
+    if state["native"] is not None:
+        _jsonParser_storeValue(state)
+    
+    return result
+
 
