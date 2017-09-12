@@ -70,6 +70,6 @@ for name, x1, y1, z1, x2, y2, z2, blockid, block in regions:
 print "fill 0:0 (-1441, 2, -1441), (1, 1, 1)"
 print "save"
 print "quit"
-print "n"
+print "y"
 
 print
