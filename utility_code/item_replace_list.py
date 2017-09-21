@@ -50,7 +50,7 @@ Action lists appear like so:
     are run from top to bottom. They look like this:
     [
     ["damage", "-", 7, "min", 2],
-    ["nbt", "update", "{display:{CustomName:"§o§6Resurrected Pheonix"}}"],
+    ["nbt", "update", "{display:{Name:"§o§6Resurrected Pheonix"}}"],
     ]
     
     Valid actions include:

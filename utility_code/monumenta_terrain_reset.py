@@ -12,9 +12,9 @@ If it's going to crash, it won't damage the original worlds.
 Just fix what broke, and run again.
 """
 import mclevel
-import terrainResetLib
-# import itemReplaceLib
-# import itemReplaceList # This is where the item replacements are kept
+import terrain_reset_lib
+import item_replace_lib
+# import item_replace_list # This is where the item replacements are kept
 
 ################################################################################
 # Config section
@@ -105,33 +105,52 @@ blocksToReplace = (
     ((145,0), "air"),
     ((145,1), "air"),
     ((145,2), "air"),
+    ((145,3), "air"),
     ((145,4), "air"),
     ((145,5), "air"),
     ((145,6), "air"),
+    ((145,7), "air"),
     ((145,8), "air"),
     ((145,9), "air"),
     ((145,10), "air"),
-    ((145,12), "air"),
-    ((145,13), "air"),
-    ((145,14), "air"),
+    ((145,11), "air"),
 )
 
 
 ################################################################################
 # Testing sandbox
+"""
+world = mclevel.loadWorld("/home/tim/.minecraft/saves/dst/")
 
-#terrainResetLib.replaceBlocksInBoxList(config,coordinatesToCopy,"main")
-#terrainResetLib.replaceBlocksGlobally(config,blocksToReplaceB,"build")
+testReplacementList = [
+    [
+        {
+            "id":"minecraft:stick",
+            "nbt":'''{display:{Name:"wand"}}'''
+        },
+        [
+            "count", "+", 1,
+        ]
+    ],
+]
+"""
+testReplace = item_replace_lib.allReplacements(testReplacementList)
+item_replace_lib.replaceItemsInWorld(world,testReplace)
+world.saveInPlace()
 
-#terrainResetLib.terrainReset(testConfig,blocksToReplace)
+
+#terrain_reset_lib.replaceBlocksInBoxList(config,coordinatesToCopy,"main")
+#terrain_reset_lib.replaceBlocksGlobally(config,blocksToReplaceB,"build")
+
+#terrain_reset_lib.terrainReset(testConfig,blocksToReplace)
 
 ################################################################################
 # Main Code
 
 # This shows where the selected regions are, as your old script does.
-#terrainResetLib.fillRegions(config)
+#terrain_reset_lib.fillRegions(config)
 
 # This does the move itself - copy areas, entities, scoreboard, etc.
-terrainResetLib.terrainReset(config,blocksToReplace)
+terrain_reset_lib.terrainReset(config,blocksToReplace)
 
 

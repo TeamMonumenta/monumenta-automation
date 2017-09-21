@@ -206,15 +206,16 @@ class matchNBT(object):
         if json is None:
             self._nbt = None
         else:
-            # TODO This is not correct! Need to parse!
-            self._nbt = json
+            self._nbt = nbt.json_to_tag(json)
     
     def __eq__(self,itemStack):
         if (self._nbt is None):
             return ("tag" not in itemStack)
         # TODO Need to handle more complicated cases
         print "Need to implement json parser:"
-        print self._value
+        print self._nbt.json
+        
+        
         return True
 
 class matchCount(object):
@@ -326,7 +327,7 @@ class changeNBT(object):
                 (self._operation == "set")
                 or (self._operation == "replace")
         ):
-            self._value = actionOptions.pop(0)
+            self._value = nbt.json_to_tag( actionOptions.pop(0) )
     
     def run(self,itemStack):
         if (
@@ -339,12 +340,14 @@ class changeNBT(object):
                 or (self._operation == "replace")
         ):
             print "Need to implement json parser:"
-            print self._value
+            print self._value.json
 
+"""
+NYI
 class changeScoreboard(object):
-    """
+    ""
     Stores a scoreboard action to apply later
-    """
+    ""
     def __init__(self,actionOptions):
         self._operation = actionOptions.pop(0)
         self._value = actionOptions.pop(0)
@@ -376,6 +379,7 @@ class changeScoreboard(object):
             newVal = max(itemStack["Damage"].value,self._value)
             itemStack["Damage"].value = newVal
             return
+"""
 
 class changeRemove(object):
     """
