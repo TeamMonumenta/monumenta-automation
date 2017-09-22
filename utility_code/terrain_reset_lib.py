@@ -153,7 +153,10 @@ def movePlayers(worldFolder,point):
 
 def resetRegionalDifficulty(world):
     """ Resets the play time for the world, and the time in each chunk. """
-    world.root_tag["Data"]["Time"].value = 0
+
+    # Don't need to reset the server time, since it does not advance
+    # world.root_tag["Data"]["Time"].value = 0
+
     for aChunk in world.getChunks():
         aChunk.root_tag["Level"]["InhabitedTime"].value = 0
 
