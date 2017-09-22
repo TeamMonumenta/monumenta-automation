@@ -20,35 +20,9 @@ from mclevel import materials
 from mclevel.box import BoundingBox, Vector
 from mclevel import nbt
 
-################################################################################
-# Function definitions
-
-def getBoxSize(box):
-    # Get the size of a box from
-    # an element of coordinatesToScan
-    sizeFix = Vector(*(1,1,1))
-    min_pos = Vector(*map(min, zip(box[1], box[2])))
-    max_pos = Vector(*map(max, zip(box[1], box[2])))
-    return max_pos - min_pos + sizeFix
-
-def getBoxPos(box):
-    # Get the origin of a box from
-    # an element of coordinatesToScan
-    return Vector(*map(min, zip(box[1], box[2])))
-
-def getBox(box):
-    # Returns a box around from
-    # an element of coordinatesToScan
-    origin = getBoxPos(box)
-    size   = getBoxSize(box)
-
-    return BoundingBox(origin,size)
-
-def getBoxList(movingBoxList):
-    boxList = []
-    for aScaningBox in movingBoxList:
-        boxList.append(getBox(aScaningBox))
-    return tuple(boxList) # turn the list into a tuple, write-protecting it
+from monumenta_common import getBoxSize
+from monumenta_common import getBoxPos
+from monumenta_common import getBox
 
 ################################################################################
 # Functions that display stuff while they work
