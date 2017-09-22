@@ -120,76 +120,6 @@ blocksToReplace = (
 ################################################################################
 # Testing sandbox
 
-world = mclevel.loadWorld("/home/tim/.minecraft/saves/dst/")
-
-testReplacementList = [
-    [
-        {
-            "id":"minecraft:gunpowder",
-            "damage":0,
-            "count":5,
-            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
-        },
-        [
-            "id","leather_helmet",
-            "count","=","1",
-            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16381908,Name:"§6Pheonix Cap",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:gunpowder",
-            "damage":0,
-            "count":8,
-            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
-        },
-        [
-            "id","leather_chestplate",
-            "count","=","1",
-            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16314131,Name:"§6Pheonix Tunic",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:gunpowder",
-            "damage":0,
-            "count":7,
-            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
-        },
-        [
-            "id","leather_leggings",
-            "count","=","1",
-            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16747314,Name:"§6Pheonix Pants",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:gunpowder",
-            "damage":0,
-            "count":4,
-            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
-        },
-        [
-            "id","leather_boots",
-            "count","=","1",
-            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:12189696,Name:"§6Pheonix Boots",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
-        ]
-    ],
-]
-
-print "Parsing item replace list..."
-testReplace = item_replace_lib.allReplacements(testReplacementList)
-print "Replacing items in the world..."
-item_replace_lib.replaceItemsInWorld(world,testReplace)
-print "Saving in place..."
-world.saveInPlace()
-
-
-#terrain_reset_lib.replaceBlocksInBoxList(config,coordinatesToCopy,"main")
-#terrain_reset_lib.replaceBlocksGlobally(config,blocksToReplaceB,"build")
-
-#terrain_reset_lib.terrainReset(testConfig,blocksToReplace)
-
 ################################################################################
 # Main Code
 
@@ -197,6 +127,6 @@ world.saveInPlace()
 #terrain_reset_lib.fillRegions(config)
 
 # This does the move itself - copy areas, entities, scoreboard, etc.
-#terrain_reset_lib.terrainReset(config,blocksToReplace)
+terrain_reset_lib.terrainReset(config,blocksToReplace)
 
 

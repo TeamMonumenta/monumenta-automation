@@ -53,8 +53,6 @@ def replaceItemStack(itemStack,replacementList):
         spawnEggEntity = itemStack["tag"]["EntityTag"]
         # TODO This recursive method should be changed to iterative!
         replaceItemsOnEntity(spawnEggEntity,replacementList)
-    # TODO anything to match or edit items goes here
-    # maybe return a value to delete? probably?
     replacementList.run(itemStack)
     
 def replaceItemStacks(itemStackContainer,replacementList):
@@ -121,7 +119,6 @@ class allReplacements(list):
 
 class replacement(object):
     def __init__(self,replacementPair):
-        # TODO need replacement list operations first
         matches = replacementPair[0]
         actions = replacementPair[1]
         

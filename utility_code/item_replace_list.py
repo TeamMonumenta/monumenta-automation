@@ -25,13 +25,13 @@ Pattern matching lists appear like so:
     Match certain damage values:
     {"id":"minecraft:wool","damage":[4,7,12,13]}
     
-    Match colored beds with NBT (NYI):
+    Match colored beds with NBT:
     {"id":"bed","nbt":"{color:14}"}
     This will not check if the NBT matches perfectly,
     only if the specified NBT matches. Other tags are
     ignored.
     
-    To specify strict NBT (NYI):
+    To specify strict NBT:
     {"id":"bed","nbt":"{color:14}","nbtStrict":True}
     This matches NBT exactly as specified.
 
@@ -76,7 +76,7 @@ Action lists appear like so:
             max - set damage to max if max is exceeded
             min - set damage to min if min is exceeded
         
-        nbt - alter an item's damage (NYI) - only clear is implemented
+        nbt - alter an item's nbt - only clear is implemented
             replace - replace an item's NBT data entirely
             set - set specified NBT without altering other NBT
                     existing lists and compounds will not have items removed
@@ -111,18 +111,57 @@ itemReplacements = [
             "damage","+",1,
         ]
     ],
-    # Replace Pheonix Armor Ash (gunpowder) with a Pheonix Chestplate
+    # Replace Pheonix Armor Ash (gunpowder) with Pheonix Armor
+    [
+        {
+            "id":"minecraft:gunpowder",
+            "damage":0,
+            "count":5,
+            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
+        },
+        [
+            "id","leather_helmet",
+            "count","=","1",
+            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16381908,Name:"§6Pheonix Cap",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
+        ]
+    ],
     [
         {
             "id":"minecraft:gunpowder",
             "damage":0,
             "count":8,
-            "nbt":ur'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
+            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
         },
         [
             "id","leather_chestplate",
             "count","=","1",
-            "nbt","replace",ur'{display:{Name:"§6Pheonix Chestplate",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
+            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16314131,Name:"§6Pheonix Tunic",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:gunpowder",
+            "damage":0,
+            "count":7,
+            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
+        },
+        [
+            "id","leather_leggings",
+            "count","=","1",
+            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16747314,Name:"§6Pheonix Pants",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:gunpowder",
+            "damage":0,
+            "count":4,
+            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
+        },
+        [
+            "id","leather_boots",
+            "count","=","1",
+            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:12189696,Name:"§6Pheonix Boots",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
         ]
     ],
 ]
