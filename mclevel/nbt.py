@@ -133,6 +133,9 @@ class TAG_Value(object):
     
     def issubset(self,other):
         return self == other
+    
+    def update(self,newTag):
+        self.value = newTag
 
 
 class TAG_Byte(TAG_Value):
@@ -693,6 +696,17 @@ class TAG_Compound(TAG_Value, collections.MutableMapping):
         except:
             return False
         return True
+    
+    def update(self,newTag):
+        for aKey in newTag.keys():
+            if aKey not in self:
+                json = newTag[aKey].json
+                newSubTag = json_to_tag(json)
+                if newSubTag.name != aKey:
+                    newSubTag = newSubTag[aKey]
+                self[aKey] = newSubTag
+            else:
+                self[aKey].update(newTag[aKey])
 
 class TAG_List(TAG_Value, collections.MutableSequence):
     """A homogenous list of unnamed data of a single TAG_* type.

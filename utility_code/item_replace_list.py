@@ -114,15 +114,15 @@ itemReplacements = [
     # Replace Pheonix Armor Ash (gunpowder) with a Pheonix Chestplate
     [
         {
-            "id":289,
+            "id":"minecraft:gunpowder",
             "damage":0,
             "count":8,
-            "nbt":"{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}",
+            "nbt":ur'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
         },
         [
             "id","leather_chestplate",
             "count","=","1",
-            "nbt","replace","{display:{Name:"§6Pheonix Chestplate",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}",
+            "nbt","replace",ur'{display:{Name:"§6Pheonix Chestplate",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
         ]
     ],
 ]

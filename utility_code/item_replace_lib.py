@@ -152,7 +152,7 @@ class replacement(object):
                 self.actions.append( changeRemove() )
     
     def run(self,itemStack):
-        if all(itemStack == rule for rule in self.matches):
+        if all(rule == itemStack for rule in self.matches):
             for action in self.actions:
                 action.run(itemStack)
 
@@ -209,14 +209,15 @@ class matchNBT(object):
             self._nbt = nbt.json_to_tag(json)
     
     def __eq__(self,itemStack):
-        if (self._nbt is None):
-            return ("tag" not in itemStack)
-        # TODO Need to handle more complicated cases
-        print "Need to implement json parser:"
-        print self._nbt.json
+        if self._nbt is None:
+            return "tag" not in itemStack
+        elif "tag" not in itemStack:
+            return False
         
-        
-        return True
+        if self._exact:
+            self._nbt == itemStack["tag"]
+        else:
+            return self._nbt.issubset(itemStack["tag"])
 
 class matchCount(object):
     """
@@ -339,8 +340,9 @@ class changeNBT(object):
                 (self._operation == "set")
                 or (self._operation == "replace")
         ):
-            print "Need to implement json parser:"
-            print self._value.json
+            if "tag" not in itemStack:
+                itemStack["tag"] = nbt.TAG_Compound()
+            itemStack["tag"].update(self._value)
 
 """
 NYI
