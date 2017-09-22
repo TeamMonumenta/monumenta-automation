@@ -23,13 +23,13 @@ config = {
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
-    "localMainFolder":"/home/rock/tmp/Project Epic Source/",
-    "localBuildFolder":"/home/rock/tmp/Project Epic/",
-    "localDstFolder":"/home/rock/tmp/Project Epic Updated/",
-    
+    "localMainFolder":"/home/rock/tmp/BETA_Project_Epic/",
+    "localBuildFolder":"/home/rock/tmp/BUILD_Project_Epic/",
+    "localDstFolder":"/home/rock/tmp/RESET_Project_Epic/",
+
     # No 0.5 offset here, add it yourself if you like.
     # (x,y,z,ry,rx)
-    "SafetyTpLocation":(-734.0, 105.5, 50.0, 0.0, 0.0),
+    "safetyTpLocation":(-734.0, 105.5, 50.0, 0.0, 0.0),
 
     "coordinatesToCopy":(
         # ("a unique name",        (lowerCoordinate),  (upperCoordinate), ( id, dmg), "block name (comment)"),
@@ -48,14 +48,52 @@ config = {
         ("Section_9",              ( -641,   0,  -25), (-655, 255,  -52), (  17, 15), "jungle wood"),
         ("Section_10",             ( -680,   0,  183), (-641, 255,  207), (  19, 0 ), "sponge"),
         ("Section_11",             ( -668,   0,  -14), (-641, 255,   25), (   1, 1 ), "granite"),
+    ),
+
+    # List of blocks to not copy over for the regions above
+    "blockReplaceList":(
+        ("minecraft:iron_block", "air"),
+        ("minecraft:iron_ore", "air"),
+        ("minecraft:gold_block", "air"),
+        ("minecraft:gold_ore", "air"),
+        ("minecraft:diamond_block", "air"),
+        ("minecraft:diamond_ore", "air"),
+        ("minecraft:emerald_block", "air"),
+        ("minecraft:emerald_ore", "air"),
+
+        ("minecraft:beacon", "air"),
+
+        # Not sure about this section
+        #("minecraft:lapis_block", "air"),
+        #("minecraft:lapis_ore", "air"),
+        #("enchanting_Table", "air"),
+        #("quartz_ore", "air"),
+        #("hopper", "air"),
+
+        # anvils
+        ((145,0), "air"),
+        ((145,1), "air"),
+        ((145,2), "air"),
+        ((145,3), "air"),
+        ((145,4), "air"),
+        ((145,5), "air"),
+        ((145,6), "air"),
+        ((145,7), "air"),
+        ((145,8), "air"),
+        ((145,9), "air"),
+        ((145,10), "air"),
+        ((145,11), "air"),
     )
 }
+
+################################################################################
+# Testing sandbox
 
 testConfig = {
     "localMainFolder":"/home/tim/.minecraft/saves/main/",
     "localBuildFolder":"/home/tim/.minecraft/saves/build/",
     "localDstFolder":"/home/tim/.minecraft/saves/dst/",
-    "SafetyTpLocation":(149.0, 76.0, 133.0, 0.0, 0.0),
+    "safetyTpLocation":(149.0, 76.0, 133.0, 0.0, 0.0),
     "coordinatesToCopy":(
         ("hut1",           (      153, 68,      104), (      156, 73,      108), (0,0), "air"),
         ("hut2fence",      (      159, 64,      112), (      163, 69,      116), (0,0), "air"),
@@ -78,55 +116,39 @@ testConfig = {
     )
 }
 
+def fillRegions(config):
+    """ Fill all regions with specified blocks to demonstrate coordinates """
 
-"""
-List of blocks to not copy over for the regions above
-"""
-blocksToReplace = (
-    ("minecraft:iron_block", "air"),
-    ("minecraft:iron_ore", "air"),
-    ("minecraft:gold_block", "air"),
-    ("minecraft:gold_ore", "air"),
-    ("minecraft:lapis_block", "air"),
-    ("minecraft:lapis_ore", "air"),
-    ("minecraft:diamond_block", "air"),
-    ("minecraft:diamond_ore", "air"),
-    ("minecraft:emerald_block", "air"),
-    ("minecraft:emerald_ore", "air"),
-    
-    ("minecraft:beacon", "air"),
-    
-    # Not sure about this section
-    #("enchanting_Table", "air"),
-    #("quartz_ore", "air"),
-    #("hopper", "air"),
-    
-    # anvils
-    ((145,0), "air"),
-    ((145,1), "air"),
-    ((145,2), "air"),
-    ((145,3), "air"),
-    ((145,4), "air"),
-    ((145,5), "air"),
-    ((145,6), "air"),
-    ((145,7), "air"),
-    ((145,8), "air"),
-    ((145,9), "air"),
-    ((145,10), "air"),
-    ((145,11), "air"),
-)
+    localBuildFolder = config["localBuildFolder"]
+    localDstFolder = config["localDstFolder"]
+    coordinatesToCopy = config["coordinatesToCopy"]
 
+    # Delete the dst world for a clean slate to start from
+    shutil.rmtree(localDstFolder,True)
 
-################################################################################
-# Testing sandbox
+    # Copy the build world to the dst world
+    shutil.copytree(localBuildFolder,localDstFolder)
 
-################################################################################
-# Main Code
+    dstWorld = mclevel.loadWorld(localDstFolder)
+
+    # Fill the selected regions for debugging reasons
+    for fillRegion in coordinatesToCopy:
+        print "Filling " + fillRegion[0] + " with " + fillRegion[4] + "..."
+        box = getBox(fillRegion)
+        block = dstWorld.materials[fillRegion[3]]
+        dstWorld.fillBlocks(box, block)
+
+    print "Saving...."
+    dstWorld.generateLights()
+    dstWorld.saveInPlace()
 
 # This shows where the selected regions are, as your old script does.
 #terrain_reset_lib.fillRegions(config)
 
+################################################################################
+# Main Code
+
 # This does the move itself - copy areas, entities, scoreboard, etc.
-terrain_reset_lib.terrainReset(config,blocksToReplace)
+terrain_reset_lib.terrainReset(config)
 
 
