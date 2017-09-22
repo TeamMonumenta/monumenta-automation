@@ -162,11 +162,15 @@ def resetRegionalDifficulty(world):
 
 def copyFile(old,new):
     os.remove(new)
-    shutil.copy2(old, new)
+    if os.path.islink(old):
+        linkto = os.readlink(old)
+        os.symlink(linkto, new)
+    else:
+        shutil.copy2(old, new)
 
 def copyFolder(old,new):
     shutil.rmtree(new, True)
-    shutil.copytree(old, new)
+    shutil.copytree(old, new, True)
 
 def copyFolders(old,new,subfolders):
     for folder in subfolders:
