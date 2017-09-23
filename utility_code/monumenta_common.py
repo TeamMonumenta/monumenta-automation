@@ -4,6 +4,11 @@ import shutil
 
 from mclevel.box import BoundingBox, Vector
 
+def getBoxName(box):
+    # Get the name of a box from
+    # an element of coordinatesToScan
+    return box[0]
+
 def getBoxSize(box):
     # Get the size of a box from
     # an element of coordinatesToScan
@@ -24,6 +29,32 @@ def getBox(box):
     size   = getBoxSize(box)
 
     return BoundingBox(origin,size)
+
+def getBoxRuleBlockReplacement(box):
+    """
+    Get whether or not the box should
+    have its blocks replaced per
+    the replacement list.
+    """
+    return box[3]
+
+def getBoxMaterial(box):
+    """
+    Get the material of a box from
+    an element of coordinatesToScan
+    Only used to confirm the box
+    is the right size
+    """
+    return box[4]
+
+def getBoxMaterialName(box):
+    """
+    Get the name of the material of a box
+    from an element of coordinatesToScan
+    Only used to confirm the box
+    is the right size
+    """
+    return box[5]
 
 def filesInBox(aBox):
     # returns a list of (x,z) pairs in terms of .mca files
@@ -48,4 +79,8 @@ def copyFolder(old, new):
 def copyFolders(old, new, subfolders):
     for folder in subfolders:
         print "Copying " + folder + "..."
-        copyFolder(old+folder, new+folder)
+        try:
+            copyFolder(old+folder, new+folder)
+        except:
+            print "*** " + folder + " could not be copied, may not exist."
+

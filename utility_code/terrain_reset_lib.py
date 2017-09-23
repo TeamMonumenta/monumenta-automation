@@ -58,8 +58,11 @@ from mclevel.box import BoundingBox, Vector
 import item_replace_lib
 import item_replace_list
 
+from monumenta_common import getBoxName
 from monumenta_common import getBoxSize
 from monumenta_common import getBoxPos
+from monumenta_common import getBox
+from monumenta_common import getBoxRuleBlockReplacement
 from monumenta_common import getBox
 from monumenta_common import copyFile
 from monumenta_common import copyFolder
@@ -71,7 +74,7 @@ from monumenta_common import copyFolders
 def replace(world, oldBlock, newBlock, box=None):
     world.fillBlocks(box, newBlock, blocksToReplace=[oldBlock])
 
-def replaceSeveral(world, replaceList, boxList):
+def replaceBlocksInBoxes(world, replaceList, boxList):
     for aBox in boxList:
         for replacePair in replaceList:
             oldBlock = world.materials[replacePair[0]]
@@ -125,7 +128,7 @@ def movePlayers(worldFolder, point):
         # save
         aPlayer.save(aPlayerFile)
 
-# TODO: This doesn't quite work
+# TODO: This didn't quite work - works on local worlds, added debug stuff, try again.
 def resetRegionalDifficulty(world):
     """ Resets the play time for the world, and the time in each chunk. """
 
@@ -133,12 +136,23 @@ def resetRegionalDifficulty(world):
     # world.root_tag["Data"]["Time"].value = 0
 
     for aChunk in world.getChunks():
-        aChunk.root_tag["Level"]["InhabitedTime"].value = 0
+        try:
+            aChunk.root_tag["Level"]["InhabitedTime"].value = 0
+        except:
+            if "Level" not in aChunk.root_tag:
+                print 'Chunk ' + str(aChunk.chunkPosition) + ' does not have "Level" in its tags'
+            elif "InhabitedTime" not in aChunk.root_tag["Level"]:
+                print 'Chunk ' + str(aChunk.chunkPosition) + ' does not have "InhabitedTime" in its "Level" tag'
+            else:
+                print 'Unexpected error changing "InhabitedTime" in chunk ' + str(aChunk.chunkPosition)
 
 ################################################################################
 # Functions that display stuff while they work
 
 def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList):
+
+    print "Compiling item replacement list..."
+    compiledItemReplacementList = item_replace_lib.allReplacements(item_replace_list.itemReplacements)
 
     print "Starting transfer of boxes from player server..."
     copyNum = 1
@@ -151,15 +165,20 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList):
     for aCopy in coordinatesToCopy:
         print "[{0}/{1}] Copying {2}...".format(copyNum,copyMax,aCopy[0])
 
+        boxName = getBoxName(aCopy)
         pos = getBoxPos(aCopy)
         box = getBox(aCopy)
+        shouldReplaceBlocks = getBoxRuleBlockReplacement(aCopy)
 
         tempSchematic = srcWorld.extractSchematic(box)
 
-        # TODO: Need to figure out a good way to only replace these things in some regions 
-        #       but not all of them (for example the guild room)
-        # print "[{0}/{1}]   Replacing forbidden blocks in {2}...".format(copyNum,copyMax,aCopy[0])
-        # replaceGlobally(tempSchematic, blockReplaceList);
+        # Replace blocks if needed
+        if shouldReplaceBlocks:
+            print "[{0}/{1}]   Replacing forbidden blocks in {2}...".format(copyNum,copyMax,boxName)
+            replaceGlobally(tempSchematic, blockReplaceList)
+
+            print "[{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
+            item_replace_lib.replaceItemsInWorld(srcWorld,compiledItemReplacementList)
 
         # Remove entities in destination
         dstWorld.removeEntitiesInBox(box)
@@ -194,21 +213,15 @@ def terrainReset(config):
     print "Opening old play World..."
     srcWorld = mclevel.loadWorld(localMainFolder)
 
-    # print "Compiling item replacement list..."
-    # itemReplacementList = item_replace_lib.allReplacements(item_replace_list.itemReplacements)
-
-    # print "Handling item replacements for tile entities..."
-    # item_replace_lib.replaceItemsInWorld(srcWorld,item_replace_list)
-
     print "Opening Destination World..."
     dstWorld = mclevel.loadWorld(localDstFolder)
 
     print "Copying needed terrain from the main world..."
     copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList)
 
-    # TODO: Not working yet
-    # print "Resetting difficulty..."
-    # resetRegionalDifficulty(dstWorld)
+    # TODO: Is this working?
+    print "Resetting difficulty..."
+    resetRegionalDifficulty(dstWorld)
 
     print "Saving...."
     dstWorld.generateLights()
@@ -220,7 +233,9 @@ def terrainReset(config):
     # print "Handling item replacements for players..."
     # item_replace_lib.replaceItemsOnPlayers(localDstFolder, itemReplacementList)
 
-    # TODO: Remove MCEdit temp files
+    # TODO: Test the removal of MCEdit temp files
+    shutil.rmtree(localDstFolder+"##MCEDIT.TEMP##", ignore_errors=True)
+    os.remove(localDstFolder+"mcedit_waypoints.dat")
 
     print "Done!"
 

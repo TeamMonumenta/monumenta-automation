@@ -16,9 +16,12 @@ from mclevel import materials
 from mclevel.box import BoundingBox, Vector
 from mclevel import nbt
 
+from monumenta_common import getBoxName
 from monumenta_common import getBoxSize
 from monumenta_common import getBoxPos
 from monumenta_common import getBox
+from monumenta_common import getBoxMaterial
+from monumenta_common import getBoxMaterialName
 
 ################################################################################
 # Function definitions
@@ -38,7 +41,7 @@ def containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints):
                                     loreIgnore)
                         return True
         except UnicodeEncodeError:
-            print "THIS SHOULDN't HAPPEN"
+            print "THIS SHOULDN'T HAPPEN"
             continue
         except:
             if debugPrints:
@@ -95,7 +98,8 @@ def run(worldFolder, coordinatesToScan, tileEntitiesToCheck, contentsLoreToIgnor
     # warnings.filterwarnings("ignore", category=numpy.VisibleDeprecationWarning)
 
     for aScanBox in coordinatesToScan:
-        print "[{0}/{1}] Scaning {2}...".format(scanNum,scanMax,aScanBox[0])
+        boxName = getBoxName(aScanBox)
+        print "[{0}/{1}] Scaning {2}...".format(scanNum,scanMax,boxName)
         lootless = []
 
         scanBox = getBox(aScanBox)

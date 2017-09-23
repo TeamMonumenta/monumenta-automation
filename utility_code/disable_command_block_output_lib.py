@@ -19,9 +19,12 @@ from mclevel import materials
 from mclevel.box import BoundingBox, Vector
 from mclevel import nbt
 
+from monumenta_common import getBoxName
 from monumenta_common import getBoxSize
 from monumenta_common import getBoxPos
 from monumenta_common import getBox
+from monumenta_common import getBoxMaterial
+from monumenta_common import getBoxMaterialName
 
 ################################################################################
 # Functions that display stuff while they work
@@ -32,9 +35,12 @@ def fillRegions(worldFolder,coordinatesToScan):
     
     # Fill the selected regions for debugging reasons
     for fillRegion in coordinatesToScan:
-        print "Filling " + fillRegion[0] + " with " + fillRegion[4] + "..."
+        boxName = getBoxName(fillRegion)
+        boxMaterial = getBoxMaterial(fillRegion)
+        boxMaterialName = getBoxMaterialName(fillRegion)
+        print "Filling " + boxName + " with " + boxMaterialName + "..."
         box = getBox(fillRegion)
-        block = world.materials[fillRegion[3]]
+        block = world.materials[boxMaterial]
         world.fillBlocks(box, block)
     
     print "Saving...."
@@ -50,7 +56,8 @@ def run(worldFolder,coordinatesToScan):
     
     allChunks = set(world.allChunks)
     for aScanBox in coordinatesToScan:
-        print "[{0}/{1}] Scaning {2}...".format(scanNum,scanMax,aScanBox[0])
+        boxName = getBoxName(aScanBox)
+        print "[{0}/{1}] Scaning {2}...".format(scanNum,scanMax,boxName)
         
         scanBox = getBox(aScanBox)
         
