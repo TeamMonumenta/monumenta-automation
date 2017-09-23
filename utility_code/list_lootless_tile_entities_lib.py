@@ -23,6 +23,37 @@ from monumenta_common import getBox
 ################################################################################
 # Function definitions
 
+def containsIgnoredContents(aTileEntity):
+    for item in aTileEntity["Items"]:
+        try:
+            for lore in item["tag"]["display"]["Lore"]:
+                for loreIgnore in contentsLoreToIgnore:
+                    if loreIgnore in lore.value:
+                        if debugPrints:
+                            print "{0} at ({1},{2},{3}) contains item with lore '{4}' matching '{5}'".format(aTileEntity["id"].value,
+                                    aTileEntity["x"].value,
+                                    aTileEntity["y"].value,
+                                    aTileEntity["z"].value,
+                                    lore.value.encode('utf-8'),
+                                    loreIgnore)
+                        return True
+        except UnicodeEncodeError:
+            print "THIS SHOULDN't HAPPEN"
+            continue
+        except:
+            continue
+    return False
+
+def isWhitelisted(aTileEntity, chestWhitelist):
+    x = aTileEntity["x"].value
+    y = aTileEntity["y"].value
+    z = aTileEntity["z"].value
+
+    if (x,y,z) in chestWhitelist:
+        return True
+    return False
+
+
 def hasLootTable(aTileEntity):
     emptyLootTables = ("", "empty", "minecraft:", "minecraft:empty")
     if "LootTable" not in aTileEntity:
@@ -41,29 +72,10 @@ def hasLootTableSeed(aTileEntity):
 ################################################################################
 # Functions that display stuff while they work
 
-def fillRegions(worldFolder,coordinatesToScan):
-    """ Fill all regions with specified blocks to demonstrate coordinates """
-    world = mclevel.loadWorld(worldFolder)
-    
-    # Fill the selected regions for debugging reasons
-    for fillRegion in coordinatesToScan:
-        print "Filling " + fillRegion[0] + " with " + fillRegion[4] + "..."
-        box = getBox(fillRegion)
-        block = world.materials[fillRegion[3]]
-        world.fillBlocks(box, block)
-    
-    print "Saving...."
-    world.generateLights()
-    world.saveInPlace()
-
-def run(worldFolder,coordinatesToScan,tileEntitiesToCheck,logFolder):
+def run(worldFolder, coordinatesToScan, tileEntitiesToCheck, chestWhitelist):
     print "Beginning scan..."
     world = mclevel.loadWorld(worldFolder)
-    
-    # Create/empty the log folder, containing all command blocks
-    shutil.rmtree(logFolder, True)
-    os.makedirs(logFolder)
-    
+
     # Build tile ID list, adding default namespace if needed
     tileIDList = []
     for tileID in tileEntitiesToCheck:
@@ -71,75 +83,67 @@ def run(worldFolder,coordinatesToScan,tileEntitiesToCheck,logFolder):
             tileIDList.append(tileID)
         else:
             tileIDList.append("minecraft:"+tileID)
-    
-    lootless = []
+
     scanNum = 1
     scanMax = len(coordinatesToScan)
-    
+
     allChunks = set(world.allChunks)
+
+    # This is fine. The warning is known and can be ignored.
+    # warnings.filterwarnings("ignore", category=numpy.VisibleDeprecationWarning)
+
     for aScanBox in coordinatesToScan:
         print "[{0}/{1}] Scaning {2}...".format(scanNum,scanMax,aScanBox[0])
-        
-        # Make appropriate folder
-        logFile = logFolder+"/"+aScanBox[0]+".txt"
-        
+        lootless = []
+
         scanBox = getBox(aScanBox)
-        
-        for cmdBlockType in tileEntitiesToCheck:
-            strBuffer = ""
-            
-            if cmdBlockType == "other":
-                strBuffer += "These command block tile entities do not appear to be in the same block as a command block - might be a bug?\n\n"
-            
-            f = open(logFile,"w")
-            f.write(strBuffer)
-            f.close()
-        
+
         # The function world.getTileEntitiesInBox() does not work.
         # Working around it, since it works for chunks but not worlds.
         selectedChunks = set(scanBox.chunkPositions)
         chunksToScan = list(selectedChunks.intersection(allChunks))
         for cx,cz in chunksToScan:
-            
-            # Get and loop through entities within chunk and box
-            aChunk = world.getChunk(cx,cz)
-            newTileEntities = aChunk.getTileEntitiesInBox(scanBox)
-            for aTileEntity in newTileEntities:
-                
-                # Check if tileEntity is being scanned
-                if aTileEntity["id"].value in tileIDList:
-                    
-                    # Detect missing loot table
-                    if not hasLootTable(aTileEntity):
-                        lootless.append(aTileEntity)
-                    
-                    # Detect fixed loot table seeds
-                    elif hasLootTableSeed(aTileEntity):
-                        print aTileEntity.json
-                        lootless.append(aTileEntity)
-                    
-                    elif "LootTableSeed" in aTileEntity:
-                        print aTileEntity
-            
-            if len(lootless):
-                strBuffer = ""
-                
-                while len(lootless):
-                    aTileEntity = lootless.pop()
-                    
-                    tileEntityID = aTileEntity["id"].value
-                    x = aTileEntity["x"].value
-                    y = aTileEntity["y"].value
-                    z = aTileEntity["z"].value
-                    
-                    strBuffer += "{0} at ({1},{2},{3}) ".format(tileEntityID,x,y,z)
-                    if not hasLootTable(aTileEntity):
-                        strBuffer += "has no loot table set.\n"
-                    elif hasLootTableSeed(aTileEntity):
-                        strBuffer += "has a fixed loot table seed.\n"
-                
-                f = open(logFile,"a")
-                f.write(strBuffer)
-                f.close()
-    
+            try:
+                # Get and loop through entities within chunk and box
+                aChunk = world.getChunk(cx,cz)
+                newTileEntities = aChunk.getTileEntitiesInBox(scanBox)
+                for aTileEntity in newTileEntities:
+
+                    # Check if tileEntity is being scanned
+                    if aTileEntity["id"].value in tileIDList:
+
+                        # Detect missing loot table
+                        if ((not hasLootTable(aTileEntity)) and
+                            (not containsIgnoredContents(aTileEntity)) and
+                            (not isWhitelisted(aTileEntity, chestWhitelist))):
+                            lootless.append(aTileEntity)
+
+                        # Detect fixed loot table seeds
+                        elif (hasLootTableSeed(aTileEntity) and
+                              (not containsIgnoredContents(aTileEntity)) and
+                              (not isWhitelisted(aTileEntity, chestWhitelist))):
+                            lootless.append(aTileEntity)
+
+                        elif "LootTableSeed" in aTileEntity:
+                            print aTileEntity
+            except:
+                #print "Got exception in chunk (" + str(cx) + "," + str(cz) + ")"
+                continue
+
+        print "{0} tile entities found without a loot table:".format(len(lootless))
+        for aTileEntity in lootless:
+            tileEntityID = aTileEntity["id"].value
+            x = aTileEntity["x"].value
+            y = aTileEntity["y"].value
+            z = aTileEntity["z"].value
+            theProblem = ""
+            if not hasLootTable(aTileEntity):
+                theProblem = "has no loot table set."
+            elif hasLootTableSeed(aTileEntity):
+                theProblem = "has a fixed loot table seed."
+            print "{0} {1} {2} - {3} {4}".format(x, y, z, tileEntityID, theProblem)
+
+        print ""
+        scanNum+=1
+
 
