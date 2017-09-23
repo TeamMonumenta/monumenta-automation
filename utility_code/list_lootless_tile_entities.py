@@ -90,5 +90,5 @@ tileEntitiesToCheck = ("chest",)
 # Main Code
 
 # This scans for tile entities that don't have a loot table
-list_lootless_tile_entities_lib.run(worldFolder, coordinatesToScan, tileEntitiesToCheck, chestWhitelist)
+list_lootless_tile_entities_lib.run(worldFolder, coordinatesToScan, tileEntitiesToCheck, contentsLoreToIgnore, chestWhitelist, False)
 

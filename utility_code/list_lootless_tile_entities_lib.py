@@ -23,7 +23,7 @@ from monumenta_common import getBox
 ################################################################################
 # Function definitions
 
-def containsIgnoredContents(aTileEntity):
+def containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints):
     for item in aTileEntity["Items"]:
         try:
             for lore in item["tag"]["display"]["Lore"]:
@@ -41,6 +41,8 @@ def containsIgnoredContents(aTileEntity):
             print "THIS SHOULDN't HAPPEN"
             continue
         except:
+            if debugPrints:
+                print "Caught general exception in containsIgnoredContents"
             continue
     return False
 
@@ -72,7 +74,7 @@ def hasLootTableSeed(aTileEntity):
 ################################################################################
 # Functions that display stuff while they work
 
-def run(worldFolder, coordinatesToScan, tileEntitiesToCheck, chestWhitelist):
+def run(worldFolder, coordinatesToScan, tileEntitiesToCheck, contentsLoreToIgnore, chestWhitelist, debugPrints=False):
     print "Beginning scan..."
     world = mclevel.loadWorld(worldFolder)
 
@@ -114,20 +116,21 @@ def run(worldFolder, coordinatesToScan, tileEntitiesToCheck, chestWhitelist):
 
                         # Detect missing loot table
                         if ((not hasLootTable(aTileEntity)) and
-                            (not containsIgnoredContents(aTileEntity)) and
+                            (not containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints)) and
                             (not isWhitelisted(aTileEntity, chestWhitelist))):
                             lootless.append(aTileEntity)
 
                         # Detect fixed loot table seeds
                         elif (hasLootTableSeed(aTileEntity) and
-                              (not containsIgnoredContents(aTileEntity)) and
+                              (not containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints)) and
                               (not isWhitelisted(aTileEntity, chestWhitelist))):
                             lootless.append(aTileEntity)
 
                         elif "LootTableSeed" in aTileEntity:
                             print aTileEntity
-            except:
-                #print "Got exception in chunk (" + str(cx) + "," + str(cz) + ")"
+            except KeyError:
+                if debugPrints:
+                    print "Got KeyError exception in chunk (" + str(cx) + "," + str(cz) + ")"
                 continue
 
         print "{0} tile entities found without a loot table:".format(len(lootless))
@@ -141,7 +144,7 @@ def run(worldFolder, coordinatesToScan, tileEntitiesToCheck, chestWhitelist):
                 theProblem = "has no loot table set."
             elif hasLootTableSeed(aTileEntity):
                 theProblem = "has a fixed loot table seed."
-            print "{0} {1} {2} - {3} {4}".format(x, y, z, tileEntityID, theProblem)
+            print "{0} {1} {2}".format(x, y, z)
 
         print ""
         scanNum+=1
