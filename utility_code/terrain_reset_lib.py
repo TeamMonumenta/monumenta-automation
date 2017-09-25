@@ -128,9 +128,14 @@ def movePlayers(worldFolder, point):
         # save
         aPlayer.save(aPlayerFile)
 
-# TODO: This didn't quite work - works on local worlds, added debug stuff, try again.
 def resetRegionalDifficulty(world):
     """ Resets the play time for the world, and the time in each chunk. """
+
+    num_reset = 0
+    num_missing_level_tag = 0
+    num_missing_inhabited_tag = 0
+    num_other_error = 0
+
 
     # This is the time the world has been played, not the in-game time.
     try:
@@ -141,13 +146,19 @@ def resetRegionalDifficulty(world):
     for aChunk in world.getChunks():
         try:
             aChunk.root_tag["Level"]["InhabitedTime"].value = 0
+            num_reset = num_reset + 1
         except:
             if "Level" not in aChunk.root_tag:
-                print 'Chunk ' + str(aChunk.chunkPosition) + ' does not have "Level" in its tags'
+                num_missing_level_tag = num_missing_level_tag + 1
+                # print 'Chunk ' + str(aChunk.chunkPosition) + ' does not have "Level" in its tags'
             elif "InhabitedTime" not in aChunk.root_tag["Level"]:
-                print 'Chunk ' + str(aChunk.chunkPosition) + ' does not have "InhabitedTime" in its "Level" tag'
+                num_missing_inhabited_tag = num_missing_inhabited_tag + 1
+                # print 'Chunk ' + str(aChunk.chunkPosition) + ' does not have "InhabitedTime" in its "Level" tag'
             else:
-                print 'Unexpected error changing "InhabitedTime" in chunk ' + str(aChunk.chunkPosition)
+                num_other_error = num_other_error + 1
+                # print 'Unexpected error changing "InhabitedTime" in chunk ' + str(aChunk.chunkPosition)
+
+    print "  {0} chunks reset, {1} missing level tag, {2} missing inhabited tag, {3} other errors".format(num_reset, num_missing_level_tag, num_missing_inhabited_tag, num_other_error)
 
 ################################################################################
 # Functions that display stuff while they work
@@ -173,22 +184,21 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList):
         box = getBox(aCopy)
         shouldReplaceBlocks = getBoxRuleBlockReplacement(aCopy)
 
-        tempSchematic = srcWorld.extractSchematic(box)
+        tempSchematic = srcWorld.extractSchematic(box, entities=True)
 
         # Replace blocks if needed
         if shouldReplaceBlocks:
             print "[{0}/{1}]   Replacing forbidden blocks in {2}...".format(copyNum,copyMax,boxName)
             replaceGlobally(tempSchematic, blockReplaceList)
 
-            print "[{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
-            item_replace_lib.replaceItemsInWorld(srcWorld,compiledItemReplacementList)
+            # print "[{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
+            # item_replace_lib.replaceItemsInWorld(srcWorld,compiledItemReplacementList)
 
         # Remove entities in destination
         dstWorld.removeEntitiesInBox(box)
 
         # Copy the schematic with edits in place
-        dstWorld.copyBlocksFrom(tempSchematic, BoundingBox((0, 0, 0), pos),
-                                pos, blocksToCopy)
+        dstWorld.copyBlocksFrom(tempSchematic, tempSchematic.bounds, pos, blocksToCopy, entities=True)
 
         copyNum+=1
 
@@ -201,6 +211,8 @@ def terrainReset(config):
     coordinatesToCopy = config["coordinatesToCopy"]
     blockReplaceList = config["blockReplaceList"]
     safetyTpLocation = config["safetyTpLocation"]
+
+    # TODO - Fail if build or main folders don't exist
 
     print "Copying build world as base..."
     copyFolder(localBuildFolder, localDstFolder)
@@ -222,7 +234,6 @@ def terrainReset(config):
     print "Copying needed terrain from the main world..."
     copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList)
 
-    # TODO: Is this working?
     print "Resetting difficulty..."
     resetRegionalDifficulty(dstWorld)
 
@@ -236,7 +247,6 @@ def terrainReset(config):
     # print "Handling item replacements for players..."
     # item_replace_lib.replaceItemsOnPlayers(localDstFolder, itemReplacementList)
 
-    # TODO: Test the removal of MCEdit temp files
     shutil.rmtree(localDstFolder+"##MCEDIT.TEMP##", ignore_errors=True)
     os.remove(localDstFolder+"mcedit_waypoints.dat")
 

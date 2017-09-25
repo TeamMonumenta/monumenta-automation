@@ -36,12 +36,12 @@ config = {
 
     # No 0.5 offset here, add it yourself if you like.
     # (x,y,z,ry,rx)
-    "safetyTpLocation":(-734.0, 105.5, 50.0, 0.0, 0.0),
+    "safetyTpLocation":(-1456, 240, -1498, 270.0, 0.0),
 
     "coordinatesToCopy":(
         # ("a unique name",        (lowerCoordinate),  (upperCoordinate), replaceBlocks, ( id, dmg), "block name (comment)"),
         ("Apartments_buying_room", ( -809,  99,   47), (-874,  96,    4), False, (  41, 0 ), "gold"),
-        ("Apartments_units",       ( -817, 113,   87), (-859, 164,   16), True,  (  41, 0 ), "gold"),
+        ("Apartments_units",       ( -817, 113,   87), (-859, 164,   16), False, (  41, 0 ), "gold"),
         ("Plot_Pressure_Plates",   ( -719, 106, -118), (-665, 106,  -74), False, (  41, 0 ), "gold"),
         ("Guild_Room",             ( -800, 109,  -75), (-758, 104, -102), False, (  41, 0 ), "gold"),
         ("Section_1",              (-1130,   0, -267), (-897, 255,  318), True,  (  41, 0 ), "gold"),
