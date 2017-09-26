@@ -38,23 +38,30 @@ config = {
     # (x,y,z,ry,rx)
     "safetyTpLocation":(-1456, 240, -1498, 270.0, 0.0),
 
+    # These get filled with the block specified - ie, the magic block with air.
+    # Disable with replaceBlocks or comment it out
+    "coordinatesToFill":(
+        # ("a unique name",        (lowerCoordinate),  (upperCoordinate), replaceBlocks, ( id, dmg), "block name (comment)"),
+        ("Magic Block",            (-1441,   2,-1441), (-1441,   2,-1441), True,  (  0, 0 ), "air"),
+    ),
+
     "coordinatesToCopy":(
         # ("a unique name",        (lowerCoordinate),  (upperCoordinate), replaceBlocks, ( id, dmg), "block name (comment)"),
-        ("Apartments_buying_room", ( -809,  99,   47), (-874,  96,    4), False, (  41, 0 ), "gold"),
-        ("Apartments_units",       ( -817, 113,   87), (-859, 164,   16), False, (  41, 0 ), "gold"),
-        ("Plot_Pressure_Plates",   ( -719, 106, -118), (-665, 106,  -74), False, (  41, 0 ), "gold"),
-        ("Guild_Room",             ( -800, 109,  -75), (-758, 104, -102), False, (  41, 0 ), "gold"),
-        ("Section_1",              (-1130,   0, -267), (-897, 255,  318), True,  (  41, 0 ), "gold"),
-        ("Section_2",              ( -896,   0,  208), (-512, 255,  318), True,  (  57, 0 ), "diamond"),
-        ("Section_3",              ( -896,   0,  207), (-788, 255,  119), True,  (  42, 0 ), "iron"),
-        ("Section_4",              ( -896,   0, -267), (-825, 255,  -28), True,  (  22, 0 ), "lapis"),
-        ("Section_5",              ( -512,   0,  207), (-640, 255, -273), True,  (  24, 0 ), "sandstone"),
-        ("Section_6",              ( -824,   0, -169), (-641, 255, -272), True,  ( 152, 0 ), "redstone"),
-        ("Section_7",              ( -641,   0, -168), (-677, 255, -132), True,  ( 155, 0 ), "quartz"),
-        ("Section_8",              ( -774,   0, -168), (-813, 255, -150), True,  (  17, 14), "birch wood"),
-        ("Section_9",              ( -641,   0,  -25), (-655, 255,  -52), True,  (  17, 15), "jungle wood"),
-        ("Section_10",             ( -680,   0,  183), (-641, 255,  207), True,  (  19, 0 ), "sponge"),
-        ("Section_11",             ( -668,   0,  -14), (-641, 255,   25), True,  (   1, 1 ), "granite"),
+        ("Apartments_buying_room", ( -809,  99,   47), ( -874,  96,    4), False, (  41, 0 ), "gold"),
+        ("Apartments_units",       ( -817, 113,   87), ( -859, 164,   16), False, (  41, 0 ), "gold"),
+        ("Plot_Pressure_Plates",   ( -719, 106, -118), ( -665, 106,  -74), False, (  41, 0 ), "gold"),
+        ("Guild_Room",             ( -800, 109,  -75), ( -758, 104, -102), False, (  41, 0 ), "gold"),
+        ("Section_1",              (-1130,   0, -267), ( -897, 255,  318), True,  (  41, 0 ), "gold"),
+        ("Section_2",              ( -896,   0,  208), ( -512, 255,  318), True,  (  57, 0 ), "diamond"),
+        ("Section_3",              ( -896,   0,  207), ( -788, 255,  119), True,  (  42, 0 ), "iron"),
+        ("Section_4",              ( -896,   0, -267), ( -825, 255,  -28), True,  (  22, 0 ), "lapis"),
+        ("Section_5",              ( -512,   0,  207), ( -640, 255, -273), True,  (  24, 0 ), "sandstone"),
+        ("Section_6",              ( -824,   0, -169), ( -641, 255, -272), True,  ( 152, 0 ), "redstone"),
+        ("Section_7",              ( -641,   0, -168), ( -677, 255, -132), True,  ( 155, 0 ), "quartz"),
+        ("Section_8",              ( -774,   0, -168), ( -813, 255, -150), True,  (  17, 14), "birch wood"),
+        ("Section_9",              ( -641,   0,  -25), ( -655, 255,  -52), True,  (  17, 15), "jungle wood"),
+        ("Section_10",             ( -680,   0,  183), ( -641, 255,  207), True,  (  19, 0 ), "sponge"),
+        ("Section_11",             ( -668,   0,  -14), ( -641, 255,   25), True,  (   1, 1 ), "granite"),
     ),
 
     # List of blocks to not copy over for the regions above
@@ -131,5 +138,8 @@ def fillRegions(config):
 
 # This does the move itself - copy areas, entities, scoreboard, etc.
 terrain_reset_lib.terrainReset(config)
+
+# Remove the magic block when done
+
 
 

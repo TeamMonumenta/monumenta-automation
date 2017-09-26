@@ -59,11 +59,13 @@ import item_replace_lib
 import item_replace_list
 
 from monumenta_common import getBoxName
-from monumenta_common import getBoxSize
 from monumenta_common import getBoxPos
+from monumenta_common import getBoxSize
 from monumenta_common import getBox
 from monumenta_common import getBoxRuleBlockReplacement
-from monumenta_common import getBox
+from monumenta_common import getBoxMaterial
+from monumenta_common import getBoxMaterialName
+
 from monumenta_common import copyFile
 from monumenta_common import copyFolder
 from monumenta_common import copyFolders
@@ -167,6 +169,21 @@ def resetRegionalDifficulty(world):
 ################################################################################
 # Functions that display stuff while they work
 
+def fillBoxes(world,coordinatesToFill):
+    """ Fill all boxes with specified blocks """
+
+    # Fill the selected regions
+    for fillBox in coordinatesToFill:
+        shouldReplaceBlocks = getBoxRuleBlockReplacement(fillBox)
+        if shouldReplaceBlocks:
+            boxName = getBoxName(fillBox)
+            boxMaterial = getBoxMaterial(fillBox)
+            boxMaterialName = getBoxMaterialName(fillBox)
+            print "[{0}/{1}] Filling " + boxName + " with " + boxMaterialName + "..."
+            box = getBox(fillBox)
+            block = world.materials[boxMaterial]
+            world.fillBlocks(box, block)
+
 def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList):
 
     print "Compiling item replacement list..."
@@ -213,6 +230,7 @@ def terrainReset(config):
     localBuildFolder = config["localBuildFolder"]
     localDstFolder = config["localDstFolder"]
     coordinatesToCopy = config["coordinatesToCopy"]
+    coordinatesToFill = config["coordinatesToFill"]
     blockReplaceList = config["blockReplaceList"]
     safetyTpLocation = config["safetyTpLocation"]
 
@@ -238,6 +256,9 @@ def terrainReset(config):
 
     print "Opening Destination World..."
     dstWorld = mclevel.loadWorld(localDstFolder)
+
+    print "Filling selected regions with specified blocks..."
+    fillBoxes(dstWorld, coordinatesToFill)
 
     print "Copying needed terrain from the main world..."
     copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList)

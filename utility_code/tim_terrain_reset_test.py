@@ -55,16 +55,21 @@ config = {
         ("farm6l",         (      138, 62,      153), (      146, 64,      165), True,  (0,0), "air"),
     ),
 
+    "coordinatesToFill":(
+        # ("a unique name",        (lowerCoordinate),  (upperCoordinate), replaceBlocks, ( id, dmg), "block name (comment)"),
+        ("Meh block",     (       146, 72,      110), (      146, 72,      110), True,  (0,0), "air"),
+    ),
+
     # List of blocks to not copy over for the regions above
     "blockReplaceList":(
         ("minecraft:iron_block", "air"),
         ("minecraft:iron_ore", "air"),
-        ("minecraft:gold_block", "air"),
-        ("minecraft:gold_ore", "air"),
+        #("minecraft:gold_block", "air"),
+        #("minecraft:gold_ore", "air"),
         ("minecraft:diamond_block", "air"),
         ("minecraft:diamond_ore", "air"),
-        ("minecraft:emerald_block", "air"),
-        ("minecraft:emerald_ore", "air"),
+        #("minecraft:emerald_block", "air"),
+        #("minecraft:emerald_ore", "air"),
 
         ("minecraft:beacon", "air"),
 
