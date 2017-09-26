@@ -3017,6 +3017,23 @@ blocks:
     type: TRAPDOOR
     opacity: 0
 
+  - id: 168
+    idStr: prismarine
+    name: Prismarine
+    data:
+      0:
+        name: Prismarine
+      1:
+        name: Prismarine Bricks
+      2:
+        name: Dark Prismarine
+
+  - id: 169
+    idStr: sea_lantern
+    name: Sea Lantern
+    explored: true
+    brightness: 15
+
   - id: 170
     idStr: hay_block
     name: Hay Block
