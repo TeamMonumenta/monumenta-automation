@@ -87,7 +87,7 @@ def replaceGlobally(world, replaceList):
         newBlock = world.materials[replacePair[1]]
         replace(world, oldBlock, newBlock)
 
-    for aChunk in world.getChunks()
+    for aChunk in world.getChunks():
         aChunk.chunkChanged(True) # needsLighting=True
 
 def movePlayers(worldFolder, point):
@@ -245,6 +245,10 @@ def terrainReset(config):
     print "Resetting difficulty..."
     resetRegionalDifficulty(dstWorld)
 
+    print "Forcing all chunks to fix lighting..."
+    for aChunk in dstWorld.getChunks():
+        aChunk.chunkChanged(True) # needsLighting=True
+    
     print "Saving...."
     dstWorld.generateLights()
     dstWorld.saveInPlace()
