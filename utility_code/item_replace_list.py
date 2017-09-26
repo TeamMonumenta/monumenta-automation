@@ -166,36 +166,8 @@ itemReplacements = [
     ],
 ]
 """
-itemReplacements = [
-    # Remove any iron ore that is present
-    [
-        {"id":"minecraft:iron_ore"},
-        [
-            "remove",
-        ]
-    ],
-    # Remove any iron nuggets that are present
-    [
-        {"id":"minecraft:iron_nugget"},
-        [
-            "remove",
-        ]
-    ],
-    # Remove any iron ingots that are present
-    [
-        {"id":"minecraft:iron_ingot"},
-        [
-            
-            "remove",
-        ]
-    ],
-    # Remove any iron blocks that are present
-    [
-        {"id":"minecraft:iron_block"},
-        [
-            "remove",
-        ]
-    ],
+
+""" Items that aren't going in this list (for now at least)
     # Remove any gold ore that is present
     [
         {"id":"minecraft:gold_ore"},
@@ -220,27 +192,6 @@ itemReplacements = [
     # Remove any gold blocks that are present
     [
         {"id":"minecraft:gold_block"},
-        [
-            "remove",
-        ]
-    ],
-    # Remove any diamond ore that is present
-    [
-        {"id":"minecraft:diamond_ore"},
-        [
-            "remove",
-        ]
-    ],
-    # Remove any diamonds that are present
-    [
-        {"id":"minecraft:diamond"},
-        [
-            "remove",
-        ]
-    ],
-    # Remove any diamond blocks that are present
-    [
-        {"id":"minecraft:diamond_block"},
         [
             "remove",
         ]
@@ -283,6 +234,59 @@ itemReplacements = [
     # Remove any lapis blocks that are present
     [
         {"id":"minecraft:lapis_block"},
+        [
+            "remove",
+        ]
+    ],
+"""
+
+itemReplacements = [
+    # Remove any iron ore that is present
+    [
+        {"id":"minecraft:iron_ore"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any iron nuggets that are present
+    [
+        {"id":"minecraft:iron_nugget"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any iron ingots that are present
+    [
+        {"id":"minecraft:iron_ingot"},
+        [
+            
+            "remove",
+        ]
+    ],
+    # Remove any iron blocks that are present
+    [
+        {"id":"minecraft:iron_block"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any diamond ore that is present
+    [
+        {"id":"minecraft:diamond_ore"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any diamonds that are present
+    [
+        {"id":"minecraft:diamond"},
+        [
+            "remove",
+        ]
+    ],
+    # Remove any diamond blocks that are present
+    [
+        {"id":"minecraft:diamond_block"},
         [
             "remove",
         ]

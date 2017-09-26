@@ -87,6 +87,9 @@ def replaceGlobally(world, replaceList):
         newBlock = world.materials[replacePair[1]]
         replace(world, oldBlock, newBlock)
 
+    for aChunk in world.getChunks()
+        aChunk.chunkChanged(True) # needsLighting=True
+
 def movePlayers(worldFolder, point):
     """ Moves all players to the same location """
     # world.players returns an empty list for multiplayer worlds?
@@ -147,6 +150,7 @@ def resetRegionalDifficulty(world):
         try:
             aChunk.root_tag["Level"]["InhabitedTime"].value = 0
             num_reset = num_reset + 1
+            aChunk.chunkChanged(False) # needsLighting=False
         except:
             if "Level" not in aChunk.root_tag:
                 num_missing_level_tag = num_missing_level_tag + 1
@@ -212,7 +216,11 @@ def terrainReset(config):
     blockReplaceList = config["blockReplaceList"]
     safetyTpLocation = config["safetyTpLocation"]
 
-    # TODO - Fail if build or main folders don't exist
+    # Fail if build or main folders don't exist
+    if not os.path.isdir(localMainFolder):
+        sys.exit("Main world folder does not exist.")
+    if not os.path.isdir(localBuildFolder):
+        sys.exit("Build world folder does not exist.")
 
     print "Copying build world as base..."
     copyFolder(localBuildFolder, localDstFolder)
