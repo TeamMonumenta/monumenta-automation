@@ -1,6 +1,6 @@
-From c2a36dd490ec67bccbdc85ae2eedc83a3476638d Mon Sep 17 00:00:00 2001
+From 41c178512506c267010b0dccacbea12272b174c6 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
-Date: Mon, 11 Sep 2017 14:53:54 -0700
+Date: Wed, 27 Sep 2017 18:46:14 -0700
 Subject: [PATCH 3/3] Disable potion has no item logspam
 
 ---
@@ -8,15 +8,15 @@ Subject: [PATCH 3/3] Disable potion has no item logspam
  1 file changed, 4 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityPotion.java b/src/main/java/net/minecraft/server/EntityPotion.java
-index 04ce7c2..393fbf6 100644
+index 80d0948..6a8ebcb 100644
 --- a/src/main/java/net/minecraft/server/EntityPotion.java
 +++ b/src/main/java/net/minecraft/server/EntityPotion.java
 @@ -52,10 +52,6 @@ public class EntityPotion extends EntityProjectile {
-         ItemStack itemstack = (ItemStack) this.getDataWatcher().get(EntityPotion.e);
+         ItemStack itemstack = (ItemStack) this.getDataWatcher().get(EntityPotion.f);
  
          if (itemstack.getItem() != Items.SPLASH_POTION && itemstack.getItem() != Items.LINGERING_POTION) {
 -            if (this.world != null) {
--                EntityPotion.f.error("ThrownPotion entity {} has no item?!", Integer.valueOf(this.getId()));
+-                EntityPotion.g.error("ThrownPotion entity {} has no item?!", Integer.valueOf(this.getId()));
 -            }
 -
              return new ItemStack(Items.SPLASH_POTION);
