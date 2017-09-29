@@ -266,10 +266,6 @@ def terrainReset(config):
     print "Resetting difficulty..."
     resetRegionalDifficulty(dstWorld)
 
-    print "Forcing all chunks to fix lighting..."
-    for aChunk in dstWorld.getChunks():
-        aChunk.chunkChanged(True) # needsLighting=True
-    
     print "Saving...."
     dstWorld.generateLights()
     dstWorld.saveInPlace()
