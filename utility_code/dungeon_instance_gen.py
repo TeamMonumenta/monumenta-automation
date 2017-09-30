@@ -31,6 +31,15 @@ config = {
     "templateFolder":"/home/rock/tmp/template/",
     "outFolder":"/home/rock/tmp/out/",
 
+    # Dungeons are placed one per MC region file (32x32 chunks)
+    # Each dungeon starts in the most-negative corner of the region
+    # Regions with dungeons form a line of consecutive regions in +z
+    #
+    # Each region containing a dungeon is full of void biome
+    # There is a padding layer of void biome in the -x and -z directions as specified below
+    #
+    # All dungeons fit in a region file; even corrupted sierhaven is only 30x24 chunks
+
     "dungeons":(
         {"name":"white",     "pos1":(-2528, 0, -1296), "pos2":(-2369, 255, -945 )},
         {"name":"orange",    "pos1":(-2336, 0, -1296), "pos2":(-2017, 119, -945 )},
@@ -38,6 +47,13 @@ config = {
         {"name":"lightblue", "pos1":(-1696, 0, -1296), "pos2":(-1409, 255, -1025)},
         #{"name":"yellow",    "pos1":(-1376, 0, -1296), "pos2":(-1121, 255, -1041)},
         {"name":"r1bonus1",  "pos1":(-1088, 0, -1296), "pos2":(-801,  92,  -929 )},
+    ),
+
+    # These get filled with the block specified - ie, the magic block with air.
+    "coordinatesToFill":(
+        # ("a unique name", (lowerCoordinate),  (upperCoordinate), replaceBlocks, (id, dmg), "block name (comment)"),
+        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+            "replace":True, "material":(0, 0), "materialName":"air"},
     ),
 
     # 16 chunks of void-biome padding on the -x and -z sides
@@ -74,6 +90,21 @@ def getBox(pos1, pos2):
 
     return BoundingBox(origin, size)
 
+def fillBoxes(world, coordinatesToFill):
+    """ Fill all boxes with specified blocks """
+
+    # Fill the selected regions
+    for fillBox in coordinatesToFill:
+        shouldReplaceBlocks = fillBox["replace"]
+        if shouldReplaceBlocks:
+            boxName = fillBox["name"]
+            boxMaterial = fillBox["material"]
+            boxMaterialName = fillBox["materialName"]
+            print "    Filling " + boxName + " with " + boxMaterialName + "..."
+            box = getBox(fillBox["pos1"], fillBox["pos2"])
+            block = world.materials[boxMaterial]
+            world.fillBlocks(box, block)
+
 ################################################################################
 # Function definitions
 
@@ -82,6 +113,7 @@ def gen_dungeon_instances(config):
     templateFolder = config["templateFolder"]
     outFolder = config["outFolder"]
     dungeons = config["dungeons"]
+    coordinatesToFill = config["coordinatesToFill"]
     voidPadding = config["voidPadding"]
     targetRegion = config["targetRegion"]
     numDungeons = config["numDungeons"]
@@ -95,7 +127,7 @@ def gen_dungeon_instances(config):
     print "Opening dungeon reference world..."
     referenceWorld = mclevel.loadWorld(dungeonFolder)
 
-    for dungeon in dungeons: 
+    for dungeon in dungeons:
         dungeonName = dungeon["name"]
         dungeonBox = getBox(dungeon["pos1"], dungeon["pos2"])
         dstFolder = outFolder + dungeonName + '/'
@@ -125,10 +157,11 @@ def gen_dungeon_instances(config):
 
         print "  Copying dungeon schematic..."
         tempSchematic = referenceWorld.extractSchematic(dungeonBox, entities=True)
+        #tempSchematic.saveToFile("/home/rock/" + dungeonName + ".schematic")
 
         print "  Creating void chunks..."
         chunksCreated = dstWorld.createChunksInBox(voidBox)
-        print "  Created {0} chunks." .format(len(chunksCreated))
+        print "    Created {0} chunks." .format(len(chunksCreated))
 
         print "  Changing all chunks to void biome..."
         for aChunk in dstWorld.getChunks():
@@ -137,9 +170,9 @@ def gen_dungeon_instances(config):
 
         print "  Creating dungeon instances..."
         for i in range(numDungeons):
-            print "  {0}...".format(i)
-            dstWorld.copyBlocksFrom(tempSchematic, tempSchematic.bounds, 
-                                     dstPos + dstStep * i, blocksToCopy, 
+            print "    {0}...".format(i)
+            dstWorld.copyBlocksFrom(tempSchematic, tempSchematic.bounds,
+                                     dstPos + dstStep * i, blocksToCopy,
                                      create=True, entities=True, biomes=True)
 
         # Note resetting difficulty is unnecessary - all generated chunks
@@ -147,11 +180,14 @@ def gen_dungeon_instances(config):
         # print "  Resetting difficulty..."
         # resetRegionalDifficulty(dstWorld)
 
+        print "  Filling regions..."
+        fillBoxes(dstWorld, coordinatesToFill)
+
         print "  Saving...."
         dstWorld.generateLights()
         dstWorld.saveInPlace()
 
-        try: 
+        try:
             shutil.rmtree(dstFolder + "##MCEDIT.TEMP##", ignore_errors=True)
             os.remove(dstFolder + "mcedit_waypoints.dat")
         except Exception as e:
