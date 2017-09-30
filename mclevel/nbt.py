@@ -109,7 +109,7 @@ class TAG_Value(object):
     def write_value(self, buf):
         buf.write(self.fmt.pack(self.value))
     
-    def __eq__(self,other):
+    def eq(self,other):
         if type(other) in [
             TAG_Compound,
             TAG_List,
@@ -120,7 +120,7 @@ class TAG_Value(object):
             return False
         return self.value == other.value
     
-    def __ne__(self,other):
+    def ne(self,other):
         if type(other) in [
             TAG_Compound,
             TAG_List,
@@ -132,7 +132,7 @@ class TAG_Value(object):
         return self.value != other.value
     
     def issubset(self,other):
-        return self == other
+        return self.eq(other)
     
     def update(self,newTag):
         self.value = newTag
@@ -331,7 +331,7 @@ class TAG_Byte_Array(TAG_Value):
         value_str = self.value.tostring()
         buf.write(struct.pack(">I%ds" % (len(value_str),), self.value.size, value_str))
     
-    def __eq__(self,other):
+    def eq(self,other):
         if type(other) not in [
             TAG_Byte_Array,
             TAG_Short_Array,
@@ -341,11 +341,11 @@ class TAG_Byte_Array(TAG_Value):
         if len(self) != len(other):
             return False
         for i in range(len(self)):
-            if self.value[i] != other.value[i]:
+            if self.value[i].ne(other.value[i]):
                 return False
         return True
     
-    def __ne__(self,other):
+    def ne(self,other):
         if type(other) not in [
             TAG_Byte_Array,
             TAG_Short_Array,
@@ -355,7 +355,7 @@ class TAG_Byte_Array(TAG_Value):
         if len(self) != len(other):
             return True
         for i in range(len(self)):
-            if self.value[i] != other.value[i]:
+            if self.value[i].ne(other.value[i]):
                 return True
         return False
 
@@ -365,35 +365,6 @@ class TAG_Int_Array(TAG_Byte_Array):
     tagID = TAG_INT_ARRAY
     __slots__ = ('_name', '_value')
     dtype = numpy.dtype('>u4')
-    
-    def __eq__(self,other):
-        if type(other) not in [
-            TAG_Byte_Array,
-            TAG_Short_Array,
-            TAG_Int_Array
-        ]:
-            return False
-        if len(self) != len(other):
-            return False
-        for i in range(len(self)):
-            if self.value[i] != other.value[i]:
-                return False
-        return True
-    
-    def __ne__(self,other):
-        if type(other) not in [
-            TAG_Byte_Array,
-            TAG_Short_Array,
-            TAG_Int_Array
-        ]:
-            return True
-        if len(self) != len(other):
-            return True
-        for i in range(len(self)):
-            if self.value[i] != other.value[i]:
-                return True
-        return False
-
 
 
 class TAG_Short_Array(TAG_Int_Array):
@@ -401,34 +372,6 @@ class TAG_Short_Array(TAG_Int_Array):
     tagID = TAG_SHORT_ARRAY
     __slots__ = ('_name', '_value')
     dtype = numpy.dtype('>u2')
-    
-    def __eq__(self,other):
-        if type(other) not in [
-            TAG_Byte_Array,
-            TAG_Short_Array,
-            TAG_Int_Array
-        ]:
-            return False
-        if len(self) != len(other):
-            return False
-        for i in range(len(self)):
-            if self.value[i] != other.value[i]:
-                return False
-        return True
-    
-    def __ne__(self,other):
-        if type(other) not in [
-            TAG_Byte_Array,
-            TAG_Short_Array,
-            TAG_Int_Array
-        ]:
-            return True
-        if len(self) != len(other):
-            return True
-        for i in range(len(self)):
-            if self.value[i] != other.value[i]:
-                return True
-        return False
 
 
 class TAG_String(TAG_Value):
@@ -653,34 +596,33 @@ class TAG_Compound(TAG_Value, collections.MutableMapping):
             result = "{"
         else:
             result = self.name + ":{"
-        # TODO parsing needs to be double checked
         for i in self.value:
             result += i.json + ","
         if len(result) > 1:
             result = result[:-1]
         return result + "}"
     
-    def __eq__(self,other):
+    def eq(self,other):
         if type(other) != TAG_Compound:
             return False
         if len(self) != len(other):
             return False
         try:
             for aKey in self.keys():
-                if self[aKey] != other[aKey]:
+                if self[aKey].ne(other[aKey]):
                     return False
         except:
             return False
         return True
     
-    def __ne__(self,other):
+    def ne(self,other):
         if type(other) != TAG_Compound:
             return True
         if len(self) != len(other):
             return True
         try:
             for aKey in self.keys():
-                if self[aKey] != other[aKey]:
+                if self[aKey].ne(other[aKey]):
                     return True
         except:
             return True
@@ -818,23 +760,23 @@ class TAG_List(TAG_Value, collections.MutableSequence):
             result = result[:-1]
         return result + "]"
     
-    def __eq__(self,other):
+    def eq(self,other):
         if type(other) != TAG_List:
             return False
         if len(self.value) != len(other.value):
             return False
         for i in range(len(self.value)):
-            if self[i] != other[i]:
+            if self[i].ne(other[i]):
                 return False
         return True
     
-    def __ne__(self,other):
+    def ne(self,other):
         if type(other) != TAG_List:
             return True
         if len(self.value) != len(other.value):
             return True
         for i in range(len(self.value)):
-            if self[i] != other[i]:
+            if self[i].ne(other[i]):
                 return True
         return False
     

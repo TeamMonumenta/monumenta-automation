@@ -190,7 +190,6 @@ class matchDamage(object):
 class matchNBT(object):
     """
     This stores NBT to match later
-    Not yet working, sorry.
     """
     def __init__(self,matchOptions):
         json = matchOptions["nbt"]
@@ -212,7 +211,7 @@ class matchNBT(object):
             return False
         
         if self._exact:
-            self._nbt == itemStack["tag"]
+            return self._nbt.eq(itemStack["tag"])
         else:
             return self._nbt.issubset(itemStack["tag"])
 
