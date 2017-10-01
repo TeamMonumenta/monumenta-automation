@@ -49,9 +49,14 @@ def replaceItemStack(itemStack,replacementList):
         # No item in this slot (mob armor/hand items)
         return
     if itemStack["id"].value in shulkerIDNames:
-        shulkerBoxContents = itemStack["tag"]["BlockEntityTag"]["Items"]
-        # TODO This recursive method should be changed to iterative!
-        replaceItemStacks(shulkerBoxContents,replacementList)
+        if (
+            ( "tag" in itemStack ) and
+            ( "BlockEntityTag" in itemStack["tag"] ) and
+            ( "Items" in itemStack["tag"]["BlockEntityTag"] )
+        ):
+            shulkerBoxContents = itemStack["tag"]["BlockEntityTag"]["Items"]
+            # TODO This recursive method should be changed to iterative!
+            replaceItemStacks(shulkerBoxContents,replacementList)
     elif itemStack["id"].value == u"minecraft:spawn_egg":
         if (
             ( "tag" in itemStack ) and
