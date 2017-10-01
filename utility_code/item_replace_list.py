@@ -117,12 +117,12 @@ itemReplacements = [
             "id":"minecraft:gunpowder",
             "damage":0,
             "count":5,
-            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
+            "nbt":ur'''{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}''',
         },
         [
             "id","leather_helmet",
             "count","=","1",
-            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16381908,Name:"§6Pheonix Cap",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
+            "nbt","replace",ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16381908,Name:"§6Pheonix Cap",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}''',
         ]
     ],
     [
@@ -130,12 +130,12 @@ itemReplacements = [
             "id":"minecraft:gunpowder",
             "damage":0,
             "count":8,
-            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
+            "nbt":ur'''{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}''',
         },
         [
             "id","leather_chestplate",
             "count","=","1",
-            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16314131,Name:"§6Pheonix Tunic",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
+            "nbt","replace",ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16314131,Name:"§6Pheonix Tunic",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}''',
         ]
     ],
     [
@@ -143,12 +143,12 @@ itemReplacements = [
             "id":"minecraft:gunpowder",
             "damage":0,
             "count":7,
-            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
+            "nbt":ur'''{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}''',
         },
         [
             "id","leather_leggings",
             "count","=","1",
-            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16747314,Name:"§6Pheonix Pants",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
+            "nbt","replace",ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:16747314,Name:"§6Pheonix Pants",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}''',
         ]
     ],
     [
@@ -156,12 +156,12 @@ itemReplacements = [
             "id":"minecraft:gunpowder",
             "damage":0,
             "count":4,
-            "nbt":'{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}',
+            "nbt":ur'''{display:{Name:"§6Pheonix Armor Ash",Lore:["§eLike a pheonix,","§ethis too shall rise"]}}''',
         },
         [
             "id","leather_boots",
             "count","=","1",
-            "nbt","replace",ur'{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:12189696,Name:"§6Pheonix Boots",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}',
+            "nbt","replace",ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:10s}],display:{color:12189696,Name:"§6Pheonix Boots",Lore:["§eLike a pheonix,","§ereborn from the ashes"]}}''',
         ]
     ],
 ]
@@ -241,6 +241,9 @@ itemReplacements = [
 """
 
 itemReplacements = [
+    ############################################################################
+    # Stuff that players shouldn't have had:
+    
     # Remove any iron ore that is present
     [
         {"id":"minecraft:iron_ore"},
@@ -296,6 +299,100 @@ itemReplacements = [
         {"id":"minecraft:anvil"},
         [
             "remove",
+        ]
+    ],
+    
+    ############################################################################
+    # Remove dungeon keys on weekly terrain resets:
+    
+    [
+        {
+            "id":"minecraft:stained_glass",
+            "nbt":ur'''{display:{Lore:["* Grants access to the white wool dungeon *"],Name:"§f§lWhite Key"}}''',
+        },
+        [
+            "remove",
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:stained_glass",
+            "nbt":ur'''{display:{Lore:["* Grants access to the orange wool dungeon *"],Name:"§f§lOrange Key"}}''',
+        },
+        [
+            "remove",
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:stained_glass",
+            "nbt":ur'''{display:{Lore:["* Grants access to the magenta wool dungeon *"],Name:"§f§lMagenta Key"}}''',
+        },
+        [
+            "remove",
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:stained_glass",
+            "nbt":ur'''{display:{Lore:["* Grants access to the light blue wool dungeon *"],Name:"§f§lLight Blue Key"}}''',
+        },
+        [
+            "remove",
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:stained_glass",
+            "nbt":ur'''{display:{Lore:["* Grants access to the yellow wool dungeon *"],Name:"§f§lYellow Key"}}''',
+        },
+        [
+            "remove",
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:leaves2",
+            "nbt":ur'''{display:{Lore:["* Grants access to the King's Valley bonus dungeon *"],Name:"§f§lBonus Key"}}''',
+        },
+        [
+            "remove",
+        ]
+    ],
+    
+    ############################################################################
+    # Replace previously allowed items:
+    
+    # Topaz Cap
+    [
+        {
+            "id":"minecraft:leather_helmet",
+            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *"],Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-2921424335945119943L,UUIDLeast:-8484684784863408544L,Amount:1.0d,Slot:"head",AttributeName:"generic.luck",Operation:0,Name:"Modifier"}]}''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+    
+    # Jeweled Tiara
+    [
+        {
+            "id":"minecraft:golden_helmet",
+            "nbt":ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743,UUIDLeast:9295615,Amount:1,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:964860,UUIDLeast:338877,Amount:1,Slot:"head",AttributeName:"generic.luck",Operation:0,Name:"generic.luck"}]}''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+    
+    # Kismet's Blessing
+    [
+        {
+            "id":"minecraft:leather_helmet",
+            "nbt":ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:230886,UUIDLeast:58454,Amount:1,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:911558,UUIDLeast:827572,Amount:1,Slot:"head",AttributeName:"generic.luck",Operation:0,Name:"generic.luck"}]}''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6The luck has decayed into health"],color:65493,Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:-6900745281224160306L,UUIDLeast:-4828553848378685989L,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1116995255491055008L,UUIDLeast:-6766107056483247837L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 ]
