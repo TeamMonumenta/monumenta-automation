@@ -304,56 +304,35 @@ itemReplacements = [
     
     ############################################################################
     # Remove dungeon keys on weekly terrain resets:
+    # (key items within dungeons, not keys to enter dungeons)
     
+    # Simbelmynë
     [
         {
-            "id":"minecraft:stained_glass",
-            "nbt":ur'''{display:{Lore:["* Grants access to the white wool dungeon *"],Name:"§f§lWhite Key"}}''',
+            "id":"minecraft:red_flower",
+            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fSimbelmynë is a rare flower, and it is said to","§fonly grow on the burial mounds of Royalty...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 1 *"],Name:"§9§lSimbelmynë"}}''',
         },
         [
             "remove",
         ]
     ],
+    
+    # Ancient Mortar
     [
         {
-            "id":"minecraft:stained_glass",
-            "nbt":ur'''{display:{Lore:["* Grants access to the orange wool dungeon *"],Name:"§f§lOrange Key"}}''',
+            "id":"minecraft:bowl",
+            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fA Mortar perfect for mashing ingredients...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 2 *"],Name:"§9§lAncient Mortar"}}''',
         },
         [
             "remove",
         ]
     ],
+    
+    # Aquanis Lily
     [
         {
-            "id":"minecraft:stained_glass",
-            "nbt":ur'''{display:{Lore:["* Grants access to the magenta wool dungeon *"],Name:"§f§lMagenta Key"}}''',
-        },
-        [
-            "remove",
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:stained_glass",
-            "nbt":ur'''{display:{Lore:["* Grants access to the light blue wool dungeon *"],Name:"§f§lLight Blue Key"}}''',
-        },
-        [
-            "remove",
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:stained_glass",
-            "nbt":ur'''{display:{Lore:["* Grants access to the yellow wool dungeon *"],Name:"§f§lYellow Key"}}''',
-        },
-        [
-            "remove",
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:leaves2",
-            "nbt":ur'''{display:{Lore:["* Grants access to the King's Valley bonus dungeon *"],Name:"§f§lBonus Key"}}''',
+            "id":"minecraft:red_flower",
+            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fAn uncommon flower generally found near Hot Springs...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 3 *"],Name:"§9§lAquanis Lily"}}''',
         },
         [
             "remove",
