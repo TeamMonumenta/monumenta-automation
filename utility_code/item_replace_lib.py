@@ -161,9 +161,14 @@ class replacement(object):
                 self.actions.append( changeRemove() )
     
     def run(self,itemStack):
+        print "****Found match:"
+        print itemStack.json
         if all(rule == itemStack for rule in self.matches):
+            print "Actions:"
             for action in self.actions:
+                print type(action)
                 action.run(itemStack)
+        print ""
 
 # Matching optimizers
 
