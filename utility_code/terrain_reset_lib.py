@@ -184,10 +184,7 @@ def fillBoxes(world,coordinatesToFill):
             block = world.materials[boxMaterial]
             world.fillBlocks(box, block)
 
-def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList):
-
-    print "Compiling item replacement list..."
-    compiledItemReplacementList = item_replace_lib.allReplacements(item_replace_list.itemReplacements)
+def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledItemReplacementList):
 
     print "Starting transfer of boxes from player server..."
     copyNum = 1
@@ -243,6 +240,9 @@ def terrainReset(config):
     print "Copying build world as base..."
     copyFolder(localBuildFolder, localDstFolder)
 
+    print "Compiling item replacement list..."
+    compiledItemReplacementList = item_replace_lib.allReplacements(item_replace_list.itemReplacements)
+
     # Copy various bits of player data from the main world
     print "Copying player data files from main world..."
     copyFolders(localMainFolder, localDstFolder, ["advancements/", "playerdata/", "stats/",])
@@ -250,6 +250,9 @@ def terrainReset(config):
     copyFolders(localMainFolder, localDstFolder, ["data/",])
     print "Copying updated advancements, functions, and loot tables from build world..."
     copyFolders(localBuildFolder, localDstFolder, ["data/advancements/", "data/functions/", "data/loot_tables/",])
+
+    print "Handling item replacements for players..."
+    item_replace_lib.replaceItemsOnPlayers(localDstFolder, compiledItemReplacementList)
 
     print "Opening old play World..."
     srcWorld = mclevel.loadWorld(localMainFolder)
@@ -261,7 +264,7 @@ def terrainReset(config):
     fillBoxes(dstWorld, coordinatesToFill)
 
     print "Copying needed terrain from the main world..."
-    copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList)
+    copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledItemReplacementList)
 
     print "Resetting difficulty..."
     resetRegionalDifficulty(dstWorld)
@@ -273,11 +276,11 @@ def terrainReset(config):
     print "Moving players..."
     movePlayers(localDstFolder, safetyTpLocation)
 
-    # print "Handling item replacements for players..."
-    # item_replace_lib.replaceItemsOnPlayers(localDstFolder, itemReplacementList)
-
     shutil.rmtree(localDstFolder+"##MCEDIT.TEMP##", ignore_errors=True)
-    os.remove(localDstFolder+"mcedit_waypoints.dat")
+    try:
+        os.remove(localDstFolder+"mcedit_waypoints.dat")
+    except Exception as e:
+        pass
 
     print "Done!"
 
