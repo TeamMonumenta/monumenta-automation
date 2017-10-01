@@ -212,8 +212,8 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList):
             print "[{0}/{1}]   Replacing forbidden blocks in {2}...".format(copyNum,copyMax,boxName)
             replaceGlobally(tempSchematic, blockReplaceList)
 
-            # print "[{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
-            # item_replace_lib.replaceItemsInWorld(srcWorld,compiledItemReplacementList)
+        print "[{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
+        item_replace_lib.replaceItemsInWorld(srcWorld,compiledItemReplacementList)
 
         # Remove entities in destination
         dstWorld.removeEntitiesInBox(box)
