@@ -42,6 +42,9 @@ containerTagNames = [
 # Item stack finding code
 
 def replaceItemStack(itemStack,replacementList):
+    if type(itemStack) != nbt.TAG_Compound:
+        # Invalid itemStack type
+        return
     if "id" not in itemStack:
         # No item in this slot (mob armor/hand items)
         return
@@ -50,16 +53,20 @@ def replaceItemStack(itemStack,replacementList):
         # TODO This recursive method should be changed to iterative!
         replaceItemStacks(shulkerBoxContents,replacementList)
     elif itemStack["id"].value == u"minecraft:spawn_egg":
-        spawnEggEntity = itemStack["tag"]["EntityTag"]
-        # TODO This recursive method should be changed to iterative!
-        replaceItemsOnEntity(spawnEggEntity,replacementList)
+        if (
+            ( "tag" in itemStack ) and
+            ( "EntityTag" in itemStack["tag"] )
+        ):
+            spawnEggEntity = itemStack["tag"]["EntityTag"]
+            # TODO This recursive method should be changed to iterative!
+            replaceItemsOnEntity(spawnEggEntity,replacementList)
     replacementList.run(itemStack)
     
 def replaceItemStacks(itemStackContainer,replacementList):
     if type(itemStackContainer) is nbt.TAG_List:
         for itemStack in itemStackContainer:
             replaceItemStack(itemStack,replacementList)
-    else:
+    elif type(itemStackContainer) is nbt.TAG_Compound:
         replaceItemStack(itemStackContainer,replacementList)
     
 def replaceItemsOnPlayers(worldDir,replacementList):
