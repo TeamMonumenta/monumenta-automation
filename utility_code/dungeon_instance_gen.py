@@ -4,12 +4,7 @@
 # Required libraries have links where not part of a standard Python install.
 import os
 import sys
-import warnings
 import shutil
-
-import numpy
-from numpy import zeros, bincount
-import itertools
 
 # These are expected in your site-packages folder, see:
 # https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory
@@ -17,11 +12,7 @@ import mclevel # from https://github.com/mcedit/pymclevel
 from mclevel import materials
 from mclevel.box import BoundingBox, Vector
 
-from monumenta_common import copyFile
 from monumenta_common import copyFolder
-from monumenta_common import copyFolders
-
-from terrain_reset_lib import resetRegionalDifficulty
 
 ################################################################################
 # Config section
@@ -41,19 +32,55 @@ config = {
     # All dungeons fit in a region file; even corrupted sierhaven is only 30x24 chunks
 
     "dungeons":(
-        {"name":"white",     "pos1":(-2528, 0, -1296), "pos2":(-2369, 255, -945 )},
-        {"name":"orange",    "pos1":(-2336, 0, -1296), "pos2":(-2017, 119, -945 )},
-        {"name":"magenta",   "pos1":(-1984, 0, -1296), "pos2":(-1729, 255, -1041)},
-        {"name":"lightblue", "pos1":(-1696, 0, -1296), "pos2":(-1409, 255, -1025)},
-        #{"name":"yellow",    "pos1":(-1376, 0, -1296), "pos2":(-1121, 255, -1041)},
-        {"name":"r1bonus1",  "pos1":(-1088, 0, -1296), "pos2":(-801,  92,  -929 )},
-    ),
-
-    # These get filled with the block specified - ie, the magic block with air.
-    "coordinatesToFill":(
-        # ("a unique name", (lowerCoordinate),  (upperCoordinate), replaceBlocks, (id, dmg), "block name (comment)"),
-        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-            "replace":True, "material":(0, 0), "materialName":"air"},
+        {
+            "name":"white", "pos1":(-2528, 0, -1296), "pos2":(-2369, 255, -945),
+            "coordinatesToFill":(
+                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+                    "replace":True, "material":(0, 0), "materialName":"air"},
+                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+                    "replace":True, "material":(35, 0), "materialName":"white wool"},
+            )
+        },{
+            "name":"orange", "pos1":(-2336, 0, -1296), "pos2":(-2017, 119, -945),
+            "coordinatesToFill":(
+                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+                    "replace":True, "material":(0, 0), "materialName":"air"},
+                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+                    "replace":True, "material":(35, 1), "materialName":"orange wool"},
+            )
+        },{
+            "name":"magenta", "pos1":(-1984, 0, -1296), "pos2":(-1729, 255, -1041),
+            "coordinatesToFill":(
+                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+                    "replace":True, "material":(0, 0), "materialName":"air"},
+                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+                    "replace":True, "material":(35, 2), "materialName":"magenta wool"},
+            )
+        },{
+            "name":"lightblue", "pos1":(-1696, 0, -1296), "pos2":(-1409, 255, -1025),
+            "coordinatesToFill":(
+                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+                    "replace":True, "material":(0, 0), "materialName":"air"},
+                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+                    "replace":True, "material":(35, 3), "materialName":"light blue wool"},
+            )
+        },{
+        #    "name":"yellow", "pos1":(-1376, 0, -1296), "pos2":(-1121, 255, -1041),
+        #    "coordinatesToFill":(
+        #        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+        #            "replace":True, "material":(0, 0), "materialName":"air"},
+        #        {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+        #            "replace":True, "material":(35, 4), "materialName":"yellow wool"},
+        #    )
+        #},{
+            "name":"r1bonus", "pos1":(-1088, 0, -1296), "pos2":(-801,  92,  -929),
+            "coordinatesToFill":(
+                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+                    "replace":True, "material":(0, 0), "materialName":"air"},
+                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+                    "replace":True, "material":(18, 4), "materialName":"oak leaves"},
+            )
+        },
     ),
 
     # 16 chunks of void-biome padding on the -x and -z sides
@@ -113,7 +140,6 @@ def gen_dungeon_instances(config):
     templateFolder = config["templateFolder"]
     outFolder = config["outFolder"]
     dungeons = config["dungeons"]
-    coordinatesToFill = config["coordinatesToFill"]
     voidPadding = config["voidPadding"]
     targetRegion = config["targetRegion"]
     numDungeons = config["numDungeons"]
@@ -181,7 +207,7 @@ def gen_dungeon_instances(config):
         # resetRegionalDifficulty(dstWorld)
 
         print "  Filling regions..."
-        fillBoxes(dstWorld, coordinatesToFill)
+        fillBoxes(dstWorld, dungeon["coordinatesToFill"])
 
         print "  Saving...."
         dstWorld.generateLights()
