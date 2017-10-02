@@ -248,57 +248,72 @@ itemReplacements = [
     [
         {"id":"minecraft:iron_ore"},
         [
-            "remove",
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
     # Remove any iron nuggets that are present
     [
         {"id":"minecraft:iron_nugget"},
         [
-            "remove",
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
     # Remove any iron ingots that are present
     [
         {"id":"minecraft:iron_ingot"},
         [
-            
-            "remove",
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
     # Remove any iron blocks that are present
     [
         {"id":"minecraft:iron_block"},
         [
-            "remove",
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
     # Remove any diamond ore that is present
     [
         {"id":"minecraft:diamond_ore"},
         [
-            "remove",
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
     # Remove any diamonds that are present
     [
         {"id":"minecraft:diamond"},
         [
-            "remove",
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
     # Remove any diamond blocks that are present
     [
         {"id":"minecraft:diamond_block"},
         [
-            "remove",
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
     # Remove any anvils that are present
     [
         {"id":"minecraft:anvil"},
         [
-            "remove",
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
     

@@ -87,18 +87,30 @@ def replaceItemsOnEntity(entity,replacementList):
         if containerTagName in entity:
             replaceItemStacks(entity[containerTagName],replacementList)
 
+def replaceItemsInSchematic(schematic,replacementList):
+    for entity in schematic.Entities:
+        replaceItemsOnEntity(entity,replacementList)
+    
+    for tileEntity in schematic.TileEntities:
+        replaceItemsOnEntity(tileEntity,replacementList)
+
 def replaceItemsInWorld(world,replacementList):
     for cx,cz in world.allChunks:
         aChunk = world.getChunk(cx,cz)
         
-        if len(aChunk.root_tag) == 0:
+        if "Level" not in aChunk.root_tag:
             # This chunk is invalid, skip it!
             # It has no data.
+            print "*** Chunk at {0},{1} has no data in its root tag".format(cx,cz)
+            print str(aChunk.root_tag)
             continue
         
+        print "*** Checking chunk {0},{1}".format(cx,cz)
+        print "Entities:" + str(len(aChunk.root_tag["Level"]["Entities"]))
         for entity in aChunk.root_tag["Level"]["Entities"]:
             replaceItemsOnEntity(entity,replacementList)
         
+        print "BlockEntities:" + str(len(aChunk.root_tag["Level"]["TileEntities"]))
         for tileEntity in aChunk.root_tag["Level"]["TileEntities"]:
             replaceItemsOnEntity(tileEntity,replacementList)
         
@@ -109,9 +121,11 @@ def replaceItemsInWorld(world,replacementList):
 
 class allReplacements(list):
     def __init__(self,replacementList):
+        print "Compiling item replacement list..."
         self._replacements = []
         for aReplacement in replacementList:
             self._replacements.append(replacement(aReplacement))
+        print "Found " + str(len(self._replacements)) + " replacements."
     
     def __len__(self):
         return len(self._replacements)
@@ -134,41 +148,66 @@ class replacement(object):
         matches = replacementPair[0]
         actions = replacementPair[1]
         
+        #print "Adding a replacement:"
+        
         self.matches = []
         if "id" in matches:
-            self.matches.append(matchID(matches))
+            newMatch = matchID(matches)
+            self.matches.append(newMatch)
+            #print newMatch.str()
         if "damage" in matches:
-            self.matches.append(matchDamage(matches))
+            newMatch = matchDamage(matches)
+            self.matches.append(newMatch)
+            #print newMatch.str()
         if "nbt" in matches:
-            self.matches.append(matchNBT(matches))
+            newMatch = matchNBT(matches)
+            self.matches.append(newMatch)
+            #print newMatch.str()
         if "count" in matches:
-            self.matches.append(matchCount(matches))
+            newMatch = matchCount(matches)
+            self.matches.append(newMatch)
+            #print newMatch.str()
         if len(self.matches) == 0:
-            self.matches.append(matchNone())
+            newMatch = matchNone()
+            self.matches.append(newMatch)
+            #print newMatch.str()
         
         self.actions = []
         while len(actions):
             action = actions.pop(0)
             if action == "id":
-                self.actions.append( changeID(actions) )
+                newAction = changeID(actions)
+                self.actions.append(newAction)
+                #print newAction.str()
             if action == "count":
-                self.actions.append( changeCount(actions) )
+                newAction = changeCount(actions)
+                self.actions.append(newAction)
+                #print newAction.str()
             if action == "damage":
-                self.actions.append( changeDamage(actions) )
+                newAction = changeDamage(actions)
+                self.actions.append(newAction)
+                #print newAction.str()
             if action == "nbt":
-                self.actions.append( changeNBT(actions) )
+                newAction = changeNBT(actions)
+                self.actions.append(newAction)
+                #print newAction.str()
             if action == "remove":
-                self.actions.append( changeRemove() )
+                newAction = changeRemove()
+                self.actions.append(newAction)
+                #print newAction.str()
     
     def run(self,itemStack):
-        print "****Found match:"
-        print itemStack.json
         if all(rule == itemStack for rule in self.matches):
+            print "*** Found match:"
+            print itemStack.json
+            print "Matched rules:"
+            for rule in self.matches:
+                print rule.str()
             print "Actions:"
             for action in self.actions:
-                print type(action)
+                print action.str()
                 action.run(itemStack)
-        print ""
+            print ""
 
 # Matching optimizers
 
@@ -179,6 +218,9 @@ class matchNone(object):
     """
     def __eq__(self,itemStack):
         return False
+    
+    def str(self):
+        return "* Match nothing"
 
 class matchID(object):
     """
@@ -188,7 +230,13 @@ class matchID(object):
         self._id = matchOptions["id"]
     
     def __eq__(self,itemStack):
-        return self._id == itemStack["id"].value
+        try:
+            return self._id == itemStack["id"].value
+        except:
+            return False
+    
+    def str(self):
+        return u'* Match ID "' + self._id + u'"'
 
 class matchDamage(object):
     """
@@ -202,7 +250,13 @@ class matchDamage(object):
             self._damage = damage
     
     def __eq__(self,itemStack):
-        return itemStack["Damage"].value in self._damage
+        try:
+            return itemStack["Damage"].value in self._damage
+        except:
+            return False
+    
+    def str(self):
+        return u'* Match damage value in "' + self._damage + u'"'
 
 class matchNBT(object):
     """
@@ -231,6 +285,14 @@ class matchNBT(object):
             return self._nbt.eq(itemStack["tag"])
         else:
             return self._nbt.issubset(itemStack["tag"])
+    
+    def str(self):
+        if self._nbt is None:
+            return u'* Match no NBT exactly'
+        elif self._exact:
+            return u'* Match NBT ' + self._nbt.json
+        else:
+            return u'* Match NBT ' + self._nbt.json + u' exactly'
 
 class matchCount(object):
     """
@@ -244,7 +306,13 @@ class matchCount(object):
             self._count = count
     
     def __eq__(self,itemStack):
-        return itemStack["Count"].value in self._count
+        try:
+            return itemStack["Count"].value in self._count
+        except:
+            return False
+    
+    def str(self):
+        return u'* Match count value in "' + self._count + u'"'
 
 
 # Action optimizers
@@ -258,6 +326,9 @@ class changeID(object):
     
     def run(self,itemStack):
         itemStack["id"].value = self._id
+    
+    def str(self):
+        return u'* Change ID to "' + self._id + u'"'
 
 class changeCount(object):
     """
@@ -294,6 +365,24 @@ class changeCount(object):
             newVal = max(itemStack["Count"].value,self._value)
             itemStack["Count"].value = newVal
             return
+    
+    def str(self):
+        if self._operation == "=":
+            return u'* Set count to ' + self._value
+        if self._operation == "+":
+            return u'* Add ' + self._value + u' to count'
+        if self._operation == "-":
+            return u'* Subtract ' + self._value + u' from count'
+        if self._operation == "*":
+            return u'* Multiply count by ' + self._value
+        if self._operation == "/":
+            return u'* Divide count by ' + self._value
+        if self._operation == "%":
+            return u'* Set count to itself modulo ' + self._value
+        if self._operation == "max":
+            return u'* Prevent count from being greater than ' + self._value
+        if self._operation == "min":
+            return u'* Prevent count from being less than ' + self._value
 
 class changeDamage(object):
     """
@@ -330,6 +419,24 @@ class changeDamage(object):
             newVal = max(itemStack["Damage"].value,self._value)
             itemStack["Damage"].value = newVal
             return
+    
+    def str(self):
+        if self._operation == "=":
+            return u'* Set damage to ' + self._value
+        if self._operation == "+":
+            return u'* Add ' + self._value + u' to damage'
+        if self._operation == "-":
+            return u'* Subtract ' + self._value + u' from damage'
+        if self._operation == "*":
+            return u'* Multiply damage by ' + self._value
+        if self._operation == "/":
+            return u'* Divide damage by ' + self._value
+        if self._operation == "%":
+            return u'* Set damage to itself modulo ' + self._value
+        if self._operation == "max":
+            return u'* Prevent damage from being greater than ' + self._value
+        if self._operation == "min":
+            return u'* Prevent damage from being less than ' + self._value
 
 class changeNBT(object):
     """
@@ -356,6 +463,14 @@ class changeNBT(object):
             if "tag" not in itemStack:
                 itemStack["tag"] = nbt.TAG_Compound()
             itemStack["tag"].update(self._value)
+    
+    def str(self):
+        if self._operation == "clear":
+            return u'* Remove NBT'
+        if self._operation == "set":
+            return u'* Add ' + self._value.json + u' to existing NBT'
+        if self._operation == "replace":
+            return u'* Replace NBT with u' + self._value.json
 
 """
 NYI
@@ -402,5 +517,8 @@ class changeRemove(object):
     """
     def run(self,itemStack):
         itemStack["Count"].value = 0
+    
+    def str(self):
+        return u'* Set item count to 0; the server will delete it on load'
 
 

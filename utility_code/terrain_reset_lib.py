@@ -210,7 +210,7 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledI
             replaceGlobally(tempSchematic, blockReplaceList)
 
         print "[{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
-        item_replace_lib.replaceItemsInWorld(tempSchematic, compiledItemReplacementList)
+        item_replace_lib.replaceItemsInSchematic(tempSchematic, compiledItemReplacementList)
 
         # Remove entities in destination
         dstWorld.removeEntitiesInBox(box)
