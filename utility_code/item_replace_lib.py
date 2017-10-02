@@ -101,16 +101,11 @@ def replaceItemsInWorld(world,replacementList):
         if "Level" not in aChunk.root_tag:
             # This chunk is invalid, skip it!
             # It has no data.
-            print "*** Chunk at {0},{1} has no data in its root tag".format(cx,cz)
-            print str(aChunk.root_tag)
             continue
         
-        print "*** Checking chunk {0},{1}".format(cx,cz)
-        print "Entities:" + str(len(aChunk.root_tag["Level"]["Entities"]))
         for entity in aChunk.root_tag["Level"]["Entities"]:
             replaceItemsOnEntity(entity,replacementList)
         
-        print "BlockEntities:" + str(len(aChunk.root_tag["Level"]["TileEntities"]))
         for tileEntity in aChunk.root_tag["Level"]["TileEntities"]:
             replaceItemsOnEntity(tileEntity,replacementList)
         
@@ -198,16 +193,16 @@ class replacement(object):
     
     def run(self,itemStack):
         if all(rule == itemStack for rule in self.matches):
-            print "*** Found match:"
-            print itemStack.json
-            print "Matched rules:"
-            for rule in self.matches:
-                print rule.str()
-            print "Actions:"
+            #print "*** Found match:"
+            #print itemStack.json
+            #print "Matched rules:"
+            #for rule in self.matches:
+            #    print rule.str()
+            #print "Actions:"
             for action in self.actions:
-                print action.str()
+                #print action.str()
                 action.run(itemStack)
-            print ""
+            #print ""
 
 # Matching optimizers
 

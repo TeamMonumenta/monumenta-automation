@@ -243,8 +243,11 @@ itemReplacements = [
 itemReplacements = [
     ############################################################################
     # Stuff that players shouldn't have had:
+    ############################################################################
     
-    # Remove any iron ore that is present
+    ############################################################################
+    # Iron:
+
     [
         {"id":"minecraft:iron_ore"},
         [
@@ -253,7 +256,6 @@ itemReplacements = [
             "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
-    # Remove any iron nuggets that are present
     [
         {"id":"minecraft:iron_nugget"},
         [
@@ -262,7 +264,6 @@ itemReplacements = [
             "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
-    # Remove any iron ingots that are present
     [
         {"id":"minecraft:iron_ingot"},
         [
@@ -271,7 +272,6 @@ itemReplacements = [
             "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
-    # Remove any iron blocks that are present
     [
         {"id":"minecraft:iron_block"},
         [
@@ -280,6 +280,82 @@ itemReplacements = [
             "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
+    [
+        {"id":"minecraft:iron_helmet"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:iron_chestplate"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:iron_leggings"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:iron_boots"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:iron_axe"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:iron_hoe"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:iron_pickaxe"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:iron_shovel"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:iron_sword"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    
+    ############################################################################
+    # Diamond:
+
     # Remove any diamond ore that is present
     [
         {"id":"minecraft:diamond_ore"},
@@ -307,6 +383,78 @@ itemReplacements = [
             "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
+    [
+        {"id":"minecraft:diamond_helmet"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:diamond_chestplate"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:diamond_leggings"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:diamond_boots"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:diamond_axe"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:diamond_hoe"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:diamond_pickaxe"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:diamond_shovel"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+    [
+        {"id":"minecraft:diamond_sword"},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
     # Remove any anvils that are present
     [
         {"id":"minecraft:anvil"},
@@ -318,8 +466,9 @@ itemReplacements = [
     ],
     
     ############################################################################
-    # Remove dungeon keys on weekly terrain resets:
+    # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)
+    ############################################################################
     
     # Simbelmynë
     [
@@ -362,6 +511,7 @@ itemReplacements = [
     
     ############################################################################
     # Replace previously allowed items:
+    ############################################################################
     
     # Topaz Cap
     [
