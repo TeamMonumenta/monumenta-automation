@@ -18,8 +18,8 @@ from monumenta_common import copyFolder
 # Config section
 
 config = {
-    "dungeonFolder":"/home/rock/tmp/dungeons/",
-    "templateFolder":"/home/rock/tmp/template/",
+    "dungeonFolder":"/home/rock/tmp/Project_Epic-dungeon/",
+    "templateFolder":"/home/rock/tmp/Project_Epic-template/",
     "outFolder":"/home/rock/tmp/out/",
 
     # Dungeons are placed one per MC region file (32x32 chunks)
@@ -156,7 +156,7 @@ def gen_dungeon_instances(config):
     for dungeon in dungeons:
         dungeonName = dungeon["name"]
         dungeonBox = getBox(dungeon["pos1"], dungeon["pos2"])
-        dstFolder = outFolder + dungeonName + '/'
+        dstFolder = outFolder + dungeonName + '/Project_Epic-' + dungeonName + '/'
 
         dstPos = Vector(*(targetRegion["x"] * 32 * 16, 0, targetRegion["z"] * 32 * 16))
         dstStep = Vector(*(0, 0, 32 * 16))
@@ -215,6 +215,9 @@ def gen_dungeon_instances(config):
 
         try:
             shutil.rmtree(dstFolder + "##MCEDIT.TEMP##", ignore_errors=True)
+            shutil.rmtree(dstFolder + "playerdata", ignore_errors=True)
+            shutil.rmtree(dstFolder + "advancements", ignore_errors=True)
+            shutil.rmtree(dstFolder + "stats", ignore_errors=True)
             os.remove(dstFolder + "mcedit_waypoints.dat")
         except Exception as e:
             continue
