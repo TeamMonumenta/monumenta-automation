@@ -1,0 +1,31 @@
+From 7c3bea3f80e1fe873014610acc5136fd1d78b01e Mon Sep 17 00:00:00 2001
+From: Byron Marohn <combustible@live.com>
+Date: Thu, 5 Oct 2017 21:45:16 -0700
+Subject: [PATCH 4/4] Removed test for monsters when sleeping in beds
+
+---
+ src/main/java/net/minecraft/server/EntityHuman.java | 8 --------
+ 1 file changed, 8 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index 9643181..0f8b959 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -1213,14 +1213,6 @@ public abstract class EntityHuman extends EntityLiving {
+             if (!this.a(blockposition, enumdirection)) {
+                 return EntityHuman.EnumBedResult.TOO_FAR_AWAY;
+             }
+-
+-            double d0 = 8.0D;
+-            double d1 = 5.0D;
+-            List list = this.world.a(EntityMonster.class, new AxisAlignedBB((double) blockposition.getX() - 8.0D, (double) blockposition.getY() - 5.0D, (double) blockposition.getZ() - 8.0D, (double) blockposition.getX() + 8.0D, (double) blockposition.getY() + 5.0D, (double) blockposition.getZ() + 8.0D), (Predicate) (new EntityHuman.c(this, null)));
+-
+-            if (!list.isEmpty()) {
+-                return EntityHuman.EnumBedResult.NOT_SAFE;
+-            }
+         }
+ 
+         if (this.isPassenger()) {
+-- 
+2.7.4
+
