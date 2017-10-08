@@ -510,14 +510,14 @@ itemReplacements = [
     ],
     
     ############################################################################
-    # Replace previously allowed items:
+    # Update items that have changed:
     ############################################################################
     
     # Topaz Cap
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *"],Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-2921424335945119943L,UUIDLeast:-8484684784863408544L,Amount:1.0d,Slot:"head",AttributeName:"generic.luck",Operation:0,Name:"Modifier"}]}''',
+            "nbt":ur'''{display:{Name:"§6§lTopaz Cap"}}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
@@ -528,7 +528,7 @@ itemReplacements = [
     [
         {
             "id":"minecraft:golden_helmet",
-            "nbt":ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743,UUIDLeast:9295615,Amount:1,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:964860,UUIDLeast:338877,Amount:1,Slot:"head",AttributeName:"generic.luck",Operation:0,Name:"generic.luck"}]}''',
+            "nbt":ur'''{display:{Name:"§d§lJeweled Tiara"}}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
@@ -539,7 +539,7 @@ itemReplacements = [
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:230886,UUIDLeast:58454,Amount:1,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:911558,UUIDLeast:827572,Amount:1,Slot:"head",AttributeName:"generic.luck",Operation:0,Name:"generic.luck"}]}''',
+            "nbt":ur'''{display:{Name:"§b§lKismet's Blessing"}}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6The luck has decayed into health"],color:65493,Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:-6900745281224160306L,UUIDLeast:-4828553848378685989L,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1116995255491055008L,UUIDLeast:-6766107056483247837L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
