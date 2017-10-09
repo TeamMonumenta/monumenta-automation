@@ -152,7 +152,6 @@ def resetRegionalDifficulty(world):
         try:
             aChunk.root_tag["Level"]["InhabitedTime"].value = 0
             num_reset = num_reset + 1
-            aChunk.chunkChanged(False) # needsLighting=False
         except:
             if "Level" not in aChunk.root_tag:
                 num_missing_level_tag = num_missing_level_tag + 1

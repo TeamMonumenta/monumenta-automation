@@ -30,8 +30,8 @@ config = {
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
-    "localMainFolder":"/home/rock/tmp/BETA_Project_Epic/",
-    "localBuildFolder":"/home/rock/tmp/BUILD_Project_Epic/",
+    "localMainFolder":"/home/rock/tmp/BETA/region_1/Project_Epic-region_1/",
+    "localBuildFolder":"/home/rock/project_epic/region_1/Project_Epic-region_1/",
     "localDstFolder":"/home/rock/tmp/RESET_Project_Epic/",
 
     # No 0.5 offset here, add it yourself if you like.
