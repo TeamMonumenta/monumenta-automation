@@ -20,7 +20,7 @@ from monumenta_common import copyFolder
 config = {
     "dungeonFolder":"/home/rock/tmp/Project_Epic-dungeon/",
     "templateFolder":"/home/rock/tmp/Project_Epic-template/",
-    "outFolder":"/home/rock/tmp/out/",
+    "outFolder":"/home/rock/tmp/dungeons-out/",
 
     # Dungeons are placed one per MC region file (32x32 chunks)
     # Each dungeon starts in the most-negative corner of the region

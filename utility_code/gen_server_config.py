@@ -6,25 +6,30 @@ import os
 import shutil
 import re
 
+server_config_to_copy = [
+        ('eula.txt',),
+        ('bukkit.yml',),
+        ('commands.yml',),
+        ('help.yml',),
+        ('permissions.yml',),
+        ('spigot.yml',),
+        ('wepif.yml',),
+        ('plugins/NBTEditor/CustomItems/NBTEditor.yml',),
+        ('plugins/CoreProtect/config.yml',),
+    ]
+
 server_config = [
-        ('eula.txt', '../server_config/eula.txt'),
-        ('bukkit.yml', '../server_config/bukkit.yml'),
-        ('commands.yml', '../server_config/commands.yml'),
-        ('help.yml', '../server_config/help.yml'),
-        ('permissions.yml', '../server_config/permissions.yml'),
-        ('spigot.yml', '../server_config/spigot.yml'),
-        ('wepif.yml', '../server_config/wepif.yml'),
         ('spigot.jar', '../server_config/spigot.jar'),
         ('Project_Epic-WORLDOOG/data/functions', '../../../server_config/data/functions'),
         ('Project_Epic-WORLDOOG/data/loot_tables', '../../../server_config/data/loot_tables'),
+        ('Project_Epic-WORLDOOG_the_end/data/functions', '../../../server_config/data/functions'),
+        ('Project_Epic-WORLDOOG_the_end/data/loot_tables', '../../../server_config/data/loot_tables'),
     ]
 
-# TODO: Need to point to disabled advancements!
 advancements_disabled = [
         ('Project_Epic-WORLDOOG/data/advancements', '../../../server_config/data/advancements_disabled'),
     ]
 
-# TODO: This symlink needs to be updated
 advancements_r1 = [
         ('Project_Epic-WORLDOOG/data/advancements', '../../../server_config/data/advancements'),
     ]
@@ -35,8 +40,6 @@ structures = [
 
 coreprotect = [
         ('plugins/CoreProtect.jar', '../../server_config/plugins/CoreProtect.jar'),
-    # Note this file must be writable or CoreProtect refuses to start
-        ('plugins/CoreProtect/config.yml', '../../../server_config/plugins/CoreProtect/config.yml'),
     ]
 
 easywarp = [
@@ -76,7 +79,6 @@ monumenta = [
 nbteditor = [
         ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
         ('plugins/NBTEditor/config.yml', '../../../server_config/plugins/NBTEditor/config.yml'),
-        ('plugins/NBTEditor/CustomItems/NBTEditor.yml', '../../../../server_config/plugins/NBTEditor/CustomItems/NBTEditor.yml'),
     ]
 
 openinv = [
@@ -142,75 +144,94 @@ config = {
     # Backups invoked from mark2-scripts.txt
 
     'region_1':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'server-port', 'server-port=25566'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /setblock -1449 1 -1440 redstone_block'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"dailyResetEnabled":', '"dailyResetEnabled": true,'),
         ],
         'linked':server_config + advancements_r1 + base_plugins + build_plugins,
     },
 
     'region_2':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'server-port', 'server-port=25568'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.3"'),
             ('mark2-scripts.txt',),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_disabled + base_plugins + build_plugins,
     },
 
     'tutorial':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'server-port', 'server-port=25567'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.7"'),
             ('mark2-scripts.txt',),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
 
     'dungeon':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25572'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.6"'),
             ('mark2-scripts.txt',),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_disabled + base_plugins + build_plugins,
     },
 
     'roguelike':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'server-port', 'server-port=25569'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.4"'),
             ('mark2-scripts.txt',),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_disabled + base_plugins + build_plugins,
     },
 
     'test':{
-        'config':[
-            ('server.properties', 'view-distance', 'view-distance=12'),
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
             ('server.properties', 'server-port', 'server-port=25571'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.5"'),
             ('mark2-scripts.txt',),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_r1 + base_plugins + build_plugins,
     },
 
+    'r1plots':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('server.properties', 'server-port', 'server-port=25573'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.8"'),
+            ('mark2-scripts.txt',),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
+        ],
+        'linked':server_config + advancements_disabled + base_plugins + build_plugins,
+    },
+
     'purgatory':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=4'),
             ('server.properties', 'force-gamemode', 'force-gamemode=true'),
             ('server.properties', 'gamemode', 'gamemode=2'),
@@ -229,73 +250,79 @@ config = {
     },
 
     'white':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=14'),
             ('server.properties', 'server-port', 'server-port=25580'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.10"'),
             ('mark2-scripts.txt',),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
 
     'orange':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25581'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.11"'),
             ('mark2-scripts.txt',),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
 
     'magenta':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25582'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.12"'),
             ('mark2-scripts.txt',),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
 
     'lightblue':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25583'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.13"'),
             ('mark2-scripts.txt',),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
 
     'yellow':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25584'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.14"'),
             ('mark2-scripts.txt',),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
 
     'r1bonus':{
-        'config':[
+        'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25600'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.30"'),
             ('mark2-scripts.txt',),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('plugins/Monumenta-Plugins/Properties.json',),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
@@ -321,8 +348,8 @@ for filename in files:
     old = template_dir + "/" + filename
     new = servername + "/" + filename
     if (os.path.islink(new)):
-        print "Warning - file is link: " + new
-        raise OSError
+        print "Warning - file '" + new + "' is link; not replacing it"
+        continue
 
     try: 
         os.makedirs(os.path.dirname(new))
@@ -354,7 +381,7 @@ for replacement in config:
         with open(filename + ".old", "rt") as fin:
             with open(filename, "wt") as fout:
                 for line in fin:
-                    fout.write(re.sub("^" + replacement[1] + ".*$", replacement[2], line))
+                    fout.write(re.sub("^[ \t]*" + replacement[1] + ".*$", replacement[2], line))
                 fout.close()
             fin.close()
         os.remove(filename + ".old")
