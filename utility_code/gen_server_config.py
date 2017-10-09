@@ -16,6 +16,7 @@ server_config_to_copy = [
         ('wepif.yml',),
         ('plugins/NBTEditor/CustomItems/NBTEditor.yml',),
         ('plugins/CoreProtect/config.yml',),
+        ('plugins/Monumenta-Plugins/config.yml',),
     ]
 
 server_config = [
@@ -120,7 +121,7 @@ voxelsniper = [
 #   nbteditor
 #   voxelsniper
 
-base_plugins = coreprotect + easywarp + f3n + luckperms + monumenta + openinv + socket4mc
+base_plugins = easywarp + f3n + luckperms + monumenta + openinv + socket4mc
 build_plugins = worldedit + speedchanger + nbteditor + voxelsniper
 
 # String replacements: 
@@ -139,9 +140,10 @@ config = {
     #         if one, just copy file unmodified
 
     # Change between play and beta: 
-    # Memory allocation
-    # Difficulty
-    # Backups invoked from mark2-scripts.txt
+    #   Memory allocation
+    #   Difficulty
+    #   Backups invoked from mark2-scripts.txt
+    #   Tab complete=4 in spigot.yml
 
     'region_1':{
         'config':server_config_to_copy + [
@@ -152,7 +154,7 @@ config = {
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
             ('plugins/Monumenta-Plugins/Properties.json', '"dailyResetEnabled":', '"dailyResetEnabled": true,'),
         ],
-        'linked':server_config + advancements_r1 + base_plugins + build_plugins,
+        'linked':server_config + advancements_r1 + base_plugins + coreprotect + build_plugins,
     },
 
     'region_2':{
@@ -164,7 +166,7 @@ config = {
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
             ('plugins/Monumenta-Plugins/Properties.json',),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + build_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
 
     'tutorial':{
@@ -176,7 +178,7 @@ config = {
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
             ('plugins/Monumenta-Plugins/Properties.json',),
         ],
-        'linked':server_config + advancements_disabled + base_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'dungeon':{
@@ -189,7 +191,7 @@ config = {
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
             ('plugins/Monumenta-Plugins/Properties.json',),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + build_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
 
     'roguelike':{
@@ -201,7 +203,7 @@ config = {
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
             ('plugins/Monumenta-Plugins/Properties.json',),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + build_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
 
     'test':{
@@ -227,7 +229,7 @@ config = {
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
             ('plugins/Monumenta-Plugins/Properties.json',),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + build_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
 
     'purgatory':{
