@@ -524,6 +524,17 @@ itemReplacements = [
         ]
     ],
     
+    # Old Amber Cap -> Topaz Cap
+    [
+        {
+            "id":"minecraft:leather_helmet",
+            "nbt":ur'''{display:{Name:"§6§lAmber Cap"}}''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+    
     # Jeweled Tiara
     [
         {
