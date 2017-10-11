@@ -85,7 +85,28 @@ def replaceItemsOnPlayers(worldDir,replacementList):
 def replaceItemsOnEntity(entity,replacementList):
     for containerTagName in containerTagNames:
         if containerTagName in entity:
-            replaceItemStacks(entity[containerTagName],replacementList)
+            
+            # Replace hand items if they can drop
+            if containerTagName == "HandItems":
+                if "HandDropChances" in entity:
+                    for i in range(2):
+                        if entity["HandDropChances"][i] > -1.00:
+                            replaceItemStacks(entity[containerTagName][i],replacementList)
+                else:
+                    replaceItemStacks(entity[containerTagName],replacementList)
+            
+            # Replace armor items if they can drop
+            elif containerTagName == "ArmorItems":
+                if "ArmorDropChances" in entity:
+                    for i in range(4):
+                        if entity["ArmorDropChances"][i] > -1.00:
+                            replaceItemStacks(entity[containerTagName][i],replacementList)
+                else:
+                    replaceItemStacks(entity[containerTagName],replacementList)
+            
+            # Replace other items; they always drop
+            else:
+                replaceItemStacks(entity[containerTagName],replacementList)
 
 def replaceItemsInSchematic(schematic,replacementList):
     for entity in schematic.Entities:
