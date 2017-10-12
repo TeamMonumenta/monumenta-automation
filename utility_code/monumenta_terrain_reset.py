@@ -36,7 +36,7 @@ config = {
 
     # No 0.5 offset here, add it yourself if you like.
     # (x,y,z,ry,rx)
-    "safetyTpLocation":(-1456, 240, -1498, 270.0, 0.0),
+    "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
 
     # These get filled with the block specified - ie, the magic block with air.
     # Disable with replaceBlocks or comment it out

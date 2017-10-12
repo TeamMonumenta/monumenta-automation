@@ -21,7 +21,7 @@ folders = (
     "/home/rock/tmp/dungeons-out/lightblue/Project_Epic-lightblue/",
     "/home/rock/tmp/dungeons-out/r1bonus/Project_Epic-r1bonus/",
 )
-safetyTpLocation = (-1456, 240, -1498, 270.0, 0.0)
+safetyTpLocation = (-1450, 241, -1498, 270.0, 0.0)
 
 print "Compiling item replacement list..."
 compiledItemReplacementList = item_replace_lib.allReplacements(item_replace_list.itemReplacements)
