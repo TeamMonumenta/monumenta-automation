@@ -251,105 +251,79 @@ itemReplacements = [
     [
         {"id":"minecraft:iron_ore"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_nugget"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_ingot"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_block"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_helmet"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_chestplate"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_leggings"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_boots"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_axe"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_hoe"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_pickaxe"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_shovel"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:iron_sword"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     
@@ -360,108 +334,82 @@ itemReplacements = [
     [
         {"id":"minecraft:diamond_ore"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     # Remove any diamonds that are present
     [
         {"id":"minecraft:diamond"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     # Remove any diamond blocks that are present
     [
         {"id":"minecraft:diamond_block"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:diamond_helmet"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:diamond_chestplate"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:diamond_leggings"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:diamond_boots"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:diamond_axe"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:diamond_hoe"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:diamond_pickaxe"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:diamond_shovel"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     [
         {"id":"minecraft:diamond_sword"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     # Remove any anvils that are present
     [
         {"id":"minecraft:anvil"},
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     
@@ -477,9 +425,7 @@ itemReplacements = [
             "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fSimbelmynë is a rare flower, and it is said to","§fonly grow on the burial mounds of Royalty...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 1 *"],Name:"§9§lSimbelmynë"}}''',
         },
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     
@@ -490,9 +436,7 @@ itemReplacements = [
             "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fA Mortar perfect for mashing ingredients...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 2 *"],Name:"§9§lAncient Mortar"}}''',
         },
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     
@@ -503,9 +447,7 @@ itemReplacements = [
             "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fAn uncommon flower generally found near Hot Springs...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 3 *"],Name:"§9§lAquanis Lily"}}''',
         },
         [
-            "id","minecraft:rotten_flesh",
-            "damage","=","0",
-            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "remove"
         ]
     ],
     
@@ -554,6 +496,21 @@ itemReplacements = [
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6The luck has decayed into health"],color:65493,Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:-6900745281224160306L,UUIDLeast:-4828553848378685989L,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1116995255491055008L,UUIDLeast:-6766107056483247837L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+
+    ############################################################################
+    # Replace removed items with a notice:
+    ############################################################################
+    [
+        {
+            "count":"0",
+        },
+        [
+            "id","minecraft:rotten_flesh",
+            "count","=","1",
+            "damage","=","0",
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
 ]

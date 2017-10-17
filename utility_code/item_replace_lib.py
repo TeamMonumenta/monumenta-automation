@@ -183,6 +183,14 @@ class replacement(object):
             newMatch = matchCount(matches)
             self.matches.append(newMatch)
             #print newMatch.str()
+        if "none" in matches:
+            newMatch = matchNone()
+            self.matches.append(newMatch)
+            #print newMatch.str()
+        if "any" in matches:
+            newMatch = matchAny()
+            self.matches.append(newMatch)
+            #print newMatch.str()
         if len(self.matches) == 0:
             newMatch = matchNone()
             self.matches.append(newMatch)
@@ -237,6 +245,17 @@ class matchNone(object):
     
     def str(self):
         return "* Match nothing"
+
+class matchAny(object):
+    """
+    This is a special case to match anything;
+    used by itself to match all items
+    """
+    def __eq__(self,itemStack):
+        return True
+    
+    def str(self):
+        return "* Match everything"
 
 class matchID(object):
     """
