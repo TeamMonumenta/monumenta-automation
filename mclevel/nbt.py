@@ -786,7 +786,8 @@ class TAG_List(TAG_Value, collections.MutableSequence):
         if len(self.value) != len(other.value):
             return False
         for i in range(len(self.value)):
-            if not self[i].issubset(other[i]):
+            # Order insensitive
+            if not any(self[i].issubset(other[j]) for j in range(len(other.value))):
                 return False
         return True
 

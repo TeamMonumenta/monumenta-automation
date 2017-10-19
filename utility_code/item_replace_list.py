@@ -242,6 +242,92 @@ itemReplacements = [
 
 itemReplacements = [
     ############################################################################
+    # Remove dungeon key items on weekly terrain resets:
+    # (key items within dungeons, not keys to enter dungeons)
+    ############################################################################
+    
+    # Simbelmynë
+    [
+        {
+            "id":"minecraft:red_flower",
+            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fSimbelmynë is a rare flower, and it is said to","§fonly grow on the burial mounds of Royalty...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 1 *"],Name:"§9§lSimbelmynë"}}''',
+        },
+        [
+            "remove"
+        ]
+    ],
+    
+    # Ancient Mortar
+    [
+        {
+            "id":"minecraft:bowl",
+            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fA Mortar perfect for mashing ingredients...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 2 *"],Name:"§9§lAncient Mortar"}}''',
+        },
+        [
+            "remove"
+        ]
+    ],
+    
+    # Aquanis Lily
+    [
+        {
+            "id":"minecraft:red_flower",
+            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fAn uncommon flower generally found near Hot Springs...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 3 *"],Name:"§9§lAquanis Lily"}}''',
+        },
+        [
+            "remove"
+        ]
+    ],
+    
+    ############################################################################
+    # Update items that have changed:
+    ############################################################################
+    
+    # Topaz Cap
+    [
+        {
+            "id":"minecraft:leather_helmet",
+            "nbt":ur'''{display:{Name:"§6§lTopaz Cap"}}''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+    
+    # Old Amber Cap -> Topaz Cap
+    [
+        {
+            "id":"minecraft:leather_helmet",
+            "nbt":ur'''{display:{Name:"§6§lAmber Cap"}}''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+    
+    # Jeweled Tiara
+    [
+        {
+            "id":"minecraft:golden_helmet",
+            "nbt":ur'''{display:{Name:"§d§lJeweled Tiara"}}''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+    
+    # Kismet's Blessing
+    [
+        {
+            "id":"minecraft:leather_helmet",
+            "nbt":ur'''{display:{Name:"§b§lKismet's Blessing"}}''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6The luck has decayed into health"],color:65493,Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:-6900745281224160306L,UUIDLeast:-4828553848378685989L,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1116995255491055008L,UUIDLeast:-6766107056483247837L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+    
+    ############################################################################
     # Stuff that players shouldn't have had:
     ############################################################################
     
@@ -414,88 +500,13 @@ itemReplacements = [
     ],
     
     ############################################################################
-    # Remove dungeon key items on weekly terrain resets:
-    # (key items within dungeons, not keys to enter dungeons)
-    ############################################################################
+    # Other:
     
-    # Simbelmynë
+    # Luck items
     [
-        {
-            "id":"minecraft:red_flower",
-            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fSimbelmynë is a rare flower, and it is said to","§fonly grow on the burial mounds of Royalty...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 1 *"],Name:"§9§lSimbelmynë"}}''',
-        },
+        {"nbt":ur'''{tag:{AttributeModifiers:[{AttributeName:"generic.luck"}]}}'''},
         [
             "remove"
-        ]
-    ],
-    
-    # Ancient Mortar
-    [
-        {
-            "id":"minecraft:bowl",
-            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fA Mortar perfect for mashing ingredients...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 2 *"],Name:"§9§lAncient Mortar"}}''',
-        },
-        [
-            "remove"
-        ]
-    ],
-    
-    # Aquanis Lily
-    [
-        {
-            "id":"minecraft:red_flower",
-            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fAn uncommon flower generally found near Hot Springs...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 3 *"],Name:"§9§lAquanis Lily"}}''',
-        },
-        [
-            "remove"
-        ]
-    ],
-    
-    ############################################################################
-    # Update items that have changed:
-    ############################################################################
-    
-    # Topaz Cap
-    [
-        {
-            "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§6§lTopaz Cap"}}''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
-        ]
-    ],
-    
-    # Old Amber Cap -> Topaz Cap
-    [
-        {
-            "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§6§lAmber Cap"}}''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
-        ]
-    ],
-    
-    # Jeweled Tiara
-    [
-        {
-            "id":"minecraft:golden_helmet",
-            "nbt":ur'''{display:{Name:"§d§lJeweled Tiara"}}''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
-        ]
-    ],
-    
-    # Kismet's Blessing
-    [
-        {
-            "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§b§lKismet's Blessing"}}''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6The luck has decayed into health"],color:65493,Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:-6900745281224160306L,UUIDLeast:-4828553848378685989L,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1116995255491055008L,UUIDLeast:-6766107056483247837L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 
