@@ -325,9 +325,9 @@ class matchNBT(object):
         if self._nbt is None:
             return u'* Match no NBT exactly'
         elif self._exact:
-            return u'* Match NBT ' + self._nbt.json
-        else:
             return u'* Match NBT ' + self._nbt.json + u' exactly'
+        else:
+            return u'* Match NBT ' + self._nbt.json
 
 class matchCount(object):
     """
