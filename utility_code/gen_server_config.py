@@ -59,7 +59,8 @@ f3n = [
     ]
 
 worldedit = [
-        ('plugins/worldedit.jar', '../../server_config/plugins/worldedit.jar'),
+        ('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit.jar'),
+        ('plugins/WorldEdit.jar', '../../server_config/plugins/WorldEdit.jar'),
         ('plugins/WorldEdit/config.yml', '../../../server_config/plugins/WorldEdit/config.yml'),
         ('plugins/WorldEdit/schematics', '../../../server_config/plugins/WorldEdit/schematics'),
 
@@ -127,6 +128,7 @@ voxelsniper = [
 
 base_plugins = easywarp + f3n + luckperms + monumenta + openinv + socket4mc
 build_plugins = worldedit + speedchanger + nbteditor + voxelsniper
+# build_plugins = []
 
 # String replacements:
 # WORLDOOG - server name
@@ -151,11 +153,14 @@ config = {
 
     'region_1':{
         'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
             ('server.properties', 'server-port', 'server-port=25566'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /setblock -1449 1 -1440 redstone_block'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            #('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
+            #('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"dailyResetEnabled":', '"dailyResetEnabled": true,'),
         ],
         'linked':server_config + advancements_r1 + base_plugins + coreprotect + build_plugins,
@@ -216,11 +221,26 @@ config = {
 
     'r1plots':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('server.properties', 'view-distance', 'view-distance=7'),
             ('server.properties', 'server-port', 'server-port=25573'),
+            ('server.properties', 'difficulty', 'difficulty=0'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.8"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            #('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            #('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
+        ],
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
+    },
+
+    'betaplots':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=7'),
+            ('server.properties', 'server-port', 'server-port=25574'),
+            ('server.properties', 'difficulty', 'difficulty=0'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.9"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
@@ -248,8 +268,8 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=14'),
             ('server.properties', 'server-port', 'server-port=25580'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.10"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
@@ -259,8 +279,8 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25581'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.11"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
@@ -270,8 +290,8 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25582'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.12"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
@@ -281,30 +301,30 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25583'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.13"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
 
     'yellow':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=12'),
+            ('server.properties', 'view-distance', 'view-distance=8'),
             ('server.properties', 'server-port', 'server-port=25584'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.14"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
 
     'r1bonus':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=12'),
+            ('server.properties', 'view-distance', 'view-distance=8'),
             ('server.properties', 'server-port', 'server-port=25600'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.30"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
     },
