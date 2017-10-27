@@ -22,6 +22,7 @@ import collections
 import gzip
 import itertools
 import logging
+import string
 import struct
 import zlib
 from cStringIO import StringIO
@@ -598,7 +599,7 @@ class TAG_Compound(TAG_Value, collections.MutableMapping):
             result = self.name + ":{"
         for i in self.value:
             result += i.json + ","
-        if len(result) > 1:
+        if result[-1] == ",":
             result = result[:-1]
         return result + "}"
     
@@ -756,7 +757,7 @@ class TAG_List(TAG_Value, collections.MutableSequence):
         # TODO parsing needs to be double checked
         for i in self.value:
             result += i.json + ","
-        if len(result) > 1:
+        if result[-1] == ",":
             result = result[:-1]
         return result + "]"
     
@@ -1006,6 +1007,8 @@ def json_to_tag(json):
     
     # Begin parse
     for i,c in enumerate(json):
+        # TODO Debug for testing the whitespace handler
+        #print c,
         # i is the index of character c in json
         if backslashFound:
             # Previous character was \, ignore this character
@@ -1089,6 +1092,9 @@ def json_to_tag(json):
             # Non-string non-container tag
             debug += '-'
             if state["native"] is None:
+                # TODO test this; should allow for json files with whitespace
+                #if c in string.whitespace:
+                #    continue
                 state["native"] = ""
             state["native"] += c
     if state["native"] is not None:
