@@ -27,8 +27,9 @@ def listUniqueTags(worldDir):
             continue
         tags.update([tag.value for tag in player["Tags"]])
     
-    for tag in sorted(tags):
-        print tag
+    print sorted(tags)
+    #for tag in sorted(tags):
+    #    print tag
 
 def deleteTheseTags(worldDir,tagsToDelete):
     """
