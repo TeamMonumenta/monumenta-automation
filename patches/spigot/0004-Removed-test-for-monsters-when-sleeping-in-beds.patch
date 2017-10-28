@@ -1,7 +1,7 @@
-From 7c3bea3f80e1fe873014610acc5136fd1d78b01e Mon Sep 17 00:00:00 2001
+From e4c309cfcab136c0be5c1092e727eb861f4580e4 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Thu, 5 Oct 2017 21:45:16 -0700
-Subject: [PATCH 4/4] Removed test for monsters when sleeping in beds
+Subject: [PATCH 4/5] Removed test for monsters when sleeping in beds
 
 ---
  src/main/java/net/minecraft/server/EntityHuman.java | 8 --------

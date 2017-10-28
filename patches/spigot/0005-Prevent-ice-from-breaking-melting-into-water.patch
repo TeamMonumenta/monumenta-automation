@@ -1,0 +1,26 @@
+From 2aa1926d332eaa2705f6b1ec2e6cfc2c777cfd60 Mon Sep 17 00:00:00 2001
+From: Byron Marohn <combustible@live.com>
+Date: Thu, 26 Oct 2017 22:09:28 -0700
+Subject: [PATCH 5/5] Prevent ice from breaking/melting into water
+
+Signed-off-by: Byron Marohn <combustible@live.com>
+---
+ src/main/java/net/minecraft/server/BlockIce.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/BlockIce.java b/src/main/java/net/minecraft/server/BlockIce.java
+index 7bb4443..d608003 100644
+--- a/src/main/java/net/minecraft/server/BlockIce.java
++++ b/src/main/java/net/minecraft/server/BlockIce.java
+@@ -52,7 +52,7 @@ public class BlockIce extends BlockHalfTransparent {
+             return;
+         }
+         // CraftBukkit end
+-        if (world.worldProvider.l()) {
++        if (true) {
+             world.setAir(blockposition);
+         } else {
+             this.b(world, blockposition, world.getType(blockposition), 0);
+-- 
+2.7.4
+
