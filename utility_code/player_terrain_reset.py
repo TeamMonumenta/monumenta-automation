@@ -19,6 +19,7 @@ folders = (
     "/home/rock/tmp/dungeons-out/orange/Project_Epic-orange/",
     "/home/rock/tmp/dungeons-out/magenta/Project_Epic-magenta/",
     "/home/rock/tmp/dungeons-out/lightblue/Project_Epic-lightblue/",
+    "/home/rock/tmp/dungeons-out/yellow/Project_Epic-yellow/",
     "/home/rock/tmp/dungeons-out/r1bonus/Project_Epic-r1bonus/",
 )
 safetyTpLocation = (-1450, 241, -1498, 270.0, 0.0)
