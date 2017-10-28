@@ -6,13 +6,14 @@ import os
 import sys
 import shutil
 
-# These are expected in your site-packages folder, see:
-# https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory
-import mclevel # from https://github.com/mcedit/pymclevel
-from mclevel import materials
-from mclevel.box import BoundingBox, Vector
+# The effective working directory for this script must always be the MCEdit-Unified directory
+os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
 
-from monumenta_common import copyFolder
+import pymclevel
+from pymclevel import materials
+from pymclevel.block_copy import copyBlocksFromIter
+from pymclevel.box import BoundingBox, Vector
+from pymclevel.mclevelbase import exhaust
 
 ################################################################################
 # Config section
@@ -33,7 +34,9 @@ config = {
 
     "dungeons":(
         {
-            "name":"white", "pos1":(-2528, 0, -1296), "pos2":(-2369, 255, -945),
+            "name":"white",
+            "size":(160, 256, 352),
+            "region":{"x":-3, "z":-2},
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -41,7 +44,9 @@ config = {
                     "replace":True, "material":(35, 0), "materialName":"white wool"},
             )
         },{
-            "name":"orange", "pos1":(-2336, 0, -1296), "pos2":(-2017, 119, -945),
+            "name":"orange",
+            "size":(320, 120, 352),
+            "region":{"x":-3, "z":-1},
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -49,7 +54,9 @@ config = {
                     "replace":True, "material":(35, 1), "materialName":"orange wool"},
             )
         },{
-            "name":"magenta", "pos1":(-1984, 0, -1296), "pos2":(-1729, 255, -1041),
+            "name":"magenta",
+            "size":(256, 256, 256),
+            "region":{"x":-3, "z":0},
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -57,7 +64,9 @@ config = {
                     "replace":True, "material":(35, 2), "materialName":"magenta wool"},
             )
         },{
-            "name":"lightblue", "pos1":(-1696, 0, -1296), "pos2":(-1409, 255, -1025),
+            "name":"lightblue",
+            "size":(288, 256, 272),
+            "region":{"x":-3, "z":1},
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -65,15 +74,19 @@ config = {
                     "replace":True, "material":(35, 3), "materialName":"light blue wool"},
             )
         },{
-        #    "name":"yellow", "pos1":(-1376, 0, -1296), "pos2":(-1121, 255, -1041),
-        #    "coordinatesToFill":(
-        #        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-        #            "replace":True, "material":(0, 0), "materialName":"air"},
-        #        {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-        #            "replace":True, "material":(35, 4), "materialName":"yellow wool"},
-        #    )
-        #},{
-            "name":"r1bonus", "pos1":(-1088, 0, -1296), "pos2":(-801,  92,  -929),
+            "name":"yellow",
+            "size":(256, 256, 256),
+            "region":{"x":-3, "z":2},
+            "coordinatesToFill":(
+                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+                    "replace":True, "material":(0, 0), "materialName":"air"},
+                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+                    "replace":True, "material":(35, 4), "materialName":"yellow wool"},
+            )
+        },{
+            "name":"r1bonus",
+            "size":(288, 93, 368),
+            "region":{"x":-3, "z":3},
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -132,6 +145,10 @@ def fillBoxes(world, coordinatesToFill):
             block = world.materials[boxMaterial]
             world.fillBlocks(box, block)
 
+def copyFolder(old, new):
+    shutil.rmtree(new, ignore_errors=True)
+    shutil.copytree(old, new, symlinks=True)
+
 ################################################################################
 # Function definitions
 
@@ -151,11 +168,14 @@ def gen_dungeon_instances(config):
         sys.exit("Template world folder does not exist.")
 
     print "Opening dungeon reference world..."
-    referenceWorld = mclevel.loadWorld(dungeonFolder)
+    referenceWorld = pymclevel.loadWorld(dungeonFolder)
 
     for dungeon in dungeons:
         dungeonName = dungeon["name"]
-        dungeonBox = getBox(dungeon["pos1"], dungeon["pos2"])
+        dungeonRegion = dungeon["region"]
+        dungeonSize = Vector(*dungeon["size"])
+        dungeonPos = Vector(*(dungeonRegion["x"] * 32 * 16, 0, dungeonRegion["z"] * 32 * 16))
+        dungeonBox = BoundingBox(dungeonPos, dungeonSize)
         dstFolder = outFolder + dungeonName + '/Project_Epic-' + dungeonName + '/'
 
         dstPos = Vector(*(targetRegion["x"] * 32 * 16, 0, targetRegion["z"] * 32 * 16))
@@ -166,6 +186,10 @@ def gen_dungeon_instances(config):
 
         blocksToCopy = range(materials.id_limit)
 
+        #print dungeonName
+        #print dungeonRegion
+        #print dungeonSize
+        #print dungeonPos
         #print dungeonBox
         #print dstPos
         #print dstStep
@@ -179,11 +203,7 @@ def gen_dungeon_instances(config):
         copyFolder(templateFolder, dstFolder)
 
         print "  Opening dungeon world..."
-        dstWorld = mclevel.loadWorld(dstFolder)
-
-        print "  Copying dungeon schematic..."
-        tempSchematic = referenceWorld.extractSchematic(dungeonBox, entities=True)
-        #tempSchematic.saveToFile("/home/rock/" + dungeonName + ".schematic")
+        dstWorld = pymclevel.loadWorld(dstFolder)
 
         print "  Creating void chunks..."
         chunksCreated = dstWorld.createChunksInBox(voidBox)
@@ -197,9 +217,12 @@ def gen_dungeon_instances(config):
         print "  Creating dungeon instances..."
         for i in range(numDungeons):
             print "    {0}...".format(i)
-            dstWorld.copyBlocksFrom(tempSchematic, tempSchematic.bounds,
-                                     dstPos + dstStep * i, blocksToCopy,
-                                     create=True, entities=True, biomes=True)
+
+            exhaust(copyBlocksFromIter(destLevel=dstWorld, sourceLevel=referenceWorld, sourceBox=dungeonBox,
+                                       destinationPoint=(dstPos + dstStep * i), blocksToCopy=blocksToCopy,
+                                       entities=True, create=True, biomes=True, tileTicks=True,
+                                       staticCommands=False, moveSpawnerPos=False, regenerateUUID=True,
+                                       first=False, cancelCommandBlockOffset=False)) # Not sure what these last two do - defaults
 
         # Note resetting difficulty is unnecessary - all generated chunks
         #   lack the time inhabited tag
