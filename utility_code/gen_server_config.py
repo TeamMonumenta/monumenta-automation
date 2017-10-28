@@ -18,6 +18,7 @@ server_config_to_copy = [
         ('spigot.yml',),
         ('wepif.yml',),
         ('mark2-scripts.txt',),
+        ('plugins/FastAsyncWorldEdit/config.yml',),
         ('plugins/NBTEditor/CustomItems/NBTEditor.yml',),
         ('plugins/CoreProtect/config.yml',),
         ('plugins/Monumenta-Plugins/config.yml',),
@@ -169,6 +170,7 @@ config = {
 
     'region_2':{
         'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
             ('server.properties', 'server-port', 'server-port=25568'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.3"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
@@ -179,7 +181,9 @@ config = {
 
     'tutorial':{
         'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
             ('server.properties', 'server-port', 'server-port=25567'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.7"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
@@ -192,6 +196,7 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25572'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.6"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
@@ -272,6 +277,7 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=14'),
             ('server.properties', 'server-port', 'server-port=25580'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.10"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
@@ -283,6 +289,7 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25581'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.11"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
@@ -294,6 +301,7 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25582'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.12"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
@@ -305,6 +313,7 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('server.properties', 'server-port', 'server-port=25583'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.13"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
@@ -316,6 +325,7 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('server.properties', 'server-port', 'server-port=25584'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.14"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
@@ -327,6 +337,7 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('server.properties', 'server-port', 'server-port=25600'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.30"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
