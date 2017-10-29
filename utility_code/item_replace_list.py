@@ -416,21 +416,18 @@ itemReplacements = [
     ############################################################################
     # Diamond:
 
-    # Remove any diamond ore that is present
     [
         {"id":"minecraft:diamond_ore"},
         [
             "remove"
         ]
     ],
-    # Remove any diamonds that are present
     [
         {"id":"minecraft:diamond"},
         [
             "remove"
         ]
     ],
-    # Remove any diamond blocks that are present
     [
         {"id":"minecraft:diamond_block"},
         [
@@ -491,9 +488,24 @@ itemReplacements = [
             "remove"
         ]
     ],
-    # Remove any anvils that are present
     [
         {"id":"minecraft:anvil"},
+        [
+            "remove"
+        ]
+    ],
+    [
+        {"id":"minecraft:beacon"},
+        [
+            "remove"
+        ]
+    ],
+    # Wither skeleton skulls
+    [
+        {
+            "id":"minecraft:skull",
+            "damage":1
+        },
         [
             "remove"
         ]
