@@ -130,6 +130,16 @@ def movePlayers(worldFolder, point):
         aPlayer["Health"].value = 20.0
         aPlayer["DeathTime"].value = 0
 
+        # Reset player spawn location (beds and /spawnpoint)
+        if "SpawnX" in aPlayer:
+            aPlayer.pop("SpawnX")
+        if "SpawnY" in aPlayer:
+            aPlayer.pop("SpawnY")
+        if "SpawnZ" in aPlayer:
+            aPlayer.pop("SpawnZ")
+        if "SpawnForced" in aPlayer:
+            aPlayer.pop("SpawnForced")
+        
         # save
         aPlayer.save(aPlayerFile)
 

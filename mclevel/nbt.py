@@ -147,7 +147,7 @@ class TAG_Byte(TAG_Value):
     
     @property
     def json(self):
-        """ Convert a TAG_Byte to a JSON string """
+        """ Convert TAG_Byte to JSON string """
         if self.name == "":
             prefix = ""
         else:
@@ -174,7 +174,7 @@ class TAG_Short(TAG_Value):
     
     @property
     def json(self):
-        """ Convert a TAG_Short to a JSON string """
+        """ Convert TAG_Short to JSON string """
         if self.name == "":
             prefix = ""
         else:
@@ -201,7 +201,7 @@ class TAG_Int(TAG_Value):
     
     @property
     def json(self):
-        """ Convert a TAG_Int to a JSON string """
+        """ Convert TAG_Int to JSON string """
         if self.name == "":
             prefix = ""
         else:
@@ -222,7 +222,7 @@ class TAG_Long(TAG_Value):
     
     @property
     def json(self):
-        """ Convert a TAG_Long to a JSON string """
+        """ Convert TAG_Long to JSON string """
         if self.name == "":
             prefix = ""
         else:
@@ -249,7 +249,7 @@ class TAG_Float(TAG_Value):
     
     @property
     def json(self):
-        """ Convert a TAG_Float to a JSON string """
+        """ Convert TAG_Float to JSON string """
         if self.name == "":
             prefix = ""
         else:
@@ -277,7 +277,7 @@ class TAG_Double(TAG_Value):
     
     @property
     def json(self):
-        """ Convert a TAG_Double to a JSON string """
+        """ Convert TAG_Double to JSON string """
         if self.name == "":
             prefix = ""
         else:
@@ -404,7 +404,7 @@ class TAG_String(TAG_Value):
     
     @property
     def json(self):
-        """ Convert a TAG_String to a JSON string """
+        """ Convert TAG_String to JSON string """
         try:
             ownName = self.name
             if ownName == "":
@@ -592,7 +592,7 @@ class TAG_Compound(TAG_Value, collections.MutableMapping):
     
     @property
     def json(self):
-        """ Convert a TAG_Compound to a JSON string """
+        """ Convert TAG_Compound to JSON string """
         if self.name == "":
             result = "{"
         else:
@@ -749,7 +749,7 @@ class TAG_List(TAG_Value, collections.MutableSequence):
     
     @property
     def json(self):
-        """ Convert a TAG_List to a JSON string """
+        """ Convert TAG_List to JSON string """
         if self.name == "":
             result = "["
         else:
