@@ -225,6 +225,23 @@ config = {
         'linked':server_config + advancements_r1 + base_plugins + build_plugins,
     },
 
+    'build':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('server.properties', 'server-port', 'server-port=25599'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.29"'),
+            ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
+            ('server.properties', 'difficulty', 'difficulty=0'),
+            ('server.properties', 'gamemode', 'gamemode=1'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1280M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1280M'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 0,'),
+        ],
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
+    },
+
     'r1plots':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=7'),
@@ -247,8 +264,8 @@ config = {
             ('server.properties', 'server-port', 'server-port=25574'),
             ('server.properties', 'difficulty', 'difficulty=0'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.9"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
         ],
