@@ -15,12 +15,17 @@ import item_replace_list
 from terrain_reset_lib import movePlayers
 
 folders = (
-    "/home/rock/tmp/dungeons-out/white/Project_Epic-white/",
-    "/home/rock/tmp/dungeons-out/orange/Project_Epic-orange/",
-    "/home/rock/tmp/dungeons-out/magenta/Project_Epic-magenta/",
-    "/home/rock/tmp/dungeons-out/lightblue/Project_Epic-lightblue/",
-    "/home/rock/tmp/dungeons-out/yellow/Project_Epic-yellow/",
-    "/home/rock/tmp/dungeons-out/r1bonus/Project_Epic-r1bonus/",
+    "/home/rock/tmp/POST_RESET/betaplots/Project_Epic-betaplots/",
+    "/home/rock/tmp/POST_RESET/lightblue/Project_Epic-lightblue/",
+    "/home/rock/tmp/POST_RESET/magenta/Project_Epic-magenta/",
+    "/home/rock/tmp/POST_RESET/orange/Project_Epic-orange/",
+    "/home/rock/tmp/POST_RESET/purgatory/Project_Epic-purgatory/",
+    "/home/rock/tmp/POST_RESET/region_1/Project_Epic-region_1/",
+    "/home/rock/tmp/POST_RESET/r1bonus/Project_Epic-r1bonus/",
+    "/home/rock/tmp/POST_RESET/r1plots/Project_Epic-r1plots/",
+    "/home/rock/tmp/POST_RESET/tutorial/Project_Epic-tutorial/",
+    "/home/rock/tmp/POST_RESET/white/Project_Epic-white/",
+    "/home/rock/tmp/POST_RESET/yellow/Project_Epic-yellow/",
 )
 safetyTpLocation = (-1450, 241, -1498, 270.0, 0.0)
 

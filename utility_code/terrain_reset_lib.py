@@ -139,7 +139,7 @@ def movePlayers(worldFolder, point):
             aPlayer.pop("SpawnZ")
         if "SpawnForced" in aPlayer:
             aPlayer.pop("SpawnForced")
-        
+
         # save
         aPlayer.save(aPlayerFile)
 
@@ -257,8 +257,10 @@ def terrainReset(config):
     copyFolders(localMainFolder, localDstFolder, ["advancements/", "playerdata/", "stats/",])
     print "Copying player maps and scoreboard from main world..."
     copyFolders(localMainFolder, localDstFolder, ["data/",])
-    print "Copying updated advancements, functions, and loot tables from build world..."
-    copyFolders(localBuildFolder, localDstFolder, ["data/advancements/", "data/functions/", "data/loot_tables/",])
+
+    # Note this part about advancements, functions, and loot tables is now done by gen_server_config (via symlinks)
+    #print "Copying updated advancements, functions, and loot tables from build world..."
+    #copyFolders(localBuildFolder, localDstFolder, ["data/advancements/", "data/functions/", "data/loot_tables/",])
 
     print "Handling item replacements for players..."
     item_replace_lib.replaceItemsOnPlayers(localDstFolder, compiledItemReplacementList)

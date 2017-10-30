@@ -30,9 +30,9 @@ config = {
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
-    "localMainFolder":"/home/rock/tmp/BETA/region_1/Project_Epic-region_1/",
+    "localMainFolder":"/home/rock/tmp/PRE_RESET/region_1/Project_Epic-region_1/",
     "localBuildFolder":"/home/rock/project_epic/region_1/Project_Epic-region_1/",
-    "localDstFolder":"/home/rock/tmp/RESET_Project_Epic/",
+    "localDstFolder":"/home/rock/tmp/POST_RESET/region_1/Project_Epic-region_1/",
 
     # No 0.5 offset here, add it yourself if you like.
     # (x,y,z,ry,rx)
@@ -54,6 +54,7 @@ config = {
         ("Apartments_500",         ( -864,  99,   23), (-813, 96,  23),   False, (  41, 0 ), "gold"),
         ("Apartments_600",         ( -864,  99,   23), (-813, 96,  23),   False, (  41, 0 ), "gold"),
         ("Apartments_700_800",     ( -874,  99,   18), (-809, 96,  18),   False, (  41, 0 ), "gold"),
+        ("Apartments_units",       ( -817, 113,   87), (-859, 164, 16),   False, (  41, 0 ), "gold"),
         ("Guild_Room",             ( -800, 109,  -75), (-758, 104, -102), False, (  41, 0 ), "gold"),
         ("Guild_1",                (-586,    0, 137 ), (-622, 255, 105),  True,  (  19, 0 ), "sponge"),
         ("Guild_2",                (-570,    0, 112 ), (-534, 255, 154),  True,  (  19, 0 ), "sponge"),
@@ -84,7 +85,6 @@ config = {
         ("Guild_27",               (-548,    0, -64 ), (-580, 255, -100), True,  (  19, 0 ), "sponge"),
 
         #("Apartments_buying_room", ( -809,  99,   47), ( -874,  96,    4), False, (  41, 0 ), "gold"),
-        #("Apartments_units",       ( -817, 113,   87), ( -859, 164,   16), False, (  41, 0 ), "gold"),
         #("Plot_Pressure_Plates",   ( -719, 106, -118), ( -665, 106,  -74), False, (  41, 0 ), "gold"),
         #("Section_1",              (-1130,   0, -267), ( -897, 255,  318), True,  (  41, 0 ), "gold"),
         #("Section_2",              ( -896,   0,  208), ( -512, 255,  318), True,  (  57, 0 ), "diamond"),
