@@ -168,21 +168,6 @@ def resetRegionalDifficulty(world):
 ################################################################################
 # Functions that display stuff while they work
 
-def fillBoxes(world,coordinatesToFill):
-    """ Fill all boxes with specified blocks """
-
-    # Fill the selected regions
-    for fillBox in coordinatesToFill:
-        shouldReplaceBlocks = getBoxRuleBlockReplacement(fillBox)
-        if shouldReplaceBlocks:
-            boxName = getBoxName(fillBox)
-            boxMaterial = getBoxMaterial(fillBox)
-            boxMaterialName = getBoxMaterialName(fillBox)
-            print "[{0}/{1}] Filling " + boxName + " with " + boxMaterialName + "..."
-            box = getBox(fillBox)
-            block = world.materials[boxMaterial]
-            world.fillBlocks(box, block)
-
 def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledItemReplacementList):
 
     print "Starting transfer of boxes from player server..."

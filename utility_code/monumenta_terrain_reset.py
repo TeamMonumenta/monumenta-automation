@@ -11,17 +11,19 @@ Python will tell you if/when the script crashes.
 If it's going to crash, it won't damage the original worlds.
 Just fix what broke, and run again.
 """
-import mclevel
-import terrain_reset_lib
-import item_replace_lib
-# import item_replace_list # This is where the item replacements are kept
 
-from monumenta_common import getBoxName
-from monumenta_common import getBoxSize
-from monumenta_common import getBoxPos
-from monumenta_common import getBox
-from monumenta_common import getBoxMaterial
-from monumenta_common import getBoxMaterialName
+import os
+import sys
+import shutil
+
+##### MAYBE NEW
+import pymclevel
+from pymclevel.box import BoundingBox, Vector
+
+from monumenta_common import fillBoxes, copyBoxes, copyFolder, copyFolders
+
+import item_replace_lib
+import item_replace_list
 
 ################################################################################
 # Config section
@@ -38,65 +40,68 @@ config = {
     # (x,y,z,ry,rx)
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
 
-    # These get filled with the block specified - ie, the magic block with air.
-    # Disable with replaceBlocks or comment it out
     "coordinatesToFill":(
-        # ("a unique name",        (lowerCoordinate),  (upperCoordinate), replaceBlocks, ( id, dmg), "block name (comment)"),
-        ("Magic Block",            (-1441,   2,-1441), (-1441,   2,-1441), True,  (  0, 0 ), "air"),
-    ),
+        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+            "replace":True, "material":(0, 0), "materialName":"air"},
+    )
+
+    # If this is set to True, instead of copying the coordinates from the Main server
+    # it treats them as additional coordinatesToFill instead, filling those regions
+    # so that their positions can be easily checked in-game
+    "coordinatesDebug":False,
 
     "coordinatesToCopy":(
         # ("a unique name",        (lowerCoordinate),  (upperCoordinate), replaceBlocks, ( id, dmg), "block name (comment)"),
-        ("Apartments_100",         ( -874,  99,   44), (-809, 96,  44),   False, (  41, 0 ), "gold"),
-        ("Apartments_200",         ( -874,  99,   36), (-809, 96,  36),   False, (  41, 0 ), "gold"),
-        ("Apartments_300",         ( -874,  99,   31), (-809, 96,  31),   False, (  41, 0 ), "gold"),
-        ("Apartments_400",         ( -874,  99,   23), (-809, 96,  23),   False, (  41, 0 ), "gold"),
-        ("Apartments_500",         ( -864,  99,   23), (-813, 96,  23),   False, (  41, 0 ), "gold"),
-        ("Apartments_600",         ( -864,  99,   23), (-813, 96,  23),   False, (  41, 0 ), "gold"),
-        ("Apartments_700_800",     ( -874,  99,   18), (-809, 96,  18),   False, (  41, 0 ), "gold"),
-        ("Apartments_units",       ( -817, 113,   87), (-859, 164, 16),   False, (  41, 0 ), "gold"),
-        ("Guild_Room",             ( -800, 109,  -75), (-758, 104, -102), False, (  41, 0 ), "gold"),
-        ("Guild_1",                (-586,    0, 137 ), (-622, 255, 105),  True,  (  19, 0 ), "sponge"),
-        ("Guild_2",                (-570,    0, 112 ), (-534, 255, 154),  True,  (  19, 0 ), "sponge"),
-        ("Guild_3",                (-581,    0, 150 ), (-613, 255, 186),  True,  (  19, 0 ), "sponge"),
-        ("Guild_4",                (-649,    0, 275 ), (-617, 255, 311),  True,  (  19, 0 ), "sponge"),
-        ("Guild_5",                (-683,    0, 275 ), (-651, 255, 311),  True,  (  19, 0 ), "sponge"),
-        ("Guild_6",                (-685,    0, 275 ), (-717, 255, 311),  True,  (  19, 0 ), "sponge"),
-        ("Guild_7",                (-816,    0, 235 ), (-780, 255, 267),  True,  (  19, 0 ), "sponge"),
-        ("Guild_8",                (-832,    0, 257 ), (-868, 255, 289),  True,  (  19, 0 ), "sponge"),
-        ("Guild_9",                (-816,    0, 269 ), (-780, 255, 301),  True,  (  19, 0 ), "sponge"),
-        ("Guild_10",               (-937,    0, 272 ), (-969, 255, 308),  True,  (  19, 0 ), "sponge"),
-        ("Guild_11",               (-969,    0, 256 ), (-937, 255, 220),  True,  (  19, 0 ), "sponge"),
-        ("Guild_12",               (-958,    0, 104 ), (-994, 255, 136),  True,  (  19, 0 ), "sponge"),
-        ("Guild_13",               (-942,    0, 93  ), (-906, 255, 125),  True,  (  19, 0 ), "sponge"),
-        ("Guild_14",               (-958,    0, 70  ), (-994, 255, 102),  True,  (  19, 0 ), "sponge"),
-        ("Guild_15",               (-920,    0, -88 ), (-952, 255, -52),  True,  (  19, 0 ), "sponge"),
-        ("Guild_16",               (-936,    0, -102), (-900, 255, -134), True,  (  19, 0 ), "sponge"),
-        ("Guild_17",               (-955,    0, -106), (-987, 255, -70),  True,  (  19, 0 ), "sponge"),
-        ("Guild_18",               (-954,    0, -120), (-990, 255, -152), True,  (  19, 0 ), "sponge"),
-        ("Guild_19",               (-936,    0, -168), (-900, 255, -136), True,  (  19, 0 ), "sponge"),
-        ("Guild_20",               (-751,    0, -230), (-787, 255, -198), True,  (  19, 0 ), "sponge"),
-        ("Guild_21",               (-787,    0, -232), (-751, 255, -264), True,  (  19, 0 ), "sponge"),
-        ("Guild_22",               (-600,    0, -191), (-564, 255, -159), True,  (  19, 0 ), "sponge"),
-        ("Guild_23",               (-615,    0, -180), (-651, 255, -212), True,  (  19, 0 ), "sponge"),
-        ("Guild_24",               (-564,    0, -192), (-600, 255, -224), True,  (  19, 0 ), "sponge"),
-        ("Guild_25",               (-581,    0, -64 ), (-613, 255, -100), True,  (  19, 0 ), "sponge"),
-        ("Guild_26",               (-596,    0, -46 ), (-564, 255, -10),  True,  (  19, 0 ), "sponge"),
-        ("Guild_27",               (-548,    0, -64 ), (-580, 255, -100), True,  (  19, 0 ), "sponge"),
+        {"name":"Apartments_100",         "pos1":( -874,  99,   44), "pos2":(-809,  96,   44), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        {"name":"Apartments_200",         "pos1":( -874,  99,   36), "pos2":(-809,  96,   36), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        {"name":"Apartments_300",         "pos1":( -874,  99,   31), "pos2":(-809,  96,   31), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        {"name":"Apartments_400",         "pos1":( -874,  99,   23), "pos2":(-809,  96,   23), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        {"name":"Apartments_500",         "pos1":( -864,  99,   23), "pos2":(-813,  96,   23), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        {"name":"Apartments_600",         "pos1":( -864,  99,   23), "pos2":(-813,  96,   23), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        {"name":"Apartments_700_800",     "pos1":( -874,  99,   18), "pos2":(-809,  96,   18), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        {"name":"Apartments_units",       "pos1":( -817, 113,   87), "pos2":(-859, 164,   16), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        {"name":"Guild_Room",             "pos1":( -800, 109,  -75), "pos2":(-758, 104, -102), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        {"name":"Guild_1",                "pos1":( -586,   0,  137), "pos2":(-622, 255,  105), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_2",                "pos1":( -570,   0,  112), "pos2":(-534, 255,  154), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_3",                "pos1":( -581,   0,  150), "pos2":(-613, 255,  186), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_4",                "pos1":( -649,   0,  275), "pos2":(-617, 255,  311), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_5",                "pos1":( -683,   0,  275), "pos2":(-651, 255,  311), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_6",                "pos1":( -685,   0,  275), "pos2":(-717, 255,  311), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_7",                "pos1":( -816,   0,  235), "pos2":(-780, 255,  267), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_8",                "pos1":( -832,   0,  257), "pos2":(-868, 255,  289), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_9",                "pos1":( -816,   0,  269), "pos2":(-780, 255,  301), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_10",               "pos1":( -937,   0,  272), "pos2":(-969, 255,  308), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_11",               "pos1":( -969,   0,  256), "pos2":(-937, 255,  220), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_12",               "pos1":( -958,   0,  104), "pos2":(-994, 255,  136), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_13",               "pos1":( -942,   0,   93), "pos2":(-906, 255,  125), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_14",               "pos1":( -958,   0,   70), "pos2":(-994, 255,  102), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_15",               "pos1":( -920,   0,  -88), "pos2":(-952, 255,  -52), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_16",               "pos1":( -936,   0, -102), "pos2":(-900, 255, -134), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_17",               "pos1":( -955,   0, -106), "pos2":(-987, 255,  -70), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_18",               "pos1":( -954,   0, -120), "pos2":(-990, 255, -152), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_19",               "pos1":( -936,   0, -168), "pos2":(-900, 255, -136), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_20",               "pos1":( -751,   0, -230), "pos2":(-787, 255, -198), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_21",               "pos1":( -787,   0, -232), "pos2":(-751, 255, -264), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_22",               "pos1":( -600,   0, -191), "pos2":(-564, 255, -159), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_23",               "pos1":( -615,   0, -180), "pos2":(-651, 255, -212), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_24",               "pos1":( -564,   0, -192), "pos2":(-600, 255, -224), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_25",               "pos1":( -581,   0,  -64), "pos2":(-613, 255, -100), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_26",               "pos1":( -596,   0,  -46), "pos2":(-564, 255,  -10), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        {"name":"Guild_27",               "pos1":( -548,   0,  -64), "pos2":(-580, 255, -100), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
 
-        #("Apartments_buying_room", ( -809,  99,   47), ( -874,  96,    4), False, (  41, 0 ), "gold"),
-        #("Plot_Pressure_Plates",   ( -719, 106, -118), ( -665, 106,  -74), False, (  41, 0 ), "gold"),
-        #("Section_1",              (-1130,   0, -267), ( -897, 255,  318), True,  (  41, 0 ), "gold"),
-        #("Section_2",              ( -896,   0,  208), ( -512, 255,  318), True,  (  57, 0 ), "diamond"),
-        #("Section_3",              ( -896,   0,  207), ( -788, 255,  119), True,  (  42, 0 ), "iron"),
-        #("Section_4",              ( -896,   0, -267), ( -825, 255,  -28), True,  (  22, 0 ), "lapis"),
-        #("Section_5",              ( -512,   0,  207), ( -640, 255, -273), True,  (  24, 0 ), "sandstone"),
-        #("Section_6",              ( -824,   0, -169), ( -641, 255, -272), True,  ( 152, 0 ), "redstone"),
-        #("Section_7",              ( -641,   0, -168), ( -677, 255, -132), True,  ( 155, 0 ), "quartz"),
-        #("Section_8",              ( -774,   0, -168), ( -813, 255, -150), True,  (  17, 14), "birch wood"),
-        #("Section_9",              ( -641,   0,  -25), ( -655, 255,  -52), True,  (  17, 15), "jungle wood"),
-        #("Section_10",             ( -680,   0,  183), ( -641, 255,  207), True,  (  19, 0 ), "sponge"),
-        #("Section_11",             ( -668,   0,  -14), ( -641, 255,   25), True,  (   1, 1 ), "granite"),
+        # These are coordinates for the plots around the capital and are no longer needed, but kept just in case
+        #{"name":"Plot_Pressure_Plates",   "pos1":( -719, 106, -118), "pos2":(-665, 106,  -74), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        #{"name":"Section_1",              "pos1":(-1130,   0, -267), "pos2":(-897, 255,  318), "replace":True,  "material":( 41,  0), "materialName":"gold"),
+        #{"name":"Section_2",              "pos1":( -896,   0,  208), "pos2":(-512, 255,  318), "replace":True,  "material":( 57,  0), "materialName":"diamond"),
+        #{"name":"Section_3",              "pos1":( -896,   0,  207), "pos2":(-788, 255,  119), "replace":True,  "material":( 42,  0), "materialName":"iron"),
+        #{"name":"Section_4",              "pos1":( -896,   0, -267), "pos2":(-825, 255,  -28), "replace":True,  "material":( 22,  0), "materialName":"lapis"),
+        #{"name":"Section_5",              "pos1":( -512,   0,  207), "pos2":(-640, 255, -273), "replace":True,  "material":( 24,  0), "materialName":"sandstone"),
+        #{"name":"Section_6",              "pos1":( -824,   0, -169), "pos2":(-641, 255, -272), "replace":True,  "material":(152,  0), "materialName":"redstone"),
+        #{"name":"Section_7",              "pos1":( -641,   0, -168), "pos2":(-677, 255, -132), "replace":True,  "material":(155,  0), "materialName":"quartz"),
+        #{"name":"Section_8",              "pos1":( -774,   0, -168), "pos2":(-813, 255, -150), "replace":True,  "material":( 17, 14), "materialName":"birch wood"),
+        #{"name":"Section_9",              "pos1":( -641,   0,  -25), "pos2":(-655, 255,  -52), "replace":True,  "material":( 17, 15), "materialName":"jungle wood"),
+        #{"name":"Section_10",             "pos1":( -680,   0,  183), "pos2":(-641, 255,  207), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
+        #{"name":"Section_11",             "pos1":( -668,   0,  -14), "pos2":(-641, 255,   25), "replace":True,  "material":(  1,  1), "materialName":"granite"),
     ),
 
     # List of blocks to not copy over for the regions above
@@ -133,48 +138,74 @@ config = {
     )
 }
 
-################################################################################
-# Testing sandbox
-
-def fillRegions(config):
-    """ Fill all regions with specified blocks to demonstrate coordinates """
-
+def terrainReset(config):
+    localMainFolder = config["localMainFolder"]
     localBuildFolder = config["localBuildFolder"]
     localDstFolder = config["localDstFolder"]
     coordinatesToCopy = config["coordinatesToCopy"]
+    coordinatesToFill = config["coordinatesToFill"]
+    coordinatesDebug = config["coordinatesDebug"]
+    blockReplaceList = config["blockReplaceList"]
+    safetyTpLocation = config["safetyTpLocation"]
 
-    # Delete the dst world for a clean slate to start from
-    shutil.rmtree(localDstFolder,True)
+    # Fail if build or main folders don't exist
+    if not os.path.isdir(localMainFolder):
+        sys.exit("Main world folder does not exist.")
+    if not os.path.isdir(localBuildFolder):
+        sys.exit("Build world folder does not exist.")
 
-    # Copy the build world to the dst world
-    shutil.copytree(localBuildFolder,localDstFolder)
+    print "Copying build world as base..."
+    copyFolder(localBuildFolder, localDstFolder)
 
+    print "Compiling item replacement list..."
+    compiledItemReplacementList = item_replace_lib.allReplacements(item_replace_list.itemReplacements)
+
+    # Copy various bits of player data from the main world
+    print "Copying player data files from main world..."
+    copyFolders(localMainFolder, localDstFolder, ["advancements/", "playerdata/", "stats/",])
+    print "Copying player maps and scoreboard from main world..."
+    copyFolders(localMainFolder, localDstFolder, ["data/",])
+
+    # Note this part about advancements, functions, and loot tables is now done by gen_server_config (via symlinks)
+    #print "Copying updated advancements, functions, and loot tables from build world..."
+    #copyFolders(localBuildFolder, localDstFolder, ["data/advancements/", "data/functions/", "data/loot_tables/",])
+
+    print "Handling item replacements for players..."
+    item_replace_lib.replaceItemsOnPlayers(localDstFolder, compiledItemReplacementList)
+
+    print "Opening old play World..."
+    srcWorld = mclevel.loadWorld(localMainFolder)
+
+    print "Opening Destination World..."
     dstWorld = mclevel.loadWorld(localDstFolder)
 
-    # Fill the selected regions for debugging reasons
-    for fillRegion in coordinatesToCopy:
-        boxName = getBoxName(fillRegion)
-        boxMaterial = getBoxMaterial(fillRegion)
-        boxMaterialName = getBoxMaterialName(fillRegion)
-        print "Filling " + boxName + " with " + boxMaterialName + "..."
-        box = getBox(fillRegion)
-        block = dstWorld.materials[boxMaterial]
-        dstWorld.fillBlocks(box, block)
+    print "Filling selected regions with specified blocks..."
+    fillBoxes(dstWorld, coordinatesToFill)
+
+    if (coordinatesDebug == False):
+        print "Copying needed terrain from the main world..."
+        copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledItemReplacementList)
+    else:
+        print "DEBUG: Filling regions instead of copying them!"
+        fillBoxes(dstWorld, coordinatesToCopy)
+
+    print "Resetting difficulty..."
+    resetRegionalDifficulty(dstWorld)
 
     print "Saving...."
     dstWorld.generateLights()
     dstWorld.saveInPlace()
 
-# This shows where the selected regions are, as your old script does.
-#terrain_reset_lib.fillRegions(config)
+    print "Moving players..."
+    movePlayers(localDstFolder, safetyTpLocation)
+
+    shutil.rmtree(localDstFolder+"##MCEDIT.TEMP##", ignore_errors=True)
+    try:
+        os.remove(localDstFolder+"mcedit_waypoints.dat")
+    except Exception as e:
+        pass
+
+    print "Done!"
 
 ################################################################################
-# Main Code
-
-# This does the move itself - copy areas, entities, scoreboard, etc.
-terrain_reset_lib.terrainReset(config)
-
-# Remove the magic block when done
-
-
-
+terrainReset(config)

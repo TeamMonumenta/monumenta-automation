@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Required libraries have links where not part of a standard Python install.
 import os
 import sys
 import shutil
@@ -14,6 +13,8 @@ from pymclevel import materials
 from pymclevel.block_copy import copyBlocksFromIter
 from pymclevel.box import BoundingBox, Vector
 from pymclevel.mclevelbase import exhaust
+
+from monumenta_common import fillBoxes, copyFolder
 
 ################################################################################
 # Config section
@@ -106,52 +107,6 @@ config = {
     "numDungeons":50,
 }
 
-################################################################################
-# TODO: Dictionary functions to move to common
-
-def getBoxSize(pos1, pos2):
-    # Get the size of a box from
-    # an element of coordinatesToScan
-    sizeFix = Vector(*(1,1,1))
-    min_pos = Vector(*map(min, zip(pos1, pos2)))
-    max_pos = Vector(*map(max, zip(pos1, pos2)))
-    return max_pos - min_pos + sizeFix
-
-def getBoxMinPos(pos1, pos2):
-    # Get the origin of a box from
-    # an element of coordinatesToScan
-    return Vector(*map(min, zip(pos1, pos2)))
-
-def getBox(pos1, pos2):
-    # Returns a box around from
-    # an element of coordinatesToScan
-    origin = getBoxMinPos(pos1, pos2)
-    size   = getBoxSize(pos1, pos2)
-
-    return BoundingBox(origin, size)
-
-def fillBoxes(world, coordinatesToFill):
-    """ Fill all boxes with specified blocks """
-
-    # Fill the selected regions
-    for fillBox in coordinatesToFill:
-        shouldReplaceBlocks = fillBox["replace"]
-        if shouldReplaceBlocks:
-            boxName = fillBox["name"]
-            boxMaterial = fillBox["material"]
-            boxMaterialName = fillBox["materialName"]
-            print "    Filling " + boxName + " with " + boxMaterialName + "..."
-            box = getBox(fillBox["pos1"], fillBox["pos2"])
-            block = world.materials[boxMaterial]
-            world.fillBlocks(box, block)
-
-def copyFolder(old, new):
-    shutil.rmtree(new, ignore_errors=True)
-    shutil.copytree(old, new, symlinks=True)
-
-################################################################################
-# Function definitions
-
 def gen_dungeon_instances(config):
     dungeonFolder = config["dungeonFolder"]
     templateFolder = config["templateFolder"]
@@ -185,17 +140,6 @@ def gen_dungeon_instances(config):
         voidBox = BoundingBox(voidPos, voidSize)
 
         blocksToCopy = range(materials.id_limit)
-
-        #print dungeonName
-        #print dungeonRegion
-        #print dungeonSize
-        #print dungeonPos
-        #print dungeonBox
-        #print dstPos
-        #print dstStep
-        #print voidPos
-        #print voidSize
-        #print voidBox
 
         print "Starting work on dungeon: " + dungeonName
 
@@ -245,10 +189,8 @@ def gen_dungeon_instances(config):
         except Exception as e:
             continue
 
-    sys.exit(0)
-
     print "Done!"
 
-
+################################################################################
 gen_dungeon_instances(config)
 
