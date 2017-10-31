@@ -14,7 +14,8 @@ from pymclevel.block_copy import copyBlocksFromIter
 from pymclevel.box import BoundingBox, Vector
 from pymclevel.mclevelbase import exhaust
 
-from monumenta_common import fillBoxes, copyFolder
+from lib_monumenta_common import fillBoxes, copyFolder
+from lib_list_lootless_tile_entities import listLootlessTileEntities
 
 ################################################################################
 # Config section
@@ -43,7 +44,9 @@ config = {
                     "replace":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
                     "replace":True, "material":(35, 0), "materialName":"white wool"},
-            )
+            ),
+            "chestContentsLoreToIgnore":("Monument Block",),
+            "chestWhitelist":(),
         },{
             "name":"orange",
             "size":(320, 120, 352),
@@ -53,7 +56,9 @@ config = {
                     "replace":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
                     "replace":True, "material":(35, 1), "materialName":"orange wool"},
-            )
+            ),
+            "chestContentsLoreToIgnore":("Monument Block",),
+            "chestWhitelist":(),
         },{
             "name":"magenta",
             "size":(256, 256, 256),
@@ -63,7 +68,9 @@ config = {
                     "replace":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
                     "replace":True, "material":(35, 2), "materialName":"magenta wool"},
-            )
+            ),
+            "chestContentsLoreToIgnore":("Monument Block",),
+            "chestWhitelist":(),
         },{
             "name":"lightblue",
             "size":(288, 256, 272),
@@ -73,7 +80,9 @@ config = {
                     "replace":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
                     "replace":True, "material":(35, 3), "materialName":"light blue wool"},
-            )
+            ),
+            "chestContentsLoreToIgnore":("Monument Block", "D4Key"),
+            "chestWhitelist":(),
         },{
             "name":"yellow",
             "size":(256, 256, 256),
@@ -83,7 +92,9 @@ config = {
                     "replace":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
                     "replace":True, "material":(35, 4), "materialName":"yellow wool"},
-            )
+            ),
+            "chestContentsLoreToIgnore":("Monument Block", "D5Key"),
+            "chestWhitelist":(),
         },{
             "name":"r1bonus",
             "size":(288, 93, 368),
@@ -93,9 +104,16 @@ config = {
                     "replace":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
                     "replace":True, "material":(18, 4), "materialName":"oak leaves"},
-            )
+            ),
+            "chestContentsLoreToIgnore":(),
+            "chestWhitelist":(),
         },
     ),
+
+    # If using only one item, ALWAYS use a trailing comma.
+    # Possible values: "chest" (trapped chest shares ID), "dispenser", "dropper", "shulker_box", "hopper"
+    # These are actually namespaced; default is "minecraft:*" in this code.
+    "tileEntitiesToCheck":("chest",),
 
     # 16 chunks of void-biome padding on the -x and -z sides
     "voidPadding":16,
@@ -115,6 +133,7 @@ def gen_dungeon_instances(config):
     voidPadding = config["voidPadding"]
     targetRegion = config["targetRegion"]
     numDungeons = config["numDungeons"]
+    tileEntitiesToCheck = config["tileEntitiesToCheck"]
 
     # Fail if folders don't exist
     if not os.path.isdir(dungeonFolder):
@@ -131,6 +150,8 @@ def gen_dungeon_instances(config):
         dungeonSize = Vector(*dungeon["size"])
         dungeonPos = Vector(*(dungeonRegion["x"] * 32 * 16, 0, dungeonRegion["z"] * 32 * 16))
         dungeonBox = BoundingBox(dungeonPos, dungeonSize)
+        dungeonContentsLoreToIgnore = dungeon["chestContentsLoreToIgnore"]
+        dungeonChestWhitelist = dungeon["chestWhitelist"]
         dstFolder = outFolder + dungeonName + '/Project_Epic-' + dungeonName + '/'
 
         dstPos = Vector(*(targetRegion["x"] * 32 * 16, 0, targetRegion["z"] * 32 * 16))
@@ -148,6 +169,9 @@ def gen_dungeon_instances(config):
 
         print "  Opening dungeon world..."
         dstWorld = pymclevel.loadWorld(dstFolder)
+
+        print "  Scanning dungeon for chests without loot tables..."
+        listLootlessTileEntities(referenceWorld, dungeonBox, tileEntitiesToCheck, dungeonContentsLoreToIgnore, dungeonChestWhitelist)
 
         print "  Creating void chunks..."
         chunksCreated = dstWorld.createChunksInBox(voidBox)

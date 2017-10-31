@@ -20,7 +20,7 @@ import shutil
 import pymclevel
 from pymclevel.box import BoundingBox, Vector
 
-from monumenta_common import fillBoxes, copyBoxes, copyFolder, copyFolders
+from lib_monumenta_common import fillBoxes, copyBoxes, copyFolder, copyFolders
 
 import item_replace_lib
 import item_replace_list
