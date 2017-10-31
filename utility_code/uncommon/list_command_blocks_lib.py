@@ -32,7 +32,7 @@ from monumenta_common import getBoxMaterialName
 def fillRegions(worldFolder,coordinatesToScan):
     """ Fill all regions with specified blocks to demonstrate coordinates """
     world = mclevel.loadWorld(worldFolder)
-    
+
     # Fill the selected regions for debugging reasons
     for fillRegion in coordinatesToScan:
         boxName = getBoxName(fillRegion)
@@ -42,7 +42,7 @@ def fillRegions(worldFolder,coordinatesToScan):
         box = getBox(fillRegion)
         block = world.materials[boxMaterial]
         world.fillBlocks(box, block)
-    
+
     print "Saving...."
     world.generateLights()
     world.saveInPlace()
@@ -50,54 +50,54 @@ def fillRegions(worldFolder,coordinatesToScan):
 def run(worldFolder,coordinatesToScan,logFolder):
     print "Beginning scan..."
     world = mclevel.loadWorld(worldFolder)
-    
+
     # Create/empty the log folder, containing all command blocks
     shutil.rmtree(logFolder, True)
     os.makedirs(logFolder)
-    
+
     idCmdBlockImpulse = 137
     idCmdBlockRepeat = 210
     idCmdBlockChain = 211
-    
+
     commandBlocks = {
         "impulse":[],
         "repeat":[],
         "chain":[],
         "other":[],
     }
-    
+
     scanNum = 1
     scanMax = len(coordinatesToScan)
-    
+
     allChunks = set(world.allChunks)
     for aScanBox in coordinatesToScan:
         boxName = getBoxName(aScanBox)
         print "[{0}/{1}] Scaning {2}...".format(scanNum,scanMax,boxName)
-        
+
         # Make appropriate folder
         subFolder = logFolder+"/"+boxName
         os.makedirs(subFolder)
-        
+
         scanBox = getBox(aScanBox)
-        
+
         for cmdBlockType in ["impulse","repeat","chain","other"]:
             strBuffer = ""
-            
+
             if cmdBlockType == "other":
                 strBuffer += "These command block tile entities do not appear to be in the same block as a command block - might be a bug?\n\n"
-            
+
             strBuffer += "x, y, z, command\n\n"
-            
+
             f = open(subFolder+"/"+cmdBlockType+".txt","w")
             f.write(strBuffer)
             f.close()
-    
+
         # The function world.getTileEntitiesInBox() does not work.
         # Working around it, since it works for chunks but not worlds.
         selectedChunks = set(scanBox.chunkPositions)
         chunksToScan = list(selectedChunks.intersection(allChunks))
         for cx,cz in chunksToScan:
-            
+
             # Get and loop through entities within chunk and box
             aChunk = world.getChunk(cx,cz)
             newTileEntities = aChunk.getTileEntitiesInBox(scanBox)
@@ -107,10 +107,10 @@ def run(worldFolder,coordinatesToScan,logFolder):
                     x = aTileEntity["x"].value
                     y = aTileEntity["y"].value
                     z = aTileEntity["z"].value
-                    
+
                     block = world.blockAt(x,y,z)
                     command = aTileEntity["Command"].value.decode("unicode-escape")
-                    
+
                     if block == idCmdBlockImpulse:
                         commandBlocks["impulse"].append((x,y,z,command))
                     elif block == idCmdBlockRepeat:
@@ -120,24 +120,24 @@ def run(worldFolder,coordinatesToScan,logFolder):
                     else:
                         # Unknown command block tile entity - bug?
                         commandBlocks["other"].append((x,y,z,command))
-            
+
             for cmdBlockType in ["impulse","repeat","chain","other"]:
                 if len(commandBlocks[cmdBlockType]):
                     strBuffer = ""
-                    
+
                     while len(commandBlocks[cmdBlockType]):
                         aCmdBlock = commandBlocks[cmdBlockType].pop()
-                        
+
                         x = aCmdBlock[0]
                         y = aCmdBlock[1]
                         z = aCmdBlock[2]
                         cmd = str(aCmdBlock[3])
-                        
+
                         strBuffer += "{0}, {1}, {2}, {3}\n".format(x,y,z,cmd)
-                    
+
                     f = open(subFolder+"/"+cmdBlockType+".txt","a")
                     f.write(strBuffer)
                     f.close()
-        
+
     print "Done."
 

@@ -15,7 +15,7 @@ def listUniqueTags(worldDir):
     nor the number of occurances of each tag
     """
     tags = set()
-    
+
     for playerFile in os.listdir(worldDir+"playerdata"):
         playerFile = worldDir + "playerdata/" + playerFile
         try:
@@ -26,7 +26,7 @@ def listUniqueTags(worldDir):
         if "Tags" not in player:
             continue
         tags.update([tag.value for tag in player["Tags"]])
-    
+
     print sorted(tags)
     #for tag in sorted(tags):
     #    print tag
@@ -39,7 +39,7 @@ def deleteTheseTags(worldDir,tagsToDelete):
     playerPaths = os.listdir(worldDir+"playerdata")
     playerCount = len(playerPaths)
     playerNumber = 0
-    
+
     for playerFile in playerPaths:
         playerNumber += 1
         #print "[{}/{}] {}".format(playerNumber,playerCount,playerFile)
@@ -65,7 +65,7 @@ def deleteOtherTags(worldDir,tagsToKeep):
     playerPaths = os.listdir(worldDir+"playerdata")
     playerCount = len(playerPaths)
     playerNumber = 0
-    
+
     for playerFile in playerPaths:
         playerNumber += 1
         #print "[{}/{}] {}".format(playerNumber,playerCount,playerFile)
