@@ -4,6 +4,8 @@ import shutil
 
 from pymclevel.box import BoundingBox, Vector
 
+import lib_item_replace
+
 ################################################################################
 # Functions that do not require dictionaries as arguments
 
@@ -212,7 +214,7 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledI
             print "[{0}/{1}]   Replacing forbidden blocks in {2}...".format(copyNum,copyMax,boxName)
             replaceGlobally(tempSchematic, blockReplaceList)
             print "[{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
-            item_replace_lib.replaceItemsInSchematic(tempSchematic, compiledItemReplacementList)
+            lib_item_replace.replaceItemsInSchematic(tempSchematic, compiledItemReplacementList)
 
         # Remove entities in destination
         dstWorld.removeEntitiesInBox(box)

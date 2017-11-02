@@ -9,7 +9,7 @@ import os
 import warnings
 import shutil
 
-import item_replace_lib
+import lib_item_replace
 import item_replace_list
 
 from terrain_reset_lib import movePlayers
@@ -30,13 +30,13 @@ folders = (
 safetyTpLocation = (-1450, 241, -1498, 270.0, 0.0)
 
 print "Compiling item replacement list..."
-compiledItemReplacementList = item_replace_lib.allReplacements(item_replace_list.itemReplacements)
+compiledItemReplacementList = lib_item_replace.allReplacements(item_replace_list.itemReplacements)
 
 for folder in folders:
     print "Starting work on folder '" + folder + "'"
 
     print "  Handling item replacements for players..."
-    item_replace_lib.replaceItemsOnPlayers(folder, compiledItemReplacementList)
+    lib_item_replace.replaceItemsOnPlayers(folder, compiledItemReplacementList)
 
     print "  Moving players..."
     movePlayers(folder, safetyTpLocation)

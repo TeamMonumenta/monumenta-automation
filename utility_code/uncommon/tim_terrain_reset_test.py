@@ -13,7 +13,7 @@ Just fix what broke, and run again.
 """
 import mclevel
 import terrain_reset_lib
-import item_replace_lib
+import lib_item_replace
 # import item_replace_list # This is where the item replacements are kept
 
 from monumenta_common import getBoxName

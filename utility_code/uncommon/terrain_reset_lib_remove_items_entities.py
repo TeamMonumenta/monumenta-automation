@@ -55,7 +55,7 @@ from mclevel import materials
 from mclevel import nbt
 from mclevel.box import BoundingBox, Vector
 
-import item_replace_lib
+import lib_item_replace
 import item_replace_list_remove_all
 
 from monumenta_common import getBoxName
@@ -194,7 +194,7 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledI
             replaceGlobally(tempSchematic, blockReplaceList)
 
         print "[{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
-        item_replace_lib.replaceItemsInSchematic(tempSchematic, compiledItemReplacementList)
+        lib_item_replace.replaceItemsInSchematic(tempSchematic, compiledItemReplacementList)
 
         # Remove entities in destination
         dstWorld.removeEntitiesInBox(box)
@@ -223,7 +223,7 @@ def terrainReset(config):
     copyFolder(localBuildFolder, localDstFolder)
 
     print "Compiling item replacement list..."
-    compiledItemReplacementList = item_replace_lib.allReplacements(item_replace_list_remove_all.itemReplacements)
+    compiledItemReplacementList = lib_item_replace.allReplacements(item_replace_list_remove_all.itemReplacements)
 
     print "Opening old play World..."
     srcWorld = mclevel.loadWorld(localMainFolder)

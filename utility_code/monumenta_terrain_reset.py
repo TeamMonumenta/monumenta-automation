@@ -22,7 +22,7 @@ from pymclevel.box import BoundingBox, Vector
 
 from lib_monumenta_common import fillBoxes, copyBoxes, copyFolder, copyFolders
 
-import item_replace_lib
+import lib_item_replace
 import item_replace_list
 
 ################################################################################
@@ -158,7 +158,7 @@ def terrainReset(config):
     copyFolder(localBuildFolder, localDstFolder)
 
     print "Compiling item replacement list..."
-    compiledItemReplacementList = item_replace_lib.allReplacements(item_replace_list.itemReplacements)
+    compiledItemReplacementList = lib_item_replace.allReplacements(item_replace_list.itemReplacements)
 
     # Copy various bits of player data from the main world
     print "Copying player data files from main world..."
@@ -171,7 +171,7 @@ def terrainReset(config):
     #copyFolders(localBuildFolder, localDstFolder, ["data/advancements/", "data/functions/", "data/loot_tables/",])
 
     print "Handling item replacements for players..."
-    item_replace_lib.replaceItemsOnPlayers(localDstFolder, compiledItemReplacementList)
+    lib_item_replace.replaceItemsOnPlayers(localDstFolder, compiledItemReplacementList)
 
     print "Opening old play World..."
     srcWorld = mclevel.loadWorld(localMainFolder)
