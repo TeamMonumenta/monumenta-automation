@@ -59,7 +59,7 @@ config = {
         {"name":"Apartments_500",         "pos1":( -864,  99,   23), "pos2":(-813,  96,   23), "replace":False, "material":( 41,  0), "materialName":"gold"),
         {"name":"Apartments_600",         "pos1":( -864,  99,   23), "pos2":(-813,  96,   23), "replace":False, "material":( 41,  0), "materialName":"gold"),
         {"name":"Apartments_700_800",     "pos1":( -874,  99,   18), "pos2":(-809,  96,   18), "replace":False, "material":( 41,  0), "materialName":"gold"),
-        {"name":"Apartments_units",       "pos1":( -817, 113,   87), "pos2":(-859, 164,   16), "replace":False, "material":( 41,  0), "materialName":"gold"),
+        {"name":"Apartments_units",       "pos1":( -817, 109,   87), "pos2":(-859, 164,   16), "replace":False, "material":( 41,  0), "materialName":"gold"),
         {"name":"Guild_Room",             "pos1":( -800, 109,  -75), "pos2":(-758, 104, -102), "replace":False, "material":( 41,  0), "materialName":"gold"),
         {"name":"Guild_1",                "pos1":( -586,   0,  137), "pos2":(-622, 255,  105), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
         {"name":"Guild_2",                "pos1":( -570,   0,  112), "pos2":(-534, 255,  154), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
