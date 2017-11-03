@@ -495,6 +495,12 @@ itemReplacements = [
         ]
     ],
     [
+        {"id":"minecraft:hopper"},
+        [
+            "remove"
+        ]
+    ],
+    [
         {"id":"minecraft:beacon"},
         [
             "remove"

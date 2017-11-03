@@ -108,6 +108,7 @@ config = {
     "blockReplaceList":(
         ("minecraft:iron_block", "air"),
         ("minecraft:iron_ore", "air"),
+        ("minecraft:hopper", "air"),
         #("minecraft:gold_block", "air"), # probably fine
         #("minecraft:gold_ore", "air"),
         ("minecraft:diamond_block", "air"),
