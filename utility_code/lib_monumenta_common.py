@@ -184,17 +184,17 @@ def fillBoxes(world, coordinatesToFill):
             print "    [{0}/{1}] Filling {2} with {3}".format(copyNum, copyMax, boxName, boxMaterialName)
             world.fillBlocks(box, block)
 
-"""
-Copies a box from srcWorld to dstWorld at the same location, preserving entities
-coordinatesToCopy should be an iterable tuple or list of dictionaries, like this:
-(
-    {"name":"Section_1", "pos1":(-1130, 0, -267), "pos2":(-897, 255,  318), "replace":True, "material":( 41, 0), "materialName":"gold"),
-    {"name":"Section_2", "pos1":( -896, 0,  208), "pos2":(-512, 255,  318), "replace":True, "material":( 57, 0), "materialName":"diamond"),
-)
-If "replace" == True, then item and block replacements will be done according
-    to blockReplaceList and compiledItemReplacementList
-"""
 def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledItemReplacementList):
+    """
+    Copies a box from srcWorld to dstWorld at the same location, preserving entities
+    coordinatesToCopy should be an iterable tuple or list of dictionaries, like this:
+    (
+        {"name":"Section_1", "pos1":(-1130, 0, -267), "pos2":(-897, 255,  318), "replace":True, "material":( 41, 0), "materialName":"gold"),
+        {"name":"Section_2", "pos1":( -896, 0,  208), "pos2":(-512, 255,  318), "replace":True, "material":( 57, 0), "materialName":"diamond"),
+    )
+    If "replace" == True, then item and block replacements will be done according
+        to blockReplaceList and compiledItemReplacementList
+    """
     copyNum = 1
     copyMax = len(coordinatesToCopy)
     blocksToCopy = range(materials.id_limit)
@@ -204,8 +204,6 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledI
 
     for copyBox in coordinatesToCopy:
         boxName = copyBox["name"]
-        boxMaterial = copyBox["material"]
-        boxMaterialName = copyBox["materialName"]
         pos = getBoxMinPos(copyBox["pos1"], copyBox["pos2"])
         box = getBox(copyBox["pos1"], copyBox["pos2"])
         shouldReplace = fillBox["replace"]
@@ -216,7 +214,7 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledI
 
         # Replace blocks if needed
         if shouldReplace:
-            print "[{0}/{1}]   Replacing forbidden blocks in {2}...".format(copyNum,copyMax,boxName)
+            print "[{0}/{1}]   Replacing specified blocks in {2}...".format(copyNum,copyMax,boxName)
             replaceGlobally(tempSchematic, blockReplaceList)
             print "[{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
             lib_item_replace.replaceItemsInSchematic(tempSchematic, compiledItemReplacementList)
@@ -228,3 +226,4 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledI
         dstWorld.copyBlocksFrom(tempSchematic, tempSchematic.bounds, pos, blocksToCopy, entities=True)
 
         copyNum+=1
+

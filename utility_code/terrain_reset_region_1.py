@@ -3,30 +3,9 @@
 """
 This takes a build world (terrain), a main world (play area), and
 merges them into a new world, dstWorld (destination).
-
-This does so as directly as possible while providing many features.
-
-Fair warning, some of the optimization is done by removing error handling.
-Python will tell you if/when the script crashes.
-If it's going to crash, it won't damage the original worlds.
-Just fix what broke, and run again.
 """
 
-import os
-import sys
-import shutil
-
-##### MAYBE NEW
-import pymclevel
-from pymclevel.box import BoundingBox, Vector
-
-from lib_monumenta_common import fillBoxes, copyBoxes, copyFolder, copyFolders
-
-import lib_item_replace
-import item_replace_list
-
-################################################################################
-# Config section
+from lib_terrain_reset import terrainReset
 
 config = {
     # Dst is the destination world, which gets overwritten by the build world.
@@ -43,7 +22,7 @@ config = {
     "coordinatesToFill":(
         {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
             "replace":True, "material":(0, 0), "materialName":"air"},
-    )
+    ),
 
     # If this is set to True, instead of copying the coordinates from the Main server
     # it treats them as additional coordinatesToFill instead, filling those regions
@@ -103,110 +82,7 @@ config = {
         #{"name":"Section_10",             "pos1":( -680,   0,  183), "pos2":(-641, 255,  207), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
         #{"name":"Section_11",             "pos1":( -668,   0,  -14), "pos2":(-641, 255,   25), "replace":True,  "material":(  1,  1), "materialName":"granite"),
     ),
-
-    # List of blocks to not copy over for the regions above
-    "blockReplaceList":(
-        ("minecraft:iron_block", "air"),
-        ("minecraft:iron_ore", "air"),
-        ("minecraft:hopper", "air"),
-        #("minecraft:gold_block", "air"), # probably fine
-        #("minecraft:gold_ore", "air"),
-        ("minecraft:diamond_block", "air"),
-        ("minecraft:diamond_ore", "air"),
-        #("minecraft:emerald_block", "air"), # probably fine
-        #("minecraft:emerald_ore", "air"),
-
-        ("minecraft:beacon", "air"),
-
-        # Not sure about this section
-        #("enchanting_Table", "air"),
-        #("quartz_ore", "air"),
-        #("hopper", "air"),
-
-        # anvils
-        ((145,0), "air"),
-        ((145,1), "air"),
-        ((145,2), "air"),
-        ((145,3), "air"),
-        ((145,4), "air"),
-        ((145,5), "air"),
-        ((145,6), "air"),
-        ((145,7), "air"),
-        ((145,8), "air"),
-        ((145,9), "air"),
-        ((145,10), "air"),
-        ((145,11), "air"),
-    )
 }
 
-def terrainReset(config):
-    localMainFolder = config["localMainFolder"]
-    localBuildFolder = config["localBuildFolder"]
-    localDstFolder = config["localDstFolder"]
-    coordinatesToCopy = config["coordinatesToCopy"]
-    coordinatesToFill = config["coordinatesToFill"]
-    coordinatesDebug = config["coordinatesDebug"]
-    blockReplaceList = config["blockReplaceList"]
-    safetyTpLocation = config["safetyTpLocation"]
-
-    # Fail if build or main folders don't exist
-    if not os.path.isdir(localMainFolder):
-        sys.exit("Main world folder does not exist.")
-    if not os.path.isdir(localBuildFolder):
-        sys.exit("Build world folder does not exist.")
-
-    print "Copying build world as base..."
-    copyFolder(localBuildFolder, localDstFolder)
-
-    print "Compiling item replacement list..."
-    compiledItemReplacementList = lib_item_replace.allReplacements(item_replace_list.itemReplacements)
-
-    # Copy various bits of player data from the main world
-    print "Copying player data files from main world..."
-    copyFolders(localMainFolder, localDstFolder, ["advancements/", "playerdata/", "stats/",])
-    print "Copying player maps and scoreboard from main world..."
-    copyFolders(localMainFolder, localDstFolder, ["data/",])
-
-    # Note this part about advancements, functions, and loot tables is now done by gen_server_config (via symlinks)
-    #print "Copying updated advancements, functions, and loot tables from build world..."
-    #copyFolders(localBuildFolder, localDstFolder, ["data/advancements/", "data/functions/", "data/loot_tables/",])
-
-    print "Handling item replacements for players..."
-    lib_item_replace.replaceItemsOnPlayers(localDstFolder, compiledItemReplacementList)
-
-    print "Opening old play World..."
-    srcWorld = mclevel.loadWorld(localMainFolder)
-
-    print "Opening Destination World..."
-    dstWorld = mclevel.loadWorld(localDstFolder)
-
-    print "Filling selected regions with specified blocks..."
-    fillBoxes(dstWorld, coordinatesToFill)
-
-    if (coordinatesDebug == False):
-        print "Copying needed terrain from the main world..."
-        copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledItemReplacementList)
-    else:
-        print "DEBUG: Filling regions instead of copying them!"
-        fillBoxes(dstWorld, coordinatesToCopy)
-
-    print "Resetting difficulty..."
-    resetRegionalDifficulty(dstWorld)
-
-    print "Saving...."
-    dstWorld.generateLights()
-    dstWorld.saveInPlace()
-
-    print "Moving players..."
-    movePlayers(localDstFolder, safetyTpLocation)
-
-    shutil.rmtree(localDstFolder+"##MCEDIT.TEMP##", ignore_errors=True)
-    try:
-        os.remove(localDstFolder+"mcedit_waypoints.dat")
-    except Exception as e:
-        pass
-
-    print "Done!"
-
-################################################################################
 terrainReset(config)
+

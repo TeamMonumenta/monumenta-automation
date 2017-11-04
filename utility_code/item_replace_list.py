@@ -8,6 +8,39 @@
 #   better notation
 #   whatever else
 
+blockReplacements = (
+    ("minecraft:iron_block", "air"),
+    ("minecraft:iron_ore", "air"),
+    ("minecraft:hopper", "air"),
+    #("minecraft:gold_block", "air"), # probably fine
+    #("minecraft:gold_ore", "air"),
+    ("minecraft:diamond_block", "air"),
+    ("minecraft:diamond_ore", "air"),
+    #("minecraft:emerald_block", "air"), # probably fine
+    #("minecraft:emerald_ore", "air"),
+
+    ("minecraft:beacon", "air"),
+
+    # Not sure about this section
+    #("enchanting_Table", "air"),
+    #("quartz_ore", "air"),
+    #("hopper", "air"),
+
+    # anvils
+    ((145,0), "air"),
+    ((145,1), "air"),
+    ((145,2), "air"),
+    ((145,3), "air"),
+    ((145,4), "air"),
+    ((145,5), "air"),
+    ((145,6), "air"),
+    ((145,7), "air"),
+    ((145,8), "air"),
+    ((145,9), "air"),
+    ((145,10), "air"),
+    ((145,11), "air"),
+)
+
 """
 Item replacement list - this MUST be mutable!
 
