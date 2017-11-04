@@ -1,7 +1,7 @@
-From db8f099c89c7494de3f15b85f737012170bc2485 Mon Sep 17 00:00:00 2001
+From 9385229a0343e835562cb3e29a7a58cb7a3879fc Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Wed, 27 Sep 2017 18:46:14 -0700
-Subject: [PATCH 3/5] Disable potion has no item logspam
+Subject: [PATCH 3/8] Disable potion has no item logspam
 
 ---
  src/main/java/net/minecraft/server/EntityPotion.java | 4 ----

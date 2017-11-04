@@ -1,0 +1,26 @@
+From e7100f81be7861829abc5f273114ad4908bbf089 Mon Sep 17 00:00:00 2001
+From: Byron Marohn <combustible@live.com>
+Date: Tue, 31 Oct 2017 17:44:53 -0700
+Subject: [PATCH 6/8] Charged creepers no longer cause mob head drops
+
+Signed-off-by: Byron Marohn <combustible@live.com>
+---
+ src/main/java/net/minecraft/server/EntityCreeper.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
+index 01e9ddc..84f89f1 100644
+--- a/src/main/java/net/minecraft/server/EntityCreeper.java
++++ b/src/main/java/net/minecraft/server/EntityCreeper.java
+@@ -253,7 +253,7 @@ public class EntityCreeper extends EntityMonster {
+     }
+ 
+     public boolean canCauseHeadDrop() {
+-        return this.bB < 1 && this.world.getGameRules().getBoolean("doMobLoot");
++		return false;
+     }
+ 
+     public void setCausedHeadDrop() {
+-- 
+2.7.4
+

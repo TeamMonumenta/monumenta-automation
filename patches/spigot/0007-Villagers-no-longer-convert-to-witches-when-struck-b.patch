@@ -1,0 +1,40 @@
+From 4849fea27f84765a7149dc282de50d1b6ebacc4b Mon Sep 17 00:00:00 2001
+From: Byron Marohn <combustible@live.com>
+Date: Tue, 31 Oct 2017 17:46:54 -0700
+Subject: [PATCH 7/8] Villagers no longer convert to witches when struck by
+ lightning
+
+Signed-off-by: Byron Marohn <combustible@live.com>
+---
+ src/main/java/net/minecraft/server/EntityVillager.java | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/EntityVillager.java b/src/main/java/net/minecraft/server/EntityVillager.java
+index 70b12c5..0730c61 100644
+--- a/src/main/java/net/minecraft/server/EntityVillager.java
++++ b/src/main/java/net/minecraft/server/EntityVillager.java
+@@ -619,20 +619,7 @@ public class EntityVillager extends EntityAgeable implements NPC, IMerchant {
+     }
+ 
+     public void onLightningStrike(EntityLightning entitylightning) {
+-        if (!this.world.isClientSide && !this.dead) {
+-            EntityWitch entitywitch = new EntityWitch(this.world);
+-
+-            entitywitch.setPositionRotation(this.locX, this.locY, this.locZ, this.yaw, this.pitch);
+-            entitywitch.prepare(this.world.D(new BlockPosition(entitywitch)), (GroupDataEntity) null);
+-            entitywitch.setNoAI(this.isNoAI());
+-            if (this.hasCustomName()) {
+-                entitywitch.setCustomName(this.getCustomName());
+-                entitywitch.setCustomNameVisible(this.getCustomNameVisible());
+-            }
+-
+-            this.world.addEntity(entitywitch);
+-            this.die();
+-        }
++        return;
+     }
+ 
+     public InventorySubcontainer dq() {
+-- 
+2.7.4
+

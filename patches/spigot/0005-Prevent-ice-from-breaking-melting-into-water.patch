@@ -1,26 +1,60 @@
-From 2aa1926d332eaa2705f6b1ec2e6cfc2c777cfd60 Mon Sep 17 00:00:00 2001
+From c3b1162df85b3af469d0f09693d1ee11e1f21681 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Thu, 26 Oct 2017 22:09:28 -0700
-Subject: [PATCH 5/5] Prevent ice from breaking/melting into water
+Subject: [PATCH 5/8] Prevent ice from breaking/melting into water
 
 Signed-off-by: Byron Marohn <combustible@live.com>
 ---
- src/main/java/net/minecraft/server/BlockIce.java | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ src/main/java/net/minecraft/server/BlockIce.java | 28 ++----------------------
+ 1 file changed, 2 insertions(+), 26 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/BlockIce.java b/src/main/java/net/minecraft/server/BlockIce.java
-index 7bb4443..d608003 100644
+index 7bb4443..90e1f3b 100644
 --- a/src/main/java/net/minecraft/server/BlockIce.java
 +++ b/src/main/java/net/minecraft/server/BlockIce.java
-@@ -52,7 +52,7 @@ public class BlockIce extends BlockHalfTransparent {
-             return;
-         }
-         // CraftBukkit end
--        if (world.worldProvider.l()) {
-+        if (true) {
-             world.setAir(blockposition);
+@@ -18,21 +18,8 @@ public class BlockIce extends BlockHalfTransparent {
+         if (this.n() && EnchantmentManager.getEnchantmentLevel(Enchantments.SILK_TOUCH, itemstack) > 0) {
+             a(world, blockposition, this.u(iblockdata));
          } else {
-             this.b(world, blockposition, world.getType(blockposition), 0);
+-            if (world.worldProvider.l()) {
+-                world.setAir(blockposition);
+-                return;
+-            }
+-
+-            int i = EnchantmentManager.getEnchantmentLevel(Enchantments.LOOT_BONUS_BLOCKS, itemstack);
+-
+-            this.b(world, blockposition, iblockdata, i);
+-            Material material = world.getType(blockposition.down()).getMaterial();
+-
+-            if (material.isSolid() || material.isLiquid()) {
+-                world.setTypeUpdate(blockposition, Blocks.FLOWING_WATER.getBlockData());
+-            }
++            world.setAir(blockposition);
+         }
+-
+     }
+ 
+     public int a(Random random) {
+@@ -47,18 +34,7 @@ public class BlockIce extends BlockHalfTransparent {
+     }
+ 
+     protected void b(World world, BlockPosition blockposition) {
+-        // CraftBukkit start
+-        if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockFadeEvent(world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()), world.worldProvider.l() ? Blocks.AIR : Blocks.WATER).isCancelled()) {
+-            return;
+-        }
+-        // CraftBukkit end
+-        if (world.worldProvider.l()) {
+-            world.setAir(blockposition);
+-        } else {
+-            this.b(world, blockposition, world.getType(blockposition), 0);
+-            world.setTypeUpdate(blockposition, Blocks.WATER.getBlockData());
+-            world.a(blockposition, (Block) Blocks.WATER, blockposition);
+-        }
++        world.setAir(blockposition);
+     }
+ 
+     public EnumPistonReaction h(IBlockData iblockdata) {
 -- 
 2.7.4
 
