@@ -16,12 +16,13 @@ import os
 import sys
 import shutil
 
-##### MAYBE NEW
+# The effective working directory for this script must always be the MCEdit-Unified directory
+os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
+
 import pymclevel
-from pymclevel.box import BoundingBox, Vector
 
 from lib_monumenta_common import fillBoxes, copyBoxes, copyFolder, copyFolders
-
+from lib_monumenta_common import resetRegionalDifficulty, movePlayers, replaceGlobally
 import lib_item_replace
 import item_replace_list
 
@@ -52,6 +53,12 @@ def terrainReset(configlist):
             print "  Copying build world as base..."
             copyFolder(config["localBuildFolder"], localDstFolder)
 
+        # Copy the main world if the destination world doesn't exist
+        # TODO: This path is a little weird, because it copies the base then copies the playerdata again
+        if ("localBuildFolder" not in config) and (not os.path.isdir(config["localDstFolder"])):
+            print "  Copying main world as base..."
+            copyFolder(config["localMainFolder"], localDstFolder)
+
         # If item replacements were specified, compile the list
         if "itemReplacements" in config:
             print "  Compiling item replacement list..."
@@ -79,14 +86,14 @@ def terrainReset(configlist):
         # Only load the world and manipulate it if we need to
         # TODO - This is a little weird, since we skip doing item replacements worldwide if we don't also do something else involving the world
         #        This is desired behavior, but it's unintuitive
-        if ("coordinatesToFill" in config) or ("coordinatesToCopy" in config) or (blockReplacements is not None) or
-            (("resetRegionalDifficulty" in config) and (config["resetRegionalDifficulty"] == True)):
+        if (("coordinatesToFill" in config) or ("coordinatesToCopy" in config) or (blockReplacements is not None) or
+            (("resetRegionalDifficulty" in config) and (config["resetRegionalDifficulty"] == True))):
 
             print "  Opening old play World..."
-            srcWorld = mclevel.loadWorld(localMainFolder)
+            srcWorld = pymclevel.loadWorld(localMainFolder)
 
             print "  Opening Destination World..."
-            dstWorld = mclevel.loadWorld(localDstFolder)
+            dstWorld = pymclevel.loadWorld(localDstFolder)
 
             if "coordinatesToFill" in config:
                 print "  Filling selected regions with specified blocks..."
@@ -98,7 +105,7 @@ def terrainReset(configlist):
                     fillBoxes(dstWorld, config["coordinatesToCopy"])
                 else:
                     print "  Copying needed terrain from the main world..."
-                    copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"], blockReplacements, compiledItemReplacementList)
+                    copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"], blockReplacements, compiledItemReplacements)
             else:
                 # No coordinates to copy, but still want to replace blocks - do the block replacement worldwide
                 if blockReplacements is not None:
@@ -120,7 +127,7 @@ def terrainReset(configlist):
 
         if "safetyTpLocation" in config:
             print "  Moving players..."
-            movePlayers(localDstFolder, safetyTpLocation)
+            movePlayers(localDstFolder, config["safetyTpLocation"])
 
         try:
             shutil.rmtree(localDstFolder+"##MCEDIT.TEMP##", ignore_errors=True)

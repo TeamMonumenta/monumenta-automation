@@ -1,8 +1,11 @@
 import os
 import warnings
 import shutil
+import numpy
 
+from pymclevel import materials
 from pymclevel.box import BoundingBox, Vector
+from pymclevel import nbt
 
 import lib_item_replace
 
@@ -206,7 +209,7 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, compiled
         boxName = copyBox["name"]
         pos = getBoxMinPos(copyBox["pos1"], copyBox["pos2"])
         box = getBox(copyBox["pos1"], copyBox["pos2"])
-        shouldReplace = fillBox["replace"]
+        shouldReplace = copyBox["replace"]
 
         print "    [{0}/{1}] Copying {2}...".format(copyNum, copyMax, boxName)
 
