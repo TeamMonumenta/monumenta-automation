@@ -6,8 +6,11 @@ merges them into a new world, dstWorld (destination).
 """
 
 from lib_terrain_reset import terrainReset
+import item_replace_list
 
-config = {
+configlist = [{
+    "server":"region_1",
+
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
@@ -15,7 +18,6 @@ config = {
     "localBuildFolder":"/home/rock/project_epic/region_1/Project_Epic-region_1/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/region_1/Project_Epic-region_1/",
 
-    # No 0.5 offset here, add it yourself if you like.
     # (x,y,z,ry,rx)
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
 
@@ -24,10 +26,12 @@ config = {
             "replace":True, "material":(0, 0), "materialName":"air"},
     ),
 
+    "resetRegionalDifficulty":True,
+
     # If this is set to True, instead of copying the coordinates from the Main server
     # it treats them as additional coordinatesToFill instead, filling those regions
     # so that their positions can be easily checked in-game
-    "coordinatesDebug":False,
+    #"coordinatesDebug":True,
 
     "coordinatesToCopy":(
         # ("a unique name",        (lowerCoordinate),  (upperCoordinate), replaceBlocks, ( id, dmg), "block name (comment)"),
@@ -82,7 +86,60 @@ config = {
         #{"name":"Section_10",             "pos1":( -680,   0,  183), "pos2":(-641, 255,  207), "replace":True,  "material":( 19,  0), "materialName":"sponge"),
         #{"name":"Section_11",             "pos1":( -668,   0,  -14), "pos2":(-641, 255,   25), "replace":True,  "material":(  1,  1), "materialName":"granite"),
     ),
-}
+}, {
+    "server":"betaplots",
 
-terrainReset(config)
+    "localMainFolder":"/home/rock/tmp/PRE_RESET/betaplots/Project_Epic-betaplots/",
+    "localDstFolder":"/home/rock/tmp/POST_RESET/betaplots/Project_Epic-betaplots/",
+
+    "blockReplacements":item_replace_list.blockReplacements,
+    "itemReplacements":item_replace_list.itemReplacements,
+}, {
+    "server":"r1plots",
+
+    "localMainFolder":"/home/rock/tmp/PRE_RESET/r1plots/Project_Epic-r1plots/",
+    "localDstFolder":"/home/rock/tmp/POST_RESET/r1plots/Project_Epic-r1plots/",
+
+    "blockReplacements":item_replace_list.blockReplacements,
+    "itemReplacements":item_replace_list.itemReplacements,
+}, {
+    "server":"white",
+    "localMainFolder":"/home/rock/tmp/PRE_RESET/white/Project_Epic-white/",
+    "localDstFolder":"/home/rock/tmp/POST_RESET/white/Project_Epic-white/",
+    "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
+    "itemReplacements":item_replace_list.itemReplacements,
+}, {
+    "server":"orange",
+    "localMainFolder":"/home/rock/tmp/PRE_RESET/orange/Project_Epic-orange/",
+    "localDstFolder":"/home/rock/tmp/POST_RESET/orange/Project_Epic-orange/",
+    "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
+    "itemReplacements":item_replace_list.itemReplacements,
+}, {
+    "server":"magenta",
+    "localMainFolder":"/home/rock/tmp/PRE_RESET/magenta/Project_Epic-magenta/",
+    "localDstFolder":"/home/rock/tmp/POST_RESET/magenta/Project_Epic-magenta/",
+    "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
+    "itemReplacements":item_replace_list.itemReplacements,
+}, {
+    "server":"lightblue",
+    "localMainFolder":"/home/rock/tmp/PRE_RESET/lightblue/Project_Epic-lightblue/",
+    "localDstFolder":"/home/rock/tmp/POST_RESET/lightblue/Project_Epic-lightblue/",
+    "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
+    "itemReplacements":item_replace_list.itemReplacements,
+}, {
+    "server":"yellow",
+    "localMainFolder":"/home/rock/tmp/PRE_RESET/yellow/Project_Epic-yellow/",
+    "localDstFolder":"/home/rock/tmp/POST_RESET/yellow/Project_Epic-yellow/",
+    "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
+    "itemReplacements":item_replace_list.itemReplacements,
+}, {
+    "server":"r1bonus",
+    "localMainFolder":"/home/rock/tmp/PRE_RESET/r1bonus/Project_Epic-r1bonus/",
+    "localDstFolder":"/home/rock/tmp/POST_RESET/r1bonus/Project_Epic-r1bonus/",
+    "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
+    "itemReplacements":item_replace_list.itemReplacements,
+}]
+
+terrainReset(configlist)
+print "Remember that tutorial, purgatory, bungee, and build are not handled by this script"
 

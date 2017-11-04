@@ -25,74 +25,108 @@ from lib_monumenta_common import fillBoxes, copyBoxes, copyFolder, copyFolders
 import lib_item_replace
 import item_replace_list
 
-def terrainReset(config):
-    localMainFolder = config["localMainFolder"]
-    localBuildFolder = config["localBuildFolder"]
-    localDstFolder = config["localDstFolder"]
-    coordinatesToCopy = config["coordinatesToCopy"]
-    coordinatesToFill = config["coordinatesToFill"]
-    coordinatesDebug = config["coordinatesDebug"]
-    itemReplaceList = item_replace_list.itemReplacements
-    blockReplaceList = item_replace_list.blockReplacements
-    safetyTpLocation = config["safetyTpLocation"]
+def terrainReset(configlist):
+    for config in configlist:
+        print "Starting reset for server {0}...".format(config["server"])
 
-    # Fail if build or main folders don't exist
-    if not os.path.isdir(localMainFolder):
-        sys.exit("Main world folder does not exist.")
-    if not os.path.isdir(localBuildFolder):
-        sys.exit("Build world folder does not exist.")
+        # Check for impossible config values
+        if "localMainFolder" in config:
+            if not os.path.isdir(config["localMainFolder"]):
+                sys.exit("localMainFolder world folder does not exist.")
+        else:
+            sys.exit("localMainFolder not specified.")
+        if "localBuildFolder" in config:
+            if not os.path.isdir(config["localBuildFolder"]):
+                sys.exit("localBuildFolder world folder does not exist.")
+        if "localDstFolder" not in config:
+            sys.exit("localDstFolder not specified.")
+        if ("coordinatesToCopy" in config) and ("localBuildFolder" not in config):
+            sys.exit("coordinatesToCopy requires localBuildFolder")
 
-    print "Copying build world as base..."
-    copyFolder(localBuildFolder, localDstFolder)
+        # Assign required variables
+        localMainFolder = config["localMainFolder"]
+        localDstFolder = config["localDstFolder"]
 
-    print "Compiling item replacement list..."
-    compiledItemReplacementList = lib_item_replace.allReplacements(itemReplaceList)
+        # Copy the build world as a base if it was provided
+        if "localBuildFolder" in config:
+            print "  Copying build world as base..."
+            copyFolder(config["localBuildFolder"], localDstFolder)
 
-    # Copy various bits of player data from the main world
-    print "Copying player data files from main world..."
-    copyFolders(localMainFolder, localDstFolder, ["advancements/", "playerdata/", "stats/",])
-    print "Copying player maps and scoreboard from main world..."
-    copyFolders(localMainFolder, localDstFolder, ["data/",])
+        # If item replacements were specified, compile the list
+        if "itemReplacements" in config:
+            print "  Compiling item replacement list..."
+            compiledItemReplacements = lib_item_replace.allReplacements(config["itemReplacements"])
+        else:
+            compiledItemReplacements = None
 
-    # Note this part about advancements, functions, and loot tables is now done by gen_server_config (via symlinks)
-    #print "Copying updated advancements, functions, and loot tables from build world..."
-    #copyFolders(localBuildFolder, localDstFolder, ["data/advancements/", "data/functions/", "data/loot_tables/",])
+        # If block replacements were specified, assign a variable
+        if "blockReplacements" in config:
+            blockReplacements = config["blockReplacements"]
+        else:
+            blockReplacements = None
 
-    print "Handling item replacements for players..."
-    lib_item_replace.replaceItemsOnPlayers(localDstFolder, compiledItemReplacementList)
+        # Copy various bits of player data from the main world
+        # Note updating advancements, functions, and loot_tables is now done via gen_server_config
+        print "  Copying player data files from main world..."
+        copyFolders(localMainFolder, localDstFolder, ["advancements/", "playerdata/", "stats/",])
+        print "  Copying player maps and scoreboard from main world..."
+        copyFolders(localMainFolder, localDstFolder, ["data/",])
 
-    print "Opening old play World..."
-    srcWorld = mclevel.loadWorld(localMainFolder)
+        if compiledItemReplacements is not None:
+            print "Handling item replacements for players..."
+            lib_item_replace.replaceItemsOnPlayers(localDstFolder, compiledItemReplacements)
 
-    print "Opening Destination World..."
-    dstWorld = mclevel.loadWorld(localDstFolder)
+        # Only load the world and manipulate it if we need to
+        # TODO - This is a little weird, since we skip doing item replacements worldwide if we don't also do something else involving the world
+        #        This is desired behavior, but it's unintuitive
+        if ("coordinatesToFill" in config) or ("coordinatesToCopy" in config) or (blockReplacements is not None) or
+            (("resetRegionalDifficulty" in config) and (config["resetRegionalDifficulty"] == True)):
 
-    print "Filling selected regions with specified blocks..."
-    fillBoxes(dstWorld, coordinatesToFill)
+            print "  Opening old play World..."
+            srcWorld = mclevel.loadWorld(localMainFolder)
 
-    if (coordinatesDebug == False):
-        print "Copying needed terrain from the main world..."
-        copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplaceList, compiledItemReplacementList)
-    else:
-        print "DEBUG: Filling regions instead of copying them!"
-        fillBoxes(dstWorld, coordinatesToCopy)
+            print "  Opening Destination World..."
+            dstWorld = mclevel.loadWorld(localDstFolder)
 
-    print "Resetting difficulty..."
-    resetRegionalDifficulty(dstWorld)
+            if "coordinatesToFill" in config:
+                print "  Filling selected regions with specified blocks..."
+                fillBoxes(dstWorld, config["coordinatesToFill"])
 
-    print "Generating lights (should only happen on block changes!)...."
-    dstWorld.generateLights()
-    print "Saving...."
-    dstWorld.saveInPlace()
+            if "coordinatesToCopy" in config:
+                if ("coordinatesDebug" in config) and (config["coordinatesDebug"] == True):
+                    print "  DEBUG: Filling regions instead of copying them!"
+                    fillBoxes(dstWorld, config["coordinatesToCopy"])
+                else:
+                    print "  Copying needed terrain from the main world..."
+                    copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"], blockReplacements, compiledItemReplacementList)
+            else:
+                # No coordinates to copy, but still want to replace blocks - do the block replacement worldwide
+                if blockReplacements is not None:
+                    print "  Replacing specified blocks worldwide..."
+                    replaceGlobally(dstWorld, blockReplacements)
+                # No coordinates to copy, but still want to replace items - do the item replacement worldwide
+                if compiledItemReplacements is not None:
+                    print "  Replacing specified items worldwide..."
+                    lib_item_replace.replaceItemsInSchematic(dstWorld, compiledItemReplacements)
 
-    print "Moving players..."
-    movePlayers(localDstFolder, safetyTpLocation)
+            if ("resetRegionalDifficulty" in config) and (config["resetRegionalDifficulty"] == True):
+                print "  Resetting difficulty..."
+                resetRegionalDifficulty(dstWorld)
 
-    shutil.rmtree(localDstFolder+"##MCEDIT.TEMP##", ignore_errors=True)
-    try:
-        os.remove(localDstFolder+"mcedit_waypoints.dat")
-    except Exception as e:
-        pass
+            print "  Generating lights (should only happen on block changes!)...."
+            dstWorld.generateLights()
+            print "  Saving...."
+            dstWorld.saveInPlace()
+
+        if "safetyTpLocation" in config:
+            print "  Moving players..."
+            movePlayers(localDstFolder, safetyTpLocation)
+
+        try:
+            shutil.rmtree(localDstFolder+"##MCEDIT.TEMP##", ignore_errors=True)
+            os.remove(localDstFolder+"mcedit_waypoints.dat")
+        except Exception as e:
+            pass
 
     print "Done!"
 
