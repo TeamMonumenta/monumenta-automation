@@ -242,6 +242,18 @@ config = {
         'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
 
+    'mobs':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=6'),
+            ('server.properties', 'server-port', 'server-port=25598'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.28"'),
+            ('server.properties', 'difficulty', 'difficulty=2'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+        ],
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
+    },
+
     'r1plots':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=7'),
