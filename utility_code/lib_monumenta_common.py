@@ -55,9 +55,14 @@ def copyFile(old, new):
         shutil.copy2(old, new)
 
 # TODO: This should fail if the new destination doesn't exist without deleting the old directory
+# Should be done, needs to be checked.
 def copyFolder(old, new):
-    shutil.rmtree(new, ignore_errors=True)
-    shutil.copytree(old, new, symlinks=True)
+    # This does not check if it's a path or a file, but there's another function for that case.
+    if os.path.exists(old):
+        shutil.rmtree(new, ignore_errors=True)
+        shutil.copytree(old, new, symlinks=True)
+    else:
+        print "*** '{}' does not exist, preserving original.".format(old)
 
 def copyFolders(old, new, subfolders):
     for folder in subfolders:
