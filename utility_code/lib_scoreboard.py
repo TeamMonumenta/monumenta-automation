@@ -80,24 +80,28 @@ def debugScoreboard(worldFolder):
     Print any errors in scoreboard.dat
     Do not use this yet, it's incomplete and untested.
     """
-    # format is playerObjectives[objective][player][#] = aScore
+    # format is playerObjectives[objective][name][#] = {"score":#,"locked":bool}
     # This is to detect duplicate scores for the same player,
     # which would indicate something is wrong with a plugin
     # or modification
     playerObjectives = {}
     # set to speed up search for duplicates
-    playerObjectiveDuplicates = ()
-    
+    # playerObjectiveDuplicates[#] = {"objective":objective:,"name":name}
+    playerObjectiveDuplicates = set()
+
+    playerObjectiveUndeclared = set()
+
     # format is validObjectives[objective][#] = objective
     # Used to detect duplicates
     validObjectives = {}
     # set to speed up search for duplicates
-    objectiveDuplicates = ()
-    
+    # objectiveDuplicates[#] = objective
+    objectiveDuplicates = set()
+
     print "Loading scoreboard.dat..."
     filePath = scoreboardPath(worldFolder)
     scoreboard = nbt.load(filePath)
-    
+
     print "Checking objective list..."
     for objective in scoreboard["Objectives"]:
         objectiveName = objective["Name"].value
@@ -106,7 +110,7 @@ def debugScoreboard(worldFolder):
             objectiveDuplicates.add(objectiveName)
         else:
             validObjectives[objectiveName] = [objective]
-    
+
     slotNames = {
         "slot_0":"list",
         "slot_1":"sidebar",
@@ -128,7 +132,7 @@ def debugScoreboard(worldFolder):
         "slot_17":"sidebar.team.yellow",
         "slot_18":"sidebar.team.white",
     }
-    
+
     for displaySlot in scoreboard["DisplaySlots"]:
         if displaySlot.value not in validObjectives.keys():
             print 'Slot {} "{}" contains unknown objective {}'.format(
@@ -136,7 +140,7 @@ def debugScoreboard(worldFolder):
                 slotNames[displaySlot.name],
                 displaySlot.value
             )
-    
+
     if len(objectiveDuplicates) > 0:
         print "*** Some objectives are entered multiple times:"
     for objective in sorted(objectiveDuplicates):
@@ -150,9 +154,27 @@ def debugScoreboard(worldFolder):
                 numOccurances,
                 duplicate.json
             )
-    
+
     print "Checking player scores..."
-    for score in ["PlayerScores"]:
+    for entry in ["PlayerScores"]:
+        objective = entry["Objective"].value
+        name = entry["Name"].value
+        score = entry["Score"].value
+        # for triggers
+        if "Locked" not in entry:
+            locked = None
+        elif entry["Locked"].value:
+            locked = True
+        else:
+            locked = False
+        playerObjectives[objective][name].append({"score":score,"locked":locked})
+        if len(playerObjectives[objective][name]) > 1:
+            playerObjectiveDuplicates.add({"objective":objective:,"name":name})
+        if objective not in validObjectives.keys():
+            playerObjectiveUndeclared.add(objective)
+
+    if len(playerObjectiveUndeclared) > 0:
+        print "*** Scores exist for undeclared objectives"
 
 
 
