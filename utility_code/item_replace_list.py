@@ -51,19 +51,19 @@ Each replacement definition is a list that contains a
 Pattern matching lists appear like so:
     Match stone and its variants:
     {"id":"minecraft:stone"}
-    
+
     Match smooth andesite by damage:
     {"id":"minecraft:stone","damage":6}
-    
+
     Match certain damage values:
     {"id":"minecraft:wool","damage":[4,7,12,13]}
-    
+
     Match colored beds with NBT:
     {"id":"bed","nbt":"{color:14}"}
     This will not check if the NBT matches perfectly,
     only if the specified NBT matches. Other tags are
     ignored.
-    
+
     To specify strict NBT:
     {"id":"bed","nbt":"{color:14}","nbtStrict":True}
     This matches NBT exactly as specified.
@@ -71,10 +71,10 @@ Pattern matching lists appear like so:
     To specify no NBT:
     {"id":"minecraft:log","nbt":None}
     This matches NBT exactly as specified.
-    
+
     To specify an item count:
     {"id":"minecraft:stick","count":5}
-    
+
     To specify an item count range:
     {"id":"minecraft:stick","count":range(12,24+1)}
 
@@ -85,10 +85,10 @@ Action lists appear like so:
     ["damage", "-", 7, "min", 2],
     ["nbt", "update", "{display:{Name:"§o§6Resurrected Pheonix"}}"],
     ]
-    
+
     Valid actions include:
         id - change the item's ID to a new value
-        
+
         count - alter an item stack's count
             = - set count
             + - increase count
@@ -98,7 +98,7 @@ Action lists appear like so:
             % - set count to ( oldCount % arg ) - always positive
             max - set count to max if max is exceeded
             min - set count to min if min is exceeded
-        
+
         damage - alter an item's damage
             = - set damage
             + - increase damage
@@ -108,20 +108,20 @@ Action lists appear like so:
             % - set damage to ( oldDamage % arg ) - always positive
             max - set damage to max if max is exceeded
             min - set damage to min if min is exceeded
-        
+
         nbt - alter an item's nbt - only clear is implemented
             replace - replace an item's NBT data entirely
             set - set specified NBT without altering other NBT
                     existing lists and compounds will not have items removed
             clear - remove all NBT from the item
-        
+
         scoreboard - if on a player, in an ender chest, or in a shulker box
                     in one of those places, affect that player's scoreboard
                     (NYI)
-                    
+
                     @s - the player to target
                     @i - item's details
-                    
+
                     @i's scores:
                         count
                         damage
@@ -129,8 +129,8 @@ Action lists appear like so:
                 set, add, remove, reset, enable, operation
             example:
                 "scoreboard", "operation", "@s", "iron_confiscated", "+=", "@i", "count"
-            
-        
+
+
         remove - delete the item
 
 So, for example:
@@ -278,7 +278,7 @@ itemReplacements = [
     # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)
     ############################################################################
-    
+
     # Simbelmynë
     [
         {
@@ -289,7 +289,7 @@ itemReplacements = [
             "remove"
         ]
     ],
-    
+
     # Ancient Mortar
     [
         {
@@ -300,7 +300,7 @@ itemReplacements = [
             "remove"
         ]
     ],
-    
+
     # Aquanis Lily
     [
         {
@@ -311,11 +311,11 @@ itemReplacements = [
             "remove"
         ]
     ],
-    
+
     ############################################################################
     # Update items that have changed:
     ############################################################################
-    
+
     # Topaz Cap
     [
         {
@@ -326,7 +326,7 @@ itemReplacements = [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
-    
+
     # Old Amber Cap -> Topaz Cap
     [
         {
@@ -337,7 +337,7 @@ itemReplacements = [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
-    
+
     # Jeweled Tiara
     [
         {
@@ -348,7 +348,7 @@ itemReplacements = [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
-    
+
     # Kismet's Blessing
     [
         {
@@ -359,14 +359,14 @@ itemReplacements = [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6The luck has decayed into health"],color:65493,Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:-6900745281224160306L,UUIDLeast:-4828553848378685989L,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1116995255491055008L,UUIDLeast:-6766107056483247837L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
-    
+
     ############################################################################
     # Event items:
     ############################################################################
-    
+
     ############################################################################
     # 2017 Halloween Plague:
-    
+
     # Pumpkin Spythe
     [
         {
@@ -377,7 +377,7 @@ itemReplacements = [
             "nbt", "replace", ur'''{ench:[{lvl:8s,id:16s},{lvl:2s,id:17s},{lvl:2s,id:34s},{lvl:1s,id:18s}],display:{Lore:["* Unique Event Item *","Halloween 2017"],Name:"§2§lPumpkin Spythe"}}'''
         ]
     ],
-    
+
     # Tribal Chisel
     [
         {
@@ -388,7 +388,7 @@ itemReplacements = [
             "nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:1s,id:34s}],display:{Lore:["* Irreparable *","§eKing's Valley : Rare"],Name:"§2§lTribal Chisel"}}'''
         ]
     ],
-    
+
     # Tribal Chisel (v2)
     [
         {
@@ -399,7 +399,7 @@ itemReplacements = [
             "nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:1s,id:34s}],display:{Lore:["* Irreparable *","§eKing's Valley : Rare"],Name:"§2§lTribal Chisel"}}'''
         ]
     ],
-    
+
     # Plague Bearer's Boots
     [
         {
@@ -410,7 +410,7 @@ itemReplacements = [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","Halloween 2017"],Name:"§2§lPlague Bearer's Boots"},AttributeModifiers:[{UUIDMost:-1640941516099861248L,UUIDLeast:-6326317583102562813L,Amount:-4.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-2914598640505769820L,UUIDLeast:-7162398802439954937L,Amount:0.12d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4035352220502543838L,UUIDLeast:-6384754459282382086L,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:1151211762335105703L,UUIDLeast:-8899502024825300851L,Amount:0.6d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
-    
+
     # G3po -> g3p0 (items only for now I'm afraid)
     [
         {
@@ -422,11 +422,11 @@ itemReplacements = [
             "nbt", "set", ur'''{SkullOwner:{Id:"bead93a4-fe1a-44d3-a02b-16b2f1f6f110",Properties:{textures:[{Signature:"ig9KhREcJcglVDIOtGxBbjQRmYN28g1s3J+g7WTe9AujWXIDoYyigB8NXWQw/dkWXX2oTHsRrxd8MNxX2TNPsvd+6C21J1p50LkMu1pZoyRSTDfQ6y0FmEnbg+TuRtfg5YZ6K5WBpRpTfivi51+NViIhbKTAm5KuACtMsCgGiKxCmDnt9S7uQSYd9W/tq1VV6w9ocw+34W1hujIt8ETN4GBAie98a7GBFlK5Mnmf1VEr8HeNqQkBpx29FR4CHTGNtWTdW7S1Q55jXcXVtM2tmp1JVshB5OHQ8s/U0KWkLOupYEfTIHqijKFXnTNfrPvdxXl/rAO93nwO75AUk7MVlPg4BTbjJn6Tece+G8fv3Xskn2lUeXrTiH+IDZYIrsPIKk+Nm6bg254aShIc2IIImwPR26BxLurT4iM+GNOJc7FuBcs12/0hZZSnEmapqlKdBhxegpCTUq5evJ8uR9Gp7Rs3l9qLueAlQ+5fiWTRWJDJ4yPwVDArK38Jmdc8yUPPimvZnYM3GxUtmjUyu8VRt3okbmGl4ttb//casujbFIoBDY3ngKsdQKMQyh8feSle78/+YyWLFfkWjpyZym+FRhNjLIuUgZMBxz9i72PUdOigvhJPGB+LChq81MtLVL5bt6cH8FoXCWiz9KJtOP5sfuERu/59qY4aVw1eYdhI570=",Value:"eyJ0aW1lc3RhbXAiOjE1MTAxMjU4NDA0MDIsInByb2ZpbGVJZCI6ImJlYWQ5M2E0ZmUxYTQ0ZDNhMDJiMTZiMmYxZjZmMTEwIiwicHJvZmlsZU5hbWUiOiJnM3AwIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS85OTExNzJhZjUzMmUxMmQ3MjRmNzEyZDA2N2YxYWFhNWQyZjMwMzUzZWZlNzViYTJkYjNhYjdmODliNWQxMSJ9fX0="}]},Name:"g3p0"}}'''
         ]
     ],
-    
+
     ############################################################################
     # Stuff that players shouldn't have had:
     ############################################################################
-    
+
     ############################################################################
     # Iron:
 
@@ -508,7 +508,7 @@ itemReplacements = [
             "remove"
         ]
     ],
-    
+
     ############################################################################
     # Diamond:
 
@@ -618,10 +618,10 @@ itemReplacements = [
             "remove"
         ]
     ],
-    
+
     ############################################################################
     # Other:
-    
+
     # Luck items
     [
         {"nbt":ur'''{tag:{AttributeModifiers:[{AttributeName:"generic.luck"}]}}'''},
