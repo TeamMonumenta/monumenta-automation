@@ -38,6 +38,28 @@ def getObjectiveValues(worldFolder,objective):
         if aScore["Objective"].value == objective:
             print aScore["Score"].value, "-", aScore["Name"].value
 
+def findMatchingObjectiveScores(worldFolder,objective,matchingScores=range(-2147483648,2147483648)):
+    """
+    For a given objective name,
+    list players whose values are
+    in the list of selected values
+    scores is a list, such as
+    [3,5,8]
+    range(7,9+1) # for 7 through 9
+    the default is any score
+    """
+    filePath = scoreboardPath(worldFolder)
+    scoreboard = nbt.load(filePath)
+
+    found = {}
+
+    for aScore in scoreboard["data"]["PlayerScores"]:
+        if aScore["Objective"].value == objective:
+            if aScore["Score"].value in matchingScores:
+                found[aScore["Name"].value] = aScore["Score"].value
+
+    return found
+
 def updateIGNs(worldFolder,replacementList):
     """
     For any scoreboard value matching oldName, update to newName
@@ -80,15 +102,15 @@ def debugScoreboard(worldFolder):
     Print any errors in scoreboard.dat
     Do not use this yet, it's incomplete and untested.
     """
-    # format is playerObjectives[objective][name][#] = {"score":#,"locked":bool}
+    # playerObjectives[objective][name][#] = {"Score":#,"Locked":bool}
     # This is to detect duplicate scores for the same player,
     # which would indicate something is wrong with a plugin
     # or modification
     playerObjectives = {}
     # set to speed up search for duplicates
-    # playerObjectiveDuplicates[#] = {"objective":objective:,"name":name}
+    # playerObjectiveDuplicates[#] = {"Objective":objective:,"Name":name}
     playerObjectiveDuplicates = set()
-
+    # playerObjectiveUndeclared[#] = objective
     playerObjectiveUndeclared = set()
 
     # format is validObjectives[objective][#] = objective
@@ -167,14 +189,34 @@ def debugScoreboard(worldFolder):
             locked = True
         else:
             locked = False
-        playerObjectives[objective][name].append({"score":score,"locked":locked})
+        playerObjectives[objective][name].append({"Score":score,"Locked":locked})
         if len(playerObjectives[objective][name]) > 1:
-            playerObjectiveDuplicates.add({"objective":objective:,"name":name})
+            playerObjectiveDuplicates.add({"Objective":objective:,"Name":name})
         if objective not in validObjectives.keys():
             playerObjectiveUndeclared.add(objective)
 
     if len(playerObjectiveUndeclared) > 0:
         print "*** Scores exist for undeclared objectives"
+    for undeclaredObjective in playerObjectiveUndeclared:
+        print undeclaredObjective + " is undeclared; the following have scores:"
+        for name in playerObjectives[objective]:
+            count = len(playerObjectives[objective][name])
+            print "*** {} has {} score(s) for objective {}".format(name,count,undeclaredObjective)
+
+    for duplicate in playerObjectiveDuplicates:
+        objective = duplicate["Objective"]
+        name = duplicate["Name"]
+        print "*** {} has multiple scores for objective {}".format(name,objective)
+        for scoreInstance in playerObjectives[objective][name]:
+            score = scoreInstance["Score"]
+            locked = scoreInstance["Locked"]
+            if locked is None:
+                lockState = "no lock"
+            elif locked:
+                lockState = "locked/disabled"
+            else:
+                lockState = "unlocked/enabled"
+            print "*** {}, {} = {} ({})".format(name,objective,score,lockState)
 
 
 
