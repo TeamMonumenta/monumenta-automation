@@ -411,6 +411,18 @@ itemReplacements = [
         ]
     ],
 
+    # Ponderous Stone
+    [
+        {
+            "id":"minecraft:clay_ball",
+            "damage":0,
+            "nbt":ur'''{display:{Name:"§6§lPonderous Stone"}}''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Uncommon"],Name:"§6§lPonderous Stone"},AttributeModifiers:[{UUIDMost:-8784931189073293981L,UUIDLeast:-5336435319922077366L,Amount:1.0d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-3784013313986900216L,UUIDLeast:-9150198598510123427L,Amount:-0.25d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-2473186416011490271L,UUIDLeast:-6797638087243652569L,Amount:-4.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+
     # G3po -> g3p0 (items only for now I'm afraid)
     [
         {
