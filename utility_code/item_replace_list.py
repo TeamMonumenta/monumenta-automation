@@ -273,6 +273,19 @@ itemReplacements = [
     ],
 """
 
+# Use this to remove every item in the world
+itemReplacementsRemoveAll = [
+    # Remove all items
+    [
+        {
+            "any":None,
+        },
+        [
+            "remove"
+        ]
+    ],
+]
+
 itemReplacements = [
     ############################################################################
     # Remove dungeon key items on weekly terrain resets:

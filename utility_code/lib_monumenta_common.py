@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import os
 import warnings
 import shutil
@@ -232,4 +235,38 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, compiled
         dstWorld.copyBlocksFrom(tempSchematic, tempSchematic.bounds, pos, blocksToCopy, entities=True)
 
         copyNum+=1
+
+def lockTileEntities(world, box, tileIDList):
+    # The function world.getTileEntitiesInBox() does not work.
+    # Working around it, since it works for chunks but not worlds.
+    allChunks = set(world.allChunks)
+
+    selectedChunks = set(box.chunkPositions)
+    chunksToScan = list(selectedChunks.intersection(allChunks))
+    for cx,cz in chunksToScan:
+        # Get and loop through entities within chunk and box
+        aChunk = world.getChunk(cx,cz)
+        chunkDirty = False
+        newTileEntities = aChunk.getTileEntitiesInBox(box)
+        for aTileEntity in newTileEntities:
+
+            # Check if tileEntity is being scanned
+            if aTileEntity["id"].value in tileIDList:
+
+                chunkDirty = True
+
+                # Detect missing lock tag
+                if ("Lock" not in aTileEntity):
+                    # Add and set a lock tag
+                    # String selection reasoning:
+                    # - generated randomly
+                    # - exceeds 32 character limit for anvil renaming
+                    # - has a formatting code (obfuscate)
+                    aTileEntity["Lock"] = nbt.Tag_STRING(u'''§kl{sC7v@6i-3g!% 22kTw?jhu.MML95,x?''')
+                else:
+                    # Set the lock tag
+                    aTileEntity["Lock"].value = u'''§kl{sC7v@6i-3g!% 22kTw?jhu.MML95,x?'''
+
+        if chunkDirty:
+            aChunk.chunkChanged(False) # needsLighting=False
 
