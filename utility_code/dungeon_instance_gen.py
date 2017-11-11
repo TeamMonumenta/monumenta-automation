@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import shutil
+import sys
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
 os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
 
+# Import pymclevel from MCLevel-Unified
 import pymclevel
 from pymclevel import materials
 from pymclevel.block_copy import copyBlocksFromIter
