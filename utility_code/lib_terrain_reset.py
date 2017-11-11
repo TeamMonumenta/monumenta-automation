@@ -18,7 +18,9 @@ import shutil
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
 os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
 
+# Import pymclevel from MCLevel-Unified
 import pymclevel
 
 from lib_monumenta_common import fillBoxes, copyBoxes, copyFolder, copyFolders
@@ -80,7 +82,7 @@ def terrainReset(configlist):
         copyFolders(localMainFolder, localDstFolder, ["data/",])
 
         if compiledItemReplacements is not None:
-            print "Handling item replacements for players..."
+            print "  Handling item replacements for players..."
             lib_item_replace.replaceItemsOnPlayers(localDstFolder, compiledItemReplacements)
 
         # Only load the world and manipulate it if we need to
@@ -114,7 +116,7 @@ def terrainReset(configlist):
                 # No coordinates to copy, but still want to replace items - do the item replacement worldwide
                 if compiledItemReplacements is not None:
                     print "  Replacing specified items worldwide..."
-                    lib_item_replace.replaceItemsInSchematic(dstWorld, compiledItemReplacements)
+                    lib_item_replace.replaceItemsInWorld(dstWorld, compiledItemReplacements)
 
             if ("resetRegionalDifficulty" in config) and (config["resetRegionalDifficulty"] == True):
                 print "  Resetting difficulty..."

@@ -72,7 +72,7 @@ def copyFolder(old, new):
 
 def copyFolders(old, new, subfolders):
     for folder in subfolders:
-        print "Copying " + folder + "..."
+        print "    Copying " + folder + "..."
         try:
             copyFolder(old+folder, new+folder)
         except:

@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-import mclevel
-from mclevel import nbt
+
+# Import pymclevel from MCLevel-Unified
+from pymclevel import nbt
 
 shulkerIDNames = [
     "minecraft:white_shulker_box",
@@ -137,11 +138,10 @@ def replaceItemsInWorld(world,replacementList):
 
 class allReplacements(list):
     def __init__(self,replacementList):
-        print "Compiling item replacement list..."
         self._replacements = []
         for aReplacement in replacementList:
             self._replacements.append(replacement(aReplacement))
-        print "Found " + str(len(self._replacements)) + " replacements."
+        print "  Found " + str(len(self._replacements)) + " replacements."
 
     def __len__(self):
         return len(self._replacements)
