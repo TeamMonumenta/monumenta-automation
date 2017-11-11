@@ -290,7 +290,7 @@ itemReplacements = [
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§6§lTopaz Cap"}}''',
+            "nbt":ur'''{display:{Name:"§6§lTopaz Cap"},AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
@@ -301,7 +301,7 @@ itemReplacements = [
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§6§lAmber Cap"}}''',
+            "nbt":ur'''{display:{Name:"§6§lAmber Cap"},AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
@@ -312,7 +312,7 @@ itemReplacements = [
     [
         {
             "id":"minecraft:golden_helmet",
-            "nbt":ur'''{display:{Name:"§d§lJeweled Tiara"}}''',
+            "nbt":ur'''{display:{Name:"§d§lJeweled Tiara"},AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
@@ -323,7 +323,7 @@ itemReplacements = [
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§b§lKismet's Blessing"}}''',
+            "nbt":ur'''{display:{Name:"§b§lKismet's Blessing"},AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6The luck has decayed into health"],color:65493,Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:-6900745281224160306L,UUIDLeast:-4828553848378685989L,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1116995255491055008L,UUIDLeast:-6766107056483247837L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
@@ -341,7 +341,7 @@ itemReplacements = [
     [
         {
             "id":"minecraft:stone_hoe",
-            "nbt":ur'''{ench:[{lvl:8s,id:16s},{lvl:2s,id:17s},{lvl:1s,id:18s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","Halloween 2017"],Name:"§2§lPumpkin Scythe"}}''',
+            "nbt":ur'''{display:{Name:"§2§lPumpkin Scythe"}}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:8s,id:16s},{lvl:2s,id:17s},{lvl:2s,id:34s},{lvl:1s,id:18s}],display:{Lore:["* Unique Event Item *","Halloween 2017"],Name:"§2§lPumpkin Spythe"}}'''
@@ -352,7 +352,7 @@ itemReplacements = [
     [
         {
             "id":"minecraft:stone_pickaxe",
-            "nbt":ur'''{ench:[{lvl:4s,id:32s}],display:{Lore:["* Irreparable *","§eKing's Valley : Rare"],Name:"§2§lTribal Chisel"}}''',
+            "nbt":ur'''{display:{Name:"§2§lTribal Chisel"}}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:1s,id:34s}],display:{Lore:["* Irreparable *","§eKing's Valley : Rare"],Name:"§2§lTribal Chisel"}}'''
@@ -363,7 +363,7 @@ itemReplacements = [
     [
         {
             "id":"minecraft:stone_pickaxe",
-            "nbt":ur'''{ench:[{lvl:5s,id:32s},{lvl:1s,id:34s}],display:{Lore:["* Irreparable *","§eKing's Valley : Rare"],Name:"§2§lTribal Chisel"}}''',
+            "nbt":ur'''{display:{Name:"§2§lTribal Chisel"}}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:1s,id:34s}],display:{Lore:["* Irreparable *","§eKing's Valley : Rare"],Name:"§2§lTribal Chisel"}}'''
@@ -374,7 +374,7 @@ itemReplacements = [
     [
         {
             "id":"minecraft:leather_boots",
-            "nbt":ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Item *"],Name:"§2§lPlague Bearer's Boots"},AttributeModifiers:[{UUIDMost:-1640941516099861248L,UUIDLeast:-6326317583102562813L,Amount:-4.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-2914598650505769820L,UUIDLeast:-7162398802439954937L,Amount:0.12d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4035352220502543838L,UUIDLeast:-6384754459282382086L,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:1151211762335105703L,UUIDLeast:-8899502024825300851L,Amount:0.6d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}''',
+            "nbt":ur'''{display:{Name:"§2§lPlague Bearer's Boots"}}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","Halloween 2017"],Name:"§2§lPlague Bearer's Boots"},AttributeModifiers:[{UUIDMost:-1640941516099861248L,UUIDLeast:-6326317583102562813L,Amount:-4.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-2914598640505769820L,UUIDLeast:-7162398802439954937L,Amount:0.12d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4035352220502543838L,UUIDLeast:-6384754459282382086L,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:1151211762335105703L,UUIDLeast:-8899502024825300851L,Amount:0.6d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
@@ -443,15 +443,21 @@ itemReplacements = [
     [ {"id":"minecraft:hopper"}, ["remove"] ],
     [ {"id":"minecraft:beacon"}, ["remove"] ],
     [ {"id":"minecraft:nether_star"}, ["remove"] ],
-    # Wither skeleton skulls
-    [ {"id":"minecraft:skull", "damage":1}, ["remove"] ],
+
+    [ {"id":"minecraft:bucket"}, ["remove"] ],
+    [ {"id":"minecraft:water_bucket"}, ["remove"] ],
+    [ {"id":"minecraft:lava_bucket"}, ["remove"] ],
+    [ {"id":"minecraft:milk_bucket"}, ["remove"] ],
+
+    # Wither skeleton skulls - allowed now that wither spawns are canceled
+    #[ {"id":"minecraft:skull", "damage":1}, ["remove"] ],
 
     ############################################################################
     # Other:
 
     # Luck items
     [
-        {"nbt":ur'''{tag:{AttributeModifiers:[{AttributeName:"generic.luck"}]}}'''},
+        {"nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}'''},
         ["remove"]
     ],
 
