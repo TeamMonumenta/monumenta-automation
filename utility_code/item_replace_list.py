@@ -20,25 +20,11 @@ blockReplacements = (
     #("minecraft:emerald_ore", "air"),
 
     ("minecraft:beacon", "air"),
+    ("minecraft:anvil", "air"),
 
     # Not sure about this section
     #("enchanting_Table", "air"),
     #("quartz_ore", "air"),
-    #("hopper", "air"),
-
-    # anvils
-    ((145,0), "air"),
-    ((145,1), "air"),
-    ((145,2), "air"),
-    ((145,3), "air"),
-    ((145,4), "air"),
-    ((145,5), "air"),
-    ((145,6), "air"),
-    ((145,7), "air"),
-    ((145,8), "air"),
-    ((145,9), "air"),
-    ((145,10), "air"),
-    ((145,11), "air"),
 )
 
 """
@@ -250,27 +236,6 @@ itemReplacements = [
             "remove",
         ]
     ],
-    # Remove any lapis ore that is present
-    [
-        {"id":"minecraft:lapis_ore"},
-        [
-            "remove",
-        ]
-    ],
-    # Remove any lapis that is present
-    [
-        {"id":"minecraft:dye","damage":4},
-        [
-            "remove",
-        ]
-    ],
-    # Remove any lapis blocks that are present
-    [
-        {"id":"minecraft:lapis_block"},
-        [
-            "remove",
-        ]
-    ],
 """
 
 # Use this to remove every item in the world
@@ -280,9 +245,7 @@ itemReplacementsRemoveAll = [
         {
             "any":None,
         },
-        [
-            "remove"
-        ]
+        ["remove"]
     ],
 ]
 
@@ -298,9 +261,7 @@ itemReplacements = [
             "id":"minecraft:red_flower",
             "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fSimbelmynë is a rare flower, and it is said to","§fonly grow on the burial mounds of Royalty...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 1 *"],Name:"§9§lSimbelmynë"}}''',
         },
-        [
-            "remove"
-        ]
+        ["remove"]
     ],
 
     # Ancient Mortar
@@ -309,9 +270,7 @@ itemReplacements = [
             "id":"minecraft:bowl",
             "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fA Mortar perfect for mashing ingredients...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 2 *"],Name:"§9§lAncient Mortar"}}''',
         },
-        [
-            "remove"
-        ]
+        ["remove"]
     ],
 
     # Aquanis Lily
@@ -320,9 +279,7 @@ itemReplacements = [
             "id":"minecraft:red_flower",
             "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fAn uncommon flower generally found near Hot Springs...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 3 *"],Name:"§9§lAquanis Lily"}}''',
         },
-        [
-            "remove"
-        ]
+        ["remove"]
     ],
 
     ############################################################################
@@ -452,197 +409,42 @@ itemReplacements = [
     # Stuff that players shouldn't have had:
     ############################################################################
 
-    ############################################################################
     # Iron:
+    [ {"id":"minecraft:iron_ore"}, ["remove"] ],
+    [ {"id":"minecraft:iron_nugget"}, ["remove"] ],
+    [ {"id":"minecraft:iron_ingot"}, ["remove"] ],
+    [ {"id":"minecraft:iron_block"}, ["remove"] ],
+    [ {"id":"minecraft:iron_helmet"}, ["remove"] ],
+    [ {"id":"minecraft:iron_chestplate"}, ["remove"] ],
+    [ {"id":"minecraft:iron_leggings"}, ["remove"] ],
+    [ {"id":"minecraft:iron_boots"}, ["remove"] ],
+    [ {"id":"minecraft:iron_axe"}, ["remove"] ],
+    [ {"id":"minecraft:iron_hoe"}, ["remove"] ],
+    [ {"id":"minecraft:iron_pickaxe"}, ["remove"] ],
+    [ {"id":"minecraft:iron_shovel"}, ["remove"] ],
+    [ {"id":"minecraft:iron_sword"}, ["remove"] ],
 
-    [
-        {"id":"minecraft:iron_ore"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_nugget"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_ingot"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_block"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_helmet"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_chestplate"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_leggings"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_boots"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_axe"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_hoe"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_pickaxe"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_shovel"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:iron_sword"},
-        [
-            "remove"
-        ]
-    ],
-
-    ############################################################################
     # Diamond:
+    [ {"id":"minecraft:diamond_ore"}, ["remove"] ],
+    [ {"id":"minecraft:diamond"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_block"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_helmet"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_chestplate"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_leggings"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_boots"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_axe"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_hoe"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_pickaxe"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_shovel"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_sword"}, ["remove"] ],
 
-    [
-        {"id":"minecraft:diamond_ore"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond_block"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond_helmet"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond_chestplate"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond_leggings"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond_boots"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond_axe"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond_hoe"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond_pickaxe"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond_shovel"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:diamond_sword"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:anvil"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:hopper"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:beacon"},
-        [
-            "remove"
-        ]
-    ],
-    [
-        {"id":"minecraft:nether_star"},
-        [
-            "remove"
-        ]
-    ],
+    # Other:
+    [ {"id":"minecraft:anvil"}, ["remove"] ],
+    [ {"id":"minecraft:hopper"}, ["remove"] ],
+    [ {"id":"minecraft:beacon"}, ["remove"] ],
+    [ {"id":"minecraft:nether_star"}, ["remove"] ],
     # Wither skeleton skulls
-    [
-        {
-            "id":"minecraft:skull",
-            "damage":1
-        },
-        [
-            "remove"
-        ]
-    ],
+    [ {"id":"minecraft:skull", "damage":1}, ["remove"] ],
 
     ############################################################################
     # Other:
@@ -650,9 +452,7 @@ itemReplacements = [
     # Luck items
     [
         {"nbt":ur'''{tag:{AttributeModifiers:[{AttributeName:"generic.luck"}]}}'''},
-        [
-            "remove"
-        ]
+        ["remove"]
     ],
 
     ############################################################################
