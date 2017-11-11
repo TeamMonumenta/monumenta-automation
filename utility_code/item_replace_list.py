@@ -508,20 +508,6 @@ itemReplacements = [
         ]
     ],
 
-    # # # # # # # # # # # # # # # # # # # # # # #
-    # Double check which of these is right?
-
-    # Searing Wrath
-    [
-        {
-            "id":"minecraft:stone_axe",
-            "nbt":ur'''{display:{Name:"§4§lSearing Wrath"}}''',
-        },
-        [
-            "nbt", "set", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:2s,id:20s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 0.8 Attack Speed","§7 12 Attack Damage","§c -3 Armor"],Name:"§4§lSearing Wrath"},AttributeModifiers:[{UUIDMost:797401,UUIDLeast:849310,Amount:9,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:205397,UUIDLeast:267554,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:589373,UUIDLeast:600470,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
-        ]
-    ],
-
     # Searing Wrath
     [
         {
@@ -530,20 +516,6 @@ itemReplacements = [
         },
         [
             "nbt", "set", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:2s,id:20s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 0.8 Attack Speed","§7 12 Attack Damage","§c -3 Armor"],Name:"§4§lSearing Wrath"},AttributeModifiers:[{UUIDMost:797401,UUIDLeast:849310,Amount:8,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:205397,UUIDLeast:267554,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:589373,UUIDLeast:600470,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
-        ]
-    ],
-
-    # # # # # # # # # # # # # # # # # # # # # # #
-    # Double check which of these is right?
-
-    # Tome of Arcane Horrors
-    [
-        {
-            "id":"minecraft:book",
-            "nbt":ur'''{display:{Name:"§5§lTome of Arcane Horrors"}}''',
-        },
-        [
-            "nbt", "set", ur'''{ench:[{lvl:3s,id:20s},{lvl:3s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 0.35 Attack Speed","§7 16 Attack Damage"],Name:"§5§lTome of Arcane Horrors"},AttributeModifiers:[{UUIDMost:495321,UUIDLeast:169768,Amount:16,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:564922,UUIDLeast:574772,Amount:-3.5d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -558,20 +530,6 @@ itemReplacements = [
         ]
     ],
 
-    # # # # # # # # # # # # # # # # # # # # # # #
-    # Double check which of these is right?
-
-    # Spiked Buckler
-    [
-        {
-            "id":"minecraft:shield",
-            "nbt":ur'''{display:{Name:"§fSpiked Buckler"}}''',
-        },
-        [
-            "nbt", "set", ur'''{ench:[{lvl:1s,id:19s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2.0 Attack Speed","§7 3 Attack Damage"],Name:"§fSpiked Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
-        ]
-    ],
-
     # Spiked Buckler
     [
         {
@@ -580,20 +538,6 @@ itemReplacements = [
         },
         [
             "nbt", "set", ur'''{ench:[{lvl:1s,id:19s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2.0 Attack Speed","§7 4 Attack Damage"],Name:"§fSpiked Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
-        ]
-    ],
-
-    # # # # # # # # # # # # # # # # # # # # # # #
-    # Double check which of these is right?
-
-    # Spellready Buckler
-    [
-        {
-            "id":"minecraft:shield",
-            "nbt":ur'''{display:{Name:"§aSpellready Buckler"}}''',
-        },
-        [
-            "nbt", "set", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:19s}],HideFlags:2,BlockEntityTag:{id:"Shield",Patterns:[{Pattern:"tt",Color:0},{Pattern:"bt",Color:0},{Pattern:"flo",Color:0}],Base:10},display:{Lore:["§8King's Valley : Uncommon","§f","§7When in main hand:","§7 2 Attack Speed","§7 3 Attack Damage"],Name:"§aSpellready Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 
