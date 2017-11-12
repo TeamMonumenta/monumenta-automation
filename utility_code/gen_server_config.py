@@ -112,20 +112,6 @@ voxelsniper = [
 #   advancements_disabled
 #   advancements_r1
 #   structures
-#
-# base_plugins:
-#   easywarp
-#   f3n
-#   luckperms
-#   monumenta
-#   openinv
-#   socket4mc
-#
-# build_plugins:
-#   speedchanger
-#   worldedit
-#   nbteditor
-#   voxelsniper
 
 base_plugins = easywarp + f3n + luckperms + monumenta + openinv + socket4mc
 build_plugins = worldedit + speedchanger + nbteditor + voxelsniper
@@ -185,8 +171,8 @@ config = {
             ('server.properties', 'server-port', 'server-port=25567'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.7"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
         ],
         'linked':server_config + advancements_disabled + base_plugins,
@@ -206,6 +192,7 @@ config = {
 
     'roguelike':{
         'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=16'),
             ('server.properties', 'server-port', 'server-port=25569'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.4"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
@@ -236,10 +223,11 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1280M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1280M'),
             ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": false,'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 0,'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
+        'linked':server_config + advancements_disabled + easywarp + f3n + monumenta + openinv + socket4mc + coreprotect + worldedit + speedchanger + nbteditor + voxelsniper,
     },
 
     'mobs':{
@@ -260,8 +248,8 @@ config = {
             ('server.properties', 'server-port', 'server-port=25573'),
             ('server.properties', 'difficulty', 'difficulty=0'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.8"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
             #('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             #('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
@@ -311,7 +299,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'orange':{
@@ -323,7 +311,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'magenta':{
@@ -335,7 +323,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'lightblue':{
@@ -347,7 +335,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'yellow':{
@@ -359,7 +347,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'r1bonus':{
@@ -371,7 +359,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 }
 

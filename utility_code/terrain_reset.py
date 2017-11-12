@@ -33,6 +33,9 @@ configlist = [{
     # so that their positions can be easily checked in-game
     #"coordinatesDebug":True,
 
+    "blockReplacements":item_replace_list.blockReplacements,
+    "itemReplacements":item_replace_list.itemReplacements,
+
     "coordinatesToCopy":(
         # ("a unique name",        (lowerCoordinate),  (upperCoordinate), replaceBlocks, ( id, dmg), "block name (comment)"),
         {"name":"Apartments_100",         "pos1":( -874,  99,   44), "pos2":(-809,  96,   44), "replace":False, "material":( 41,  0), "materialName":"gold"},
@@ -92,8 +95,7 @@ configlist = [{
     "localMainFolder":"/home/rock/tmp/PRE_RESET/betaplots/Project_Epic-betaplots/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/betaplots/Project_Epic-betaplots/",
 
-    #TODO
-    #"blockReplacements":item_replace_list.blockReplacements,
+    "blockReplacements":item_replace_list.blockReplacements,
     "itemReplacements":item_replace_list.itemReplacements,
 }, {
     "server":"r1plots",
@@ -101,8 +103,7 @@ configlist = [{
     "localMainFolder":"/home/rock/tmp/PRE_RESET/r1plots/Project_Epic-r1plots/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/r1plots/Project_Epic-r1plots/",
 
-    #TODO
-    #"blockReplacements":item_replace_list.blockReplacements,
+    "blockReplacements":item_replace_list.blockReplacements,
     "itemReplacements":item_replace_list.itemReplacements,
 }, {
     "server":"white",
