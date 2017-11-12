@@ -241,12 +241,7 @@ itemReplacements = [
 # Use this to remove every item in the world
 itemReplacementsRemoveAll = [
     # Remove all items
-    [
-        {
-            "any":None,
-        },
-        ["remove"]
-    ],
+    [ { "any":None, }, ["remove"] ],
 ]
 
 itemReplacements = [
@@ -621,17 +616,6 @@ itemReplacements = [
     ],
 
     # Tribal Chisel
-    [
-        {
-            "id":"minecraft:stone_pickaxe",
-            "nbt":ur'''{display:{Name:"§2§lTribal Chisel"}}''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:1s,id:34s}],display:{Lore:["* Irreparable *","§eKing's Valley : Rare"],Name:"§2§lTribal Chisel"}}'''
-        ]
-    ],
-
-    # Tribal Chisel (v2)
     [
         {
             "id":"minecraft:stone_pickaxe",
