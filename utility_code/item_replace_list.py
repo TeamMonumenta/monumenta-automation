@@ -350,7 +350,7 @@ itemReplacements = [
             "nbt":ur'''{SkullOwner:{Name:"G3po"}}''',
         },
         [
-            "nbt", "set", ur'''{SkullOwner:{Id:"bead93a4-fe1a-44d3-a02b-16b2f1f6f110",Properties:{textures:[{Signature:"ig9KhREcJcglVDIOtGxBbjQRmYN28g1s3J+g7WTe9AujWXIDoYyigB8NXWQw/dkWXX2oTHsRrxd8MNxX2TNPsvd+6C21J1p50LkMu1pZoyRSTDfQ6y0FmEnbg+TuRtfg5YZ6K5WBpRpTfivi51+NViIhbKTAm5KuACtMsCgGiKxCmDnt9S7uQSYd9W/tq1VV6w9ocw+34W1hujIt8ETN4GBAie98a7GBFlK5Mnmf1VEr8HeNqQkBpx29FR4CHTGNtWTdW7S1Q55jXcXVtM2tmp1JVshB5OHQ8s/U0KWkLOupYEfTIHqijKFXnTNfrPvdxXl/rAO93nwO75AUk7MVlPg4BTbjJn6Tece+G8fv3Xskn2lUeXrTiH+IDZYIrsPIKk+Nm6bg254aShIc2IIImwPR26BxLurT4iM+GNOJc7FuBcs12/0hZZSnEmapqlKdBhxegpCTUq5evJ8uR9Gp7Rs3l9qLueAlQ+5fiWTRWJDJ4yPwVDArK38Jmdc8yUPPimvZnYM3GxUtmjUyu8VRt3okbmGl4ttb//casujbFIoBDY3ngKsdQKMQyh8feSle78/+YyWLFfkWjpyZym+FRhNjLIuUgZMBxz9i72PUdOigvhJPGB+LChq81MtLVL5bt6cH8FoXCWiz9KJtOP5sfuERu/59qY4aVw1eYdhI570=",Value:"eyJ0aW1lc3RhbXAiOjE1MTAxMjU4NDA0MDIsInByb2ZpbGVJZCI6ImJlYWQ5M2E0ZmUxYTQ0ZDNhMDJiMTZiMmYxZjZmMTEwIiwicHJvZmlsZU5hbWUiOiJnM3AwIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS85OTExNzJhZjUzMmUxMmQ3MjRmNzEyZDA2N2YxYWFhNWQyZjMwMzUzZWZlNzViYTJkYjNhYjdmODliNWQxMSJ9fX0="}]},Name:"g3p0"}}'''
+            "nbt", "replace", ur'''{SkullOwner:{Id:"bead93a4-fe1a-44d3-a02b-16b2f1f6f110",Properties:{textures:[{Signature:"ig9KhREcJcglVDIOtGxBbjQRmYN28g1s3J+g7WTe9AujWXIDoYyigB8NXWQw/dkWXX2oTHsRrxd8MNxX2TNPsvd+6C21J1p50LkMu1pZoyRSTDfQ6y0FmEnbg+TuRtfg5YZ6K5WBpRpTfivi51+NViIhbKTAm5KuACtMsCgGiKxCmDnt9S7uQSYd9W/tq1VV6w9ocw+34W1hujIt8ETN4GBAie98a7GBFlK5Mnmf1VEr8HeNqQkBpx29FR4CHTGNtWTdW7S1Q55jXcXVtM2tmp1JVshB5OHQ8s/U0KWkLOupYEfTIHqijKFXnTNfrPvdxXl/rAO93nwO75AUk7MVlPg4BTbjJn6Tece+G8fv3Xskn2lUeXrTiH+IDZYIrsPIKk+Nm6bg254aShIc2IIImwPR26BxLurT4iM+GNOJc7FuBcs12/0hZZSnEmapqlKdBhxegpCTUq5evJ8uR9Gp7Rs3l9qLueAlQ+5fiWTRWJDJ4yPwVDArK38Jmdc8yUPPimvZnYM3GxUtmjUyu8VRt3okbmGl4ttb//casujbFIoBDY3ngKsdQKMQyh8feSle78/+YyWLFfkWjpyZym+FRhNjLIuUgZMBxz9i72PUdOigvhJPGB+LChq81MtLVL5bt6cH8FoXCWiz9KJtOP5sfuERu/59qY4aVw1eYdhI570=",Value:"eyJ0aW1lc3RhbXAiOjE1MTAxMjU4NDA0MDIsInByb2ZpbGVJZCI6ImJlYWQ5M2E0ZmUxYTQ0ZDNhMDJiMTZiMmYxZjZmMTEwIiwicHJvZmlsZU5hbWUiOiJnM3AwIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS85OTExNzJhZjUzMmUxMmQ3MjRmNzEyZDA2N2YxYWFhNWQyZjMwMzUzZWZlNzViYTJkYjNhYjdmODliNWQxMSJ9fX0="}]},Name:"g3p0"}}'''
         ]
     ],
 
@@ -364,7 +364,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§a§lArcane H0plon"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:1s,id:19s}],HideFlags:2,BlockEntityTag:{id:"Shield",Patterns:[{Pattern:"cbo",Color:10},{Pattern:"tts",Color:0},{Pattern:"bts",Color:0},{Pattern:"mr",Color:10},{Pattern:"sc",Color:0},{Pattern:"flo",Color:0}],Base:0},display:{Lore:["§8* Magic Wand *","§8King's Valley : §6Patron Made","§8St0mp them down with your magic","§8","§7When in main hand:","§7 2.0 Attack Speed","§7 4 Attack Damage"],Name:"§a§lArcane H0plon"},AttributeModifiers:[{UUIDMost:-2117986151759854833L,UUIDLeast:-5593014839057914980L,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-8899225606506198748L,UUIDLeast:-7900000780697794749L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:1s,id:19s}],HideFlags:2,BlockEntityTag:{id:"Shield",Patterns:[{Pattern:"cbo",Color:10},{Pattern:"tts",Color:0},{Pattern:"bts",Color:0},{Pattern:"mr",Color:10},{Pattern:"sc",Color:0},{Pattern:"flo",Color:0}],Base:0},display:{Lore:["§8* Magic Wand *","§8King's Valley : §6Patron Made","§8St0mp them down with your magic","§8","§7When in main hand:","§7 2.0 Attack Speed","§7 4 Attack Damage"],Name:"§a§lArcane H0plon"},AttributeModifiers:[{UUIDMost:-2117986151759854833L,UUIDLeast:-5593014839057914980L,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-8899225606506198748L,UUIDLeast:-7900000780697794749L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 
@@ -375,7 +375,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§aSpellready Buckler"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:19s}],HideFlags:2,BlockEntityTag:{id:"Shield",Patterns:[{Pattern:"tt",Color:0},{Pattern:"bt",Color:0},{Pattern:"flo",Color:0}],Base:10},display:{Lore:["§8King's Valley : Uncommon","§f","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§aSpellready Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:19s}],HideFlags:2,BlockEntityTag:{id:"Shield",Patterns:[{Pattern:"tt",Color:0},{Pattern:"bt",Color:0},{Pattern:"flo",Color:0}],Base:10},display:{Lore:["§8King's Valley : Uncommon","§f","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§aSpellready Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 
@@ -386,7 +386,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§fSpiked Buckler"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:1s,id:19s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2.0 Attack Speed","§7 4 Attack Damage"],Name:"§fSpiked Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:19s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2.0 Attack Speed","§7 4 Attack Damage"],Name:"§fSpiked Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 
@@ -403,7 +403,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§6§lAngelic Sword"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:2s,id:17s},{lvl:5s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 5 Attack Damage","§9 +1 Armor"],Name:"§6§lAngelic Sword"},AttributeModifiers:[{UUIDMost:699422,UUIDLeast:76466,Amount:5,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:230886,UUIDLeast:58454,Amount:1,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:891666,UUIDLeast:498692,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:5s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 5 Attack Damage","§9 +1 Armor"],Name:"§6§lAngelic Sword"},AttributeModifiers:[{UUIDMost:699422,UUIDLeast:76466,Amount:5,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:230886,UUIDLeast:58454,Amount:1,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:891666,UUIDLeast:498692,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -414,7 +414,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§8§lAshheart Dagger"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:2s,id:34s},{lvl:4s,id:20s},{lvl:2s,id:22s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§f","§7When in main hand:","§7 1.6 Attack Speed","§7 5 Attack Damage","§9 +2 Max Health"],Name:"§8§lAshheart Dagger"},AttributeModifiers:[{UUIDMost:6203368885045579351L,UUIDLeast:-5502292298614332755L,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1770737273186633355L,UUIDLeast:-7632807259696268977L,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-925442460826187303L,UUIDLeast:-5209611670608876751L,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:4s,id:20s},{lvl:2s,id:22s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§f","§7When in main hand:","§7 1.6 Attack Speed","§7 5 Attack Damage","§9 +2 Max Health"],Name:"§8§lAshheart Dagger"},AttributeModifiers:[{UUIDMost:6203368885045579351L,UUIDLeast:-5502292298614332755L,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1770737273186633355L,UUIDLeast:-7632807259696268977L,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-925442460826187303L,UUIDLeast:-5209611670608876751L,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 
@@ -425,7 +425,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§2§lEarthbound Runeblade"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§6","§7When in main hand:","§7 1.6 Attack Speed","§7 6.5 Attack Damage","§9 +2 Armor"],Name:"§2§lEarthbound Runeblade"},AttributeModifiers:[{UUIDMost:789959,UUIDLeast:382503,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:217190,UUIDLeast:148481,Amount:2,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:905023,UUIDLeast:621272,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§6","§7When in main hand:","§7 1.6 Attack Speed","§7 6.5 Attack Damage","§9 +2 Armor"],Name:"§2§lEarthbound Runeblade"},AttributeModifiers:[{UUIDMost:789959,UUIDLeast:382503,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:217190,UUIDLeast:148481,Amount:2,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:905023,UUIDLeast:621272,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -436,7 +436,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§b§lIceborn Runeblade"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:17s},{lvl:3s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7","§7When in main hand:"," §71.2 Attack Speed"," §78 Attack Damage"," §c-10% Speed"],Name:"§b§lIceborn Runeblade"},AttributeModifiers:[{UUIDMost:3111,UUIDLeast:62113,Amount:-0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:789959,UUIDLeast:382503,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:905023,UUIDLeast:621272,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:17s},{lvl:3s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7","§7When in main hand:"," §71.2 Attack Speed"," §78 Attack Damage"," §c-10% Speed"],Name:"§b§lIceborn Runeblade"},AttributeModifiers:[{UUIDMost:3111,UUIDLeast:62113,Amount:-0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:789959,UUIDLeast:382503,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:905023,UUIDLeast:621272,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -447,7 +447,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§2§lPoison Ivy"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:18s},{lvl:2s,id:34s},{lvl:2s,id:22s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 8 Attack Damage","§c -3 Armor"],Name:"§2§lPoison Ivy"},AttributeModifiers:[{UUIDMost:689233,UUIDLeast:494460,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:176274,UUIDLeast:250428,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:426734,UUIDLeast:486418,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:18s},{lvl:2s,id:34s},{lvl:2s,id:22s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 8 Attack Damage","§c -3 Armor"],Name:"§2§lPoison Ivy"},AttributeModifiers:[{UUIDMost:689233,UUIDLeast:494460,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:176274,UUIDLeast:250428,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:426734,UUIDLeast:486418,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -458,7 +458,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§4§lShadow Spike"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 7.5 Attack Damage","§c -3 Armor"],Name:"§4§lShadow Spike"},AttributeModifiers:[{UUIDMost:473183,UUIDLeast:222857,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:223351,UUIDLeast:686496,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:188583,UUIDLeast:588437,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 7.5 Attack Damage","§c -3 Armor"],Name:"§4§lShadow Spike"},AttributeModifiers:[{UUIDMost:473183,UUIDLeast:222857,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:223351,UUIDLeast:686496,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:188583,UUIDLeast:588437,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -469,7 +469,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§3§lStormborn Runeblade"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§l","§7When in main hand:","§7 2 Attack Speed","§7 6.5 Attack Damage","§9 +10% Speed"],Name:"§3§lStormborn Runeblade"},AttributeModifiers:[{UUIDMost:3111,UUIDLeast:62113,Amount:0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:789959,UUIDLeast:382503,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:905023,UUIDLeast:621272,Amount:-2,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§l","§7When in main hand:","§7 2 Attack Speed","§7 6.5 Attack Damage","§9 +10% Speed"],Name:"§3§lStormborn Runeblade"},AttributeModifiers:[{UUIDMost:3111,UUIDLeast:62113,Amount:0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:789959,UUIDLeast:382503,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:905023,UUIDLeast:621272,Amount:-2,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -480,7 +480,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§6§lTelum Immoriel"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§fAnother toy for Fangride to play with.","§8","§7When in main hand:","§7 0.8 Attack Speed","§7 12 Attack Damage"],Name:"§6§lTelum Immoriel"},AttributeModifiers:[{UUIDMost:962659,UUIDLeast:90631,Amount:11,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:345591,UUIDLeast:876260,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§fAnother toy for Fangride to play with.","§8","§7When in main hand:","§7 0.8 Attack Speed","§7 12 Attack Damage"],Name:"§6§lTelum Immoriel"},AttributeModifiers:[{UUIDMost:962659,UUIDLeast:90631,Amount:11,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:345591,UUIDLeast:876260,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -494,7 +494,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§6§lGeomantic Dagger"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:17s},{lvl:5s,id:34s}],HideFlags:2,display:{Lore:["* Unique Item *","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 5.5 Attack Damage","§9 +3 Armor"],Name:"§6§lGeomantic Dagger"},AttributeModifiers:[{UUIDMost:749364,UUIDLeast:739930,Amount:3,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:787340,UUIDLeast:172309,Amount:3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:728374,UUIDLeast:661477,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:17s},{lvl:5s,id:34s}],HideFlags:2,display:{Lore:["* Unique Item *","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 5.5 Attack Damage","§9 +3 Armor"],Name:"§6§lGeomantic Dagger"},AttributeModifiers:[{UUIDMost:749364,UUIDLeast:739930,Amount:3,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:787340,UUIDLeast:172309,Amount:3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:728374,UUIDLeast:661477,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -511,7 +511,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§6§lGiant's Axe"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7","§7When in main hand:","§7 0.6 Attack Speed","§7 15 Attack Damage"," §c-8% Speed"],Name:"§6§lGiant's Axe"},AttributeModifiers:[{UUIDMost:3111,UUIDLeast:62113,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:789959,UUIDLeast:382503,Amount:14,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:905023,UUIDLeast:621272,Amount:-3.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7","§7When in main hand:","§7 0.6 Attack Speed","§7 15 Attack Damage"," §c-8% Speed"],Name:"§6§lGiant's Axe"},AttributeModifiers:[{UUIDMost:3111,UUIDLeast:62113,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:789959,UUIDLeast:382503,Amount:14,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:905023,UUIDLeast:621272,Amount:-3.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -522,7 +522,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§3§lMithril Cleaver"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 1.2 Attack Speed","§7 10 Attack Damage","§9 +12% Speed"],Name:"§3§lMithril Cleaver"},AttributeModifiers:[{UUIDMost:580907,UUIDLeast:714721,Amount:0.12d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:891666,UUIDLeast:498692,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"},{UUIDMost:699422,UUIDLeast:16466,Amount:8,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 1.2 Attack Speed","§7 10 Attack Damage","§9 +12% Speed"],Name:"§3§lMithril Cleaver"},AttributeModifiers:[{UUIDMost:580907,UUIDLeast:714721,Amount:0.12d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:891666,UUIDLeast:498692,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"},{UUIDMost:699422,UUIDLeast:16466,Amount:8,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"}]}'''
         ]
     ],
 
@@ -533,7 +533,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§4§lSearing Wrath"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:2s,id:20s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 0.8 Attack Speed","§7 12 Attack Damage","§c -3 Armor"],Name:"§4§lSearing Wrath"},AttributeModifiers:[{UUIDMost:797401,UUIDLeast:849310,Amount:8,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:205397,UUIDLeast:267554,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:589373,UUIDLeast:600470,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:2s,id:20s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 0.8 Attack Speed","§7 12 Attack Damage","§c -3 Armor"],Name:"§4§lSearing Wrath"},AttributeModifiers:[{UUIDMost:797401,UUIDLeast:849310,Amount:8,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:205397,UUIDLeast:267554,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:589373,UUIDLeast:600470,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -544,7 +544,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§6§lSoulcrusher"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:6s,id:16s},{lvl:3s,id:34s}],RepairCost:1,HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§f","§7When in main hand:","§7 0.8 Attack Speed","§7 12.5 Attack Damage","§c -20% Speed"],Name:"§6§lSoulcrusher"},AttributeModifiers:[{UUIDMost:591080,UUIDLeast:153443,Amount:-0.2d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:949514,UUIDLeast:324160,Amount:8,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:21574,UUIDLeast:844732,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:6s,id:16s},{lvl:3s,id:34s}],RepairCost:1,HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§f","§7When in main hand:","§7 0.8 Attack Speed","§7 12.5 Attack Damage","§c -20% Speed"],Name:"§6§lSoulcrusher"},AttributeModifiers:[{UUIDMost:591080,UUIDLeast:153443,Amount:-0.2d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:949514,UUIDLeast:324160,Amount:8,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:21574,UUIDLeast:844732,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -561,7 +561,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§5§lEnderwrath"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:7s,id:16s},{lvl:5s,id:34s},{lvl:1s,id:19s},{lvl:2s,id:20s},{lvl:2s,id:21s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","","§7When in main hand:","§7 2 Attack Speed","§7 5 Attack Damage","§9 +15% Speed"],Name:"§5§lEnderwrath"},AttributeModifiers:[{UUIDMost:905415,UUIDLeast:796247,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:840609,UUIDLeast:663888,Amount:-2,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:7s,id:16s},{lvl:5s,id:34s},{lvl:1s,id:19s},{lvl:2s,id:20s},{lvl:2s,id:21s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","","§7When in main hand:","§7 2 Attack Speed","§7 5 Attack Damage","§9 +15% Speed"],Name:"§5§lEnderwrath"},AttributeModifiers:[{UUIDMost:905415,UUIDLeast:796247,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:840609,UUIDLeast:663888,Amount:-2,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 
@@ -587,7 +587,7 @@ itemReplacements = [
             "nbt":ur'''{display:{Name:"§5§lTome of Arcane Horrors"}}''',
         },
         [
-            "nbt", "set", ur'''{ench:[{lvl:3s,id:20s},{lvl:3s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 0.5 Attack Speed","§7 16 Attack Damage"],Name:"§5§lTome of Arcane Horrors"},AttributeModifiers:[{UUIDMost:495321,UUIDLeast:169768,Amount:15,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:564922,UUIDLeast:574772,Amount:-3.5d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:3s,id:20s},{lvl:3s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 0.5 Attack Speed","§7 16 Attack Damage"],Name:"§5§lTome of Arcane Horrors"},AttributeModifiers:[{UUIDMost:495321,UUIDLeast:169768,Amount:15,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:564922,UUIDLeast:574772,Amount:-3.5d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
         ]
     ],
 

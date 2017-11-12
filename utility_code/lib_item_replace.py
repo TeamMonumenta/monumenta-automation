@@ -37,12 +37,98 @@ containerTagNames = [
 
     # Item Frames
     "Item",
+    
+    # Players
+    "Inventory", # villagers too, apparently
+    "EnderItems",
 ]
 
 ################################################################################
 # Item stack finding code
 
-def replaceItemStack(itemStack,replacementList):
+class ReplaceItems(object):
+    """
+    Item replacement util; give it an uncompiled
+    list of items to replace, then tell it where
+    to replace things.
+    """
+    def __init__(self,replacementList=None):
+        if replacementList is None:
+            self.replacements = None
+        else:
+            self.replacements = item_replace.allReplacements(replacementList)
+        self.entities = []
+        self.entity = None
+
+    def InWorld(self,world):
+        if self.replacements is None:
+            continue
+
+        for cx,cz in world.allChunks:
+            aChunk = world.getChunk(cx,cz)
+
+            if "Level" not in aChunk.root_tag:
+                # This chunk is invalid, skip it!
+                # It has no data.
+                continue
+
+            self.entities = aChunk.root_tag["Level"]["Entities"]
+            self._OnEntities()
+            self.entities = aChunk.root_tag["Level"]["TileEntities"]
+            self._OnEntities()
+
+            aChunk.chunkChanged(False) # needsLighting=False
+
+    def InSchematic(self,schematic):
+        if self.replacements is None:
+            continue
+
+        self.entities = schematic.Entities
+        self._OnEntities()
+        self.entities = schematic.TileEntities
+        self._OnEntities()
+
+    def OnPlayers(self,worldDir,replacementList):
+        if self.replacements is None:
+            continue
+
+        for playerFile in os.listdir(worldDir+"playerdata"):
+            playerFile = worldDir+"playerdata/" + playerFile
+            player = nbt.load(playerFile)
+            self.entities = [player]
+            self._OnEntities()
+            player.save(playerFile)
+    
+    def _OnEntities():
+        while len(self.entities) > 0:
+            self.entity = self.entities.pop()
+            for containerTagName in containerTagNames:
+                if containerTagName in self.entity:
+                    # Replace hand items if they can drop
+                    if containerTagName == "HandItems":
+                        if "HandDropChances" in self.entity:
+                            for i in range(2):
+                                if self.entity["HandDropChances"][i] > -1.00:
+                                    self._InStacks(self.entity[containerTagName][i])
+                        else:
+                            self._InStacks(self.entity[containerTagName])
+
+                    # Replace armor items if they can drop
+                    elif containerTagName == "ArmorItems":
+                        if "ArmorDropChances" in self.entity:
+                            for i in range(4):
+                                if self.entity["ArmorDropChances"][i] > -1.00:
+                                    self._InStacks(self.entity[containerTagName][i])
+                        else:
+                            self._InStacks(self.entity[containerTagName])
+
+                    # Replace other items; they always drop
+                    else:
+                        self._InStacks(self.entity[containerTagName])
+
+        self.entity = None
+
+def replaceItemStack(entityList,itemStack,replacementList):
     if type(itemStack) != nbt.TAG_Compound:
         # Invalid itemStack type
         return
@@ -55,66 +141,62 @@ def replaceItemStack(itemStack,replacementList):
             ( "BlockEntityTag" in itemStack["tag"] ) and
             ( "Items" in itemStack["tag"]["BlockEntityTag"] )
         ):
-            shulkerBoxContents = itemStack["tag"]["BlockEntityTag"]["Items"]
-            # TODO This recursive method should be changed to iterative!
-            replaceItemStacks(shulkerBoxContents,replacementList)
+            shulkerBox = itemStack["tag"]["BlockEntityTag"]
+            entityList.append(shulkerBox)
     elif itemStack["id"].value == u"minecraft:spawn_egg":
         if (
             ( "tag" in itemStack ) and
             ( "EntityTag" in itemStack["tag"] )
         ):
             spawnEggEntity = itemStack["tag"]["EntityTag"]
-            # TODO This recursive method should be changed to iterative!
-            replaceItemsOnEntity(spawnEggEntity,replacementList)
+            entityList.append(spawnEggEntity)
     replacementList.run(itemStack)
 
-def replaceItemStacks(itemStackContainer,replacementList):
+def replaceItemStacks(entityList,itemStackContainer,replacementList):
     if type(itemStackContainer) is nbt.TAG_List:
         for itemStack in itemStackContainer:
-            replaceItemStack(itemStack,replacementList)
+            replaceItemStack(entityList,itemStack,replacementList)
     elif type(itemStackContainer) is nbt.TAG_Compound:
-        replaceItemStack(itemStackContainer,replacementList)
+        replaceItemStack(entityList,itemStackContainer,replacementList)
 
 def replaceItemsOnPlayers(worldDir,replacementList):
     for playerFile in os.listdir(worldDir+"playerdata"):
         playerFile = worldDir+"playerdata/" + playerFile
         player = nbt.load(playerFile)
-        replaceItemStacks(player["Inventory"],replacementList)
-        replaceItemStacks(player["EnderItems"],replacementList)
+        replaceItemsOnEntities([player])
         player.save(playerFile)
 
-def replaceItemsOnEntity(entity,replacementList):
-    for containerTagName in containerTagNames:
-        if containerTagName in entity:
+def replaceItemsOnEntities(entityList,replacementList):
+    while len(entityList) > 0:
+        entity = entityList.pop()
+        for containerTagName in containerTagNames:
+            if containerTagName in entity:
 
-            # Replace hand items if they can drop
-            if containerTagName == "HandItems":
-                if "HandDropChances" in entity:
-                    for i in range(2):
-                        if entity["HandDropChances"][i] > -1.00:
-                            replaceItemStacks(entity[containerTagName][i],replacementList)
+                # Replace hand items if they can drop
+                if containerTagName == "HandItems":
+                    if "HandDropChances" in entity:
+                        for i in range(2):
+                            if entity["HandDropChances"][i] > -1.00:
+                                replaceItemStacks(entityList,entity[containerTagName][i],replacementList)
+                    else:
+                        replaceItemStacks(entityList,entity[containerTagName],replacementList)
+
+                # Replace armor items if they can drop
+                elif containerTagName == "ArmorItems":
+                    if "ArmorDropChances" in entity:
+                        for i in range(4):
+                            if entity["ArmorDropChances"][i] > -1.00:
+                                replaceItemStacks(entityList,entity[containerTagName][i],replacementList)
+                    else:
+                        replaceItemStacks(entityList,entity[containerTagName],replacementList)
+
+                # Replace other items; they always drop
                 else:
-                    replaceItemStacks(entity[containerTagName],replacementList)
-
-            # Replace armor items if they can drop
-            elif containerTagName == "ArmorItems":
-                if "ArmorDropChances" in entity:
-                    for i in range(4):
-                        if entity["ArmorDropChances"][i] > -1.00:
-                            replaceItemStacks(entity[containerTagName][i],replacementList)
-                else:
-                    replaceItemStacks(entity[containerTagName],replacementList)
-
-            # Replace other items; they always drop
-            else:
-                replaceItemStacks(entity[containerTagName],replacementList)
+                    replaceItemStacks(entityList,entity[containerTagName],replacementList)
 
 def replaceItemsInSchematic(schematic,replacementList):
-    for entity in schematic.Entities:
-        replaceItemsOnEntity(entity,replacementList)
-
-    for tileEntity in schematic.TileEntities:
-        replaceItemsOnEntity(tileEntity,replacementList)
+    replaceItemsOnEntities(schematic.Entities,replacementList)
+    replaceItemsOnEntities(schematic.TileEntities,replacementList)
 
 def replaceItemsInWorld(world,replacementList):
     for cx,cz in world.allChunks:
@@ -125,11 +207,8 @@ def replaceItemsInWorld(world,replacementList):
             # It has no data.
             continue
 
-        for entity in aChunk.root_tag["Level"]["Entities"]:
-            replaceItemsOnEntity(entity,replacementList)
-
-        for tileEntity in aChunk.root_tag["Level"]["TileEntities"]:
-            replaceItemsOnEntity(tileEntity,replacementList)
+        replaceItemsOnEntities(aChunk.root_tag["Level"]["Entities"],replacementList)
+        replaceItemsOnEntities(aChunk.root_tag["Level"]["TileEntities"],replacementList)
 
         aChunk.chunkChanged(False) # needsLighting=False
 
