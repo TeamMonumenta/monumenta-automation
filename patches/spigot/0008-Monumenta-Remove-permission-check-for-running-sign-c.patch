@@ -1,0 +1,60 @@
+From e42b6bc5621605ed606996ca41ff55e77991c558 Mon Sep 17 00:00:00 2001
+From: Byron Marohn <combustible@live.com>
+Date: Mon, 13 Nov 2017 17:20:23 -0800
+Subject: [PATCH 8/8] Monumenta - Remove permission check for running sign
+ commands
+
+---
+ src/main/java/net/minecraft/server/TileEntitySign.java | 6 +++++-
+ src/main/java/org/bukkit/craftbukkit/CraftServer.java  | 4 ++--
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/TileEntitySign.java b/src/main/java/net/minecraft/server/TileEntitySign.java
+index 77a7b44..c85f380 100644
+--- a/src/main/java/net/minecraft/server/TileEntitySign.java
++++ b/src/main/java/net/minecraft/server/TileEntitySign.java
+@@ -38,7 +38,7 @@ public class TileEntitySign extends TileEntity {
+     public void load(NBTTagCompound nbttagcompound) {
+         this.isEditable = false;
+         super.load(nbttagcompound);
+-        ICommandListener icommandlistener = new ICommandListener() {
++        SignCommandListener icommandlistener = new SignCommandListener() {
+             public String getName() {
+                 return "Sign";
+             }
+@@ -119,6 +119,10 @@ public class TileEntitySign extends TileEntity {
+         this.h = entityhuman;
+     }
+ 
++	public static interface SignCommandListener extends ICommandListener {
++		// Nothing here - just want to be able to check for ICommandListeners of this type
++	}
++
+     public EntityHuman e() {
+         return this.h;
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 814be6e..f516304 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -268,7 +268,7 @@ public final class CraftServer implements Server {
+             listener = ((CommandListenerWrapper) listener).base;
+         }
+ 
+-        return unrestrictedAdvancements && listener instanceof AdvancementRewards.AdvancementCommandListener;
++        return unrestrictedAdvancements && listener instanceof AdvancementRewards.AdvancementCommandListener || listener instanceof TileEntitySign.SignCommandListener;
+     }
+ 
+     public boolean getCommandBlockOverride(String command) {
+@@ -1369,7 +1369,7 @@ public final class CraftServer implements Server {
+ 
+         for (JsonListEntry entry : playerList.getProfileBans().getValues()) {
+             result.add(getOfflinePlayer((GameProfile) entry.getKey()));
+-        }        
++        }
+ 
+         return result;
+     }
+-- 
+2.7.4
+

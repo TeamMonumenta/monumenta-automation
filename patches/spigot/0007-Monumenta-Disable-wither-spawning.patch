@@ -1,9 +1,8 @@
-From 6d6bb8d007ffc72e619bda2a0a4a8af60df01b4e Mon Sep 17 00:00:00 2001
+From 437696bc72af37a31234c3e2ac024b628dd2835c Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Tue, 31 Oct 2017 18:02:46 -0700
-Subject: [PATCH 8/8] Disable wither spawning
+Subject: [PATCH 7/8] Monumenta - Disable wither spawning
 
-Signed-off-by: Byron Marohn <combustible@live.com>
 ---
  src/main/java/net/minecraft/server/BlockSkull.java | 69 ----------------------
  1 file changed, 69 deletions(-)
