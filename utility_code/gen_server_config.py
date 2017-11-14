@@ -141,11 +141,12 @@ config = {
     'region_1':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25566'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /setblock -1449 1 -1440 redstone_block'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
             #('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
             #('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"dailyResetEnabled":', '"dailyResetEnabled": true,'),
@@ -157,6 +158,7 @@ config = {
     'region_2':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25568'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.3"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
@@ -167,7 +169,8 @@ config = {
 
     'tutorial':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('server.properties', 'view-distance', 'view-distance=6'),
+            ('spigot.yml', 'view-distance', '    view-distance: 6'),
             ('server.properties', 'server-port', 'server-port=25567'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.7"'),
@@ -175,12 +178,13 @@ config = {
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + build_plugins,
     },
 
     'dungeon':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
+            ('spigot.yml', 'view-distance', '    view-distance: 12'),
             ('server.properties', 'server-port', 'server-port=25572'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.6"'),
@@ -193,6 +197,7 @@ config = {
     'roguelike':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=16'),
+            ('spigot.yml', 'view-distance', '    view-distance: 16'),
             ('server.properties', 'server-port', 'server-port=25569'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.4"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
@@ -204,6 +209,7 @@ config = {
     'test':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25571'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.5"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
@@ -215,6 +221,7 @@ config = {
     'build':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25599'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.29"'),
             ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
@@ -233,6 +240,7 @@ config = {
     'mobs':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=6'),
+            ('spigot.yml', 'view-distance', '    view-distance: 6'),
             ('server.properties', 'server-port', 'server-port=25598'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.28"'),
             ('server.properties', 'difficulty', 'difficulty=2'),
@@ -245,6 +253,7 @@ config = {
     'r1plots':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=7'),
+            ('spigot.yml', 'view-distance', '    view-distance: 7'),
             ('server.properties', 'server-port', 'server-port=25573'),
             ('server.properties', 'difficulty', 'difficulty=0'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.8"'),
@@ -261,6 +270,7 @@ config = {
     'betaplots':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=7'),
+            ('spigot.yml', 'view-distance', '    view-distance: 7'),
             ('server.properties', 'server-port', 'server-port=25574'),
             ('server.properties', 'difficulty', 'difficulty=0'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.9"'),
@@ -275,6 +285,7 @@ config = {
     'purgatory':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=4'),
+            ('spigot.yml', 'view-distance', '    view-distance: 4'),
             ('server.properties', 'force-gamemode', 'force-gamemode=true'),
             ('server.properties', 'gamemode', 'gamemode=2'),
             ('server.properties', 'server-port', 'server-port=25570'),
@@ -292,7 +303,8 @@ config = {
 
     'white':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=14'),
+            ('server.properties', 'view-distance', 'view-distance=12'),
+            ('spigot.yml', 'view-distance', '    view-distance: 12'),
             ('server.properties', 'server-port', 'server-port=25580'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.10"'),
@@ -305,6 +317,7 @@ config = {
     'orange':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
+            ('spigot.yml', 'view-distance', '    view-distance: 12'),
             ('server.properties', 'server-port', 'server-port=25581'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.11"'),
@@ -317,6 +330,7 @@ config = {
     'magenta':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
+            ('spigot.yml', 'view-distance', '    view-distance: 12'),
             ('server.properties', 'server-port', 'server-port=25582'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.12"'),
@@ -329,6 +343,7 @@ config = {
     'lightblue':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
+            ('spigot.yml', 'view-distance', '    view-distance: 12'),
             ('server.properties', 'server-port', 'server-port=25583'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.13"'),
@@ -341,11 +356,12 @@ config = {
     'yellow':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25584'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.14"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
@@ -353,6 +369,7 @@ config = {
     'r1bonus':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25600'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.30"'),
