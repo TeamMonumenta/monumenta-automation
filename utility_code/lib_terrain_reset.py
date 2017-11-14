@@ -25,8 +25,6 @@ import pymclevel
 
 from lib_monumenta_common import fillBoxes, copyBoxes, copyFolder, copyFolders
 from lib_monumenta_common import resetRegionalDifficulty, movePlayers, replaceGlobally
-import lib_item_replace
-import item_replace_list
 
 def terrainReset(configlist):
     for config in configlist:
@@ -61,12 +59,7 @@ def terrainReset(configlist):
             print "  Copying main world as base..."
             copyFolder(config["localMainFolder"], localDstFolder)
 
-        # If item replacements were specified, compile the list
-        if "itemReplacements" in config:
-            print "  Compiling item replacement list..."
-            compiledItemReplacements = lib_item_replace.allReplacements(config["itemReplacements"])
-        else:
-            compiledItemReplacements = None
+        replaceItems = config["itemReplacements"]
 
         # If block replacements were specified, assign a variable
         if "blockReplacements" in config:
@@ -81,9 +74,7 @@ def terrainReset(configlist):
         print "  Copying player maps and scoreboard from main world..."
         copyFolders(localMainFolder, localDstFolder, ["data/",])
 
-        if compiledItemReplacements is not None:
-            print "  Handling item replacements for players..."
-            lib_item_replace.replaceItemsOnPlayers(localDstFolder, compiledItemReplacements)
+        replaceItems.OnPlayers(localDstFolder)
 
         # Only load the world and manipulate it if we need to
         # TODO - This is a little weird, since we skip doing item replacements worldwide if we don't also do something else involving the world
@@ -107,16 +98,15 @@ def terrainReset(configlist):
                     fillBoxes(dstWorld, config["coordinatesToCopy"])
                 else:
                     print "  Copying needed terrain from the main world..."
-                    copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"], blockReplacements, compiledItemReplacements)
+                    copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"], blockReplacements, replaceItems)
             else:
                 # No coordinates to copy, but still want to replace blocks - do the block replacement worldwide
                 if blockReplacements is not None:
                     print "  Replacing specified blocks worldwide..."
                     replaceGlobally(dstWorld, blockReplacements)
                 # No coordinates to copy, but still want to replace items - do the item replacement worldwide
-                if compiledItemReplacements is not None:
-                    print "  Replacing specified items worldwide..."
-                    lib_item_replace.replaceItemsInWorld(dstWorld, compiledItemReplacements)
+                print "  Replacing specified items worldwide..."
+                replaceItems.InWorld(dstWorld)
 
             if ("resetRegionalDifficulty" in config) and (config["resetRegionalDifficulty"] == True):
                 print "  Resetting difficulty..."

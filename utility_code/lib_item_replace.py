@@ -37,7 +37,7 @@ containerTagNames = [
 
     # Item Frames
     "Item",
-    
+
     # Players
     "Inventory", # villagers too, apparently
     "EnderItems",
@@ -57,12 +57,14 @@ class ReplaceItems(object):
             self.replacements = None
         else:
             self.replacements = item_replace.allReplacements(replacementList)
-        self.entities = []
-        self.entity = None
+            self.debug = {}
+            self.debug["global"] = {}
 
     def InWorld(self,world):
         if self.replacements is None:
             continue
+
+        self.debug["current"] = {}
 
         for cx,cz in world.allChunks:
             aChunk = world.getChunk(cx,cz)
@@ -72,9 +74,13 @@ class ReplaceItems(object):
                 # It has no data.
                 continue
 
-            self.entities = aChunk.root_tag["Level"]["Entities"]
-            self._OnEntities()
-            self.entities = aChunk.root_tag["Level"]["TileEntities"]
+            # shallow copy this list, or we won't have entities in the main world.
+            # Also, we don't need a TAG_List; a normal list is fine.
+            self.entityList = []
+            for entity in aChunk.root_tag["Level"]["Entities"]:
+                self.entityList.append(entity)
+            for entity in aChunk.root_tag["Level"]["TileEntities"]:
+                self.entityList.append(entity)
             self._OnEntities()
 
             aChunk.chunkChanged(False) # needsLighting=False
@@ -83,25 +89,72 @@ class ReplaceItems(object):
         if self.replacements is None:
             continue
 
-        self.entities = schematic.Entities
-        self._OnEntities()
-        self.entities = schematic.TileEntities
+        self.debug["current"] = {}
+
+        # shallow copy this list, or we won't have entities in the main world.
+        # Also, we don't need a TAG_List; a normal list is fine.
+        self.entityList = []
+        for entity in schematic.Entities:
+            self.entityList.append(entity)
+        for entity in schematic.TileEntities:
+            self.entityList.append(entity)
         self._OnEntities()
 
-    def OnPlayers(self,worldDir,replacementList):
+    def OnPlayers(self,worldDir):
         if self.replacements is None:
             continue
+
+        self.debug["current"] = {}
 
         for playerFile in os.listdir(worldDir+"playerdata"):
             playerFile = worldDir+"playerdata/" + playerFile
             player = nbt.load(playerFile)
-            self.entities = [player]
+            # In this case, we can easily copy the only entity to a list.
+            self.entityList = [player]
             self._OnEntities()
             player.save(playerFile)
-    
+
     def _OnEntities():
-        while len(self.entities) > 0:
-            self.entity = self.entities.pop()
+        while len(self.entityList) > 0:
+            self.entity = self.entityList.pop()
+            self.debug["entity"] = self.entity
+            if (
+                ("Pos" in self.entity) or
+                ("x" in self.entity)
+            ):
+                # The entity exists in the world/schematic directly,
+                # not inside something.
+                self.rootEntity = self.entity
+                self.debug["rootEntity"] = self.rootEntity
+
+            # Handle spawners (done this way for spawner items with NBT)
+            if "SpawnData" in self.entity:
+                self.entityList.append(self.entity["SpawnData"])
+            if "SpawnData" in self.entity:
+                for potentialSpawn in self.entity["SpawnData"]:
+                    self.entityList.append(potentialSpawn["Entity"])
+
+            # Handle villager trades
+            if (
+                ("Offers" in self.entity) and
+                ("Recipes" in self.entity["Offers"]) and
+            ):
+                for trade in self.entity["Offers"]["Recipes"]:
+                    #if "maxUses" in trade:
+                    #    # make the villager support the maximum allowed trades
+                    #    trade["maxUses"] = 2147483647
+                    # trade["uses"] is the number of times a trade is used;
+                    # we can use it for player shops, as long as it starts at 1
+                    # if it starts at 0, trades will get refreshed, resetting
+                    # other trades to 0, reducing their max use, and potentially
+                    # opening another trade.
+                    if "buy" in trade:
+                        self._InStack(trade["buy"])
+                    if "buyB" in trade:
+                        self._InStack(trade["buyB"])
+                    if "sell" in trade:
+                        self._InStack(trade["sell"])
+
             for containerTagName in containerTagNames:
                 if containerTagName in self.entity:
                     # Replace hand items if they can drop
@@ -109,108 +162,56 @@ class ReplaceItems(object):
                         if "HandDropChances" in self.entity:
                             for i in range(2):
                                 if self.entity["HandDropChances"][i] > -1.00:
-                                    self._InStacks(self.entity[containerTagName][i])
+                                    self._InStack(self.entity[containerTagName][i])
                         else:
-                            self._InStacks(self.entity[containerTagName])
+                            self._InStack(self.entity[containerTagName])
 
                     # Replace armor items if they can drop
                     elif containerTagName == "ArmorItems":
                         if "ArmorDropChances" in self.entity:
                             for i in range(4):
                                 if self.entity["ArmorDropChances"][i] > -1.00:
-                                    self._InStacks(self.entity[containerTagName][i])
+                                    self._InStack(self.entity[containerTagName][i])
                         else:
-                            self._InStacks(self.entity[containerTagName])
+                            self._InStackList(self.entity[containerTagName])
 
                     # Replace other items; they always drop
                     else:
-                        self._InStacks(self.entity[containerTagName])
+                        self._InStackList(self.entity[containerTagName])
 
         self.entity = None
+        self.debug.pop("entity")
+        self.rootEntity = None
+        self.debug.pop("rootEntity")
 
-def replaceItemStack(entityList,itemStack,replacementList):
-    if type(itemStack) != nbt.TAG_Compound:
-        # Invalid itemStack type
-        return
-    if "id" not in itemStack:
-        # No item in this slot (mob armor/hand items)
-        return
-    if itemStack["id"].value in shulkerIDNames:
-        if (
-            ( "tag" in itemStack ) and
-            ( "BlockEntityTag" in itemStack["tag"] ) and
-            ( "Items" in itemStack["tag"]["BlockEntityTag"] )
-        ):
-            shulkerBox = itemStack["tag"]["BlockEntityTag"]
-            entityList.append(shulkerBox)
-    elif itemStack["id"].value == u"minecraft:spawn_egg":
-        if (
-            ( "tag" in itemStack ) and
-            ( "EntityTag" in itemStack["tag"] )
-        ):
-            spawnEggEntity = itemStack["tag"]["EntityTag"]
-            entityList.append(spawnEggEntity)
-    replacementList.run(itemStack)
+    def _InStackList(itemStackList):
+        if type(itemStackList) is nbt.TAG_List:
+            for itemStack in itemStackList:
+                replaceItemStack(itemStack)
+        elif type(itemStackList) is nbt.TAG_Compound:
+            replaceItemStack(itemStackList)
 
-def replaceItemStacks(entityList,itemStackContainer,replacementList):
-    if type(itemStackContainer) is nbt.TAG_List:
-        for itemStack in itemStackContainer:
-            replaceItemStack(entityList,itemStack,replacementList)
-    elif type(itemStackContainer) is nbt.TAG_Compound:
-        replaceItemStack(entityList,itemStackContainer,replacementList)
+    def _InStack(itemStack):
+        if type(itemStack) != nbt.TAG_Compound:
+            # Invalid itemStack type
+            return
+        if "id" not in itemStack:
+            # No item in this slot (mob armor/hand items)
+            return
+        # Handle item replacement on this item first
+        self.replacements.run(itemStack)
+        # Now that this item has been altered/removed, try these:
+        if "tag" in itemStack:
+            if "BlockEntityTag" in itemStack["tag"]:
+                # This is enough info to loop over blocks with
+                # NBT held as items, like shulker boxes.
+                blockEntity = itemStack["tag"]["BlockEntityTag"]
+                self.entityList.append(blockEntity)
+            if "EntityTag" in itemStack["tag"]:
+                # Handles spawn eggs, and potentially other cases.
+                entity = itemStack["tag"]["EntityTag"]
+                self.entityList.append(entity)
 
-def replaceItemsOnPlayers(worldDir,replacementList):
-    for playerFile in os.listdir(worldDir+"playerdata"):
-        playerFile = worldDir+"playerdata/" + playerFile
-        player = nbt.load(playerFile)
-        replaceItemsOnEntities([player])
-        player.save(playerFile)
-
-def replaceItemsOnEntities(entityList,replacementList):
-    while len(entityList) > 0:
-        entity = entityList.pop()
-        for containerTagName in containerTagNames:
-            if containerTagName in entity:
-
-                # Replace hand items if they can drop
-                if containerTagName == "HandItems":
-                    if "HandDropChances" in entity:
-                        for i in range(2):
-                            if entity["HandDropChances"][i] > -1.00:
-                                replaceItemStacks(entityList,entity[containerTagName][i],replacementList)
-                    else:
-                        replaceItemStacks(entityList,entity[containerTagName],replacementList)
-
-                # Replace armor items if they can drop
-                elif containerTagName == "ArmorItems":
-                    if "ArmorDropChances" in entity:
-                        for i in range(4):
-                            if entity["ArmorDropChances"][i] > -1.00:
-                                replaceItemStacks(entityList,entity[containerTagName][i],replacementList)
-                    else:
-                        replaceItemStacks(entityList,entity[containerTagName],replacementList)
-
-                # Replace other items; they always drop
-                else:
-                    replaceItemStacks(entityList,entity[containerTagName],replacementList)
-
-def replaceItemsInSchematic(schematic,replacementList):
-    replaceItemsOnEntities(schematic.Entities,replacementList)
-    replaceItemsOnEntities(schematic.TileEntities,replacementList)
-
-def replaceItemsInWorld(world,replacementList):
-    for cx,cz in world.allChunks:
-        aChunk = world.getChunk(cx,cz)
-
-        if "Level" not in aChunk.root_tag:
-            # This chunk is invalid, skip it!
-            # It has no data.
-            continue
-
-        replaceItemsOnEntities(aChunk.root_tag["Level"]["Entities"],replacementList)
-        replaceItemsOnEntities(aChunk.root_tag["Level"]["TileEntities"],replacementList)
-
-        aChunk.chunkChanged(False) # needsLighting=False
 
 ################################################################################
 # Replacement list optimizer
@@ -234,9 +235,9 @@ class allReplacements(list):
     def __iter__(self):
         return self._replacements
 
-    def run(self,itemStack):
+    def run(self,itemStack,debug):
         for replacement in self._replacements:
-            replacement.run(itemStack)
+            replacement.run(itemStack,debug)
 
 class replacement(object):
     def __init__(self,replacementPair):
@@ -299,7 +300,7 @@ class replacement(object):
                 self.actions.append(newAction)
                 #print newAction.str()
 
-    def run(self,itemStack):
+    def run(self,itemStack,debug):
         if all(rule == itemStack for rule in self.matches):
             #print "*** Found match:"
             #print itemStack.json
@@ -309,7 +310,7 @@ class replacement(object):
             #print "Actions:"
             for action in self.actions:
                 #print action.str()
-                action.run(itemStack)
+                action.run(itemStack,debug)
             #print ""
 
 # Matching optimizers
@@ -438,7 +439,7 @@ class changeID(object):
     def __init__(self,actionOptions):
         self._id = actionOptions.pop(0)
 
-    def run(self,itemStack):
+    def run(self,itemStack,debug):
         itemStack["id"].value = self._id
 
     def str(self):
@@ -450,53 +451,53 @@ class changeCount(object):
     """
     def __init__(self,actionOptions):
         self._operation = actionOptions.pop(0)
-        self._value = actionOptions.pop(0)
+        self._opValue = actionOptions.pop(0)
 
-    def run(self,itemStack):
+    def run(self,itemStack,debug):
         if self._operation == "=":
-            itemStack["Count"].value = self._value
+            itemStack["Count"].value = self._opValue
             return
         if self._operation == "+":
-            itemStack["Count"].value += self._value
+            itemStack["Count"].value += self._opValue
             return
         if self._operation == "-":
-            itemStack["Count"].value -= self._value
+            itemStack["Count"].value -= self._opValue
             return
         if self._operation == "*":
-            itemStack["Count"].value *= self._value
+            itemStack["Count"].value *= self._opValue
             return
         if self._operation == "/":
-            itemStack["Count"].value /= self._value
+            itemStack["Count"].value /= self._opValue
             return
         if self._operation == "%":
-            itemStack["Count"].value %= self._value
+            itemStack["Count"].value %= self._opValue
             return
         if self._operation == "max":
-            newVal = min(itemStack["Count"].value,self._value)
+            newVal = min(itemStack["Count"].value,self._opValue)
             itemStack["Count"].value = newVal
             return
         if self._operation == "min":
-            newVal = max(itemStack["Count"].value,self._value)
+            newVal = max(itemStack["Count"].value,self._opValue)
             itemStack["Count"].value = newVal
             return
 
     def str(self):
         if self._operation == "=":
-            return u'* Set count to ' + self._value
+            return u'* Set count to ' + self._opValue
         if self._operation == "+":
-            return u'* Add ' + self._value + u' to count'
+            return u'* Add ' + self._opValue + u' to count'
         if self._operation == "-":
-            return u'* Subtract ' + self._value + u' from count'
+            return u'* Subtract ' + self._opValue + u' from count'
         if self._operation == "*":
-            return u'* Multiply count by ' + self._value
+            return u'* Multiply count by ' + self._opValue
         if self._operation == "/":
-            return u'* Divide count by ' + self._value
+            return u'* Divide count by ' + self._opValue
         if self._operation == "%":
-            return u'* Set count to itself modulo ' + self._value
+            return u'* Set count to itself modulo ' + self._opValue
         if self._operation == "max":
-            return u'* Prevent count from being greater than ' + self._value
+            return u'* Prevent count from being greater than ' + self._opValue
         if self._operation == "min":
-            return u'* Prevent count from being less than ' + self._value
+            return u'* Prevent count from being less than ' + self._opValue
 
 class changeDamage(object):
     """
@@ -504,53 +505,53 @@ class changeDamage(object):
     """
     def __init__(self,actionOptions):
         self._operation = actionOptions.pop(0)
-        self._value = actionOptions.pop(0)
+        self._opValue = actionOptions.pop(0)
 
-    def run(self,itemStack):
+    def run(self,itemStack,debug):
         if self._operation == "=":
-            itemStack["Damage"].value = self._value
+            itemStack["Damage"].value = self._opValue
             return
         if self._operation == "+":
-            itemStack["Damage"].value += self._value
+            itemStack["Damage"].value += self._opValue
             return
         if self._operation == "-":
-            itemStack["Damage"].value -= self._value
+            itemStack["Damage"].value -= self._opValue
             return
         if self._operation == "*":
-            itemStack["Damage"].value *= self._value
+            itemStack["Damage"].value *= self._opValue
             return
         if self._operation == "/":
-            itemStack["Damage"].value /= self._value
+            itemStack["Damage"].value /= self._opValue
             return
         if self._operation == "%":
-            itemStack["Damage"].value %= self._value
+            itemStack["Damage"].value %= self._opValue
             return
         if self._operation == "max":
-            newVal = min(itemStack["Damage"].value,self._value)
+            newVal = min(itemStack["Damage"].value,self._opValue)
             itemStack["Damage"].value = newVal
             return
         if self._operation == "min":
-            newVal = max(itemStack["Damage"].value,self._value)
+            newVal = max(itemStack["Damage"].value,self._opValue)
             itemStack["Damage"].value = newVal
             return
 
     def str(self):
         if self._operation == "=":
-            return u'* Set damage to ' + self._value
+            return u'* Set damage to ' + self._opValue
         if self._operation == "+":
-            return u'* Add ' + self._value + u' to damage'
+            return u'* Add ' + self._opValue + u' to damage'
         if self._operation == "-":
-            return u'* Subtract ' + self._value + u' from damage'
+            return u'* Subtract ' + self._opValue + u' from damage'
         if self._operation == "*":
-            return u'* Multiply damage by ' + self._value
+            return u'* Multiply damage by ' + self._opValue
         if self._operation == "/":
-            return u'* Divide damage by ' + self._value
+            return u'* Divide damage by ' + self._opValue
         if self._operation == "%":
-            return u'* Set damage to itself modulo ' + self._value
+            return u'* Set damage to itself modulo ' + self._opValue
         if self._operation == "max":
-            return u'* Prevent damage from being greater than ' + self._value
+            return u'* Prevent damage from being greater than ' + self._opValue
         if self._operation == "min":
-            return u'* Prevent damage from being less than ' + self._value
+            return u'* Prevent damage from being less than ' + self._opValue
 
 class changeNBT(object):
     """
@@ -562,9 +563,9 @@ class changeNBT(object):
                 (self._operation == "set")
                 or (self._operation == "replace")
         ):
-            self._value = nbt.json_to_tag( actionOptions.pop(0) )
+            self._nbt = nbt.json_to_tag( actionOptions.pop(0) )
 
-    def run(self,itemStack):
+    def run(self,itemStack,debug):
         if (
                 (self._operation == "clear")
                 or (self._operation == "replace")
@@ -576,15 +577,15 @@ class changeNBT(object):
         ):
             if "tag" not in itemStack:
                 itemStack["tag"] = nbt.TAG_Compound()
-            itemStack["tag"].update(self._value)
+            itemStack["tag"].update(self._nbt)
 
     def str(self):
         if self._operation == "clear":
             return u'* Remove NBT'
         if self._operation == "set":
-            return u'* Add ' + self._value.json + u' to existing NBT'
+            return u'* Add ' + self._nbt.json + u' to existing NBT'
         if self._operation == "replace":
-            return u'* Replace NBT with u' + self._value.json
+            return u'* Replace NBT with u' + self._nbt.json
 
 """
 NYI
@@ -594,33 +595,33 @@ class changeScoreboard(object):
     ""
     def __init__(self,actionOptions):
         self._operation = actionOptions.pop(0)
-        self._value = actionOptions.pop(0)
+        self._opValue = actionOptions.pop(0)
 
     def run(self,itemStack):
         if self._operation == "=":
-            itemStack["Damage"].value = self._value
+            itemStack["Damage"].value = self._opValue
             return
         if self._operation == "+":
-            itemStack["Damage"].value += self._value
+            itemStack["Damage"].value += self._opValue
             return
         if self._operation == "-":
-            itemStack["Damage"].value -= self._value
+            itemStack["Damage"].value -= self._opValue
             return
         if self._operation == "*":
-            itemStack["Damage"].value *= self._value
+            itemStack["Damage"].value *= self._opValue
             return
         if self._operation == "/":
-            itemStack["Damage"].value /= self._value
+            itemStack["Damage"].value /= self._opValue
             return
         if self._operation == "%":
-            itemStack["Damage"].value %= self._value
+            itemStack["Damage"].value %= self._opValue
             return
         if self._operation == "max":
-            newVal = min(itemStack["Damage"].value,self._value)
+            newVal = min(itemStack["Damage"].value,self._opValue)
             itemStack["Damage"].value = newVal
             return
         if self._operation == "min":
-            newVal = max(itemStack["Damage"].value,self._value)
+            newVal = max(itemStack["Damage"].value,self._opValue)
             itemStack["Damage"].value = newVal
             return
 """
@@ -629,8 +630,11 @@ class changeRemove(object):
     """
     Stores a stack removal action to apply later
     """
-    def run(self,itemStack):
+    def run(self,itemStack,debug):
+        # item stacks with count 0 are deleted when loading the world
         itemStack["Count"].value = 0
+        if "tag" in itemStack:
+            itemStack.pop("tag")
 
     def str(self):
         return u'* Set item count to 0; the server will delete it on load'

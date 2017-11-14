@@ -8,7 +8,7 @@ merges them into a new world, dstWorld (destination).
 from lib_terrain_reset import terrainReset
 import item_replace_list
 
-configlist = [{
+configList = [{
     "server":"region_1",
 
     # Dst is the destination world, which gets overwritten by the build world.
@@ -37,7 +37,12 @@ configlist = [{
     "itemReplacements":item_replace_list.itemReplacements,
 
     "coordinatesToCopy":(
-        # ("a unique name",        (lowerCoordinate),  (upperCoordinate), replaceBlocks, ( id, dmg), "block name (comment)"),
+        # "name":"a unique name"
+        # "pos1":(x1,y1,z1)
+        # "pos2":(x2,y2,z2)
+        # "replace":True/False
+        # "material":(id,dmg) # what to fill with
+        # "materialName":"block name" # comment
         {"name":"Apartments_100",         "pos1":( -874,  99,   44), "pos2":(-809,  96,   44), "replace":False, "material":( 41,  0), "materialName":"gold"},
         {"name":"Apartments_200",         "pos1":( -874,  99,   36), "pos2":(-809,  96,   36), "replace":False, "material":( 41,  0), "materialName":"gold"},
         {"name":"Apartments_300",         "pos1":( -874,  99,   31), "pos2":(-809,  96,   31), "replace":False, "material":( 41,  0), "materialName":"gold"},
@@ -143,6 +148,6 @@ configlist = [{
     "itemReplacements":item_replace_list.itemReplacements,
 }]
 
-terrainReset(configlist)
+terrainReset(configList)
 print "Remember that tutorial, purgatory, bungee, and build are not handled by this script"
 

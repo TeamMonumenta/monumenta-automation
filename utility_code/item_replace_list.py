@@ -8,6 +8,8 @@
 #   better notation
 #   whatever else
 
+import lib_item_replace
+
 blockReplacements = (
     ("minecraft:iron_block", "air"),
     ("minecraft:iron_ore", "air"),
@@ -238,13 +240,16 @@ itemReplacements = [
     ],
 """
 
+# Use this to replace nothing
+itemReplacementsNone = lib_item_replace.ReplaceItems()
+
 # Use this to remove every item in the world
-itemReplacementsRemoveAll = [
+itemReplacementsRemoveAll = lib_item_replace.ReplaceItems([
     # Remove all items
     [ { "any":None, }, ["remove"] ],
-]
+])
 
-itemReplacements = [
+itemReplacements = lib_item_replace.ReplaceItems([
     ############################################################################
     # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)
@@ -697,5 +702,5 @@ itemReplacements = [
             "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],
-]
+])
 

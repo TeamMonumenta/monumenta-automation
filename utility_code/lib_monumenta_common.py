@@ -10,8 +10,6 @@ from pymclevel import materials
 from pymclevel.box import BoundingBox, Vector
 from pymclevel import nbt
 
-import lib_item_replace
-
 ################################################################################
 # Functions that do not require dictionaries as arguments
 
@@ -190,7 +188,7 @@ def fillBoxes(world, coordinatesToFill):
             print "    [{0}/{1}] Filling {2} with {3}".format(copyNum, copyMax, boxName, boxMaterialName)
             world.fillBlocks(box, block)
 
-def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, compiledItemReplacements):
+def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, replaceItems):
     """
     Copies a box from srcWorld to dstWorld at the same location, preserving entities
     coordinatesToCopy should be an iterable tuple or list of dictionaries, like this:
@@ -199,7 +197,7 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, compiled
         {"name":"Section_2", "pos1":( -896, 0,  208), "pos2":(-512, 255,  318), "replace":True, "material":( 57, 0), "materialName":"diamond"),
     )
     If "replace" == True, then item and block replacements will be done according
-        to blockReplacements and compiledItemReplacements
+        to blockReplacements and replaceItems
     """
     copyNum = 1
     copyMax = len(coordinatesToCopy)
@@ -224,9 +222,8 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, compiled
                 print "    [{0}/{1}]   Replacing specified blocks in {2}...".format(copyNum,copyMax,boxName)
                 replaceGlobally(tempSchematic, blockReplacements)
 
-            if compiledItemReplacements is not None:
-                print "    [{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
-                lib_item_replace.replaceItemsInSchematic(tempSchematic, compiledItemReplacements)
+            print "    [{0}/{1}]   Handling item replacements for tile entities in {2} (if applicable)...".format(copyNum,copyMax,boxName)
+            replaceItems.InSchematic(tempSchematic)
 
         # Remove entities in destination
         dstWorld.removeEntitiesInBox(box)
