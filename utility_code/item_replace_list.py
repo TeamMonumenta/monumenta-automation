@@ -693,12 +693,12 @@ itemReplacements = lib_item_replace.ReplaceItems([
     ############################################################################
     [
         {
-            "count":"0",
+            "count":0,
         },
         [
             "id","minecraft:rotten_flesh",
-            "count","=","1",
-            "damage","=","0",
+            "count","=",1,
+            "damage","=",0,
             "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
     ],

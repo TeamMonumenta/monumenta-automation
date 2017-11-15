@@ -56,13 +56,13 @@ class ReplaceItems(object):
         if replacementList is None:
             self.replacements = None
         else:
-            self.replacements = item_replace.allReplacements(replacementList)
+            self.replacements = allReplacements(replacementList)
             self.debug = {}
             self.debug["global"] = {}
 
     def InWorld(self,world):
         if self.replacements is None:
-            continue
+            return
 
         self.debug["current"] = {}
 
@@ -87,7 +87,7 @@ class ReplaceItems(object):
 
     def InSchematic(self,schematic):
         if self.replacements is None:
-            continue
+            return
 
         self.debug["current"] = {}
 
@@ -102,7 +102,7 @@ class ReplaceItems(object):
 
     def OnPlayers(self,worldDir):
         if self.replacements is None:
-            continue
+            return
 
         self.debug["current"] = {}
 
@@ -114,7 +114,7 @@ class ReplaceItems(object):
             self._OnEntities()
             player.save(playerFile)
 
-    def _OnEntities():
+    def _OnEntities(self):
         while len(self.entityList) > 0:
             self.entity = self.entityList.pop()
             self.debug["entity"] = self.entity
@@ -130,14 +130,14 @@ class ReplaceItems(object):
             # Handle spawners (done this way for spawner items with NBT)
             if "SpawnData" in self.entity:
                 self.entityList.append(self.entity["SpawnData"])
-            if "SpawnData" in self.entity:
-                for potentialSpawn in self.entity["SpawnData"]:
+            if "SpawnPotentials" in self.entity:
+                for potentialSpawn in self.entity["SpawnPotentials"]:
                     self.entityList.append(potentialSpawn["Entity"])
 
             # Handle villager trades
             if (
                 ("Offers" in self.entity) and
-                ("Recipes" in self.entity["Offers"]) and
+                ("Recipes" in self.entity["Offers"])
             ):
                 for trade in self.entity["Offers"]["Recipes"]:
                     #if "maxUses" in trade:
@@ -179,19 +179,27 @@ class ReplaceItems(object):
                     else:
                         self._InStackList(self.entity[containerTagName])
 
-        self.entity = None
-        self.debug.pop("entity")
-        self.rootEntity = None
-        self.debug.pop("rootEntity")
+            if (
+                ("x" in self.rootEntity) and
+                (self.rootEntity["x"].value == 80) and
+                (self.rootEntity["y"].value == 64) and
+                (self.rootEntity["z"].value == 251)
+            ):
+                print self.entity
 
-    def _InStackList(itemStackList):
+        self.entity = None
+        self.debug["entity"] = None
+        self.rootEntity = None
+        self.debug["rootEntity"] = None
+
+    def _InStackList(self,itemStackList):
         if type(itemStackList) is nbt.TAG_List:
             for itemStack in itemStackList:
-                replaceItemStack(itemStack)
+                self._InStack(itemStack)
         elif type(itemStackList) is nbt.TAG_Compound:
-            replaceItemStack(itemStackList)
+            self._InStack(itemStackList)
 
-    def _InStack(itemStack):
+    def _InStack(self,itemStack):
         if type(itemStack) != nbt.TAG_Compound:
             # Invalid itemStack type
             return
@@ -199,7 +207,7 @@ class ReplaceItems(object):
             # No item in this slot (mob armor/hand items)
             return
         # Handle item replacement on this item first
-        self.replacements.run(itemStack)
+        self.replacements.run(itemStack,self.debug)
         # Now that this item has been altered/removed, try these:
         if "tag" in itemStack:
             if "BlockEntityTag" in itemStack["tag"]:
@@ -297,6 +305,10 @@ class replacement(object):
                 #print newAction.str()
             if action == "remove":
                 newAction = changeRemove()
+                self.actions.append(newAction)
+                #print newAction.str()
+            if action == "print":
+                newAction = changePrint(actions)
                 self.actions.append(newAction)
                 #print newAction.str()
 
@@ -638,5 +650,18 @@ class changeRemove(object):
 
     def str(self):
         return u'* Set item count to 0; the server will delete it on load'
+
+class changePrint(object):
+    """
+    Print a constant string to the terminal
+    """
+    def __init__(self,actionOptions):
+        self._msg = actionOptions.pop(0)
+
+    def run(self,itemStack,debug):
+        print self._msg
+
+    def str(self):
+        return u'* Print ' + self._msg
 
 
