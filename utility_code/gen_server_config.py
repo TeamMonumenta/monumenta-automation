@@ -169,8 +169,8 @@ config = {
 
     'tutorial':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=6'),
-            ('spigot.yml', 'view-distance', '    view-distance: 6'),
+            ('server.properties', 'view-distance', 'view-distance=9'),
+            ('spigot.yml', 'view-distance', '    view-distance: 9'),
             ('server.properties', 'server-port', 'server-port=25567'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.7"'),
