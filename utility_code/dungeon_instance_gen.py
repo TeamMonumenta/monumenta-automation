@@ -16,8 +16,8 @@ from pymclevel.block_copy import copyBlocksFromIter
 from pymclevel.box import BoundingBox, Vector
 from pymclevel.mclevelbase import exhaust
 
-from lib_monumenta_common import fillBoxes, copyFolder
-from lib_list_lootless_tile_entities import listLootlessTileEntities
+from lib_monumenta.common import fillBoxes, copyFolder
+from lib_monumenta.list_lootless_tile_entities import listLootlessTileEntities
 
 ################################################################################
 # Config section

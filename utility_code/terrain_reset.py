@@ -5,7 +5,7 @@ This takes a build world (terrain), a main world (play area), and
 merges them into a new world, dstWorld (destination).
 """
 
-from lib_terrain_reset import terrainReset
+from lib_monumenta.terrain_reset import terrainReset
 import item_replace_list
 
 configList = [{

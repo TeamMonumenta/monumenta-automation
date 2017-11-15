@@ -11,24 +11,20 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MC
 # Import pymclevel from MCLevel-Unified
 import pymclevel
 
-import lib_item_replace
-import item_replace_list
+from lib_monumenta import item_replace
+from item_replace_list import itemReplacements
 
 ################################################################################
 # Function definitions
-
-print "Compiling item replacement list..."
-compiledItemReplacementList = lib_item_replace.allReplacements(item_replace_list.itemReplacements)
 
 print "Opening Destination World..."
 dstWorld = pymclevel.loadWorld("/home/rock/project_epic/test/Project_Epic-test")
 
 print "Replacing items in the world..."
-lib_item_replace.replaceItemsInWorld(dstWorld, compiledItemReplacementList)
+itemReplacements.InWorld(dstWorld)
 
 print "Saving...."
 dstWorld.saveInPlace()
 
 print "Done!"
-
 

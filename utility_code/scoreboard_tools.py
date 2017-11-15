@@ -3,8 +3,8 @@
 """
 Tools useful for modifying scoreboard values
 """
-from scoreboard_tools_lib import getUniqueValues
-from scoreboard_tools_lib import updateIGNs
+from lib_monumenta.scoreboard import getUniqueValues
+from lib_monumenta.scoreboard import updateIGNs
 
 ################################################################################
 # Config section

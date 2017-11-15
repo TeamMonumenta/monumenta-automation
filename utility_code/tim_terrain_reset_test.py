@@ -5,11 +5,11 @@ This takes a build world (terrain), a main world (play area), and
 merges them into a new world, dstWorld (destination).
 """
 
-from lib_terrain_reset import terrainReset
-import lib_item_replace
+from lib_monumenta.terrain_reset import terrainReset
+from lib_monumenta import item_replace
 import item_replace_list
 
-itemReplacementsTest = lib_item_replace.ReplaceItems([
+itemReplacementsTest = item_replace.ReplaceItems([
     # Bow (testing spawners)
     [{"id":"minecraft:bow",},["remove"]],
     

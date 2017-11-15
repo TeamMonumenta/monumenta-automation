@@ -15,7 +15,7 @@ from pymclevel import mclevelbase
 from pymclevel.box import BoundingBox, Vector
 from pymclevel import nbt
 
-from lib_monumenta_common import getBox, lockTileEntities
+from lib_monumenta.common import getBox, lockTileEntities
 
 ################################################################################
 # Config section

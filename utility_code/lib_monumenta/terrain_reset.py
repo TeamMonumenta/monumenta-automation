@@ -17,14 +17,15 @@ import sys
 import shutil
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
-os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
+# This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
+os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
 
 # Import pymclevel from MCLevel-Unified
 import pymclevel
 
-from lib_monumenta_common import fillBoxes, copyBoxes, copyFolder, copyFolders
-from lib_monumenta_common import resetRegionalDifficulty, movePlayers, replaceGlobally
+from lib_monumenta.common import fillBoxes, copyBoxes, copyFolder, copyFolders
+from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGlobally
 
 def terrainReset(configlist):
     for config in configlist:

@@ -8,7 +8,7 @@
 #   better notation
 #   whatever else
 
-import lib_item_replace
+from lib_monumenta import item_replace
 
 blockReplacements = (
     ("minecraft:iron_block", "air"),
@@ -241,15 +241,15 @@ itemReplacements = [
 """
 
 # Use this to replace nothing
-itemReplacementsNone = lib_item_replace.ReplaceItems()
+itemReplacementsNone = item_replace.ReplaceItems()
 
 # Use this to remove every item in the world
-itemReplacementsRemoveAll = lib_item_replace.ReplaceItems([
+itemReplacementsRemoveAll = item_replace.ReplaceItems([
     # Remove all items
     [ { "any":None, }, ["remove"] ],
 ])
 
-itemReplacements = lib_item_replace.ReplaceItems([
+itemReplacements = item_replace.ReplaceItems([
     ############################################################################
     # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)
