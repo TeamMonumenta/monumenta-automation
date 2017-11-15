@@ -1,9 +1,8 @@
-From c3b1162df85b3af469d0f09693d1ee11e1f21681 Mon Sep 17 00:00:00 2001
+From 45f099b9dcd9b0eb222212c874d180d81434ce72 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Thu, 26 Oct 2017 22:09:28 -0700
-Subject: [PATCH 5/8] Prevent ice from breaking/melting into water
+Subject: [PATCH 4/8] Monumenta - Prevent ice from breaking/melting into water
 
-Signed-off-by: Byron Marohn <combustible@live.com>
 ---
  src/main/java/net/minecraft/server/BlockIce.java | 28 ++----------------------
  1 file changed, 2 insertions(+), 26 deletions(-)

@@ -1,7 +1,8 @@
-From 5f06acdd64aa29b8f71fd22eacfee7605d74b91e Mon Sep 17 00:00:00 2001
+From b136d41055439ef652a87f0c2bd4d28cb019e04b Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Thu, 5 Oct 2017 21:45:16 -0700
-Subject: [PATCH 4/8] Removed test for monsters when sleeping in beds
+Subject: [PATCH 3/8] Monumenta - Removed test for monsters when sleeping in
+ beds
 
 ---
  src/main/java/net/minecraft/server/EntityHuman.java | 8 --------

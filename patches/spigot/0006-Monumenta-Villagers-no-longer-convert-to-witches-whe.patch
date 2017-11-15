@@ -1,10 +1,9 @@
-From 4849fea27f84765a7149dc282de50d1b6ebacc4b Mon Sep 17 00:00:00 2001
+From c25b548b8440f4489f2de61eda83f5f934ec573f Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Tue, 31 Oct 2017 17:46:54 -0700
-Subject: [PATCH 7/8] Villagers no longer convert to witches when struck by
- lightning
+Subject: [PATCH 6/8] Monumenta - Villagers no longer convert to witches when
+ struck by lightning
 
-Signed-off-by: Byron Marohn <combustible@live.com>
 ---
  src/main/java/net/minecraft/server/EntityVillager.java | 15 +--------------
  1 file changed, 1 insertion(+), 14 deletions(-)
