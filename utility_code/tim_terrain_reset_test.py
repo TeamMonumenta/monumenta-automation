@@ -9,51 +9,12 @@ from lib_monumenta.terrain_reset import terrainReset
 from lib_monumenta import item_replace
 import item_replace_list
 
-itemReplacementsTest = item_replace.ReplaceItems([
+itemReplacementsTest = item_replace.ReplaceItems(["init"],[
     # Bow (testing spawners)
     [{"id":"minecraft:bow",},["remove"]],
-    
-    # Iron:
-    [ {"id":"minecraft:iron_ore"}, ["remove"] ],
-    [ {"id":"minecraft:iron_nugget"}, ["remove"] ],
-    [ {"id":"minecraft:iron_ingot"}, ["remove"] ],
-    [ {"id":"minecraft:iron_block"}, ["remove"] ],
-    [ {"id":"minecraft:iron_helmet"}, ["remove"] ],
-    [ {"id":"minecraft:iron_chestplate"}, ["remove"] ],
-    [ {"id":"minecraft:iron_leggings"}, ["remove"] ],
-    [ {"id":"minecraft:iron_boots"}, ["remove"] ],
-    [ {"id":"minecraft:iron_axe"}, ["remove"] ],
-    [ {"id":"minecraft:iron_hoe"}, ["remove"] ],
-    [ {"id":"minecraft:iron_pickaxe"}, ["remove"] ],
-    [ {"id":"minecraft:iron_shovel"}, ["remove"] ],
-    [ {"id":"minecraft:iron_sword"}, ["remove"] ],
-
-    # Diamond:
-    [ {"id":"minecraft:diamond_ore"}, ["remove"] ],
-    [ {"id":"minecraft:diamond"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_block"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_helmet"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_chestplate"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_leggings"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_boots"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_axe"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_hoe"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_pickaxe"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_shovel"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_sword"}, ["remove"] ],
 
     # Other:
-    [ {"id":"minecraft:anvil"}, ["remove"] ],
-    [ {"id":"minecraft:hopper"}, ["remove"] ],
-    [ {"id":"minecraft:hopper_minecart"}, ["remove"] ],
-    [ {"id":"minecraft:beacon"}, ["remove"] ],
-    [ {"id":"minecraft:nether_star"}, ["remove"] ],
-
-    [ {"id":"minecraft:bucket"}, ["remove"] ],
-    [ {"id":"minecraft:water_bucket"}, ["remove"] ],
-    [ {"id":"minecraft:lava_bucket"}, ["remove"] ],
-    [ {"id":"minecraft:milk_bucket"}, ["remove"] ],
-    [ {"id":"minecraft:emerald"}, ["remove","print","*** Emerald found",] ],
+    [ {"id":"minecraft:emerald"}, ["remove"] ],
 
     [
         {
@@ -64,7 +25,6 @@ itemReplacementsTest = item_replace.ReplaceItems([
             "count","=",1,
             "damage","=",0,
             "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
-            "print","*** Notice given",
         ]
     ],
 ])

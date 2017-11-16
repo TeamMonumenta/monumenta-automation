@@ -99,8 +99,9 @@ Action lists appear like so:
 
         nbt - alter an item's nbt - only clear is implemented
             replace - replace an item's NBT data entirely
-            set - set specified NBT without altering other NBT
-                    existing lists and compounds will not have items removed
+            update - update specified NBT without altering other NBT;
+                existing lists and compounds will not have items removed;
+                type conflicts will cause crashes to occur
             clear - remove all NBT from the item
 
         scoreboard - if on a player, in an ender chest, or in a shulker box
@@ -244,12 +245,12 @@ itemReplacements = [
 itemReplacementsNone = item_replace.ReplaceItems()
 
 # Use this to remove every item in the world
-itemReplacementsRemoveAll = item_replace.ReplaceItems([
+itemReplacementsRemoveAll = item_replace.ReplaceItems([],[
     # Remove all items
     [ { "any":None, }, ["remove"] ],
 ])
 
-itemReplacements = item_replace.ReplaceItems([
+itemReplacements = item_replace.ReplaceItems([],[
     ############################################################################
     # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)
