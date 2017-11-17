@@ -70,11 +70,39 @@ ItemsWithRealDamage = [
     # Tools
 
     # Wood
-    "minecraft:",
-    "minecraft:",
-    "minecraft:",
-    "minecraft:",
-    "minecraft:",
+    "minecraft:wooden_axe",
+    "minecraft:wooden_hoe",
+    "minecraft:wooden_pickaxe",
+    "minecraft:wooden_shovel",
+    "minecraft:wooden_sword",
+
+    # Stone
+    "minecraft:stone_axe",
+    "minecraft:stone_hoe",
+    "minecraft:stone_pickaxe",
+    "minecraft:stone_shovel",
+    "minecraft:stone_sword",
+
+    # Iron
+    "minecraft:iron_axe",
+    "minecraft:iron_hoe",
+    "minecraft:iron_pickaxe",
+    "minecraft:iron_shovel",
+    "minecraft:iron_sword",
+
+    # Gold
+    "minecraft:golden_axe",
+    "minecraft:golden_hoe",
+    "minecraft:golden_pickaxe",
+    "minecraft:golden_shovel",
+    "minecraft:golden_sword",
+
+    # Diamond
+    "minecraft:diamond_axe",
+    "minecraft:diamond_hoe",
+    "minecraft:diamond_pickaxe",
+    "minecraft:diamond_shovel",
+    "minecraft:diamond_sword",
 
     # Misc
 
@@ -406,8 +434,10 @@ class replacement(object):
 
         if "init" in log_data["debug"]:
             print u"  ┣╸Adding a replacement:"
-            print u"  ┃ ╟╴Matches:"
+            print u"  ┃ ╟╴If all of these are true:"
 
+        # TODO create new matches for all/any/none groups of matches
+        
         # matches is the list of uncompiled matches
         # self.matches is the list of compiled matches
         self.matches = []
@@ -435,7 +465,7 @@ class replacement(object):
             if "init" in log_data["debug"]:
                 print u"  ┃ ║ └╴" + newMatch.str()
         if "init" in log_data["debug"]:
-            print u"  ┃ ╙╴Actions:"
+            print u"  ┃ ╙╴Then do these in order:"
 
         # actions is the uncompiled list of actions
         # self.actions is the list of compiled actions
@@ -489,7 +519,7 @@ class matchAny(object):
         return True
 
     def str(self):
-        return u'everything'
+        return u'True'
 
 class matchCount(object):
     """
@@ -509,7 +539,7 @@ class matchCount(object):
             return False
 
     def str(self):
-        return u'count value in ' + str(self._count)
+        return u'Item count is in ' + str(self._count)
 
 class matchDamage(object):
     """
@@ -529,7 +559,7 @@ class matchDamage(object):
             return False
 
     def str(self):
-        return u'damage value in ' + str(self._damage)
+        return u'Item damage is in ' + str(self._damage)
 
 class matchID(object):
     """
@@ -545,7 +575,7 @@ class matchID(object):
             return False
 
     def str(self):
-        return u'ID "' + self._id + u'"'
+        return u'Item ID is "' + self._id + u'"'
 
 class matchNBT(object):
     """
@@ -577,11 +607,11 @@ class matchNBT(object):
 
     def str(self):
         if self._nbt is None:
-            return u'no NBT exactly'
+            return u'Item has no NBT'
         elif self._exact:
-            return u'NBT ' + self._nbt.json + u' exactly'
+            return u'Item NBT exactly matches ' + self._nbt.json
         else:
-            return u'NBT ' + self._nbt.json + u' loosely'
+            return u'Item NBT loosely matches ' + self._nbt.json
 
 class matchNone(object):
     """
@@ -592,7 +622,7 @@ class matchNone(object):
         return False
 
     def str(self):
-        return u'nothing'
+        return u'False'
 
 
 # Action optimizers

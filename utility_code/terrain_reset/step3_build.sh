@@ -1,5 +1,5 @@
 # Run as:
-# terrain_reset_step3_build.sh <beta server ip> <beta server port> <Update Daily? true/false>
+# step3_build.sh <beta server ip> <beta server port> <Update Daily? true/false>
 
 # Init stuff
 today=$(date +'%Y_%m_%d')

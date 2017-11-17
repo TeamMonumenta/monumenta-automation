@@ -1,5 +1,5 @@
 # Run as:
-# terrain_reset_step4_beta.sh <Ops only? true/false>
+# step4_beta.sh <Ops only? true/false>
 
 
 # Init stuff
