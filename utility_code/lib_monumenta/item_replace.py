@@ -269,13 +269,6 @@ class ReplaceItems(object):
                 self.rootEntity = self.entity
                 self.log_data["rootEntity"] = self.rootEntity
 
-            # Handle spawners (done this way for spawner items with NBT)
-            if "SpawnData" in self.entity:
-                self.entityList.append(self.entity["SpawnData"])
-            if "SpawnPotentials" in self.entity:
-                for potentialSpawn in self.entity["SpawnPotentials"]:
-                    self.entityList.append(potentialSpawn["Entity"])
-
             # Handle villager trades
             if (
                 ("Offers" in self.entity) and
