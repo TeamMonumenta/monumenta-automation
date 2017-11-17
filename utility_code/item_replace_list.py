@@ -250,7 +250,10 @@ itemReplacementsRemoveAll = item_replace.ReplaceItems([],[
     [ { "any":None, }, ["remove"] ],
 ])
 
-itemReplacements = item_replace.ReplaceItems([],[
+# Try "init" to show what this list does; you can even
+# run this library as a script and skip the other stuff.
+#itemReplacements = item_replace.ReplaceItems(["init","global count"],[
+itemReplacements = item_replace.ReplaceItems(["global count"],[
     ############################################################################
     # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)

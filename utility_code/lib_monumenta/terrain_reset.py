@@ -56,9 +56,9 @@ def terrainReset(configlist):
 
         # Copy the main world if the destination world doesn't exist
         # TODO: This path is a little weird, because it copies the base then copies the playerdata again
-        if ("localBuildFolder" not in config) and (not os.path.isdir(config["localDstFolder"])):
+        elif ("localBuildFolder" not in config):
             print "  Copying main world as base..."
-            copyFolder(config["localMainFolder"], localDstFolder)
+            copyFolder(localMainFolder, localDstFolder)
 
         replaceItems = config["itemReplacements"]
 
@@ -80,9 +80,15 @@ def terrainReset(configlist):
         # Only load the world and manipulate it if we need to
         # TODO - This is a little weird, since we skip doing item replacements worldwide if we don't also do something else involving the world
         #        This is desired behavior, but it's unintuitive
-        if (("coordinatesToFill" in config) or ("coordinatesToCopy" in config) or (blockReplacements is not None) or
-            (("resetRegionalDifficulty" in config) and (config["resetRegionalDifficulty"] == True))):
-
+        if (
+            ("coordinatesToFill" in config) or
+            ("coordinatesToCopy" in config) or
+            (blockReplacements is not None) or
+            (
+                ("resetRegionalDifficulty" in config) and
+                (config["resetRegionalDifficulty"] == True)
+            )
+        ):
             print "  Opening old play World..."
             srcWorld = pymclevel.loadWorld(localMainFolder)
 

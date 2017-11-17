@@ -5,12 +5,12 @@ opsOnly=$1
 ops_only_shard(){ #set to ops only or not
     shard=$1
     opsOnly=$2
-    
+
     # stop the shard;
     # hold/unhold might work, but it would be
     # harder to tell when the shards are back up
     mark2 send --name "$shard" --wait "Thank you and goodbye" "~stop"
-    
+
     # update the whitelist file
     cd ~/project_epic/$shard
     if $opsOnly; then
@@ -20,7 +20,7 @@ ops_only_shard(){ #set to ops only or not
         # do clobber, or whitelist.json will be empty
         mv -f whitelist.json.bak whitelist.json
     fi
-    
+
     # start the shard
     mark2 start
 }

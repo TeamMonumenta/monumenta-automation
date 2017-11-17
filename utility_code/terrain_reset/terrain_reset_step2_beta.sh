@@ -54,7 +54,7 @@ done
 rm server_config/*.jar
 
 
-# 8/1. 
+# 8/1.Re-tarball the project for transferring to the build server
 cd ~
 tar czf project_epic_pre_reset_${today}.tgz project_epic
 

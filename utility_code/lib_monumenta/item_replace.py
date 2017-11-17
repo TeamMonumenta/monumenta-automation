@@ -2,6 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
+
+# The effective working directory for this script must always be the MCEdit-Unified directory
+# This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
+os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
 
 # Import pymclevel from MCLevel-Unified
 from pymclevel import nbt
@@ -29,7 +35,7 @@ shulkerIDNames = [
 ItemsWithRealDamage = [
     ############
     # Armor
-    
+
     # Leather
     "minecraft:leather_helmet",
     "minecraft:leather_chestplate",
@@ -59,17 +65,17 @@ ItemsWithRealDamage = [
     "minecraft:diamond_chestplate",
     "minecraft:diamond_leggings",
     "minecraft:diamond_boots",
-    
+
     ############
     # Tools
-    
+
     # Wood
     "minecraft:",
     "minecraft:",
     "minecraft:",
     "minecraft:",
     "minecraft:",
-    
+
     # Misc
 
     "minecraft:carrot_on_a_stick",
@@ -97,6 +103,36 @@ containerTagNames = [
     "EnderItems",
 ]
 
+formatCodes = {
+    "colors":u'0123456789abcdef',
+    "styles":u'klmnor',
+    "list":[
+        {"id":u"0","display":u"Black","technical":u"black",},
+        {"id":u"1","display":u"Dark Blue","technical":u"dark_blue",},
+        {"id":u"2","display":u"Dark Green","technical":u"dark_green",},
+        {"id":u"3","display":u"Dark Aqua","technical":u"dark_aqua",},
+        {"id":u"4","display":u"Dark Red","technical":u"dark_red",},
+        {"id":u"5","display":u"Dark Purple","technical":u"dark_purple",},
+        {"id":u"6","display":u"Gold","technical":u"gold",},
+        {"id":u"7","display":u"Gray","technical":u"gray",},
+        {"id":u"8","display":u"Dark Gray","technical":u"dark_gray",},
+        {"id":u"9","display":u"Blue","technical":u"blue",},
+        {"id":u"a","display":u"Green","technical":u"green",},
+        {"id":u"b","display":u"Aqua","technical":u"aqua",},
+        {"id":u"c","display":u"Red","technical":u"red",},
+        {"id":u"d","display":u"Light Purple","technical":u"light_purple",},
+        {"id":u"e","display":u"Yellow","technical":u"yellow",},
+        {"id":u"f","display":u"White","technical":u"white",},
+
+        {"id":u"k","display":u"Obfuscated","technical":u"obfuscated",},
+        {"id":u"l","display":u"Bold","technical":u"bold",},
+        {"id":u"m","display":u"Strikethrough","technical":u"strikethrough",},
+        {"id":u"n","display":u"Underline","technical":u"underlined",},
+        {"id":u"o","display":u"Italic","technical":u"italic",},
+        {"id":u"r","display":u"Reset","technical":u"reset",},
+    ],
+}
+
 ################################################################################
 # Item stack finding code
 
@@ -114,18 +150,18 @@ class ReplaceItems(object):
     """
     def __init__(self,debug=[],replacementList=None):
         if "init" in debug:
-            print "New item replacement list loading..."
+            print u"  New item replacement list loading..."
         if replacementList is None:
             self.replacements = None
             if "init" in debug:
-                print "Dummy list, does nothing."
+                print u"  ┗╸Dummy list, does nothing."
         else:
             self.log_data = {}
             self.log_data["debug"] = debug
             self.log_data["global"] = {}
             self.replacements = allReplacements(replacementList,self.log_data)
             if "global count" in debug:
-                self.log_data["global count"] = {}
+                self.log_data["global"]["global count"] = {}
 
     def InWorld(self,world):
         if self.replacements is None:
@@ -175,11 +211,22 @@ class ReplaceItems(object):
 
         for playerFile in os.listdir(worldDir+"playerdata"):
             playerFile = worldDir+"playerdata/" + playerFile
+            self.log_data["player file"] = playerFile
             player = nbt.load(playerFile)
             # In this case, we can easily copy the only entity to a list.
             self.entityList = [player]
             self._OnEntities()
             player.save(playerFile)
+        self.log_data.pop("player file")
+
+    def PrintGlobalLog(self):
+        if "global count" in self.log_data["global"]:
+            print u"Items found:"
+            for item in self.log_data["global"]["global count"]:
+                print u"* {}x {}".format(
+                    self.log_data["global"]["global count"][item],
+                    item
+                )
 
     def _OnEntities(self):
         while len(self.entityList) > 0:
@@ -279,15 +326,24 @@ class ReplaceItems(object):
                 entity = itemStack["tag"]["EntityTag"]
                 self.entityList.append(entity)
         if "global count" in self.log_data["debug"]:
-            globalCounts = self.log_data["global count"]
+            globalCounts = self.log_data["global"]["global count"]
 
             # In order to simplify the item list, certain
             # details must be removed; a fake item is
             # used to handle these changes, and is
             # discarded afterwards.
             fakeItem = nbt.json_to_tag(itemStack.json)
-            count = fakeItem["Count"].value
-            fakeItem.pop("Count")
+            # If we put this in a sub-tag ,we need to fix it
+            if "id" not in fakeItem:
+                fakeItem = fakeItem[fakeItem.keys()[0]]
+                # Remove the name so it matches with the others
+                fakeItem.name = ""
+
+            if "Count" in fakeItem:
+                count = fakeItem["Count"].value
+                fakeItem.pop("Count")
+            else:
+                count = 1
             if fakeItem["id"].value in ItemsWithRealDamage:
                 fakeItem.pop("Damage")
             if "Slot" in fakeItem:
@@ -295,7 +351,7 @@ class ReplaceItems(object):
             if "tag" in fakeItem:
                 if "BlockEntityTag" in fakeItem["tag"]:
                     for containerTagName in containerTagNames:
-                        if containerTagName in fakeItem["tag"]["BlockEntityTag"]
+                        if containerTagName in fakeItem["tag"]["BlockEntityTag"]:
                             fakeItem["tag"]["BlockEntityTag"].pop(containerTagName)
                 # EntityTag is left alone because of spawn eggs;
                 # may need to be left out if we let players store
@@ -310,9 +366,9 @@ class ReplaceItems(object):
                 # CustomPotionEffects - guess what else is unsorted?
 
                 if "display" in fakeItem["tag"]:
-                    if color in fakeItem["tag"]["display"]:
+                    if "color" in fakeItem["tag"]["display"]:
                         fakeItem["tag"]["display"].pop("color")
-                
+
                 ################
                 # Fireworks:
                 # Because I highly doubt we care
@@ -320,8 +376,13 @@ class ReplaceItems(object):
                     fakeItem["tag"].pop("Explosion")
                 if "Fireworks" in fakeItem["tag"]:
                     fakeItem["tag"].pop("Fireworks")
-                
-            # TODO
+
+            # I think that's all the tags we want to ignore.
+            itemString = fakeItem.json
+            if itemString not in globalCounts:
+                globalCounts[itemString] = count
+            else:
+                globalCounts[itemString] += count
 
 
 ################################################################################
@@ -332,7 +393,7 @@ class allReplacements(list):
         self._replacements = []
         for aReplacement in replacementList:
             self._replacements.append(replacement(aReplacement,log_data))
-        print "  Found " + str(len(self._replacements)) + " replacements."
+        print u"  Found " + unicode(len(self._replacements)) + u" replacements."
 
     def run(self,itemStack,log_data):
         for replacement in self._replacements:
@@ -344,59 +405,65 @@ class replacement(object):
         actions = replacementPair[1]
 
         if "init" in log_data["debug"]:
-            print "Adding a replacement:"
+            print u"  ┣╸Adding a replacement:"
+            print u"  ┃ ╟╴Matches:"
 
+        # matches is the list of uncompiled matches
+        # self.matches is the list of compiled matches
         self.matches = []
         for key in matches:
-            if key == "id":
-                newMatch = matchID(matches)
-                self.matches.append(newMatch)
-            if key == "damage":
-                newMatch = matchDamage(matches)
-                self.matches.append(newMatch)
-            if key == "nbt":
-                newMatch = matchNBT(matches)
-                self.matches.append(newMatch)
-            if key == "count":
-                newMatch = matchCount(matches)
-                self.matches.append(newMatch)
-            if key == "none":
-                newMatch = matchNone()
-                self.matches.append(newMatch)
             if key == "any":
                 newMatch = matchAny()
-                self.matches.append(newMatch)
+            if key == "count":
+                newMatch = matchCount(matches)
+            if key == "damage":
+                newMatch = matchDamage(matches)
+            if key == "id":
+                newMatch = matchID(matches)
+            if key == "nbt":
+                newMatch = matchNBT(matches)
+            if key == "none":
+                newMatch = matchNone()
+
+            self.matches.append(newMatch)
             if "init" in log_data["debug"]:
-                print newMatch.str()
+                print u"  ┃ ║ └╴" + newMatch.str()
+
         if len(self.matches) == 0:
             newMatch = matchNone()
             self.matches.append(newMatch)
             if "init" in log_data["debug"]:
-                print u"* No known match criteria provided."
+                print u"  ┃ ║ └╴" + newMatch.str()
+        if "init" in log_data["debug"]:
+            print u"  ┃ ╙╴Actions:"
 
+        # actions is the uncompiled list of actions
+        # self.actions is the list of compiled actions
         self.actions = []
         while len(actions):
             action = actions.pop(0)
-            if action == "id":
-                newAction = changeID(actions)
-                self.actions.append(newAction)
             if action == "count":
-                newAction = changeCount(actions)
-                self.actions.append(newAction)
+                newAction = actCount(actions)
             if action == "damage":
-                newAction = changeDamage(actions)
-                self.actions.append(newAction)
+                newAction = actDamage(actions)
+            if action == "id":
+                newAction = actID(actions)
+            if action == "location":
+                newAction = actLocation(actions)
+            if action == "name":
+                newAction = actName(actions)
             if action == "nbt":
-                newAction = changeNBT(actions)
-                self.actions.append(newAction)
-            if action == "remove":
-                newAction = changeRemove()
-                self.actions.append(newAction)
+                newAction = actNBT(actions)
             if action == "print":
-                newAction = changePrint(actions)
-                self.actions.append(newAction)
+                newAction = actPrint(actions)
+            if action == "print item":
+                newAction = actPrintItem(actions)
+            if action == "remove":
+                newAction = actRemove(actions)
+
+            self.actions.append(newAction)
             if "init" in log_data["debug"]:
-                print newAction.str()
+                print u"  ┃   └╴" + newAction.str()
 
     def run(self,itemStack,log_data):
         if all(rule == itemStack for rule in self.matches):
@@ -413,17 +480,6 @@ class replacement(object):
 
 # Matching optimizers
 
-class matchNone(object):
-    """
-    This is a special case to never match anything;
-    used for invalid item replacements
-    """
-    def __eq__(self,itemStack):
-        return False
-
-    def str(self):
-        return "* Match nothing"
-
 class matchAny(object):
     """
     This is a special case to match anything;
@@ -433,23 +489,27 @@ class matchAny(object):
         return True
 
     def str(self):
-        return "* Match everything"
+        return u'everything'
 
-class matchID(object):
+class matchCount(object):
     """
-    This stores an ID to match later
+    This stores item counts to match later
     """
     def __init__(self,matchOptions):
-        self._id = matchOptions["id"]
+        count = matchOptions["count"]
+        if (type(count) != list) and (type(count) != tuple):
+            self._count = [count]
+        else:
+            self._count = count
 
     def __eq__(self,itemStack):
         try:
-            return self._id == itemStack["id"].value
+            return itemStack["Count"].value in self._count
         except:
             return False
 
     def str(self):
-        return u'* Match ID "' + self._id + u'"'
+        return u'count value in ' + str(self._count)
 
 class matchDamage(object):
     """
@@ -469,7 +529,23 @@ class matchDamage(object):
             return False
 
     def str(self):
-        return u'* Match damage value in ' + str(self._damage)
+        return u'damage value in ' + str(self._damage)
+
+class matchID(object):
+    """
+    This stores an ID to match later
+    """
+    def __init__(self,matchOptions):
+        self._id = matchOptions["id"]
+
+    def __eq__(self,itemStack):
+        try:
+            return self._id == itemStack["id"].value
+        except:
+            return False
+
+    def str(self):
+        return u'ID "' + self._id + u'"'
 
 class matchNBT(object):
     """
@@ -501,49 +577,27 @@ class matchNBT(object):
 
     def str(self):
         if self._nbt is None:
-            return u'* Match no NBT exactly'
+            return u'no NBT exactly'
         elif self._exact:
-            return u'* Match NBT ' + self._nbt.json + u' exactly'
+            return u'NBT ' + self._nbt.json + u' exactly'
         else:
-            return u'* Match NBT ' + self._nbt.json
+            return u'NBT ' + self._nbt.json + u' loosely'
 
-class matchCount(object):
+class matchNone(object):
     """
-    This stores item counts to match later
+    This is a special case to never match anything;
+    used for invalid item replacements
     """
-    def __init__(self,matchOptions):
-        count = matchOptions["count"]
-        if (type(count) != list) and (type(count) != tuple):
-            self._count = [count]
-        else:
-            self._count = count
-
     def __eq__(self,itemStack):
-        try:
-            return itemStack["Count"].value in self._count
-        except:
-            return False
+        return False
 
     def str(self):
-        return u'* Match count value in ' + str(self._count)
+        return u'nothing'
 
 
 # Action optimizers
 
-class changeID(object):
-    """
-    Stores an ID to apply later
-    """
-    def __init__(self,actionOptions):
-        self._id = actionOptions.pop(0)
-
-    def run(self,itemStack,log_data):
-        itemStack["id"].value = self._id
-
-    def str(self):
-        return u'* Change ID to "' + self._id + u'"'
-
-class changeCount(object):
+class actCount(object):
     """
     Stores a count action to apply later
     """
@@ -581,23 +635,23 @@ class changeCount(object):
 
     def str(self):
         if self._operation == "=":
-            return u'* Set count to ' + str(self._opValue)
+            return u'Set count to ' + str(self._opValue)
         if self._operation == "+":
-            return u'* Add ' + str(self._opValue) + u' to count'
+            return u'Add ' + str(self._opValue) + u' to count'
         if self._operation == "-":
-            return u'* Subtract ' + str(self._opValue) + u' from count'
+            return u'Subtract ' + str(self._opValue) + u' from count'
         if self._operation == "*":
-            return u'* Multiply count by ' + str(self._opValue)
+            return u'Multiply count by ' + str(self._opValue)
         if self._operation == "/":
-            return u'* Divide count by ' + str(self._opValue)
+            return u'Divide count by ' + str(self._opValue)
         if self._operation == "%":
-            return u'* Set count to itself modulo ' + str(self._opValue)
+            return u'Set count to itself modulo ' + str(self._opValue)
         if self._operation == "max":
-            return u'* Prevent count from being greater than ' + str(self._opValue)
+            return u'Prevent count from being greater than ' + str(self._opValue)
         if self._operation == "min":
-            return u'* Prevent count from being less than ' + str(self._opValue)
+            return u'Prevent count from being less than ' + str(self._opValue)
 
-class changeDamage(object):
+class actDamage(object):
     """
     Stores a damage action to apply later
     """
@@ -635,23 +689,128 @@ class changeDamage(object):
 
     def str(self):
         if self._operation == "=":
-            return u'* Set damage to ' + str(self._opValue)
+            return u'Set damage to ' + str(self._opValue)
         if self._operation == "+":
-            return u'* Add ' + str(self._opValue) + u' to damage'
+            return u'Add ' + str(self._opValue) + u' to damage'
         if self._operation == "-":
-            return u'* Subtract ' + str(self._opValue) + u' from damage'
+            return u'Subtract ' + str(self._opValue) + u' from damage'
         if self._operation == "*":
-            return u'* Multiply damage by ' + str(self._opValue)
+            return u'Multiply damage by ' + str(self._opValue)
         if self._operation == "/":
-            return u'* Divide damage by ' + str(self._opValue)
+            return u'Divide damage by ' + str(self._opValue)
         if self._operation == "%":
-            return u'* Set damage to itself modulo ' + str(self._opValue)
+            return u'Set damage to itself modulo ' + str(self._opValue)
         if self._operation == "max":
-            return u'* Prevent damage from being greater than ' + str(self._opValue)
+            return u'Prevent damage from being greater than ' + str(self._opValue)
         if self._operation == "min":
-            return u'* Prevent damage from being less than ' + str(self._opValue)
+            return u'Prevent damage from being less than ' + str(self._opValue)
 
-class changeNBT(object):
+class actID(object):
+    """
+    Stores an ID to apply later
+    """
+    def __init__(self,actionOptions):
+        self._id = actionOptions.pop(0)
+
+    def run(self,itemStack,log_data):
+        itemStack["id"].value = self._id
+
+    def str(self):
+        return u'Change ID to "' + self._id + u'"'
+
+class actLocation(object):
+    """
+    Print the player file or location of the root entity
+    """
+    def __init__(self,actionOptions):
+        return
+
+    def run(self,itemStack,log_data):
+        if "player file" in log_data:
+            print u"Item is in player file " + log_data["player file"]
+        elif "Pos" in log_data["rootEntity"]:
+            print u"Item is on {} at {},{},{}".format(
+                log_data["rootEntity"]["id"].value,
+                round(log_data["rootEntity"]["Pos"][0].value,3),
+                round(log_data["rootEntity"]["Pos"][1].value,3),
+                round(log_data["rootEntity"]["Pos"][2].value,3)
+            )
+        elif "x" in log_data["rootEntity"]:
+            print u"Item is in {} at {},{},{}".format(
+                log_data["rootEntity"]["id"].value,
+                log_data["rootEntity"]["x"].value,
+                log_data["rootEntity"]["y"].value,
+                log_data["rootEntity"]["z"].value
+            )
+        else:
+            print u"Item is on an entity without location? " + log_data["rootEntity"].json
+
+    def str(self):
+        return u'Print the player file name or location of the root entity'
+
+class actName(object): # TODO test it
+    """
+    Modify an item name
+    """
+    def __init__(self,actionOptions):
+        self._cmd = actionOptions.pop(0)
+        if self._cmd == "color":
+            self._color = None
+            color = actionOptions.pop(0)
+            if type(color) == int:
+                # assumes color is a number from 0-15
+                self._color = formatCodes["list"][color]["id"]
+            elif (
+                (type(color) == str) or
+                (type(color) == unicode)
+            ):
+                # assumes color is a name or character like '7' as in '§7'
+                # use '' to mean "no color"
+                for formatCode in formatCodes["list"]:
+                    if (
+                        (color.lower() == formatCode["id"].lower()) or
+                        (color.lower() == formatCode["display"].lower()) or
+                        (color.lower() == formatCode["technical"].lower())
+                    ):
+                        self._color = formatCode
+            # If self._color is None by here, assume it should be no color
+        else:
+            print u"!!! Unknown subcommand for actName: {}".format(self._cmd)
+            # put the subcommand back
+            actionOptions.insert(0,self._cmd)
+            self._cmd = None
+
+    def run(self,itemStack,log_data):
+        if self._cmd == "color":
+            if (
+                ("tag" not in itemStack) or
+                ("display" not in itemStack["tag"]) or
+                ("Name" not in itemStack["tag"]["display"])
+            ):
+                # not applicable (unless default name is obtained)
+                return
+            formatList = u"" # strings are lists of characters...
+            # ...which are strings of length 1...don't think about it.
+            name = itemStack["tag"]["display"]["Name"].value
+            while name[0] == u'§':
+                formatList += name[1]
+                name = name[2:]
+            while len(formatList):
+                color = formatList[-1]
+                formatList = formatList[:-1]
+                if color not in formatCodes["colors"]:
+                    name = u'§' + color + name
+            if self._color is not None:
+                name = u'§' + self._color["id"] + name
+            itemStack["tag"]["display"]["Name"].value = name
+
+    def str(self):
+        if self._cmd == "color":
+            return u'Update name color to {} if name exists (WIP)'.format(self._color["display"])
+        else:
+            return u'Invalid color subcommand'
+
+class actNBT(object):
     """
     Stores an NBT action to apply later
     """
@@ -679,15 +838,58 @@ class changeNBT(object):
 
     def str(self):
         if self._operation == "clear":
-            return u'* Remove NBT'
+            return u'Remove NBT'
         if self._operation == "update":
-            return u'* Update existing NBT with ' + self._nbt.json
+            return u'Update existing NBT with ' + self._nbt.json
         if self._operation == "replace":
-            return u'* Replace NBT with u' + self._nbt.json
+            return u'Replace NBT with ' + self._nbt.json
+
+class actPrint(object):
+    """
+    Print a constant string to the terminal
+    """
+    def __init__(self,actionOptions):
+        self._msg = actionOptions.pop(0)
+
+    def run(self,itemStack,log_data):
+        print self._msg
+
+    def str(self):
+        return u'Print "' + self._msg + '"'
+
+class actPrintItem(object):
+    """
+    Print the item to the terminal as json
+    """
+    def __init__(self,actionOptions):
+        return
+
+    def run(self,itemStack,log_data):
+        print itemStack.json
+
+    def str(self):
+        return u'Print the item details as json'
+
+class actRemove(object):
+    """
+    Stores a stack removal action to apply later
+    """
+    def __init__(self,actionOptions):
+        return
+
+    def run(self,itemStack,log_data):
+        # item stacks with count 0 are deleted when loading the world
+        itemStack["Count"].value = 0
+        if "tag" in itemStack:
+            itemStack.pop("tag")
+
+    def str(self):
+        return u'Set item count to 0; the server will delete it on load'
 
 """
-NYI
-class changeScoreboard(object):
+NYI - more promising now that we can track which player holds an item;
+I'd like to track player plots too, but that needs more work first.
+class actScoreboard(object):
     ""
     Stores a scoreboard action to apply later
     ""
@@ -723,31 +925,4 @@ class changeScoreboard(object):
             itemStack["Damage"].value = newVal
             return
 """
-
-class changeRemove(object):
-    """
-    Stores a stack removal action to apply later
-    """
-    def run(self,itemStack,log_data):
-        # item stacks with count 0 are deleted when loading the world
-        itemStack["Count"].value = 0
-        if "tag" in itemStack:
-            itemStack.pop("tag")
-
-    def str(self):
-        return u'* Set item count to 0; the server will delete it on load'
-
-class changePrint(object):
-    """
-    Print a constant string to the terminal
-    """
-    def __init__(self,actionOptions):
-        self._msg = actionOptions.pop(0)
-
-    def run(self,itemStack,log_data):
-        print self._msg
-
-    def str(self):
-        return u'* Print "' + self._msg + '"'
-
 

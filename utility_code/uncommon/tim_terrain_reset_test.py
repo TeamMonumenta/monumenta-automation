@@ -3,136 +3,97 @@
 """
 This takes a build world (terrain), a main world (play area), and
 merges them into a new world, dstWorld (destination).
-
-This does so as directly as possible while providing many features.
-
-Fair warning, some of the optimization is done by removing error handling.
-Python will tell you if/when the script crashes.
-If it's going to crash, it won't damage the original worlds.
-Just fix what broke, and run again.
 """
-import mclevel
-import terrain_reset_lib
-import lib_item_replace
-# import item_replace_list # This is where the item replacements are kept
 
-from monumenta_common import getBoxName
-from monumenta_common import getBoxSize
-from monumenta_common import getBoxPos
-from monumenta_common import getBox
-from monumenta_common import getBoxMaterial
-from monumenta_common import getBoxMaterialName
+from lib_monumenta.terrain_reset import terrainReset
+from lib_monumenta import item_replace
+import item_replace_list
 
-################################################################################
-# Config section
+itemReplacementsTest = item_replace.ReplaceItems([],[
+    # Bow (testing spawners)
+    [{"id":"minecraft:bow",},["remove"]],
 
-################################################################################
-# Testing sandbox
+    # Other:
+    [ {"id":"minecraft:emerald"}, ["remove"] ],
 
-config = {
-    "localMainFolder":"/home/tim/.minecraft/saves/main/",
-    "localBuildFolder":"/home/tim/.minecraft/saves/build/",
-    "localDstFolder":"/home/tim/.minecraft/saves/dst/",
-    "safetyTpLocation":(149.0, 76.0, 133.0, 0.0, 0.0),
-    "coordinatesToCopy":(
-        ("hut1",           (      153, 68,      104), (      156, 73,      108), True,  (0,0), "air"),
-        ("hut2fence",      (      159, 64,      112), (      163, 69,      116), True,  (0,0), "air"),
-        ("hut3",           (      150, 70,      112), (      154, 75,      115), True,  (0,0), "air"),
-        ("church",         (      138, 73,      113), (      146, 84,      117), False, (0,0), "air"),
-        ("hut4",           (      113, 62,      126), (      116, 68,      130), True,  (0,0), "air"),
-        ("farm1s",         (      120, 62,      122), (      126, 64,      130), True,  (0,0), "air"),
-        ("hut5",           (      133, 70,      126), (      136, 74,      130), True,  (0,0), "air"),
-        ("hut6",           (      155, 70,      126), (      158, 74,      130), True,  (0,0), "air"),
-        ("farm2l",         (      164, 67,      122), (      176, 69,      130), True,  (0,0), "air"),
-        ("well",           (      146, 58,      130), (      151, 73,      135), True,  (0,0), "air"),
-        ("hut7",           (      111, 61,      134), (      115, 67,      138), True,  (0,0), "air"),
-        ("farm3l",         (      118, 62,      134), (      130, 64,      142), True,  (0,0), "air"),
-        ("hut8TShape",     (      136, 63,      136), (      147, 73,      144), True,  (0,0), "air"),
-        ("hut9fence",      (      153, 68,      134), (      157, 74,      138), True,  (0,0), "air"),
-        ("hut10fence",     (      150, 64,      139), (      154, 70,      143), True,  (0,0), "air"),
-        ("farm4l",         (      164, 68,      134), (      176, 70,      142), True,  (0,0), "air"),
-        ("farm5s",         (      150, 63,      146), (      158, 65,      152), True,  (0,0), "air"),
-        ("farm6l",         (      138, 62,      153), (      146, 64,      165), True,  (0,0), "air"),
-    ),
+    [
+        {
+            "count":0,
+        },
+        [
+            #"print","Replacing item with notice:",
+            #"print item",
+            "id","minecraft:rotten_flesh",
+            "count","=",1,
+            "damage","=",0,
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+            "name","color","green",
+        ]
+    ],
+])
 
-    "coordinatesToFill":(
-        # ("a unique name",        (lowerCoordinate),  (upperCoordinate), replaceBlocks, ( id, dmg), "block name (comment)"),
-        ("Meh block",     (       146, 72,      110), (      146, 72,      110), True,  (0,0), "air"),
-    ),
+"""
+configList = [
+    {
+        "server":"dst_merged",
 
-    # List of blocks to not copy over for the regions above
-    "blockReplaceList":(
-        ("minecraft:iron_block", "air"),
-        ("minecraft:iron_ore", "air"),
-        #("minecraft:gold_block", "air"),
-        #("minecraft:gold_ore", "air"),
-        ("minecraft:diamond_block", "air"),
-        ("minecraft:diamond_ore", "air"),
-        #("minecraft:emerald_block", "air"),
-        #("minecraft:emerald_ore", "air"),
+        "localMainFolder":"/home/tim/.minecraft/saves/main/",
+        "localBuildFolder":"/home/tim/.minecraft/saves/build/",
+        "localDstFolder":"/home/tim/.minecraft/saves/dst/",
 
-        ("minecraft:beacon", "air"),
+        "safetyTpLocation":(149.0, 76.0, 133.0, 0.0, 0.0),
 
-        # Not sure about this section
-        #("enchanting_Table", "air"),
-        #("quartz_ore", "air"),
-        #("hopper", "air"),
+        "resetRegionalDifficulty":True,
 
-        # anvils
-        ((145,0), "air"),
-        ((145,1), "air"),
-        ((145,2), "air"),
-        ((145,3), "air"),
-        ((145,4), "air"),
-        ((145,5), "air"),
-        ((145,6), "air"),
-        ((145,7), "air"),
-        ((145,8), "air"),
-        ((145,9), "air"),
-        ((145,10), "air"),
-        ((145,11), "air"),
-    )
-}
+        "blockReplacements":item_replace_list.blockReplacements,
+        "itemReplacements":item_replace_list.itemReplacements,
 
-################################################################################
-# Testing sandbox
+        "coordinatesToFill":(
+            {"name":"Meh block", "pos1":(146,72,110), "pos2":(146,72,110), "replace":True, "material":(0,0), "materialName":"air"},
+        ),
 
-def fillRegions(config):
-    """ Fill all regions with specified blocks to demonstrate coordinates """
+        "coordinatesToCopy":(
+            {"name":"hut1",       "pos1":(153,68,104), "pos2":(156,73,108), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut2fence",  "pos1":(159,64,112), "pos2":(163,69,116), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut3",       "pos1":(150,70,112), "pos2":(154,75,115), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"church",     "pos1":(138,73,113), "pos2":(146,84,117), "replace":False, "material":(0,0), "materialName":"air"},
+            {"name":"hut4",       "pos1":(113,62,126), "pos2":(116,68,130), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm1s",     "pos1":(120,62,122), "pos2":(126,64,130), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut5",       "pos1":(133,70,126), "pos2":(136,74,130), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut6",       "pos1":(155,70,126), "pos2":(158,74,130), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm2l",     "pos1":(164,67,122), "pos2":(176,69,130), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"well",       "pos1":(146,58,130), "pos2":(151,73,135), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut7",       "pos1":(111,61,134), "pos2":(115,67,138), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm3l",     "pos1":(118,62,134), "pos2":(130,64,142), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut8TShape", "pos1":(136,63,136), "pos2":(147,73,144), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut9fence",  "pos1":(153,68,134), "pos2":(157,74,138), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut10fence", "pos1":(150,64,139), "pos2":(154,70,143), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm4l",     "pos1":(164,68,134), "pos2":(176,70,142), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm5s",     "pos1":(150,63,146), "pos2":(158,65,152), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm6l",     "pos1":(138,62,153), "pos2":(146,64,165), "replace":True,  "material":(0,0), "materialName":"air"},
+        ),
+    },
+    {
+        "server":"plots_world",
 
-    localBuildFolder = config["localBuildFolder"]
-    localDstFolder = config["localDstFolder"]
-    coordinatesToCopy = config["coordinatesToCopy"]
+        "localMainFolder":"/home/tim/.minecraft/saves/Item Reset Test/",
+        "localDstFolder":"/home/tim/.minecraft/saves/Item Reset dst/",
 
-    # Delete the dst world for a clean slate to start from
-    shutil.rmtree(localDstFolder,True)
+        "blockReplacements":item_replace_list.blockReplacements,
+        "itemReplacements":itemReplacementsTest,
+    }
+]
+"""
+configList = [
+    {
+        "server":"plots_world",
 
-    # Copy the build world to the dst world
-    shutil.copytree(localBuildFolder,localDstFolder)
+        "localMainFolder":"/home/tim/.minecraft/saves/Item Reset Test/",
+        "localDstFolder":"/home/tim/.minecraft/saves/Item Reset dst/",
 
-    dstWorld = mclevel.loadWorld(localDstFolder)
-
-    # Fill the selected regions for debugging reasons
-    for fillRegion in coordinatesToCopy:
-        boxName = getBoxName(fillRegion)
-        boxMaterial = getBoxMaterial(fillRegion)
-        boxMaterialName = getBoxMaterialName(fillRegion)
-        print "Filling " + boxName + " with " + boxMaterialName + "..."
-        box = getBox(fillRegion)
-        block = dstWorld.materials[boxMaterial]
-        dstWorld.fillBlocks(box, block)
-
-    print "Saving...."
-    dstWorld.generateLights()
-    dstWorld.saveInPlace()
-
-# This shows where the selected regions are, as your old script does.
-#terrain_reset_lib.fillRegions(config)
-
-################################################################################
-# Main Code
-
-# This does the move itself - copy areas, entities, scoreboard, etc.
-terrain_reset_lib.terrainReset(config)
-
+        "blockReplacements":item_replace_list.blockReplacements,
+        "itemReplacements":itemReplacementsTest,
+    }
+]
+terrainReset(configList)
 
