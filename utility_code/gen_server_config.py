@@ -177,7 +177,6 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": [],'),
         ],
         'linked':server_config + advancements_disabled + base_plugins + build_plugins,
