@@ -188,7 +188,7 @@ def fillBoxes(world, coordinatesToFill):
             print "    [{0}/{1}] Filling {2} with {3}".format(copyNum, copyMax, boxName, boxMaterialName)
             world.fillBlocks(box, block)
 
-def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, replaceItems):
+def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, itemReplacements):
     """
     Copies a box from srcWorld to dstWorld at the same location, preserving entities
     coordinatesToCopy should be an iterable tuple or list of dictionaries, like this:
@@ -197,7 +197,7 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, replaceI
         {"name":"Section_2", "pos1":( -896, 0,  208), "pos2":(-512, 255,  318), "replace":True, "material":( 57, 0), "materialName":"diamond"),
     )
     If "replace" == True, then item and block replacements will be done according
-        to blockReplacements and replaceItems
+        to blockReplacements and itemReplacements
     """
     copyNum = 1
     copyMax = len(coordinatesToCopy)
@@ -222,8 +222,9 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, replaceI
                 print "    [{0}/{1}]   Replacing specified blocks in {2}...".format(copyNum,copyMax,boxName)
                 replaceGlobally(tempSchematic, blockReplacements)
 
-            print "    [{0}/{1}]   Handling item replacements for tile entities in {2} (if applicable)...".format(copyNum,copyMax,boxName)
-            replaceItems.InSchematic(tempSchematic)
+            if itemReplacements is not None:
+                print "    [{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
+                itemReplacements.InSchematic(tempSchematic)
 
         # Remove entities in destination
         dstWorld.removeEntitiesInBox(box)

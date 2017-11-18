@@ -28,13 +28,22 @@ configList = [{
 
     "resetRegionalDifficulty":True,
 
+    # Which folder to copy the base world from. Either "build", "main", or not set
+    "copyBaseFrom":"build",
+    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
+
     # If this is set to True, instead of copying the coordinates from the Main server
     # it treats them as additional coordinatesToFill instead, filling those regions
     # so that their positions can be easily checked in-game
     #"coordinatesDebug":True,
 
+    # List of places where block replacements should be run - options are "world", "schematics"
     "blockReplacements":item_replace_list.blockReplacements,
+    "blockReplaceLocations":["schematics",],
+
+    # List of places where item replacements should be run - options are "players", "world", "schematics"
     "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplaceLocations":["players", "schematics",],
 
     "coordinatesToCopy":(
         # "name":"a unique name"
@@ -100,52 +109,72 @@ configList = [{
     "localMainFolder":"/home/rock/tmp/PRE_RESET/betaplots/Project_Epic-betaplots/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/betaplots/Project_Epic-betaplots/",
 
+    "copyBaseFrom":"main",
+
     "blockReplacements":item_replace_list.blockReplacements,
+    "blockReplaceLocations":["world",],
     "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplaceLocations":["players", "world",],
 }, {
     "server":"r1plots",
 
     "localMainFolder":"/home/rock/tmp/PRE_RESET/r1plots/Project_Epic-r1plots/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/r1plots/Project_Epic-r1plots/",
 
+    "copyBaseFrom":"main",
+
     "blockReplacements":item_replace_list.blockReplacements,
+    "blockReplaceLocations":["world",],
     "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplaceLocations":["players", "world",],
 }, {
     "server":"white",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/white/Project_Epic-white/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/white/Project_Epic-white/",
+    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplaceLocations":["players"],
 }, {
     "server":"orange",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/orange/Project_Epic-orange/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/orange/Project_Epic-orange/",
+    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplaceLocations":["players"],
 }, {
     "server":"magenta",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/magenta/Project_Epic-magenta/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/magenta/Project_Epic-magenta/",
+    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplaceLocations":["players"],
 }, {
     "server":"lightblue",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/lightblue/Project_Epic-lightblue/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/lightblue/Project_Epic-lightblue/",
+    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplaceLocations":["players"],
 }, {
     "server":"yellow",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/yellow/Project_Epic-yellow/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/yellow/Project_Epic-yellow/",
+    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplaceLocations":["players"],
 }, {
     "server":"r1bonus",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/r1bonus/Project_Epic-r1bonus/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/r1bonus/Project_Epic-r1bonus/",
+    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplaceLocations":["players"],
 }]
 
 terrainReset(configList)

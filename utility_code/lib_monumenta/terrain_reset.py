@@ -31,64 +31,70 @@ def terrainReset(configlist):
     for config in configlist:
         print "Starting reset for server {0}...".format(config["server"])
 
+        ################################################################################
         # Check for impossible config values
         if "localMainFolder" in config:
             if not os.path.isdir(config["localMainFolder"]):
                 sys.exit("localMainFolder world folder does not exist.")
         else:
             sys.exit("localMainFolder not specified.")
+
+        if "localDstFolder" not in config:
+            sys.exit("localDstFolder not specified.")
+
         if "localBuildFolder" in config:
             if not os.path.isdir(config["localBuildFolder"]):
                 sys.exit("localBuildFolder world folder does not exist.")
-        if "localDstFolder" not in config:
-            sys.exit("localDstFolder not specified.")
+
         if ("coordinatesToCopy" in config) and ("localBuildFolder" not in config):
             sys.exit("coordinatesToCopy requires localBuildFolder")
 
-        # Assign required variables
+        if ((("blockReplacements" in config) and ("blockReplaceLocations" not in config))
+                or (("blockReplacements" not in config) and ("blockReplaceLocations" in config))):
+            sys.exit("blockReplacements and blockReplaceLocations must be used together")
+
+        if ((("itemReplacements" in config) and ("itemReplaceLocations" not in config))
+                or (("itemReplacements" not in config) and ("itemReplaceLocations" in config))):
+            sys.exit("itemReplacements and itemReplaceLocations must be used together")
+
+        ################################################################################
+        # Assign variables
+
         localMainFolder = config["localMainFolder"]
         localDstFolder = config["localDstFolder"]
 
-        # Copy the build world as a base if it was provided
-        if "localBuildFolder" in config:
-            print "  Copying build world as base..."
-            copyFolder(config["localBuildFolder"], localDstFolder)
+        blockReplacements = config["blockReplacements"] if ("blockReplacements" in config) else None
+        itemReplacements = config["itemReplacements"] if ("itemReplacements" in config) else None
+        shouldResetDifficulty = config["resetRegionalDifficulty"] if ("resetRegionalDifficulty" in config) else False
 
-        # Copy the main world if the destination world doesn't exist
-        # TODO: This path is a little weird, because it copies the base then copies the playerdata again
-        elif ("localBuildFolder" not in config):
-            print "  Copying main world as base..."
-            copyFolder(localMainFolder, localDstFolder)
+        ################################################################################
+        # Copy folders
 
-        replaceItems = config["itemReplacements"]
-
-        # If block replacements were specified, assign a variable
-        if "blockReplacements" in config:
-            blockReplacements = config["blockReplacements"]
-        else:
-            blockReplacements = None
+        # Copy build or main as base world, depending on config
+        if "copyBaseFrom" in config:
+            if config["copyBaseFrom"] == "build":
+                print "  Copying build world as base..."
+                copyFolder(config["localBuildFolder"], localDstFolder)
+            elif config["copyBaseFrom"] == "main":
+                print "  Copying main world as base..."
+                copyFolder(localMainFolder, localDstFolder)
+            else:
+                sys.exit("Illegal value '" + config["copyBaseFrom"] + "' for key 'copyBaseFrom'")
 
         # Copy various bits of player data from the main world
-        # Note updating advancements, functions, and loot_tables is now done via gen_server_config
-        print "  Copying player data files from main world..."
-        copyFolders(localMainFolder, localDstFolder, ["advancements/", "playerdata/", "stats/",])
-        print "  Copying player maps and scoreboard from main world..."
-        copyFolders(localMainFolder, localDstFolder, ["data/",])
+        if "copyMainFolders" in config:
+            print "  Copying folders from main world..."
+            copyFolders(localMainFolder, localDstFolder, config["copyMainFolders"])
 
-        replaceItems.OnPlayers(localDstFolder)
 
-        # Only load the world and manipulate it if we need to
-        # TODO - This is a little weird, since we skip doing item replacements worldwide if we don't also do something else involving the world
-        #        This is desired behavior, but it's unintuitive
-        if (
-            ("coordinatesToFill" in config) or
-            ("coordinatesToCopy" in config) or
-            (blockReplacements is not None) or
-            (
-                ("resetRegionalDifficulty" in config) and
-                (config["resetRegionalDifficulty"] == True)
-            )
-        ):
+        ################################################################################
+        # Perform world manipulations if required
+        if (("coordinatesToFill" in config)
+                or ("coordinatesToCopy" in config)
+                or (blockReplacements is not None)
+                or ((itemReplacements is not None) and "world" in config["itemReplaceLocations"])
+                or (shouldResetDifficulty == True)):
+
             print "  Opening old play World..."
             srcWorld = pymclevel.loadWorld(localMainFolder)
 
@@ -104,18 +110,22 @@ def terrainReset(configlist):
                     print "  DEBUG: Filling regions instead of copying them!"
                     fillBoxes(dstWorld, config["coordinatesToCopy"])
                 else:
-                    print "  Copying needed terrain from the main world..."
-                    copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"], blockReplacements, replaceItems)
-            else:
-                # No coordinates to copy, but still want to replace blocks - do the block replacement worldwide
-                if blockReplacements is not None:
-                    print "  Replacing specified blocks worldwide..."
-                    replaceGlobally(dstWorld, blockReplacements)
-                # No coordinates to copy, but still want to replace items - do the item replacement worldwide
-                print "  Replacing specified items worldwide..."
-                replaceItems.InWorld(dstWorld)
+                    # Only pass in replacement lists if specifically requested for schematics
+                    tmpBlockReplacements = blockReplacements if (blockReplacements is not None and "schematics" in config["blockReplaceLocations"]) else None
+                    tmpItemReplacements = itemReplacements if (itemReplacements is not None and "schematics" in config["itemReplaceLocations"]) else None
 
-            if ("resetRegionalDifficulty" in config) and (config["resetRegionalDifficulty"] == True):
+                    print "  Copying needed terrain from the main world..."
+                    copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"], tmpBlockReplacements, tmpItemReplacements)
+
+            if (blockReplacements is not None) and ("world" in config["blockReplaceLocations"]):
+                print "  Replacing specified blocks worldwide..."
+                replaceGlobally(dstWorld, blockReplacements)
+
+            if (itemReplacements is not None) and ("world" in config["itemReplaceLocations"]):
+                print "  Replacing specified items worldwide..."
+                itemReplacements.InWorld(dstWorld)
+
+            if (shouldResetDifficulty == True):
                 print "  Resetting difficulty..."
                 resetRegionalDifficulty(dstWorld)
 
@@ -123,6 +133,9 @@ def terrainReset(configlist):
             dstWorld.generateLights()
             print "  Saving...."
             dstWorld.saveInPlace()
+
+        if "players" in config["itemReplaceLocations"]:
+            itemReplacements.OnPlayers(localDstFolder)
 
         if "safetyTpLocation" in config:
             print "  Moving players..."
