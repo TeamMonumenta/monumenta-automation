@@ -149,6 +149,6 @@ configList = [{
 }]
 
 terrainReset(configList)
-item_replace_list.itemReplacements.PrintGlobalLog()
+#item_replace_list.itemReplacements.PrintGlobalLog()
 print "Remember that tutorial, purgatory, bungee, and build are not handled by this script"
 
