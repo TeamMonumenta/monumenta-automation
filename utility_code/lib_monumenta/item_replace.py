@@ -830,6 +830,15 @@ class actName(object):
                     ):
                         self._color = formatCode
             # If self._color is None by here, assume it should be no color
+        if self._cmd == "set":
+            self._setName = None
+            name = actionOptions.pop(0)
+            if (
+                (type(name) == str) or
+                (type(name) == unicode)
+            ):
+                self._setName = name
+            # If self._setName is None by here, assume it should be no name
         else:
             print u"!!! Unknown subcommand for actName: {}".format(self._cmd)
             # put the subcommand back
@@ -859,11 +868,38 @@ class actName(object):
                 name = u'§' + self._color["id"] + name
             itemStack["tag"]["display"]["Name"].value = name
 
+        elif self._cmd == "set":
+            if self._setName is None:
+                # delete the item name
+                if "tag" in itemStack:
+                    if "display" in itemStack["tag"]:
+                        if "Name" in itemStack["tag"]["display"]:
+                            itemStack["tag"]["display"].pop("Name")
+                        if len(itemStack["tag"]["display"].keys()) == 0:
+                            itemStack["tag"].pop("display")
+                    if len(itemStack["tag"].keys()) == 0:
+                        itemStack.pop("tag")
+            else:
+                # set the item name
+                if "tag" not in itemStack:
+                    itemStack["tag"] = nbt.TAG_Compound()
+                if "display" not in itemStack:
+                    itemStack["tag"]["display"] = nbt.TAG_Compound()
+                if "Name" not in itemStack["tag"]["display"]:
+                    itemStack["tag"]["display"]["Name"] = nbt.TAG_String(self._setName)
+                else:
+                    itemStack["tag"]["display"]["Name"].value = self._setName
+
     def str(self):
         if self._cmd == "color":
-            return u'Update name color to {} if name exists (WIP)'.format(self._color["display"])
+            return u'Update name color to {} if name exists'.format(self._color["display"])
+        elif self._cmd == "set":
+            if self._setName is None:
+                return u'Remove item name'
+            else:
+                return u'Set name to "{}"'.format(self._setName)
         else:
-            return u'Invalid color subcommand'
+            return u'Invalid color subcommand; does nothing'
 
 class actNBT(object):
     """

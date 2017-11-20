@@ -194,49 +194,49 @@ itemReplacements = [
     [
         {"id":"minecraft:gold_ore"},
         [
-            "remove",
+            "name","set",u"Decayed Item",
         ]
     ],
     # Remove any gold nuggets that are present
     [
         {"id":"minecraft:gold_nugget"},
         [
-            "remove",
+            "name","set",u"Decayed Item",
         ]
     ],
     # Remove any gold ingots that are present
     [
         {"id":"minecraft:gold_ingot"},
         [
-            "remove",
+            "name","set",u"Decayed Item",
         ]
     ],
     # Remove any gold blocks that are present
     [
         {"id":"minecraft:gold_block"},
         [
-            "remove",
+            "name","set",u"Decayed Item",
         ]
     ],
     # Remove any emerald ore that is present
     [
         {"id":"minecraft:emerald_ore"},
         [
-            "remove",
+            "name","set",u"Decayed Item",
         ]
     ],
     # Remove any emeralds that are present
     [
         {"id":"minecraft:emerald"},
         [
-            "remove",
+            "name","set",u"Decayed Item",
         ]
     ],
     # Remove any emerald blocks that are present
     [
         {"id":"minecraft:emerald_block"},
         [
-            "remove",
+            "name","set",u"Decayed Item",
         ]
     ],
 """
@@ -253,7 +253,7 @@ itemReplacementsRemoveAll = item_replace.ReplaceItems([],[
 # Try "init" to show what this list does; you can even
 # run this library as a script and skip the other stuff.
 #itemReplacements = item_replace.ReplaceItems(["init","global count"],[
-itemReplacements = item_replace.ReplaceItems(["init"],[
+itemReplacements = item_replace.ReplaceItems([],[
     ############################################################################
     # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)
@@ -1013,48 +1013,48 @@ itemReplacements = item_replace.ReplaceItems(["init"],[
     ############################################################################
 
     # Iron:
-    [ {"id":"minecraft:iron_ore"}, ["remove"] ],
-    [ {"id":"minecraft:iron_nugget"}, ["remove"] ],
-    [ {"id":"minecraft:iron_ingot"}, ["remove"] ],
-    [ {"id":"minecraft:iron_block"}, ["remove"] ],
-    [ {"id":"minecraft:iron_helmet"}, ["remove"] ],
-    [ {"id":"minecraft:iron_chestplate"}, ["remove"] ],
-    [ {"id":"minecraft:iron_leggings"}, ["remove"] ],
-    [ {"id":"minecraft:iron_boots"}, ["remove"] ],
-    [ {"id":"minecraft:iron_axe"}, ["remove"] ],
-    [ {"id":"minecraft:iron_hoe"}, ["remove"] ],
-    [ {"id":"minecraft:iron_pickaxe"}, ["remove"] ],
-    [ {"id":"minecraft:iron_shovel"}, ["remove"] ],
-    [ {"id":"minecraft:iron_sword"}, ["remove"] ],
+    [ {"id":"minecraft:iron_ore"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_nugget"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_ingot"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_block"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_helmet"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_chestplate"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_leggings"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_boots"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_axe"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_hoe"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_pickaxe"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_shovel"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:iron_sword"}, ["name","set",u"Decayed Item"] ],
 
     # Diamond:
-    [ {"id":"minecraft:diamond_ore"}, ["remove"] ],
-    [ {"id":"minecraft:diamond"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_block"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_helmet"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_chestplate"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_leggings"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_boots"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_axe"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_hoe"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_pickaxe"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_shovel"}, ["remove"] ],
-    [ {"id":"minecraft:diamond_sword"}, ["remove"] ],
+    [ {"id":"minecraft:diamond_ore"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond_block"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond_helmet"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond_chestplate"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond_leggings"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond_boots"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond_axe"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond_hoe"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond_pickaxe"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond_shovel"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:diamond_sword"}, ["name","set",u"Decayed Item"] ],
 
     # Other:
-    [ {"id":"minecraft:anvil"}, ["remove"] ],
-    [ {"id":"minecraft:hopper"}, ["remove"] ],
-    [ {"id":"minecraft:hopper_minecart"}, ["remove"] ],
-    [ {"id":"minecraft:beacon"}, ["remove"] ],
-    [ {"id":"minecraft:nether_star"}, ["remove"] ],
+    [ {"id":"minecraft:anvil"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:hopper"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:hopper_minecart"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:beacon"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:nether_star"}, ["name","set",u"Decayed Item"] ],
 
-    [ {"id":"minecraft:bucket"}, ["remove"] ],
-    [ {"id":"minecraft:water_bucket"}, ["remove"] ],
-    [ {"id":"minecraft:lava_bucket"}, ["remove"] ],
-    [ {"id":"minecraft:milk_bucket"}, ["remove"] ],
+    [ {"id":"minecraft:bucket"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:water_bucket"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:lava_bucket"}, ["name","set",u"Decayed Item"] ],
+    [ {"id":"minecraft:milk_bucket"}, ["name","set",u"Decayed Item"] ],
 
     # Wither skeleton skulls - allowed now that wither spawns are canceled
-    #[ {"id":"minecraft:skull", "damage":1}, ["remove"] ],
+    #[ {"id":"minecraft:skull", "damage":1}, ["name","set",u"Decayed Item"] ],
 
     ############################################################################
     # Other:
@@ -1062,7 +1062,7 @@ itemReplacements = item_replace.ReplaceItems(["init"],[
     # Luck items
     [
         {"nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}'''},
-        ["remove"]
+        ["name","set",u"Decayed Item"]
     ],
 
     ############################################################################
@@ -1070,7 +1070,7 @@ itemReplacements = item_replace.ReplaceItems(["init"],[
     ############################################################################
     [
         {
-            "count":0,
+            "name":u"Decayed Item",
         },
         [
             "id","minecraft:rotten_flesh",

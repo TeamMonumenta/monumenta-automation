@@ -9,12 +9,12 @@ from lib_monumenta.terrain_reset import terrainReset
 from lib_monumenta import item_replace
 import item_replace_list
 
-itemReplacementsTest = item_replace.ReplaceItems([],[
+itemReplacementsTest = item_replace.ReplaceItems(["init"],[
     # Bow (testing spawners)
     [{"id":"minecraft:bow",},["remove"]],
 
     # Other:
-    [ {"id":"minecraft:emerald"}, ["remove"] ],
+    [ {"id":"minecraft:emerald"}, ["name","set",u"Decayed Item"] ],
 
     [
         {
@@ -63,7 +63,7 @@ itemReplacementsTest = item_replace.ReplaceItems([],[
     ],
     [
         {
-            "count":0,
+            "name":"Decayed Item",
         },
         [
             #"print","Replacing item with notice:",
