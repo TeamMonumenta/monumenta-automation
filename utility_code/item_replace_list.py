@@ -253,7 +253,7 @@ itemReplacementsRemoveAll = item_replace.ReplaceItems([],[
 # Try "init" to show what this list does; you can even
 # run this library as a script and skip the other stuff.
 #itemReplacements = item_replace.ReplaceItems(["init","global count"],[
-itemReplacements = item_replace.ReplaceItems([],[
+itemReplacements = item_replace.ReplaceItems(["init"],[
     ############################################################################
     # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)
@@ -338,7 +338,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§fBrigand's Coif"}}''',
+            "name":u'''Brigand's Coif''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Coif"}}'''
@@ -349,7 +349,8 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§b§lKismet's Blessing"},AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
+            "name":u'''Kismet's Blessing''',
+            "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6The luck has decayed into health"],color:65493,Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:-6900745281224160306L,UUIDLeast:-4828553848378685989L,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1116995255491055008L,UUIDLeast:-6766107056483247837L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
@@ -360,7 +361,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§b§lIceborn Helmet"}}''',
+            "name":u'''Iceborn Helmet''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:3s,id:34s},{lvl:1s,id:4s},{lvl:2s,id:5s}],display:{Lore:["§eKing's Valley : Rare"],color:9107455,Name:"§b§lIceborn Helmet"},AttributeModifiers:[{UUIDMost:46674431434570316L,UUIDLeast:29842133510151376L,Amount:-0.05d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:10509373368372805L,UUIDLeast:27250250553169692L,Amount:1,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -371,7 +372,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§aPlaguehide Cap"}}''',
+            "name":u'''Plaguehide Cap''',
         },
         [
             "nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Cap"},AttributeModifiers:[{UUIDMost:22907356139724361L,UUIDLeast:55634361538278368L,Amount:2,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:50813337862916683L,UUIDLeast:38856196263924788L,Amount:0.05d,Slot:"head",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:22347000550566221L,UUIDLeast:68212466135762333L,Amount:1,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -382,7 +383,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§fSpellweave Hat"}}''',
+            "name":u'''Spellweave Hat''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Hat"},AttributeModifiers:[{UUIDMost:260399,UUIDLeast:803793,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -393,7 +394,8 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§6§lTopaz Cap"},AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
+            "name":u'''Topaz Cap''',
+            "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
@@ -404,7 +406,8 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_helmet",
-            "nbt":ur'''{display:{Name:"§6§lAmber Cap"},AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
+            "name":u'''Amber Cap''',
+            "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
@@ -418,7 +421,8 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:golden_helmet",
-            "nbt":ur'''{display:{Name:"§d§lJeweled Tiara"},AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
+            "name":u'''Jeweled Tiara''',
+            "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
@@ -435,7 +439,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_chestplate",
-            "nbt":ur'''{display:{Name:"§2§lBasilisk Scales"}}''',
+            "name":u'''Basilisk Scales''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§eKing's Valley : Rare"],color:54286,Name:"§2§lBasilisk Scales"},AttributeModifiers:[{UUIDMost:1217047145548364L,UUIDLeast:62197310443051283L,Amount:4,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"}]}'''
@@ -446,7 +450,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_chestplate",
-            "nbt":ur'''{display:{Name:"§fBrigand's Tunic"}}''',
+            "name":u'''Brigand's Tunic''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Tunic"}}'''
@@ -457,7 +461,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_chestplate",
-            "nbt":ur'''{display:{Name:"§d§lCultist's Robe"}}''',
+            "name":u'''Cultist's Robe''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:10s},{lvl:1s,id:70s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:8857897,Name:"§d§lCultist's Robe"},AttributeModifiers:[{UUIDMost:42188985747894336L,UUIDLeast:58789894930970307L,Amount:3,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:26258638605899072L,UUIDLeast:65484620952030853L,Amount:0.1d,Slot:"chest",AttributeName:"generic.attackSpeed",Operation:1,Name:"generic.attackSpeed"}]}'''
@@ -468,7 +472,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_chestplate",
-            "nbt":ur'''{display:{Name:"§aPlaguehide Torso"}}''',
+            "name":u'''Plaguehide Torso''',
         },
         [
             "nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Torso"},AttributeModifiers:[{UUIDMost:71978911221471809L,UUIDLeast:25260044972271010L,Amount:2,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:19117308396094024L,UUIDLeast:9968568939286539L,Amount:0.05d,Slot:"chest",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:8440217748974405L,UUIDLeast:3552643124966103L,Amount:3,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -479,7 +483,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_chestplate",
-            "nbt":ur'''{display:{Name:"§fSpellweave Tunic"}}''',
+            "name":u'''Spellweave Tunic''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Tunic"},AttributeModifiers:[{UUIDMost:270399,UUIDLeast:903793,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -490,7 +494,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_chestplate",
-            "nbt":ur'''{display:{Name:"§1§lVoidguard"}}''',
+            "name":u'''Voidguard''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:3287104,Name:"§1§lVoidguard"},AttributeModifiers:[{UUIDMost:71061793700771916L,UUIDLeast:70921921889626742L,Amount:0.05d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:5618170327124803L,UUIDLeast:67318597315435972L,Amount:3,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -507,7 +511,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_leggings",
-            "nbt":ur'''{display:{Name:"§6§lAngelic Pants"}}''',
+            "name":u'''Angelic Pants''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:14277081,Name:"§6§lAngelic Pants"},AttributeModifiers:[{UUIDMost:2767629973749578L,UUIDLeast:26549136928073536L,Amount:5,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -518,7 +522,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_leggings",
-            "nbt":ur'''{display:{Name:"§fBrigand's Trousers"}}''',
+            "name":u'''Brigand's Trousers''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Trousers"}}'''
@@ -529,7 +533,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_leggings",
-            "nbt":ur'''{display:{Name:"§2§lEarthbound Pants"}}''',
+            "name":u'''Earthbound Pants''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:34s}],display:{Lore:["§eKing's Valley : Rare"],color:11753010,Name:"§2§lEarthbound Pants"},AttributeModifiers:[{UUIDMost:47478565729543745L,UUIDLeast:55464327090482055L,Amount:3,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:44980305394582344L,UUIDLeast:14485042704930583L,Amount:2,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -540,7 +544,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_leggings",
-            "nbt":ur'''{display:{Name:"§aPlaguehide Pants"}}''',
+            "name":u'''Plaguehide Pants''',
         },
         [
             "nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Pants"},AttributeModifiers:[{UUIDMost:7398196116790600L,UUIDLeast:33239325481073366L,Amount:2,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:61910509039675723L,UUIDLeast:13746144420287990L,Amount:0.05d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:14165244533123147L,UUIDLeast:22637248009267620L,Amount:2,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -551,7 +555,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_leggings",
-            "nbt":ur'''{display:{Name:"§fSpellweave Trousers"}}''',
+            "name":u'''Spellweave Trousers''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Trousers"},AttributeModifiers:[{UUIDMost:280399,UUIDLeast:1003793,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -565,7 +569,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:chainmail_leggings",
-            "nbt":ur'''{display:{Name:"§9§lIronscale Leggings"}}''',
+            "name":u'''Ironscale Leggings''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§9§lIronscale Leggings"},AttributeModifiers:[{UUIDMost:46932015782064460L,UUIDLeast:34304226943201925L,Amount:4,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:42035034178315847L,UUIDLeast:15455365629951484L,Amount:2,Slot:"legs",AttributeName:"generic.armorToughness",Operation:0,Name:"generic.armorToughness"}]}'''
@@ -582,7 +586,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_boots",
-            "nbt":ur'''{display:{Name:"§2§lBoots of Vitality"}}''',
+            "name":u'''Boots of Vitality''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:5s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:4521728,Name:"§2§lBoots of Vitality"},AttributeModifiers:[{UUIDMost:47288061869184321L,UUIDLeast:31209886326295287L,Amount:2,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:67642567772660032L,UUIDLeast:69671216077991960L,Amount:1,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -593,7 +597,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_boots",
-            "nbt":ur'''{display:{Name:"§fBrigand's Shoes"}}''',
+            "name":u'''Brigand's Shoes''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Shoes"}}'''
@@ -604,7 +608,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_boots",
-            "nbt":ur'''{display:{Name:"§aPlaguehide Boots"}}''',
+            "name":u'''Plaguehide Boots''',
         },
         [
             "nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Boots"},AttributeModifiers:[{UUIDMost:19971159992297292L,UUIDLeast:11701631750427272L,Amount:2,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:50620023180411213L,UUIDLeast:56580625667548148L,Amount:0.05d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:61536614628787790L,UUIDLeast:12067686387522583L,Amount:1,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -615,7 +619,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_boots",
-            "nbt":ur'''{display:{Name:"§1§lShadowborn Boots"}}''',
+            "name":u'''Shadowborn Boots''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:2s},{lvl:2s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:0,Name:"§1§lShadowborn Boots"},AttributeModifiers:[{UUIDMost:27244509153028163L,UUIDLeast:28582544481897959L,Amount:0.1d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:28562665029432653L,UUIDLeast:46011597873607935L,Amount:1,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -626,7 +630,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_boots",
-            "nbt":ur'''{display:{Name:"§fSpellweave Shoes"}}''',
+            "name":u'''Spellweave Shoes''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Shoes"},AttributeModifiers:[{UUIDMost:290399,UUIDLeast:1103793,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -637,7 +641,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_boots",
-            "nbt":ur'''{display:{Name:"§3§lStormborn Boots"}}''',
+            "name":u'''Stormborn Boots''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:2s},{lvl:3s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§eKing's Valley : Rare"],color:16775894,Name:"§3§lStormborn Boots"},AttributeModifiers:[{UUIDMost:8168110272590147L,UUIDLeast:66575962804257055L,Amount:0.05d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:55068906034949703L,UUIDLeast:23695059647787143L,Amount:1,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -651,7 +655,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:shield",
-            "nbt":ur'''{display:{Name:"§a§lArcane H0plon"}}''',
+            "name":u'''Arcane H0plon''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:1s,id:19s}],HideFlags:2,BlockEntityTag:{id:"Shield",Patterns:[{Pattern:"cbo",Color:10},{Pattern:"tts",Color:0},{Pattern:"bts",Color:0},{Pattern:"mr",Color:10},{Pattern:"sc",Color:0},{Pattern:"flo",Color:0}],Base:0},display:{Lore:["§8* Magic Wand *","§8King's Valley : §6Patron Made","§8St0mp them down with your magic","§8","§7When in main hand:","§7 2.0 Attack Speed","§7 4 Attack Damage"],Name:"§a§lArcane H0plon"},AttributeModifiers:[{UUIDMost:-2117986151759854833L,UUIDLeast:-5593014839057914980L,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-8899225606506198748L,UUIDLeast:-7900000780697794749L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
@@ -662,7 +666,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:shield",
-            "nbt":ur'''{display:{Name:"§2§lKeeper of the Jungle"}}''',
+            "name":u'''Keeper of the Jungle''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],HideFlags:32,BlockEntityTag:{Patterns:[{Pattern:"ss",Color:2},{Pattern:"flo",Color:2},{Pattern:"bri",Color:2}],Base:3},display:{Lore:["§eKing's Valley : Rare"],Name:"§2§lKeeper of the Jungle"},AttributeModifiers:[{UUIDMost:9006655014927177L,UUIDLeast:4782782479127341L,Amount:1,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
@@ -673,7 +677,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:shield",
-            "nbt":ur'''{display:{Name:"§aSpellready Buckler"}}''',
+            "name":u'''Spellready Buckler''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:19s}],HideFlags:2,BlockEntityTag:{id:"Shield",Patterns:[{Pattern:"tt",Color:0},{Pattern:"bt",Color:0},{Pattern:"flo",Color:0}],Base:10},display:{Lore:["§8King's Valley : Uncommon","§f","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§aSpellready Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
@@ -684,7 +688,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:shield",
-            "nbt":ur'''{display:{Name:"§fSpiked Buckler"}}''',
+            "name":u'''Spiked Buckler''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:19s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2.0 Attack Speed","§7 4 Attack Damage"],Name:"§fSpiked Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
@@ -695,7 +699,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:shield",
-            "nbt":ur'''{display:{Name:"§2§lTlaxan Bulwark"}}''',
+            "name":u'''Tlaxan Bulwark''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],HideFlags:32,BlockEntityTag:{Patterns:[{Pattern:"gru",Color:0},{Pattern:"cre",Color:0},{Pattern:"flo",Color:0},{Pattern:"moj",Color:0},{Pattern:"tts",Color:0},{Pattern:"bts",Color:0}],Base:2},display:{Lore:["§eKing's Valley : Rare"],Name:"§2§lTlaxan Bulwark"},AttributeModifiers:[{UUIDMost:8279654741628239L,UUIDLeast:50644245966137402L,Amount:2,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"}]}'''
@@ -712,7 +716,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_sword",
-            "nbt":ur'''{display:{Name:"§6§lAngelic Sword"}}''',
+            "name":u'''Angelic Sword''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:5s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 5 Attack Damage","§9 +1 Armor"],Name:"§6§lAngelic Sword"},AttributeModifiers:[{UUIDMost:13921849192281677L,UUIDLeast:29424957165321736L,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:14771070297205314L,UUIDLeast:58375339796730923L,Amount:1,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:69970127574793796L,UUIDLeast:64342718172429329L,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -723,7 +727,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_sword",
-            "nbt":ur'''{display:{Name:"§8§lAshheart Dagger"}}''',
+            "name":u'''Ashheart Dagger''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:4s,id:20s},{lvl:2s,id:22s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§f","§7When in main hand:","§7 1.6 Attack Speed","§7 5 Attack Damage","§9 +2 Max Health"],Name:"§8§lAshheart Dagger"},AttributeModifiers:[{UUIDMost:6203368885045579351L,UUIDLeast:-5502292298614332755L,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1770737273186633355L,UUIDLeast:-7632807259696268977L,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-925442460826187303L,UUIDLeast:-5209611670608876751L,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"}]}'''
@@ -734,7 +738,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_sword",
-            "nbt":ur'''{display:{Name:"§2§lEarthbound Runeblade"}}''',
+            "name":u'''Earthbound Runeblade''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§6","§7When in main hand:","§7 1.6 Attack Speed","§7 6.5 Attack Damage","§9 +2 Armor"],Name:"§2§lEarthbound Runeblade"},AttributeModifiers:[{UUIDMost:67445053026503759L,UUIDLeast:20777435665232169L,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:57037229736289856L,UUIDLeast:7096337185411272L,Amount:2,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:29541336158339146L,UUIDLeast:50859522055085541L,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -745,7 +749,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_sword",
-            "nbt":ur'''{display:{Name:"§b§lFrostbite"}}''',
+            "name":u'''Frostbite''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],HideFlags:1,display:{Lore:["§eKing's Valley : Rare"],Name:"§b§lFrostbite"},AttributeModifiers:[{UUIDMost:15904589298271559L,UUIDLeast:15892098128867088L,Amount:0.5d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"},{UUIDMost:5519348956124230L,UUIDLeast:71245373947163486L,Amount:-0.1d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:26919752762697285L,UUIDLeast:9565821765701568L,Amount:0.3d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:70946014956938317L,UUIDLeast:59970257892856718L,Amount:3.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:59337689937702222L,UUIDLeast:43829378243568899L,Amount:-0.15d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
@@ -756,7 +760,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_sword",
-            "nbt":ur'''{display:{Name:"§b§lIceborn Runeblade"}}''',
+            "name":u'''Iceborn Runeblade''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:17s},{lvl:3s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7","§7When in main hand:"," §71.2 Attack Speed"," §78 Attack Damage"," §c-10% Speed"],Name:"§b§lIceborn Runeblade"},AttributeModifiers:[{UUIDMost:68342020398380105L,UUIDLeast:18376432692088500L,Amount:-0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:20792108251577155L,UUIDLeast:44880469650724553L,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:49556179849667657L,UUIDLeast:15931220204059978L,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -767,7 +771,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_sword",
-            "nbt":ur'''{display:{Name:"§2§lPoison Ivy"}}''',
+            "name":u'''Poison Ivy''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:18s},{lvl:2s,id:34s},{lvl:2s,id:22s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 8 Attack Damage","§c -3 Armor"],Name:"§2§lPoison Ivy"},AttributeModifiers:[{UUIDMost:8412449719562827L,UUIDLeast:45136191579064328L,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:68056669774727247L,UUIDLeast:599809216906588L,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:66546952320709442L,UUIDLeast:65370556181348047L,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -778,7 +782,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_sword",
-            "nbt":ur'''{display:{Name:"§4§lShadow Spike"}}''',
+            "name":u'''Shadow Spike''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 7.5 Attack Damage","§c -3 Armor"],Name:"§4§lShadow Spike"},AttributeModifiers:[{UUIDMost:24272506551626816L,UUIDLeast:3188629144429256L,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:68081597460234561L,UUIDLeast:58960188647077945L,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:40900807882193986L,UUIDLeast:13214525664118331L,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -789,7 +793,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_sword",
-            "nbt":ur'''{display:{Name:"§3§lStormborn Runeblade"}}''',
+            "name":u'''Stormborn Runeblade''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§l","§7When in main hand:","§7 2 Attack Speed","§7 6.5 Attack Damage","§9 +10% Speed"],Name:"§3§lStormborn Runeblade"},AttributeModifiers:[{UUIDMost:44607095061251400L,UUIDLeast:17181972604100280L,Amount:0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:32717593065480005L,UUIDLeast:13800488484714149L,Amount:4,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:18508304389737284L,UUIDLeast:65266891060907778L,Amount:-2,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -800,7 +804,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_sword",
-            "nbt":ur'''{display:{Name:"§6§lTelum Immoriel"}}''',
+            "name":u'''Telum Immoriel''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§fAnother toy for Fangride to play with.","§8","§7When in main hand:","§7 0.8 Attack Speed","§7 12 Attack Damage"],Name:"§6§lTelum Immoriel"},AttributeModifiers:[{UUIDMost:962659,UUIDLeast:90631,Amount:11,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:345591,UUIDLeast:876260,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -814,7 +818,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:golden_sword",
-            "nbt":ur'''{display:{Name:"§6§lGeomantic Dagger"}}''',
+            "name":u'''Geomantic Dagger''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:17s},{lvl:5s,id:34s}],HideFlags:2,display:{Lore:["* Unique Item *","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 5.5 Attack Damage","§9 +3 Armor"],Name:"§6§lGeomantic Dagger"},AttributeModifiers:[{UUIDMost:749364,UUIDLeast:739930,Amount:3,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:787340,UUIDLeast:172309,Amount:3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:728374,UUIDLeast:661477,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -831,7 +835,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:wooden_axe",
-            "nbt":ur'''{display:{Name:"§fVersatile Axe"}}''',
+            "name":u'''Versatile Axe''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:32s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fVersatile Axe"}}'''
@@ -845,7 +849,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_axe",
-            "nbt":ur'''{display:{Name:"§6§lGiant's Axe"}}''',
+            "name":u'''Giant's Axe''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7","§7When in main hand:","§7 0.6 Attack Speed","§7 15 Attack Damage"," §c-8% Speed"],Name:"§6§lGiant's Axe"},AttributeModifiers:[{UUIDMost:50069596546217285L,UUIDLeast:52124018636176511L,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:16684340706050887L,UUIDLeast:61729139377545821L,Amount:14,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:20258808824438599L,UUIDLeast:52420949332344389L,Amount:-3.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -856,7 +860,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_axe",
-            "nbt":ur'''{display:{Name:"§3§lMithril Cleaver"}}''',
+            "name":u'''Mithril Cleaver''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 1.2 Attack Speed","§7 10 Attack Damage","§9 +12% Speed"],Name:"§3§lMithril Cleaver"},AttributeModifiers:[{UUIDMost:1317475486626126L,UUIDLeast:53226458093335048L,Amount:0.12d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:776403941688908L,UUIDLeast:11889093433774429L,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"},{UUIDMost:30352855180673349L,UUIDLeast:58285458965911180L,Amount:8,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"}]}'''
@@ -867,7 +871,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_axe",
-            "nbt":ur'''{display:{Name:"§4§lSearing Wrath"}}''',
+            "name":u'''Searing Wrath''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:2s,id:20s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 0.8 Attack Speed","§7 12 Attack Damage","§c -3 Armor"],Name:"§4§lSearing Wrath"},AttributeModifiers:[{UUIDMost:797401,UUIDLeast:849310,Amount:8,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:205397,UUIDLeast:267554,Amount:-3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:589373,UUIDLeast:600470,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -878,7 +882,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_axe",
-            "nbt":ur'''{display:{Name:"§6§lSoulcrusher"}}''',
+            "name":u'''Soulcrusher''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:6s,id:16s},{lvl:3s,id:34s}],RepairCost:1,HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§f","§7When in main hand:","§7 0.8 Attack Speed","§7 12.5 Attack Damage","§c -20% Speed"],Name:"§6§lSoulcrusher"},AttributeModifiers:[{UUIDMost:12446444898007617L,UUIDLeast:64791494739800248L,Amount:-0.2d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:19182804207771727L,UUIDLeast:44200783352792867L,Amount:8,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:1126358275258178L,UUIDLeast:50193448324688339L,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -895,7 +899,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_hoe",
-            "nbt":ur'''{display:{Name:"§5§lEnderwrath"}}''',
+            "name":u'''Enderwrath''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:7s,id:16s},{lvl:5s,id:34s},{lvl:1s,id:19s},{lvl:2s,id:20s},{lvl:2s,id:21s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","","§7When in main hand:","§7 2 Attack Speed","§7 5 Attack Damage","§9 +15% Speed"],Name:"§5§lEnderwrath"},AttributeModifiers:[{UUIDMost:905415,UUIDLeast:796247,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:840609,UUIDLeast:663888,Amount:-2,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -910,7 +914,7 @@ itemReplacements = item_replace.ReplaceItems([],[
         {
             "id":"minecraft:packed_ice",
             "damage":0,
-            "nbt":ur'''{display:{Name:"§b§lCrystalized Water"}}''',
+            "name":u'''Crystalized Water''',
         },
         [
             "nbt", "replace", ur'''{display:{Lore:["§fTurns into water when","§fplaced on a plot"],Name:"§b§lCrystalized Water"}}'''
@@ -922,7 +926,7 @@ itemReplacements = item_replace.ReplaceItems([],[
         {
             "id":"minecraft:bone",
             "damage":0,
-            "nbt":ur'''{display:{Name:"§9§lDeathchill Staff"}}''',
+            "name":u'''Deathchill Staff''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:17s}],display:{Lore:["§8* Magic Wand *","§eKing's Valley : Rare"],Name:"§9§lDeathchill Staff"},AttributeModifiers:[{UUIDMost:9215418588072772L,UUIDLeast:29013032778824963L,Amount:0.3d,Slot:"mainhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"},{UUIDMost:15405034991318852L,UUIDLeast:13833242679511430L,Amount:-0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
@@ -934,7 +938,7 @@ itemReplacements = item_replace.ReplaceItems([],[
         {
             "id":"minecraft:blaze_rod",
             "damage":0,
-            "nbt":ur'''{display:{Name:"§5§lHell's Fury"}}''',
+            "name":u'''Hell's Fury''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:19s},{lvl:5s,id:20s}],display:{Lore:["§8* Magic Wand *","§eKing's Valley : Rare"],Name:"§5§lHell's Fury"},AttributeModifiers:[{UUIDMost:69502167760309831L,UUIDLeast:25155512585813018L,Amount:0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
@@ -946,7 +950,7 @@ itemReplacements = item_replace.ReplaceItems([],[
         {
             "id":"minecraft:clay_ball",
             "damage":0,
-            "nbt":ur'''{display:{Name:"§6§lPonderous Stone"}}''',
+            "name":u'''Ponderous Stone''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Uncommon"],Name:"§6§lPonderous Stone"},AttributeModifiers:[{UUIDMost:-8784931189073293981L,UUIDLeast:-5336435319922077366L,Amount:1.0d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-3784013313986900216L,UUIDLeast:-9150198598510123427L,Amount:-0.25d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-2473186416011490271L,UUIDLeast:-6797638087243652569L,Amount:-4.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
@@ -957,7 +961,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:book",
-            "nbt":ur'''{display:{Name:"§5§lTome of Arcane Horrors"}}''',
+            "name":u'''Tome of Arcane Horrors''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:20s},{lvl:3s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§8","§7When in main hand:","§7 0.5 Attack Speed","§7 16 Attack Damage"],Name:"§5§lTome of Arcane Horrors"},AttributeModifiers:[{UUIDMost:495321,UUIDLeast:169768,Amount:15,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:564922,UUIDLeast:574772,Amount:-3.5d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
@@ -975,7 +979,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:leather_boots",
-            "nbt":ur'''{display:{Name:"§2§lPlague Bearer's Boots"}}''',
+            "name":u'''Plague Bearer's Boots''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","Halloween 2017"],color:675072,Name:"§2§lPlague Bearer's Boots"},AttributeModifiers:[{UUIDMost:-1640941516099861248L,UUIDLeast:-6326317583102562813L,Amount:-4.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-2914598640505769820L,UUIDLeast:-7162398802439954937L,Amount:0.12d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4035352220502543838L,UUIDLeast:-6384754459282382086L,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:1151211762335105703L,UUIDLeast:-8899502024825300851L,Amount:0.6d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
@@ -986,7 +990,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_hoe",
-            "nbt":ur'''{display:{Name:"§2§lPumpkin Scythe"}}''',
+            "name":u'''Pumpkin Scythe''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:8s,id:16s},{lvl:2s,id:17s},{lvl:2s,id:34s},{lvl:1s,id:18s}],display:{Lore:["* Unique Event Item *","Halloween 2017"],Name:"§2§lPumpkin Spythe"}}'''
@@ -997,7 +1001,7 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:stone_pickaxe",
-            "nbt":ur'''{display:{Name:"§2§lTribal Chisel"}}''',
+            "name":u'''Tribal Chisel''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:1s,id:34s}],display:{Lore:["* Irreparable *","§eKing's Valley : Rare"],Name:"§2§lTribal Chisel"}}'''

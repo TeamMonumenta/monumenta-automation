@@ -443,6 +443,8 @@ class replacement(object):
                 newMatch = matchDamage(matches)
             if key == "id":
                 newMatch = matchID(matches)
+            if key == "name":
+                newMatch = matchName(matches)
             if key == "nbt":
                 newMatch = matchNBT(matches)
             if key == "none":
@@ -569,6 +571,37 @@ class matchID(object):
 
     def str(self):
         return u'Item ID is "' + self._id + u'"'
+
+class matchName(object):
+    """
+    This stores a name to match later without color
+    """
+    def __init__(self,matchOptions):
+        self._name = matchOptions["name"]
+        if type(self._name) == str:
+            self._name = unicode(self._name)
+
+    def __eq__(self,itemStack):
+        if (
+            ("tag" not in itemStack) or
+            ("display" not in itemStack["tag"]) or
+            ("Name" not in itemStack["tag"]["display"])
+        ):
+            return self._name is None
+        elif self._name is None:
+            return False
+        else:
+            nameNoFormat = itemStack["tag"]["display"]["Name"].value
+            while u'§' in nameNoFormat:
+                i = nameNoFormat.find(u'§')
+                nameNoFormat = nameNoFormat[:i]+nameNoFormat[i+2:]
+            return nameNoFormat == self._name
+
+    def str(self):
+        if self._name == None:
+            return u'Item has no name'
+        else:
+            return u'Item name matches "' + self._name + '" regardless of color'
 
 class matchNBT(object):
     """
@@ -771,7 +804,7 @@ class actLocation(object):
     def str(self):
         return u'Print the player file name or location of the root entity'
 
-class actName(object): # TODO test it
+class actName(object):
     """
     Modify an item name
     """
@@ -812,8 +845,7 @@ class actName(object): # TODO test it
             ):
                 # not applicable (unless default name is obtained)
                 return
-            formatList = u"" # strings are lists of characters...
-            # ...which are strings of length 1...don't think about it.
+            formatList = u""
             name = itemStack["tag"]["display"]["Name"].value
             while name[0] == u'§':
                 formatList += name[1]

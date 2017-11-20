@@ -18,6 +18,51 @@ itemReplacementsTest = item_replace.ReplaceItems([],[
 
     [
         {
+            "id":"minecraft:wool",
+            "damage":0,
+        },
+        [
+            "nbt","replace",ur'''{display:{Name:"§0Test"}}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:wool",
+            "damage":1,
+        },
+        [
+            "nbt","replace",ur'''{display:{Name:"§1Test"}}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:wool",
+            "damage":2,
+        },
+        [
+            "nbt","replace",ur'''{display:{Name:"§2Test"}}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:wool",
+            "damage":3,
+        },
+        [
+            "nbt","replace",ur'''{display:{Name:"§33§cc"}}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:wool",
+            "name":"Test",
+        },
+        [
+            "nbt","replace",ur'''{display:{Name:"Baaaa!"}}''',
+        ]
+    ],
+    [
+        {
             "count":0,
         },
         [
@@ -27,7 +72,7 @@ itemReplacementsTest = item_replace.ReplaceItems([],[
             "count","=",1,
             "damage","=",0,
             "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
-            "name","color","green",
+            #"name","color","green",
         ]
     ],
 ])
