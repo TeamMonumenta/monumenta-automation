@@ -151,6 +151,7 @@ config = {
             #('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"dailyResetEnabled":', '"dailyResetEnabled": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"questCompassEnabled":', '"questCompassEnabled": true,'),
         ],
         'linked':server_config + advancements_r1 + base_plugins + coreprotect + build_plugins,
     },
@@ -234,7 +235,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": [],'),
         ],
-        'linked':server_config + advancements_disabled + easywarp + f3n + monumenta + openinv + socket4mc + coreprotect + worldedit + speedchanger + nbteditor + voxelsniper,
+        'linked':server_config + advancements_disabled + easywarp + f3n + monumenta + socket4mc + coreprotect + worldedit + speedchanger + nbteditor + voxelsniper,
     },
 
     'mobs':{
