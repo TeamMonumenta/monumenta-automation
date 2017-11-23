@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# This is in development; suggestions are more than welcome!
-# Looking for:
-#   additional item matching pattens
-#   additional actions
-#   better notation
-#   whatever else
-
 from lib_monumenta import item_replace
 
 blockReplacements = (
@@ -913,7 +906,6 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:packed_ice",
-            "damage":0,
             "name":u'''Crystalized Water''',
         },
         [
@@ -925,7 +917,6 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:bone",
-            "damage":0,
             "name":u'''Deathchill Staff''',
         },
         [
@@ -933,11 +924,22 @@ itemReplacements = item_replace.ReplaceItems([],[
         ]
     ],
 
+    # Ender Chest
+    [
+        {
+            "id":"minecraft:chest",
+            "nbt":ur'''{BlockEntityTag:{CustomName:"Ender Chest",Lock:"lockedforever"},display:{Lore:["Place me and stand on top","Only works within a player or guild plot","Avoid placing next to a regular chest","Can only be placed once!"],Name:"Ender Chest"}}''',
+        },
+        [
+            "id","minecraft:ender_chest",
+            "nbt", "clear",
+        ]
+    ],
+
     # Hell's Fury
     [
         {
             "id":"minecraft:blaze_rod",
-            "damage":0,
             "name":u'''Hell's Fury''',
         },
         [
@@ -949,7 +951,6 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "id":"minecraft:clay_ball",
-            "damage":0,
             "name":u'''Ponderous Stone''',
         },
         [
