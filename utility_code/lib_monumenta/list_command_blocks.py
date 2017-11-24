@@ -36,7 +36,7 @@ def _onEntity(args,entityDetails):
         z = entity["z"].value
 
         block = world.blockAt(x,y,z)
-        command = entity["Command"].value.decode("unicode-escape")
+        command = entity["Command"].value
 
         if block == idCmdBlockImpulse:
             commandBlocks["impulse"].append((x,y,z,command))
@@ -86,7 +86,7 @@ def run(worldFolder,logFolder):
 
     for cmdBlockType in ["impulse","repeat","chain","other"]:
         if len(commandBlocks[cmdBlockType]):
-            strBuffer = ""
+            strBuffer = u""
 
             while len(commandBlocks[cmdBlockType]):
                 aCmdBlock = commandBlocks[cmdBlockType].pop()
@@ -94,12 +94,12 @@ def run(worldFolder,logFolder):
                 x = aCmdBlock[0]
                 y = aCmdBlock[1]
                 z = aCmdBlock[2]
-                cmd = str(aCmdBlock[3])
+                cmd = unicode(aCmdBlock[3])
 
-                strBuffer += "{0}, {1}, {2}, {3}\n".format(x,y,z,cmd)
+                strBuffer += u"{0}, {1}, {2}, {3}\n".format(x,y,z,cmd)
 
             f = open(logFolder+"/"+cmdBlockType+".txt","a")
-            f.write(strBuffer)
+            f.write(strBuffer.encode('utf8'))
             f.close()
 
     print "Done."
