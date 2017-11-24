@@ -2,10 +2,9 @@
 
 This is a repository of code for automation and debugging.
 
-All of the Python code included assumes that there is a symlink to pymclevel as:
+MCEdit-Unified should be referenced from
 ```
-~/.local/lib/python2.7/site-packages/mclevel
+~/.local/lib/python2.7/site-packages/whatever
 ```
-
-Now with separate config files!
+if possible (doesn't look like we can for now, I think).
 

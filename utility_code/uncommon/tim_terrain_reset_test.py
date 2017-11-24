@@ -91,7 +91,10 @@ configList = [
         "resetRegionalDifficulty":True,
 
         "blockReplacements":item_replace_list.blockReplacements,
+        "blockReplaceLocations":["world",],
+
         "itemReplacements":item_replace_list.itemReplacements,
+        "itemReplaceLocations":["world",],
 
         "coordinatesToFill":(
             {"name":"Meh block", "pos1":(146,72,110), "pos2":(146,72,110), "replace":True, "material":(0,0), "materialName":"air"},
@@ -125,7 +128,10 @@ configList = [
         "localDstFolder":"/home/tim/.minecraft/saves/Item Reset dst/",
 
         "blockReplacements":item_replace_list.blockReplacements,
+        "blockReplaceLocations":["world",],
+
         "itemReplacements":itemReplacementsTest,
+        "itemReplaceLocations":["world",],
     }
 ]
 """
@@ -137,7 +143,10 @@ configList = [
         "localDstFolder":"/home/tim/.minecraft/saves/Item Reset dst/",
 
         "blockReplacements":item_replace_list.blockReplacements,
+        "blockReplaceLocations":["world",],
+
         "itemReplacements":itemReplacementsTest,
+        "itemReplaceLocations":["world",],
     }
 ]
 terrainReset(configList)

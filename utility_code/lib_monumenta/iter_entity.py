@@ -9,9 +9,6 @@ import sys
 os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
 
-# TODO debug test
-import pymclevel
-
 # Import pymclevel from MCLevel-Unified
 from pymclevel import nbt
 
@@ -35,7 +32,9 @@ class IterEntities(object):
     A class used to iterate over entities and block entities.
     For each entity found, calls onMatch like so:
 
+    ****
     onMatch(onMatchArgs,entityDetails)
+    ****
 
     Entity details are provided as a dictionary like so:
     {
@@ -232,43 +231,4 @@ class IterEntities(object):
             # Handles spawn eggs, and potentially other cases.
             entity = itemStack["tag"]["EntityTag"]
             self._entityList.append(entity)
-
-logData = {
-    "root entities found":0,
-    "root block entities found":0,
-    "entities found":0,
-    "block entities found":0,
-    "unknown entities found":0,
-    "players found":0,
-    "errors occured":0
-}
-
-def testFunction(options=None,entityDetails=None):
-    if type(entityDetails) is None:
-        options["errors occured"] += 1
-        return
-    if entityDetails["root entity"] is True:
-        if entityDetails["player file"] is not None:
-            options["players found"] += 1
-        elif entityDetails["is block entity"]:
-            options["root block entities found"] += 1
-        else:
-            options["root entities found"] += 1
-    else:
-        if entityDetails["is block entity"] == "unknown":
-            options["unknown entities found"] += 1
-        elif entityDetails["is block entity"]:
-            options["block entities found"] += 1
-        else:
-            options["entities found"] += 1
-
-test = IterEntities(["search spawners","search item entities"],testFunction,logData)
-
-world = pymclevel.loadWorld("/home/tim/.minecraft/saves/Item Reset Test")
-test.InWorld(world)
-
-print ""
-for key in sorted(logData.keys()):
-    print key + ": " + str(logData[key])
-
 

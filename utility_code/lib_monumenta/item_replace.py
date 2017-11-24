@@ -12,6 +12,8 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 # Import pymclevel from MCLevel-Unified
 from pymclevel import nbt
 
+from lib_monumenta.iter_entity import IterEntities
+
 # used to ignore data values that aren't damage
 ItemsWithRealDamage = [
     ############
@@ -164,68 +166,40 @@ class ReplaceItems(object):
             self.replacements = None
             if "init" in debug:
                 print u"  ┗╸Dummy list, does nothing."
-        else:
-            self.log_data = {}
-            self.log_data["debug"] = debug
-            self.log_data["global"] = {}
-            self.replacements = allReplacements(replacementList,self.log_data)
-            if "global count" in debug:
-                self.log_data["global"]["global count"] = {}
+            return
+        self.log_data = {}
+        self.log_data["debug"] = debug
+        self.log_data["global"] = {}
+        self.replacements = allReplacements(replacementList,self.log_data)
+        if "global count" in debug:
+            self.log_data["global"]["global count"] = {}
+        self.entityIter = IterEntities(
+            [
+                "block entities",
+                "entities",
+                "search item entities"
+            ],
+            self._OnEntities,
+            None
+        )
 
     def InWorld(self,world):
         if self.replacements is None:
             return
-
         self.log_data["current"] = {}
-
-        for cx,cz in world.allChunks:
-            aChunk = world.getChunk(cx,cz)
-
-            if "Level" not in aChunk.root_tag:
-                # This chunk is invalid, skip it!
-                # It has no data.
-                continue
-
-            # shallow copy this list, or we won't have entities in the main world.
-            # Also, we don't need a TAG_List; a normal list is fine.
-            self.entityList = []
-            for entity in aChunk.root_tag["Level"]["Entities"]:
-                self.entityList.append(entity)
-            for entity in aChunk.root_tag["Level"]["TileEntities"]:
-                self.entityList.append(entity)
-            self._OnEntities()
-
-            aChunk.chunkChanged(False) # needsLighting=False
+        self.entityIter.InWorld(world)
 
     def InSchematic(self,schematic):
         if self.replacements is None:
             return
-
         self.log_data["current"] = {}
-
-        # shallow copy this list, or we won't have entities in the main world.
-        # Also, we don't need a TAG_List; a normal list is fine.
-        self.entityList = []
-        for entity in schematic.Entities:
-            self.entityList.append(entity)
-        for entity in schematic.TileEntities:
-            self.entityList.append(entity)
-        self._OnEntities()
+        self.entityIter.InSchematic(schematic)
 
     def OnPlayers(self,worldDir):
         if self.replacements is None:
             return
-
         self.log_data["current"] = {}
-
-        for playerFile in os.listdir(worldDir+"playerdata"):
-            playerFile = worldDir+"playerdata/" + playerFile
-            self.log_data["player file"] = playerFile
-            player = nbt.load(playerFile)
-            # In this case, we can easily copy the only entity to a list.
-            self.entityList = [player]
-            self._OnEntities()
-            player.save(playerFile)
+        self.entityIter.OnPlayers(worldDir)
         self.log_data.pop("player file")
 
     def PrintGlobalLog(self):
@@ -237,68 +211,54 @@ class ReplaceItems(object):
                     item
                 )
 
-    def _OnEntities(self):
-        while len(self.entityList) > 0:
-            self.entity = self.entityList.pop()
-            self.log_data["entity"] = self.entity
-            if (
-                ("Pos" in self.entity) or
-                ("x" in self.entity)
-            ):
-                # The entity exists in the world/schematic directly,
-                # not inside something.
-                self.rootEntity = self.entity
-                self.log_data["rootEntity"] = self.rootEntity
+    def _OnEntities(self,dummyArg,entityDetails):
+        self.entity = entityDetails["entity"]
+        self.log_data["entity"] = self.entity
 
-            # Handle villager trades
-            if (
-                ("Offers" in self.entity) and
-                ("Recipes" in self.entity["Offers"])
-            ):
-                for trade in self.entity["Offers"]["Recipes"]:
-                    #if "maxUses" in trade:
-                    #    # make the villager support the maximum allowed trades
-                    #    trade["maxUses"] = 2147483647
-                    # trade["uses"] is the number of times a trade is used;
-                    # we can use it for player shops, as long as it starts at 1
-                    # if it starts at 0, trades will get refreshed, resetting
-                    # other trades to 0, reducing their max use, and potentially
-                    # opening another trade.
-                    if "buy" in trade:
-                        self._InStack(trade["buy"])
-                    if "buyB" in trade:
-                        self._InStack(trade["buyB"])
-                    if "sell" in trade:
-                        self._InStack(trade["sell"])
+        # The entity exists in the world/schematic directly,
+        # not inside something.
+        if entityDetails["root entity"] is True:
+            self.rootEntity = entityDetails["entity"]
+        else:
+            self.rootEntity = entityDetails["root entity"]
+            self.log_data["rootEntity"] = self.rootEntity
 
-            for containerTagName in containerTagNames:
-                if containerTagName in self.entity:
-                    # Replace hand items if they can drop
-                    if containerTagName == "HandItems":
-                        if "HandDropChances" in self.entity:
-                            for i in range(2):
-                                if self.entity["HandDropChances"][i] > -1.00:
-                                    self._InStack(self.entity[containerTagName][i])
-                        else:
-                            self._InStack(self.entity[containerTagName])
+        # Handle villager trades
+        if (
+            ("Offers" in self.entity) and
+            ("Recipes" in self.entity["Offers"])
+        ):
+            for trade in self.entity["Offers"]["Recipes"]:
+                if "buy" in trade:
+                    self._InStack(trade["buy"])
+                if "buyB" in trade:
+                    self._InStack(trade["buyB"])
+                if "sell" in trade:
+                    self._InStack(trade["sell"])
 
-                    # Replace armor items if they can drop
-                    elif containerTagName == "ArmorItems":
-                        if "ArmorDropChances" in self.entity:
-                            for i in range(4):
-                                if self.entity["ArmorDropChances"][i] > -1.00:
-                                    self._InStack(self.entity[containerTagName][i])
-                        else:
-                            self._InStackList(self.entity[containerTagName])
+        for containerTagName in containerTagNames:
+            if containerTagName in self.entity:
+                # Replace hand items if they can drop
+                if containerTagName == "HandItems":
+                    if "HandDropChances" in self.entity:
+                        for i in range(2):
+                            if self.entity["HandDropChances"][i] > -1.00:
+                                self._InStack(self.entity[containerTagName][i])
+                    else:
+                        self._InStack(self.entity[containerTagName])
 
-                    # Replace other items; they always drop
+                # Replace armor items if they can drop
+                elif containerTagName == "ArmorItems":
+                    if "ArmorDropChances" in self.entity:
+                        for i in range(4):
+                            if self.entity["ArmorDropChances"][i] > -1.00:
+                                self._InStack(self.entity[containerTagName][i])
                     else:
                         self._InStackList(self.entity[containerTagName])
 
-        self.entity = None
-        self.log_data["entity"] = None
-        self.rootEntity = None
-        self.log_data["rootEntity"] = None
+                # Replace other items; they always drop
+                else:
+                    self._InStackList(self.entity[containerTagName])
 
     def _InStackList(self,itemStackList):
         if type(itemStackList) is nbt.TAG_List:
@@ -316,17 +276,6 @@ class ReplaceItems(object):
             return
         # Handle item replacement on this item first
         self.replacements.run(itemStack,self.log_data)
-        # Now that this item has been altered/removed, try these:
-        if "tag" in itemStack:
-            if "BlockEntityTag" in itemStack["tag"]:
-                # This is enough info to loop over blocks with
-                # NBT held as items, like shulker boxes.
-                blockEntity = itemStack["tag"]["BlockEntityTag"]
-                self.entityList.append(blockEntity)
-            if "EntityTag" in itemStack["tag"]:
-                # Handles spawn eggs, and potentially other cases.
-                entity = itemStack["tag"]["EntityTag"]
-                self.entityList.append(entity)
         if "global count" in self.log_data["debug"]:
             globalCounts = self.log_data["global"]["global count"]
 

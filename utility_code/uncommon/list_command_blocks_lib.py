@@ -3,53 +3,27 @@
 """
 This lists the command block tile entities.
 """
-# Required libraries have links where not part of a standard Python install.
 import os
-import shutil
+import sys
 
-import numpy
-from numpy import zeros, bincount
-import itertools
+# The effective working directory for this script must always be the MCEdit-Unified directory
+# This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
+os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
 
-# These are expected in your site-packages folder, see:
-# https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory
-import mclevel # from https://github.com/mcedit/pymclevel
-from mclevel import mclevelbase
-from mclevel import materials
-from mclevel.box import BoundingBox, Vector
-from mclevel import nbt
+# Import pymclevel from pymclevel-Unified
+import pymclevel
 
-from monumenta_common import getBoxName
-from monumenta_common import getBoxSize
-from monumenta_common import getBoxPos
-from monumenta_common import getBox
-from monumenta_common import getBoxMaterial
-from monumenta_common import getBoxMaterialName
+from lib_monumenta.common import getBoxName, getBoxSize, getBoxPos, getBox
+from lib_monumenta.common import getBox, getBoxMaterial, getBoxMaterialName
+from lib_monumenta.iter_entity import IterEntities
 
 ################################################################################
 # Functions that display stuff while they work
 
-def fillRegions(worldFolder,coordinatesToScan):
-    """ Fill all regions with specified blocks to demonstrate coordinates """
-    world = mclevel.loadWorld(worldFolder)
-
-    # Fill the selected regions for debugging reasons
-    for fillRegion in coordinatesToScan:
-        boxName = getBoxName(fillRegion)
-        boxMaterial = getBoxMaterial(fillRegion)
-        boxMaterialName = getBoxMaterialName(fillRegion)
-        print "Filling " + boxName + " with " + boxMaterialName + "..."
-        box = getBox(fillRegion)
-        block = world.materials[boxMaterial]
-        world.fillBlocks(box, block)
-
-    print "Saving...."
-    world.generateLights()
-    world.saveInPlace()
-
 def run(worldFolder,coordinatesToScan,logFolder):
     print "Beginning scan..."
-    world = mclevel.loadWorld(worldFolder)
+    world = pymclevel.loadWorld(worldFolder)
 
     # Create/empty the log folder, containing all command blocks
     shutil.rmtree(logFolder, True)

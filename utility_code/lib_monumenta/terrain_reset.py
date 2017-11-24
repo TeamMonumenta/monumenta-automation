@@ -49,12 +49,10 @@ def terrainReset(configlist):
         if ("coordinatesToCopy" in config) and ("localBuildFolder" not in config):
             sys.exit("coordinatesToCopy requires localBuildFolder")
 
-        if ((("blockReplacements" in config) and ("blockReplaceLocations" not in config))
-                or (("blockReplacements" not in config) and ("blockReplaceLocations" in config))):
+        if ("blockReplacements" in config) ^ ("blockReplaceLocations" in config):
             sys.exit("blockReplacements and blockReplaceLocations must be used together")
 
-        if ((("itemReplacements" in config) and ("itemReplaceLocations" not in config))
-                or (("itemReplacements" not in config) and ("itemReplaceLocations" in config))):
+        if ("itemReplacements" in config) ^ ("itemReplaceLocations" in config):
             sys.exit("itemReplacements and itemReplaceLocations must be used together")
 
         ################################################################################
