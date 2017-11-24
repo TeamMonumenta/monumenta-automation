@@ -252,29 +252,10 @@ itemReplacements = item_replace.ReplaceItems([],[
     # (key items within dungeons, not keys to enter dungeons)
     ############################################################################
 
-    # Ancient Mortar
+    # We really don't care what it is, just match the lore
     [
         {
-            "id":"minecraft:bowl",
-            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fA Mortar perfect for mashing ingredients...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 2 *"],Name:"§9§lAncient Mortar"}}''',
-        },
-        ["remove"]
-    ],
-
-    # Aquanis Lily
-    [
-        {
-            "id":"minecraft:red_flower",
-            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fAn uncommon flower generally found near Hot Springs...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 3 *"],Name:"§9§lAquanis Lily"}}''',
-        },
-        ["remove"]
-    ],
-
-    # Simbelmynë
-    [
-        {
-            "id":"minecraft:red_flower",
-            "nbt":ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§fSimbelmynë is a rare flower, and it is said to","§fonly grow on the burial mounds of Royalty...","§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction.","* D4 Key 1 *"],Name:"§9§lSimbelmynë"}}''',
+            "nbt":ur'''{display:{Lore:["§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction."]}}''',
         },
         ["remove"]
     ],
@@ -427,6 +408,17 @@ itemReplacements = item_replace.ReplaceItems([],[
 
     ################
     # leather
+
+    # Alchemist's Apron
+    [
+        {
+            "id":"minecraft:leather_chestplate",
+            "name":u'''Alchemist's Apron''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2,id:1},{lvl:1,id:3}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:16776960,Name:"§fAlchemist's Apron"},AttributeModifiers:[{UUIDMost:270399,UUIDLeast:903793,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+        ]
+    ],
 
     # Basilisk Scales
     [
@@ -638,6 +630,20 @@ itemReplacements = item_replace.ReplaceItems([],[
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:2s},{lvl:3s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§eKing's Valley : Rare"],color:16775894,Name:"§3§lStormborn Boots"},AttributeModifiers:[{UUIDMost:8168110272590147L,UUIDLeast:66575962804257055L,Amount:0.05d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:55068906034949703L,UUIDLeast:23695059647787143L,Amount:1,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+        ]
+    ],
+
+    ################
+    # gold
+
+    # King's Sabatons
+    [
+        {
+            "id":"minecraft:golden_boots",
+            "name":u'''King's Sabatons''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:2s},{lvl:2s,id:4s},{lvl:1s,id:70s}],display:{Lore:["§6King's Valley : §lEPIC"],Name:"§b§l§nKing's Sabatons"},AttributeModifiers:[{UUIDMost:1036305191833456054L,UUIDLeast:-6779657396915867014L,Amount:2.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-4007202657393029347L,UUIDLeast:-7994857794876010881L,Amount:0.2d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
         ]
     ],
 
