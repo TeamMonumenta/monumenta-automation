@@ -938,7 +938,7 @@ itemReplacements = item_replace.ReplaceItems([],[
         },
         [
             "id","minecraft:ender_chest",
-            "nbt", "clear",
+            "nbt", "replace", ur'''{display:{Lore:["Can only be placed on a plot!"]}}''',
         ]
     ],
 

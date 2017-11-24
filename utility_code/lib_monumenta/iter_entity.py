@@ -52,7 +52,7 @@ class IterEntities(object):
 
     Which entities to pass to function (defaults to both)
     * "block entities" - search block entities
-    * "entities" - search within spawners
+    * "entities" - search within entities
 
     Which entities to search inside of (root entities always searched)
     * "search item entities" - search for entities inside items
