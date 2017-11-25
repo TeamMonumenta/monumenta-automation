@@ -21,6 +21,7 @@ server_config_to_copy = [
         ('plugins/FastAsyncWorldEdit/config.yml',),
         ('plugins/NBTEditor/CustomItems/NBTEditor.yml',),
         ('plugins/CoreProtect/config.yml',),
+        ('plugins/OpenInv/config.yml',),
         ('plugins/Monumenta-Plugins/config.yml',),
         ('plugins/Monumenta-Plugins/Properties.json',),
     ]
@@ -91,7 +92,6 @@ nbteditor = [
 
 openinv = [
         ('plugins/OpenInv.jar', '../../server_config/plugins/OpenInv.jar'),
-        ('plugins/OpenInv/config.yml', '../../../server_config/plugins/OpenInv/config.yml'),
     ]
 
 socket4mc = [
@@ -140,8 +140,8 @@ config = {
 
     'region_1':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'view-distance', 'view-distance=11'),
+            ('spigot.yml', 'view-distance', '    view-distance: 11'),
             ('server.properties', 'server-port', 'server-port=25566'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /setblock -1449 1 -1440 redstone_block'),
@@ -275,8 +275,8 @@ config = {
             ('server.properties', 'server-port', 'server-port=25574'),
             ('server.properties', 'difficulty', 'difficulty=0'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.9"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
             ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
         ],
