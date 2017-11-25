@@ -200,7 +200,6 @@ class ReplaceItems(object):
             return
         self.log_data["current"] = {}
         self.entityIter.OnPlayers(worldDir)
-        self.log_data.pop("player file")
 
     def PrintGlobalLog(self):
         if "global count" in self.log_data["global"]:
@@ -214,6 +213,8 @@ class ReplaceItems(object):
     def _OnEntities(self,dummyArg,entityDetails):
         self.entity = entityDetails["entity"]
         self.log_data["entity"] = self.entity
+
+        self.log_data["player file"] = entityDetails["player file"]
 
         # The entity exists in the world/schematic directly,
         # not inside something.
@@ -712,7 +713,7 @@ class actLocation(object):
         return
 
     def run(self,itemStack,log_data):
-        if "player file" in log_data:
+        if log_data["player file"] is not None:
             print u"Item is in player file " + log_data["player file"]
         elif "Pos" in log_data["rootEntity"]:
             print u"Item is on {} at {},{},{}".format(

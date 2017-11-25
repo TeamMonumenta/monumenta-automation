@@ -9,7 +9,7 @@ from lib_monumenta.terrain_reset import terrainReset
 from lib_monumenta import item_replace
 import item_replace_list
 
-itemReplacementsTest = item_replace.ReplaceItems(["init"],[
+itemReplacementsTest = item_replace.ReplaceItems([],[
     # Bow (testing spawners)
     [{"id":"minecraft:bow",},["remove"]],
 
@@ -77,7 +77,7 @@ itemReplacementsTest = item_replace.ReplaceItems(["init"],[
     ],
 ])
 
-"""
+
 configList = [
     {
         "server":"dst_merged",
@@ -91,10 +91,10 @@ configList = [
         "resetRegionalDifficulty":True,
 
         "blockReplacements":item_replace_list.blockReplacements,
-        "blockReplaceLocations":["world",],
+        "blockReplaceLocations":["schematics",],
 
         "itemReplacements":item_replace_list.itemReplacements,
-        "itemReplaceLocations":["world",],
+        "itemReplaceLocations":["schematics","players",],
 
         "coordinatesToFill":(
             {"name":"Meh block", "pos1":(146,72,110), "pos2":(146,72,110), "replace":True, "material":(0,0), "materialName":"air"},
@@ -134,20 +134,6 @@ configList = [
         "itemReplaceLocations":["world",],
     }
 ]
-"""
-configList = [
-    {
-        "server":"plots_world",
 
-        "localMainFolder":"/home/tim/.minecraft/saves/Item Reset Test/",
-        "localDstFolder":"/home/tim/.minecraft/saves/Item Reset dst/",
-
-        "blockReplacements":item_replace_list.blockReplacements,
-        "blockReplaceLocations":["world",],
-
-        "itemReplacements":itemReplacementsTest,
-        "itemReplaceLocations":["world",],
-    }
-]
 terrainReset(configList)
 
