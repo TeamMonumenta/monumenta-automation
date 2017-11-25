@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Required libraries have links where not part of a standard Python install.
 import os
 import shutil
+import sys
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
 os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
 
-# These are expected in your site-packages folder, see:
-# https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory
-import pymclevel # from https://github.com/mcedit/pymclevel
+# Import pymclevel from MCLevel-Unified
+import pymclevel
 from pymclevel import mclevelbase
 from pymclevel.box import BoundingBox, Vector
 from pymclevel import nbt
@@ -23,11 +23,21 @@ from lib_monumenta.common import getBox, lockTileEntities
 # Dst is the destination world, which gets overwritten by the build world.
 # Then, data from the main world replaces the relevant parts of the dst world.
 # Please note that no special care need be taken with whitespace in filenames.
-worldFolder = "/home/rock/project_epic/test/Project_Epic-test"
+worldFolder = "/home/rock/project_epic/region_1/Project_Epic-region_1"
 
 coordinatesToScan = (
     # ("region name",        (lowerCoordinate),  (upperCoordinate),  ( id, dmg), "block name (comment)"),
-    {"name":"PropPlots",         "pos1":(-1488, 0, -1433), "pos2":(-1512, 255, -1577), "replace":True, "material":( 41,  0), "materialName":"gold"},
+    {"name":"Section_1",              "pos1":(-1130,   0, -267), "pos2":(-897, 255,  318), "replace":True,  "material":( 41,  0), "materialName":"gold"},
+    {"name":"Section_2",              "pos1":( -896,   0,  208), "pos2":(-512, 255,  318), "replace":True,  "material":( 57,  0), "materialName":"diamond"},
+    {"name":"Section_3",              "pos1":( -896,   0,  207), "pos2":(-788, 255,  119), "replace":True,  "material":( 42,  0), "materialName":"iron"},
+    {"name":"Section_4",              "pos1":( -896,   0, -267), "pos2":(-825, 255,  -28), "replace":True,  "material":( 22,  0), "materialName":"lapis"},
+    {"name":"Section_5",              "pos1":( -512,   0,  207), "pos2":(-640, 255, -273), "replace":True,  "material":( 24,  0), "materialName":"sandstone"},
+    {"name":"Section_6",              "pos1":( -824,   0, -169), "pos2":(-641, 255, -272), "replace":True,  "material":(152,  0), "materialName":"redstone"},
+    {"name":"Section_7",              "pos1":( -641,   0, -168), "pos2":(-677, 255, -132), "replace":True,  "material":(155,  0), "materialName":"quartz"},
+    {"name":"Section_8",              "pos1":( -774,   0, -168), "pos2":(-813, 255, -150), "replace":True,  "material":( 17, 14), "materialName":"birch wood"},
+    {"name":"Section_9",              "pos1":( -641,   0,  -25), "pos2":(-655, 255,  -52), "replace":True,  "material":( 17, 15), "materialName":"jungle wood"},
+    {"name":"Section_10",             "pos1":( -680,   0,  183), "pos2":(-641, 255,  207), "replace":True,  "material":( 19,  0), "materialName":"sponge"},
+    {"name":"Section_11",             "pos1":( -668,   0,  -14), "pos2":(-641, 255,   25), "replace":True,  "material":(  1,  1), "materialName":"granite"},
 )
 
 tileEntitiesToCheck = ("chest", "dispenser", "dropper", "shulker_box", "hopper", "brewing_stand", "furnace")
