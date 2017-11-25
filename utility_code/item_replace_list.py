@@ -353,6 +353,17 @@ itemReplacements = item_replace.ReplaceItems([],[
         ]
     ],
 
+    # Scout's Leathers
+    [
+        {
+            "id":"minecraft:leather_helmet",
+            "name":u'''Scout's Leathers''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:692165,UUIDLeast:277777,Amount:0.03d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:692165,UUIDLeast:277777,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+        ]
+    ],
+
     # Spellweave Hat
     [
         {
@@ -464,6 +475,17 @@ itemReplacements = item_replace.ReplaceItems([],[
         ]
     ],
 
+    # Scout's Leathers
+    [
+        {
+            "id":"minecraft:leather_chestplate",
+            "name":u'''Scout's Leathers''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:752165,UUIDLeast:297777,Amount:0.03d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:752165,UUIDLeast:297777,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+        ]
+    ],
+
     # Spellweave Tunic
     [
         {
@@ -536,6 +558,17 @@ itemReplacements = item_replace.ReplaceItems([],[
         ]
     ],
 
+    # Scout's Leathers
+    [
+        {
+            "id":"minecraft:leather_leggings",
+            "name":u'''Scout's Leathers''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:732165,UUIDLeast:337777,Amount:0.03d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:764261,UUIDLeast:337777,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+        ]
+    ],
+
     # Spellweave Trousers
     [
         {
@@ -600,6 +633,17 @@ itemReplacements = item_replace.ReplaceItems([],[
         ]
     ],
 
+    # Scout's Leathers
+    [
+        {
+            "id":"minecraft:leather_boots",
+            "name":u'''Scout's Leathers''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:3s,id:2s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:632165,UUIDLeast:237777,Amount:0.03d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:632165,UUIDLeast:237777,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+        ]
+    ],
+
     # Shadowborn Boots
     [
         {
@@ -643,7 +687,7 @@ itemReplacements = item_replace.ReplaceItems([],[
             "name":u'''King's Sabatons''',
         },
         [
-            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:2s},{lvl:2s,id:4s},{lvl:1s,id:70s}],display:{Lore:["§6King's Valley : §lEPIC"],Name:"§b§l§nKing's Sabatons"},AttributeModifiers:[{UUIDMost:1036305191833456054L,UUIDLeast:-6779657396915867014L,Amount:2.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-4007202657393029347L,UUIDLeast:-7994857794876010881L,Amount:0.2d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:2s},{lvl:2s,id:4s},{lvl:1s,id:70s}],display:{Lore:["§6King's Valley : §lEPIC"],Name:"§b§l§nKing's Sabatons"},AttributeModifiers:[{UUIDMost:3501364431898363217L,UUIDLeast:-7168568964464722073L,Amount:0.15d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"},{UUIDMost:5805861576375026441L,UUIDLeast:-7198359331380377644L,Amount:2.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 
