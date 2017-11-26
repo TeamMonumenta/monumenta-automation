@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-This takes a build world (terrain), a main world (play area), and
-merges them into a new world, dstWorld (destination).
+Tim's test terrain reset script - used on tiny local worlds to debug quickly.
 """
 
 from lib_monumenta.terrain_reset import terrainReset

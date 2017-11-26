@@ -1125,7 +1125,6 @@ itemReplacements = item_replace.ReplaceItems([],[
         },
         [
             "id","minecraft:rotten_flesh",
-            "count","=",1,
             "damage","=",0,
             "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
         ]
