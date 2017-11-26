@@ -56,6 +56,7 @@ easywarp = [
     ]
 
 # F3 + n switch creative/spectator for non-ops
+# Not currently used - buggy
 f3n = [
         ('plugins/F3NPerm.jar', '../../server_config/plugins/F3NPerm.jar'),
     ]
@@ -113,7 +114,7 @@ voxelsniper = [
 #   advancements_r1
 #   structures
 
-base_plugins = easywarp + f3n + luckperms + monumenta + openinv + socket4mc
+base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc
 build_plugins = worldedit + speedchanger + nbteditor + voxelsniper
 # build_plugins = []
 
