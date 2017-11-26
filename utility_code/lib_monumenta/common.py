@@ -5,6 +5,8 @@ import os
 import warnings
 import shutil
 import numpy
+import contextlib
+import tempfile
 
 from pymclevel import materials
 from pymclevel.box import BoundingBox, Vector
@@ -58,8 +60,18 @@ def copyFile(old, new):
     else:
         shutil.copy2(old, new)
 
-# TODO: This should fail if the new destination doesn't exist without deleting the old directory
-# Should be done, needs to be checked.
+# Create a temporary directory which is automatically removed afterwards, even if the script crashes
+# Use like:
+#    with tempdir() as tempDungeonRefCopy:
+#        <code using the folder tempDungeonRefCopy>
+@contextlib.contextmanager
+def tempdir():
+    dirpath = tempfile.mkdtemp()
+    try:
+        yield dirpath
+    finally:
+        shutil.rmtree(dirpath)
+
 def copyFolder(old, new):
     # This does not check if it's a path or a file, but there's another function for that case.
     if os.path.exists(old):

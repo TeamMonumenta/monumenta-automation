@@ -4,6 +4,8 @@
 import os
 import shutil
 import sys
+import multiprocessing as mp
+import tempfile
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
 os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
@@ -16,14 +18,14 @@ from pymclevel.block_copy import copyBlocksFromIter
 from pymclevel.box import BoundingBox, Vector
 from pymclevel.mclevelbase import exhaust
 
-from lib_monumenta.common import fillBoxes, copyFolder
+from lib_monumenta.common import fillBoxes, copyFolder, tempdir
 from lib_monumenta.list_lootless_tile_entities import listLootlessTileEntities
 
 ################################################################################
 # Config section
 
 config = {
-    "dungeonFolder":"/home/rock/tmp/Project_Epic-dungeon/",
+    "dungeonRefFolder":"/home/rock/tmp/Project_Epic-dungeon/",
     "templateFolder":"/home/rock/tmp/Project_Epic-template/",
     "outFolder":"/home/rock/tmp/dungeons-out/",
 
@@ -164,47 +166,48 @@ config = {
     "targetRegion":{"x":-3, "z":-2},
 
     # Number of dungeons
-    "numDungeons":50,
+    "numDungeons":1,
 }
 
-def gen_dungeon_instances(config):
-    dungeonFolder = config["dungeonFolder"]
+def gen_dungeon_instance(config, dungeon, outputFile):
+    # Redirect output to specified fiel
+    sys.stdout = open(outputFile, "w")
+
+    # Global config
+    dungeonRefFolder = config["dungeonRefFolder"]
     templateFolder = config["templateFolder"]
     outFolder = config["outFolder"]
-    dungeons = config["dungeons"]
     voidPadding = config["voidPadding"]
     targetRegion = config["targetRegion"]
     numDungeons = config["numDungeons"]
     tileEntitiesToCheck = config["tileEntitiesToCheck"]
 
-    # Fail if folders don't exist
-    if not os.path.isdir(dungeonFolder):
-        sys.exit("Dungeon reference folder does not exist.")
-    if not os.path.isdir(templateFolder):
-        sys.exit("Template world folder does not exist.")
+    # Per-dungeon config
+    dungeonName = dungeon["name"]
+    dungeonRegion = dungeon["region"]
+    dungeonSize = Vector(*dungeon["size"])
+    dungeonContentsLoreToIgnore = dungeon["chestContentsLoreToIgnore"]
+    dungeonChestWhitelist = dungeon["chestWhitelist"]
+    dstFolder = outFolder + dungeonName + '/Project_Epic-' + dungeonName + '/'
 
-    print "Opening dungeon reference world..."
-    referenceWorld = pymclevel.loadWorld(dungeonFolder)
+    # Compute dungeon parameters
+    dungeonPos = Vector(*(dungeonRegion["x"] * 32 * 16, 0, dungeonRegion["z"] * 32 * 16))
+    dungeonBox = BoundingBox(dungeonPos, dungeonSize)
+    dstPos = Vector(*(targetRegion["x"] * 32 * 16, 0, targetRegion["z"] * 32 * 16))
+    dstStep = Vector(*(0, 0, 32 * 16))
+    voidPos = dstPos + Vector(*(-1 * voidPadding * 16, 0, -1 * voidPadding * 16))
+    voidSize = Vector(*((32 + voidPadding) * 16, 256, (32 * numDungeons + voidPadding) * 16))
+    voidBox = BoundingBox(voidPos, voidSize)
+    blocksToCopy = range(materials.id_limit)
 
-    for dungeon in dungeons:
-        dungeonName = dungeon["name"]
-        dungeonRegion = dungeon["region"]
-        dungeonSize = Vector(*dungeon["size"])
-        dungeonPos = Vector(*(dungeonRegion["x"] * 32 * 16, 0, dungeonRegion["z"] * 32 * 16))
-        dungeonBox = BoundingBox(dungeonPos, dungeonSize)
-        dungeonContentsLoreToIgnore = dungeon["chestContentsLoreToIgnore"]
-        dungeonChestWhitelist = dungeon["chestWhitelist"]
-        dstFolder = outFolder + dungeonName + '/Project_Epic-' + dungeonName + '/'
-
-        dstPos = Vector(*(targetRegion["x"] * 32 * 16, 0, targetRegion["z"] * 32 * 16))
-        dstStep = Vector(*(0, 0, 32 * 16))
-        voidPos = dstPos + Vector(*(-1 * voidPadding * 16, 0, -1 * voidPadding * 16))
-        voidSize = Vector(*((32 + voidPadding) * 16, 256, (32 * numDungeons + voidPadding) * 16))
-        voidBox = BoundingBox(voidPos, voidSize)
-
-        blocksToCopy = range(materials.id_limit)
+    # Make a temporary copy of the dungeon template folder
+    with tempdir() as tempDungeonRefCopy:
+        copyFolder(dungeonRefFolder, tempDungeonRefCopy)
 
         print "Starting work on dungeon: " + dungeonName
+
+        print "  Opening dungeon reference world..."
+        referenceWorld = pymclevel.loadWorld(tempDungeonRefCopy)
 
         print "  Copying template world as base..."
         copyFolder(templateFolder, dstFolder)
@@ -234,8 +237,7 @@ def gen_dungeon_instances(config):
                                        staticCommands=False, moveSpawnerPos=False, regenerateUUID=True,
                                        first=False, cancelCommandBlockOffset=False)) # Not sure what these last two do - defaults
 
-        # Note resetting difficulty is unnecessary - all generated chunks
-        #   lack the time inhabited tag
+        # Note resetting difficulty is unnecessary - all generated chunks lack the time inhabited tag
         # print "  Resetting difficulty..."
         # resetRegionalDifficulty(dstWorld)
 
@@ -253,7 +255,40 @@ def gen_dungeon_instances(config):
             shutil.rmtree(dstFolder + "stats", ignore_errors=True)
             os.remove(dstFolder + "mcedit_waypoints.dat")
         except Exception as e:
-            continue
+            pass
+
+
+# Multiprocessing implementation based on:
+# http://sebastianraschka.com/Articles/2014_multiprocessing.html
+def gen_dungeon_instances(config):
+    dungeonRefFolder = config["dungeonRefFolder"]
+    templateFolder = config["templateFolder"]
+    dungeons = config["dungeons"]
+
+    # Fail if folders don't exist
+    if not os.path.isdir(dungeonRefFolder):
+        sys.exit("Dungeon reference folder does not exist.")
+    if not os.path.isdir(templateFolder):
+        sys.exit("Template world folder does not exist.")
+
+
+    processes = []
+    outputFiles = []
+    for dungeon in dungeons:
+        outputFile = tempfile.mktemp()
+        processes.append({
+            "process":mp.Process(target=gen_dungeon_instance, args=(config, dungeon, outputFile)),
+            "outputFile":outputFile,
+            })
+
+    for p in processes:
+        p["process"].start()
+
+    for p in processes:
+        p["process"].join()
+        logFile = open(p["outputFile"], "r")
+        print logFile.read()
+        logFile.close()
 
     print "Done!"
 
