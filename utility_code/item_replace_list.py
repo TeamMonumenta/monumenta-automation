@@ -15,7 +15,7 @@ blockReplacements = (
     #("minecraft:emerald_ore", "air"),
 
     ("minecraft:beacon", "air"),
-    
+
     # Unfortunately, we need this repeated for all data values :(
     #("minecraft:anvil", "air"),
     ((145, 0), "air"),
