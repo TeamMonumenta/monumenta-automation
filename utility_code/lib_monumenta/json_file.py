@@ -1,4 +1,7 @@
-# json utility
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Don't rename this to json.py - it'll break things
 
 import json
 
