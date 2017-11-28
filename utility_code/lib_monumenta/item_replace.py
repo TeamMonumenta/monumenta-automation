@@ -210,6 +210,20 @@ class ReplaceItems(object):
                     item
                 )
 
+    def SaveGlobalLog(self,logPath=None):
+        if logPath is None:
+            print u"! Global Item Replacement log path not specified"
+            return
+        if "global count" in self.log_data["global"]:
+            with open(logPath,'w') as f:
+                f.write(u"Items found:\n".encode('utf8'))
+                for item in self.log_data["global"]["global count"]:
+                    f.write(u"* {}x {}\n".format(
+                        self.log_data["global"]["global count"][item],
+                        item
+                    ).encode('utf8'))
+                f.close()
+
     def _OnEntities(self,dummyArg,entityDetails):
         self.entity = entityDetails["entity"]
         self.log_data["entity"] = self.entity

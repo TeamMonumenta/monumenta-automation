@@ -15,7 +15,21 @@ blockReplacements = (
     #("minecraft:emerald_ore", "air"),
 
     ("minecraft:beacon", "air"),
-    ("minecraft:anvil", "air"),
+    
+    # Unfortunately, we need this repeated for all data values :(
+    #("minecraft:anvil", "air"),
+    ((145, 0), "air"),
+    ((145, 1), "air"),
+    ((145, 2), "air"),
+    ((145, 3), "air"),
+    ((145, 4), "air"),
+    ((145, 5), "air"),
+    ((145, 6), "air"),
+    ((145, 7), "air"),
+    ((145, 8), "air"),
+    ((145, 9), "air"),
+    ((145,10), "air"),
+    ((145,11), "air"),
 
     # Not sure about this section
     #("enchanting_Table", "air"),
@@ -246,7 +260,7 @@ itemReplacementsRemoveAll = item_replace.ReplaceItems([],[
 # Try "init" to show what this list does; you can even
 # run this library as a script and skip the other stuff.
 #itemReplacements = item_replace.ReplaceItems(["init","global count"],[
-itemReplacements = item_replace.ReplaceItems([],[
+itemReplacements = item_replace.ReplaceItems(["global count"],[
     ############################################################################
     # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)

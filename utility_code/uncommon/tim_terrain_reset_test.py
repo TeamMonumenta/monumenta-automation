@@ -4,6 +4,8 @@
 Tim's test terrain reset script - used on tiny local worlds to debug quickly.
 """
 
+import shutil
+
 from lib_monumenta.terrain_reset import terrainReset
 from lib_monumenta import item_replace
 import item_replace_list
@@ -89,6 +91,9 @@ configList = [
 
         "resetRegionalDifficulty":True,
 
+        "copyBaseFrom":"build",
+        "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
+
         "blockReplacements":item_replace_list.blockReplacements,
         "blockReplaceLocations":["schematics",],
 
@@ -96,28 +101,28 @@ configList = [
         "itemReplaceLocations":["schematics","players",],
 
         "coordinatesToFill":(
-            {"name":"Meh block", "pos1":(146,72,110), "pos2":(146,72,110), "replace":True, "material":(0,0), "materialName":"air"},
+            {"name":"Meh block", "pos1":(146,72,110), "pos2":(146,72,110), "replaceBlocks":True, "material":(0,0), "materialName":"air"},
         ),
 
         "coordinatesToCopy":(
-            {"name":"hut1",       "pos1":(153,68,104), "pos2":(156,73,108), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"hut2fence",  "pos1":(159,64,112), "pos2":(163,69,116), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"hut3",       "pos1":(150,70,112), "pos2":(154,75,115), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"church",     "pos1":(138,73,113), "pos2":(146,84,117), "replace":False, "material":(0,0), "materialName":"air"},
-            {"name":"hut4",       "pos1":(113,62,126), "pos2":(116,68,130), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"farm1s",     "pos1":(120,62,122), "pos2":(126,64,130), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"hut5",       "pos1":(133,70,126), "pos2":(136,74,130), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"hut6",       "pos1":(155,70,126), "pos2":(158,74,130), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"farm2l",     "pos1":(164,67,122), "pos2":(176,69,130), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"well",       "pos1":(146,58,130), "pos2":(151,73,135), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"hut7",       "pos1":(111,61,134), "pos2":(115,67,138), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"farm3l",     "pos1":(118,62,134), "pos2":(130,64,142), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"hut8TShape", "pos1":(136,63,136), "pos2":(147,73,144), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"hut9fence",  "pos1":(153,68,134), "pos2":(157,74,138), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"hut10fence", "pos1":(150,64,139), "pos2":(154,70,143), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"farm4l",     "pos1":(164,68,134), "pos2":(176,70,142), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"farm5s",     "pos1":(150,63,146), "pos2":(158,65,152), "replace":True,  "material":(0,0), "materialName":"air"},
-            {"name":"farm6l",     "pos1":(138,62,153), "pos2":(146,64,165), "replace":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut1",       "pos1":(153,68,104), "pos2":(156,73,108), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut2fence",  "pos1":(159,64,112), "pos2":(163,69,116), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut3",       "pos1":(150,70,112), "pos2":(154,75,115), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"church",     "pos1":(138,73,113), "pos2":(146,84,117), "replaceBlocks":False, "replaceItems":False, "material":(0,0), "materialName":"air"},
+            {"name":"hut4",       "pos1":(113,62,126), "pos2":(116,68,130), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm1s",     "pos1":(120,62,122), "pos2":(126,64,130), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut5",       "pos1":(133,70,126), "pos2":(136,74,130), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut6",       "pos1":(155,70,126), "pos2":(158,74,130), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm2l",     "pos1":(164,67,122), "pos2":(176,69,130), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"well",       "pos1":(146,58,130), "pos2":(151,73,135), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut7",       "pos1":(111,61,134), "pos2":(115,67,138), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm3l",     "pos1":(118,62,134), "pos2":(130,64,142), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut8TShape", "pos1":(136,63,136), "pos2":(147,73,144), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut9fence",  "pos1":(153,68,134), "pos2":(157,74,138), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"hut10fence", "pos1":(150,64,139), "pos2":(154,70,143), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm4l",     "pos1":(164,68,134), "pos2":(176,70,142), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm5s",     "pos1":(150,63,146), "pos2":(158,65,152), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
+            {"name":"farm6l",     "pos1":(138,62,153), "pos2":(146,64,165), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
         ),
     },
     {
@@ -125,6 +130,9 @@ configList = [
 
         "localMainFolder":"/home/tim/.minecraft/saves/Item Reset Test/",
         "localDstFolder":"/home/tim/.minecraft/saves/Item Reset dst/",
+
+        "copyBaseFrom":"main",
+        "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
 
         "blockReplacements":item_replace_list.blockReplacements,
         "blockReplaceLocations":["world",],
@@ -134,5 +142,7 @@ configList = [
     }
 ]
 
+shutil.rmtree("/home/tim/.minecraft/saves/dst", ignore_errors=True)
+shutil.rmtree("/home/tim/.minecraft/saves/Item Reset dst", ignore_errors=True)
 terrainReset(configList)
 
