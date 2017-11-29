@@ -170,7 +170,7 @@ config = {
 }
 
 def gen_dungeon_instance(config, dungeon, outputFile):
-    # Redirect output to specified fiel
+    # Redirect output to specified file
     sys.stdout = open(outputFile, "w")
 
     # Global config
@@ -279,7 +279,7 @@ def gen_dungeon_instances(config):
         processes.append({
             "process":mp.Process(target=gen_dungeon_instance, args=(config, dungeon, outputFile)),
             "outputFile":outputFile,
-            })
+        })
 
     for p in processes:
         p["process"].start()

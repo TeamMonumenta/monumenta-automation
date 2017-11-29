@@ -29,13 +29,16 @@ class jsonFile(object):
             return
         with open(path,'r') as f:
             self.dict = json.load(f)
+            f.close()
 
-    def save(self,path=self.path,indent=2,separators=(',', ': '),sort_keys=False):
+    def save(self,path=None,indent=2,separators=(',', ': '),sort_keys=False):
         """
         save a json file; defaults to original location
         """
         if path is None:
-            raise TypeError("Path not specified for json file")
+            path = self.path
+            if path is None:
+                raise TypeError("Path not specified for json file")
         with open(path,'w') as f:
             json.dump(
                 self.dict,
@@ -47,4 +50,5 @@ class jsonFile(object):
                 default=None,
                 sort_keys=sort_keys
             )
+            f.close()
 
