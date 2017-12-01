@@ -205,6 +205,7 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.4"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"isSleepingEnabled":', '"isSleepingEnabled": false,'),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
