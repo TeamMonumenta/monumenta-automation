@@ -859,11 +859,31 @@ class actNBT(object):
             self._nbt = nbt.json_to_tag( actionOptions.pop(0) )
 
     def run(self,itemStack,log_data):
+        # Attempt to preserve armor color and banner/shield patterns
+        armorColor = None
+        bannerColor = None
+        bannerPattern = None
+        if "tag" in itemStack:
+            # armor color
+            if (
+                ("display" in itemStack["tag"]) and
+                ("color" in itemStack["tag"]["display"])
+            ):
+                armorColor = itemStack["tag"]["display"]["color"]
+            # banner/shield color/pattern
+            if "BlockEntityTag" in itemStack["tag"]:
+                if "Base" in itemStack["tag"]["BlockEntityTag"]:
+                    bannerColor = itemStack["tag"]["BlockEntityTag"]["Base"]
+                if "Patterns" in itemStack["tag"]["BlockEntityTag"]:
+                    bannerPattern = itemStack["tag"]["BlockEntityTag"]["Patterns"]
+
+        # Clear NBT if needed
         if (
                 (self._operation == "clear")
                 or (self._operation == "replace")
         ) and ("tag" in itemStack):
             itemStack.pop("tag")
+        # Set NBT if needed
         if (
                 (self._operation == "update")
                 or (self._operation == "replace")
@@ -871,6 +891,26 @@ class actNBT(object):
             if "tag" not in itemStack:
                 itemStack["tag"] = nbt.TAG_Compound()
             itemStack["tag"].update(self._nbt)
+
+            # restore armor/banner/shield color/patterns here;
+            # if we intended to clear their NBT, it's probably
+            # for a good reason. If we put it back, we player
+            # customizations back.
+            if armorColor is not None:
+                if "display" not in itemStack["tag"]:
+                    itemStack["tag"]["display"] = nbt.TAG_Compound()
+                itemStack["tag"]["display"]["color"] = armorColor
+            # banner/shield color/pattern
+            if (
+                (bannerColor is not None) or
+                (bannerPattern is not None)
+            ):
+                if "BlockEntityTag" not in itemStack["tag"]:
+                    itemStack["tag"]["BlockEntityTag"] = nbt.TAG_Compound()
+                if bannerColor is not None:
+                    itemStack["tag"]["BlockEntityTag"]["Base"] = bannerColor
+                if bannerPattern is not None:
+                    itemStack["tag"]["BlockEntityTag"]["Patterns"] = bannerPattern
 
     def str(self):
         if self._operation == "clear":
