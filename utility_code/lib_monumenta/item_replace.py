@@ -358,7 +358,13 @@ class allReplacements(list):
     def __init__(self,replacementList,log_data):
         self._replacements = []
         for aReplacement in replacementList:
-            self._replacements.append(replacement(aReplacement,log_data))
+            if type(aReplacement) is allReplacements:
+                if "init" in log_data["debug"]:
+                    print u"  ┣╸Adding a replacement list"
+                    print u"  ┃ ╟╴No code to track which one it is, sorry."
+                self._replacements.append(aReplacement)
+            else:
+                self._replacements.append(replacement(aReplacement,log_data))
         print u"  Found " + unicode(len(self._replacements)) + u" replacements."
 
     def run(self,itemStack,log_data):
