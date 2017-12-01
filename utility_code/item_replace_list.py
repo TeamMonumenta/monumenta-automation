@@ -441,7 +441,7 @@ itemReplacements = item_replace.ReplaceItems(["global count"],[
             "name":u'''Alchemist's Apron''',
         },
         [
-            "nbt", "replace", ur'''{ench:[{lvl:2,id:1},{lvl:1,id:3}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:16776960,Name:"§fAlchemist's Apron"},AttributeModifiers:[{UUIDMost:270399,UUIDLeast:903793,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:16776960,Name:"§fAlchemist's Apron"},AttributeModifiers:[{UUIDMost:270399,UUIDLeast:903793,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
         ]
     ],
 
@@ -960,6 +960,18 @@ itemReplacements = item_replace.ReplaceItems(["global count"],[
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:7s,id:16s},{lvl:5s,id:34s},{lvl:1s,id:19s},{lvl:2s,id:20s},{lvl:2s,id:21s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","","§7When in main hand:","§7 2 Attack Speed","§7 5 Attack Damage","§9 +15% Speed"],Name:"§5§lEnderwrath"},AttributeModifiers:[{UUIDMost:905415,UUIDLeast:796247,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:840609,UUIDLeast:663888,Amount:-2,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+        ]
+    ],
+
+    # Enderwrath
+    [
+        {
+            "id":"minecraft:stone_hoe",
+            "name":u'''Ruby Scythe''',
+            "nbt":u'''{display:{Lore:["§8Adorned in gleaming red rocks"]}}''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:1s,id:20s}],Unbreakable:1b,display:{Lore:["§8King's Valley : §6Patron Made","§8Made of a gleaming red rock"],Name:"§c§lRuby Scythe"}}'''
         ]
     ],
 
