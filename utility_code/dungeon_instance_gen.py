@@ -43,6 +43,7 @@ config = {
             "name":"white",
             "size":(160, 256, 352),
             "region":{"x":-3, "z":-2},
+            "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -66,6 +67,7 @@ config = {
             "name":"orange",
             "size":(320, 120, 352),
             "region":{"x":-3, "z":-1},
+            "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -78,6 +80,7 @@ config = {
             "name":"magenta",
             "size":(256, 256, 256),
             "region":{"x":-3, "z":0},
+            "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -93,6 +96,7 @@ config = {
             "name":"lightblue",
             "size":(288, 256, 272),
             "region":{"x":-3, "z":1},
+            "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -111,6 +115,7 @@ config = {
             "name":"yellow",
             "size":(256, 256, 256),
             "region":{"x":-3, "z":2},
+            "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -143,6 +148,7 @@ config = {
             "name":"r1bonus",
             "size":(288, 93, 368),
             "region":{"x":-3, "z":3},
+            "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
                     "replace":True, "material":(0, 0), "materialName":"air"},
@@ -164,9 +170,6 @@ config = {
 
     # Dungeons placed in region -3,-2 - a region is 32x32 chunks
     "targetRegion":{"x":-3, "z":-2},
-
-    # Number of dungeons
-    "numDungeons":1,
 }
 
 def gen_dungeon_instance(config, dungeon, outputFile):
@@ -179,7 +182,6 @@ def gen_dungeon_instance(config, dungeon, outputFile):
     outFolder = config["outFolder"]
     voidPadding = config["voidPadding"]
     targetRegion = config["targetRegion"]
-    numDungeons = config["numDungeons"]
     tileEntitiesToCheck = config["tileEntitiesToCheck"]
 
     # Per-dungeon config
@@ -188,6 +190,7 @@ def gen_dungeon_instance(config, dungeon, outputFile):
     dungeonSize = Vector(*dungeon["size"])
     dungeonContentsLoreToIgnore = dungeon["chestContentsLoreToIgnore"]
     dungeonChestWhitelist = dungeon["chestWhitelist"]
+    numDungeons = dungeon["numDungeons"]
     dstFolder = outFolder + dungeonName + '/Project_Epic-' + dungeonName + '/'
 
     # Compute dungeon parameters
