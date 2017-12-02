@@ -46,9 +46,9 @@ config = {
             "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-                    "replace":True, "material":(0, 0), "materialName":"air"},
+                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-                    "replace":True, "material":(35, 0), "materialName":"white wool"},
+                    "replaceBlocks":True, "material":(35, 0), "materialName":"white wool"},
             ),
             "chestContentsLoreToIgnore":("Monument Block",),
             "chestWhitelist":(
@@ -70,9 +70,9 @@ config = {
             "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-                    "replace":True, "material":(0, 0), "materialName":"air"},
+                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-                    "replace":True, "material":(35, 1), "materialName":"orange wool"},
+                    "replaceBlocks":True, "material":(35, 1), "materialName":"orange wool"},
             ),
             "chestContentsLoreToIgnore":("Monument Block",),
             "chestWhitelist":(),
@@ -83,9 +83,9 @@ config = {
             "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-                    "replace":True, "material":(0, 0), "materialName":"air"},
+                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-                    "replace":True, "material":(35, 2), "materialName":"magenta wool"},
+                    "replaceBlocks":True, "material":(35, 2), "materialName":"magenta wool"},
             ),
             "chestContentsLoreToIgnore":("Monument Block",),
             "chestWhitelist":(
@@ -99,9 +99,9 @@ config = {
             "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-                    "replace":True, "material":(0, 0), "materialName":"air"},
+                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-                    "replace":True, "material":(35, 3), "materialName":"light blue wool"},
+                    "replaceBlocks":True, "material":(35, 3), "materialName":"light blue wool"},
             ),
             "chestContentsLoreToIgnore":("Monument Block", "D4 Key"),
             "chestWhitelist":(
@@ -118,9 +118,9 @@ config = {
             "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-                    "replace":True, "material":(0, 0), "materialName":"air"},
+                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-                    "replace":True, "material":(35, 4), "materialName":"yellow wool"},
+                    "replaceBlocks":True, "material":(35, 4), "materialName":"yellow wool"},
             ),
             "chestContentsLoreToIgnore":("Monument Block", "D5 Key"),
             "chestWhitelist":(
@@ -151,9 +151,9 @@ config = {
             "numDungeons":50,
             "coordinatesToFill":(
                 {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-                    "replace":True, "material":(0, 0), "materialName":"air"},
+                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-                    "replace":True, "material":(18, 4), "materialName":"oak leaves"},
+                    "replaceBlocks":True, "material":(18, 4), "materialName":"oak leaves"},
             ),
             "chestContentsLoreToIgnore":(),
             "chestWhitelist":(),
@@ -164,9 +164,9 @@ config = {
 #            "numDungeons":400,
 #            "coordinatesToFill":(
 #                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-#                    "replace":True, "material":(0, 0), "materialName":"air"},
+#                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
 #                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-#                    "replace":True, "material":(213, 0), "materialName":"magma block"},
+#                    "replaceBlocks":True, "material":(213, 0), "materialName":"magma block"},
 #            ),
 #            "chestContentsLoreToIgnore":(),
 #            "chestWhitelist":(),
@@ -287,6 +287,7 @@ def gen_dungeon_instances(config):
     if not os.path.isdir(templateFolder):
         sys.exit("Template world folder does not exist.")
 
+    print "Generating dungeon instances. There will be no output here until finished."
 
     processes = []
     outputFiles = []
