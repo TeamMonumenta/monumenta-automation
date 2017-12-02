@@ -16,20 +16,8 @@ blockReplacements = (
 
     ("minecraft:beacon", "air"),
 
-    # Unfortunately, we need this repeated for all data values :(
-    #("minecraft:anvil", "air"),
-    ((145, 0), "air"),
-    ((145, 1), "air"),
-    ((145, 2), "air"),
-    ((145, 3), "air"),
-    ((145, 4), "air"),
-    ((145, 5), "air"),
-    ((145, 6), "air"),
-    ((145, 7), "air"),
-    ((145, 8), "air"),
-    ((145, 9), "air"),
-    ((145,10), "air"),
-    ((145,11), "air"),
+    # We had a happy fix in lib_monumenta/common.py
+    ("minecraft:anvil", "air"),
 
     # Not sure about this section
     #("enchanting_Table", "air"),

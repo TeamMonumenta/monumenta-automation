@@ -37,7 +37,7 @@ def getBox(pos1, pos2):
     return BoundingBox(origin, size)
 
 def replace(world, oldBlock, newBlock, box=None):
-    world.fillBlocks(box, newBlock, blocksToReplace=[oldBlock])
+    world.fillBlocks(box, newBlock, blocksToReplace=[oldBlock], noData=True)
 
 def replaceBlocksInBoxes(world, replaceList, boxList):
     for aBox in boxList:
