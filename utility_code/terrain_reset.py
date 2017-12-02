@@ -182,6 +182,7 @@ configList = [{
 
 terrainReset(configList)
 print "Saving items found after replacement to {}".format(itemCountLog)
-item_replace_list.itemReplacements.SaveGlobalLog(itemCountLog)
+# Save this for when the item count stuff is working
+#item_replace_list.itemReplacements.SaveGlobalLog(itemCountLog)
 print "Remember that tutorial, purgatory, bungee, and build are not handled by this script"
 
