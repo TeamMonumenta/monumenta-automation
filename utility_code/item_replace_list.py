@@ -261,6 +261,12 @@ itemReplacements = item_replace.ReplaceItems([],[
         },
         ["remove"]
     ],
+    [
+        {
+            "nbt":ur'''{display:{Lore:["§e§lThis item will be deleted if attempted","§e§lto be taken out of dungeon!!!"]}}''',
+        },
+        ["remove"]
+    ],
 
     ############################################################################
     # Oh dear, these shouldn't be in the build world...
@@ -274,6 +280,12 @@ itemReplacements = item_replace.ReplaceItems([],[
     [
         {
             "name":u"Well, you've fucked up"
+        }
+        ["print","check here","location"]
+    ],
+    [
+        {
+            "name":u"The Great Penis"
         }
         ["print","check here","location"]
     ],
@@ -1048,6 +1060,18 @@ itemReplacements = item_replace.ReplaceItems([],[
         {
             "id":"minecraft:chest",
             "nbt":ur'''{BlockEntityTag:{CustomName:"Ender Chest",Lock:"lockedforever"},display:{Lore:["Place me and stand on top","Only works within a player or guild plot","Avoid placing next to a regular chest","Can only be placed once!"],Name:"Ender Chest"}}''',
+        },
+        [
+            "id","minecraft:ender_chest",
+            "nbt", "replace", ur'''{display:{Lore:["Can only be placed on a plot!"]}}''',
+        ]
+    ],
+
+    # Ender Chest
+    [
+        {
+            "id":"minecraft:chest",
+            "nbt":ur'''{display:{Name:"Ender Chest",Lore:["Place me and stand on top","Only works within a plot","Can only be placed once!"]},BlockEntityTag:{CustomName:"Ender Chest",Lock:"lockedforever"}}''',
         },
         [
             "id","minecraft:ender_chest",
