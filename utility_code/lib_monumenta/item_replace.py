@@ -3,6 +3,7 @@
 
 import os
 import sys
+import codecs
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
 # This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
@@ -88,7 +89,7 @@ ItemsWithRealDamage = [
     "minecraft:diamond_sword",
 
     # Misc
-
+    "minecraft:bow",
     "minecraft:carrot_on_a_stick",
     "minecraft:fishing_rod",
     "minecraft:elytra",
@@ -183,6 +184,11 @@ class ReplaceItems(object):
             None
         )
 
+    def enableGlobalCount(self):
+        if "global count" not in self.log_data["debug"]:
+            self.log_data["debug"].append("global count")
+            self.log_data["global"]["global count"] = {}
+
     def InWorld(self,world):
         if self.replacements is None:
             return
@@ -215,13 +221,14 @@ class ReplaceItems(object):
             print u"! Global Item Replacement log path not specified"
             return
         if "global count" in self.log_data["global"]:
-            with open(logPath,'w') as f:
-                f.write(u"Items found:\n".encode('utf8'))
-                for item in self.log_data["global"]["global count"]:
-                    f.write(u"* {}x {}\n".format(
+            with codecs.open(logPath,'w',encoding='utf8') as f:
+                f.write(u"Items found:\n")
+                for item in sorted(self.log_data["global"]["global count"].keys()):
+                    line = u"{}\t{}\n".format(
                         self.log_data["global"]["global count"][item],
                         item
-                    ).encode('utf8'))
+                    )
+                    f.write(line)
                 f.close()
 
     def _OnEntities(self,dummyArg,entityDetails):
@@ -298,7 +305,8 @@ class ReplaceItems(object):
             # details must be removed; a fake item is
             # used to handle these changes, and is
             # discarded afterwards.
-            fakeItem = nbt.json_to_tag(itemStack.json)
+            itemJson = itemStack.json
+            fakeItem = nbt.json_to_tag(itemJson)
             # If we put this in a sub-tag ,we need to fix it
             if "id" not in fakeItem:
                 fakeItem = fakeItem[fakeItem.keys()[0]]
@@ -317,8 +325,18 @@ class ReplaceItems(object):
             if "tag" in fakeItem:
                 if "BlockEntityTag" in fakeItem["tag"]:
                     for containerTagName in containerTagNames:
+                        # We don't care which items an item contains;
+                        # We only care about how many items exist
                         if containerTagName in fakeItem["tag"]["BlockEntityTag"]:
                             fakeItem["tag"]["BlockEntityTag"].pop(containerTagName)
+
+                    # Ignore banner/shield patterns
+                    if "Patterns" in fakeItem["tag"]["BlockEntityTag"]:
+                        fakeItem["tag"]["BlockEntityTag"].pop("Patterns")
+
+                    if len(fakeItem["tag"]["BlockEntityTag"].keys()) == 0:
+                        fakeItem["tag"].pop("BlockEntityTag")
+
                 # EntityTag is left alone because of spawn eggs;
                 # may need to be left out if we let players store
                 # their animals as spawn eggs (donkey inventory, for example)
@@ -343,6 +361,9 @@ class ReplaceItems(object):
                 if "Fireworks" in fakeItem["tag"]:
                     fakeItem["tag"].pop("Fireworks")
 
+                if len(fakeItem["tag"].keys()) == 0:
+                    fakeItem.pop("tag")
+
             # I think that's all the tags we want to ignore.
             itemString = fakeItem.json
             if itemString not in globalCounts:
@@ -358,11 +379,11 @@ class allReplacements(list):
     def __init__(self,replacementList,log_data):
         self._replacements = []
         for aReplacement in replacementList:
-            if type(aReplacement) is allReplacements:
+            if type(aReplacement) is ReplaceItems:
                 if "init" in log_data["debug"]:
                     print u"  ┣╸Adding a replacement list"
                     print u"  ┃ ╟╴No code to track which one it is, sorry."
-                self._replacements.append(aReplacement)
+                self._replacements.append(aReplacement.replacements)
             else:
                 self._replacements.append(replacement(aReplacement,log_data))
         print u"  Found " + unicode(len(self._replacements)) + u" replacements."
@@ -381,7 +402,7 @@ class replacement(object):
             print u"  ┃ ╟╴If all of these are true:"
 
         # TODO create new matches for all/any/none groups of matches
-        
+
         # matches is the list of uncompiled matches
         # self.matches is the list of compiled matches
         self.matches = []

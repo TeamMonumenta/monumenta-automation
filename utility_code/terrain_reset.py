@@ -46,6 +46,7 @@ configList = [{
     # List of places where item replacements should be run - options are "players", "world", "schematics"
     "itemReplacements":item_replace_list.itemReplacements,
     "itemReplaceLocations":["players", "schematics",],
+    "itemLog":"/home/rock/tmp/items_region_1.txt",
 
     "coordinatesToCopy":(
         # "name":"a unique name"
@@ -118,6 +119,7 @@ configList = [{
     "blockReplaceLocations":["world",],
     "itemReplacements":item_replace_list.itemReplacements,
     "itemReplaceLocations":["players", "world",],
+    "itemLog":"/home/rock/tmp/items_betaplots.txt",
 }, {
     "server":"r1plots",
 
@@ -130,6 +132,7 @@ configList = [{
     "blockReplaceLocations":["world",],
     "itemReplacements":item_replace_list.itemReplacements,
     "itemReplaceLocations":["players", "world",],
+    "itemLog":"/home/rock/tmp/items_r1plots.txt",
 }, {
     "server":"white",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/white/Project_Epic-white/",
@@ -138,6 +141,7 @@ configList = [{
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
     "itemReplaceLocations":["players"],
+    "itemLog":"/home/rock/tmp/items_white.txt",
 }, {
     "server":"orange",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/orange/Project_Epic-orange/",
@@ -146,6 +150,7 @@ configList = [{
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
     "itemReplaceLocations":["players"],
+    "itemLog":"/home/rock/tmp/items_orange.txt",
 }, {
     "server":"magenta",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/magenta/Project_Epic-magenta/",
@@ -154,6 +159,7 @@ configList = [{
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
     "itemReplaceLocations":["players"],
+    "itemLog":"/home/rock/tmp/items_magenta.txt",
 }, {
     "server":"lightblue",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/lightblue/Project_Epic-lightblue/",
@@ -162,6 +168,7 @@ configList = [{
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
     "itemReplaceLocations":["players"],
+    "itemLog":"/home/rock/tmp/items_lightblue.txt",
 }, {
     "server":"yellow",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/yellow/Project_Epic-yellow/",
@@ -170,6 +177,7 @@ configList = [{
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
     "itemReplaceLocations":["players"],
+    "itemLog":"/home/rock/tmp/items_yellow.txt",
 }, {
     "server":"r1bonus",
     "localMainFolder":"/home/rock/tmp/PRE_RESET/r1bonus/Project_Epic-r1bonus/",
@@ -178,6 +186,7 @@ configList = [{
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
     "itemReplacements":item_replace_list.itemReplacements,
     "itemReplaceLocations":["players"],
+    "itemLog":"/home/rock/tmp/items_r1bonus.txt",
 }]
 
 terrainReset(configList)

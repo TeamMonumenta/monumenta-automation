@@ -78,7 +78,7 @@ itemReplacementsTest = item_replace.ReplaceItems([],[
     ],
 ])
 
-
+"""
 configList = [
     {
         "server":"dst_merged",
@@ -141,8 +141,47 @@ configList = [
         "itemReplaceLocations":["world",],
     }
 ]
+"""
 
-shutil.rmtree("/home/tim/.minecraft/saves/dst", ignore_errors=True)
-shutil.rmtree("/home/tim/.minecraft/saves/Item Reset dst", ignore_errors=True)
+configList = [
+    {
+        "server":"r1plots",
+
+        "localMainFolder":"/home/tim/.minecraft/saves/Project_Epic-r1plots_pre/",
+        "localDstFolder":"/home/tim/.minecraft/saves/Project_Epic-r1plots_post/",
+
+        "copyBaseFrom":"main",
+
+        "itemReplacements":item_replace_list.itemReplacements,
+        "itemReplaceLocations":["world",],
+        "itemLog":"/home/tim/Desktop/items_r1plots.txt",
+    },{
+        "server":"betaplots",
+
+        "localMainFolder":"/home/tim/.minecraft/saves/Project_Epic-betaplots_pre/",
+        "localDstFolder":"/home/tim/.minecraft/saves/Project_Epic-betaplots_post/",
+
+        "copyBaseFrom":"main",
+
+        "itemReplacements":item_replace_list.itemReplacements,
+        "itemReplaceLocations":["world",],
+        "itemLog":"/home/tim/Desktop/items_betaplots.txt",
+    },{
+        "server":"region_1",
+
+        "localMainFolder":"/home/tim/.minecraft/saves/Project_Epic-region_1_pre/",
+        "localDstFolder":"/home/tim/.minecraft/saves/Project_Epic-region_1_post/",
+
+        "copyBaseFrom":"main",
+
+        "itemReplacements":item_replace_list.itemReplacements,
+        "itemReplaceLocations":["world",],
+        "itemLog":"/home/tim/Desktop/items_region_1.txt",
+    }
+]
+
+#shutil.rmtree("/home/tim/.minecraft/saves/dst", ignore_errors=True)
+#shutil.rmtree("/home/tim/.minecraft/saves/Item Reset dst", ignore_errors=True)
+shutil.rmtree("/home/tim/.minecraft/saves/Project_Epic-r1plots_post/", ignore_errors=True)
 terrainReset(configList)
 

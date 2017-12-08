@@ -14,9 +14,12 @@ Just fix what broke, and run again.
 
 import os
 import sys
+import codecs
 import shutil
 import multiprocessing as mp
 import tempfile
+
+from lib_monumenta import item_replace
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
 # This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
@@ -31,7 +34,7 @@ from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGl
 
 def terrainResetInstance(config, outputFile):
     # Redirect output to specified file
-    sys.stdout = open(outputFile, "w")
+    sys.stdout = codecs.getwriter('utf8')(open(outputFile, "w"))
 
     print "Starting reset for server {0}...".format(config["server"])
 
@@ -44,6 +47,9 @@ def terrainResetInstance(config, outputFile):
     blockReplacements = config["blockReplacements"] if ("blockReplacements" in config) else None
     itemReplacements = config["itemReplacements"] if ("itemReplacements" in config) else None
     shouldResetDifficulty = config["resetRegionalDifficulty"] if ("resetRegionalDifficulty" in config) else False
+
+    if "itemLog" in config:
+        itemReplacements.enableGlobalCount()
 
     ################################################################################
     # Copy folders
@@ -66,11 +72,16 @@ def terrainResetInstance(config, outputFile):
 
     ################################################################################
     # Perform world manipulations if required
-    if (("coordinatesToFill" in config)
-            or ("coordinatesToCopy" in config)
-            or (blockReplacements is not None)
-            or ((itemReplacements is not None) and "world" in config["itemReplaceLocations"])
-            or (shouldResetDifficulty == True)):
+    if (
+        ("coordinatesToFill" in config) or
+        ("coordinatesToCopy" in config) or
+        (blockReplacements is not None) or
+        (
+            (itemReplacements is not None) and
+            ("world" in config["itemReplaceLocations"])
+        ) or
+        (shouldResetDifficulty == True)
+    ):
 
         print "  Opening old play World..."
         srcWorld = pymclevel.loadWorld(localMainFolder)
@@ -124,6 +135,9 @@ def terrainResetInstance(config, outputFile):
     except Exception as e:
         pass
 
+    if "itemLog" in config:
+        itemReplacements.SaveGlobalLog(config["itemLog"])
+
 # Multiprocessing implementation based on:
 # http://sebastianraschka.com/Articles/2014_multiprocessing.html
 def terrainReset(configList):
@@ -174,7 +188,7 @@ def terrainReset(configList):
 
     for p in processes:
         p["process"].join()
-        logFile = open(p["outputFile"], "r")
+        logFile = codecs.open(p["outputFile"],'r',encoding='utf8')
         print logFile.read()
         logFile.close()
 
