@@ -174,7 +174,7 @@ def debugScoreboard(worldFolder):
             print "*** [{}/{}] {}".format(
                 i,
                 numOccurances,
-                duplicate.json
+                duplicate.json()
             )
 
     print "Checking player scores..."

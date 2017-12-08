@@ -91,10 +91,11 @@ ItemsWithRealDamage = [
     # Misc
     "minecraft:bow",
     "minecraft:carrot_on_a_stick",
-    "minecraft:fishing_rod",
     "minecraft:elytra",
-    "minecraft:shears",
+    "minecraft:fishing_rod",
     "minecraft:flint_and_steel",
+    "minecraft:shears",
+    "minecraft:shield",
 ]
 
 containerTagNames = [
@@ -210,11 +211,12 @@ class ReplaceItems(object):
     def PrintGlobalLog(self):
         if "global count" in self.log_data["global"]:
             print u"Items found:"
-            for item in self.log_data["global"]["global count"]:
-                print u"* {}x {}".format(
+            for item in sorted(self.log_data["global"]["global count"].keys()):
+                line = u"{}\t{}\n".format(
                     self.log_data["global"]["global count"][item],
                     item
                 )
+                print line
 
     def SaveGlobalLog(self,logPath=None):
         if logPath is None:
@@ -305,7 +307,7 @@ class ReplaceItems(object):
             # details must be removed; a fake item is
             # used to handle these changes, and is
             # discarded afterwards.
-            itemJson = itemStack.json
+            itemJson = itemStack.json(["id","display","Name","Lore"])
             fakeItem = nbt.json_to_tag(itemJson)
             # If we put this in a sub-tag ,we need to fix it
             if "id" not in fakeItem:
@@ -320,6 +322,8 @@ class ReplaceItems(object):
                 count = 1
             if fakeItem["id"].value in ItemsWithRealDamage:
                 fakeItem.pop("Damage")
+            if fakeItem["id"].value == "minecraft:filled_map":
+                fakeItem.pop("Damage")
             if "Slot" in fakeItem:
                 fakeItem.pop("Slot")
             if "tag" in fakeItem:
@@ -333,6 +337,8 @@ class ReplaceItems(object):
                     # Ignore banner/shield patterns
                     if "Patterns" in fakeItem["tag"]["BlockEntityTag"]:
                         fakeItem["tag"]["BlockEntityTag"].pop("Patterns")
+                    if "Base" in fakeItem["tag"]["BlockEntityTag"]:
+                        fakeItem["tag"]["BlockEntityTag"].pop("Base")
 
                     if len(fakeItem["tag"]["BlockEntityTag"].keys()) == 0:
                         fakeItem["tag"].pop("BlockEntityTag")
@@ -352,6 +358,8 @@ class ReplaceItems(object):
                 if "display" in fakeItem["tag"]:
                     if "color" in fakeItem["tag"]["display"]:
                         fakeItem["tag"]["display"].pop("color")
+                    if len(fakeItem["tag"]["display"].keys()) == 0:
+                        fakeItem["tag"].pop("display")
 
                 ################
                 # Fireworks:
@@ -364,12 +372,18 @@ class ReplaceItems(object):
                 if len(fakeItem["tag"].keys()) == 0:
                     fakeItem.pop("tag")
 
-            # I think that's all the tags we want to ignore.
-            itemString = fakeItem.json
-            if itemString not in globalCounts:
-                globalCounts[itemString] = count
-            else:
-                globalCounts[itemString] += count
+            # Skip book of souls
+            if (
+                ("tag" not in fakeItem) or
+                ("author" not in fakeItem["tag"]) or
+                (fakeItem["tag"]["author"].value != u"§6The Creator")
+            ):
+                # I think that's all the tags we want to ignore.
+                itemString = fakeItem.json()
+                if itemString not in globalCounts:
+                    globalCounts[itemString] = count
+                else:
+                    globalCounts[itemString] += count
 
 
 ################################################################################
@@ -464,16 +478,8 @@ class replacement(object):
 
     def run(self,itemStack,log_data):
         if all(rule == itemStack for rule in self.matches):
-            #print "*** Found match:"
-            #print itemStack.json
-            #print "Matched rules:"
-            #for rule in self.matches:
-            #    print rule.str()
-            #print "Actions:"
             for action in self.actions:
-                #print action.str()
                 action.run(itemStack,log_data)
-            #print ""
 
 # Matching optimizers
 
@@ -607,9 +613,9 @@ class matchNBT(object):
         if self._nbt is None:
             return u'Item has no NBT'
         elif self._exact:
-            return u'Item NBT exactly matches ' + self._nbt.json
+            return u'Item NBT exactly matches ' + self._nbt.json()
         else:
-            return u'Item NBT loosely matches ' + self._nbt.json
+            return u'Item NBT loosely matches ' + self._nbt.json()
 
 class matchNone(object):
     """
@@ -771,7 +777,7 @@ class actLocation(object):
                 log_data["rootEntity"]["z"].value
             )
         else:
-            print u"Item is on an entity without location? " + log_data["rootEntity"].json
+            print u"Item is on an entity without location? " + log_data["rootEntity"].json()
 
     def str(self):
         return u'Print the player file name or location of the root entity'
@@ -943,9 +949,9 @@ class actNBT(object):
         if self._operation == "clear":
             return u'Remove NBT'
         if self._operation == "update":
-            return u'Update existing NBT with ' + self._nbt.json
+            return u'Update existing NBT with ' + self._nbt.json()
         if self._operation == "replace":
-            return u'Replace NBT with ' + self._nbt.json
+            return u'Replace NBT with ' + self._nbt.json()
 
 class actPrint(object):
     """
@@ -968,7 +974,7 @@ class actPrintItem(object):
         return
 
     def run(self,itemStack,log_data):
-        print itemStack.json
+        print itemStack.json()
 
     def str(self):
         return u'Print the item details as json'

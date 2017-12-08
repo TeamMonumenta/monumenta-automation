@@ -263,6 +263,22 @@ itemReplacements = item_replace.ReplaceItems([],[
     ],
 
     ############################################################################
+    # Oh dear, these shouldn't be in the build world...
+
+    [
+        {
+            "name":u"How the fuck did you get back here?"
+        }
+        ["print","check here","location"]
+    ],
+    [
+        {
+            "name":u"Well, you've fucked up"
+        }
+        ["print","check here","location"]
+    ],
+
+    ############################################################################
     # Update items that have changed:
     ############################################################################
 
@@ -318,6 +334,17 @@ itemReplacements = item_replace.ReplaceItems([],[
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Coif"}}'''
+        ]
+    ],
+
+    # Choleric Helm
+    [
+        {
+            "id":"minecraft:leather_helmet",
+            "name":u'''Choleric Helm''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Helm"},AttributeModifiers:[{UUIDMost:260399,UUIDLeast:803793,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
         ]
     ],
 
@@ -546,6 +573,17 @@ itemReplacements = item_replace.ReplaceItems([],[
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:34s}],display:{Lore:["§eKing's Valley : Rare"],color:11753010,Name:"§2§lEarthbound Pants"},AttributeModifiers:[{UUIDMost:47478565729543745L,UUIDLeast:55464327090482055L,Amount:3,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:44980305394582344L,UUIDLeast:14485042704930583L,Amount:2,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+        ]
+    ],
+
+    # Infernal Robe
+    [
+        {
+            "id":"minecraft:leather_leggings",
+            "name":u'''Infernal Robe''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:11206656,Name:"§4§lInfernal Robe"},AttributeModifiers:[{UUIDMost:-3906240411837903389L,UUIDLeast:-7890992669234016346L,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:5753471876015473889L,UUIDLeast:-7352350150367536802L,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
         ]
     ],
 
@@ -960,6 +998,23 @@ itemReplacements = item_replace.ReplaceItems([],[
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:1s,id:20s}],Unbreakable:1b,display:{Lore:["§8King's Valley : §6Patron Made","§8Made of a gleaming red rock"],Name:"§c§lRuby Scythe"}}'''
+        ]
+    ],
+
+    ####################################
+    # Potions
+
+    ################
+    # lingering
+
+    # Strong Sanctify Potion
+    [
+        {
+            "id":"minecraft:lingering_potion",
+            "name":u'''Strong Sanctify Potion''',
+        },
+        [
+            "nbt", "replace", ur'''{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:240,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:900,Id:22b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§aStrong Sanctify Potion"}}'''
         ]
     ],
 
