@@ -458,7 +458,7 @@ class replacement(object):
                 print newAction.str(u"  ┃   ")
 
     def run(self,itemStack,log_data):
-        if all(rule == itemStack for rule in self._matches):
+        if self._matches == itemStack
             for action in self._actions:
                 action.run(itemStack,log_data)
 
