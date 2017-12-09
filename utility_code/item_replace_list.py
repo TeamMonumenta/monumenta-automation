@@ -48,7 +48,7 @@ Pattern matching lists appear like so:
     ignored.
 
     To specify strict NBT:
-    {"id":"bed","nbt":"{color:14}","nbtStrict":True}
+    {"id":"bed","nbt":"strict{color:14}"}
     This matches NBT exactly as specified.
 
     To specify no NBT:
@@ -248,7 +248,7 @@ itemReplacementsRemoveAll = item_replace.ReplaceItems([],[
 # Try "init" to show what this list does; you can even
 # run this library as a script and skip the other stuff.
 #itemReplacements = item_replace.ReplaceItems(["init","global count"],[
-itemReplacements = item_replace.ReplaceItems([],[
+itemReplacements = item_replace.ReplaceItems(["init"],[
     ############################################################################
     # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)
@@ -256,15 +256,10 @@ itemReplacements = item_replace.ReplaceItems([],[
 
     # We really don't care what it is, just match the lore
     [
-        {
-            "nbt":ur'''{display:{Lore:["§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction."]}}''',
-        },
-        ["remove"]
-    ],
-    [
-        {
-            "nbt":ur'''{display:{Lore:["§e§lThis item will be deleted if attempted","§e§lto be taken out of dungeon!!!"]}}''',
-        },
+        {"any":[
+            {"nbt":ur'''{display:{Lore:["§e§lThis item will be deleted if attempted","§e§lto be taken out of dungeon!!!"]}}''',},
+            {"nbt":ur'''{display:{Lore:["§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction."]}}''',},
+        ]},
         ["remove"]
     ],
 
@@ -272,22 +267,15 @@ itemReplacements = item_replace.ReplaceItems([],[
     # Oh dear, these shouldn't be in the build world...
 
     [
-        {
-            "name":u"How the fuck did you get back here?"
-        }
-        ["print","check here","location"]
-    ],
-    [
-        {
-            "name":u"Well, you've fucked up"
-        }
-        ["print","check here","location"]
-    ],
-    [
-        {
-            "name":u"The Great Penis"
-        }
-        ["print","check here","location"]
+        {"any":[
+            {"name":u"How the fuck did you get back here?"},
+            {"name":u"Well, you've fucked up"},
+            {"name":u"The Great Penis"},
+        ]},
+        [
+            "print","check here",
+            "location"
+        ]
     ],
 
     ############################################################################
@@ -1155,67 +1143,53 @@ itemReplacements = item_replace.ReplaceItems([],[
     ############################################################################
     # Stuff that players shouldn't have had:
     ############################################################################
-
-    # Iron:
-    [ {"id":"minecraft:iron_ore"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_nugget"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_ingot"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_block"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_helmet"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_chestplate"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_leggings"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_boots"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_axe"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_hoe"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_pickaxe"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_shovel"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:iron_sword"}, ["name","set",u"Decayed Item"] ],
-
-    # Diamond:
-    [ {"id":"minecraft:diamond_ore"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond_block"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond_helmet"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond_chestplate"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond_leggings"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond_boots"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond_axe"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond_hoe"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond_pickaxe"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond_shovel"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:diamond_sword"}, ["name","set",u"Decayed Item"] ],
-
-    # Other:
-    [ {"id":"minecraft:anvil"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:hopper"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:hopper_minecart"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:beacon"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:nether_star"}, ["name","set",u"Decayed Item"] ],
-
-    [ {"id":"minecraft:bucket"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:water_bucket"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:lava_bucket"}, ["name","set",u"Decayed Item"] ],
-    [ {"id":"minecraft:milk_bucket"}, ["name","set",u"Decayed Item"] ],
-
-    # Wither skeleton skulls - allowed now that wither spawns are canceled
-    #[ {"id":"minecraft:skull", "damage":1}, ["name","set",u"Decayed Item"] ],
-
-    ############################################################################
-    # Other:
-
-    # Luck items
     [
-        {"nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}'''},
-        ["name","set",u"Decayed Item"]
-    ],
+        {"any":[
+            # Iron:
+            {"id":"minecraft:iron_ore"},
+            {"id":"minecraft:iron_nugget"},
+            {"id":"minecraft:iron_ingot"},
+            {"id":"minecraft:iron_block"},
+            {"id":"minecraft:iron_helmet"},
+            {"id":"minecraft:iron_chestplate"},
+            {"id":"minecraft:iron_leggings"},
+            {"id":"minecraft:iron_boots"},
+            {"id":"minecraft:iron_axe"},
+            {"id":"minecraft:iron_hoe"},
+            {"id":"minecraft:iron_pickaxe"},
+            {"id":"minecraft:iron_shovel"},
+            {"id":"minecraft:iron_sword"},
 
-    ############################################################################
-    # Replace removed items with a notice:
-    ############################################################################
-    [
-        {
-            "name":u"Decayed Item",
-        },
+            # Diamond:
+            {"id":"minecraft:diamond_ore"},
+            {"id":"minecraft:diamond"},
+            {"id":"minecraft:diamond_block"},
+            {"id":"minecraft:diamond_helmet"},
+            {"id":"minecraft:diamond_chestplate"},
+            {"id":"minecraft:diamond_leggings"},
+            {"id":"minecraft:diamond_boots"},
+            {"id":"minecraft:diamond_axe"},
+            {"id":"minecraft:diamond_hoe"},
+            {"id":"minecraft:diamond_pickaxe"},
+            {"id":"minecraft:diamond_shovel"},
+            {"id":"minecraft:diamond_sword"},
+
+            # Other
+            {"id":"minecraft:anvil"},
+            {"id":"minecraft:hopper"},
+            {"id":"minecraft:hopper_minecart"},
+            {"id":"minecraft:beacon"},
+            {"id":"minecraft:nether_star"},
+
+            # Buckets
+            {"id":"minecraft:bucket"},
+            {"id":"minecraft:water_bucket"},
+            {"id":"minecraft:lava_bucket"},
+            {"id":"minecraft:milk_bucket"},
+
+            # Luck items
+            {"nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}'''},
+        ]},
         [
             "id","minecraft:rotten_flesh",
             "damage","=",0,

@@ -413,44 +413,25 @@ class replacement(object):
 
         if "init" in log_data["debug"]:
             print u"  ┣╸Adding a replacement:"
-            print u"  ┃ ╟╴If all of these are true:"
-
-        # TODO create new matches for all/any/none groups of matches
 
         # matches is the list of uncompiled matches
-        # self.matches is the list of compiled matches
-        self.matches = []
-        for key in matches:
-            if key == "any":
-                newMatch = matchAny()
-            if key == "count":
-                newMatch = matchCount(matches)
-            if key == "damage":
-                newMatch = matchDamage(matches)
-            if key == "id":
-                newMatch = matchID(matches)
-            if key == "name":
-                newMatch = matchName(matches)
-            if key == "nbt":
-                newMatch = matchNBT(matches)
-            if key == "none":
-                newMatch = matchNone()
+        # self._matches is the list of compiled matches
+        if (
+            ("any" in matches) and
+            (len(matches.keys()) == 1)
+        ):
+            self._matches = matchAny(matches["any"])
+        else:
+            self._matches = matchAll(matches)
+        if "init" in log_data["debug"]:
+            print self._matches.str(u"  ┃ ")
 
-            self.matches.append(newMatch)
-            if "init" in log_data["debug"]:
-                print u"  ┃ ║ └╴" + newMatch.str()
-
-        if len(self.matches) == 0:
-            newMatch = matchNone()
-            self.matches.append(newMatch)
-            if "init" in log_data["debug"]:
-                print u"  ┃ ║ └╴" + newMatch.str()
         if "init" in log_data["debug"]:
             print u"  ┃ ╙╴Then do these in order:"
 
         # actions is the uncompiled list of actions
-        # self.actions is the list of compiled actions
-        self.actions = []
+        # self._actions is the list of compiled actions
+        self._actions = []
         while len(actions):
             action = actions.pop(0)
             if action == "count":
@@ -472,34 +453,128 @@ class replacement(object):
             if action == "remove":
                 newAction = actRemove(actions)
 
-            self.actions.append(newAction)
+            self._actions.append(newAction)
             if "init" in log_data["debug"]:
-                print u"  ┃   └╴" + newAction.str()
+                print newAction.str(u"  ┃   ")
 
     def run(self,itemStack,log_data):
-        if all(rule == itemStack for rule in self.matches):
-            for action in self.actions:
+        if all(rule == itemStack for rule in self._matches):
+            for action in self._actions:
                 action.run(itemStack,log_data)
 
 # Matching optimizers
 
-class matchAny(object):
-    """
-    This is a special case to match anything;
-    used by itself to match all items
-    """
+class match(object):
+    def __init__(self,matchOptions):
+        pass
+
+    def _grab_matches(self,matchOptions):
+        for key in matchOptions:
+            newMatch = None
+            if key == "any":
+                newMatch = matchAny(matchOptions[key])
+            if key == "all":
+                newMatch = matchAll(matchOptions[key])
+            if key == "count":
+                newMatch = matchCount(matchOptions[key])
+            if key == "damage":
+                newMatch = matchDamage(matchOptions[key])
+            if key == "id":
+                newMatch = matchID(matchOptions[key])
+            if key == "name":
+                newMatch = matchName(matchOptions[key])
+            if key == "nbt":
+                newMatch = matchNBT(matchOptions[key])
+            if key == "none":
+                newMatch = matchNone(matchOptions[key])
+            if newMatch is not None:
+                self._matches.append(newMatch)
+
     def __eq__(self,itemStack):
-        return True
+        return False
 
-    def str(self):
-        return u'True'
+    def str(self,prefix=u''):
+        return prefix + u'└╴Undefined matching pattern (returns False)'
 
-class matchCount(object):
+class matchAll(match):
+    """
+    Logical AND
+    Match if all sub matches are true;
+    If no sub matches exist, always false;
+    This is the default case
+    """
+    def __init__(self,matchOptions):
+        self._matches = None
+        if type(matchOptions) is list:
+            self._matches = []
+            for i in matchOptions:
+                if len(i.keys()) == 1:
+                    self._grab_matches(i)
+                else:
+                    subMatch=matchAll(i)
+                    self._matches.append(subMatch)
+        elif type(matchOptions) is dict:
+            self._matches = []
+            self._grab_matches(matchOptions)
+
+    def __eq__(self,itemStack):
+        if self._matches is None:
+            return False
+        else:
+            return all(rule == itemStack for rule in self._matches)
+
+    def str(self,prefix=u''):
+        if self._matches is None:
+            return prefix + u'└╴False'
+        else:
+            result = prefix + u'╟╴If all of these are true:'
+            subprefix = prefix + u'║ '
+            for match in self._matches:
+                result += u'\n' + match.str(subprefix)
+            return result
+
+class matchAny(match):
+    """
+    Logical OR
+    Match if any of the sub matches are true;
+    If no sub matches exist, always true
+    """
+    def __init__(self,matchOptions):
+        self._matches = None
+        if type(matchOptions) is list:
+            self._matches = []
+            for i in matchOptions:
+                if len(i.keys()) == 1:
+                    self._grab_matches(i)
+                else:
+                    subMatch=matchAll(i)
+                    self._matches.append(subMatch)
+        elif type(matchOptions) is dict:
+            self._matches = []
+            self._grab_matches(matchOptions)
+
+    def __eq__(self,itemStack):
+        if self._matches is None:
+            return True
+        else:
+            return any(rule == itemStack for rule in self._matches)
+
+    def str(self,prefix=u''):
+        if self._matches is None:
+            return prefix + u'└╴True'
+        else:
+            result = prefix + u'╟╴If any of these are true:'
+            subprefix = prefix + u'║ '
+            for match in self._matches:
+                result += u'\n' + match.str(subprefix)
+            return result
+
+class matchCount(match):
     """
     This stores item counts to match later
     """
     def __init__(self,matchOptions):
-        count = matchOptions["count"]
+        count = matchOptions
         if (type(count) != list) and (type(count) != tuple):
             self._count = [count]
         else:
@@ -511,15 +586,15 @@ class matchCount(object):
         except:
             return False
 
-    def str(self):
-        return u'Item count is in ' + str(self._count)
+    def str(self,prefix=u''):
+        return prefix + u'└╴Item count is in ' + str(self._count)
 
-class matchDamage(object):
+class matchDamage(match):
     """
     This stores damage values to match later
     """
     def __init__(self,matchOptions):
-        damage = matchOptions["damage"]
+        damage = matchOptions
         if (type(damage) != list) and (type(damage) != tuple):
             self._damage = [damage]
         else:
@@ -531,15 +606,15 @@ class matchDamage(object):
         except:
             return False
 
-    def str(self):
-        return u'Item damage is in ' + str(self._damage)
+    def str(self,prefix=u''):
+        return prefix + u'└╴Item damage is in ' + str(self._damage)
 
-class matchID(object):
+class matchID(match):
     """
     This stores an ID to match later
     """
     def __init__(self,matchOptions):
-        self._id = matchOptions["id"]
+        self._id = matchOptions
 
     def __eq__(self,itemStack):
         try:
@@ -547,15 +622,15 @@ class matchID(object):
         except:
             return False
 
-    def str(self):
-        return u'Item ID is "' + self._id + u'"'
+    def str(self,prefix=u''):
+        return prefix + u'└╴Item ID is "' + self._id + u'"'
 
-class matchName(object):
+class matchName(match):
     """
     This stores a name to match later without color
     """
     def __init__(self,matchOptions):
-        self._name = matchOptions["name"]
+        self._name = matchOptions
         if type(self._name) == str:
             self._name = unicode(self._name)
 
@@ -575,27 +650,26 @@ class matchName(object):
                 nameNoFormat = nameNoFormat[:i]+nameNoFormat[i+2:]
             return nameNoFormat == self._name
 
-    def str(self):
+    def str(self,prefix=u''):
         if self._name == None:
-            return u'Item has no name'
+            return prefix + u'└╴Item has no name'
         else:
-            return u'Item name matches "' + self._name + '" regardless of color'
+            return prefix + u'└╴Item name matches "' + self._name + '" regardless of color'
 
-class matchNBT(object):
+class matchNBT(match):
     """
     This stores NBT to match later
     """
     def __init__(self,matchOptions):
-        json = matchOptions["nbt"]
-
-        if "nbtStrict" in matchOptions:
-            self._exact = matchOptions["nbtStrict"]
-        else:
-            self._exact = False
+        json = matchOptions
 
         if json is None:
             self._nbt = None
         else:
+            self._exact = False
+            if "strict" == json[:6]:
+                self._exact = True
+                json = json[6:]
             self._nbt = nbt.json_to_tag(json)
 
     def __eq__(self,itemStack):
@@ -609,24 +683,51 @@ class matchNBT(object):
         else:
             return self._nbt.issubset(itemStack["tag"])
 
-    def str(self):
+    def str(self,prefix=u''):
         if self._nbt is None:
-            return u'Item has no NBT'
+            return prefix + u'└╴Item has no NBT'
         elif self._exact:
-            return u'Item NBT exactly matches ' + self._nbt.json()
+            return prefix + u'└╴Item NBT exactly matches ' + self._nbt.json()
         else:
-            return u'Item NBT loosely matches ' + self._nbt.json()
+            return prefix + u'└╴Item NBT loosely matches ' + self._nbt.json()
 
-class matchNone(object):
+class matchNone(match):
     """
+    Logical NOR/NOT
+    Match if none of the sub matches are true;
+    If no sub matches exist, defaults to false;
     This is a special case to never match anything;
-    used for invalid item replacements
+    used to invalidate item replacements
     """
-    def __eq__(self,itemStack):
-        return False
+    def __init__(self,matchOptions):
+        self._matches = None
+        if type(matchOptions) is list:
+            self._matches = []
+            for i in matchOptions:
+                if len(i.keys()) == 1:
+                    self._grab_matches(i)
+                else:
+                    subMatch=matchAll(i)
+                    self._matches.append(subMatch)
+        elif type(matchOptions) is dict:
+            self._matches = []
+            self._grab_matches(matchOptions)
 
-    def str(self):
-        return u'False'
+    def __eq__(self,itemStack):
+        if self._matches is None:
+            return False
+        else:
+            return all(rule != itemStack for rule in self._matches)
+
+    def str(self,prefix=u''):
+        if self._matches is None:
+            return prefix + u'└╴False'
+        else:
+            result = prefix + u'╟╴If none of these are true:'
+            subprefix = prefix + u'║ '
+            for match in self._matches:
+                result += u'\n' + match.str(subprefix)
+            return result
 
 
 # Action optimizers
@@ -667,23 +768,23 @@ class actCount(object):
             itemStack["Count"].value = newVal
             return
 
-    def str(self):
+    def str(self,prefix=u''):
         if self._operation == "=":
-            return u'Set count to ' + str(self._opValue)
+            return prefix + u'└╴Set count to ' + str(self._opValue)
         if self._operation == "+":
-            return u'Add ' + str(self._opValue) + u' to count'
+            return prefix + u'└╴Add ' + str(self._opValue) + u' to count'
         if self._operation == "-":
-            return u'Subtract ' + str(self._opValue) + u' from count'
+            return prefix + u'└╴Subtract ' + str(self._opValue) + u' from count'
         if self._operation == "*":
-            return u'Multiply count by ' + str(self._opValue)
+            return prefix + u'└╴Multiply count by ' + str(self._opValue)
         if self._operation == "/":
-            return u'Divide count by ' + str(self._opValue)
+            return prefix + u'└╴Divide count by ' + str(self._opValue)
         if self._operation == "%":
-            return u'Set count to itself modulo ' + str(self._opValue)
+            return prefix + u'└╴Set count to itself modulo ' + str(self._opValue)
         if self._operation == "max":
-            return u'Prevent count from being greater than ' + str(self._opValue)
+            return prefix + u'└╴Prevent count from being greater than ' + str(self._opValue)
         if self._operation == "min":
-            return u'Prevent count from being less than ' + str(self._opValue)
+            return prefix + u'└╴Prevent count from being less than ' + str(self._opValue)
 
 class actDamage(object):
     """
@@ -721,23 +822,23 @@ class actDamage(object):
             itemStack["Damage"].value = newVal
             return
 
-    def str(self):
+    def str(self,prefix=u''):
         if self._operation == "=":
-            return u'Set damage to ' + str(self._opValue)
+            return prefix + u'└╴Set damage to ' + str(self._opValue)
         if self._operation == "+":
-            return u'Add ' + str(self._opValue) + u' to damage'
+            return prefix + u'└╴Add ' + str(self._opValue) + u' to damage'
         if self._operation == "-":
-            return u'Subtract ' + str(self._opValue) + u' from damage'
+            return prefix + u'└╴Subtract ' + str(self._opValue) + u' from damage'
         if self._operation == "*":
-            return u'Multiply damage by ' + str(self._opValue)
+            return prefix + u'└╴Multiply damage by ' + str(self._opValue)
         if self._operation == "/":
-            return u'Divide damage by ' + str(self._opValue)
+            return prefix + u'└╴Divide damage by ' + str(self._opValue)
         if self._operation == "%":
-            return u'Set damage to itself modulo ' + str(self._opValue)
+            return prefix + u'└╴Set damage to itself modulo ' + str(self._opValue)
         if self._operation == "max":
-            return u'Prevent damage from being greater than ' + str(self._opValue)
+            return prefix + u'└╴Prevent damage from being greater than ' + str(self._opValue)
         if self._operation == "min":
-            return u'Prevent damage from being less than ' + str(self._opValue)
+            return prefix + u'└╴Prevent damage from being less than ' + str(self._opValue)
 
 class actID(object):
     """
@@ -749,8 +850,8 @@ class actID(object):
     def run(self,itemStack,log_data):
         itemStack["id"].value = self._id
 
-    def str(self):
-        return u'Change ID to "' + self._id + u'"'
+    def str(self,prefix=u''):
+        return prefix + u'└╴Change ID to "' + self._id + u'"'
 
 class actLocation(object):
     """
@@ -779,8 +880,8 @@ class actLocation(object):
         else:
             print u"Item is on an entity without location? " + log_data["rootEntity"].json()
 
-    def str(self):
-        return u'Print the player file name or location of the root entity'
+    def str(self,prefix=u''):
+        return prefix + u'└╴Print the player file name or location of the root entity'
 
 class actName(object):
     """
@@ -868,16 +969,16 @@ class actName(object):
                 else:
                     itemStack["tag"]["display"]["Name"].value = self._setName
 
-    def str(self):
+    def str(self,prefix=u''):
         if self._cmd == "color":
-            return u'Update name color to {} if name exists'.format(self._color["display"])
+            return prefix + u'└╴Update name color to {} if name exists'.format(self._color["display"])
         elif self._cmd == "set":
             if self._setName is None:
-                return u'Remove item name'
+                return prefix + u'└╴Remove item name'
             else:
-                return u'Set name to "{}"'.format(self._setName)
+                return prefix + u'└╴Set name to "{}"'.format(self._setName)
         else:
-            return u'Invalid color subcommand; does nothing'
+            return prefix + u'└╴Invalid color subcommand; does nothing'
 
 class actNBT(object):
     """
@@ -945,13 +1046,13 @@ class actNBT(object):
                 if bannerPattern is not None:
                     itemStack["tag"]["BlockEntityTag"]["Patterns"] = bannerPattern
 
-    def str(self):
+    def str(self,prefix=u''):
         if self._operation == "clear":
-            return u'Remove NBT'
+            return prefix + u'└╴Remove NBT'
         if self._operation == "update":
-            return u'Update existing NBT with ' + self._nbt.json()
+            return prefix + u'└╴Update existing NBT with ' + self._nbt.json()
         if self._operation == "replace":
-            return u'Replace NBT with ' + self._nbt.json()
+            return prefix + u'└╴Replace NBT with ' + self._nbt.json()
 
 class actPrint(object):
     """
@@ -963,8 +1064,8 @@ class actPrint(object):
     def run(self,itemStack,log_data):
         print self._msg
 
-    def str(self):
-        return u'Print "' + self._msg + '"'
+    def str(self,prefix=u''):
+        return prefix + u'└╴Print "' + self._msg + '"'
 
 class actPrintItem(object):
     """
@@ -976,8 +1077,8 @@ class actPrintItem(object):
     def run(self,itemStack,log_data):
         print itemStack.json()
 
-    def str(self):
-        return u'Print the item details as json'
+    def str(self,prefix=u''):
+        return prefix + u'└╴Print the item details as json'
 
 class actRemove(object):
     """
@@ -992,8 +1093,8 @@ class actRemove(object):
         if "tag" in itemStack:
             itemStack.pop("tag")
 
-    def str(self):
-        return u'Set item count to 0; the server will delete it on load'
+    def str(self,prefix=u''):
+        return prefix + u'└╴Set item count to 0; the server will delete it on load'
 
 """
 NYI - more promising now that we can track which player holds an item;
