@@ -39,14 +39,14 @@ class IterEntities(object):
     Entity details are provided as a dictionary like so:
     {
         "player file":<None or a player.dat file name>,
-        "root entity":<True or entity's NBT>,
+        "root entity":<entity's NBT>,
         "entity":<entity's NBT>,
         "is block entity":<True/False/"unknown">
     }
 
-    Where a root entity is true for players, entities directly in worlds,
-    and entities directly in schematics; this is the root entity instead for
-    entities within items or commands (when commands are implemented)
+    root entity is the nbt of the entity in the
+    world/schematic/player file, never an entity
+    contained in any of those entities
 
     searchArgs is a list of strings, and may include:
 
@@ -77,7 +77,7 @@ class IterEntities(object):
         self._entityList = []
         self._entityDetails = {
             "player file":None,
-            "root entity":True,
+            "root entity":None,
             "entity":None,
             "is block entity":None
         }
@@ -134,7 +134,7 @@ class IterEntities(object):
             ):
                 # The entity exists in the world/schematic directly,
                 # not inside something.
-                self._entityDetails["root entity"] = True
+                self._entityDetails["root entity"] = entity
 
                 if (
                     "block entities" in self._searchArgs and
@@ -196,7 +196,6 @@ class IterEntities(object):
                     for potential in entity["SpawnPotentials"]:
                         self._entityList.append(potential["Entity"])
 
-            self._entityDetails["root entity"] = entity
         self._entityDetails["root entity"] = None
 
     def _InStackList(self,itemStackList):
