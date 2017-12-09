@@ -44,7 +44,7 @@ configList = [{
     "blockReplaceLocations":["schematics",],
 
     # List of places where item replacements should be run - options are "players", "world", "schematics"
-    "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players", "schematics",],
     "itemLog":"/home/rock/tmp/items_region_1.txt",
 
@@ -117,7 +117,7 @@ configList = [{
 
     "blockReplacements":item_replace_list.blockReplacements,
     "blockReplaceLocations":["world",],
-    "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players", "world",],
     "itemLog":"/home/rock/tmp/items_betaplots.txt",
 }, {
@@ -130,7 +130,7 @@ configList = [{
 
     "blockReplacements":item_replace_list.blockReplacements,
     "blockReplaceLocations":["world",],
-    "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players", "world",],
     "itemLog":"/home/rock/tmp/items_r1plots.txt",
 }, {
@@ -139,7 +139,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/white/Project_Epic-white/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
-    "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
     "itemLog":"/home/rock/tmp/items_white.txt",
 }, {
@@ -148,7 +148,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/orange/Project_Epic-orange/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
-    "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
     "itemLog":"/home/rock/tmp/items_orange.txt",
 }, {
@@ -157,7 +157,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/magenta/Project_Epic-magenta/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
-    "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
     "itemLog":"/home/rock/tmp/items_magenta.txt",
 }, {
@@ -166,7 +166,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/lightblue/Project_Epic-lightblue/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
-    "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
     "itemLog":"/home/rock/tmp/items_lightblue.txt",
 }, {
@@ -175,7 +175,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/yellow/Project_Epic-yellow/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
-    "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
     "itemLog":"/home/rock/tmp/items_yellow.txt",
 }, {
@@ -184,7 +184,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/r1bonus/Project_Epic-r1bonus/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
-    "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
     "itemLog":"/home/rock/tmp/items_r1bonus.txt",
 }]
@@ -192,6 +192,6 @@ configList = [{
 terrainReset(configList)
 print "Saving items found after replacement to {}".format(itemCountLog)
 # Save this for when the item count stuff is working
-#item_replace_list.itemReplacements.SaveGlobalLog(itemCountLog)
+#item_replace_list.KingsValley.SaveGlobalLog(itemCountLog)
 print "Remember that tutorial, purgatory, bungee, and build are not handled by this script"
 

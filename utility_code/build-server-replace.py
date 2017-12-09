@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-This takes a build world (terrain), a main world (play area), and
-merges them into a new world, dstWorld (destination).
+This replaces items within the build server
 """
 
 import time
@@ -28,7 +27,7 @@ configList = [{
     #"coordinatesDebug":True,
 
     # List of places where item replacements should be run - options are "players", "world", "schematics"
-    "itemReplacements":item_replace_list.itemReplacements,
+    "itemReplacements":item_replace_list.KingsValleyBuild,
     "itemReplaceLocations":["players", "world",],
     "itemLog":"/home/rock/tmp/items_region_1.txt",
 }]

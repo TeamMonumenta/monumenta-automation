@@ -247,8 +247,8 @@ itemReplacementsRemoveAll = item_replace.ReplaceItems([],[
 
 # Try "init" to show what this list does; you can even
 # run this library as a script and skip the other stuff.
-#itemReplacements = item_replace.ReplaceItems(["init","global count"],[
-itemReplacements = item_replace.ReplaceItems([],[
+#KingsValleyBuild = item_replace.ReplaceItems(["init","global count"],[
+KingsValleyBuild = item_replace.ReplaceItems([],[
     ############################################################################
     # Remove dungeon key items on weekly terrain resets:
     # (key items within dungeons, not keys to enter dungeons)
@@ -1139,10 +1139,15 @@ itemReplacements = item_replace.ReplaceItems([],[
             "nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:1s,id:34s}],display:{Lore:["* Irreparable *","§eKing's Valley : Rare"],Name:"§2§lTribal Chisel"}}'''
         ]
     ],
+])
 
+KingsValley = item_replace.ReplaceItems([],[
+    # Remove all items
     ############################################################################
     # Stuff that players shouldn't have had:
     ############################################################################
+
+    KingsValleyBuild,
     [
         {"any":[
             # Iron:
@@ -1197,4 +1202,5 @@ itemReplacements = item_replace.ReplaceItems([],[
         ]
     ],
 ])
+
 
