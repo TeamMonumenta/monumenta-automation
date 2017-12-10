@@ -114,8 +114,8 @@ voxelsniper = [
 #   advancements_r1
 #   structures
 
-base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc
-build_plugins = worldedit + speedchanger + nbteditor + voxelsniper
+base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit
+build_plugins = speedchanger + nbteditor + voxelsniper
 # build_plugins = []
 
 # String replacements:
