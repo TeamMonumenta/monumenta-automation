@@ -15,8 +15,8 @@ configList = [{
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
-    "localMainFolder":"/home/rock/tmp/Project_Epic-region_1-prereplaceitems/",
-    "localDstFolder":"/home/rock/tmp/Project_Epic-region_1/",
+    "localMainFolder":"/home/rock/project_epic/region_1/Project_Epic-region_1-prereplaceitems/",
+    "localDstFolder":"/home/rock/project_epic/region_1/Project_Epic-region_1/",
 
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"main",
