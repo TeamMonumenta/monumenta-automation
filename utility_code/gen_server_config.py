@@ -172,6 +172,7 @@ config = {
     'tutorial':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=9'),
+            ('server.properties', 'white-list', 'white-list=false'),
             ('spigot.yml', 'view-distance', '    view-distance: 9'),
             ('server.properties', 'server-port', 'server-port=25567'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
