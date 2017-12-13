@@ -258,15 +258,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     # Fix all loot table items on both build and play servers
     KingsValleyLootTables,
 
-    # We really don't care what it is, just match the lore
-    [
-        {"any":[
-            {"nbt":ur'''{display:{Lore:["§e§lThis item will be deleted if attempted","§e§lto be taken out of dungeon!!!"]}}''',},
-            {"nbt":ur'''{display:{Lore:["§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction."]}}''',},
-        ]},
-        ["remove"]
-    ],
-
     ############################################################################
     # Oh dear, these shouldn't be in the build world...
 
@@ -317,17 +308,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
 
     ################
     # leather
-
-    # Plaguehide Cap
-    [
-        {
-            "id":"minecraft:leather_helmet",
-            "name":u'''Plaguehide Cap''',
-        },
-        [
-            "nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Cap"},AttributeModifiers:[{UUIDMost:22907356139724361L,UUIDLeast:55634361538278368L,Amount:2,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:50813337862916683L,UUIDLeast:38856196263924788L,Amount:0.05d,Slot:"head",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:22347000550566221L,UUIDLeast:68212466135762333L,Amount:1,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-        ]
-    ],
 
     # Topaz Cap
     [
@@ -388,33 +368,8 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         ]
     ],
 
-    # Plaguehide Pants
-    [
-        {
-            "id":"minecraft:leather_leggings",
-            "name":u'''Plaguehide Pants''',
-        },
-        [
-            "nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Pants"},AttributeModifiers:[{UUIDMost:7398196116790600L,UUIDLeast:33239325481073366L,Amount:2,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:61910509039675723L,UUIDLeast:13746144420287990L,Amount:0.05d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:14165244533123147L,UUIDLeast:22637248009267620L,Amount:2,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-        ]
-    ],
-
     ####################################
     # Boots
-
-    ################
-    # leather
-
-    # Plaguehide Boots
-    [
-        {
-            "id":"minecraft:leather_boots",
-            "name":u'''Plaguehide Boots''',
-        },
-        [
-            "nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Boots"},AttributeModifiers:[{UUIDMost:19971159992297292L,UUIDLeast:11701631750427272L,Amount:2,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:50620023180411213L,UUIDLeast:56580625667548148L,Amount:0.05d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:61536614628787790L,UUIDLeast:12067686387522583L,Amount:1,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-        ]
-    ],
 
     ################
     # gold
@@ -451,7 +406,7 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
             "name":u'''Spellready Buckler''',
         },
         [
-            "nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:19s}],HideFlags:2,BlockEntityTag:{id:"Shield",Patterns:[{Pattern:"tt",Color:0},{Pattern:"bt",Color:0},{Pattern:"flo",Color:0}],Base:10},display:{Lore:["§8King's Valley : Uncommon","§f","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§aSpellready Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:19s}],HideFlags:2,BlockEntityTag:{id:"Shield",Patterns:[{Pattern:"tt",Color:0},{Pattern:"bt",Color:0},{Pattern:"flo",Color:0}],Base:10},display:{Lore:["§8King's Valley : Uncommon","§f","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§aSpellready Buckler"},AttributeModifiers:[{UUIDMost:-211798659854833L,UUIDLeast:-559301457914980L,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"}, {UUIDMost:6962219233119978799L,UUIDLeast:-7099076830009706309L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 
@@ -486,7 +441,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         {
             "id":"minecraft:stone_hoe",
             "name":u'''Ruby Scythe''',
-            "nbt":u'''{display:{Lore:["§8Adorned in gleaming red rocks"]}}''',
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:1s,id:20s}],Unbreakable:1b,display:{Lore:["§8King's Valley : §6Patron Made","§8Made of a gleaming red rock"],Name:"§c§lRuby Scythe"}}'''
@@ -596,8 +550,13 @@ KingsValley = item_replace.ReplaceItems([],[
     ############################################################################
 
     KingsValleyBuild,
+
     [
         {"any":[
+            # Dungeon keys
+            {"nbt":ur'''{display:{Lore:["§e§lThis item will be deleted if attempted","§e§lto be taken out of dungeon!!!"]}}''',},
+            {"nbt":ur'''{display:{Lore:["§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction."]}}''',},
+
             # Iron:
             {"id":"minecraft:iron_ore"},
             {"id":"minecraft:iron_nugget"},
