@@ -157,19 +157,19 @@ config = {
             ),
             "chestContentsLoreToIgnore":(),
             "chestWhitelist":(),
-#        },{
-#            "name":"roguelike",
-#            "size":(272, 101, 272),
-#            "region":{"x":-2, "z":-1},
-#            "numDungeons":400,
-#            "coordinatesToFill":(
-#                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-#                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
-#                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-#                    "replaceBlocks":True, "material":(213, 0), "materialName":"magma block"},
-#            ),
-#            "chestContentsLoreToIgnore":(),
-#            "chestWhitelist":(),
+        },{
+            "name":"roguelike",
+            "size":(272, 101, 272),
+            "region":{"x":-2, "z":-1},
+            "numDungeons":400,
+            "coordinatesToFill":(
+                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
+                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+                    "replaceBlocks":True, "material":(213, 0), "materialName":"magma block"},
+            ),
+            "chestContentsLoreToIgnore":(),
+            "chestWhitelist":(),
         },
     ),
 
