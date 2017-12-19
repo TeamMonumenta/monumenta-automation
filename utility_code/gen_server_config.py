@@ -176,7 +176,7 @@ config = {
         {"name":"Brown Co 57 Floating Island", "type":"SafeZone", "pos1":"887 0 -927", "pos2":"978 255 -899"},
         {"name":"Roguelike Entrance Puzzle", "type":"SafeZone", "pos1":"825 0 173", "pos2":"889 97 217"},
 
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
         {"name":"Siege Of Highwatch", "type":"AdventureZone", "pos1":"1505 102 -178", "pos2":"1631 256 -16"},
         {"name":"Ctaz", "type":"AdventureZone", "pos1":"227 10 294", "pos2":"252 256 320"},
         {"name":"Hermy", "type":"AdventureZone", "pos1":"-331 86 334", "pos2":"-310 110 355"},
@@ -199,7 +199,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
@@ -218,7 +218,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": [],'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
         {"name":"New Player Lobby", "type":"SafeZone", "pos1":"-1456 0 -1216", "pos2":"-1425 255 -1185"}
     ],'''),
         ],
@@ -235,7 +235,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
@@ -252,7 +252,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"isSleepingEnabled":', '"isSleepingEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"unbreakableBlocks":', '"unbreakableBlocks": ["OBSERVER", "WOOD_PLATE", "STONE_PLATE", "IRON_PLATE", "GOLD_PLATE"],'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
         {"name":"Lobby and reward room", "type":"SafeZone", "pos1":"-9999999 60 -9999999", "pos2":"9999999 255 9999999"}
     ],'''),
         ],
@@ -363,7 +363,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect,
@@ -379,7 +379,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect,
@@ -395,7 +395,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect,
@@ -411,7 +411,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect,
@@ -427,7 +427,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect,
@@ -443,7 +443,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"AdventureZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect,
