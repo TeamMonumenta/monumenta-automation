@@ -303,10 +303,36 @@ class ReplaceItems(object):
         if "global count" in self.log_data["debug"]:
             globalCounts = self.log_data["global"]["global count"]
 
+            # If you want all items and their details exactly as-is,
+            # use this. Will be very verbose, not what we normally
+            # want! Comment out every line of the function after
+            # here to avoid double entries.
+            """
+            itemString = itemStack.json()
+            fakeItem = nbt.json_to_tag(itemString)
+
+            if "Count" in fakeItem:
+                count = fakeItem["Count"].value
+                fakeItem.pop("Count")
+                itemString = fakeItem.json()
+            else:
+                count = 1
+
+            if itemString not in globalCounts:
+                globalCounts[itemString] = count
+            else:
+                globalCounts[itemString] += count
+            """
+
             # In order to simplify the item list, certain
             # details must be removed; a fake item is
             # used to handle these changes, and is
             # discarded afterwards.
+
+            # The list provided is used to sort the tags
+            # within compounds, and causes all other
+            # tags to be sorted alphabetically.
+            # TAG_Lists are never sorted.
             itemJson = itemStack.json(["id","display","Name","Lore"])
             fakeItem = nbt.json_to_tag(itemJson)
             # If we put this in a sub-tag ,we need to fix it
