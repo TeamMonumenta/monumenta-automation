@@ -354,9 +354,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     ####################################
     # Leggings
 
-    ################
-    # leather
-
     # Infernal Robe
     [
         {
@@ -368,8 +365,41 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         ]
     ],
 
+    # Busty's Hotter Pants
+    [
+        {
+            "id":"minecraft:leather_leggings",
+            "name":u'''Busty's Hotter Pants''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:4s,id:1s},{lvl:4s,id:3s},{lvl:1s,id:70s}],display:{Lore:["§bLeather Armor","§eKing's Valley : §lEnhanced Rare","§fThe legs are flaming with stress!"],color:14059296,Name:"§4§lBusty's Hotter Pants"}}'''
+        ]
+    ],
+
+    # Steelscale Leggings
+    [
+        {
+            "id":"minecraft:chainmail_leggings",
+            "name":u'''Steelscale Leggings''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:4s},{lvl:2s,id:34s}],display:{Lore:["§eKing's Valley : §lEnhanced Rare"],Name:"§9§lSteelscale Leggings"},AttributeModifiers:[{UUIDMost:-2327598243755965121l,UUIDLeast:-7295240752476775997l,Amount:4.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-1961662591581338036l,UUIDLeast:-7158710234379227327l,Amount:3.0d,Slot:"legs",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+
     ####################################
     # Boots
+
+    # Boots of Vigor
+    [
+        {
+            "id":"minecraft:leather_boots",
+            "name":u'''Boots of Vigor''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:5s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : §lEnhanced Rare"],color:4521728,Name:"§2§lBoots of Vigor"},AttributeModifiers:[{UUIDMost:4275084912512485263l,UUIDLeast:-5640926957255110802l,Amount:3.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:2935233553126737342l,UUIDLeast:-8942942613933079309l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
 
     ################
     # gold
@@ -410,8 +440,41 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         ]
     ],
 
+    # Sanctifying Guard
+    [
+        {
+            "id":"minecraft:shield",
+            "name":u'''Sanctifying Guard''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:19s}],HideFlags:32,BlockEntityTag:{Base:10,Patterns:[{Color:15,Pattern:"bo"},{Color:15,Pattern:"mr"},{Color:6,Pattern:"flo"},{Color:7,Pattern:"tts"},{Color:7,Pattern:"bts"}]},display:{Lore:["* Mainhand Regeneration *"],Name:"§a§lSanctifying Guard"},AttributeModifiers:[{UUIDMost:1287381409643709352l,UUIDLeast:-7880782928783714372l,Amount:4.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:4065928328244447087l,UUIDLeast:-8906003175754769214l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:2452519509611594002l,UUIDLeast:-9038091112074494442l,Amount:-0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+        ]
+    ],
+
+    # Charm of C'Zanil
+    [
+        {
+            "id":"minecraft:bone",
+            "name":u'''Charm of C'Zanil''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:3s,id:19s}],display:{Lore:["§eKing's Valley : §lEnhanced Rare","* Regeneration *","§7Grants Regeneration I when","§7held in your off-hand"],Name:"§6§lCharm of C'Zanil"},AttributeModifiers:[{UUIDMost:-1371131983094264777l,UUIDLeast:-5382187275748050885l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-8015875971495671213l,UUIDLeast:-5412219057499937559l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-3797124817498126120l,UUIDLeast:-5357676604054506780l,Amount:0.06d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+        ]
+    ],
+
     ####################################
     # Sword items
+
+    # Rosethorn Blade
+    [
+        {
+            "id":"minecraft:stone_sword",
+            "name":u'''Rosethorn Blade''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:6s,id:16s},{lvl:2s,id:18s},{lvl:3s,id:34s},{lvl:1s,id:7s},{lvl:2s,id:22s}],HideFlags:2,display:{Lore:["§eKing's Valley : §lEnhanced Rare","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 8.5 Attack Damge","§c -1 Armor"],Name:"§2§lRosethorn Blade"},AttributeModifiers:[{UUIDMost:-4030115003770974645l,UUIDLeast:-8624436179929330760l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-6097606032756880319l,UUIDLeast:-6935384686738106924l,Amount:4.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:4535675750486917643l,UUIDLeast:-6071361771643014893l,Amount:-1.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
 
     ################
     # gold
@@ -429,6 +492,17 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
 
     ####################################
     # Axe items
+
+    # The Annihilator
+    [
+        {
+            "id":"minecraft:stone_axe",
+            "name":u'''The Annihilator''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:4s,id:34s},{lvl:3s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§eKing's Valley : §lEnhanced Rare"],Name:"§3§lThe Annihilator"}}'''
+        ]
+    ],
 
     ####################################
     # Hoe items
@@ -449,20 +523,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
 
     ####################################
     # Potions
-
-    ################
-    # lingering
-
-    # Strong Sanctify Potion
-    [
-        {
-            "id":"minecraft:lingering_potion",
-            "name":u'''Strong Sanctify Potion''',
-        },
-        [
-            "nbt", "replace", ur'''{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:240,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:900,Id:22b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§aStrong Sanctify Potion"}}'''
-        ]
-    ],
 
     ####################################
     # Other items

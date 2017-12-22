@@ -4,22 +4,157 @@
 from lib_monumenta import item_replace
 
 KingsValleyLootTables = item_replace.ReplaceItems([],[
-	[
+                    	[
 		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Living Thorn''',
+			"id":"minecraft:coal",
+			"name":u'''Animated Coal''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fLiving Thorn",Lore:["§8King's Valley : Tier III"]},ench:[{id:16s,lvl:1s},{id:70s,lvl:1s},{id:18s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lAnimated Coal"}}'''
+		]
+	],
+                    	[
+		{
+			"id":"minecraft:beetroot",
+			"name":u'''Plague Bearer's Heart''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:71s}],display:{Lore:["It's still beating..."],Name:"Plague Bearer's Heart"}}'''
+		]
+	],
+                    	[
+		{
+			"id":"minecraft:stone_hoe",
+			"name":u'''Pumpkin Scythe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:8s,id:16s},{lvl:2s,id:17s},{lvl:1s,id:18s},{lvl:2s,id:34s}],display:{Lore:["* Unique Event Item *","Halloween 2017"],Name:"§2§lPumpkin Scythe"}}'''
+		]
+	],
+                    	[
+		{
+			"id":"minecraft:stick",
+			"name":u'''Prehensile Stick''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lPrehensile Stick"}}'''
+		]
+	],
+                    	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Rod of the Onodrim''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:1s,id:70s}],display:{Lore:["* Unique Event Item *","Winter 2017"],Name:"§9§lRod of the Onodrim"},AttributeModifiers:[{UUIDMost:2512866317016583848l,UUIDLeast:-8695731667534274344l,Amount:-0.4d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:2801717605841978307l,UUIDLeast:-4821070712928009977l,Amount:-0.2d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:5435604988355234856l,UUIDLeast:-7278734017423574959l,Amount:0.6d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+                    	[
+		{
+			"id":"minecraft:snowball",
+			"name":u'''Everlasting Snow''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lEverlasting Snow"}}'''
+		]
+	],
+                    	[
+		{
+			"id":"minecraft:carrot",
+			"name":u'''Olfactory Carrot''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lOlfactory Carrot"}}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Crusader's Sword''',
+			"id":"minecraft:rabbit",
+			"name":u'''Zombie Meat''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fCrusader's Sword",Lore:["§8King's Valley : Tier III"]},ench:[{id:34s,lvl:1s},{id:17s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{display:{Name:"§fZombie Meat"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:quartz",
+			"name":u'''Bone Shard''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8Broken, but could be rebuilt"],Name:"§fBone Shard"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:spider_eye",
+			"name":u'''Antidote''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:4239424,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:40,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:30,Id:19b,Amplifier:2b}],Potion:"minecraft:empty",display:{Lore:["§7Removes Poison II and lower"],Name:"§fAntidote"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:cooked_beef",
+			"name":u'''Cooked Horse Meat''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Name:"§fCooked Horse Meat"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:beef",
+			"name":u'''Horse Meat''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Name:"§fHorse Meat"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Turtle Flippers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Flippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Turtle Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Turtle Vest''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:6s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Turtle Helm''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:5s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:fishing_rod",
+			"name":u'''Angler's Rod''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:62s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fAngler's Rod"}}'''
 		]
 	],
 	[
@@ -28,7 +163,88 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Light Scimitar''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fLight Scimitar",Lore:["§8King's Valley : Tier III"]},ench:[{id:34s,lvl:1s},{id:16s,lvl:2s},{id:22s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:3s,id:22s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fLight Scimitar"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_axe",
+			"name":u'''Tempered Mace''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fTempered Mace"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_pickaxe",
+			"name":u'''Sapper's Tool''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:2s,id:34s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fSapper's Tool"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:lever",
+			"name":u'''Damaged Hilt''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8Carved with elegant flowers"],Name:"§fDamaged Hilt"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:fish",
+			"name":u'''Magic Fish''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["* Gills *","§7Gives water breathing to you and nearby","§7allies when held in your offhand"],Name:"§b§lMagic Fish"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:shield",
+			"name":u'''Turtle Shield''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],BlockEntityTag:{Base:6,Patterns:[{Color:2,Pattern:"bri"}]},display:{Lore:["§8King's Valley : Uncommon"],Name:"§b§lTurtle Shield"},AttributeModifiers:[{UUIDMost:-2699735906624845463l,UUIDLeast:-6308071593572563623l,Amount:-0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-407094390218668203l,UUIDLeast:-9013419339908919017l,Amount:0.4d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Oncoming Tide''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:49s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§b§lOncoming Tide"},AttributeModifiers:[{UUIDMost:1004903320127294777l,UUIDLeast:-6735527447459109365l,Amount:0.07d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Living Thorn''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:18s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fLiving Thorn"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Crusader's Sword''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fCrusader's Sword"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Light Scimitar''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:3s,id:22s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fLight Scimitar"}}'''
 		]
 	],
 	[
@@ -37,7 +253,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Flamewreath Splinter''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fFlamewreath Splinter",Lore:["§8King's Valley : Tier III"]},ench:[{id:20s,lvl:3s},{id:19s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:2s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fFlamewreath Splinter"}}'''
 		]
 	],
 	[
@@ -46,7 +262,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Thief's Dagger''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fThief's Dagger",Lore:["§8King's Valley : Tier III"]},ench:[{id:16s,lvl:2s},{id:34s,lvl:1s},{id:21s,lvl:4s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:4s,id:21s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fThief's Dagger"}}'''
 		]
 	],
 	[
@@ -55,7 +271,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Brigand's Rapier''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBrigand's Rapier",Lore:["§8King's Valley : Tier III"]},ench:[{id:20s,lvl:2s},{id:21s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:20s},{lvl:2s,id:21s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fBrigand's Rapier"}}'''
 		]
 	],
 	[
@@ -64,7 +280,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Honed Claymore''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fHoned Claymore",Lore:["§8King's Valley : Tier III"]},ench:[{id:22s,lvl:1s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fHoned Claymore"}}'''
 		]
 	],
 	[
@@ -73,7 +289,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ritual Knife''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fRitual Knife",Lore:["§8King's Valley : Tier III"]},ench:[{id:34s,lvl:1s},{id:17s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fRitual Knife"}}'''
 		]
 	],
 	[
@@ -82,7 +298,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Trusty Dagger''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fTrusty Dagger",Lore:["§8King's Valley : Tier III"]},ench:[{id:34s,lvl:1s},{id:16s,lvl:1s},{id:18s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:18s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fTrusty Dagger"}}'''
 		]
 	],
 	[
@@ -109,7 +325,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Meteor Hammer''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fMeteor Hammer",Lore:["§8King's Valley : Tier III"]},ench:[{id:20s,lvl:2s},{id:16s,lvl:4s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fMeteor Hammer"}}'''
 		]
 	],
 	[
@@ -118,7 +334,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Tempered Mace''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fTempered Mace",Lore:["§8King's Valley : Tier III"]},ench:[{id:16s,lvl:2s},{id:34s,lvl:2s},{id:19s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fTempered Mace"}}'''
 		]
 	],
 	[
@@ -127,7 +343,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Woodsman's Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fWoodsman's Axe",Lore:["§8King's Valley : Tier III"]},ench:[{id:32s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fWoodsman's Axe"}}'''
 		]
 	],
 	[
@@ -136,7 +352,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Heavy Warhammer''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fHeavy Warhammer",Lore:["§8King's Valley : Tier III"]},ench:[{id:19s,lvl:1s},{id:16s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:34s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fHeavy Warhammer"}}'''
 		]
 	],
 	[
@@ -145,7 +361,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Jagged Cleaver''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fJagged Cleaver",Lore:["§8King's Valley : Tier III"]},ench:[{id:16s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fJagged Cleaver"}}'''
 		]
 	],
 	[
@@ -154,7 +370,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Inferno Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fInferno Axe",Lore:["§8King's Valley : Tier III"]},ench:[{id:32s,lvl:1s},{id:20s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fInferno Axe"}}'''
 		]
 	],
 	[
@@ -163,7 +379,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Sapper's Tool''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSapper's Tool",Lore:["§8King's Valley : Tier III"]},ench:[{id:32s,lvl:2s},{id:34s,lvl:2s},{id:19s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:2s,id:34s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fSapper's Tool"}}'''
 		]
 	],
 	[
@@ -172,7 +388,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Masterwork Pickaxe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fMasterwork Pickaxe",Lore:["§8King's Valley : Tier III"]},ench:[{id:32s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fMasterwork Pickaxe"}}'''
 		]
 	],
 	[
@@ -181,7 +397,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Runic Pickaxe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fRunic Pickaxe",Lore:["§8King's Valley : Tier III"]},ench:[{id:35s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:2s,id:35s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fRunic Pickaxe"}}'''
 		]
 	],
 	[
@@ -190,7 +406,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Resiliant Pickaxe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fResiliant Pickaxe",Lore:["§8King's Valley : Tier III"]},ench:[{id:34s,lvl:5s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fResiliant Pickaxe"}}'''
 		]
 	],
 	[
@@ -199,7 +415,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Arrowmeld''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fArrowmeld",Lore:["§8King's Valley : Tier III"]},ench:[{id:35s,lvl:3s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s},{lvl:3s,id:35s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fArrowmeld"}}'''
 		]
 	],
 	[
@@ -208,7 +424,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hardened Shield''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fHardened Shield",Lore:["§8King's Valley : Tier III"]},ench:[{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fHardened Shield"}}'''
 		]
 	],
 	[
@@ -217,7 +433,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hawk's Talon''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fHawk's Talon",Lore:["§8King's Valley : Tier III"]},ench:[{id:48s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fHawk's Talon"}}'''
 		]
 	],
 	[
@@ -226,7 +442,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Crossbow''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fCrossbow",Lore:["§8King's Valley : Tier III"]},ench:[{id:49s,lvl:1s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:49s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fCrossbow"}}'''
 		]
 	],
 	[
@@ -235,7 +451,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Searing Bow''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSearing Bow",Lore:["§8King's Valley : Tier III"]},ench:[{id:50s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:50s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fSearing Bow"}}'''
 		]
 	],
 	[
@@ -244,7 +460,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Angler's Rod''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fAngler's Rod",Lore:["§8King's Valley : Tier III"]},ench:[{id:34s,lvl:2s},{id:62s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:62s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fAngler's Rod"}}'''
 		]
 	],
 	[
@@ -253,7 +469,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Apprentice's Wand''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fApprentice's Wand",Lore:["§8* Magic Wand *","§8King's Valley : Tier III"]},ench:[{id:19s,lvl:1s},{id:20s,lvl:1s},{id:16s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier III"],Name:"§fApprentice's Wand"}}'''
 		]
 	],
 	[
@@ -262,7 +478,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Consecrated Wand''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fConsecrated Wand",Lore:["§8* Magic Wand *","§8King's Valley : Tier III"]},ench:[{id:17s,lvl:2s},{id:19s,lvl:1s},{id:21s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:1s,id:19s},{lvl:1s,id:21s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier III"],Name:"§fConsecrated Wand"}}'''
 		]
 	],
 	[
@@ -271,7 +487,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ruffian's Scythe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fRuffian's Scythe",Lore:["§8King's Valley : Tier III"]},ench:[{id:16s,lvl:4s},{id:17s,lvl:1s},{id:21s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:1s,id:21s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fRuffian's Scythe"}}'''
 		]
 	],
 	[
@@ -280,7 +496,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Sky Mage Coif''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fSky Mage Coif",color:10531071,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:0s,lvl:1s},{id:34s,lvl:2s},{id:2s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Coif"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -289,7 +505,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Sky Mage Cloak''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fSky Mage Cloak",color:10531071,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:0s,lvl:1s},{id:34s,lvl:2s},{id:2s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -298,7 +514,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Sky Mage Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fSky Mage Robe",color:10531071,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:0s,lvl:1s},{id:34s,lvl:2s},{id:2s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Robe"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -307,7 +523,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Sky Mage Slippers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fSky Mage Slippers",color:10531071,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:0s,lvl:1s},{id:34s,lvl:2s},{id:2s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Slippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -316,7 +532,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Scoundrel's Hood''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fScoundrel's Hood",color:2109472,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:4s,lvl:3s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Hood"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -325,7 +541,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Scoundrel's Tunic''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fScoundrel's Tunic",color:2109472,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:4s,lvl:3s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -334,7 +550,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Scoundrel's Trousers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fScoundrel's Trousers",color:2109472,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:4s,lvl:3s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -343,7 +559,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Scoundrel's Slippers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fScoundrel's Slippers",color:2109472,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:4s,lvl:3s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Slippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -352,7 +568,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Spellweave Hat''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fSpellweave Hat",color:11555008,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Hat"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -361,7 +577,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Spellweave Tunic''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fSpellweave Tunic",color:11555008,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -370,7 +586,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Spellweave Trousers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fSpellweave Trousers",color:11555008,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -379,7 +595,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Spellweave Shoes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fSpellweave Shoes",color:11555008,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -388,7 +604,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Blast Visor''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBlast Visor",color:5597999,Lore:["§bLeather Armor","§8King's Valley : Tier III"]},ench:[{id:3s,lvl:2s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Visor"}}'''
 		]
 	],
 	[
@@ -397,7 +613,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Blast Vest''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBlast Vest",color:5597999,Lore:["§bLeather Armor","§8King's Valley : Tier III"]},ench:[{id:3s,lvl:2s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Vest"}}'''
 		]
 	],
 	[
@@ -406,7 +622,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Blast Apron''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBlast Apron",color:5597999,Lore:["§bLeather Armor","§8King's Valley : Tier III"]},ench:[{id:3s,lvl:2s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Apron"}}'''
 		]
 	],
 	[
@@ -415,7 +631,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Blast Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBlast Boots",color:5597999,Lore:["§bLeather Armor","§8King's Valley : Tier III"]},ench:[{id:3s,lvl:2s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Boots"}}'''
 		]
 	],
 	[
@@ -424,7 +640,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Burnt Helm''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBurnt Helm",color:7352328,Lore:["§bLeather Armor","§8King's Valley : Tier III"]},ench:[{id:1s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Helm"}}'''
 		]
 	],
 	[
@@ -433,7 +649,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Burnt Cloak''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBurnt Cloak",color:7352328,Lore:["§bLeather Armor","§8King's Valley : Tier III"]},ench:[{id:1s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Cloak"}}'''
 		]
 	],
 	[
@@ -442,7 +658,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Burnt Leggings''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBurnt Leggings",color:7352328,Lore:["§bLeather Armor","§8King's Valley : Tier III"]},ench:[{id:1s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Leggings"}}'''
 		]
 	],
 	[
@@ -451,7 +667,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Burnt Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBurnt Boots",color:7352328,Lore:["§bLeather Armor","§8King's Valley : Tier III"]},ench:[{id:1s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Boots"}}'''
 		]
 	],
 	[
@@ -460,7 +676,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Warlock Helm''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fWarlock Helm",color:14725264,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -469,7 +685,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Warlock Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fWarlock Robe",color:14725264,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Robe"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -478,7 +694,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Warlock Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fWarlock Robe",color:14725264,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Robe"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -487,7 +703,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Warlock Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fWarlock Boots",color:14725264,Lore:["§9Cloth Armor","§8King's Valley : Tier III"]},ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -496,7 +712,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''The Ravager''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:19s},{lvl:2s,id:34s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§3§lThe Ravager"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§3§lThe Ravager"}}'''
 		]
 	],
 	[
@@ -604,7 +820,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ender Eyes''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s}],SkullOwner:{Id:"40ffb372-12f6-4678-b3f2-2176bf56dd4b",Properties:{textures:[{Signature:"yBts7gxjhzU2wRkYNhrKffQl07Y3RGCABJqNKsIg4AqKyKdRC4Mi72Yo4GZLSxbnlefQF8mzkAtZO5VZJyOwVGtyDm0kdV3lKWQAcQft1tsng+RzuezdxCyySwZBCuxkqg6WCAO4EvTT3AUCyrIkme3i8ch1gWSas56SZeIC60fdr1ZaQUua65+RG8/b7Xk8h6ANQpOQNKwgMKBDWXTyVyTgAEqX65HymK793I30Jee+KYi43QLLilZ2l3i+YI5r915c+mtHeXOwYSjywnJ6nXdKQS9LorjxT+3fNrX4AAckU4liRppDiXk0tuaz5Y2qFGIobgJa9u4aEis2KfjIabKwAMx0IAWOKW5eBUDHAAHriWAJg8knWbF/N3mH8y3s/ksU1N3Y76zTyCh577LEpcqdK7KoBnWLek1hswf1Ria+ydXLFxw/YJqy2zEOK60Hb5qc4HX1pqdFRY4utTSAqyaElZGKMBcitkGtGRCW7CmJReWoREWaoTkI6kmm2YN2Ogm6QRHiMTwu2tMQxOjZWnnUc5PsqtrmkS0w6DwcZnRNHb/op30wxfEztpOoY7QBPivG0WMZq+cj+4ncPm+r604d4dUz7nfA95NNr81SSSRh4IqBjqnnq1A5dnlnlipfWcspo8oiDqvO+59+SZet9Y67j0qG1o2iI8jmMQDfFwk=",Value:"eyJ0aW1lc3RhbXAiOjE1MDc0NzA1NTU2OTksInByb2ZpbGVJZCI6IjQwZmZiMzcyMTJmNjQ2NzhiM2YyMjE3NmJmNTZkZDRiIiwicHJvZmlsZU5hbWUiOiJNSEZfRW5kZXJtYW4iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzdhNTliYjBhN2EzMjk2NWIzZDkwZDhlYWZhODk5ZDE4MzVmNDI0NTA5ZWFkZDRlNmI3MDlhZGE1MGI5Y2YifX19"}]},Name:"MHF_Enderman"},display:{Lore:["* Darksight *","§eKing's Valley : Rare","§8Grants Night Vision when worn"],Name:"§5§lEnder Eyes"},AttributeModifiers:[{UUIDMost:-6943906489819969946l,UUIDLeast:-8870601153493074758l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s}],SkullOwner:{Id:"40ffb372-12f6-4678-b3f2-2176bf56dd4b",Name:"MHF_Enderman",Properties:{textures:[{Signature:"yBts7gxjhzU2wRkYNhrKffQl07Y3RGCABJqNKsIg4AqKyKdRC4Mi72Yo4GZLSxbnlefQF8mzkAtZO5VZJyOwVGtyDm0kdV3lKWQAcQft1tsng+RzuezdxCyySwZBCuxkqg6WCAO4EvTT3AUCyrIkme3i8ch1gWSas56SZeIC60fdr1ZaQUua65+RG8/b7Xk8h6ANQpOQNKwgMKBDWXTyVyTgAEqX65HymK793I30Jee+KYi43QLLilZ2l3i+YI5r915c+mtHeXOwYSjywnJ6nXdKQS9LorjxT+3fNrX4AAckU4liRppDiXk0tuaz5Y2qFGIobgJa9u4aEis2KfjIabKwAMx0IAWOKW5eBUDHAAHriWAJg8knWbF/N3mH8y3s/ksU1N3Y76zTyCh577LEpcqdK7KoBnWLek1hswf1Ria+ydXLFxw/YJqy2zEOK60Hb5qc4HX1pqdFRY4utTSAqyaElZGKMBcitkGtGRCW7CmJReWoREWaoTkI6kmm2YN2Ogm6QRHiMTwu2tMQxOjZWnnUc5PsqtrmkS0w6DwcZnRNHb/op30wxfEztpOoY7QBPivG0WMZq+cj+4ncPm+r604d4dUz7nfA95NNr81SSSRh4IqBjqnnq1A5dnlnlipfWcspo8oiDqvO+59+SZet9Y67j0qG1o2iI8jmMQDfFwk=",Value:"eyJ0aW1lc3RhbXAiOjE1MDc0NzA1NTU2OTksInByb2ZpbGVJZCI6IjQwZmZiMzcyMTJmNjQ2NzhiM2YyMjE3NmJmNTZkZDRiIiwicHJvZmlsZU5hbWUiOiJNSEZfRW5kZXJtYW4iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzdhNTliYjBhN2EzMjk2NWIzZDkwZDhlYWZhODk5ZDE4MzVmNDI0NTA5ZWFkZDRlNmI3MDlhZGE1MGI5Y2YifX19"}]}},display:{Lore:["* Darksight *","§eKing's Valley : Rare","§8Grants Night Vision when worn"],Name:"§5§lEnder Eyes"},AttributeModifiers:[{UUIDMost:-6943906489819969946l,UUIDLeast:-8870601153493074758l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -631,7 +847,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ironscale Leggings''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§9§lIronscale Leggings"},AttributeModifiers:[{UUIDMost:46932015782064460l,UUIDLeast:34304226943201925l,Amount:4d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:42035034178315847l,UUIDLeast:15455365629951484l,Amount:2d,Slot:"legs",AttributeName:"generic.armorToughness",Operation:0,Name:"generic.armorToughness"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§9§lIronscale Leggings"},AttributeModifiers:[{UUIDMost:46932015782064460l,UUIDLeast:34304226943201925l,Amount:4.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:42035034178315847l,UUIDLeast:15455365629951484l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armorToughness",Operation:0,Name:"generic.armorToughness"}]}'''
 		]
 	],
 	[
@@ -649,7 +865,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Magmahide Shield''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:19s},{lvl:2s,id:20s}],HideFlags:34,BlockEntityTag:{Patterns:[{Pattern:"gra",Color:0},{Pattern:"cbo",Color:1},{Pattern:"tts",Color:1},{Pattern:"bts",Color:1},{Pattern:"mc",Color:14},{Pattern:"flo",Color:1}],Base:14},display:{Lore:["§eKing's Valley : Rare"],Name:"§4§lMagmahide Shield"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:19s},{lvl:2s,id:20s}],HideFlags:34,BlockEntityTag:{Base:14,Patterns:[{Color:0,Pattern:"gra"},{Color:1,Pattern:"cbo"},{Color:1,Pattern:"tts"},{Color:1,Pattern:"bts"},{Color:14,Pattern:"mc"},{Color:1,Pattern:"flo"}]},display:{Lore:["§eKing's Valley : Rare"],Name:"§4§lMagmahide Shield"}}'''
 		]
 	],
 	[
@@ -685,7 +901,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Offering's Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:7895314803459967566l,UUIDLeast:-4684285381480027934l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:7895314803459967566l,UUIDLeast:-4684285381480027934l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -694,7 +910,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Offering's Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:2421209759494129265l,UUIDLeast:-7639468242547147097l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:2421209759494129265l,UUIDLeast:-7639468242547147097l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -703,7 +919,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Offering's Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:4172809477985159313l,UUIDLeast:-6315940985289442365l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:4172809477985159313l,UUIDLeast:-6315940985289442365l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -712,7 +928,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Offering's Hood''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Hood"},AttributeModifiers:[{UUIDMost:-1020269136855678533l,UUIDLeast:-8988064621405004682l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Hood"},AttributeModifiers:[{UUIDMost:-1020269136855678533l,UUIDLeast:-8988064621405004682l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -739,7 +955,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Tempered Ironwood Blade''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fTempered Ironwood Blade",Lore:["§8King's Valley : Tier II"]},ench:[{id:34s,lvl:2s},{id:16s,lvl:1s},{id:21s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:21s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fTempered Ironwood Blade"}}'''
 		]
 	],
 	[
@@ -748,7 +964,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Sculpted Dagger''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSculpted Dagger",Lore:["§8King's Valley : Tier II"]},ench:[{id:16s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fSculpted Dagger"}}'''
 		]
 	],
 	[
@@ -757,7 +973,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ashen Broadsword''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fAshen Broadsword",Lore:["§8King's Valley : Tier II"]},ench:[{id:22s,lvl:2s},{id:20s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:1s,id:20s},{lvl:2s,id:22s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fAshen Broadsword"}}'''
 		]
 	],
 	[
@@ -766,7 +982,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Priest's Stake''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fPriest's Stake",Lore:["§8King's Valley : Tier II"]},ench:[{id:34s,lvl:3s},{id:17s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fPriest's Stake"}}'''
 		]
 	],
 	[
@@ -775,7 +991,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Versatile Knife''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fVersatile Knife",Lore:["§8King's Valley : Tier II"]},ench:[{id:16s,lvl:1s},{id:18s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:18s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fVersatile Knife"}}'''
 		]
 	],
 	[
@@ -784,7 +1000,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Searing Gladius''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSearing Gladius",Lore:["§8King's Valley : Tier II"]},ench:[{id:20s,lvl:1s},{id:19s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:2s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fSearing Gladius"}}'''
 		]
 	],
 	[
@@ -793,7 +1009,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Burning Rapier''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBurning Rapier",Lore:["§8King's Valley : Tier II"]},ench:[{id:20s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:20s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fBurning Rapier"}}'''
 		]
 	],
 	[
@@ -802,7 +1018,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Soldier's Blade''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSoldier's Blade",Lore:["§8King's Valley : Tier II"]},ench:[{id:16s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fSoldier's Blade"}}'''
 		]
 	],
 	[
@@ -811,7 +1027,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Granite Sabre''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fGranite Sabre",Lore:["§8King's Valley : Tier II"]},ench:[{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fGranite Sabre"}}'''
 		]
 	],
 	[
@@ -838,7 +1054,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Warhammer''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fWarhammer",Lore:["§8King's Valley : Tier II"]},ench:[{id:19s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fWarhammer"}}'''
 		]
 	],
 	[
@@ -847,7 +1063,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Masterwork Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fMasterwork Axe",Lore:["§8King's Valley : Tier II"]},ench:[{id:32s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fMasterwork Axe"}}'''
 		]
 	],
 	[
@@ -856,7 +1072,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Honed Swiftwood Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fHoned Swiftwood Axe",Lore:["§8King's Valley : Tier II"]},ench:[{id:32s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fHoned Swiftwood Axe"}}'''
 		]
 	],
 	[
@@ -865,7 +1081,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Versatile Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fVersatile Axe",Lore:["§8King's Valley : Tier II"]},ench:[{id:34s,lvl:2s},{id:16s,lvl:1s},{id:32s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:16s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fVersatile Axe"}}'''
 		]
 	],
 	[
@@ -874,7 +1090,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Smoldering Mace''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSmoldering Mace",Lore:["§8King's Valley : Tier II"]},ench:[{id:17s,lvl:1s},{id:34s,lvl:1s},{id:20s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:1s,id:20s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fSmoldering Mace"}}'''
 		]
 	],
 	[
@@ -883,7 +1099,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Bluefell Chisel''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBluefell Chisel",Lore:["§8King's Valley : Tier II"]},ench:[{id:32s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fBluefell Chisel"}}'''
 		]
 	],
 	[
@@ -892,7 +1108,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Miner's Pick''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fMiner's Pick",Lore:["§8King's Valley : Tier II"]},ench:[{id:35s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:35s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fMiner's Pick"}}'''
 		]
 	],
 	[
@@ -901,7 +1117,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Granite Pickaxe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fGranite Pickaxe",Lore:["§8King's Valley : Tier II"]},ench:[{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fGranite Pickaxe"}}'''
 		]
 	],
 	[
@@ -910,7 +1126,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Grassbane''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fGrassbane",Lore:["§8King's Valley : Tier II"]},ench:[{id:32s,lvl:3s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fGrassbane"}}'''
 		]
 	],
 	[
@@ -919,7 +1135,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Student's Wand''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fStudent's Wand",Lore:["§8* Magic Wand *","§8King's Valley : Tier II"]},ench:[{id:19s,lvl:1s},{id:20s,lvl:1s},{id:16s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier II"],Name:"§fStudent's Wand"}}'''
 		]
 	],
 	[
@@ -928,7 +1144,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Flame Wand''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fFlame Wand",Lore:["§8* Magic Wand *","§8King's Valley : Tier II"]},ench:[{id:19s,lvl:2s},{id:20s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:20s},{lvl:2s,id:19s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier II"],Name:"§fFlame Wand"}}'''
 		]
 	],
 	[
@@ -937,7 +1153,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Peasant's Scythe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fPeasant's Scythe",Lore:["§8King's Valley : Tier II"]},ench:[{id:16s,lvl:3s},{id:17s,lvl:1s},{id:21s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:21s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fPeasant's Scythe"}}'''
 		]
 	],
 	[
@@ -946,7 +1162,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ironwood Bow''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fIronwood Bow",Lore:["§8King's Valley : Tier II"]},ench:[{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fIronwood Bow"}}'''
 		]
 	],
 	[
@@ -955,7 +1171,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Longbow''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fLongbow",Lore:["§8King's Valley : Tier II"]},ench:[{id:49s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:49s}],display:{Lore:["§8King's Valley : Tier II"],Name:"§fLongbow"}}'''
 		]
 	],
 	[
@@ -964,7 +1180,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Bandit's Cap''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fBandit's Cap",color:5197647,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:4s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:5197647,Name:"§fBandit's Cap"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -973,7 +1189,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Bandit's Tunic''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fBandit's Tunic",color:5197647,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:4s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:5197647,Name:"§fBandit's Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -982,7 +1198,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Bandit's Trousers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fBandit's Trousers",color:5197647,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:4s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:5197647,Name:"§fBandit's Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -991,7 +1207,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Bandit's Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fBandit's Boots",color:5197647,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:4s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:5197647,Name:"§fBandit's Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1000,7 +1216,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Crimson Mage Hat''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fCrimson Mage Hat",color:12517599,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:0s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:12517599,Name:"§fCrimson Mage Hat"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1009,7 +1225,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Crimson Mage Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fCrimson Mage Robes",color:12517599,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:0s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:12517599,Name:"§fCrimson Mage Robes"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1018,7 +1234,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Crimson Mage Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fCrimson Mage Robes",color:12517599,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:0s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:12517599,Name:"§fCrimson Mage Robes"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1027,7 +1243,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Crimson Mage Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fCrimson Mage Robes",color:12517599,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:0s,lvl:1s},{id:2s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:12517599,Name:"§fCrimson Mage Robes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1036,7 +1252,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Thornskin Veil''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fThornskin Veil",color:4185951,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:7s,lvl:3s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:4185951,Name:"§fThornskin Veil"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1045,7 +1261,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Thornskin Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fThornskin Robe",color:4185951,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:7s,lvl:3s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:4185951,Name:"§fThornskin Robe"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1054,7 +1270,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Thornskin Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fThornskin Robe",color:4185951,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:7s,lvl:3s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:4185951,Name:"§fThornskin Robe"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1063,7 +1279,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Thornskin Shoes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fThornskin Shoes",color:4185951,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:7s,lvl:3s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:4185951,Name:"§fThornskin Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1072,7 +1288,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Alchemist's Helm''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fAlchemist's Helm",color:16776960,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:1s,lvl:2s},{id:3s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:16776960,Name:"§fAlchemist's Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1090,7 +1306,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Alchemist's Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fAlchemist's Robe",color:16776960,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:1s,lvl:2s},{id:3s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:16776960,Name:"§fAlchemist's Robe"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1099,7 +1315,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Alchemist's Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fAlchemist's Boots",color:16776960,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:1s,lvl:2s},{id:3s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:16776960,Name:"§fAlchemist's Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1108,7 +1324,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Turtle Helm''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fTurtle Helm",color:36912,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:5s,lvl:1s},{id:3s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:5s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1117,7 +1333,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Turtle Vest''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fTurtle Vest",color:36912,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:6s,lvl:1s},{id:3s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:6s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1126,7 +1342,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Turtle Pants''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fTurtle Pants",color:36912,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:8s,lvl:1s},{id:3s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1135,7 +1351,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Turtle Flippers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fTurtle Flippers",color:36912,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:8s,lvl:1s},{id:3s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Flippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1144,7 +1360,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Puresilk Coif''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"},{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.02d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}],display:{Name:"§fPuresilk Coif",color:12636415,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:0s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:12636415,Name:"§fPuresilk Coif"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.02d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -1153,7 +1369,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Puresilk Tunic''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"},{UUIDMost:270399l,UUIDLeast:903793l,Amount:0.02d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}],display:{Name:"§fPuresilk Tunic",color:12636415,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:0s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:12636415,Name:"§fPuresilk Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:270399l,UUIDLeast:903793l,Amount:0.02d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -1162,7 +1378,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Puresilk Leggings''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"},{UUIDMost:280399l,UUIDLeast:1003793l,Amount:0.02d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}],display:{Name:"§fPuresilk Leggings",color:12636415,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:0s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:12636415,Name:"§fPuresilk Leggings"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:280399l,UUIDLeast:1003793l,Amount:0.02d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -1171,7 +1387,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Puresilk Slippers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"},{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.02d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}],display:{Name:"§fPuresilk Slippers",color:12636415,Lore:["§9Cloth Armor","§8King's Valley : Tier II"]},ench:[{id:0s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:12636415,Name:"§fPuresilk Slippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.02d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -1180,7 +1396,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Soulcrusher''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:6s,id:16s},{lvl:3s,id:34s}],RepairCost:1,HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§f","§7When in main hand:","§7 0.8 Attack Speed","§7 12.5 Attack Damage","§c -20% Speed"],Name:"§6§lSoulcrusher"},AttributeModifiers:[{UUIDMost:12446444898007617l,UUIDLeast:64791494739800248l,Amount:-0.2d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:19182804207771727l,UUIDLeast:44200783352792867l,Amount:8d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:1126358275258178l,UUIDLeast:50193448324688339l,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:6s,id:16s},{lvl:3s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§f","§7When in main hand:","§7 0.8 Attack Speed","§7 12.5 Attack Damage","§c -20% Speed"],Name:"§6§lSoulcrusher"},AttributeModifiers:[{UUIDMost:12446444898007617l,UUIDLeast:64791494739800248l,Amount:-0.2d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:19182804207771727l,UUIDLeast:44200783352792867l,Amount:8d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:1126358275258178l,UUIDLeast:50193448324688339l,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
 		]
 	],
 	[
@@ -1216,7 +1432,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Tlaxan Bulwark''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],HideFlags:32,BlockEntityTag:{Patterns:[{Pattern:"gru",Color:0},{Pattern:"cre",Color:0},{Pattern:"flo",Color:0},{Pattern:"moj",Color:0},{Pattern:"tts",Color:0},{Pattern:"bts",Color:0}],Base:2},display:{Lore:["§eKing's Valley : Rare"],Name:"§2§lTlaxan Bulwark"},AttributeModifiers:[{UUIDMost:8279654741628239l,UUIDLeast:50644245966137402l,Amount:2d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],HideFlags:32,BlockEntityTag:{Base:2,Patterns:[{Color:0,Pattern:"gru"},{Color:0,Pattern:"cre"},{Color:0,Pattern:"flo"},{Color:0,Pattern:"moj"},{Color:0,Pattern:"tts"},{Color:0,Pattern:"bts"}]},display:{Lore:["§eKing's Valley : Rare"],Name:"§2§lTlaxan Bulwark"},AttributeModifiers:[{UUIDMost:8279654741628239l,UUIDLeast:50644245966137402l,Amount:2d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"}]}'''
 		]
 	],
 	[
@@ -1297,7 +1513,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Stormborn Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:2s},{lvl:3s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§eKing's Valley : Rare"],color:16775894,Name:"§3§lStormborn Boots"},AttributeModifiers:[{UUIDMost:8168110272590147l,UUIDLeast:66575962804257055l,Amount:0.05d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:55068906034949703l,UUIDLeast:23695059647787143l,Amount:1d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:4s},{lvl:3s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§eKing's Valley : Rare"],color:16775894,Name:"§3§lStormborn Boots"},AttributeModifiers:[{UUIDMost:8168110272590147l,UUIDLeast:66575962804257055l,Amount:0.05d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:55068906034949703l,UUIDLeast:23695059647787143l,Amount:1d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1315,7 +1531,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Iceborn Helmet''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:3s,id:34s},{lvl:2s,id:5s},{lvl:1s,id:4s}],display:{Lore:["§eKing's Valley : Rare"],color:9107455,Name:"§b§lIceborn Helmet"},AttributeModifiers:[{UUIDMost:46674431434570316l,UUIDLeast:29842133510151376l,Amount:-0.05d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:10509373368372805l,UUIDLeast:27250250553169692l,Amount:1d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:4s},{lvl:2s,id:5s},{lvl:3s,id:34s}],display:{Lore:["§eKing's Valley : Rare"],color:9107455,Name:"§b§lIceborn Helmet"},AttributeModifiers:[{UUIDMost:46674431434570316l,UUIDLeast:29842133510151376l,Amount:-0.05d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:10509373368372805l,UUIDLeast:27250250553169692l,Amount:1d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1324,7 +1540,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Imperial Bulwark''',
 		},
 		[
-			"nbt", "replace", ur'''{HideFlags:32,BlockEntityTag:{Patterns:[{Pattern:"bri",Color:7},{Pattern:"bo",Color:8},{Pattern:"mr",Color:8},{Pattern:"tts",Color:8},{Pattern:"bts",Color:8}],Base:15},display:{Lore:["§eKing's Valley : Rare"],Name:"§6§lImperial Bulwark"},AttributeModifiers:[{UUIDMost:20324l,UUIDLeast:596443l,Amount:0.4d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"}]}'''
+			"nbt", "replace", ur'''{HideFlags:32,BlockEntityTag:{Base:15,Patterns:[{Color:7,Pattern:"bri"},{Color:8,Pattern:"bo"},{Color:8,Pattern:"mr"},{Color:8,Pattern:"tts"},{Color:8,Pattern:"bts"}]},display:{Lore:["§eKing's Valley : Rare"],Name:"§6§lImperial Bulwark"},AttributeModifiers:[{UUIDMost:20324l,UUIDLeast:596443l,Amount:0.4d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"}]}'''
 		]
 	],
 	[
@@ -1378,7 +1594,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Shadowborn Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:2s},{lvl:2s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:0,Name:"§1§lShadowborn Boots"},AttributeModifiers:[{UUIDMost:27244509153028163l,UUIDLeast:28582544481897959l,Amount:0.1d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:28562665029432653l,UUIDLeast:46011597873607935l,Amount:1d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:0,Name:"§1§lShadowborn Boots"},AttributeModifiers:[{UUIDMost:27244509153028163l,UUIDLeast:28582544481897959l,Amount:0.1d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:28562665029432653l,UUIDLeast:46011597873607935l,Amount:1d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1388,6 +1604,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 		},
 		[
 			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:3287104,Name:"§1§lVoidguard"},AttributeModifiers:[{UUIDMost:71061793700771916l,UUIDLeast:70921921889626742l,Amount:0.05d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:5618170327124803l,UUIDLeast:67318597315435972l,Amount:3d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Kismet's Blessing''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:65493,Name:"§b§lKismet's Blessing"},AttributeModifiers:[{UUIDMost:-6900745281224160306l,UUIDLeast:-4828553848378685989l,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1116995255491055008l,UUIDLeast:-6766107056483247837l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -1432,7 +1657,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hide Shield''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s}],BlockEntityTag:{Patterns:[{Pattern:"mr",Color:14},{Pattern:"sku",Color:3}],Base:3},display:{Lore:["§8King's Valley : Uncommon"],Name:"§fHide Shield"},AttributeModifiers:[{UUIDMost:4829683371424304161l,UUIDLeast:-8495861702335545947l,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-660961315230563653l,UUIDLeast:-7651396858820480353l,Amount:0.15d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s}],BlockEntityTag:{Base:3,Patterns:[{Color:14,Pattern:"mr"},{Color:3,Pattern:"sku"}]},display:{Lore:["§8King's Valley : Uncommon"],Name:"§fHide Shield"},AttributeModifiers:[{UUIDMost:4829683371424304161l,UUIDLeast:-8495861702335545947l,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-660961315230563653l,UUIDLeast:-7651396858820480353l,Amount:0.15d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -1504,7 +1729,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Busty's Hot Pants''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:70s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§fCaution: Highly combustible!"],color:14059296,Name:"§4§lBusty's Hot Pants"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:2s,id:3s},{lvl:1s,id:70s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§fCaution: Highly combustible!"],color:14059296,Name:"§4§lBusty's Hot Pants"}}'''
 		]
 	],
 	[
@@ -1522,7 +1747,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Arachnidruid Cutlass''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:5s,id:18s},{lvl:2s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§7§lArachnidruid Cutlass"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:5s,id:18s},{lvl:7s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§7§lArachnidruid Cutlass"}}'''
 		]
 	],
 	[
@@ -1531,7 +1756,16 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Imperial Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:34s},{lvl:2s,id:4s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§6§lImperial Boots"},AttributeModifiers:[{UUIDMost:1775669591734307443l,UUIDLeast:-6024546899061047350l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:195460280784930720l,UUIDLeast:-7656255313218295407l,Amount:0.07d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-1259872000693875336l,UUIDLeast:-5487988998098507807l,Amount:1.0d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:3s,id:34s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§6§lImperial Boots"},AttributeModifiers:[{UUIDMost:1775669591734307443l,UUIDLeast:-6024546899061047350l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:195460280784930720l,UUIDLeast:-7656255313218295407l,Amount:0.07d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:chainmail_helmet",
+			"name":u'''Hellborn Crown''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§4§lHellborn Crown"},AttributeModifiers:[{UUIDMost:379758l,UUIDLeast:617489l,Amount:0.05d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:282280l,UUIDLeast:923322l,Amount:2.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:-3581384299597379461l,UUIDLeast:-8581973643124513272l,Amount:1.0d,Slot:"head",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -1540,34 +1774,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Heatwave''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:48s},{lvl:1s,id:50s},{lvl:2s,id:34s},{lvl:3s,id:20s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§4§lHeatwave"},AttributeModifiers:[{UUIDMost:8116569735093830297l,UUIDLeast:-8242952756743872354l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:8273465459297502240l,UUIDLeast:-6088735693514867889l,Amount:0.02d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Cloak of Ember''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:1s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:3486254,Name:"§8§lCloak of Ember"},AttributeModifiers:[{UUIDMost:-2107453396396193913l,UUIDLeast:-7680694910814334169l,Amount:2.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-5329785336972817813l,UUIDLeast:-6601139244675735161l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-4773003082261573747l,UUIDLeast:-5329109993049263189l,Amount:0.01d,Slot:"chest",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_axe",
-			"name":u'''Shangonian Battleaxe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:19s},{lvl:6s,id:20s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§c§lShangonian Battleaxe"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Arctic Trousers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:70s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:9353727,Name:"§b§lArctic Trousers"},AttributeModifiers:[{UUIDMost:6516905089539588538l,UUIDLeast:-8897699700085799479l,Amount:-0.1d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-7002837463268834312l,UUIDLeast:-7685788661332608448l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:48s},{lvl:1s,id:50s},{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§4§lHeatwave"},AttributeModifiers:[{UUIDMost:1953985229413762026l,UUIDLeast:-7788873909617989122l,Amount:0.05d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:235371758392001205l,UUIDLeast:-5169380198454453816l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:4460626849743783254l,UUIDLeast:-4613216353505383089l,Amount:1.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -1576,7 +1783,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Whispers of the Blizzard''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],BlockEntityTag:{Patterns:[{Pattern:"gra",Color:12},{Pattern:"gra",Color:15},{Pattern:"bts",Color:12},{Pattern:"bts",Color:15},{Pattern:"tts",Color:12},{Pattern:"tts",Color:15},{Pattern:"flo",Color:15}],Base:15},display:{Lore:["§eKing's Valley : Rare"],Name:"§f§lWhispers of the Blizzard"},AttributeModifiers:[{UUIDMost:-4748455169170455229l,UUIDLeast:-7729420609970491595l,Amount:1.5d,Slot:"offhand",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:-3199166846941117776l,UUIDLeast:-6426976444844163947l,Amount:0.03d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-8241686692365516491l,UUIDLeast:-6658870864660478700l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s},{lvl:3s,id:7s}],HideFlags:32,BlockEntityTag:{Base:15,Patterns:[{Color:12,Pattern:"gra"},{Color:15,Pattern:"gra"},{Color:12,Pattern:"bts"},{Color:15,Pattern:"bts"},{Color:12,Pattern:"tts"},{Color:15,Pattern:"tts"},{Color:15,Pattern:"flo"}]},display:{Lore:["§eKing's Valley : Rare"],Name:"§f§lWhispers of the Blizzard"},AttributeModifiers:[{UUIDMost:2256773067886383020l,UUIDLeast:-5655061197444746948l,Amount:-0.1d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:5849519655109806008l,UUIDLeast:-8335205912319506803l,Amount:-0.15d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:8672913500936421533l,UUIDLeast:-5547658156596734111l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-1341536773596754749l,UUIDLeast:-5380820354758116450l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:-280597868914128454l,UUIDLeast:-6563374324551311180l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -1585,7 +1792,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Frostbite Scythe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:6s,id:16s},{lvl:2s,id:17s},{lvl:4s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§b§lFrostbite Scythe"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:9s,id:16s},{lvl:2s,id:17s},{lvl:4s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§eKing's Valley : Rare"],Name:"§b§lFrostbite Scythe"}}'''
 		]
 	],
 	[
@@ -1594,7 +1801,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Cloth Cap''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fCloth Cap",color:16768959,Lore:["§9Cloth Armor"]}}'''
+			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Cap"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1603,7 +1810,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Cloth Shirt''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fCloth Shirt",color:16768959,Lore:["§9Cloth Armor"]}}'''
+			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Shirt"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1612,7 +1819,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Cloth Pants''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fCloth Pants",color:16768959,Lore:["§9Cloth Armor"]}}'''
+			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1621,7 +1828,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Cloth Shoes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fCloth Shoes",color:16768959,Lore:["§9Cloth Armor"]}}'''
+			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1639,7 +1846,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Concentrated Experience''',
 		},
 		[
-			"nbt", "replace", ur'''{HideFlags:1,display:{Name:"§6Concentrated Experience",Lore:["§7Worth 8 enchanting bottles"]},ench:[{id:48s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s}],HideFlags:1,display:{Lore:["§7Worth 8 enchanting bottles"],Name:"§6Concentrated Experience"}}'''
 		]
 	],
 	[
@@ -1711,7 +1918,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Vicious Thorn''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fVicious Thorn",Lore:["§8King's Valley : Tier IV"]},ench:[{id:16s,lvl:2s},{id:70s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fVicious Thorn"}}'''
 		]
 	],
 	[
@@ -1720,7 +1927,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Godwood Sword''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fGodwood Sword",Lore:["§8King's Valley : Tier IV"]},ench:[{id:34s,lvl:2s},{id:20s,lvl:2s},{id:17s,lvl:2s},{id:19s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fGodwood Sword"}}'''
 		]
 	],
 	[
@@ -1729,7 +1936,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Druidic Broadsword''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fDruidic Broadsword",Lore:["§8King's Valley : Tier IV"]},ench:[{id:34s,lvl:2s},{id:20s,lvl:2s},{id:22s,lvl:2s},{id:16s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:20s},{lvl:2s,id:22s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDruidic Broadsword"}}'''
 		]
 	],
 	[
@@ -1738,7 +1945,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ponderous Branch''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fPonderous Branch",Lore:["§8King's Valley : Tier IV"]},ench:[{id:16s,lvl:1s},{id:19s,lvl:2s},{id:34s,lvl:4s},{id:17s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:4s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fPonderous Branch"}}'''
 		]
 	],
 	[
@@ -1747,7 +1954,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Nest's Bane''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fNest's Bane",Lore:["§8King's Valley : Tier IV"]},ench:[{id:17s,lvl:1s},{id:34s,lvl:1s},{id:16s,lvl:1s},{id:32s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fNest's Bane"}}'''
 		]
 	],
 	[
@@ -1756,7 +1963,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Officer's Blade''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fOfficer's Blade",Lore:["§8King's Valley : Tier IV"]},ench:[{id:22s,lvl:1s},{id:16s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fOfficer's Blade"}}'''
 		]
 	],
 	[
@@ -1765,7 +1972,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Infernal Dagger''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fInfernal Dagger",Lore:["§8King's Valley : Tier IV"]},ench:[{id:20s,lvl:2s},{id:19s,lvl:1s},{id:17s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fInfernal Dagger"}}'''
 		]
 	],
 	[
@@ -1774,7 +1981,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Masterwork Sabre''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fMasterwork Sabre",Lore:["§8King's Valley : Tier IV"]},ench:[{id:16s,lvl:1s},{id:34s,lvl:5s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:5s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fMasterwork Sabre"}}'''
 		]
 	],
 	[
@@ -1801,7 +2008,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Falling Comet''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fFalling Comet",Lore:["§8King's Valley : Tier IV"]},ench:[{id:20s,lvl:3s},{id:16s,lvl:3s},{id:34s,lvl:2s},{id:17s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:34s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fFalling Comet"}}'''
 		]
 	],
 	[
@@ -1810,7 +2017,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Deforester''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fDeforester",Lore:["§8King's Valley : Tier IV"]},ench:[{id:32s,lvl:4s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDeforester"}}'''
 		]
 	],
 	[
@@ -1819,7 +2026,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Cutter''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fCutter",Lore:["§8King's Valley : Tier IV"]},ench:[{id:34s,lvl:2s},{id:32s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fCutter"}}'''
 		]
 	],
 	[
@@ -1828,7 +2035,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Divine Cleaver''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fDivine Cleaver",Lore:["§8King's Valley : Tier IV"]},ench:[{id:21s,lvl:1s},{id:17s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:1s,id:21s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDivine Cleaver"}}'''
 		]
 	],
 	[
@@ -1837,7 +2044,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Battle Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBattle Axe",Lore:["§8King's Valley : Tier IV"]},ench:[{id:34s,lvl:3s},{id:16s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBattle Axe"}}'''
 		]
 	],
 	[
@@ -1846,7 +2053,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Bluescourge Chisel''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBluescourge Chisel",Lore:["§8King's Valley : Tier IV"]},ench:[{id:32s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBluescourge Chisel"}}'''
 		]
 	],
 	[
@@ -1855,7 +2062,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Coal Devourer''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fCoal Devourer",Lore:["§8King's Valley : Tier IV"]},ench:[{id:35s,lvl:4s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:4s,id:35s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fCoal Devourer"}}'''
 		]
 	],
 	[
@@ -1864,7 +2071,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Balanced Adze''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBalanced Adze",Lore:["§8King's Valley : Tier IV"]},ench:[{id:32s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBalanced Adze"}}'''
 		]
 	],
 	[
@@ -1873,7 +2080,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Bountiful Chisel''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBountiful Chisel",Lore:["§8King's Valley : Tier IV"]},ench:[{id:35s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:35s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBountiful Chisel"}}'''
 		]
 	],
 	[
@@ -1882,7 +2089,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Rebel's Scythe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fRebel's Scythe",Lore:["§8King's Valley : Tier IV"]},ench:[{id:16s,lvl:5s},{id:17s,lvl:1s},{id:21s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:2s,id:21s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fRebel's Scythe"}}'''
 		]
 	],
 	[
@@ -1891,7 +2098,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ironwrought Shield''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.knockbackResistance",Name:"generic.knockbackResistance",Amount:0.25d,Operation:0,UUIDLeast:816028l,UUIDMost:477084l,Slot:"offhand"}],display:{Name:"§fIronwrought Shield",Lore:["§8King's Valley : Tier IV"]}}'''
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Tier IV"],Name:"§fIronwrought Shield"},AttributeModifiers:[{UUIDMost:477084l,UUIDLeast:816028l,Amount:0.25d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"}]}'''
 		]
 	],
 	[
@@ -1909,7 +2116,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Pyromancer's Bow''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fPyromancer's Bow",Lore:["§8King's Valley : Tier IV"]},ench:[{id:50s,lvl:1s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:50s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fPyromancer's Bow"}}'''
 		]
 	],
 	[
@@ -1918,7 +2125,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Composite Bow''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fComposite Bow",Lore:["§8King's Valley : Tier IV"]},ench:[{id:48s,lvl:1s},{id:49s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:1s,id:49s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fComposite Bow"}}'''
 		]
 	],
 	[
@@ -1927,7 +2134,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Gardener''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fGardener",Lore:["§8King's Valley : Tier IV"]},ench:[{id:32s,lvl:3s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fGardener"}}'''
 		]
 	],
 	[
@@ -1936,7 +2143,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Journeyman's Staff''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fJourneyman's Staff",Lore:["§8* Magic Wand *","§8King's Valley : Tier IV"]},ench:[{id:19s,lvl:1s},{id:20s,lvl:2s},{id:16s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier IV"],Name:"§fJourneyman's Staff"}}'''
 		]
 	],
 	[
@@ -1945,7 +2152,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Shaman's Staff''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fShaman's Staff",Lore:["§8* Magic Wand *","§8King's Valley : Tier IV"]},ench:[{id:18s,lvl:2s},{id:19s,lvl:1s},{id:16s,lvl:4s},{id:71s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:18s},{lvl:1s,id:19s},{lvl:1s,id:71s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier IV"],Name:"§fShaman's Staff"}}'''
 		]
 	],
 	[
@@ -1954,7 +2161,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Cerulean Mage Hat''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fCerulean Mage Hat",color:5214175,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:1s},{id:1s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:1s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Hat"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1963,7 +2170,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Cerulean Mage Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fCerulean Mage Robes",color:5214175,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:1s},{id:4s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Robes"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1972,7 +2179,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Cerulean Mage Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fCerulean Mage Robes",color:5214175,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:1s},{id:3s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Robes"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1981,7 +2188,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Cerulean Mage Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fCerulean Mage Robes",color:5214175,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:1s},{id:2s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Robes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1990,7 +2197,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Molten Hood''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fMolten Hood",color:16756736,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:1s,lvl:5s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Hood"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -1999,7 +2206,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Molten Cloak''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fMolten Cloak",color:16756736,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:1s,lvl:5s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2008,7 +2215,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Molten Pants''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fMolten Pants",color:16756736,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:1s,lvl:5s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2017,7 +2224,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Molten Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fMolten Boots",color:16756736,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:1s,lvl:5s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2026,7 +2233,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Choleric Helm''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fCholeric Helm",color:6356736,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:4s},{id:7s,lvl:5s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2035,7 +2242,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Choleric Cloak''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fCholeric Cloak",color:6356736,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:4s},{id:7s,lvl:5s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2044,7 +2251,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Choleric Leggings''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fCholeric Leggings",color:6356736,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:4s},{id:7s,lvl:5s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Leggings"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2053,7 +2260,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Choleric Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fCholeric Boots",color:6356736,Lore:["§9Cloth Armor","§8King's Valley : Tier IV"]},ench:[{id:0s,lvl:2s},{id:34s,lvl:4s},{id:7s,lvl:5s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2098,7 +2305,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Brigand's Coif''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBrigand's Coif",color:8425600,Lore:["§bLeather Armor","§8King's Valley : Tier IV"]},ench:[{id:34s,lvl:1s},{id:4s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Coif"}}'''
 		]
 	],
 	[
@@ -2107,7 +2314,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Brigand's Tunic''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBrigand's Tunic",color:8425600,Lore:["§bLeather Armor","§8King's Valley : Tier IV"]},ench:[{id:34s,lvl:1s},{id:4s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Tunic"}}'''
 		]
 	],
 	[
@@ -2116,7 +2323,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Brigand's Trousers''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBrigand's Trousers",color:8425600,Lore:["§bLeather Armor","§8King's Valley : Tier IV"]},ench:[{id:34s,lvl:1s},{id:4s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Trousers"}}'''
 		]
 	],
 	[
@@ -2125,7 +2332,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Brigand's Shoes''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fBrigand's Shoes",color:8425600,Lore:["§bLeather Armor","§8King's Valley : Tier IV"]},ench:[{id:34s,lvl:1s},{id:4s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Shoes"}}'''
 		]
 	],
 	[
@@ -2134,7 +2341,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Gemcrust Coif''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fGemcrust Coif",color:16711935,Lore:["§bLeather Armor","§8King's Valley : Tier IV"]},ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Coif"}}'''
 		]
 	],
 	[
@@ -2143,7 +2350,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Gemcrust Vest''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fGemcrust Vest",color:16711935,Lore:["§bLeather Armor","§8King's Valley : Tier IV"]},ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Vest"}}'''
 		]
 	],
 	[
@@ -2152,7 +2359,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Gemcrust Pants''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fGemcrust Pants",color:16711935,Lore:["§bLeather Armor","§8King's Valley : Tier IV"]},ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Pants"}}'''
 		]
 	],
 	[
@@ -2161,7 +2368,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Gemcrust Shoes''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fGemcrust Shoes",color:16711935,Lore:["§bLeather Armor","§8King's Valley : Tier IV"]},ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Shoes"}}'''
 		]
 	],
 	[
@@ -2224,7 +2431,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Keeper of the Jungle''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],HideFlags:32,BlockEntityTag:{Patterns:[{Pattern:"ss",Color:2},{Pattern:"flo",Color:2},{Pattern:"bri",Color:2}],Base:3},display:{Lore:["§eKing's Valley : Rare"],Name:"§2§lKeeper of the Jungle"},AttributeModifiers:[{UUIDMost:9006655014927177l,UUIDLeast:4782782479127341l,Amount:1d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],HideFlags:32,BlockEntityTag:{Base:3,Patterns:[{Color:2,Pattern:"ss"},{Color:2,Pattern:"flo"},{Color:2,Pattern:"bri"}]},display:{Lore:["§eKing's Valley : Rare"],Name:"§2§lKeeper of the Jungle"},AttributeModifiers:[{UUIDMost:9006655014927177l,UUIDLeast:4782782479127341l,Amount:1d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2242,7 +2449,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ironwood Blade''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fIronwood Blade",Lore:["§8King's Valley : Tier I"]},ench:[{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fIronwood Blade"}}'''
 		]
 	],
 	[
@@ -2251,7 +2458,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Carved Dagger''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fCarved Dagger",Lore:["§8King's Valley : Tier I"]},ench:[{id:16s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fCarved Dagger"}}'''
 		]
 	],
 	[
@@ -2260,7 +2467,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Oaken Broadsword''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fOaken Broadsword",Lore:["§8King's Valley : Tier I"]},ench:[{id:22s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fOaken Broadsword"}}'''
 		]
 	],
 	[
@@ -2269,7 +2476,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Scorching Splinter''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fScorching Splinter",Lore:["§8King's Valley : Tier I"]},ench:[{id:20s,lvl:1s},{id:19s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:20s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fScorching Splinter"}}'''
 		]
 	],
 	[
@@ -2278,7 +2485,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Flensing Knife''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fFlensing Knife",Lore:["§8King's Valley : Tier I"]},ench:[{id:18s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:18s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fFlensing Knife"}}'''
 		]
 	],
 	[
@@ -2287,7 +2494,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hunter's Stake''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fHunter's Stake",Lore:["§8King's Valley : Tier I"]},ench:[{id:17s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fHunter's Stake"}}'''
 		]
 	],
 	[
@@ -2305,7 +2512,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Swiftwood Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSwiftwood Axe",Lore:["§8King's Valley : Tier I"]},ench:[{id:32s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSwiftwood Axe"}}'''
 		]
 	],
 	[
@@ -2314,7 +2521,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Squire's Hammer''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSquire's Hammer",Lore:["§8King's Valley : Tier I"]},ench:[{id:16s,lvl:2s},{id:19s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSquire's Hammer"}}'''
 		]
 	],
 	[
@@ -2323,7 +2530,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Smoldering Hatchet''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSmoldering Hatchet",Lore:["§8King's Valley : Tier I"]},ench:[{id:20s,lvl:1s},{id:19s,lvl:1s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSmoldering Hatchet"}}'''
 		]
 	],
 	[
@@ -2332,7 +2539,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Swiftwood Pickaxe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSwiftwood Pickaxe",Lore:["§8King's Valley : Tier I"]},ench:[{id:32s,lvl:1s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSwiftwood Pickaxe"}}'''
 		]
 	],
 	[
@@ -2341,7 +2548,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Lucky Pick''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fLucky Pick",Lore:["§8King's Valley : Tier I"]},ench:[{id:35s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:35s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fLucky Pick"}}'''
 		]
 	],
 	[
@@ -2350,7 +2557,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ironwood Pick''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fIronwood Pick",Lore:["§8King's Valley : Tier I"]},ench:[{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fIronwood Pick"}}'''
 		]
 	],
 	[
@@ -2359,7 +2566,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Swiftwood Shovel''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fSwiftwood Shovel",Lore:["§8King's Valley : Tier I"]},ench:[{id:32s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSwiftwood Shovel"}}'''
 		]
 	],
 	[
@@ -2368,7 +2575,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Novice's Fishing Rod''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fNovice's Fishing Rod",Lore:["§8King's Valley : Tier I"]},ench:[{id:34s,lvl:1s},{id:62s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:62s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fNovice's Fishing Rod"}}'''
 		]
 	],
 	[
@@ -2377,7 +2584,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Weak Wand''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fWeak Wand",Lore:["§8* Magic Wand *","§8King's Valley : Tier I"]},ench:[{id:19s,lvl:1s},{id:20s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:20s},{lvl:1s,id:19s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier I"],Name:"§fWeak Wand"}}'''
 		]
 	],
 	[
@@ -2386,7 +2593,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Weak Shield''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§fWeak Shield",Lore:["§8King's Valley : Tier I"]}}'''
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Tier I"],Name:"§fWeak Shield"}}'''
 		]
 	],
 	[
@@ -2395,7 +2602,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Sturdy Cloth Cap''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fSturdy Cloth Cap",color:16768959,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Cap"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2404,7 +2611,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Sturdy Cloth Shirt''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fSturdy Cloth Shirt",color:16768959,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Shirt"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2413,7 +2620,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Sturdy Cloth Pants''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fSturdy Cloth Pants",color:16768959,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2422,7 +2629,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Sturdy Cloth Shoes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fSturdy Cloth Shoes",color:16768959,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2431,7 +2638,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Infused Cloth Helm''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fInfused Cloth Helm",color:16752543,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:0s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2440,7 +2647,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Infused Cloth Cloak''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fInfused Cloth Cloak",color:16752543,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:0s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2449,7 +2656,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Infused Cloth Leggings''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fInfused Cloth Leggings",color:16752543,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:0s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Leggings"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2458,7 +2665,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Infused Cloth Shoes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fInfused Cloth Shoes",color:16752543,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:0s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2467,7 +2674,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Padded Cloth Coif''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fPadded Cloth Coif",color:10461087,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:4s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Coif"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2476,7 +2683,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Padded Cloth Tunic''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fPadded Cloth Tunic",color:10461087,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:4s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2485,7 +2692,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Padded Cloth Trousers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fPadded Cloth Trousers",color:10461087,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:4s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2494,7 +2701,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Padded Cloth Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fPadded Cloth Boots",color:10461087,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:4s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2503,7 +2710,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Leafweave Veil''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fLeafweave Veil",color:12582847,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:1s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Veil"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2512,7 +2719,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Leafweave Vest''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fLeafweave Vest",color:12582847,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:1s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2521,7 +2728,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Leafweave Trousers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fLeafweave Trousers",color:12582847,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:1s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2530,7 +2737,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Leafweave Sandals''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fLeafweave Sandals",color:12582847,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:1s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Sandals"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2539,7 +2746,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Binding Coif''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fBinding Coif",color:4194304,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:0s,lvl:1s},{id:4s,lvl:1s},{id:10s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Coif"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2548,7 +2755,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Binding Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fBinding Robes",color:4194304,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:0s,lvl:1s},{id:4s,lvl:1s},{id:10s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Robes"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2557,7 +2764,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Binding Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fBinding Robes",color:4194304,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:0s,lvl:1s},{id:4s,lvl:1s},{id:10s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Robes"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2566,7 +2773,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Binding Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fBinding Boots",color:4194304,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:0s,lvl:1s},{id:4s,lvl:1s},{id:10s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2575,7 +2782,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hobnailed Helm''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§fHobnailed Helm",color:7393328,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:3s,lvl:1s},{id:7s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2584,7 +2791,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hobnailed Vest''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§fHobnailed Vest",color:7393328,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:3s,lvl:1s},{id:7s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2593,7 +2800,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hobnailed Leggings''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§fHobnailed Leggings",color:7393328,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:3s,lvl:1s},{id:7s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Leggings"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2602,7 +2809,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hobnailed Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§fHobnailed Boots",color:7393328,Lore:["§9Cloth Armor","§8King's Valley : Tier I"]},ench:[{id:3s,lvl:1s},{id:7s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -2665,7 +2872,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Boreas Greaves''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:2s},{lvl:5s,id:34s},{lvl:3s,id:4s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:13100779,Name:"§9§lBoreas Greaves"},AttributeModifiers:[{UUIDMost:459286l,UUIDLeast:392956l,Amount:0.1d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:428915l,UUIDLeast:855359l,Amount:2d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:277302l,UUIDLeast:24984l,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackSpeed",Operation:1,Name:"generic.attackSpeed"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:5s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare"],color:13100779,Name:"§9§lBoreas Greaves"},AttributeModifiers:[{UUIDMost:459286l,UUIDLeast:392956l,Amount:0.1d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:428915l,UUIDLeast:855359l,Amount:2d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:277302l,UUIDLeast:24984l,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackSpeed",Operation:1,Name:"generic.attackSpeed"}]}'''
 		]
 	],
 	[
@@ -2683,7 +2890,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Thaumaturge's Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:8s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:7833547,Name:"§fThaumaturge's Robes"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:3s,id:0s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:7833547,Name:"§fThaumaturge's Robes"}}'''
 		]
 	],
 	[
@@ -2719,7 +2926,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Bloody Thorn''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aBloody Thorn",Lore:["§8King's Valley : Tier V"]},ench:[{id:16s,lvl:2s},{id:19s,lvl:1s},{id:70s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBloody Thorn"}}'''
 		]
 	],
 	[
@@ -2728,7 +2935,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Eternal Crescent''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aEternal Crescent",Lore:["§8King's Valley : Tier V"]},ench:[{id:16s,lvl:1s},{id:22s,lvl:3s},{id:70s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:70s},{lvl:3s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aEternal Crescent"}}'''
 		]
 	],
 	[
@@ -2737,7 +2944,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Macuahuitl''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aMacuahuitl",Lore:["§8King's Valley : Tier V"]},ench:[{id:16s,lvl:5s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMacuahuitl"}}'''
 		]
 	],
 	[
@@ -2746,7 +2953,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Reliable Longsword''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aReliable Longsword",Lore:["§8King's Valley : Tier V"]},ench:[{id:34s,lvl:1s},{id:22s,lvl:2s},{id:16s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aReliable Longsword"}}'''
 		]
 	],
 	[
@@ -2755,7 +2962,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Versatile Cutlass''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aVersatile Cutlass",Lore:["§8King's Valley : Tier V"]},ench:[{id:17s,lvl:1s},{id:18s,lvl:1s},{id:22s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:18s},{lvl:1s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aVersatile Cutlass"}}'''
 		]
 	],
 	[
@@ -2764,7 +2971,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Molten Rapier''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aMolten Rapier",Lore:["§8King's Valley : Tier V"]},ench:[{id:16s,lvl:1s},{id:20s,lvl:2s},{id:17s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMolten Rapier"}}'''
 		]
 	],
 	[
@@ -2773,7 +2980,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Polished Gladius''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aPolished Gladius",Lore:["§8King's Valley : Tier V"]},ench:[{id:16s,lvl:1s},{id:34s,lvl:3s},{id:19s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:3s,id:34s},{lvl:3s,id:19s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aPolished Gladius"}}'''
 		]
 	],
 	[
@@ -2800,7 +3007,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Blessed Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aBlessed Axe",Lore:["§8King's Valley : Tier V"]},ench:[{id:32s,lvl:3s},{id:34s,lvl:4s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:4s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBlessed Axe"}}'''
 		]
 	],
 	[
@@ -2809,7 +3016,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Crushing Mace''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aCrushing Mace",Lore:["§8King's Valley : Tier V"]},ench:[{id:16s,lvl:2s},{id:17s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aCrushing Mace"}}'''
 		]
 	],
 	[
@@ -2818,7 +3025,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Phoenix Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aPhoenix Axe",Lore:["§8King's Valley : Tier V"]},ench:[{id:19s,lvl:2s},{id:20s,lvl:3s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aPhoenix Axe"}}'''
 		]
 	],
 	[
@@ -2827,7 +3034,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Soulhammer''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aSoulhammer",Lore:["§8King's Valley : Tier V"]},ench:[{id:16s,lvl:1s},{id:19s,lvl:1s},{id:70s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aSoulhammer"}}'''
 		]
 	],
 	[
@@ -2836,7 +3043,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Evanescent''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aEvanescent",Lore:["§8King's Valley : Tier V"]},ench:[{id:32s,lvl:4s},{id:71s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:1s,id:71s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aEvanescent"}}'''
 		]
 	],
 	[
@@ -2845,7 +3052,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Undying Chisel''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aUndying Chisel",Lore:["§8King's Valley : Tier V"]},ench:[{id:32s,lvl:1s},{id:70s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aUndying Chisel"}}'''
 		]
 	],
 	[
@@ -2854,7 +3061,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Truerune Pick''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aTruerune Pick",Lore:["§8King's Valley : Tier V"]},ench:[{id:35s,lvl:4s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:4s,id:35s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aTruerune Pick"}}'''
 		]
 	],
 	[
@@ -2863,7 +3070,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Undying Trowel''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aUndying Trowel",Lore:["§8King's Valley : Tier V"]},ench:[{id:32s,lvl:3s},{id:70s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aUndying Trowel"}}'''
 		]
 	],
 	[
@@ -2872,7 +3079,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Executioner's Scythe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aExecutioner's Scythe",Lore:["§8King's Valley : Tier V"]},ench:[{id:16s,lvl:5s},{id:17s,lvl:2s},{id:21s,lvl:2s},{id:34s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:17s},{lvl:2s,id:34s},{lvl:2s,id:21s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aExecutioner's Scythe"}}'''
 		]
 	],
 	[
@@ -2881,7 +3088,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Swiftwood Buckler''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{UUIDMost:3799174595893871670l,UUIDLeast:-8604776829862673178l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}],display:{Name:"§aSwiftwood Buckler",Lore:["§8King's Valley : Tier V"]}}'''
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Tier V"],Name:"§aSwiftwood Buckler"},AttributeModifiers:[{UUIDMost:3799174595893871670l,UUIDLeast:-8604776829862673178l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -2890,7 +3097,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Blazing Crossbow''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aBlazing Crossbow",Lore:["§8King's Valley : Tier V"]},ench:[{id:49s,lvl:2s},{id:50s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:49s},{lvl:1s,id:50s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBlazing Crossbow"}}'''
 		]
 	],
 	[
@@ -2899,7 +3106,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Korbaran Shortbow''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aKorbaran Shortbow",Lore:["§8King's Valley : Tier V"]},ench:[{id:48s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:48s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aKorbaran Shortbow"}}'''
 		]
 	],
 	[
@@ -2908,7 +3115,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Mermaid's Touch''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aMermaid's Touch",Lore:["§8King's Valley : Tier V"]},ench:[{id:70s,lvl:1s},{id:62s,lvl:4s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:62s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMermaid's Touch"}}'''
 		]
 	],
 	[
@@ -2917,7 +3124,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Pyromancer's Staff''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aPyromancer's Staff",Lore:["§8* Magic Wand *","§8King's Valley : Tier V"]},ench:[{id:17s,lvl:1s},{id:20s,lvl:3s},{id:16s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:17s},{lvl:3s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier V"],Name:"§aPyromancer's Staff"}}'''
 		]
 	],
 	[
@@ -2926,7 +3133,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Wand of Storms''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:3s,id:19s},{lvl:1s,id:20s}],display:{Name:"§aWand of Storms",Lore:["§8* Magic Wand *","§8King's Valley : Tier V"]},AttributeModifiers:[{UUIDMost:120619l,UUIDLeast:372763l,Amount:0.07d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:3s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier V"],Name:"§aWand of Storms"},AttributeModifiers:[{UUIDMost:120619l,UUIDLeast:372763l,Amount:0.07d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
 		]
 	],
 	[
@@ -2935,7 +3142,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Nereid Cap''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aNereid Cap",color:1073407,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:2s},{id:4s,lvl:1s},{id:6s,lvl:1s},{id:5s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s},{lvl:1s,id:5s},{lvl:1s,id:6s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Cap"}}'''
 		]
 	],
 	[
@@ -2944,7 +3151,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Nereid Tunic''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aNereid Tunic",color:1073407,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:2s},{id:4s,lvl:1s},{id:8s,lvl:1s},{id:5s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s},{lvl:1s,id:5s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Tunic"}}'''
 		]
 	],
 	[
@@ -2953,7 +3160,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Nereid Leggings''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aNereid Leggings",color:1073407,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:2s},{id:4s,lvl:1s},{id:8s,lvl:1s},{id:5s,lvl:1s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s},{lvl:1s,id:5s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Leggings"}}'''
 		]
 	],
 	[
@@ -2962,7 +3169,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Nereid Sandals''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aNereid Sandals",color:1073407,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:2s},{id:4s,lvl:1s},{id:8s,lvl:2s},{id:34s,lvl:1s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:8s},{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Sandals"}}'''
 		]
 	],
 	[
@@ -2971,7 +3178,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hardened Leather Cap''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aHardened Leather Cap",color:10506272,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:1s},{id:3s,lvl:3s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Cap"}}'''
 		]
 	],
 	[
@@ -2980,7 +3187,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hardened Leather Tunic''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aHardened Leather Tunic",color:10506272,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:1s},{id:3s,lvl:3s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Tunic"}}'''
 		]
 	],
 	[
@@ -2989,7 +3196,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hardened Leather Pants''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aHardened Leather Pants",color:10506272,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:1s},{id:3s,lvl:3s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Pants"}}'''
 		]
 	],
 	[
@@ -2998,7 +3205,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Hardened Leather Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aHardened Leather Boots",color:10506272,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:1s},{id:3s,lvl:3s},{id:34s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Boots"}}'''
 		]
 	],
 	[
@@ -3007,7 +3214,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Scout's Leathers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.movementSpeed",Name:"generic.movementSpeed",Amount:0.03d,Operation:1,UUIDLeast:277777l,UUIDMost:692165l,Slot:"head"},{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:277777l,UUIDMost:692165l,Slot:"head"}],display:{Name:"§aScout's Leathers",color:10240,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:34s,lvl:1s},{id:0s,lvl:2s},{id:4s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:692165l,UUIDLeast:277777l,Amount:0.03d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:692165l,UUIDLeast:277777l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -3016,7 +3223,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Scout's Leathers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.movementSpeed",Name:"generic.movementSpeed",Amount:0.03d,Operation:1,UUIDLeast:297777l,UUIDMost:752165l,Slot:"chest"},{AttributeName:"generic.armor",Name:"generic.armor",Amount:3.0d,Operation:0,UUIDLeast:297777l,UUIDMost:752165l,Slot:"chest"}],display:{Name:"§aScout's Leathers",color:10240,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:34s,lvl:1s},{id:0s,lvl:2s},{id:4s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:752165l,UUIDLeast:297777l,Amount:0.03d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:752165l,UUIDLeast:297777l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -3025,7 +3232,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Scout's Leathers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.movementSpeed",Name:"generic.movementSpeed",Amount:0.03d,Operation:1,UUIDLeast:337777l,UUIDMost:732165l,Slot:"legs"},{AttributeName:"generic.armor",Name:"generic.armor",Amount:2.0d,Operation:0,UUIDLeast:337777l,UUIDMost:764261l,Slot:"legs"}],display:{Name:"§aScout's Leathers",color:10240,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:34s,lvl:1s},{id:0s,lvl:2s},{id:4s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:732165l,UUIDLeast:337777l,Amount:0.03d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:764261l,UUIDLeast:337777l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -3034,7 +3241,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Scout's Leathers''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.movementSpeed",Name:"generic.movementSpeed",Amount:0.03d,Operation:1,UUIDLeast:237777l,UUIDMost:632165l,Slot:"feet"},{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:237777l,UUIDMost:632165l,Slot:"feet"}],display:{Name:"§aScout's Leathers",color:10240,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:34s,lvl:1s},{id:0s,lvl:2s},{id:2s,lvl:3s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:3s,id:2s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:632165l,UUIDLeast:237777l,Amount:0.03d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:632165l,UUIDLeast:237777l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -3043,7 +3250,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Soulleather Veil''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aSoulleather Veil",color:16777215,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:70s,lvl:1s},{id:71s,lvl:1s},{id:0s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Veil"}}'''
 		]
 	],
 	[
@@ -3052,7 +3259,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Soulleather Cloak''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aSoulleather Cloak",color:16777215,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:70s,lvl:1s},{id:71s,lvl:1s},{id:0s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Cloak"}}'''
 		]
 	],
 	[
@@ -3061,7 +3268,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Soulleather Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aSoulleather Robe",color:16777215,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:70s,lvl:1s},{id:71s,lvl:1s},{id:0s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Robe"}}'''
 		]
 	],
 	[
@@ -3070,7 +3277,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Soulleather Shoes''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Name:"§aSoulleather Shoes",color:16777215,Lore:["§bLeather Armor","§8King's Valley : Tier V"]},ench:[{id:70s,lvl:1s},{id:71s,lvl:1s},{id:0s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Shoes"}}'''
 		]
 	],
 	[
@@ -3079,7 +3286,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Viridian Mage Hat''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:803793l,UUIDMost:260399l,Slot:"head"}],display:{Name:"§aViridian Mage Hat",color:1105920,Lore:["§9Cloth Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:3s},{id:34s,lvl:1s},{id:1s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:2s,id:1s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Hat"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -3088,7 +3295,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Viridian Mage Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.5d,Operation:0,UUIDLeast:903793l,UUIDMost:270399l,Slot:"chest"}],display:{Name:"§aViridian Mage Robes",color:1105920,Lore:["§9Cloth Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:3s},{id:34s,lvl:1s},{id:4s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Robes"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -3097,7 +3304,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Viridian Mage Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:1.0d,Operation:0,UUIDLeast:1003793l,UUIDMost:280399l,Slot:"legs"}],display:{Name:"§aViridian Mage Robes",color:1105920,Lore:["§9Cloth Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:3s},{id:34s,lvl:1s},{id:3s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Robes"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -3106,7 +3313,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Viridian Mage Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{AttributeModifiers:[{AttributeName:"generic.armor",Name:"generic.armor",Amount:0.75d,Operation:0,UUIDLeast:1103793l,UUIDMost:290399l,Slot:"feet"}],display:{Name:"§aViridian Mage Robes",color:1105920,Lore:["§9Cloth Armor","§8King's Valley : Tier V"]},ench:[{id:0s,lvl:3s},{id:34s,lvl:1s},{id:2s,lvl:2s}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Robes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -3115,7 +3322,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Dualsun Hood''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:0s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Hood"},AttributeModifiers:[{UUIDMost:3410419544452450231l,UUIDLeast:-5482257300623082461l,Amount:1.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-7224057274751827505l,UUIDLeast:-6818848218977621316l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Hood"},AttributeModifiers:[{UUIDMost:3410419544452450231l,UUIDLeast:-5482257300623082461l,Amount:1.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-7224057274751827505l,UUIDLeast:-6818848218977621316l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -3124,7 +3331,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Dualsun Cloak''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:0s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Cloak"},AttributeModifiers:[{UUIDMost:-895514479119021132l,UUIDLeast:-6538819203639619634l,Amount:1.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-845493126176553328l,UUIDLeast:-6934174944561962248l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Cloak"},AttributeModifiers:[{UUIDMost:-895514479119021132l,UUIDLeast:-6538819203639619634l,Amount:1.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-845493126176553328l,UUIDLeast:-6934174944561962248l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -3133,7 +3340,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Dualsun Robe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:0s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Robe"},AttributeModifiers:[{UUIDMost:-3224490652004365870l,UUIDLeast:-8490984991565425765l,Amount:1.0d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:5309333526597813727l,UUIDLeast:-8167831153772325916l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Robe"},AttributeModifiers:[{UUIDMost:-3224490652004365870l,UUIDLeast:-8490984991565425765l,Amount:1.0d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:5309333526597813727l,UUIDLeast:-8167831153772325916l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -3142,7 +3349,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Dualsun Shoes''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:0s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Shoes"},AttributeModifiers:[{UUIDMost:-1243331979226886434l,UUIDLeast:-7990746417674087296l,Amount:1.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-5110990380665716018l,UUIDLeast:-5231967837950058796l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Shoes"},AttributeModifiers:[{UUIDMost:-1243331979226886434l,UUIDLeast:-7990746417674087296l,Amount:1.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-5110990380665716018l,UUIDLeast:-5231967837950058796l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -3178,7 +3385,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Explorer's Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:8s},{lvl:1s,id:34s},{lvl:1s,id:0s}],display:{color:3445134,Name:"§fExplorer's Boots",Lore:["§bLeather Armor","§8King's Valley : Uncommon"]}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:8s},{lvl:1s,id:0s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:3445134,Name:"§fExplorer's Boots"}}'''
 		]
 	],
 	[
@@ -3187,7 +3394,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Explorer's Cap''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:5s},{lvl:1s,id:6s},{lvl:1s,id:0s}],display:{color:755048,Name:"§fExplorer's Cap",Lore:["§bLeather Armor","§8King's Valley : Uncommon"]}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:5s},{lvl:1s,id:6s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:755048,Name:"§fExplorer's Cap"}}'''
 		]
 	],
 	[
