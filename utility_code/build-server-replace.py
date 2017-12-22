@@ -32,8 +32,6 @@ configList = [{
     "itemLog":"/home/rock/tmp/items_region_1.txt",
 }]
 
-print "If you didn't edit the replacement list to remove the decayed items, hit control+C now!"
-time.sleep(5)
 terrainReset(configList)
 print "Done"
 
