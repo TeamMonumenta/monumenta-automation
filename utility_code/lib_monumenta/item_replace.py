@@ -334,7 +334,14 @@ class ReplaceItems(object):
             # tags to be sorted alphabetically.
             # TAG_Lists are never sorted.
             itemJson = itemStack.json(["id","display","Name","Lore"])
-            fakeItem = nbt.json_to_tag(itemJson)
+
+            # TODO: This try/except hides a real crash in JSON parsing - need to fix
+            try:
+                fakeItem = nbt.json_to_tag(itemJson)
+            except Exception:
+                print "Failed to parse JSON: '" + itemJson + "'"
+                return
+
             # If we put this in a sub-tag ,we need to fix it
             if "id" not in fakeItem:
                 fakeItem = fakeItem[fakeItem.keys()[0]]
