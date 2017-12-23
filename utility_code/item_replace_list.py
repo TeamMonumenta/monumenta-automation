@@ -303,6 +303,17 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         ]
     ],
 
+    [ # Entropic Skull
+        {
+            "id":"minecraft:skull",
+            "damage":0,
+            "name":u'''Entropic Skull''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:1s},{lvl:1s,id:10s},{lvl:2s,id:4s}],display:{Lore:["§8King's Valley : §6Patron Made","§8Alas poor skull, they got pwn4d"],Name:"§5§lEntropic Skull"},AttributeModifiers:[{UUIDMost:-3064219100859248973L,UUIDLeast:-8672896259970709443L,Amount:-0.08d,Slot:"head",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+        ]
+    ],
+
     ####################################
     # Helmets
 
