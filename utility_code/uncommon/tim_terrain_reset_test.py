@@ -78,7 +78,7 @@ itemReplacementsTest = item_replace.ReplaceItems([],[
     ],
 ])
 
-"""
+
 configList = [
     {
         "server":"dst_merged",
@@ -97,7 +97,7 @@ configList = [
         "blockReplacements":item_replace_list.blockReplacements,
         "blockReplaceLocations":["schematics",],
 
-        "itemReplacements":item_replace_list.itemReplacements,
+        "itemReplacements":item_replace_list.KingsValley,
         "itemReplaceLocations":["schematics","players",],
 
         "coordinatesToFill":(
@@ -124,9 +124,11 @@ configList = [
             {"name":"farm5s",     "pos1":(150,63,146), "pos2":(158,65,152), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
             {"name":"farm6l",     "pos1":(138,62,153), "pos2":(146,64,165), "replaceBlocks":True,  "replaceItems":True,  "material":(0,0), "materialName":"air"},
         ),
+
+        "itemLog":"/home/tim/Desktop/village.txt",
     },
     {
-        "server":"plots_world",
+        "server":"item_cave",
 
         "localMainFolder":"/home/tim/.minecraft/saves/Item Reset Test/",
         "localDstFolder":"/home/tim/.minecraft/saves/Item Reset dst/",
@@ -139,10 +141,12 @@ configList = [
 
         "itemReplacements":itemReplacementsTest,
         "itemReplaceLocations":["world",],
+
+        "itemLog":"/home/tim/Desktop/item_cave.txt",
     }
 ]
-"""
 
+"""
 configList = [
     {
         "server":"r1plots",
@@ -152,7 +156,7 @@ configList = [
 
         "copyBaseFrom":"main",
 
-        "itemReplacements":item_replace_list.itemReplacements,
+        "itemReplacements":item_replace_list.KingsValley,
         "itemReplaceLocations":["world",],
         "itemLog":"/home/tim/Desktop/items_r1plots.txt",
     },{
@@ -163,7 +167,7 @@ configList = [
 
         "copyBaseFrom":"main",
 
-        "itemReplacements":item_replace_list.itemReplacements,
+        "itemReplacements":item_replace_list.KingsValley,
         "itemReplaceLocations":["world",],
         "itemLog":"/home/tim/Desktop/items_betaplots.txt",
     },{
@@ -174,12 +178,12 @@ configList = [
 
         "copyBaseFrom":"main",
 
-        "itemReplacements":item_replace_list.itemReplacements,
+        "itemReplacements":item_replace_list.KingsValley,
         "itemReplaceLocations":["world",],
         "itemLog":"/home/tim/Desktop/items_region_1.txt",
     }
 ]
-
+"""
 #shutil.rmtree("/home/tim/.minecraft/saves/dst", ignore_errors=True)
 #shutil.rmtree("/home/tim/.minecraft/saves/Item Reset dst", ignore_errors=True)
 shutil.rmtree("/home/tim/.minecraft/saves/Project_Epic-r1plots_post/", ignore_errors=True)
