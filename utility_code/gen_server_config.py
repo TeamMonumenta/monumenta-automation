@@ -154,6 +154,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"questCompassEnabled":', '"questCompassEnabled": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
+        {"name":"Arena", "type":"AdventureZone", "pos1":"-966 0 -124", "pos2":"-926 256 -84"},
         {"name":"Capital", "type":"Capital", "pos1":"-1130 0 -284", "pos2":"-498 256 344"},
 
         {"name":"Nyr", "type":"SafeZone", "pos1":"-181 0 -166", "pos2":"-79 256 14"},
