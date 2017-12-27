@@ -261,6 +261,9 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     ############################################################################
     # Oh dear, these shouldn't be in the build world...
 
+    # You see nothing!
+    [{"id":"minecraft:elytra",},["remove",]],
+
     [
         {"any":[
             {"name":u"How the fuck did you get back here?"},
