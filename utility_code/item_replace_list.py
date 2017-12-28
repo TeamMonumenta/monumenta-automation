@@ -306,17 +306,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         ]
     ],
 
-    [ # Entropic Skull
-        {
-            "id":"minecraft:skull",
-            "damage":0,
-            "name":u'''Entropic Skull''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:1s},{lvl:1s,id:10s},{lvl:2s,id:4s}],display:{Lore:["§8King's Valley : §6Patron Made","§8Alas poor skull, they got pwn4d"],Name:"§5§lEntropic Skull"},AttributeModifiers:[{UUIDMost:-3064219100859248973L,UUIDLeast:-8672896259970709443L,Amount:-0.08d,Slot:"head",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
-        ]
-    ],
-
     ####################################
     # Helmets
 
@@ -376,17 +365,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:11206656,Name:"§4§lInfernal Robe"},AttributeModifiers:[{UUIDMost:-3906240411837903389L,UUIDLeast:-7890992669234016346L,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:5753471876015473889L,UUIDLeast:-7352350150367536802L,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
-        ]
-    ],
-
-    # Busty's Hotter Pants
-    [
-        {
-            "id":"minecraft:leather_leggings",
-            "name":u'''Busty's Hotter Pants''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:4s,id:1s},{lvl:4s,id:3s},{lvl:1s,id:70s}],display:{Lore:["§bLeather Armor","§eKing's Valley : §lEnhanced Rare","§fThe legs are flaming with stress!"],color:14059296,Name:"§4§lBusty's Hotter Pants"}}'''
         ]
     ],
 
@@ -549,41 +527,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         },
         [
             "nbt", "replace", ur'''{display:{Lore:["§fTurns into water when","§fplaced on a plot"],Name:"§b§lCrystalized Water"}}'''
-        ]
-    ],
-
-    # Ender Chest
-    [
-        {
-            "id":"minecraft:chest",
-            "nbt":ur'''{BlockEntityTag:{CustomName:"Ender Chest",Lock:"lockedforever"},display:{Lore:["Place me and stand on top","Only works within a player or guild plot","Avoid placing next to a regular chest","Can only be placed once!"],Name:"Ender Chest"}}''',
-        },
-        [
-            "id","minecraft:ender_chest",
-            "nbt", "replace", ur'''{display:{Lore:["Can only be placed on a plot!"]}}''',
-        ]
-    ],
-
-    # Ender Chest
-    [
-        {
-            "id":"minecraft:chest",
-            "nbt":ur'''{display:{Name:"Ender Chest",Lore:["Place me and stand on top","Only works within a plot","Can only be placed once!"]},BlockEntityTag:{CustomName:"Ender Chest",Lock:"lockedforever"}}''',
-        },
-        [
-            "id","minecraft:ender_chest",
-            "nbt", "replace", ur'''{display:{Lore:["Can only be placed on a plot!"]}}''',
-        ]
-    ],
-
-    # Ponderous Stone
-    [
-        {
-            "id":"minecraft:clay_ball",
-            "name":u'''Ponderous Stone''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Uncommon"],Name:"§6§lPonderous Stone"},AttributeModifiers:[{UUIDMost:-8784931189073293981L,UUIDLeast:-5336435319922077366L,Amount:1.0d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-3784013313986900216L,UUIDLeast:-9150198598510123427L,Amount:-0.25d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-2473186416011490271L,UUIDLeast:-6797638087243652569L,Amount:-4.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 

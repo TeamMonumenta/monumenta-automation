@@ -41,7 +41,6 @@ enchantLookup[4]  = "Projectile Protection",
 enchantLookup[48] = "Power",
 enchantLookup[49] = "Punch",
 enchantLookup[50] = "Flame",
-enchantLookup[51] = "Infinity",
 enchantLookup[5]  = "Respiration",
 enchantLookup[16] = "Sharpness",
 enchantLookup[33] = "Silk Touch",
@@ -58,6 +57,7 @@ enchantLookup[7]  = "Thorns",
 enchantLookup[20] = "Fire Aspect",
 enchantLookup[21] = "Looting",
 enchantLookup[22] = "Sweeping Edge",
+enchantLookup[51] = "Infinity",
 enchantLookup[71] = "Curse of Vanishing",
 
 # The list of overrides for the ordering above - some enchantment combinations
@@ -80,6 +80,18 @@ enchantOverride = [
 
     # Phantom's Hood
     (1, 3, 4),
+
+    # Gem Encrusted Manpance
+    (0, 8, 5, 70),
+
+    # Cerulean Mage Robes
+    (0, 4, 34),
+
+    # Busty's Hot / Hotter Pants
+    (1, 70, 3),
+
+    # Scalawag's Hatchet
+    (16, 32, 34),
 
     # Nereid Gear
     # Prot / Unbreaking / Proj Prot / Respiration / Aqua Affinity
