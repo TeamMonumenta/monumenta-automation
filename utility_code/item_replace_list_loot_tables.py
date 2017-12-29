@@ -109,7 +109,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Entropic Skull''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:2s,id:4s},{lvl:2s,id:3s},{lvl:2s,id:2s},{lvl:1s,id:10s}],display:{Lore:["§8King's Valley : §6Patron Made","§8Alas poor skull, they got pwn4d"],Name:"§5§lEntropic Skull"},AttributeModifiers:[{UUIDMost:-3064219100859248973l,UUIDLeast:-8672896259970709443l,Amount:-0.08d,Slot:"head",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:1s},{lvl:2s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§8King's Valley : §6Patron Made","§8Alas poor skull, they got pwn4d"],Name:"§5§lEntropic Skull"},AttributeModifiers:[{UUIDMost:-3064219100859248973l,UUIDLeast:-8672896259970709443l,Amount:-0.08d,Slot:"head",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
