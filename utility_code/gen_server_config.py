@@ -146,8 +146,8 @@ config = {
             ('server.properties', 'server-port', 'server-port=25566'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /setblock -1449 1 -1440 redstone_block'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
             #('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
             #('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"dailyResetEnabled":', '"dailyResetEnabled": true,'),
@@ -197,8 +197,8 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25568'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.3"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
@@ -233,8 +233,8 @@ config = {
             ('server.properties', 'server-port', 'server-port=25572'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.6"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
@@ -266,8 +266,8 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25571'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.5"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
         ],
         'linked':server_config + advancements_r1 + base_plugins + build_plugins,
     },
