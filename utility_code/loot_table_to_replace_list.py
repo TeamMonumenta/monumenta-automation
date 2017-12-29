@@ -34,7 +34,7 @@ def print_tag_as_replacement(itemType, tag):
             print '\t\t{'
             print '\t\t\t"id":"' + itemType + '",'
             print '\t\t\t"name":u\'\'\'' + itemName + '\'\'\','
-            print '\t\t}'
+            print '\t\t},'
             print '\t\t['
             print '\t\t\t"nbt", "replace", ur\'\'\'' + tag + '\'\'\''
             print '\t\t]'
