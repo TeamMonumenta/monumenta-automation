@@ -87,7 +87,6 @@ configList = [{
         {"name":"Guild_24",               "pos1":( -564,   0, -192), "pos2":(-600, 255, -224), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
         {"name":"Guild_26",               "pos1":( -596,   0,  -46), "pos2":(-564, 255,  -10), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
         {"name":"Guild_27",               "pos1":( -548,   0,  -64), "pos2":(-580, 255, -100), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Arena Placeholder",      "pos1":( -1039,   0,  -208), "pos2":(-836, 255, -24), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
 
         # These are coordinates for the plots around the capital and are no longer needed, but kept just in case
         #{"name":"Plot_Pressure_Plates",   "pos1":( -719, 106, -118), "pos2":(-665, 106,  -74), "replaceBlocks":False, "replaceItems":True,  "material":( 41,  0), "materialName":"gold"},
