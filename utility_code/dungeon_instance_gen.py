@@ -5,6 +5,7 @@ import os
 import shutil
 import sys
 import multiprocessing as mp
+import psutil
 import tempfile
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
@@ -288,6 +289,10 @@ def gen_dungeon_instances(config):
         sys.exit("Template world folder does not exist.")
 
     print "Generating dungeon instances. There will be no output here until finished."
+
+    # Decrease the priority for this work so it doesn't slow down other things
+    parent = psutil.Process(os.getpid())
+    parent.nice = 10
 
     processes = []
     outputFiles = []
