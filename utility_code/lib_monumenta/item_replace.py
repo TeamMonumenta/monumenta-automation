@@ -1026,17 +1026,21 @@ class actNBT(object):
             self._nbt = nbt.json_to_tag( actionOptions.pop(0) )
 
     def run(self,itemStack,log_data):
-        # Attempt to preserve armor color and banner/shield patterns
+        ########################################
+        # Preserve cosmetics and soulbound tag
         armorColor = None
         bannerColor = None
         bannerPattern = None
+        soulbound = None
         if "tag" in itemStack:
             # armor color
-            if (
-                ("display" in itemStack["tag"]) and
-                ("color" in itemStack["tag"]["display"])
-            ):
-                armorColor = itemStack["tag"]["display"]["color"]
+            if "display" in itemStack["tag"]:
+                displayTag = itemStack["tag"]["display"]
+                if "color" in displayTag:
+                    armorColor = displayTag["color"]
+                if "Lore" in displayTag:
+                    if u"* Soulbound to " in displayTag["Lore"][-1].value:
+                        soulbound = displayTag["Lore"][-1]
             # banner/shield color/pattern
             if "BlockEntityTag" in itemStack["tag"]:
                 if "Base" in itemStack["tag"]["BlockEntityTag"]:
@@ -1044,12 +1048,15 @@ class actNBT(object):
                 if "Patterns" in itemStack["tag"]["BlockEntityTag"]:
                     bannerPattern = itemStack["tag"]["BlockEntityTag"]["Patterns"]
 
+        ########################################
         # Clear NBT if needed
         if (
                 (self._operation == "clear")
                 or (self._operation == "replace")
         ) and ("tag" in itemStack):
             itemStack.pop("tag")
+
+        ########################################
         # Set NBT if needed
         if (
                 (self._operation == "update")
@@ -1059,14 +1066,22 @@ class actNBT(object):
                 itemStack["tag"] = nbt.TAG_Compound()
             itemStack["tag"].update(self._nbt)
 
-            # restore armor/banner/shield color/patterns here;
+            ########################################
+            # restore preserved tags here
+
             # if we intended to clear their NBT, it's probably
-            # for a good reason. If we put it back, we player
-            # customizations back.
-            if armorColor is not None:
+            # for a good reason. If we put it back, we put
+            # player customizations back.
+            if (
+                (armorColor is not None) or
+                (soulbound is not None)
+            ):
                 if "display" not in itemStack["tag"]:
                     itemStack["tag"]["display"] = nbt.TAG_Compound()
-                itemStack["tag"]["display"]["color"] = armorColor
+                if armorColor is not None:
+                    itemStack["tag"]["display"]["color"] = armorColor
+                if soulbound is not None:
+                    itemStack["tag"]["display"]["Lore"].append(soulbound)
             # banner/shield color/pattern
             if (
                 (bannerColor is not None) or

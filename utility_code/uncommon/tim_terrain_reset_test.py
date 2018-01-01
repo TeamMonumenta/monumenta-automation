@@ -64,6 +64,14 @@ itemReplacementsTest = item_replace.ReplaceItems([],[
     ],
     [
         {
+            "id":"minecraft:stick",
+        },
+        [
+            "nbt","replace",ur'''{display:{Name:"Wand of Meh",Lore:["This doesn't","do much..."]}}''',
+        ]
+    ],
+    [
+        {
             "name":"Decayed Item",
         },
         [
