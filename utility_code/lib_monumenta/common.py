@@ -53,7 +53,8 @@ def replaceGlobally(world, replaceList):
         replace(world, oldBlock, newBlock)
 
 def copyFile(old, new):
-    os.remove(new)
+    if os.path.exists(new):
+        os.remove(new)
     if os.path.islink(old):
         linkto = os.readlink(old)
         os.symlink(linkto, new)

@@ -41,7 +41,7 @@ class IterEntities(object):
         "player file":<None or a player.dat file name>,
         "root entity":<entity's NBT>,
         "entity":<entity's NBT>,
-        "is block entity":<True/False/"unknown">
+        "entity type":<"entity"/"block entity"/"tile tick">
     }
 
     root entity is the nbt of the entity in the
@@ -53,6 +53,7 @@ class IterEntities(object):
     Which entities to pass to function (defaults to both)
     * "block entities" - search block entities
     * "entities" - search within entities
+    * "tile ticks" - search tile ticks (not really entities)
 
     Which entities to search inside of (root entities always searched)
     * "search item entities" - search for entities inside items
@@ -66,7 +67,8 @@ class IterEntities(object):
 
         if (
             "entities" not in searchArgs and
-            "block entities" not in searchArgs
+            "block entities" not in searchArgs and
+            "tile ticks" not in searchArgs
         ):
             searchArgs.append("entities")
             searchArgs.append("block entities")
@@ -79,38 +81,63 @@ class IterEntities(object):
             "player file":None,
             "root entity":None,
             "entity":None,
-            "is block entity":None
+            "entity type":None
         }
+
+    def InChunkTag(self,chunkTag):
+        if "Level" not in chunkTag:
+            # This chunk is invalid, skip it!
+            # It has no data.
+            return
+
+        # shallow copy this list, or we won't have entities in the world.
+        # Also, we don't need a TAG_List; a normal list is fine.
+        self._entityList = []
+        if (
+            "entities" in self._searchArgs and
+            "Entities" in chunkTag["Level"]
+        ):
+            for entity in chunkTag["Level"]["Entities"]:
+                self._entityList.append(entity)
+        if (
+            "block entities" in self._searchArgs and
+            "TileEntities" in chunkTag["Level"]
+        ):
+            for entity in chunkTag["Level"]["TileEntities"]:
+                self._entityList.append(entity)
+        if (
+            "tile ticks" in self._searchArgs and
+            "TileTicks" in chunkTag["Level"]
+        ):
+            for entity in chunkTag["Level"]["TileTicks"]:
+                self._entityList.append(entity)
+        self._OnEntities()
+
+    def InChunk(self,chunk):
+        chunkTag = chunk.root_tag
+        self.InChunkTag(chunkTag)
+
+        # TODO move this into onMatch instead
+        chunk.chunkChanged(False) # needsLighting=False
 
     def InWorld(self,world):
         for cx,cz in world.allChunks:
             aChunk = world.getChunk(cx,cz)
-
-            if "Level" not in aChunk.root_tag:
-                # This chunk is invalid, skip it!
-                # It has no data.
-                continue
-
-            # shallow copy this list, or we won't have entities in the world.
-            # Also, we don't need a TAG_List; a normal list is fine.
-            self._entityList = []
-            for entity in aChunk.root_tag["Level"]["Entities"]:
-                self._entityList.append(entity)
-            for entity in aChunk.root_tag["Level"]["TileEntities"]:
-                self._entityList.append(entity)
-            self._OnEntities()
-
-            # TODO move this into onMatch instead
-            aChunk.chunkChanged(False) # needsLighting=False
+            self.InChunk(aChunk)
 
     def InSchematic(self,schematic):
         # shallow copy this list, or we won't have entities in the schematic.
         # Also, we don't need a TAG_List; a normal list is fine.
         self._entityList = []
-        for entity in schematic.Entities:
-            self._entityList.append(entity)
-        for entity in schematic.TileEntities:
-            self._entityList.append(entity)
+        if "entities" in self._searchArgs:
+            for entity in schematic.Entities:
+                self._entityList.append(entity)
+        if "block entities" in self._searchArgs:
+            for entity in schematic.TileEntities:
+                self._entityList.append(entity)
+        if "tile ticks" in self._searchArgs:
+            for entity in schematic.TileEntities:
+                self._entityList.append(entity)
         self._OnEntities()
 
     def OnPlayers(self,worldDir):
@@ -137,17 +164,26 @@ class IterEntities(object):
                 self._entityDetails["root entity"] = entity
 
                 if (
-                    "block entities" in self._searchArgs and
-                    "x" in entity
+                    "tile ticks" in self._searchArgs and
+                    "x" in entity and
+                    "i" in entity
                 ):
-                    self._entityDetails["is block entity"] = True
+                    self._entityDetails["entity type"] = "tile tick"
+                    self._onMatch(self._onMatchArgs,self._entityDetails)
+
+                if (
+                    "block entities" in self._searchArgs and
+                    "x" in entity and
+                    "i" not in entity
+                ):
+                    self._entityDetails["entity type"] = "block entity"
                     self._onMatch(self._onMatchArgs,self._entityDetails)
 
                 if (
                     "entities" in self._searchArgs and
                     "Pos" in entity
                 ):
-                    self._entityDetails["is block entity"] = False
+                    self._entityDetails["entity type"] = "entity"
                     self._onMatch(self._onMatchArgs,self._entityDetails)
 
             else:
@@ -156,11 +192,11 @@ class IterEntities(object):
                 # IDs might be the only way to tell which is which.
                 if "id" in entity:
                     # Child entity
-                    self._entityDetails["is block entity"] = False
+                    self._entityDetails["entity type"] = "entity"
                     self._onMatch(self._onMatchArgs,self._entityDetails)
                 else:
                     # Child block entity (id inferred from parent item)
-                    self._entityDetails["is block entity"] = True
+                    self._entityDetails["entity type"] = "block entity"
                     self._onMatch(self._onMatchArgs,self._entityDetails)
 
             # Handle villager trades
