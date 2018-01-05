@@ -53,6 +53,9 @@ def replaceGlobally(world, replaceList):
         replace(world, oldBlock, newBlock)
 
 def copyFile(old, new):
+    if not os.path.exists(old):
+        print "*** '{}' does not exist, preserving original.".format(old)
+        return
     if os.path.exists(new):
         os.remove(new)
     if os.path.islink(old):
@@ -75,11 +78,11 @@ def tempdir():
 
 def copyFolder(old, new):
     # This does not check if it's a path or a file, but there's another function for that case.
-    if os.path.exists(old):
-        shutil.rmtree(new, ignore_errors=True)
-        shutil.copytree(old, new, symlinks=True)
-    else:
+    if not os.path.exists(old):
         print "*** '{}' does not exist, preserving original.".format(old)
+        return
+    shutil.rmtree(new, ignore_errors=True)
+    shutil.copytree(old, new, symlinks=True)
 
 def copyFolders(old, new, subfolders):
     for folder in subfolders:
