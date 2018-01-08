@@ -457,6 +457,9 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     ####################################
     # Sword items
 
+    ################
+    # stone
+
     # Rosethorn Blade
     [
         {
@@ -479,6 +482,17 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:17s},{lvl:5s,id:34s}],HideFlags:2,display:{Lore:["* Unique Item *","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 5.5 Attack Damage","§9 +3 Armor"],Name:"§6§lGeomantic Dagger"},AttributeModifiers:[{UUIDMost:749364,UUIDLeast:739930,Amount:3,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:787340,UUIDLeast:172309,Amount:3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:728374,UUIDLeast:661477,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+        ]
+    ],
+
+    # Lingering Flame
+    [
+        {
+            "id":"minecraft:golden_sword",
+            "name":u'''Lingering Flame''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:5s,id:20s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§6§lLingering Flame"}}'''
         ]
     ],
 
