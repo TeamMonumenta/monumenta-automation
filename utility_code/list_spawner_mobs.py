@@ -6,11 +6,8 @@ from lib_monumenta import list_spawner_mobs
 ################################################################################
 # Config section
 
-#worldFolder = "/home/rock/tmp/Project Epic"
-#logFolder = "/home/rock/tmp/Project Epic Mob Spawners"
-
-worldFolder = "/home/tim/.minecraft/saves/build"
-logFolder = "/home/tim/Desktop/mobs"
+worldFolder = "/home/rock/tmp/Project Epic"
+logFolder = "/home/rock/tmp/Project Epic Mob Spawners"
 
 ################################################################################
 # Main Code
