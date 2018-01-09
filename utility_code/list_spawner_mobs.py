@@ -7,12 +7,11 @@ from lib_monumenta import list_spawner_mobs
 # Config section
 
 worldFolder = "/home/rock/tmp/Project Epic"
-logFolder = "/home/rock/tmp/Project Epic Mob Spawners"
+logFile = "/home/rock/tmp/Project Epic Mob Spawners/mobs.txt"
 
 ################################################################################
 # Main Code
 
 # This scans for tile entities are mob spawners
-list_spawner_mobs.run(worldFolder,logFolder)
-
+list_spawner_mobs.run(worldFolder,logFile)
 

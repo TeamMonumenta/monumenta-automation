@@ -42,17 +42,22 @@ def _onEntity(args,entityDetails):
         cloneEntity.name = ""
         noTagNameJson = cloneEntity.json()
 
-        mobs.add(noTagNameJson)
+        # Get the mob's name, if it exists
+        mobName = None
+        if "CustomName" in cloneEntity:
+            mobName=cloneEntity["CustomName"].value
 
-def run(worldFolder,logFolder):
+        # Create set for entity's name if needed
+        if mobName not in mobs:
+            mobs[mobName] = set()
+
+        mobs[mobName].add(noTagNameJson)
+
+def run(worldFolder,logFile):
     print "Beginning scan..."
     world = pymclevel.loadWorld(worldFolder)
 
-    # Create/empty the log folder, containing all mobs in spawners
-    shutil.rmtree(logFolder, True)
-    os.makedirs(logFolder)
-
-    mobs = set()
+    mobs = {}
 
     args = {
         "world":world,
@@ -65,10 +70,15 @@ def run(worldFolder,logFolder):
 
     strBuffer = u""
 
-    for mob in sorted(mobs):
-        strBuffer += mob + u"\n"
+    for mobName in sorted(mobs.keys()):
+        mobNameStr = mobName
+        if mobName is None:
+            mobNameStr = u"Unnamed mobs"
+        strBuffer += u"="*80 + u"\n" + mobNameStr + u"\n\n"
+        for mob in sorted(mobs[mobName]):
+            strBuffer += mob + u"\n\n"
 
-    f = open(logFolder+"/mobs from spawners.txt","w")
+    f = open(logFile,"w")
     f.write(strBuffer.encode('utf8'))
     f.close()
 
