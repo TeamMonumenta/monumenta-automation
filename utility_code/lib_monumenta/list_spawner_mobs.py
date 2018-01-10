@@ -69,11 +69,11 @@ def run(worldFolder,logFile):
     cmdIter.InWorld(world)
 
     strBuffer = u""
-
     for mobName in sorted(mobs.keys()):
         mobNameStr = mobName
         if mobName is None:
             mobNameStr = u"Unnamed mobs"
+        print mobNameStr
         strBuffer += u"="*80 + u"\n" + mobNameStr + u"\n\n"
         for mob in sorted(mobs[mobName]):
             strBuffer += mob + u"\n\n"
