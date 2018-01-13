@@ -452,91 +452,99 @@ config = {
     },
 }
 
-if (len(sys.argv) != 2 or (not(sys.argv[1] in config))):
-    sys.exit("Usage: " + sys.argv[0] + " <minecraft_directory>")
+def gen_server_config(servername):
+    if not(servername in config):
+        print "ERROR: No config available for '" + servername + "'"
+        return
 
-servername = sys.argv[1]
-dest = config[servername]
-config = dest["config"]
+    dest = config[servername]
+    serverConfig = dest["config"]
 
-################################################################################
-# Copy customized configuration per-server
-################################################################################
+    ################################################################################
+    # Copy customized configuration per-server
+    ################################################################################
 
-# Get a unique list of files to copy
-files = [i[0] for i in config]
-files = list(set(files))
+    # Get a unique list of files to copy
+    files = [i[0] for i in serverConfig]
+    files = list(set(files))
 
-# Copy those files and replace WORLDOOG with the appropriate string
-for filename in files:
-    old = template_dir + "/" + filename
-    new = servername + "/" + filename
-    if (os.path.islink(new)):
-        print "Warning - file '" + new + "' is link; not replacing it"
-        continue
+    # Copy those files and replace WORLDOOG with the appropriate string
+    for filename in files:
+        old = template_dir + "/" + filename
+        new = servername + "/" + filename
+        if (os.path.islink(new)):
+            print "Warning - file '" + new + "' is link; not replacing it"
+            continue
 
-    try:
-        os.makedirs(os.path.dirname(new))
-    except OSError as e:
-        pass
+        try:
+            os.makedirs(os.path.dirname(new))
+        except OSError as e:
+            pass
 
-    with open(old, "rt") as fin:
-        with open(new, "wt") as fout:
-            for line in fin:
-                fout.write(line.replace('WORLDOOG', servername))
-            fout.close()
-        fin.close()
-
-# Do the per-file replacements
-for replacement in config:
-    filename = servername + "/" + replacement[0]
-    filename = filename.replace('WORLDOOG', servername)
-    if (len(replacement) == 1):
-        # Nothing to do here, just copying the file was enough
-        continue;
-    elif (len(replacement) == 2):
-        # Need to append the second argument to the file
-        with open(filename, "a") as fout:
-            fout.write(replacement[1])
-            fout.close()
-    elif (len(replacement) == 3):
-        os.rename(filename, filename + ".old")
-
-        with open(filename + ".old", "rt") as fin:
-            with open(filename, "wt") as fout:
+        with open(old, "rt") as fin:
+            with open(new, "wt") as fout:
                 for line in fin:
-                    fout.write(re.sub("^[ \t]*" + replacement[1] + ".*$", replacement[2], line))
+                    fout.write(line.replace('WORLDOOG', servername))
                 fout.close()
             fin.close()
-        os.remove(filename + ".old")
 
-################################################################################
-# Create symlinks
-################################################################################
+    # Do the per-file replacements
+    for replacement in serverConfig:
+        filename = servername + "/" + replacement[0]
+        filename = filename.replace('WORLDOOG', servername)
+        if (len(replacement) == 1):
+            # Nothing to do here, just copying the file was enough
+            continue;
+        elif (len(replacement) == 2):
+            # Need to append the second argument to the file
+            with open(filename, "a") as fout:
+                fout.write(replacement[1])
+                fout.close()
+        elif (len(replacement) == 3):
+            os.rename(filename, filename + ".old")
 
-linked = dest["linked"]
-for link in linked:
-    linkname = servername + "/" + link[0]
-    linkname = linkname.replace('WORLDOOG', servername)
+            with open(filename + ".old", "rt") as fin:
+                with open(filename, "wt") as fout:
+                    for line in fin:
+                        fout.write(re.sub("^[ \t]*" + replacement[1] + ".*$", replacement[2], line))
+                    fout.close()
+                fin.close()
+            os.remove(filename + ".old")
 
-    if (os.path.islink(linkname)):
-        os.unlink(linkname)
-    if (os.path.isfile(linkname)):
-        print "Warning - file that should be link detected. Please remove this file:"
-        print "  rm -f " + linkname
-        continue
-    if (os.path.isdir(linkname)):
-        print "Warning - directory that should be link detected. Please remove this directory:"
-        print "  rm -rf " + linkname
-        continue
+    ################################################################################
+    # Create symlinks
+    ################################################################################
 
-    try:
-        os.makedirs(os.path.dirname(linkname))
-    except OSError as e:
-        pass
+    linked = dest["linked"]
+    for link in linked:
+        linkname = servername + "/" + link[0]
+        linkname = linkname.replace('WORLDOOG', servername)
 
-    os.symlink(link[1], linkname)
+        if (os.path.islink(linkname)):
+            os.unlink(linkname)
+        if (os.path.isfile(linkname)):
+            print "Warning - file that should be link detected. Please remove this file:"
+            print "  rm -f " + linkname
+            continue
+        if (os.path.isdir(linkname)):
+            print "Warning - directory that should be link detected. Please remove this directory:"
+            print "  rm -rf " + linkname
+            continue
 
-print "Success"
+        try:
+            os.makedirs(os.path.dirname(linkname))
+        except OSError as e:
+            pass
+
+        os.symlink(link[1], linkname)
+
+    print "Success - " + servername
+
+# Main entry point
+if (len(sys.argv) < 2):
+    sys.exit("Usage: " + sys.argv[0] + " <minecraft_directory> <dir2> ...")
+
+for servername in sys.argv[1:]:
+    gen_server_config(servername)
 
 
