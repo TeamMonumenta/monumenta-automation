@@ -1,14 +1,14 @@
-From 45f099b9dcd9b0eb222212c874d180d81434ce72 Mon Sep 17 00:00:00 2001
+From a91b042c0ddce3d82ce402c9a21ec8902e9bead0 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Thu, 26 Oct 2017 22:09:28 -0700
-Subject: [PATCH 4/8] Monumenta - Prevent ice from breaking/melting into water
+Subject: [PATCH 4/9] Monumenta - Prevent ice from breaking/melting into water
 
 ---
  src/main/java/net/minecraft/server/BlockIce.java | 28 ++----------------------
  1 file changed, 2 insertions(+), 26 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/BlockIce.java b/src/main/java/net/minecraft/server/BlockIce.java
-index 7bb4443..90e1f3b 100644
+index 7bb4443f..90e1f3b5 100644
 --- a/src/main/java/net/minecraft/server/BlockIce.java
 +++ b/src/main/java/net/minecraft/server/BlockIce.java
 @@ -18,21 +18,8 @@ public class BlockIce extends BlockHalfTransparent {
@@ -55,5 +55,5 @@ index 7bb4443..90e1f3b 100644
  
      public EnumPistonReaction h(IBlockData iblockdata) {
 -- 
-2.7.4
+2.14.1
 

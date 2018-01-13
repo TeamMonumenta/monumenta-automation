@@ -1,14 +1,14 @@
-From 03f101a16b1cf51b12682cd25cc8e97e560c8eb3 Mon Sep 17 00:00:00 2001
+From 8a7561ae2d94b643c66031624450097bb405052b Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Wed, 27 Sep 2017 18:46:14 -0700
-Subject: [PATCH 2/8] Monumenta - Disable potion has no item logspam
+Subject: [PATCH 2/9] Monumenta - Disable potion has no item logspam
 
 ---
  src/main/java/net/minecraft/server/EntityPotion.java | 4 ----
  1 file changed, 4 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityPotion.java b/src/main/java/net/minecraft/server/EntityPotion.java
-index 80d0948..6a8ebcb 100644
+index 80d09488..6a8ebcb1 100644
 --- a/src/main/java/net/minecraft/server/EntityPotion.java
 +++ b/src/main/java/net/minecraft/server/EntityPotion.java
 @@ -52,10 +52,6 @@ public class EntityPotion extends EntityProjectile {
@@ -23,5 +23,5 @@ index 80d0948..6a8ebcb 100644
          } else {
              return itemstack;
 -- 
-2.7.4
+2.14.1
 

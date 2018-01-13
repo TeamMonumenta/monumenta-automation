@@ -1,7 +1,7 @@
-From c0a41302c9efd9adde43e4893c995c69db41b1ed Mon Sep 17 00:00:00 2001
+From c1babdbd2acab5108fb0db754eb67e29066eca4a Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Tue, 31 Oct 2017 17:44:53 -0700
-Subject: [PATCH 5/8] Monumenta - Charged creepers no longer cause mob head
+Subject: [PATCH 5/9] Monumenta - Charged creepers no longer cause mob head
  drops
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 5/8] Monumenta - Charged creepers no longer cause mob head
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
-index c872607..a92db9c 100644
+index c872607f..a92db9c4 100644
 --- a/src/main/java/net/minecraft/server/EntityCreeper.java
 +++ b/src/main/java/net/minecraft/server/EntityCreeper.java
 @@ -253,7 +253,7 @@ public class EntityCreeper extends EntityMonster {
@@ -22,5 +22,5 @@ index c872607..a92db9c 100644
  
      public void setCausedHeadDrop() {
 -- 
-2.7.4
+2.14.1
 

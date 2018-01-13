@@ -1,7 +1,7 @@
-From e42b6bc5621605ed606996ca41ff55e77991c558 Mon Sep 17 00:00:00 2001
+From ec04cbdd0e3c89844e6539334200a93294125544 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Mon, 13 Nov 2017 17:20:23 -0800
-Subject: [PATCH 8/8] Monumenta - Remove permission check for running sign
+Subject: [PATCH 8/9] Monumenta - Remove permission check for running sign
  commands
 
 ---
@@ -10,7 +10,7 @@ Subject: [PATCH 8/8] Monumenta - Remove permission check for running sign
  2 files changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/TileEntitySign.java b/src/main/java/net/minecraft/server/TileEntitySign.java
-index 77a7b44..c85f380 100644
+index 77a7b445..c85f3804 100644
 --- a/src/main/java/net/minecraft/server/TileEntitySign.java
 +++ b/src/main/java/net/minecraft/server/TileEntitySign.java
 @@ -38,7 +38,7 @@ public class TileEntitySign extends TileEntity {
@@ -34,10 +34,10 @@ index 77a7b44..c85f380 100644
          return this.h;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 814be6e..f516304 100644
+index 5ab7cee1..fe3ce0d3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -268,7 +268,7 @@ public final class CraftServer implements Server {
+@@ -265,7 +265,7 @@ public final class CraftServer implements Server {
              listener = ((CommandListenerWrapper) listener).base;
          }
  
@@ -46,7 +46,7 @@ index 814be6e..f516304 100644
      }
  
      public boolean getCommandBlockOverride(String command) {
-@@ -1369,7 +1369,7 @@ public final class CraftServer implements Server {
+@@ -1366,7 +1366,7 @@ public final class CraftServer implements Server {
  
          for (JsonListEntry entry : playerList.getProfileBans().getValues()) {
              result.add(getOfflinePlayer((GameProfile) entry.getKey()));
@@ -56,5 +56,5 @@ index 814be6e..f516304 100644
          return result;
      }
 -- 
-2.7.4
+2.14.1
 
