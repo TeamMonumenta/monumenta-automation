@@ -1,7 +1,7 @@
 From c1babdbd2acab5108fb0db754eb67e29066eca4a Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Tue, 31 Oct 2017 17:44:53 -0700
-Subject: [PATCH 5/9] Monumenta - Charged creepers no longer cause mob head
+Subject: [PATCH 05/10] Monumenta - Charged creepers no longer cause mob head
  drops
 
 ---

@@ -1,7 +1,7 @@
 From cb6a87e36c8c9ad6db82b855755e55c819c9e18a Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Thu, 5 Oct 2017 21:45:16 -0700
-Subject: [PATCH 3/9] Monumenta - Removed test for monsters when sleeping in
+Subject: [PATCH 03/10] Monumenta - Removed test for monsters when sleeping in
  beds
 
 ---

@@ -1,7 +1,7 @@
 From ec04cbdd0e3c89844e6539334200a93294125544 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Mon, 13 Nov 2017 17:20:23 -0800
-Subject: [PATCH 8/9] Monumenta - Remove permission check for running sign
+Subject: [PATCH 08/10] Monumenta - Remove permission check for running sign
  commands
 
 ---
