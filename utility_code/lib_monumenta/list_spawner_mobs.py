@@ -24,7 +24,6 @@ from lib_monumenta.iter_entity import IterEntities
 
 def _onEntity(args,entityDetails):
     # Check if tileEntity is being scanned
-    world = args["world"]
     mobs = args["mobs"]
 
     entity = entityDetails["entity"]
