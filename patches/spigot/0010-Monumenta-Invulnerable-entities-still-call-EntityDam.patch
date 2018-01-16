@@ -1,15 +1,15 @@
-From 049910469d6cc540a313e3904def755c37932896 Mon Sep 17 00:00:00 2001
+From 8a42d5a2acd91bcf6d7e179b1885458db39a18d9 Mon Sep 17 00:00:00 2001
 From: Monumenta <monumenta.mgmt@gmail.com>
 Date: Sun, 14 Jan 2018 20:41:40 -0500
 Subject: [PATCH 10/10] Monumenta - Invulnerable entities still call
  EntityDamageByEntityEvent
 
 ---
- src/main/java/net/minecraft/server/EntityLiving.java | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ src/main/java/net/minecraft/server/EntityLiving.java | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index ee2d1f9a..555f3e79 100644
+index ee2d1f9a..9999c67a 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -31,6 +31,12 @@ import org.bukkit.event.entity.EntityTeleportEvent;
@@ -33,19 +33,21 @@ index ee2d1f9a..555f3e79 100644
              return false;
          } else if (this.world.isClientSide) {
              return false;
-@@ -1275,7 +1282,15 @@ public abstract class EntityLiving extends Entity {
+@@ -1275,7 +1282,17 @@ public abstract class EntityLiving extends Entity {
  
      // CraftBukkit start
      protected boolean damageEntity0(final DamageSource damagesource, float f) { // void -> boolean, add final
 -       if (!this.isInvulnerable(damagesource)) {
 +       if (this.isInvulnerable(damagesource)) {
-+            EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(this.getBukkitEntity(),
-+                    damagesource.getEntity().getBukkitEntity(),
-+                    DamageCause.CUSTOM,
-+                    new EnumMap<DamageModifier, Double>(DamageModifier.class),
-+                    new EnumMap<DamageModifier, Function<? super Double, Double>>(DamageModifier.class));
++		   if (damagesource != null && damagesource.getEntity() != null && this.getBukkitEntity() != null && damagesource.getEntity().getBukkitEntity() != null) {
++				EntityDamageByEntityEvent event = new EntityDamageByEntityEvent(this.getBukkitEntity(),
++						damagesource.getEntity().getBukkitEntity(),
++						DamageCause.CUSTOM,
++						new EnumMap<DamageModifier, Double>(DamageModifier.class),
++						new EnumMap<DamageModifier, Function<? super Double, Double>>(DamageModifier.class));
 +
-+            this.world.getServer().getPluginManager().callEvent(event);
++				this.world.getServer().getPluginManager().callEvent(event);
++		   }
 +       } else {
              final boolean human = this instanceof EntityHuman;
              float originalDamage = f;
