@@ -300,6 +300,9 @@ config = {
             ('server.properties', 'difficulty', 'difficulty=2'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
+        {"name":"Diamond Platform", "type":"AdventureZone", "pos1":"-1002 69 -1483", "pos2":"-1032 57 -1456"}
+    ],'''),
         ],
         'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
