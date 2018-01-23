@@ -182,6 +182,15 @@ configList = [{
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
     "itemLog":"/home/rock/tmp/items_r1bonus.txt",
+}, {
+    "server":"roguelike",
+    "localMainFolder":"/home/rock/tmp/PRE_RESET/roguelike/Project_Epic-roguelike/",
+    "localDstFolder":"/home/rock/tmp/POST_RESET/roguelike/Project_Epic-roguelike/",
+    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
+    "safetyTpLocation":(-1450, 241, -1498, 270.0, 0.0),
+    "itemReplacements":item_replace_list.KingsValley,
+    "itemReplaceLocations":["players"],
+    "itemLog":"/home/rock/tmp/items_roguelike.txt",
 }]
 
 terrainReset(configList)
