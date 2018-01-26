@@ -306,6 +306,17 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         ]
     ],
 
+    [ # Wrangler's Disguise
+        {
+            "id":"minecraft:skull",
+            "damage":4,
+            "name":u'''Wrangler's Disguise''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:3s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fWrangler's Disguise"},AttributeModifiers:[{UUIDMost:7228445873160669085L,UUIDLeast:-4704669888939619595L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+
     ####################################
     # Helmets
 
@@ -336,6 +347,17 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         ]
     ],
 
+    # Fedora
+    [
+        {
+            "id":"minecraft:leather_helmet",
+            "name":u'''Fedora''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:70s}],HideFlags:35,display:{Lore:["§8King's Valley : Uncommon","§8Nice guys finish last...","§8M' Lady... ( ͡° ͜ʖ ͡°)","§7","§7When on head:","§9 +10% Coolness","§9 +25% Neckbeard","§c -10% Speed"],color:0,Name:"§8§lFedora"},AttributeModifiers:[{UUIDMost:5639012561410475226L,UUIDLeast:-7926585099207054512L,Amount:-20.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:2236652158341825249L,UUIDLeast:-6720137306445331011L,Amount:-0.1d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-7196473041523228034L,UUIDLeast:-7435759153258789866L,Amount:-50.0d,Slot:"head",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
+
     ################
     # gold
 
@@ -356,17 +378,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
 
     ####################################
     # Leggings
-
-    # Infernal Robe
-    [
-        {
-            "id":"minecraft:leather_leggings",
-            "name":u'''Infernal Robe''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:11206656,Name:"§4§lInfernal Robe"},AttributeModifiers:[{UUIDMost:-3906240411837903389L,UUIDLeast:-7890992669234016346L,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:5753471876015473889L,UUIDLeast:-7352350150367536802L,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
-        ]
-    ],
 
     # Steelscale Leggings
     [
@@ -485,17 +496,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         ]
     ],
 
-    # Lingering Flame
-    [
-        {
-            "id":"minecraft:golden_sword",
-            "name":u'''Lingering Flame''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:5s,id:20s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§6§lLingering Flame"}}'''
-        ]
-    ],
-
     ####################################
     # Axe items
 
@@ -523,7 +523,7 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
             "name":u'''Ruby Scythe''',
         },
         [
-            "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:1s,id:20s}],Unbreakable:1b,display:{Lore:["§8King's Valley : §6Patron Made","§8Made of a gleaming red rock"],Name:"§c§lRuby Scythe"}}'''
+            "nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:20s}],Unbreakable:1b,display:{Lore:["§8King's Valley : §6Patron Made","§8Made of a gleaming red rock"],Name:"§c§lRuby Scythe"}}'''
         ]
     ],
 
@@ -541,6 +541,17 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         },
         [
             "nbt", "replace", ur'''{display:{Lore:["§fTurns into water when","§fplaced on a plot"],Name:"§b§lCrystalized Water"}}'''
+        ]
+    ],
+
+    # Sharpened Holy Feather
+    [
+        {
+            "id":"minecraft:feather",
+            "name":u'''Sharpened Holy Feather''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:7s,id:16s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : §6Patron Made","§8A feather from the holy Rayven"],Name:"§f§lSharpened Holy Feather"},AttributeModifiers:[{UUIDMost:8148793466415236557L,UUIDLeast:-5911602864794772103L,Amount:0.07d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
         ]
     ],
 
