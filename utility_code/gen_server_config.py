@@ -84,6 +84,7 @@ luckperms = [
 
 monumenta = [
         ('plugins/Monumenta-Plugins.jar', '../../server_config/plugins/Monumenta-Plugins.jar'),
+        ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
     ]
 
 nbteditor = [
