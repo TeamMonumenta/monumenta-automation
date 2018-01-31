@@ -6,8 +6,27 @@ import os
 import shutil
 import re
 
-# TODO: Need to find a way to link some things, copy others by groups.
-# Many things don't need coreprotect config or nbteditor config...
+SERVER_TYPE='build'
+
+# Main entry point
+if (len(sys.argv) < 2):
+    sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> <dir2> ...")
+
+server_list = [];
+for arg in sys.argv[1:]:
+    if (arg == "--play"):
+        SERVER_TYPE='play'
+    else:
+        server_list += [arg,]
+
+if (len(server_list) < 1):
+    print "ERROR: No folders specified"
+    sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> <dir2> ...")
+
+if SERVER_TYPE == 'build':
+    print "Using build server settings!"
+else:
+    print "Using play server settings!"
 
 server_config_to_copy = [
         ('eula.txt',),
@@ -116,8 +135,10 @@ voxelsniper = [
 #   structures
 
 base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit
-build_plugins = speedchanger + nbteditor + voxelsniper
-# build_plugins = []
+if (SERVER_TYPE == 'build'):
+    build_plugins = speedchanger + nbteditor + voxelsniper
+else:
+    build_plugins = []
 
 # String replacements:
 # WORLDOOG - server name
@@ -147,10 +168,6 @@ config = {
             ('server.properties', 'server-port', 'server-port=25566'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /setblock -1449 1 -1440 redstone_block'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-            #('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
-            #('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"dailyResetEnabled":', '"dailyResetEnabled": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"questCompassEnabled":', '"questCompassEnabled": true,'),
@@ -251,8 +268,6 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 16'),
             ('server.properties', 'server-port', 'server-port=25569'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.4"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
             ('plugins/Monumenta-Plugins/Properties.json', '"isSleepingEnabled":', '"isSleepingEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"unbreakableBlocks":', '"unbreakableBlocks": ["OBSERVER", "WOOD_PLATE", "STONE_PLATE", "IRON_PLATE", "GOLD_PLATE"],'),
             ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
@@ -457,6 +472,26 @@ config = {
     },
 }
 
+# Config additions that are specific to build or play server
+if (SERVER_TYPE == 'build'):
+    config['region_1']['config'] += [
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
+    ]
+    config['roguelike']['config'] += [
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
+    ]
+else:
+    config['region_1']['config'] += [
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=10G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=10G'),
+    ]
+    config['roguelike']['config'] += [
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=4G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=4G'),
+    ]
+
 def gen_server_config(servername):
     if not(servername in config):
         print "ERROR: No config available for '" + servername + "'"
@@ -545,11 +580,7 @@ def gen_server_config(servername):
 
     print "Success - " + servername
 
-# Main entry point
-if (len(sys.argv) < 2):
-    sys.exit("Usage: " + sys.argv[0] + " <minecraft_directory> <dir2> ...")
-
-for servername in sys.argv[1:]:
+for servername in server_list:
     gen_server_config(servername)
 
 
