@@ -552,6 +552,14 @@ def gen_server_config(servername):
             os.remove(filename + ".old")
 
     ################################################################################
+    # Remove plugin directory symlinks if they exist
+    ################################################################################
+    for filename in os.listdir(servername + '/plugins'):
+        filename = servername + '/plugins/' + filename
+        if (os.path.islink(filename)):
+            os.unlink(filename)
+
+    ################################################################################
     # Create symlinks
     ################################################################################
 
