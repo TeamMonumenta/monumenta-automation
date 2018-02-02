@@ -19,8 +19,10 @@ from pymclevel.block_copy import copyBlocksFromIter
 from pymclevel.box import BoundingBox, Vector
 from pymclevel.mclevelbase import exhaust
 
-from lib_monumenta.common import fillBoxes, copyFolder, tempdir
+from lib_monumenta.common import fillBoxes, copyFolder, tempdir, resetRegionalDifficulty
 from lib_monumenta.list_lootless_tile_entities import listLootlessTileEntities
+from lib_monumenta.copy_region_file import copyRegion
+from lib_monumenta.timing import timings
 
 ################################################################################
 # Config section
@@ -187,8 +189,16 @@ config = {
 }
 
 def gen_dungeon_instance(config, dungeon, outputFile):
+    mainTiming = timings(enabled=True)
+    nextStep = mainTiming.nextStep
+
+    # Per-dungeon config
+    dungeonName = dungeon["name"]
+
     # Redirect output to specified file
     sys.stdout = open(outputFile, "w")
+
+    nextStep(dungeonName + ": Thread started")
 
     # Global config
     dungeonRefFolder = config["dungeonRefFolder"]
@@ -207,63 +217,56 @@ def gen_dungeon_instance(config, dungeon, outputFile):
     numDungeons = dungeon["numDungeons"]
     dstFolder = outFolder + dungeonName + '/Project_Epic-' + dungeonName + '/'
 
+    nextStep(dungeonName + ": Config read")
+
     # Compute dungeon parameters
     dungeonPos = Vector(*(dungeonRegion["x"] * 32 * 16, 0, dungeonRegion["z"] * 32 * 16))
     dungeonBox = BoundingBox(dungeonPos, dungeonSize)
-    dstPos = Vector(*(targetRegion["x"] * 32 * 16, 0, targetRegion["z"] * 32 * 16))
-    dstStep = Vector(*(0, 0, 32 * 16))
-    voidPos = dstPos + Vector(*(-1 * voidPadding * 16, 0, -1 * voidPadding * 16))
-    voidSize = Vector(*((32 + voidPadding) * 16, 256, (32 * numDungeons + voidPadding) * 16))
-    voidBox = BoundingBox(voidPos, voidSize)
-    blocksToCopy = range(materials.id_limit)
+
+    nextStep(dungeonName + ": pre-calc done")
 
     # Make a temporary copy of the dungeon template folder
     with tempdir() as tempDungeonRefCopy:
+        nextStep(dungeonName + ": Temp folder created")
         copyFolder(dungeonRefFolder, tempDungeonRefCopy)
-
         print "Starting work on dungeon: " + dungeonName
 
         print "  Opening dungeon reference world..."
         referenceWorld = pymclevel.loadWorld(tempDungeonRefCopy)
-
-        print "  Copying template world as base..."
-        copyFolder(templateFolder, dstFolder)
-
-        print "  Opening dungeon world..."
-        dstWorld = pymclevel.loadWorld(dstFolder)
+        nextStep(dungeonName + ": Opened reference world")
 
         print "  Scanning dungeon for chests without loot tables..."
         listLootlessTileEntities(referenceWorld, dungeonBox, tileEntitiesToCheck, dungeonContentsLoreToIgnore, dungeonChestWhitelist)
+        nextStep(dungeonName + ": Finished scan")
 
-        print "  Creating void chunks..."
-        chunksCreated = dstWorld.createChunksInBox(voidBox)
-        print "    Created {0} chunks." .format(len(chunksCreated))
-
-        print "  Changing all chunks to void biome..."
-        for aChunk in dstWorld.getChunks():
-            aChunk.root_tag["Level"]["Biomes"].value.fill(127)
-            aChunk.chunkChanged(True)
+        print "  Copying template world as base..."
+        copyFolder(templateFolder, dstFolder)
+        nextStep(dungeonName + ": Copy done")
 
         print "  Creating dungeon instances..."
+        oldRegionFile = tempDungeonRefCopy + "/region/r.{}.{}.mca".format(dungeonRegion["x"],dungeonRegion["z"])
+        rx=targetRegion["x"]
+        rzInit=targetRegion["z"]
         for i in range(numDungeons):
             print "    {0}...".format(i)
+            rz = rzInit + i
+            newRegionFile = dstFolder + "region/r.{}.{}.mca".format(rx,rz)
+            copyRegion(oldRegionFile,newRegionFile,rx,rz)
+        nextStep(dungeonName + ": Created instances")
 
-            exhaust(copyBlocksFromIter(destLevel=dstWorld, sourceLevel=referenceWorld, sourceBox=dungeonBox,
-                                       destinationPoint=(dstPos + dstStep * i), blocksToCopy=blocksToCopy,
-                                       entities=True, create=True, biomes=True, tileTicks=True,
-                                       staticCommands=False, moveSpawnerPos=False, regenerateUUID=True,
-                                       first=False, cancelCommandBlockOffset=False)) # Not sure what these last two do - defaults
-
-        # Note resetting difficulty is unnecessary - all generated chunks lack the time inhabited tag
-        # print "  Resetting difficulty..."
-        # resetRegionalDifficulty(dstWorld)
+        print "  Opening dungeon world..."
+        dstWorld = pymclevel.loadWorld(dstFolder)
+        nextStep(dungeonName + ": Opened world")
 
         print "  Filling regions..."
         fillBoxes(dstWorld, dungeon["coordinatesToFill"])
+        nextStep(dungeonName + ": Filled regions")
 
         print "  Saving...."
-        dstWorld.generateLights()
+        #dstWorld.generateLights() # Shouldn't be needed;
+        # template lights are right, and region lighting is copied.
         dstWorld.saveInPlace()
+        nextStep(dungeonName + ": Saved")
 
         try:
             shutil.rmtree(dstFolder + "##MCEDIT.TEMP##", ignore_errors=True)
@@ -273,11 +276,16 @@ def gen_dungeon_instance(config, dungeon, outputFile):
             os.remove(dstFolder + "mcedit_waypoints.dat")
         except Exception as e:
             pass
+        nextStep(dungeonName + ": Done!")
 
 
 # Multiprocessing implementation based on:
 # http://sebastianraschka.com/Articles/2014_multiprocessing.html
 def gen_dungeon_instances(config):
+    mainTiming = timings(enabled=True)
+    nextStep = mainTiming.nextStep
+    nextStep("Main: Starting timings")
+
     dungeonRefFolder = config["dungeonRefFolder"]
     templateFolder = config["templateFolder"]
     dungeons = config["dungeons"]
@@ -288,11 +296,32 @@ def gen_dungeon_instances(config):
     if not os.path.isdir(templateFolder):
         sys.exit("Template world folder does not exist.")
 
+    print "Preparing template world for use."
+    referenceWorld = pymclevel.loadWorld(dungeonRefFolder)
+    nextStep("Main: Loaded template world")
+
+    print "Changing all chunks to void biome..."
+    for aChunk in referenceWorld.getChunks():
+        aChunk.root_tag["Level"]["Biomes"].value.fill(127)
+        aChunk.chunkChanged(True)
+    nextStep("Main: Changed biome")
+
+    # We're not creating empty region files anymore, but copying existing ones;
+    # difficulty must be reset
+    print "Resetting difficulty..."
+    resetRegionalDifficulty(referenceWorld)
+    nextStep("Main: Reset difficulty")
+
+    print "Saving in place..."
+    referenceWorld.saveInPlace()
+    nextStep("Main: Saved")
+
     print "Generating dungeon instances. There will be no output here until finished."
 
     # Decrease the priority for this work so it doesn't slow down other things
     parent = psutil.Process(os.getpid())
     parent.nice = 10
+    nextStep("Main: Decreased main thread priority")
 
     processes = []
     outputFiles = []
@@ -302,17 +331,24 @@ def gen_dungeon_instances(config):
             "process":mp.Process(target=gen_dungeon_instance, args=(config, dungeon, outputFile)),
             "outputFile":outputFile,
         })
+    nextStep("Main: Processes prepared")
 
     for p in processes:
         p["process"].start()
+    nextStep("Main: Processes started, waiting for threads to join")
 
     for p in processes:
         p["process"].join()
-        logFile = open(p["outputFile"], "r")
-        print logFile.read()
-        logFile.close()
+        try:
+            logFile = open(p["outputFile"], "r")
+            print logFile.read()
+            logFile.close()
+            os.remove(p["outputFile"])
+        except:
+            pass
 
     print "Done!"
+    nextStep("Main: Done.")
 
 ################################################################################
 gen_dungeon_instances(config)

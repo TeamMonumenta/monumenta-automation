@@ -39,6 +39,7 @@ class IterEntities(object):
     Entity details are provided as a dictionary like so:
     {
         "chunk":<None or chunk for chunkChanged>,
+        "chunk pos":<None or (cx,cz)>,
         "player file":<None or a player.dat file name>,
         "root entity":<entity's NBT>,
         "entity":<entity's NBT>,
@@ -80,6 +81,7 @@ class IterEntities(object):
         self._entityList = []
         self._entityDetails = {
             "chunk":None,
+            "chunk pos":None,
             "player file":None,
             "root entity":None,
             "entity":None,
@@ -87,10 +89,14 @@ class IterEntities(object):
         }
 
     def InChunkTag(self,chunkTag):
-        if "Level" not in chunkTag:
+        if 'Level' not in chunkTag:
             # This chunk is invalid, skip it!
             # It has no data.
             return
+
+        cx = chunkTag['Level']['xPos'].value
+        cz = chunkTag['Level']['zPos'].value
+        self._entityDetails["chunk pos"] = (cx,cz)
 
         # shallow copy this list, or we won't have entities in the world.
         # Also, we don't need a TAG_List; a normal list is fine.
@@ -114,6 +120,7 @@ class IterEntities(object):
             for entity in chunkTag["Level"]["TileTicks"]:
                 self._entityList.append(entity)
         self._OnEntities()
+        self._entityDetails["chunk pos"] = None
 
     def InChunk(self,chunk):
         self._entityDetails["chunk"] = chunk

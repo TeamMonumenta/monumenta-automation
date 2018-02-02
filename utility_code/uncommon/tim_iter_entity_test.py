@@ -34,14 +34,14 @@ def testFunction(options=None,entityDetails=None):
     if entityDetails["root entity"] is True:
         if entityDetails["player file"] is not None:
             options["players found"] += 1
-        elif entityDetails["is block entity"]:
+        elif entityDetails["entity type"] == "block entity":
             options["root block entities found"] += 1
         else:
             options["root entities found"] += 1
     else:
-        if entityDetails["is block entity"] == "unknown":
+        if entityDetails["entity type"] == "unknown":
             options["unknown entities found"] += 1
-        elif entityDetails["is block entity"]:
+        elif entityDetails["entity type"] == "block entity":
             options["block entities found"] += 1
         else:
             options["entities found"] += 1
