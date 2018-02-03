@@ -17,7 +17,7 @@ configList = [{
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
     "localMainFolder":"/home/rock/tmp/PRE_RESET/region_1/Project_Epic-region_1/",
-    "localBuildFolder":"/home/rock/tmp/TEMPLATE/region_1/Project_Epic-region_1/"
+    "localBuildFolder":"/home/rock/tmp/TEMPLATE/region_1/Project_Epic-region_1/",
     "localDstFolder":"/home/rock/tmp/POST_RESET/region_1/Project_Epic-region_1/",
 
     # (x,y,z,ry,rx)
