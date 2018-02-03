@@ -454,17 +454,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         ]
     ],
 
-    # Charm of C'Zanil
-    [
-        {
-            "id":"minecraft:bone",
-            "name":u'''Charm of C'Zanil''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:3s,id:19s}],display:{Lore:["§eKing's Valley : §lEnhanced Rare","* Regeneration *","§7Grants Regeneration I when","§7held in your off-hand"],Name:"§6§lCharm of C'Zanil"},AttributeModifiers:[{UUIDMost:-1371131983094264777l,UUIDLeast:-5382187275748050885l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-8015875971495671213l,UUIDLeast:-5412219057499937559l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-3797124817498126120l,UUIDLeast:-5357676604054506780l,Amount:0.06d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
-        ]
-    ],
-
     ####################################
     # Sword items
 
@@ -513,20 +502,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     ####################################
     # Hoe items
 
-    ################
-    # stone
-
-    # Ruby Scythe
-    [
-        {
-            "id":"minecraft:stone_hoe",
-            "name":u'''Ruby Scythe''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:20s}],Unbreakable:1b,display:{Lore:["§8King's Valley : §6Patron Made","§8Made of a gleaming red rock"],Name:"§c§lRuby Scythe"}}'''
-        ]
-    ],
-
     ####################################
     # Potions
 
@@ -570,17 +545,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","Halloween 2017"],color:675072,Name:"§2§lPlague Bearer's Boots"},AttributeModifiers:[{UUIDMost:-1640941516099861248L,UUIDLeast:-6326317583102562813L,Amount:-4.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-2914598640505769820L,UUIDLeast:-7162398802439954937L,Amount:0.12d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4035352220502543838L,UUIDLeast:-6384754459282382086L,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:1151211762335105703L,UUIDLeast:-8899502024825300851L,Amount:0.6d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
-        ]
-    ],
-
-    # Pumpkin Spythe
-    [
-        {
-            "id":"minecraft:stone_hoe",
-            "name":u'''Pumpkin Scythe''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:8s,id:16s},{lvl:2s,id:17s},{lvl:2s,id:34s},{lvl:1s,id:18s}],display:{Lore:["* Unique Event Item *","Halloween 2017"],Name:"§2§lPumpkin Spythe"}}'''
         ]
     ],
 ])
