@@ -51,6 +51,8 @@ server_config = [
         ('Project_Epic-WORLDOOG/data/loot_tables', '../../../server_config/data/loot_tables'),
         ('Project_Epic-WORLDOOG_the_end/data/functions', '../../../server_config/data/functions'),
         ('Project_Epic-WORLDOOG_the_end/data/loot_tables', '../../../server_config/data/loot_tables'),
+        ('plugins/ScriptedQuests/npcs', '../../../server_config/data/scriptedquests/npcs'),
+        ('plugins/ScriptedQuests/compass', '../../../server_config/data/scriptedquests/compass'),
     ]
 
 advancements_disabled = [
