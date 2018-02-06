@@ -501,6 +501,17 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
 
     ####################################
     # Hoe items
+    
+    # Pumpkin Spythe
+    [
+        {
+            "id":"minecraft:stone_hoe",
+            "name":u'''Pumpkin Spythe''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:8s,id:16s},{lvl:2s,id:17s},{lvl:2s,id:34s},{lvl:1s,id:18s}],display:{Lore:["* Unique Event Item *","Halloween 2017"],Name:"§2§lPumpkin Spythe"}}'''
+        ]
+    ],
 
     ####################################
     # Potions
