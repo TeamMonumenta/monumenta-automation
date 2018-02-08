@@ -18,7 +18,6 @@ blockReplacements = (
     ("minecraft:beacon", "air"),
 
     # We had a happy fix in lib_monumenta/common.py
-    ("minecraft:anvil", "air"),
 
     # Not sure about this section
     #("enchanting_Table", "air"),
@@ -251,14 +250,6 @@ itemReplacementsRemoveAll = item_replace.ReplaceItems([],[
 #KingsValleyBuild = item_replace.ReplaceItems(["init","global count"],[
 KingsValleyBuild = item_replace.ReplaceItems([],[
     ############################################################################
-    # Remove dungeon key items on weekly terrain resets:
-    # (key items within dungeons, not keys to enter dungeons)
-    ############################################################################
-
-    # Fix all loot table items on both build and play servers
-    KingsValleyLootTables,
-
-    ############################################################################
     # Oh dear, these shouldn't be in the build world...
 
     # You see nothing!
@@ -291,6 +282,7 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
             "nbt":ur'''{SkullOwner:{Id:"8364a924-d1f2-4760-8db3-e4034fdcfe5b"}}''',
         },
         [
+            "print", "G3po -> g3p0 still needed",
             "nbt", "replace", ur'''{SkullOwner:{Id:"bead93a4-fe1a-44d3-a02b-16b2f1f6f110",Properties:{textures:[{Signature:"ig9KhREcJcglVDIOtGxBbjQRmYN28g1s3J+g7WTe9AujWXIDoYyigB8NXWQw/dkWXX2oTHsRrxd8MNxX2TNPsvd+6C21J1p50LkMu1pZoyRSTDfQ6y0FmEnbg+TuRtfg5YZ6K5WBpRpTfivi51+NViIhbKTAm5KuACtMsCgGiKxCmDnt9S7uQSYd9W/tq1VV6w9ocw+34W1hujIt8ETN4GBAie98a7GBFlK5Mnmf1VEr8HeNqQkBpx29FR4CHTGNtWTdW7S1Q55jXcXVtM2tmp1JVshB5OHQ8s/U0KWkLOupYEfTIHqijKFXnTNfrPvdxXl/rAO93nwO75AUk7MVlPg4BTbjJn6Tece+G8fv3Xskn2lUeXrTiH+IDZYIrsPIKk+Nm6bg254aShIc2IIImwPR26BxLurT4iM+GNOJc7FuBcs12/0hZZSnEmapqlKdBhxegpCTUq5evJ8uR9Gp7Rs3l9qLueAlQ+5fiWTRWJDJ4yPwVDArK38Jmdc8yUPPimvZnYM3GxUtmjUyu8VRt3okbmGl4ttb//casujbFIoBDY3ngKsdQKMQyh8feSle78/+YyWLFfkWjpyZym+FRhNjLIuUgZMBxz9i72PUdOigvhJPGB+LChq81MtLVL5bt6cH8FoXCWiz9KJtOP5sfuERu/59qY4aVw1eYdhI570=",Value:"eyJ0aW1lc3RhbXAiOjE1MTAxMjU4NDA0MDIsInByb2ZpbGVJZCI6ImJlYWQ5M2E0ZmUxYTQ0ZDNhMDJiMTZiMmYxZjZmMTEwIiwicHJvZmlsZU5hbWUiOiJnM3AwIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS85OTExNzJhZjUzMmUxMmQ3MjRmNzEyZDA2N2YxYWFhNWQyZjMwMzUzZWZlNzViYTJkYjNhYjdmODliNWQxMSJ9fX0="}]},Name:"g3p0"}}'''
         ]
     ],
@@ -302,6 +294,7 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
             "nbt":ur'''{SkullOwner:{Name:"G3po"}}''',
         },
         [
+            "print", "G3po -> g3p0 by IGN still needed",
             "nbt", "replace", ur'''{SkullOwner:{Id:"bead93a4-fe1a-44d3-a02b-16b2f1f6f110",Properties:{textures:[{Signature:"ig9KhREcJcglVDIOtGxBbjQRmYN28g1s3J+g7WTe9AujWXIDoYyigB8NXWQw/dkWXX2oTHsRrxd8MNxX2TNPsvd+6C21J1p50LkMu1pZoyRSTDfQ6y0FmEnbg+TuRtfg5YZ6K5WBpRpTfivi51+NViIhbKTAm5KuACtMsCgGiKxCmDnt9S7uQSYd9W/tq1VV6w9ocw+34W1hujIt8ETN4GBAie98a7GBFlK5Mnmf1VEr8HeNqQkBpx29FR4CHTGNtWTdW7S1Q55jXcXVtM2tmp1JVshB5OHQ8s/U0KWkLOupYEfTIHqijKFXnTNfrPvdxXl/rAO93nwO75AUk7MVlPg4BTbjJn6Tece+G8fv3Xskn2lUeXrTiH+IDZYIrsPIKk+Nm6bg254aShIc2IIImwPR26BxLurT4iM+GNOJc7FuBcs12/0hZZSnEmapqlKdBhxegpCTUq5evJ8uR9Gp7Rs3l9qLueAlQ+5fiWTRWJDJ4yPwVDArK38Jmdc8yUPPimvZnYM3GxUtmjUyu8VRt3okbmGl4ttb//casujbFIoBDY3ngKsdQKMQyh8feSle78/+YyWLFfkWjpyZym+FRhNjLIuUgZMBxz9i72PUdOigvhJPGB+LChq81MtLVL5bt6cH8FoXCWiz9KJtOP5sfuERu/59qY4aVw1eYdhI570=",Value:"eyJ0aW1lc3RhbXAiOjE1MTAxMjU4NDA0MDIsInByb2ZpbGVJZCI6ImJlYWQ5M2E0ZmUxYTQ0ZDNhMDJiMTZiMmYxZjZmMTEwIiwicHJvZmlsZU5hbWUiOiJnM3AwIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS85OTExNzJhZjUzMmUxMmQ3MjRmNzEyZDA2N2YxYWFhNWQyZjMwMzUzZWZlNzViYTJkYjNhYjdmODliNWQxMSJ9fX0="}]},Name:"g3p0"}}'''
         ]
     ],
@@ -331,6 +324,7 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
             "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
         },
         [
+            "print", "Lucky Topaz Cap still needed",
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
@@ -343,6 +337,7 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
             "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
         },
         [
+            "print", "Lucky Amber Cap still needed",
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
@@ -367,6 +362,7 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
             "id":"minecraft:golden_helmet",
             "name":u'''Jeweled Tiara''',
             "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
+            "print", "Lucky Jeweled Tiara still needed",
         },
         [
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
@@ -541,6 +537,16 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         ]
     ],
 
+    # Mobile Repair Station (need to update anvils that were placed and picked up anyways probably)
+    [
+        {
+            "id":"minecraft:anvil",
+        },
+        [
+            "nbt", "replace", ur'''{display:{Name:"§aMobile Repair Station"}}'''
+        ]
+    ],
+
     ############################################################################
     # Event items:
     ############################################################################
@@ -558,6 +564,9 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
             "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","Halloween 2017"],color:675072,Name:"§2§lPlague Bearer's Boots"},AttributeModifiers:[{UUIDMost:-1640941516099861248L,UUIDLeast:-6326317583102562813L,Amount:-4.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-2914598640505769820L,UUIDLeast:-7162398802439954937L,Amount:0.12d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4035352220502543838L,UUIDLeast:-6384754459282382086L,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:1151211762335105703L,UUIDLeast:-8899502024825300851L,Amount:0.6d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
+
+    # Fix all loot table items on both build and play servers
+    KingsValleyLootTables,
 ])
 
 KingsValley = item_replace.ReplaceItems([],[
@@ -604,7 +613,6 @@ KingsValley = item_replace.ReplaceItems([],[
             {"id":"minecraft:diamond_sword"},
 
             # Other
-            {"id":"minecraft:anvil"},
             {"id":"minecraft:hopper"},
             {"id":"minecraft:hopper_minecart"},
             {"id":"minecraft:beacon"},
