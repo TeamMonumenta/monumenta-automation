@@ -209,7 +209,8 @@ config = {
         {"name":"Nivalis Cave", "type":"AdventureZone", "pos1":"999 119 -306", "pos2":"1006 128 -295"},
         {"name":"Haunted House Quest", "type":"AdventureZone", "pos1":"1000 7 72", "pos2":"1042 38 108"},
 
-        {"name":"post-monument Sage Draiikali", "type":"AdventureZone", "pos1":"1220 0 -126", "pos2":"1242 255 -103"}
+        {"name":"post-monument Sage Draiikali", "type":"AdventureZone", "pos1":"1220 0 -126", "pos2":"1242 255 -103"},
+        {"name":"Farr race", "type":"AdventureZone", "pos1":"1036 99 -119", "pos2":"1051 112 -105"}
     ],'''),
         ],
         'linked':server_config + advancements_r1 + base_plugins + coreprotect + build_plugins,
