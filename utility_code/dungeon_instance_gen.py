@@ -160,7 +160,7 @@ config = {
             "chestWhitelist":(),
         },{
             "name":"roguelike",
-            "size":(272, 101, 272),
+            "size":(464, 101, 464),
             "region":{"x":-2, "z":-1},
             "numDungeons":400,
             "coordinatesToFill":(
