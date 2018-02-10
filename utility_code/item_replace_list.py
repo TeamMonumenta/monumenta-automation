@@ -362,9 +362,9 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
             "id":"minecraft:golden_helmet",
             "name":u'''Jeweled Tiara''',
             "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
-            "print", "Lucky Jeweled Tiara still needed",
         },
         [
+            "print", "Lucky Jeweled Tiara still needed",
             "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
