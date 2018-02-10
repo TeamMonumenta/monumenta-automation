@@ -53,6 +53,7 @@ server_config = [
         ('Project_Epic-WORLDOOG_the_end/data/loot_tables', '../../../server_config/data/loot_tables'),
         ('plugins/ScriptedQuests/npcs', '../../../server_config/data/scriptedquests/npcs'),
         ('plugins/ScriptedQuests/compass', '../../../server_config/data/scriptedquests/compass'),
+        ('plugins/ScriptedQuests/death', '../../../server_config/data/scriptedquests/death'),
     ]
 
 advancements_disabled = [
@@ -180,6 +181,7 @@ config = {
         {"name":"Nyr", "type":"SafeZone", "pos1":"-181 0 -166", "pos2":"-79 256 14"},
         {"name":"Farr", "type":"SafeZone", "pos1":"538 0 100", "pos2":"658 256 229"},
         {"name":"Highwatch", "type":"SafeZone", "pos1":"1130 0 -156", "pos2":"1217 256 -76"},
+        {"name":"Lowtide Chef Quest Basement", "type":"AdventureZone", "pos1":"729 56 452", "pos2":"752 43 487"},
         {"name":"Lowtide Main", "type":"SafeZone", "pos1":"675 0 421", "pos2":"767 255 558"},
         {"name":"Lowtide docks", "type":"SafeZone", "pos1":"664 0 474", "pos2":"675 255 483"},
         {"name":"Lowtide boat", "type":"SafeZone", "pos1":"650 0 483", "pos2":"675 255 558"},
