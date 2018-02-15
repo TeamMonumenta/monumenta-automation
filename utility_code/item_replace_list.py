@@ -543,7 +543,7 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
             "id":"minecraft:anvil",
         },
         [
-            "nbt", "replace", ur'''{display:{Name:"§aMobile Repair Station"}}'''
+            "nbt", "replace", ur'''{display:{Name:"§aNarsen Anvil"}}'''
         ]
     ],
 
