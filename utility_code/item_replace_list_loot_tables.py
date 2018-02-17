@@ -6,6 +6,195 @@ from lib_monumenta import item_replace
 KingsValleyLootTables = item_replace.ReplaceItems([],[
 	[
 		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Turtle Flippers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Flippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Turtle Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Turtle Vest''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:6s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Turtle Helm''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:5s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:fishing_rod",
+			"name":u'''Angler's Rod''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:62s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fAngler's Rod"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:lever",
+			"name":u'''Damaged Hilt''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8Carved with elegant flowers"],Name:"§fDamaged Hilt"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:fish",
+			"name":u'''Magic Fish''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["* Gills *","§7Gives water breathing to you and nearby","§7allies when held in your offhand"],Name:"§b§lMagic Fish"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:shield",
+			"name":u'''Turtle Shield''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],BlockEntityTag:{Base:6,Patterns:[{Color:2,Pattern:"bri"}]},display:{Lore:["§8King's Valley : Uncommon"],Name:"§b§lTurtle Shield"},AttributeModifiers:[{UUIDMost:-2699735906624845463l,UUIDLeast:-6308071593572563623l,Amount:-0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-407094390218668203l,UUIDLeast:-9013419339908919017l,Amount:0.4d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Oncoming Tide''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:49s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§b§lOncoming Tide"},AttributeModifiers:[{UUIDMost:1004903320127294777l,UUIDLeast:-6735527447459109365l,Amount:0.07d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:cooked_fish",
+			"name":u'''Regal Salmon''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],display:{Lore:["§d* Quest Item *","#Q16I02"],Name:"§6§lRegal Salmon"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:rabbit",
+			"name":u'''Zombie Meat''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Name:"§fZombie Meat"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:cooked_rabbit",
+			"name":u'''Cooked Zombie Meat''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Name:"§fCooked Zombie Meat"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:splash_potion",
+			"name":u'''Extinguisher''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:16756736,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:200,Id:12b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§fExtinguisher"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:splash_potion",
+			"name":u'''Antidote''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:4239424,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:40,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:30,Id:19b,Amplifier:2b}],Potion:"minecraft:empty",display:{Lore:["§7Removes Poison II and lower"],Name:"§fAntidote"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:quartz",
+			"name":u'''Bone Shard''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8Broken, but could be rebuilt"],Name:"§fBone Shard"}}'''
+		]
+	],
+	[
+		{
+			"id":"rotten_flesh",
+			"name":u'''High Quality Beef''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:71s}],display:{Lore:["§d* Quest Item *","#Q17I02"],Name:"§l§3High Quality Beef"}}'''
+		]
+	],
+	[
+		{
+			"id":"rotten_flesh",
+			"name":u'''High Quality Beef''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:71s}],display:{Lore:["§d* Quest Item *,#Q17I02"],Name:"§l§3High Quality Beef"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:cooked_beef",
+			"name":u'''Cooked Horse Meat''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Name:"§fCooked Horse Meat"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:beef",
+			"name":u'''Horse Meat''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Name:"§fHorse Meat"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:splash_potion",
+			"name":u'''Antidote''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:4239424,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:40,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:30,Id:19b,Amplifier:2b}],Potion:"minecraft:empty",display:{Lore:["§7Removes Poison II and lower"],Name:"§fAntidote"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:splash_potion",
+			"name":u'''Potion of Salvation''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:13947904,CustomPotionEffects:[{Ambient:0b,ShowParticles:0b,Duration:600,Id:22b,Amplifier:1b},{Ambient:1b,ShowParticles:1b,Duration:100,Id:10b,Amplifier:1b}],Potion:"minecraft:awkward",display:{Name:"§fPotion of Salvation"}}'''
+		]
+	],
+	[
+		{
 			"id":"minecraft:sugar",
 			"name":u'''Pulsating Dust''',
 		},
@@ -514,7 +703,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Ancient Robes''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§fHalls of Wind and Blood","§8Flecks of flood stains these ancient","§8sacrificial robes."],color:6299664,Name:"§4§lAncient Robes"},AttributeModifiers:[{UUIDMost:6974589633277084868l,UUIDLeast:-6904800762426278794l,Amount:2.0d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:583279600458681380l,UUIDLeast:-6719247825501452697l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§fHalls of Wind and Blood","§8Flecks of blood stains these ancient","§8sacrificial robes."],color:6299664,Name:"§4§lAncient Robes"},AttributeModifiers:[{UUIDMost:6974589633277084868l,UUIDLeast:-6904800762426278794l,Amount:2.0d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:583279600458681380l,UUIDLeast:-6719247825501452697l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -3124,7 +3313,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Soulcrusher''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:6s,id:16s},{lvl:3s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Crush the body, crush the soul,§8crush the life that makes them whole.","§7","§7When in main hand:","§7 0.8 Attack Speed","§7 12.5 Attack Damage","§c -20% Speed"],Name:"§6§lSoulcrusher"},AttributeModifiers:[{UUIDMost:12446444898007617l,UUIDLeast:64791494739800248l,Amount:-0.2d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:19182804207771727l,UUIDLeast:44200783352792867l,Amount:8.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:1126358275258178l,UUIDLeast:50193448324688339l,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:6s,id:16s},{lvl:3s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Crush the body, crush the soul","§8crush the life that makes them whole.","§7","§7When in main hand:","§7 0.8 Attack Speed","§7 12.5 Attack Damage","§c -20% Speed"],Name:"§6§lSoulcrusher"},AttributeModifiers:[{UUIDMost:12446444898007617l,UUIDLeast:64791494739800248l,Amount:-0.2d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:19182804207771727l,UUIDLeast:44200783352792867l,Amount:8.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:1126358275258178l,UUIDLeast:50193448324688339l,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
 		]
 	],
 	[
@@ -3448,7 +3637,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Watcher's Sword''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:3s,id:34s}],display:{Lore:["* Unique Item *","§fQuis Custodeit Ipsos Custodets?"],Name:"§d§lWatcher's Sword"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:3s,id:34s}],display:{Lore:["* Unique Item *","§8Quis Custodeit Ipsos Custodets?"],Name:"§d§lWatcher's Sword"}}'''
 		]
 	],
 	[
@@ -3457,7 +3646,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Morphic Shield''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:70s}],BlockEntityTag:{Base:13,Patterns:[{Color:0,Pattern:"gra"},{Color:15,Pattern:"mc"}]},display:{Lore:["* Unique Item *","§fAs everlasting as a Memory"],Name:"§5§lMorphic Shield"},AttributeModifiers:[{UUIDMost:576781l,UUIDLeast:877205l,Amount:0.03d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:70s}],BlockEntityTag:{Base:13,Patterns:[{Color:0,Pattern:"gra"},{Color:15,Pattern:"mc"}]},display:{Lore:["* Unique Item *","§8As everlasting as a Memory"],Name:"§5§lMorphic Shield"},AttributeModifiers:[{UUIDMost:576781l,UUIDLeast:877205l,Amount:0.03d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
 		]
 	],
 	[
@@ -3475,7 +3664,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Silver Knight's Hammer''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:17s},{lvl:1s,id:70s}],display:{Lore:["* Unique Item *","§fA mighty weapon of heroes past"],Name:"§b§lSilver Knight's Hammer"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:17s},{lvl:1s,id:70s}],display:{Lore:["* Unique Item *","§8A mighty weapon of heroes past"],Name:"§b§lSilver Knight's Hammer"}}'''
 		]
 	],
 	[
@@ -3836,6 +4025,69 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 		},
 		[
 			"nbt", "replace", ur'''{CustomPotionColor:16756736,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:200,Id:12b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§fExtinguisher"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:beetroot",
+			"name":u'''Plague Bearer's Heart''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:71s}],display:{Lore:["It's still beating..."],Name:"Plague Bearer's Heart"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_hoe",
+			"name":u'''Pumpkin Spythe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:17s},{lvl:1s,id:18s},{lvl:3s,id:34s}],HideFlags:2,display:{Lore:["* Unique Event Item *","Halloween 2017","§8","§7When in main hand:","§7 2 Attack Speed","§7 5.5 Attack Damage"],Name:"§2§lPumpkin Spythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:coal",
+			"name":u'''Animated Coal''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lAnimated Coal"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stick",
+			"name":u'''Prehensile Stick''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lPrehensile Stick"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Rod of the Onodrim''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:1s,id:70s}],display:{Lore:["* Unique Event Item *","Winter 2017"],Name:"§9§lRod of the Onodrim"},AttributeModifiers:[{UUIDMost:2512866317016583848l,UUIDLeast:-8695731667534274344l,Amount:-0.4d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:2801717605841978307l,UUIDLeast:-4821070712928009977l,Amount:-0.2d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:5435604988355234856l,UUIDLeast:-7278734017423574959l,Amount:0.6d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:carrot",
+			"name":u'''Olfactory Carrot''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lOlfactory Carrot"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:snowball",
+			"name":u'''Everlasting Snow''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lEverlasting Snow"}}'''
 		]
 	],
 ])
