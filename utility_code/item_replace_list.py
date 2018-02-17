@@ -496,21 +496,29 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     ],
 
     ####################################
-    # Hoe items
-    
-    # Pumpkin Spythe
+    # Potions
+
+    # Essence of Frost
     [
         {
-            "id":"minecraft:stone_hoe",
-            "name":u'''Pumpkin Spythe''',
+            "id":"minecraft:potion",
+            "name":u'''Essence of Frost''',
         },
         [
-            "nbt", "replace", ur'''{ench:[{lvl:8s,id:16s},{lvl:2s,id:17s},{lvl:2s,id:34s},{lvl:1s,id:18s}],display:{Lore:["* Unique Event Item *","Halloween 2017"],Name:"§2§lPumpkin Spythe"}}'''
+            "nbt", "replace", ur'''{CustomPotionColor:7000823,CustomPotionEffects:[{Ambient:0b,ShowParticles:0b,Duration:24000,Id:2b,Amplifier:1b},{Ambient:0b,ShowParticles:0b,Duration:24000,Id:10b,Amplifier:0b},{Ambient:0b,ShowParticles:0b,Duration:24000,Id:21b,Amplifier:2b}],Potion:"minecraft:empty",display:{Lore:["§eKing's Valley : Rare"],Name:"§b§lEssence of Frost"}}'''
         ]
     ],
 
-    ####################################
-    # Potions
+    # Essence of Flame
+    [
+        {
+            "id":"minecraft:potion",
+            "name":u'''Essence of Flame''',
+        },
+        [
+            "nbt", "replace", ur'''{CustomPotionColor:15438662,CustomPotionEffects:[{Ambient:0b,ShowParticles:0b,Duration:9600,Id:5b,Amplifier:0b},{Ambient:0b,ShowParticles:0b,Duration:9600,Id:22b,Amplifier:0b},{Ambient:0b,ShowParticles:0b,Duration:9600,Id:12b,Amplifier:0b}],Potion:"minecraft:empty",display:{Lore:["§eKing's Valley : Rare"],Name:"§c§lEssence of Flame"}}'''
+        ]
+    ],
 
     ####################################
     # Other items
@@ -553,6 +561,28 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
 
     ############################################################################
     # 2017 Halloween Plague:
+
+    # Cupid's Bow
+    [
+        {
+            "id":"minecraft:bow",
+            "name":u'''Cupid's Bow''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:1s,id:7s}],display:{Lore:["* Unique Event Item *","§dValentine's 2018","* Regeneration *","* Mainhand Regeneration *","§7Grants Regeneration I when","§7held in either hand"],Name:"§d§lCupid's Bow"}}'''
+        ]
+    ],
+
+    # Pumpkin Spythe
+    [
+        {
+            "id":"minecraft:stone_hoe",
+            "name":u'''Pumpkin Spythe''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:17s},{lvl:3s,id:34s},{lvl:1s,id:18s}],HideFlags:2,display:{Lore:["* Event Item *","§2Halloween 2017","§7","§7When in main hand:","§7 2 Attack Speed","§7 5.5 Attack Damage"],Name:"§2§lPumpkin Spythe"},AttributeModifiers:[{UUIDMost:6433490404641818817L,UUIDLeast:-8593178968434576189L,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654L,UUIDLeast:-5839775210248136997L,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+        ]
+    ],
 
     # Plague Bearer's Boots
     [
