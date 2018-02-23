@@ -77,12 +77,6 @@ easywarp = [
         ('plugins/EasyWarp/config.yml', '../../../server_config/plugins/EasyWarp/config.yml'),
     ]
 
-# F3 + n switch creative/spectator for non-ops
-# Not currently used - buggy
-f3n = [
-        ('plugins/F3NPerm.jar', '../../server_config/plugins/F3NPerm.jar'),
-    ]
-
 worldedit = [
         ('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit.jar'),
         ('plugins/WorldEdit.jar', '../../server_config/plugins/WorldEdit.jar'),
@@ -127,6 +121,7 @@ speedchanger = [
     ]
 
 voxelsniper = [
+        ('plugins/FastAsyncVoxelSniper.jar', '../../server_config/plugins/FastAsyncVoxelSniper.jar'),
         ('plugins/VoxelSniper.jar', '../../server_config/plugins/VoxelSniper.jar'),
         ('plugins/VoxelSniper/config.yml', '../../../server_config/plugins/VoxelSniper/config.yml'),
     ]
