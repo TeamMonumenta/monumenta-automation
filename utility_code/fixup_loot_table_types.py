@@ -156,6 +156,10 @@ def fixup_tag(tag):
         del decoded["ench"]
         #print "AFTER:  ", ordered["ench"]
 
+    if ("Unbreakable" in decoded):
+        ordered["Unbreakable"] = decoded["Unbreakable"]
+        del decoded["Unbreakable"]
+
     if ("HideFlags" in decoded):
         ordered["HideFlags"] = decoded["HideFlags"]
         del decoded["HideFlags"]
