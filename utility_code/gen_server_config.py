@@ -198,6 +198,7 @@ config = {
         {"name":"Siege Of Highwatch", "type":"AdventureZone", "pos1":"1505 102 -178", "pos2":"1631 256 -16"},
         {"name":"Ctaz", "type":"AdventureZone", "pos1":"227 10 294", "pos2":"252 256 320"},
         {"name":"Hermy", "type":"AdventureZone", "pos1":"-331 86 334", "pos2":"-310 110 355"},
+        {"name":"West Water Tower", "type":"AdventureZone", "pos1":"-1377 0 -173", "pos2":"-1336 255 -132"},
 
         {"name":"Fountain of Miracles Patreon Trader", "type":"AdventureZone", "pos1":"501 67 437", "pos2":"512 57 422"},
         {"name":"Cursed Forest Patreon Trader", "type":"AdventureZone", "pos1":"1163 100 87", "pos2":"1151 90 80"},
