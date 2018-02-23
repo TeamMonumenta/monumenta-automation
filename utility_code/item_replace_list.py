@@ -274,31 +274,6 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     ####################################
     # skulls
 
-    # G3po -> g3p0 (items only for now I'm afraid)
-    [
-        {
-            "id":"minecraft:skull",
-            "damage":3,
-            "nbt":ur'''{SkullOwner:{Id:"8364a924-d1f2-4760-8db3-e4034fdcfe5b"}}''',
-        },
-        [
-            "print", "G3po -> g3p0 still needed",
-            "nbt", "replace", ur'''{SkullOwner:{Id:"bead93a4-fe1a-44d3-a02b-16b2f1f6f110",Properties:{textures:[{Signature:"ig9KhREcJcglVDIOtGxBbjQRmYN28g1s3J+g7WTe9AujWXIDoYyigB8NXWQw/dkWXX2oTHsRrxd8MNxX2TNPsvd+6C21J1p50LkMu1pZoyRSTDfQ6y0FmEnbg+TuRtfg5YZ6K5WBpRpTfivi51+NViIhbKTAm5KuACtMsCgGiKxCmDnt9S7uQSYd9W/tq1VV6w9ocw+34W1hujIt8ETN4GBAie98a7GBFlK5Mnmf1VEr8HeNqQkBpx29FR4CHTGNtWTdW7S1Q55jXcXVtM2tmp1JVshB5OHQ8s/U0KWkLOupYEfTIHqijKFXnTNfrPvdxXl/rAO93nwO75AUk7MVlPg4BTbjJn6Tece+G8fv3Xskn2lUeXrTiH+IDZYIrsPIKk+Nm6bg254aShIc2IIImwPR26BxLurT4iM+GNOJc7FuBcs12/0hZZSnEmapqlKdBhxegpCTUq5evJ8uR9Gp7Rs3l9qLueAlQ+5fiWTRWJDJ4yPwVDArK38Jmdc8yUPPimvZnYM3GxUtmjUyu8VRt3okbmGl4ttb//casujbFIoBDY3ngKsdQKMQyh8feSle78/+YyWLFfkWjpyZym+FRhNjLIuUgZMBxz9i72PUdOigvhJPGB+LChq81MtLVL5bt6cH8FoXCWiz9KJtOP5sfuERu/59qY4aVw1eYdhI570=",Value:"eyJ0aW1lc3RhbXAiOjE1MTAxMjU4NDA0MDIsInByb2ZpbGVJZCI6ImJlYWQ5M2E0ZmUxYTQ0ZDNhMDJiMTZiMmYxZjZmMTEwIiwicHJvZmlsZU5hbWUiOiJnM3AwIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS85OTExNzJhZjUzMmUxMmQ3MjRmNzEyZDA2N2YxYWFhNWQyZjMwMzUzZWZlNzViYTJkYjNhYjdmODliNWQxMSJ9fX0="}]},Name:"g3p0"}}'''
-        ]
-    ],
-
-    [ # same, but by IGN instead
-        {
-            "id":"minecraft:skull",
-            "damage":3,
-            "nbt":ur'''{SkullOwner:{Name:"G3po"}}''',
-        },
-        [
-            "print", "G3po -> g3p0 by IGN still needed",
-            "nbt", "replace", ur'''{SkullOwner:{Id:"bead93a4-fe1a-44d3-a02b-16b2f1f6f110",Properties:{textures:[{Signature:"ig9KhREcJcglVDIOtGxBbjQRmYN28g1s3J+g7WTe9AujWXIDoYyigB8NXWQw/dkWXX2oTHsRrxd8MNxX2TNPsvd+6C21J1p50LkMu1pZoyRSTDfQ6y0FmEnbg+TuRtfg5YZ6K5WBpRpTfivi51+NViIhbKTAm5KuACtMsCgGiKxCmDnt9S7uQSYd9W/tq1VV6w9ocw+34W1hujIt8ETN4GBAie98a7GBFlK5Mnmf1VEr8HeNqQkBpx29FR4CHTGNtWTdW7S1Q55jXcXVtM2tmp1JVshB5OHQ8s/U0KWkLOupYEfTIHqijKFXnTNfrPvdxXl/rAO93nwO75AUk7MVlPg4BTbjJn6Tece+G8fv3Xskn2lUeXrTiH+IDZYIrsPIKk+Nm6bg254aShIc2IIImwPR26BxLurT4iM+GNOJc7FuBcs12/0hZZSnEmapqlKdBhxegpCTUq5evJ8uR9Gp7Rs3l9qLueAlQ+5fiWTRWJDJ4yPwVDArK38Jmdc8yUPPimvZnYM3GxUtmjUyu8VRt3okbmGl4ttb//casujbFIoBDY3ngKsdQKMQyh8feSle78/+YyWLFfkWjpyZym+FRhNjLIuUgZMBxz9i72PUdOigvhJPGB+LChq81MtLVL5bt6cH8FoXCWiz9KJtOP5sfuERu/59qY4aVw1eYdhI570=",Value:"eyJ0aW1lc3RhbXAiOjE1MTAxMjU4NDA0MDIsInByb2ZpbGVJZCI6ImJlYWQ5M2E0ZmUxYTQ0ZDNhMDJiMTZiMmYxZjZmMTEwIiwicHJvZmlsZU5hbWUiOiJnM3AwIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS85OTExNzJhZjUzMmUxMmQ3MjRmNzEyZDA2N2YxYWFhNWQyZjMwMzUzZWZlNzViYTJkYjNhYjdmODliNWQxMSJ9fX0="}]},Name:"g3p0"}}'''
-        ]
-    ],
-
     [ # Wrangler's Disguise
         {
             "id":"minecraft:skull",
@@ -375,30 +350,8 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     ####################################
     # Leggings
 
-    # Steelscale Leggings
-    [
-        {
-            "id":"minecraft:chainmail_leggings",
-            "name":u'''Steelscale Leggings''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:4s},{lvl:2s,id:34s}],display:{Lore:["§eKing's Valley : §lEnhanced Rare"],Name:"§9§lSteelscale Leggings"},AttributeModifiers:[{UUIDMost:-2327598243755965121l,UUIDLeast:-7295240752476775997l,Amount:4.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-1961662591581338036l,UUIDLeast:-7158710234379227327l,Amount:3.0d,Slot:"legs",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"}]}'''
-        ]
-    ],
-
     ####################################
     # Boots
-
-    # Boots of Vigor
-    [
-        {
-            "id":"minecraft:leather_boots",
-            "name":u'''Boots of Vigor''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:5s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : §lEnhanced Rare"],color:4521728,Name:"§2§lBoots of Vigor"},AttributeModifiers:[{UUIDMost:4275084912512485263l,UUIDLeast:-5640926957255110802l,Amount:3.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:2935233553126737342l,UUIDLeast:-8942942613933079309l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-        ]
-    ],
 
     ################
     # gold
@@ -456,69 +409,14 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     ################
     # stone
 
-    # Rosethorn Blade
-    [
-        {
-            "id":"minecraft:stone_sword",
-            "name":u'''Rosethorn Blade''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:6s,id:16s},{lvl:2s,id:18s},{lvl:3s,id:34s},{lvl:1s,id:7s},{lvl:2s,id:22s}],HideFlags:2,display:{Lore:["§eKing's Valley : §lEnhanced Rare","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 8.5 Attack Damge","§c -1 Armor"],Name:"§2§lRosethorn Blade"},AttributeModifiers:[{UUIDMost:-4030115003770974645l,UUIDLeast:-8624436179929330760l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-6097606032756880319l,UUIDLeast:-6935384686738106924l,Amount:4.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:4535675750486917643l,UUIDLeast:-6071361771643014893l,Amount:-1.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-        ]
-    ],
-
     ################
     # gold
-
-    # Geomantic Dagger
-    [
-        {
-            "id":"minecraft:golden_sword",
-            "name":u'''Geomantic Dagger''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:17s},{lvl:5s,id:34s}],HideFlags:2,display:{Lore:["* Unique Item *","§8","§7When in main hand:","§7 1.6 Attack Speed","§7 5.5 Attack Damage","§9 +3 Armor"],Name:"§6§lGeomantic Dagger"},AttributeModifiers:[{UUIDMost:749364,UUIDLeast:739930,Amount:3,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:787340,UUIDLeast:172309,Amount:3,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:728374,UUIDLeast:661477,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
-        ]
-    ],
 
     ####################################
     # Axe items
 
-    # The Annihilator
-    [
-        {
-            "id":"minecraft:stone_axe",
-            "name":u'''The Annihilator''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:4s,id:34s},{lvl:3s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§eKing's Valley : §lEnhanced Rare"],Name:"§3§lThe Annihilator"}}'''
-        ]
-    ],
-
     ####################################
     # Potions
-
-    # Essence of Frost
-    [
-        {
-            "id":"minecraft:potion",
-            "name":u'''Essence of Frost''',
-        },
-        [
-            "nbt", "replace", ur'''{CustomPotionColor:7000823,CustomPotionEffects:[{Ambient:0b,ShowParticles:0b,Duration:24000,Id:2b,Amplifier:1b},{Ambient:0b,ShowParticles:0b,Duration:24000,Id:10b,Amplifier:0b},{Ambient:0b,ShowParticles:0b,Duration:24000,Id:21b,Amplifier:2b}],Potion:"minecraft:empty",display:{Lore:["§eKing's Valley : Rare"],Name:"§b§lEssence of Frost"}}'''
-        ]
-    ],
-
-    # Essence of Flame
-    [
-        {
-            "id":"minecraft:potion",
-            "name":u'''Essence of Flame''',
-        },
-        [
-            "nbt", "replace", ur'''{CustomPotionColor:15438662,CustomPotionEffects:[{Ambient:0b,ShowParticles:0b,Duration:9600,Id:5b,Amplifier:0b},{Ambient:0b,ShowParticles:0b,Duration:9600,Id:22b,Amplifier:0b},{Ambient:0b,ShowParticles:0b,Duration:9600,Id:12b,Amplifier:0b}],Potion:"minecraft:empty",display:{Lore:["§eKing's Valley : Rare"],Name:"§c§lEssence of Flame"}}'''
-        ]
-    ],
 
     ####################################
     # Other items
@@ -559,40 +457,145 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     # Event items:
     ############################################################################
 
-    ############################################################################
+    ########################################
     # 2017 Halloween Plague:
-
-    # Cupid's Bow
     [
-        {
-            "id":"minecraft:bow",
-            "name":u'''Cupid's Bow''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:1s,id:7s}],display:{Lore:["* Unique Event Item *","§dValentine's 2018","* Regeneration *","* Mainhand Regeneration *","§7Grants Regeneration I when","§7held in either hand"],Name:"§d§lCupid's Bow"}}'''
-        ]
+            {
+                    "id":"minecraft:pumpkin",
+                    "name":u'''Plague Bearer's Head''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:5s},{lvl:10s,id:7s}],display:{Lore:["* Unique Event Item *","§2Halloween 2017"],Name:"§2§lPlague Bearer's Head"},AttributeModifiers:[{UUIDMost:288139l,UUIDLeast:25869l,Amount:-4d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:737075l,UUIDLeast:622094l,Amount:1d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:leather_chestplate",
+                    "name":u'''Plague Bearer's Tunic''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:4s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","§2Halloween 2017"],color:8252160,Name:"§2§lPlague Bearer's Tunic"},AttributeModifiers:[{UUIDMost:-2864634781938629890l,UUIDLeast:-4853618912971704644l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:6775590779125908083l,UUIDLeast:-4834564711714845847l,Amount:0.35d,Slot:"chest",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"},{UUIDMost:-3135663898049493017l,UUIDLeast:-5638735112125366694l,Amount:-4.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:leather_leggings",
+                    "name":u'''Plague Bearer's Soiled Trousers''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:2s,id:4s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","§2Halloween 2017"],color:13070852,Name:"§2§lPlague Bearer's Soiled Trousers"},AttributeModifiers:[{UUIDMost:1644902849549979627l,UUIDLeast:-6334696171190229818l,Amount:-4.0d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:2348010706303338053l,UUIDLeast:-6411594601520431420l,Amount:0.4d,Slot:"legs",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:2225618996942884003l,UUIDLeast:-6129754164345949662l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:leather_boots",
+                    "name":u'''Plague Bearer's Boots''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","§2Halloween 2017"],color:675072,Name:"§2§lPlague Bearer's Boots"},AttributeModifiers:[{UUIDMost:-1640941516099861248l,UUIDLeast:-6326317583102562813l,Amount:-4.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-2914598640505769820l,UUIDLeast:-7162398802439954937l,Amount:0.12d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4035352220502543838l,UUIDLeast:-6384754459282382086l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:1151211762335105703l,UUIDLeast:-8899502024825300851l,Amount:0.6d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:stone_hoe",
+                    "name":u'''Pumpkin Spythe''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:17s},{lvl:1s,id:18s},{lvl:3s,id:34s}],HideFlags:2,display:{Lore:["* Event Item *","§2Halloween 2017","§7","§7When in main hand:","§7 2 Attack Speed","§7 5.5 Attack Damage"],Name:"§2§lPumpkin Spythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+            ]
     ],
 
-    # Pumpkin Spythe
+    ########################################
+    # 2017 Winter with Nivalis
     [
-        {
-            "id":"minecraft:stone_hoe",
-            "name":u'''Pumpkin Spythe''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:17s},{lvl:3s,id:34s},{lvl:1s,id:18s}],HideFlags:2,display:{Lore:["* Event Item *","§2Halloween 2017","§7","§7When in main hand:","§7 2 Attack Speed","§7 5.5 Attack Damage"],Name:"§2§lPumpkin Spythe"},AttributeModifiers:[{UUIDMost:6433490404641818817L,UUIDLeast:-8593178968434576189L,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654L,UUIDLeast:-5839775210248136997L,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
-        ]
+            {
+                    "id":"minecraft:stick",
+                    "name":u'''Prehensile Stick''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","§9Winter 2017"],Name:"§6§lPrehensile Stick"}}'''
+            ]
     ],
-
-    # Plague Bearer's Boots
     [
-        {
-            "id":"minecraft:leather_boots",
-            "name":u'''Plague Bearer's Boots''',
-        },
-        [
-            "nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","Halloween 2017"],color:675072,Name:"§2§lPlague Bearer's Boots"},AttributeModifiers:[{UUIDMost:-1640941516099861248L,UUIDLeast:-6326317583102562813L,Amount:-4.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-2914598640505769820L,UUIDLeast:-7162398802439954937L,Amount:0.12d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4035352220502543838L,UUIDLeast:-6384754459282382086L,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:1151211762335105703L,UUIDLeast:-8899502024825300851L,Amount:0.6d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
-        ]
+            {
+                    "id":"minecraft:coal",
+                    "name":u'''Animated Coal''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","§9Winter 2017"],Name:"§6§lAnimated Coal"}}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:carrot",
+                    "name":u'''Olfactory Carrot''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","§9Winter 2017"],Name:"§6§lOlfactory Carrot"}}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:snowball",
+                    "name":u'''Everlasting Snow''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","§9Winter 2017"],Name:"§6§lEverlasting Snow"}}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:leather_boots",
+                    "name":u'''Snegovik Boots''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:4s,id:34s},{lvl:3s,id:2s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","§9Winter 2017"],color:16383998,Name:"§9§lSnegovik Boots"},AttributeModifiers:[{UUIDMost:-5978105780621458805l,UUIDLeast:-8700344539718369213l,Amount:-0.25d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:3187109101431704271l,UUIDLeast:-6731613508922955815l,Amount:0.25d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-287479839887832961l,UUIDLeast:-4828764350438371832l,Amount:3.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:leather_leggings",
+                    "name":u'''Snegovik Greaves''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","§9Winter 2017"],color:16383998,Name:"§9§lSnegovik Greaves"},AttributeModifiers:[{UUIDMost:-6341046020925667044l,UUIDLeast:-6457955953871678720l,Amount:-0.25d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-7631271266390487651l,UUIDLeast:-7348755354350928744l,Amount:0.25d,Slot:"legs",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-5436134608155098067l,UUIDLeast:-8350436639202330222l,Amount:3.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:leather_chestplate",
+                    "name":u'''Snegovik Cuirass''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","§9Winter 2017"],color:16383998,Name:"§9§lSnegovik Cuirass"},AttributeModifiers:[{UUIDMost:-4287348896770604697l,UUIDLeast:-6859886905264673929l,Amount:-0.25d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4129461185357693856l,UUIDLeast:-6077279240674996299l,Amount:0.25d,Slot:"chest",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:179710638715454523l,UUIDLeast:-5179097180515627721l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:leather_helmet",
+                    "name":u'''Snegovik Helm''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:4s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","* Unique Event Item *","§9Winter 2017"],color:16383998,Name:"§9§lSnegovik Helm"},AttributeModifiers:[{UUIDMost:-7121844074788926637l,UUIDLeast:-7125048144545132342l,Amount:-0.25d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-3760667262727925946l,UUIDLeast:-6993157342267378714l,Amount:0.25d,Slot:"head",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-1237906264110972440l,UUIDLeast:-5382957932985185645l,Amount:3.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:wooden_sword",
+                    "name":u'''Rod of the Onodrim''',
+            },
+            [
+                    "nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:1s,id:70s}],display:{Lore:["* Unique Event Item *","§9Winter 2017"],Name:"§9§lRod of the Onodrim"},AttributeModifiers:[{UUIDMost:2512866317016583848l,UUIDLeast:-8695731667534274344l,Amount:-0.4d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:2801717605841978307l,UUIDLeast:-4821070712928009977l,Amount:-0.2d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:5435604988355234856l,UUIDLeast:-7278734017423574959l,Amount:0.6d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
+            ]
+    ],
+    [
+            {
+                    "id":"minecraft:leather_chestplate",
+                    "name":u'''Ebola Shirt''',
+            },
+            [
+                    "nbt", "replace", ur'''{Unbreakable:1,display:{Lore:["§bLeather Armor","* Unique Event Item *","* Stylish *","§cWe are small, but our legend spreads like Ebola.","§4Uganda 2018"],color:16711680,Name:"§c§lEbola Shirt"}}'''
+            ]
     ],
 
     # Fix all loot table items on both build and play servers
