@@ -206,7 +206,7 @@ config = {
 
         {"name":"Fountain of Miracles Patreon Trader", "type":"AdventureZone", "pos1":"501 67 437", "pos2":"512 57 422"},
         {"name":"Cursed Forest Patreon Trader", "type":"AdventureZone", "pos1":"1163 100 87", "pos2":"1151 90 80"},
-        {"name":"Nivalis Cave", "type":"AdventureZone", "pos1":"999 119 -306", "pos2":"1006 128 -295"},
+        {"name":"Nivalis Cave", "type":"AdventureZone", "pos1":"998 119 -320", "pos2":"1008 135 -295"},
         {"name":"Haunted House Quest", "type":"AdventureZone", "pos1":"1000 7 72", "pos2":"1042 38 108"},
 
         {"name":"post-monument Sage Draiikali", "type":"AdventureZone", "pos1":"1220 0 -126", "pos2":"1242 255 -103"},
