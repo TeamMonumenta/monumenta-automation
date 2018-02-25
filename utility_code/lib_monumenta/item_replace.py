@@ -1032,6 +1032,7 @@ class actNBT(object):
         bannerColor = None
         bannerPattern = None
         soulbound = None
+        isReplica = False
         if "tag" in itemStack:
             # armor color
             if "display" in itemStack["tag"]:
@@ -1039,8 +1040,11 @@ class actNBT(object):
                 if "color" in displayTag:
                     armorColor = displayTag["color"]
                 if "Lore" in displayTag:
-                    if u"* Soulbound to " in displayTag["Lore"][-1].value:
-                        soulbound = displayTag["Lore"][-1]
+                    for loreLine in displayTag["Lore"]:
+                        if u"* Soulbound to " in loreLine.value:
+                            soulbound = loreLine
+                        if loreLine.value == u'''§5§o* Replica Item *''':
+                            isReplica = True
             # banner/shield color/pattern
             if "BlockEntityTag" in itemStack["tag"]:
                 if "Base" in itemStack["tag"]["BlockEntityTag"]:
@@ -1082,6 +1086,13 @@ class actNBT(object):
                     itemStack["tag"]["display"]["color"] = armorColor
                 if soulbound is not None:
                     itemStack["tag"]["display"]["Lore"].append(soulbound)
+                if isReplica:
+                    for loreLine in itemStack["tag"]["display"]["Lore"]:
+                        if loreLine.value == u'''* Unique Item *''':
+                            loreLine.value = u'''§5§o* Replica Item *'''
+                        if loreLine.value == u'''King's Valley: Unique''':
+                            loreLine.value = u'''§5§o* Replica Item *'''
+                        
             # banner/shield color/pattern
             if (
                 (bannerColor is not None) or
