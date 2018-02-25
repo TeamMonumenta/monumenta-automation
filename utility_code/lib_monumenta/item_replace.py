@@ -174,7 +174,7 @@ class ReplaceItems(object):
         self.log_data["global"] = {}
         self.replacements = allReplacements(replacementList,self.log_data)
         if "global count" in debug:
-            self.log_data["global"]["global count"] = {}
+            self.enableGlobalCount()
         self.entityIter = IterEntities(
             [
                 "block entities",
@@ -188,6 +188,7 @@ class ReplaceItems(object):
     def enableGlobalCount(self):
         if "global count" not in self.log_data["debug"]:
             self.log_data["debug"].append("global count")
+        if "global count" not in self.log_data["global"]:
             self.log_data["global"]["global count"] = {}
 
     def InWorld(self,world):
@@ -234,10 +235,10 @@ class ReplaceItems(object):
                 f.close()
 
     def _OnEntities(self,dummyArg,entityDetails):
-        self.entity = entityDetails["entity"]
-        self.log_data["entity"] = self.entity
-
+        entity = entityDetails["entity"]
+        self.log_data["entity"] = entity
         self.log_data["player file"] = entityDetails["player file"]
+        self.log_data["chunk"] = entityDetails["chunk"]
 
         # The entity exists in the world/schematic directly,
         # not inside something.
@@ -249,10 +250,10 @@ class ReplaceItems(object):
 
         # Handle villager trades
         if (
-            ("Offers" in self.entity) and
-            ("Recipes" in self.entity["Offers"])
+            ("Offers" in entity) and
+            ("Recipes" in entity["Offers"])
         ):
-            for trade in self.entity["Offers"]["Recipes"]:
+            for trade in entity["Offers"]["Recipes"]:
                 if "buy" in trade:
                     self._InStack(trade["buy"])
                 if "buyB" in trade:
@@ -261,28 +262,28 @@ class ReplaceItems(object):
                     self._InStack(trade["sell"])
 
         for containerTagName in containerTagNames:
-            if containerTagName in self.entity:
+            if containerTagName in entity:
                 # Replace hand items if they can drop
                 if containerTagName == "HandItems":
-                    if "HandDropChances" in self.entity:
+                    if "HandDropChances" in entity:
                         for i in range(2):
-                            if self.entity["HandDropChances"][i] > -1.00:
-                                self._InStack(self.entity[containerTagName][i])
+                            if entity["HandDropChances"][i] > -1.00:
+                                self._InStack(entity[containerTagName][i])
                     else:
-                        self._InStack(self.entity[containerTagName])
+                        self._InStack(entity[containerTagName])
 
                 # Replace armor items if they can drop
                 elif containerTagName == "ArmorItems":
-                    if "ArmorDropChances" in self.entity:
+                    if "ArmorDropChances" in entity:
                         for i in range(4):
-                            if self.entity["ArmorDropChances"][i] > -1.00:
-                                self._InStack(self.entity[containerTagName][i])
+                            if entity["ArmorDropChances"][i] > -1.00:
+                                self._InStack(entity[containerTagName][i])
                     else:
-                        self._InStackList(self.entity[containerTagName])
+                        self._InStackList(entity[containerTagName])
 
                 # Replace other items; they always drop
                 else:
-                    self._InStackList(self.entity[containerTagName])
+                    self._InStackList(entity[containerTagName])
 
     def _InStackList(self,itemStackList):
         if type(itemStackList) is nbt.TAG_List:
@@ -429,15 +430,15 @@ class allReplacements(list):
             if type(aReplacement) is ReplaceItems:
                 if "init" in log_data["debug"]:
                     print u"  ┣╸Adding a replacement list"
-                    print u"  ┃ ╟╴No code to track which one it is, sorry."
+                    print u"  ┃ ╙╴No code to track which one it is, sorry."
                 self._replacements.append(aReplacement.replacements)
             else:
                 self._replacements.append(replacement(aReplacement,log_data))
         print u"  Found " + unicode(len(self._replacements)) + u" replacements."
 
     def run(self,itemStack,log_data):
-        for replacement in self._replacements:
-            replacement.run(itemStack,log_data)
+        for aReplacement in self._replacements:
+            aReplacement.run(itemStack,log_data)
 
 class replacement(object):
     def __init__(self,replacementPair,log_data):
@@ -450,9 +451,10 @@ class replacement(object):
         # matches is the list of uncompiled matches
         # self._matches is the list of compiled matches
         if (
-            ("any" in matches) and
-            (len(matches.keys()) == 1)
+            "any" in matches and
+            len(matches.keys()) == 1
         ):
+            # If is level only contains an OR, skip to it
             self._matches = matchAny(matches["any"])
         else:
             self._matches = matchAll(matches)
@@ -927,7 +929,7 @@ class actName(object):
             color = actionOptions.pop(0)
             if type(color) == int:
                 # assumes color is a number from 0-15
-                self._color = formatCodes["list"][color]["id"]
+                self._color = formatCodes["list"][color]
             elif (
                 (type(color) == str) or
                 (type(color) == unicode)
@@ -1004,7 +1006,10 @@ class actName(object):
 
     def str(self,prefix=u''):
         if self._cmd == "color":
-            return prefix + u'└╴Update name color to {} if name exists'.format(self._color["display"])
+            if self._color is None:
+                return prefix + u'└╴Remove name color if name exists'
+            else:
+                return prefix + u'└╴Update name color to {} if name exists'.format(self._color["display"])
         elif self._cmd == "set":
             if self._setName is None:
                 return prefix + u'└╴Remove item name'
@@ -1020,7 +1025,7 @@ class actNBT(object):
     def __init__(self,actionOptions):
         self._operation = actionOptions.pop(0)
         if (
-                (self._operation == "set")
+                (self._operation == "update")
                 or (self._operation == "replace")
         ):
             self._nbt = nbt.json_to_tag( actionOptions.pop(0) )
@@ -1028,17 +1033,17 @@ class actNBT(object):
     def run(self,itemStack,log_data):
         ########################################
         # Preserve cosmetics and soulbound tag
-        armorColor = None
-        bannerColor = None
-        bannerPattern = None
+        tagsToRestore = nbt.TAG_Compound()
         soulbound = None
         isReplica = False
         if "tag" in itemStack:
+            tagsToRestore["tag"] = nbt.TAG_Compound()
             # armor color
             if "display" in itemStack["tag"]:
                 displayTag = itemStack["tag"]["display"]
+                tagsToRestore["tag"]["display"] = nbt.TAG_Compound()
                 if "color" in displayTag:
-                    armorColor = displayTag["color"]
+                    tagsToRestore["tag"]["display"]["color"] = displayTag["color"]
                 if "Lore" in displayTag:
                     for loreLine in displayTag["Lore"]:
                         if u"* Soulbound to " in loreLine.value:
@@ -1047,10 +1052,11 @@ class actNBT(object):
                             isReplica = True
             # banner/shield color/pattern
             if "BlockEntityTag" in itemStack["tag"]:
+                tagsToRestore["tag"]["BlockEntityTag"] = nbt.TAG_Compound()
                 if "Base" in itemStack["tag"]["BlockEntityTag"]:
-                    bannerColor = itemStack["tag"]["BlockEntityTag"]["Base"]
+                    tagsToRestore["tag"]["BlockEntityTag"]["Base"] = itemStack["tag"]["BlockEntityTag"]["Base"]
                 if "Patterns" in itemStack["tag"]["BlockEntityTag"]:
-                    bannerPattern = itemStack["tag"]["BlockEntityTag"]["Patterns"]
+                    tagsToRestore["tag"]["BlockEntityTag"]["Patterns"] = itemStack["tag"]["BlockEntityTag"]["Patterns"]
 
         ########################################
         # Clear NBT if needed
@@ -1076,14 +1082,12 @@ class actNBT(object):
             # if we intended to clear their NBT, it's probably
             # for a good reason. If we put it back, we put
             # player customizations back.
-            if (
-                (armorColor is not None) or
-                (soulbound is not None)
-            ):
+            itemStack.update(tagsToRestore)
+            if soulbound is not None:
                 if "display" not in itemStack["tag"]:
                     itemStack["tag"]["display"] = nbt.TAG_Compound()
-                if armorColor is not None:
-                    itemStack["tag"]["display"]["color"] = armorColor
+                if "lore" not in itemStack["tag"]["display"]:
+                    itemStack["tag"]["display"] = nbt.TAG_List()
                 if soulbound is not None:
                     itemStack["tag"]["display"]["Lore"].append(soulbound)
                 if isReplica:
@@ -1092,18 +1096,6 @@ class actNBT(object):
                             loreLine.value = u'''§5§o* Replica Item *'''
                         if loreLine.value == u'''King's Valley: Unique''':
                             loreLine.value = u'''§5§o* Replica Item *'''
-                        
-            # banner/shield color/pattern
-            if (
-                (bannerColor is not None) or
-                (bannerPattern is not None)
-            ):
-                if "BlockEntityTag" not in itemStack["tag"]:
-                    itemStack["tag"]["BlockEntityTag"] = nbt.TAG_Compound()
-                if bannerColor is not None:
-                    itemStack["tag"]["BlockEntityTag"]["Base"] = bannerColor
-                if bannerPattern is not None:
-                    itemStack["tag"]["BlockEntityTag"]["Patterns"] = bannerPattern
 
     def str(self,prefix=u''):
         if self._operation == "clear":

@@ -8,6 +8,7 @@ import time
 
 from lib_monumenta.terrain_reset import terrainReset
 import item_replace_list
+import entity_update_list
 
 configList = [{
     "server":"region_1",
@@ -25,6 +26,10 @@ configList = [{
     # it treats them as additional coordinatesToFill instead, filling those regions
     # so that their positions can be easily checked in-game
     #"coordinatesDebug":True,
+
+    # List of places where entity updates should be run - options are "world", "schematics" (players not yet available, considering replacing creeper spawn eggs with a copy of Mr Snuggles that can't complete the Mr Snuggles quest)
+    "entityUpdates":entity_update_list.KingsValleyBuild,
+    "entityUpdateLocations":["world",],
 
     # List of places where item replacements should be run - options are "players", "world", "schematics"
     "itemReplacements":item_replace_list.KingsValleyBuild,
