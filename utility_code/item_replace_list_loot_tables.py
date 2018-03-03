@@ -141,24 +141,6 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"rotten_flesh",
-			"name":u'''High Quality Beef''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:71s}],display:{Lore:["§d* Quest Item *","#Q17I02"],Name:"§l§3High Quality Beef"}}'''
-		]
-	],
-	[
-		{
-			"id":"rotten_flesh",
-			"name":u'''High Quality Beef''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:71s}],display:{Lore:["§d* Quest Item *,#Q17I02"],Name:"§l§3High Quality Beef"}}'''
-		]
-	],
-	[
-		{
 			"id":"minecraft:cooked_beef",
 			"name":u'''Cooked Horse Meat''',
 		},
@@ -978,15 +960,6 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:yellow_flower",
-			"name":u'''Essence of Passion''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§5§o* Event Item *","§dValentine's 2018"],Name:"§d§lEssence of Passion"}}'''
-		]
-	],
-	[
-		{
 			"id":"minecraft:lingering_potion",
 			"name":u'''Strong Barrier Potion''',
 		},
@@ -1073,24 +1046,6 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 		},
 		[
 			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:1s},{lvl:2s,id:34s},{lvl:2s,id:3s},{lvl:2s,id:4s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§3Arcane Rivalry","§8The mantle of Archmage is passed by death.","§8More specifically by killing the prior owner."],color:8201983,Name:"§d§lArchmage's Vestment"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:red_flower",
-			"name":u'''Essence of Yearning''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§5§o* Event Item *","§dValentine's 2018"],Name:"§d§lEssence of Yearning"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:red_flower",
-			"name":u'''Essence of Devotion''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§5§o* Event Item *","§dValentine's 2018"],Name:"§d§lEssence of Devotion"}}'''
 		]
 	],
 	[
@@ -2922,15 +2877,6 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:red_flower",
-			"name":u'''Essence of Romance''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§5§o* Event Item *","§dValentine's 2018"],Name:"§d§lEssence of Romance"}}'''
-		]
-	],
-	[
-		{
 			"id":"minecraft:wooden_sword",
 			"name":u'''Ironwood Blade''',
 		},
@@ -3322,6 +3268,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Doom's Edge''',
 		},
 		[
+			"id","minecraft:golden_sword",
 			"nbt", "replace", ur'''{ench:[{lvl:7s,id:16s},{lvl:1s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:22s},{lvl:1s,id:71s}],display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Those sent into the temple were","§8doomed from the start."],Name:"§6§lDoom's Edge"}}'''
 		]
 	],
@@ -3412,7 +3359,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Frostbite Scythe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:17s},{lvl:4s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§cEphemeral Corridors","§8Even beyond death, the bones remember","§8the chill.","§7","§7When in main hand:","§7 2 Attack Speed","§7 6 Attack Damage"],Name:"§b§lFrostbite Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:17s},{lvl:4s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§cEphemeral Corridors","§8Even beyond death, the bones remember","§8the chill.","§7","§7When in main hand:","§7 2 Attack Speed","§7 6 Attack Damage"],Name:"§b§lFrostbite Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -3647,6 +3594,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 		},
 		[
 			"nbt", "replace", ur'''{ench:[{lvl:1s,id:70s}],BlockEntityTag:{Base:13,Patterns:[{Color:0,Pattern:"gra"},{Color:15,Pattern:"mc"}]},display:{Lore:["* Unique Item *","§8As everlasting as a Memory"],Name:"§5§lMorphic Shield"},AttributeModifiers:[{UUIDMost:576781l,UUIDLeast:877205l,Amount:0.03d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:rotten_flesh",
+			"name":u'''High-Quality Beef''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:71s}],display:{Lore:["§d* Quest Item *","#Q17I02"],Name:"§6§lHigh-Quality Beef"}}'''
 		]
 	],
 	[
@@ -3944,6 +3900,42 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 		},
 		[
 			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§6§lBurdened Stone"},AttributeModifiers:[{UUIDMost:1533226517562609431l,UUIDLeast:-6398042709746424447l,Amount:-0.1d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-8773735443779992269l,UUIDLeast:-8038567590932003071l,Amount:-2.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-1805071597428191759l,UUIDLeast:-8809138101270845723l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-5381934911278069713l,UUIDLeast:-6206268774793144820l,Amount:0.8d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:record_mall",
+			"name":u'''Obsidian Hits''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8A disc made out of solid obsidian.","§8It has a nice chime to it."],Name:"§5§lObsidian Hits"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:record_ward",
+			"name":u'''Embalmer's Mixtape''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8An old record for an old Embalmer.","§8Questionably eerie, yet soothing."],Name:"§2§lEmbalmer's Mixtape"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:record_strad",
+			"name":u'''Web-Covered Classics''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8Coated in a thick webbing,","§8this track is oddly upbeat."],Name:"§f§lWeb-Covered Classics"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:record_13",
+			"name":u'''Sandy Smooth Jazz''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8The sand grains in the disc","§8add a pleasant metallic ring."],Name:"§6§lSandy-Smooth Jazz"}}'''
 		]
 	],
 	[
