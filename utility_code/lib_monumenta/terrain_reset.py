@@ -46,7 +46,6 @@ def terrainResetInstance(config, outputFile):
 
     blockReplacements = config["blockReplacements"] if ("blockReplacements" in config) else None
     itemReplacements = config["itemReplacements"] if ("itemReplacements" in config) else None
-    entityUpdates = config["entityUpdates"] if ("entityUpdates" in config) else None
     shouldResetDifficulty = config["resetRegionalDifficulty"] if ("resetRegionalDifficulty" in config) else False
 
     if "itemLog" in config:
@@ -78,10 +77,7 @@ def terrainResetInstance(config, outputFile):
         ("coordinatesToCopy" in config) or
         (blockReplacements is not None) or
         (
-            (
-                (itemReplacements is not None) or
-                (entityUpdates is not None)
-            ) and
+            (itemReplacements is not None) and
             ("world" in config["itemReplaceLocations"])
         ) or
         (shouldResetDifficulty == True)
@@ -105,10 +101,9 @@ def terrainResetInstance(config, outputFile):
                 # Only pass in replacement lists if specifically requested for schematics
                 tmpBlockReplacements = blockReplacements if (blockReplacements is not None and "schematics" in config["blockReplaceLocations"]) else None
                 tmpItemReplacements = itemReplacements if (itemReplacements is not None and "schematics" in config["itemReplaceLocations"]) else None
-                tmpEntityUpdates = entityUpdates if (entityUpdates is not None and "schematics" in config["entityUpdateLocations"]) else None
 
                 print "  Copying needed terrain from the main world..."
-                copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"], tmpBlockReplacements, tmpItemReplacements, tmpEntityUpdates)
+                copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"], tmpBlockReplacements, tmpItemReplacements)
 
         if (blockReplacements is not None) and ("world" in config["blockReplaceLocations"]):
             print "  Replacing specified blocks worldwide..."
@@ -117,10 +112,6 @@ def terrainResetInstance(config, outputFile):
         if (itemReplacements is not None) and ("world" in config["itemReplaceLocations"]):
             print "  Replacing specified items worldwide..."
             itemReplacements.InWorld(dstWorld)
-
-        if (entityUpdates is not None) and ("world" in config["entityUpdateLocations"]):
-            print "  Replacing specified items worldwide..."
-            entityUpdates.InWorld(dstWorld)
 
         if (shouldResetDifficulty == True):
             print "  Resetting difficulty..."
@@ -174,9 +165,6 @@ def terrainReset(configList):
 
         if ("itemReplacements" in config) ^ ("itemReplaceLocations" in config):
             sys.exit("itemReplacements and itemReplaceLocations must be used together")
-
-        if ("entityUpdates" in config) ^ ("entityUpdateLocations" in config):
-            sys.exit("entityUpdates and entityUpdateLocations must be used together")
 
         if "copyBaseFrom" in config:
             if config["copyBaseFrom"] != "build" and config["copyBaseFrom"] != "main":

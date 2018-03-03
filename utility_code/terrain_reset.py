@@ -7,7 +7,6 @@ merges them into a new world, dstWorld (destination).
 
 from lib_monumenta.terrain_reset import terrainReset
 import item_replace_list
-import entity_update_list
 
 itemCountLog = "/home/rock/tmp/all_items.txt"
 
@@ -49,10 +48,6 @@ configList = [{
     "itemReplaceLocations":["players", "schematics",],
     "itemLog":"/home/rock/tmp/items_region_1.txt",
 
-    # List of places where entity updates should be run - options are "world", "schematics"
-    "entityUpdates":entity_update_list.KingsValley,
-    "entityUpdateLocations":["schematics",],
-
     "coordinatesToCopy":(
         # "name":"a unique name"
         # "pos1":(x1,y1,z1)
@@ -61,37 +56,37 @@ configList = [{
         # "replaceItems":True/False
         # "material":(id,dmg) # what to fill with
         # "materialName":"block name" # comment
-        {"name":"Apartments_100",         "pos1":( -874,  99,   44), "pos2":(-809,  96,   44), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_200",         "pos1":( -874,  99,   36), "pos2":(-809,  96,   36), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_300",         "pos1":( -874,  99,   31), "pos2":(-809,  96,   31), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_400",         "pos1":( -874,  99,   23), "pos2":(-809,  96,   23), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_500",         "pos1":( -864,  99,   23), "pos2":(-813,  96,   23), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_600",         "pos1":( -864,  99,   23), "pos2":(-813,  96,   23), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_700_800",     "pos1":( -874,  99,   18), "pos2":(-809,  96,   18), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_units",       "pos1":( -817, 109,   87), "pos2":(-859, 164,   16), "replaceBlocks":False, "replaceItems":True,  "updateEntities":True,  "material":( 41,  0), "materialName":"gold"},
-        {"name":"Guild_Room",             "pos1":( -800, 109,  -75), "pos2":(-758, 104, -102), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Guild_1",                "pos1":( -586,   0,  137), "pos2":(-622, 255,  105), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_2",                "pos1":( -570,   0,  112), "pos2":(-534, 255,  154), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_3",                "pos1":( -581,   0,  150), "pos2":(-613, 255,  186), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_4",                "pos1":( -649,   0,  275), "pos2":(-617, 255,  311), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_5",                "pos1":( -683,   0,  275), "pos2":(-651, 255,  311), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_6",                "pos1":( -685,   0,  275), "pos2":(-717, 255,  311), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_7",                "pos1":( -816,   0,  235), "pos2":(-780, 255,  267), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_8",                "pos1":( -832,   0,  257), "pos2":(-868, 255,  289), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_9",                "pos1":( -816,   0,  269), "pos2":(-780, 255,  301), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_10",               "pos1":( -937,   0,  272), "pos2":(-969, 255,  308), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_11",               "pos1":( -969,   0,  256), "pos2":(-937, 255,  220), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_12",               "pos1":( -958,   0,  104), "pos2":(-994, 255,  136), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_14",               "pos1":( -958,   0,   70), "pos2":(-994, 255,  102), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_15",               "pos1":( -581,   0,  -64), "pos2":(-613, 255, -100), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_18",               "pos1":( -942,   0,   93), "pos2":(-906, 255,  125), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_20",               "pos1":( -751,   0, -230), "pos2":(-787, 255, -198), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_21",               "pos1":( -787,   0, -232), "pos2":(-751, 255, -264), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_22",               "pos1":( -600,   0, -191), "pos2":(-564, 255, -159), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_23",               "pos1":( -615,   0, -180), "pos2":(-651, 255, -212), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_24",               "pos1":( -564,   0, -192), "pos2":(-600, 255, -224), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_26",               "pos1":( -596,   0,  -46), "pos2":(-564, 255,  -10), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-        {"name":"Guild_27",               "pos1":( -548,   0,  -64), "pos2":(-580, 255, -100), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Apartments_100",         "pos1":( -874,  99,   44), "pos2":(-809,  96,   44), "replaceBlocks":False, "replaceItems":False,  "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_200",         "pos1":( -874,  99,   36), "pos2":(-809,  96,   36), "replaceBlocks":False, "replaceItems":False,  "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_300",         "pos1":( -874,  99,   31), "pos2":(-809,  96,   31), "replaceBlocks":False, "replaceItems":False,  "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_400",         "pos1":( -874,  99,   23), "pos2":(-809,  96,   23), "replaceBlocks":False, "replaceItems":False,  "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_500",         "pos1":( -864,  99,   23), "pos2":(-813,  96,   23), "replaceBlocks":False, "replaceItems":False,  "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_600",         "pos1":( -864,  99,   23), "pos2":(-813,  96,   23), "replaceBlocks":False, "replaceItems":False,  "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_700_800",     "pos1":( -874,  99,   18), "pos2":(-809,  96,   18), "replaceBlocks":False, "replaceItems":False,  "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_units",       "pos1":( -817, 109,   87), "pos2":(-859, 164,   16), "replaceBlocks":False, "replaceItems":True,  "material":( 41,  0), "materialName":"gold"},
+        {"name":"Guild_Room",             "pos1":( -800, 109,  -75), "pos2":(-758, 104, -102), "replaceBlocks":False, "replaceItems":False,  "material":( 41,  0), "materialName":"gold"},
+        {"name":"Guild_1",                "pos1":( -586,   0,  137), "pos2":(-622, 255,  105), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_2",                "pos1":( -570,   0,  112), "pos2":(-534, 255,  154), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_3",                "pos1":( -581,   0,  150), "pos2":(-613, 255,  186), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_4",                "pos1":( -649,   0,  275), "pos2":(-617, 255,  311), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_5",                "pos1":( -683,   0,  275), "pos2":(-651, 255,  311), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_6",                "pos1":( -685,   0,  275), "pos2":(-717, 255,  311), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_7",                "pos1":( -816,   0,  235), "pos2":(-780, 255,  267), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_8",                "pos1":( -832,   0,  257), "pos2":(-868, 255,  289), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_9",                "pos1":( -816,   0,  269), "pos2":(-780, 255,  301), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_10",               "pos1":( -937,   0,  272), "pos2":(-969, 255,  308), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_11",               "pos1":( -969,   0,  256), "pos2":(-937, 255,  220), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_12",               "pos1":( -958,   0,  104), "pos2":(-994, 255,  136), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_14",               "pos1":( -958,   0,   70), "pos2":(-994, 255,  102), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_15",               "pos1":( -581,   0,  -64), "pos2":(-613, 255, -100), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_18",               "pos1":( -942,   0,   93), "pos2":(-906, 255,  125), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_20",               "pos1":( -751,   0, -230), "pos2":(-787, 255, -198), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_21",               "pos1":( -787,   0, -232), "pos2":(-751, 255, -264), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_22",               "pos1":( -600,   0, -191), "pos2":(-564, 255, -159), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_23",               "pos1":( -615,   0, -180), "pos2":(-651, 255, -212), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_24",               "pos1":( -564,   0, -192), "pos2":(-600, 255, -224), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_26",               "pos1":( -596,   0,  -46), "pos2":(-564, 255,  -10), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
+        {"name":"Guild_27",               "pos1":( -548,   0,  -64), "pos2":(-580, 255, -100), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
 
         # These are coordinates for the plots around the capital and are no longer needed, but kept just in case
         #{"name":"Plot_Pressure_Plates",   "pos1":( -719, 106, -118), "pos2":(-665, 106,  -74), "replaceBlocks":False, "replaceItems":True,  "material":( 41,  0), "materialName":"gold"},
@@ -119,8 +114,6 @@ configList = [{
     "blockReplaceLocations":["world",],
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players", "world",],
-    "entityUpdates":entity_update_list.KingsValley,
-    "entityUpdateLocations":["world",],
     "itemLog":"/home/rock/tmp/items_betaplots.txt",
 }, {
     "server":"r1plots",
@@ -134,8 +127,6 @@ configList = [{
     "blockReplaceLocations":["world",],
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players", "world",],
-    "entityUpdates":entity_update_list.KingsValley,
-    "entityUpdateLocations":["world",],
     "itemLog":"/home/rock/tmp/items_r1plots.txt",
 }, {
     "server":"white",

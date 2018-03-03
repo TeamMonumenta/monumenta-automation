@@ -204,7 +204,7 @@ def fillBoxes(world, coordinatesToFill):
             print "    [{0}/{1}] Filling {2} with {3}".format(copyNum, copyMax, boxName, boxMaterialName)
             world.fillBlocks(box, block)
 
-def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, itemReplacements, entityUpdates):
+def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, itemReplacements):
     """
     Copies a box from srcWorld to dstWorld at the same location, preserving entities
     coordinatesToCopy should be an iterable tuple or list of dictionaries, like this:
@@ -214,7 +214,6 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, itemRepl
     )
     If "replaceBlocks" == True, then block replacements will be done according to blockReplacements
     If "replaceItems" == True, then item replacements will be done according to itemReplacements
-    If "updateEntities" == True, then entity updates will be done according to entityUpdates
     """
     copyNum = 1
     copyMax = len(coordinatesToCopy)
@@ -228,8 +227,7 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, itemRepl
         pos = getBoxMinPos(copyBox["pos1"], copyBox["pos2"])
         box = getBox(copyBox["pos1"], copyBox["pos2"])
         replaceBlocks = ("replaceBlocks" in copyBox) and (copyBox["replaceBlocks"] is True)
-        replaceItems = ("replaceItems" in copyBox) and (copyBox["replaceItems"] is True)
-        updateEntities = ("updateEntities" in copyBox) and (copyBox["updateEntities"] is True)
+        replaceItems = ("replaceBlocks" in copyBox) and (copyBox["replaceItems"] is True)
 
         print "    [{0}/{1}] Copying {2}...".format(copyNum, copyMax, boxName)
 
@@ -244,11 +242,6 @@ def copyBoxes(srcWorld, dstWorld, coordinatesToCopy, blockReplacements, itemRepl
         if replaceItems and (itemReplacements is not None):
             print "    [{0}/{1}]   Handling item replacements for tile entities in {2}...".format(copyNum,copyMax,boxName)
             itemReplacements.InSchematic(tempSchematic)
-
-        # Replace items if needed
-        if updateEntities and (entityUpdates is not None):
-            print "    [{0}/{1}]   Handling entity updates in {2}...".format(copyNum,copyMax,boxName)
-            entityUpdates.InSchematic(tempSchematic)
 
         # Remove entities in destination
         dstWorld.removeEntitiesInBox(box)
