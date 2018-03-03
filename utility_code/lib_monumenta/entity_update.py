@@ -426,11 +426,17 @@ class matchNameFormat(match):
 
         nameNoFormat = entityDetails["entity"]["CustomName"].value
         nameFormatOnly = u''
-        while u'§' == nameNoFormat[0]:
+        while (
+            ( len(nameNoFormat) != 0 ) and
+            ( u'§' == nameNoFormat[0] )
+        ):
             nameFormatOnly += nameNoFormat[1]
             nameNoFormat = nameNoFormat[2:]
 
-        return nameFormatOnly == self._nameFormat["id"]
+        return (
+            ( len(nameNoFormat) != 0 ) and
+            ( nameFormatOnly == self._nameFormat["id"] )
+        )
 
     def str(self,prefix=u''):
         if self._nameFormat == None:
@@ -595,17 +601,23 @@ class actName(object):
                 return
             formatList = u""
             name = entityDetails["entity"]["CustomName"].value
-            while name[0] == u'§':
+            while (
+                ( len(name) != 0 ) and
+                ( name[0] == u'§' )
+            ):
                 formatList += name[1]
                 name = name[2:]
-            while len(formatList):
-                color = formatList[-1]
-                formatList = formatList[:-1]
-                if color not in formatCodes["colors"]:
-                    name = u'§' + color + name
-            if self._color is not None:
-                name = u'§' + self._color["id"] + name
-            entityDetails["entity"]["CustomName"].value = name
+            if len(name) == 0:
+                entityDetails["entity"].pop("CustomName")
+            else:
+                while len(formatList):
+                    color = formatList[-1]
+                    formatList = formatList[:-1]
+                    if color not in formatCodes["colors"]:
+                        name = u'§' + color + name
+                if self._color is not None:
+                    name = u'§' + self._color["id"] + name
+                entityDetails["entity"]["CustomName"].value = name
 
         elif self._cmd == "set":
             if self._setName is None:
