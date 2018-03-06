@@ -16,6 +16,7 @@ from pymclevel import nbt
 
 # This is the whole config
 dataDir = "/home/rock/tmp/dungeons-out/roguelike/Project_Epic-roguelike/data/"
+dataDir = "/home/tim/Desktop/data/"
 maxID = 400
 
 startX = -3 * 512 + 320
@@ -32,15 +33,16 @@ fillColor = 117
 if maxID >= 0:
     idCountsTag = nbt.TAG_Compound()
     idCountsTag["map"] = nbt.TAG_Short(maxID)
-    idCountsTag.save(outDir+"idcounts.dat",compressed=False)
+    idCountsTag.save(dataDir+"idcounts.dat",compressed=False)
 
 baseMap = nbt.json_to_tag(u'{data:{unlimitedTracking:0b,trackingPosition:1b,width:128s,scale:1b,dimension:0b,height:128s}}')
+mapColors = nbt.TAG_Byte_Array( numpy.full( 128*128, fillColor, dtype=numpy.dtype('uint8') ) )
 baseMapJson = baseMap.json()
 
 for mapID in range(0,maxID):
     thisMap = nbt.json_to_tag(baseMapJson)
     thisMap['data']['xCenter'] = nbt.TAG_Int( mapID * dX + startX )
     thisMap['data']['zCenter'] = nbt.TAG_Int( mapID * dZ + startZ )
-    thisMap['data']['colors'] = nbt.TAG_Byte_Array( numpy.full( 128*128, fillColor, dtype=numpy.dtype('uint8') ) )
-    thisMap.save(outDir+"map_"+str(mapID)+".dat")
+    thisMap['data']['colors'] = mapColors
+    thisMap.save(dataDir+"map_"+str(mapID)+".dat")
 
