@@ -3264,12 +3264,11 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:stone_sword",
+			"id":"minecraft:golden_sword",
 			"name":u'''Doom's Edge''',
 		},
 		[
-			"id","minecraft:golden_sword",
-			"nbt", "replace", ur'''{ench:[{lvl:7s,id:16s},{lvl:1s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:22s},{lvl:1s,id:71s}],display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Those sent into the temple were","§8doomed from the start."],Name:"§6§lDoom's Edge"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:22s},{lvl:1s,id:71s}],display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Those sent into the temple were","§8doomed from the start."],Name:"§6§lDoom's Edge"}}'''
 		]
 	],
 	[
@@ -3589,6 +3588,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Water Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:70s}],HideFlags:2,display:{Lore:["* Unique Item *","* Regeneration *","§7Grants Regeneration I","§7while worn","§f","§7When on legs:","§c 0 Armor","§c -10% Speed"],color:10535167,Name:"§b§lWater Robe"},AttributeModifiers:[{UUIDMost:-5444563899986130921l,UUIDLeast:-6071829781889919167l,Amount:-0.1d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
 			"id":"minecraft:shield",
 			"name":u'''Morphic Shield''',
 		},
@@ -3638,7 +3646,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Eventide''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:70s},{lvl:1s,id:71s}],HideFlags:32,BlockEntityTag:{Base:5,Patterns:[{Color:0,Pattern:"bri"},{Color:0,Pattern:"bo"},{Color:0,Pattern:"gru"},{Color:0,Pattern:"gra"}]},display:{Lore:["§8King's Valley : §6Patron Made","§8Made from the hide of a War Pig"],Name:"§5§lEventide"},AttributeModifiers:[{UUIDMost:-6816615871721422303l,UUIDLeast:-6867029474550034413l,Amount:0.5d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:70s}],HideFlags:32,BlockEntityTag:{Base:5,Patterns:[{Color:0,Pattern:"bri"},{Color:0,Pattern:"bo"},{Color:0,Pattern:"gru"},{Color:0,Pattern:"gra"}]},display:{Lore:["§8King's Valley : §6Patron Made","§8Made from the hide of a War Pig"],Name:"§5§lEventide"},AttributeModifiers:[{UUIDMost:7520587670989783111l,UUIDLeast:-5102823209888792649l,Amount:0.3d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -3841,6 +3849,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
+			"id":"minecraft:dye",
+			"name":u'''Ephemeral Key Fragment''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§7Shattered fragments of a dungeon key.","§7Maybe these could be reforged by someone?"],Name:"§c§lEphemeral Key Fragment"}}'''
+		]
+	],
+	[
+		{
 			"id":"minecraft:bow",
 			"name":u'''Swiftwood Longbow''',
 		},
@@ -3932,7 +3949,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	[
 		{
 			"id":"minecraft:record_13",
-			"name":u'''Sandy Smooth Jazz''',
+			"name":u'''Sandy-Smooth Jazz''',
 		},
 		[
 			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8The sand grains in the disc","§8add a pleasant metallic ring."],Name:"§6§lSandy-Smooth Jazz"}}'''
