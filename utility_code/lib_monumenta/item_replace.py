@@ -114,6 +114,9 @@ containerTagNames = [
     # Players
     "Inventory", # villagers too, apparently
     "EnderItems",
+
+    # Jukeboxes
+    "RecordItem",
 ]
 
 formatCodes = {
