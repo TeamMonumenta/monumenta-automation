@@ -1095,9 +1095,7 @@ class actNBT(object):
                     itemStack["tag"]["display"]["Lore"].append(soulbound)
                 if isReplica:
                     for loreLine in itemStack["tag"]["display"]["Lore"]:
-                        if loreLine.value == u'''* Unique Item *''':
-                            loreLine.value = u'''§5§o* Replica Item *'''
-                        if loreLine.value == u'''King's Valley: Unique''':
+                        if u'''Unique''' in loreLine.value:
                             loreLine.value = u'''§5§o* Replica Item *'''
 
     def str(self,prefix=u''):
