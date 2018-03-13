@@ -357,6 +357,36 @@ config = {
         'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
 
+    'vanilla':{
+        'config':[
+            ('eula.txt',),
+            ('commands.yml',),
+            ('help.yml',),
+            ('permissions.yml',),
+            ('spigot.yml',),
+            ('wepif.yml',),
+            ('mark2-scripts.txt',),
+            ('plugins/FastAsyncWorldEdit/config.yml',),
+            ('plugins/CoreProtect/config.yml',),
+            ('plugins/Monumenta-Plugins/config.yml',),
+            ('plugins/Monumenta-Plugins/Properties.json',),
+
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'server-port', 'server-port=25575'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.27"'),
+            ('server.properties', 'difficulty', 'difficulty=2'),
+            ('server.properties', 'gamemode', 'gamemode=0'),
+            ('server.properties', 'spawn-protection', 'spawn-protection=16'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": ["region_1"],'),
+        ],
+        'linked':server_config + easywarp + monumenta + socket4mc + coreprotect + worldedit,
+    },
+
     'purgatory':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=4'),
