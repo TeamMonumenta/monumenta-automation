@@ -193,6 +193,7 @@ config = {
         {"name":"Mystic Grotto", "type":"SafeZone", "pos1":"317 61 309", "pos2":"383 106 392"},
         {"name":"Brown Co 57 Floating Island", "type":"SafeZone", "pos1":"887 0 -927", "pos2":"978 255 -899"},
         {"name":"Roguelike Entrance Puzzle", "type":"SafeZone", "pos1":"825 0 173", "pos2":"889 97 217"},
+        {"name":"Vanilla Pilot", "type":"SafeZone", "pos1":"410 156 157", "pos2":"429 190 176"},
 
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
         {"name":"Siege Of Highwatch", "type":"AdventureZone", "pos1":"1505 102 -178", "pos2":"1631 256 -16"},
@@ -372,8 +373,10 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json',),
 
             ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'generate-structures', 'generate-structures=true'),
             ('server.properties', 'server-port', 'server-port=25575'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('spigot.yml', 'save-structure-info', '    save-structure-info: true'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.27"'),
             ('server.properties', 'difficulty', 'difficulty=2'),
             ('server.properties', 'gamemode', 'gamemode=0'),
@@ -383,6 +386,9 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": ["region_1"],'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
+        {"name":"Spawn", "type":"SafeZone", "pos1":"-1520 43 1087", "pos2":"-1475 255 1126"}
+    ],'''),
         ],
         'linked':server_config + easywarp + monumenta + socket4mc + coreprotect + worldedit,
     },
@@ -515,12 +521,12 @@ if (SERVER_TYPE == 'build'):
     ]
 else:
     config['region_1']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=10G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=10G'),
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=7G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=7G'),
     ]
     config['roguelike']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=4G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=4G'),
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
     ]
 
 def gen_server_config(servername):
