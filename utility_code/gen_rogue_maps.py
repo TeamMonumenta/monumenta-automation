@@ -29,7 +29,8 @@ dZ = 512
 fillColor = 117
 # End of config
 
-idCounts = nbt.json_to_tag(u'{map:399s}')
+idCounts = nbt.TAG_Compound()
+idCounts['map'] = nbt.TAG_Short(maxID-1)
 idCounts.save(dataDir+"idcounts.dat",compressed=False)
 
 baseMap = nbt.json_to_tag(u'{data:{unlimitedTracking:0b,trackingPosition:1b,width:128s,scale:1b,dimension:0b,height:128s}}')
