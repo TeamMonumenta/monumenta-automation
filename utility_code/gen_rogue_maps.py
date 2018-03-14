@@ -30,10 +30,8 @@ dZ = 512
 fillColor = 117
 # End of config
 
-if maxID >= 0:
-    idCountsTag = nbt.TAG_Compound()
-    idCountsTag["map"] = nbt.TAG_Short(maxID)
-    idCountsTag.save(dataDir+"idcounts.dat",compressed=False)
+idCounts = nbt.json_to_tag(u'{map:399s}')
+idCounts.save(dataDir+"idcounts.dat",compressed=False)
 
 baseMap = nbt.json_to_tag(u'{data:{unlimitedTracking:0b,trackingPosition:1b,width:128s,scale:1b,dimension:0b,height:128s}}')
 mapColors = nbt.TAG_Byte_Array( numpy.full( 128*128, fillColor, dtype=numpy.dtype('uint8') ) )
