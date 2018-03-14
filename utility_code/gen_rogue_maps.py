@@ -16,7 +16,6 @@ from pymclevel import nbt
 
 # This is the whole config
 dataDir = "/home/rock/tmp/dungeons-out/roguelike/Project_Epic-roguelike/data/"
-dataDir = "/home/tim/Desktop/data/"
 maxID = 400
 
 startX = -3 * 512 + 320
