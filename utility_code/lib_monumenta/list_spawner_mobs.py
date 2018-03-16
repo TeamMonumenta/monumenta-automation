@@ -39,7 +39,7 @@ def _onEntity(args,entityDetails):
         if "id" not in cloneEntity:
             cloneEntity = cloneEntity[cloneEntity.keys()[0]]
         cloneEntity.name = ""
-        noTagNameJson = cloneEntity.json()
+        noTagNameJson = cloneEntity.json(["CustomName","id","Tags","Passengers"])
 
         # Get the mob's name, if it exists
         mobName = None
