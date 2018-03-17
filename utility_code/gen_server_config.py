@@ -54,6 +54,7 @@ server_config = [
         ('plugins/ScriptedQuests/npcs', '../../../server_config/data/scriptedquests/npcs'),
         ('plugins/ScriptedQuests/compass', '../../../server_config/data/scriptedquests/compass'),
         ('plugins/ScriptedQuests/death', '../../../server_config/data/scriptedquests/death'),
+        ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
     ]
 
 advancements_disabled = [
@@ -101,6 +102,7 @@ luckperms = [
 monumenta = [
         ('plugins/Monumenta-Plugins.jar', '../../server_config/plugins/Monumenta-Plugins.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
+        ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
     ]
 
 nbteditor = [
