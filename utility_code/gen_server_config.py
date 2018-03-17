@@ -45,12 +45,18 @@ server_config_to_copy = [
         ('plugins/Monumenta-Plugins/Properties.json',),
     ]
 
-server_config = [
+server_config_min = [
         ('spigot.jar', '../server_config/spigot.jar'),
+    ]
+
+server_config_min_plus_data = server_config_min + [
         ('Project_Epic-WORLDOOG/data/functions', '../../../server_config/data/functions'),
         ('Project_Epic-WORLDOOG/data/loot_tables', '../../../server_config/data/loot_tables'),
         ('Project_Epic-WORLDOOG_the_end/data/functions', '../../../server_config/data/functions'),
         ('Project_Epic-WORLDOOG_the_end/data/loot_tables', '../../../server_config/data/loot_tables'),
+    ]
+
+server_config = server_config_min_plus_data + [
         ('plugins/ScriptedQuests/npcs', '../../../server_config/data/scriptedquests/npcs'),
         ('plugins/ScriptedQuests/compass', '../../../server_config/data/scriptedquests/compass'),
         ('plugins/ScriptedQuests/death', '../../../server_config/data/scriptedquests/death'),
@@ -309,7 +315,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": ["region_1"],'),
         ],
-        'linked':server_config + advancements_disabled + easywarp + monumenta + socket4mc + coreprotect + worldedit + speedchanger + nbteditor + voxelsniper,
+        'linked':server_config_min + advancements_disabled + easywarp + monumenta + socket4mc + coreprotect + worldedit + speedchanger + nbteditor + voxelsniper,
     },
 
     'mobs':{
@@ -357,7 +363,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
+        'linked':server_config_min_plus_data + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
 
     'vanilla':{
@@ -392,7 +398,7 @@ config = {
         {"name":"Spawn", "type":"SafeZone", "pos1":"-1520 43 1087", "pos2":"-1475 255 1126"}
     ],'''),
         ],
-        'linked':server_config + easywarp + monumenta + socket4mc + coreprotect + worldedit,
+        'linked':server_config_min + easywarp + monumenta + socket4mc + coreprotect + worldedit,
     },
 
     'purgatory':{
