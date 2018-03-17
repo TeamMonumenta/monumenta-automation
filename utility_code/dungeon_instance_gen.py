@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+import sys
+
+# The effective working directory for this script must always be the MCEdit-Unified directory
+os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
+
 from lib_monumenta.dungeon_instance_gen import gen_dungeon_instances
 
 config = {
@@ -149,6 +156,7 @@ config = {
             ),
             "chestContentsLoreToIgnore":(),
             "chestWhitelist":(),
+            "generateMaps":{"offset":{"x":320, "z":320}},
         },
     ),
 

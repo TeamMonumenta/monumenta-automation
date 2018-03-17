@@ -8,10 +8,6 @@ import multiprocessing as mp
 import psutil
 import tempfile
 
-# The effective working directory for this script must always be the MCEdit-Unified directory
-os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
-
 # Import pymclevel from MCLevel-Unified
 import pymclevel
 from pymclevel import materials
@@ -21,6 +17,7 @@ from lib_monumenta.common import fillBoxes, copyFolder, tempdir, resetRegionalDi
 from lib_monumenta.list_lootless_tile_entities import listLootlessTileEntities
 from lib_monumenta.copy_region_file import copyRegion
 from lib_monumenta.timing import timings
+from lib_monumenta.gen_map_array import gen_map_array
 
 def gen_dungeon_instance(config, dungeon, outputFile):
     mainTiming = timings(enabled=True)
@@ -101,6 +98,13 @@ def gen_dungeon_instance(config, dungeon, outputFile):
         # template lights are right, and region lighting is copied.
         dstWorld.saveInPlace()
         nextStep(dungeonName + ": Saved")
+
+        # If generateMaps is specified, do that
+        if "generateMaps" in dungeon:
+            print "  Generating maps...."
+            startX = targetRegion["x"] * 512 + dungeon["generateMaps"]["offset"]["x"]
+            startZ = targetRegion["z"] * 512 + dungeon["generateMaps"]["offset"]["z"]
+            gen_map_array(dstFolder + "data/", numDungeons, startX, startZ, 0, 512)
 
         try:
             shutil.rmtree(dstFolder + "##MCEDIT.TEMP##", ignore_errors=True)
