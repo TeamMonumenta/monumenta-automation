@@ -401,7 +401,7 @@ config = {
         {"name":"Spawn", "type":"SafeZone", "pos1":"-1520 43 1087", "pos2":"-1475 255 1126"}
     ],'''),
         ],
-        'linked':server_config_min + luckperms_standalone + easywarp + monumenta + socket4mc + coreprotect + worldedit,
+        'linked':server_config_min + luckperms_standalone + easywarp + socket4mc + coreprotect + worldedit + [('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),]
     },
 
     'purgatory':{
