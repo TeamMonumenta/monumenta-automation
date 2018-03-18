@@ -97,9 +97,12 @@ worldedit = [
         ('plugins/WorldEdit/shapes', '../../../server_config/plugins/WorldEdit/shapes'),
     ]
 
-luckperms = [
+luckperms_standalone = [
         ('plugins/LuckPerms.jar', '../../server_config/plugins/LuckPerms.jar'),
         ('plugins/LuckPerms/config.yml', '../../../server_config/plugins/LuckPerms/config.yml'),
+    ]
+
+luckperms = luckperms_standalone + [
         ('plugins/LuckPerms/yaml-storage/groups', '../../../../server_config/plugins/LuckPerms/yaml-storage/groups'),
         ('plugins/LuckPerms/yaml-storage/tracks', '../../../../server_config/plugins/LuckPerms/yaml-storage/tracks'),
         ('plugins/LuckPerms/yaml-storage/users', '../../../../server_config/plugins/LuckPerms/yaml-storage/users'),
@@ -315,7 +318,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": ["region_1"],'),
         ],
-        'linked':server_config_min + advancements_disabled + easywarp + monumenta + socket4mc + coreprotect + worldedit + speedchanger + nbteditor + voxelsniper,
+        'linked':server_config_min + advancements_disabled + luckperms_standalone + easywarp + monumenta + socket4mc + coreprotect + worldedit + speedchanger + nbteditor + voxelsniper,
     },
 
     'mobs':{
@@ -398,7 +401,7 @@ config = {
         {"name":"Spawn", "type":"SafeZone", "pos1":"-1520 43 1087", "pos2":"-1475 255 1126"}
     ],'''),
         ],
-        'linked':server_config_min + easywarp + monumenta + socket4mc + coreprotect + worldedit,
+        'linked':server_config_min + luckperms_standalone + easywarp + monumenta + socket4mc + coreprotect + worldedit,
     },
 
     'purgatory':{
