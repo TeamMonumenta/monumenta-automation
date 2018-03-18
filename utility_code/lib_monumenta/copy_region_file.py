@@ -6,6 +6,7 @@ import sys
 
 from lib_monumenta.common import copyFile
 from lib_monumenta.iter_entity import IterEntities
+from lib_monumenta.mcUUID import mcUUID
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
 # This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
@@ -31,7 +32,7 @@ def copyRegion(old,new,rx,rz):
     """
     copyFile(old,new)
     region = regionfile.MCRegionFile(new,(rx,rz))
-    entityIter = IterEntities(["entities","block entities","tile ticks","search spawners"],_fixEntityCoordinates,None)
+    entityIter = IterEntities(["entities","block entities","tile ticks","search spawners"],_fixEntity,None)
     for index, offset in enumerate(region.offsets):
         if offset:
             cx = index & 0x1f
@@ -48,13 +49,14 @@ def copyRegion(old,new,rx,rz):
             region.saveChunk(cx, cz, data) # saves region file too
     region.close()
 
-def _fixEntityCoordinates(onMatchArgs,entityDetails):
+def _fixEntity(onMatchArgs,entityDetails):
     cx,cz = entityDetails["chunk pos"]
     entity = entityDetails["entity"]
     minx = cx << 4
     minz = cz << 4
     rx = minx - (minx % 512)
     rz = minz - (minz % 512)
+
     if "Pos" in entity:
         entity["Pos"][0].value = rx + (entity["Pos"][0].value % 512)
         entity["Pos"][2].value = rz + (entity["Pos"][2].value % 512)
@@ -73,4 +75,8 @@ def _fixEntityCoordinates(onMatchArgs,entityDetails):
         # end portal gateway - not correct if we copy more than a 1x1 chunk!
         entity["ExitPortal"]["X"] = rx + (entity["ExitPortal"]["X"] % 512)
         entity["ExitPortal"]["Z"] = rz + (entity["ExitPortal"]["Z"] % 512)
+
+    if "UUIDMost" in entity:
+        entity["UUIDMost"].value, entity["UUIDLeast"].value = mcUUID.asTuple()
+    
 
