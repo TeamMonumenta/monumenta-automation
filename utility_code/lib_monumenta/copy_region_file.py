@@ -77,6 +77,12 @@ def _fixEntity(onMatchArgs,entityDetails):
         entity["ExitPortal"]["Z"] = rz + (entity["ExitPortal"]["Z"] % 512)
 
     if "UUIDMost" in entity:
-        entity["UUIDMost"].value, entity["UUIDLeast"].value = mcUUID.asTuple()
-    
+        newUUID = mcUUID()
+        UUIDMost, UUIDLeast = newUUID.asTuple()
+        if UUIDMost >= 2**63:
+            UUIDMost -= 2**64
+        if UUIDLeast >= 2**63:
+            UUIDLeast -= 2**64
+        entity["UUIDMost"].value  = UUIDMost
+        entity["UUIDLeast"].value = UUIDLeast
 

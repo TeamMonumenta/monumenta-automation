@@ -8,7 +8,7 @@
 import random
 
 class mcUUID(object):
-    def __init__():
+    def __init__(self):
         maxVal = 2**128-1
 
         self.uuid = random.randint(0,maxVal)
@@ -18,7 +18,7 @@ class mcUUID(object):
 
         self.uuid
 
-    def __str__():
+    def __str__(self):
         unformattedStr=str(self.uuid)
         return '{0:8x}-{1:4x}-{2:4x}-{3:4x}-{4:12x}'.format(
             unformattedStr[0:8],
@@ -28,6 +28,8 @@ class mcUUID(object):
             unformattedStr[20:32]
         )
 
-    def asTuple():
-        return ( self.uuid >> 64, self.uuid && ( 2 ** 64 - 1 ) )
+    def asTuple(self):
+        uuidMost  = ( self.uuid >> 64 ) & 0xffffffffffffffff
+        uuidLeast = self.uuid & 0xffffffffffffffff
+        return ( uuidMost, uuidLeast )
 
