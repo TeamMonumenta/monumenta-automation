@@ -377,13 +377,14 @@ config = {
             ('permissions.yml',),
             ('spigot.yml',),
             ('wepif.yml',),
-            ('mark2-scripts.txt',),
+            # Note - mark2-scripts.txt is static!
             ('plugins/FastAsyncWorldEdit/config.yml',),
             ('plugins/CoreProtect/config.yml',),
             ('plugins/Monumenta-Plugins/config.yml',),
             ('plugins/Monumenta-Plugins/Properties.json',),
 
             ('server.properties', 'view-distance', 'view-distance=8'),
+            ('server.properties', 'difficulty', 'difficulty=3'),
             ('server.properties', 'generate-structures', 'generate-structures=true'),
             ('server.properties', 'server-port', 'server-port=25575'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
@@ -403,7 +404,7 @@ config = {
         {"name":"Spawn", "type":"SafeZone", "pos1":"-1520 43 1087", "pos2":"-1475 255 1126"}
     ],'''),
         ],
-        'linked':server_config_min + luckperms_standalone + easywarp + socket4mc + coreprotect + worldedit + [('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),]
+        'linked':server_config_min + luckperms_standalone + easywarp + socket4mc + coreprotect + worldedit + [('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),('plugins/TogglePvp.jar', '../../server_config/plugins/TogglePvp.jar')]
     },
 
     'purgatory':{
