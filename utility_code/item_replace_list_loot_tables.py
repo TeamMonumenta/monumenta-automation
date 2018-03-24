@@ -3552,6 +3552,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
+			"id":"gold_nugget",
+			"name":u'''Pulsating Gold''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:10s,id:48s}],display:{Lore:["§8Epic Crafting Ingredient"],Name:"§6§lPulsating Gold"}}'''
+		]
+	],
+	[
+		{
 			"id":"minecraft:stone_axe",
 			"name":u'''Scalawag's Hatchet''',
 		},
@@ -3773,6 +3782,24 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 		},
 		[
 			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§3§lSwiftwood Shortbow"},AttributeModifiers:[{UUIDMost:-6988194619003155857l,UUIDLeast:-5808010696763356504l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:7252551692242076597l,UUIDLeast:-9043457864470459739l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:dye",
+			"name":u'''Fangride's Cat Dung''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8 Why would I even want this?"],Name:"§rFangride's Cat Dung"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Fangridian Cattcrappe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Uncommon","§8You find this while rummaging around in the dung. Yuck!"],Name:"§e§lFangridian Cattcrappe"}}'''
 		]
 	],
 	[
