@@ -8,6 +8,11 @@ import numpy
 import contextlib
 import tempfile
 
+# The effective working directory for this script must always be the MCEdit-Unified directory
+# This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
+os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
+
 from pymclevel import materials
 from pymclevel.box import BoundingBox, Vector
 from pymclevel import nbt
@@ -98,6 +103,8 @@ def movePlayers(worldFolder, safetyTpLocation):
     # Lovely. Mojang changed the player data folder from world/player
     # to world/playerdata when they changed the files to be UUIDs.
     # Weird that pymclevel wasn't updated for that years ago.
+    resetTag = nbt.TAG_String("resetMessage")
+
     for aPlayerFile in os.listdir(worldFolder+"/playerdata"):
         aPlayerFile = worldFolder+"/playerdata/"+aPlayerFile
         aPlayer = nbt.load(aPlayerFile)
@@ -139,6 +146,11 @@ def movePlayers(worldFolder, safetyTpLocation):
             aPlayer.pop("SpawnZ")
         if "SpawnForced" in aPlayer:
             aPlayer.pop("SpawnForced")
+
+        if "Tags" not in aPlayer:
+            aPlayer["Tags"] = nbt.TAG_List()
+        if resetTag not in aPlayer["Tags"]:
+            aPlayer["Tags"].append(resetTag)
 
         # save
         aPlayer.save(aPlayerFile)

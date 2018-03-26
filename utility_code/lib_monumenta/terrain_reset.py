@@ -19,7 +19,8 @@ import shutil
 import multiprocessing as mp
 import tempfile
 
-from lib_monumenta import item_replace
+from lib_monumenta import item_replace, scoreboard
+from lib_monumenta.list_uuids import listUUIDs
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
 # This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
@@ -131,12 +132,46 @@ def terrainResetInstance(config, outputFile):
         print "  Saving...."
         dstWorld.saveInPlace()
 
+    print "  Deleting scores for missing entities..."
+    existingEntities = listUUIDs(dstWorld)
+    worldScores = scoreboard.scoreboard(localDstFolder)
+    worldScores.pruneMissingEntities(existingEntities)
+
+    if "playerScoreChanges" in config:
+        print "  Adjusting player scores (dungeon scores)..."
+        worldScores.batchScoreChanges(config["playerScoreChanges"])
+
+    worldScores.save()
+
     if "players" in config["itemReplaceLocations"]:
         itemReplacements.OnPlayers(localDstFolder)
 
     if "safetyTpLocation" in config:
-        print "  Moving players..."
+        print "  Moving players to safety..."
         movePlayers(localDstFolder, config["safetyTpLocation"])
+
+    if (
+        "tpToSpawn" in config and
+        config["tpToSpawn"] is True
+    ):
+        print "  Moving players to spawn..."
+        spawnX = dstWorld.root_tag['Data']['SpawnX'].value + 0.5
+        spawnY = dstWorld.root_tag['Data']['SpawnY'].value
+        spawnZ = dstWorld.root_tag['Data']['SpawnZ'].value + 0.5
+        if dstWorld.root_tag['Data']['GameType'].value != 2:
+            """
+            Servers with Adventure as the default game mode
+            ignore standard spawn mechanics; this is what
+            happens outside of adventure mode.
+            """
+            spawnY = 256
+            block_air = 0
+            while (
+                spawnY > 0 and
+                dstWorld.blockAt(spawnX,spawnY-1,spawnZ) == block_air
+            ):
+                spawnY -= 1
+        movePlayers(localDstFolder, (spawnX,spawnY,spawnZ,0.0,0.0))
 
     try:
         shutil.rmtree(localDstFolder+"##MCEDIT.TEMP##", ignore_errors=True)

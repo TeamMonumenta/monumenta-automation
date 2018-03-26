@@ -6,14 +6,15 @@ Tools useful for modifying scoreboard values
 # Required libraries have links where not part of a standard Python install.
 import os
 import shutil
+import sys
 import time # Just for efficient display purposes when processing large amounts of data
 
-import numpy
-from numpy import zeros, bincount
-import itertools
+# The effective working directory for this script must always be the MCEdit-Unified directory
+# This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
+os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
 
-# These are expected in your site-packages folder, see:
-# https://stackoverflow.com/questions/31384639/what-is-pythons-site-packages-directory
+# Import pymclevel from pymclevel-Unified
 from pymclevel import nbt
 
 ################################################################################
@@ -26,6 +27,161 @@ def scoreboardPath(worldFolder):
 
 ################################################################################
 # Functions that display stuff while they work
+
+class scoreboard(object):
+    def __init__(self,worldFolder):
+        self.load(worldFolder)
+
+    def load(self,worldFolder):
+        self.filePath = scoreboardPath(worldFolder)
+        self.nbt = nbt.load(self.filePath)
+        self.allScores = self.nbt['data']['PlayerScores']
+
+    def save(self,worldFolder=None)
+        if worldFolder is None:
+            saveTo = self.filePath
+        else:
+            saveTo = worldFolder + "data/scoreboard.dat"
+        scoreboard.save(saveTo)
+
+    def searchScores(self,Conditions={},Name=None,Objective=None,Score=None,Locked=None):
+        if "Name" in Conditions:
+            Name = Conditions["Name"]
+        if "Objective" in Conditions:
+            Name = Conditions["Objective"]
+        if "Score" in Conditions:
+            Name = Conditions["Score"]
+        if "Locked" in Conditions:
+            Name = Conditions["Locked"]
+        matchingScores = []
+        for _aScore in self.allScores:
+            if (
+                Name is not None and
+                _aScore['Name'].value != Name
+            ):
+                continue
+            if (
+                Objective is not None and
+                _aScore['Objective'].value != Objective
+            ):
+                continue
+            if (
+                Score is not None and
+                _aScore['Score'].value != Score and
+                _aScore['Score'].value not in Score
+            ):
+                continue
+            if (
+                Locked is not None and
+                _aScore['Locked'].value != Locked
+            ):
+                continue
+            matchingScores.append(aScore)
+        return matchingScores
+
+    def resetScores(self,Name=None,Objective=None,Score=None,Locked=None):
+        """
+        Reset all scores matching the specified criteria
+        """
+        numEntries = len(self.allScores)
+        for i in range(numEntries-1,-1,-1):
+            _aScore = self.allScores[i]
+            if (
+                Name is not None and
+                _aScore['Name'].value != Name
+            ):
+                continue
+            if (
+                Objective is not None and
+                _aScore['Objective'].value != Objective
+            ):
+                continue
+            if (
+                type(Score) is int and
+                _aScore['Score'].value != Score
+            ):
+                continue
+            if (
+                type(Score) is list and
+                _aScore['Score'].value not in Score
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "min" in Score and
+                _aScore['Score'].value < Score["min"]
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "max" in Score and
+                _aScore['Score'].value > Score["max"]
+            ):
+                continue
+            if (
+                Locked is not None and
+                _aScore['Locked'].value != Locked
+            ):
+                continue
+            self.allScores.pop(i)
+
+    def getScore(self,Name,Objective,Fallback=None)
+        """
+        Return Name's score for Objective;
+        if not found, return Fallback
+        """
+        matches = self.searchScores(Name=Name,Objective=Objective)
+        if len(matches) > 1:
+            raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
+        elif len(matches) == 1:
+            return matches[0]['Score'].value
+        elif len(matches) == 0:
+            return Fallback
+
+    def setScore(self,Name,Objective,Score):
+        matches = self.searchScores(Name=Name,Objective=Objective)
+        if len(matches) > 1:
+            raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
+        elif len(matches) == 1:
+            matches[0]['Score'].value = Score
+        elif len(matches) == 0:
+            newScore = nbt.TAG_Compound()
+            newScore['Objective'] = nbt.TAG_String(Objective)
+            newScore['Locked'] = nbt.TAG_Byte(0)
+            newScore['Score'] = nbt.TAG_Int(Score)
+            newScore['Name'] = nbt.TAG_String(Name)
+            self.allScores.append(newScore)
+
+    def pruneMissingEntities(self,entitiesToKeep):
+        """
+        Player names cannot exceed 16 characters; UUID's are
+        always 36 characters (4 hyphens and 32 hexadecimal digits).
+        This deletes entities that have UUID's not found in entitiesToKeep
+        """
+        numEntries = len(self.allScores)
+        for i in range(numEntries-1,-1,-1):
+            aScore = self.allScores[i]
+            owner = aScore["Name"].value
+            if (
+                len(owner) == 36 and
+                owner not in entitiesToKeep
+            ):
+                self.allScores.pop(i)
+
+    def batchScoreChanges(self,rules):
+        for aRule in rules:
+            matchedConditions = self.searchScores(Conditions=aRule["condition"])
+            for aMatchingScore in matchedConditions:
+                Name = aMatchingScore["Name"].value
+                if "set" in aRule["actions"]:
+                    for toSet in aRule["actions"]["set"]:
+                        Objective = toSet["Objective"]
+                        Score = toSet["Score"]
+                        self.setScore(Name,Objective,Score)
+
+################################################################################
+# These are legacy functions that should be merged into the Scoreboard class
+# or otherwise removed. To be decided.
 
 def getObjectiveValues(worldFolder,objective):
     """
