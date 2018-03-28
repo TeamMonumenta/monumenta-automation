@@ -4,6 +4,7 @@
 import os
 import warnings
 import shutil
+import sys
 import numpy
 import contextlib
 import tempfile
