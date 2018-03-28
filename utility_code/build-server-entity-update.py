@@ -16,7 +16,7 @@ import pymclevel
 
 import entity_update_list
 
-worldDir = "/home/tim/MCserver/project_epic_edits/mobs/Project_Epic-mobs/"
+worldDir = "/home/rock/project_epic/test/Project_Epic-test/"
 world = pymclevel.loadWorld(worldDir)
 entity_update_list.KingsValleyBuild.InWorld(world)
 world.saveInPlace()
