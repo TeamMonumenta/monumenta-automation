@@ -37,12 +37,12 @@ class scoreboard(object):
         self.nbt = nbt.load(self.filePath)
         self.allScores = self.nbt['data']['PlayerScores']
 
-    def save(self,worldFolder=None)
+    def save(self,worldFolder=None):
         if worldFolder is None:
             saveTo = self.filePath
         else:
             saveTo = worldFolder + "data/scoreboard.dat"
-        scoreboard.save(saveTo)
+        self.nbt.save(saveTo)
 
     def searchScores(self,Conditions={},Name=None,Objective=None,Score=None,Locked=None):
         if "Name" in Conditions:
@@ -125,7 +125,7 @@ class scoreboard(object):
                 continue
             self.allScores.pop(i)
 
-    def getScore(self,Name,Objective,Fallback=None)
+    def getScore(self,Name,Objective,Fallback=None):
         """
         Return Name's score for Objective;
         if not found, return Fallback
@@ -182,7 +182,9 @@ class scoreboard(object):
 ################################################################################
 # These are legacy functions that should be merged into the Scoreboard class
 # or otherwise removed. To be decided.
-
+# Due to what is probably a naming mistake, leaving these uncommented results
+# in Python hanging while trying to import this library. Oops.
+'''
 def getObjectiveValues(worldFolder,objective):
     """
     For a given objective name, find any value of
@@ -373,6 +375,5 @@ def debugScoreboard(worldFolder):
             else:
                 lockState = "unlocked/enabled"
             print "*** {}, {} = {} ({})".format(name,objective,score,lockState)
-
-
+'''
 

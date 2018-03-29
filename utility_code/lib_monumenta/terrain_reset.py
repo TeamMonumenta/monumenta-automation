@@ -19,9 +19,6 @@ import shutil
 import multiprocessing as mp
 import tempfile
 
-from lib_monumenta import item_replace, scoreboard
-from lib_monumenta.list_uuids import listUUIDs
-
 # The effective working directory for this script must always be the MCEdit-Unified directory
 # This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
 os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../MCEdit-Unified/"))
@@ -30,8 +27,11 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 # Import pymclevel from MCLevel-Unified
 import pymclevel
 
+from lib_monumenta import item_replace
+from lib_monumenta import scoreboard
 from lib_monumenta.common import fillBoxes, copyBoxes, copyFolder, copyFolders
 from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGlobally
+from lib_monumenta.list_uuids import listUUIDs
 
 def terrainResetInstance(config, outputFile):
     # Redirect output to specified file
@@ -72,6 +72,11 @@ def terrainResetInstance(config, outputFile):
         copyFolders(localMainFolder, localDstFolder, config["copyMainFolders"])
 
 
+    # We need to read DstWorld, even if we don't edit it.
+    # This lets us prune scores of dead entities.
+    print "  Opening Destination World..."
+    dstWorld = pymclevel.loadWorld(localDstFolder)
+
     ################################################################################
     # Perform world manipulations if required
     if (
@@ -90,9 +95,6 @@ def terrainResetInstance(config, outputFile):
 
         print "  Opening old play World..."
         srcWorld = pymclevel.loadWorld(localMainFolder)
-
-        print "  Opening Destination World..."
-        dstWorld = pymclevel.loadWorld(localDstFolder)
 
         if "coordinatesToFill" in config:
             print "  Filling selected regions with specified blocks..."
@@ -155,9 +157,9 @@ def terrainResetInstance(config, outputFile):
         config["tpToSpawn"] is True
     ):
         print "  Moving players to spawn..."
-        spawnX = dstWorld.root_tag['Data']['SpawnX'].value + 0.5
+        spawnX = dstWorld.root_tag['Data']['SpawnX'].value
         spawnY = dstWorld.root_tag['Data']['SpawnY'].value
-        spawnZ = dstWorld.root_tag['Data']['SpawnZ'].value + 0.5
+        spawnZ = dstWorld.root_tag['Data']['SpawnZ'].value
         if dstWorld.root_tag['Data']['GameType'].value != 2:
             """
             Servers with Adventure as the default game mode
