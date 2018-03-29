@@ -27,35 +27,35 @@ dungeonScoreRules = [
         ]},
     },
     {
-        "condition":{"Objective":"D2Access","Score":{"min":1}},},
+        "condition":{"Objective":"D2Access","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"D2Access","Score":0},
             {"Objective":"D2Finished","Score":0},
         ]},
     },
     {
-        "condition":{"Objective":"D3Access","Score":{"min":1}},},
+        "condition":{"Objective":"D3Access","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"D3Access","Score":0},
             {"Objective":"D3Finished","Score":0},
         ]},
     },
     {
-        "condition":{"Objective":"D4Access","Score":{"min":1}},},
+        "condition":{"Objective":"D4Access","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"D4Access","Score":0},
             {"Objective":"D4Finished","Score":0},
         ]},
     },
     {
-        "condition":{"Objective":"D5Access","Score":{"min":1}},},
+        "condition":{"Objective":"D5Access","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"D5Access","Score":0},
             {"Objective":"D5Finished","Score":0},
         ]},
     },
     {
-        "condition":{"Objective":"DB1Access","Score":{"min":1}},},
+        "condition":{"Objective":"DB1Access","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"DB1Access","Score":0},
         ]},
