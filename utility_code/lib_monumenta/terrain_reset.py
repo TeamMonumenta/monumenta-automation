@@ -29,7 +29,7 @@ import pymclevel
 
 from lib_monumenta import item_replace
 from lib_monumenta import scoreboard
-from lib_monumenta.common import fillBoxes, copyBoxes, copyFolder, copyFolders
+from lib_monumenta.common import fillBoxes, copyBoxes, copyFolder, copyFolders, copyFiles
 from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGlobally
 from lib_monumenta.list_uuids import listUUIDs
 
@@ -71,6 +71,10 @@ def terrainResetInstance(config, outputFile):
         print "  Copying folders from main world..."
         copyFolders(localMainFolder, localDstFolder, config["copyMainFolders"])
 
+    # Copy various bits of player data from the main world
+    if "copyMainFiles" in config:
+        print "  Copying files from main world..."
+        copyFiles(localMainFolder, localDstFolder, config["copyMainFiles"])
 
     # We need to read DstWorld, even if we don't edit it.
     # This lets us prune scores of dead entities.

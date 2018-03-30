@@ -58,6 +58,18 @@ def replaceGlobally(world, replaceList):
         newBlock = world.materials[replacePair[1]]
         replace(world, oldBlock, newBlock)
 
+# Create a temporary directory which is automatically removed afterwards, even if the script crashes
+# Use like:
+#    with tempdir() as tempDungeonRefCopy:
+#        <code using the folder tempDungeonRefCopy>
+@contextlib.contextmanager
+def tempdir():
+    dirpath = tempfile.mkdtemp()
+    try:
+        yield dirpath
+    finally:
+        shutil.rmtree(dirpath)
+
 def copyFile(old, new):
     if not os.path.exists(old):
         print "*** '{}' does not exist, preserving original.".format(old)
@@ -70,17 +82,13 @@ def copyFile(old, new):
     else:
         shutil.copy2(old, new)
 
-# Create a temporary directory which is automatically removed afterwards, even if the script crashes
-# Use like:
-#    with tempdir() as tempDungeonRefCopy:
-#        <code using the folder tempDungeonRefCopy>
-@contextlib.contextmanager
-def tempdir():
-    dirpath = tempfile.mkdtemp()
-    try:
-        yield dirpath
-    finally:
-        shutil.rmtree(dirpath)
+def copyFiles(oldDir, newDir, files):
+    for aFile in files:
+        print "    Copying " + aFile + "..."
+        try:
+            copyFile(oldDir+aFile, newDir+aFile)
+        except:
+            print "*** " + aFile + " could not be copied, may not exist."
 
 def copyFolder(old, new):
     # This does not check if it's a path or a file, but there's another function for that case.
