@@ -60,6 +60,12 @@ dungeonScoreRules = [
             {"Objective":"DB1Access","Score":0},
         ]},
     },
+    {
+        "condition":{"Objective":"DRAccess","Score":{"min":1}},
+        "actions":{"set":[
+            {"Objective":"DRAccess","Score":0},
+        ]},
+    },
 ]
 
 configList = [{

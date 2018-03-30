@@ -48,11 +48,11 @@ class scoreboard(object):
         if "Name" in Conditions:
             Name = Conditions["Name"]
         if "Objective" in Conditions:
-            Name = Conditions["Objective"]
+            Objective = Conditions["Objective"]
         if "Score" in Conditions:
-            Name = Conditions["Score"]
+            Score = Conditions["Score"]
         if "Locked" in Conditions:
-            Name = Conditions["Locked"]
+            Locked = Conditions["Locked"]
         matchingScores = []
         for _aScore in self.allScores:
             if (
@@ -66,9 +66,25 @@ class scoreboard(object):
             ):
                 continue
             if (
-                Score is not None and
-                _aScore['Score'].value != Score and
+                type(Score) is int and
+                _aScore['Score'].value != Score
+            ):
+                continue
+            if (
+                type(Score) is list and
                 _aScore['Score'].value not in Score
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "min" in Score and
+                _aScore['Score'].value < Score["min"]
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "max" in Score and
+                _aScore['Score'].value > Score["max"]
             ):
                 continue
             if (
@@ -76,7 +92,7 @@ class scoreboard(object):
                 _aScore['Locked'].value != Locked
             ):
                 continue
-            matchingScores.append(aScore)
+            matchingScores.append(_aScore)
         return matchingScores
 
     def resetScores(self,Name=None,Objective=None,Score=None,Locked=None):
