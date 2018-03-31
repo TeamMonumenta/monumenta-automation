@@ -1089,8 +1089,8 @@ class actNBT(object):
             if soulbound is not None:
                 if "display" not in itemStack["tag"]:
                     itemStack["tag"]["display"] = nbt.TAG_Compound()
-                if "lore" not in itemStack["tag"]["display"]:
-                    itemStack["tag"]["display"] = nbt.TAG_List()
+                if "Lore" not in itemStack["tag"]["display"]:
+                    itemStack["tag"]["display"]["Lore"] = nbt.TAG_List()
                 if soulbound is not None:
                     itemStack["tag"]["display"]["Lore"].append(soulbound)
                 if isReplica:
