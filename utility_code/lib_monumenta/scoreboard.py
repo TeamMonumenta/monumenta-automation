@@ -174,15 +174,25 @@ class scoreboard(object):
         always 36 characters (4 hyphens and 32 hexadecimal digits).
         This deletes entities that have UUID's not found in entitiesToKeep
         """
+        uuidsToKeep = []
+        for entity in entitiesToKeep:
+            uuidsToKeep.append(str(entity))
         numEntries = len(self.allScores)
+        prunedDryRun = 0
         for i in range(numEntries-1,-1,-1):
             aScore = self.allScores[i]
             owner = aScore["Name"].value
             if (
                 len(owner) == 36 and
-                owner not in entitiesToKeep
+                owner not in uuidsToKeep
             ):
-                self.allScores.pop(i)
+                prunedDryRun += 1
+                #self.allScores.pop(i)
+        print "    - Dry run; scores not affected."
+        print "    - {} entities found.".format(len(uuidsToKeep))
+        if len(uuidsToKeep) > 0:
+            print "    - Example UUID: {}".format(uuidsToKeep[0])
+        print "    - {} scores pruned.".format(prunedDryRun)
 
     def batchScoreChanges(self,rules):
         for aRule in rules:
