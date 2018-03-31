@@ -82,6 +82,7 @@ configList = [{
     "playerScoreChanges":dungeonScoreRules,
 
     "tpToSpawn":True,
+    "tagPlayers":["resetMessage"],
 
     "coordinatesToFill":(
         {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
@@ -174,6 +175,7 @@ configList = [{
 
     "copyBaseFrom":"main",
 
+    "tagPlayers":["resetMessage"],
     "playerScoreChanges":dungeonScoreRules,
     "blockReplacements":item_replace_list.blockReplacements,
     "blockReplaceLocations":["world",],
@@ -190,6 +192,7 @@ configList = [{
 
     "copyBaseFrom":"main",
 
+    "tagPlayers":["resetMessage"],
     "playerScoreChanges":dungeonScoreRules,
     "blockReplacements":item_replace_list.blockReplacements,
     "blockReplaceLocations":["world",],
@@ -204,6 +207,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/white/Project_Epic-white/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
+    "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
@@ -214,6 +218,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/orange/Project_Epic-orange/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
+    "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
@@ -224,6 +229,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/magenta/Project_Epic-magenta/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
+    "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
@@ -234,6 +240,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/lightblue/Project_Epic-lightblue/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
+    "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
@@ -244,6 +251,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/yellow/Project_Epic-yellow/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
+    "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
@@ -254,6 +262,7 @@ configList = [{
     "localDstFolder":"/home/rock/tmp/POST_RESET/r1bonus/Project_Epic-r1bonus/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
+    "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
@@ -265,6 +274,7 @@ configList = [{
     "copyMainFolders":["advancements/", "playerdata/", "stats/"],
     "copyMainFiles":["data/scoreboard.dat","data/villages.dat","data/villages_end.dat","data/advancements","data/functions","data/loot_tables"],
     "playerScoreChanges":dungeonScoreRules,
+    "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],

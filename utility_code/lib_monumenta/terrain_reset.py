@@ -30,7 +30,7 @@ import pymclevel
 from lib_monumenta import item_replace
 from lib_monumenta import scoreboard
 from lib_monumenta.common import fillBoxes, copyBoxes, copyFolder, copyFolders, copyFiles
-from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGlobally
+from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGlobally, tagPlayers
 from lib_monumenta.list_uuids import listUUIDs
 
 def terrainResetInstance(config, outputFile):
@@ -155,6 +155,10 @@ def terrainResetInstance(config, outputFile):
     if "safetyTpLocation" in config:
         print "  Moving players to safety..."
         movePlayers(localDstFolder, config["safetyTpLocation"])
+
+    if "tagPlayers" in config:
+        print "  Giving scoreboard tags to players..."
+        tagPlayers(localDstFolder,config["tagPlayers"])
 
     if (
         "tpToSpawn" in config and

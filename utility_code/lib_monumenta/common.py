@@ -106,8 +106,8 @@ def copyFolders(old, new, subfolders):
         except:
             print "*** " + folder + " could not be copied, may not exist."
 
-""" Moves all players to the same location """
 def movePlayers(worldFolder, safetyTpLocation):
+    """ Moves all players to the same location """
     # world.players returns an empty list for multiplayer worlds?
     # Lovely. Mojang changed the player data folder from world/player
     # to world/playerdata when they changed the files to be UUIDs.
@@ -156,16 +156,36 @@ def movePlayers(worldFolder, safetyTpLocation):
         if "SpawnForced" in aPlayer:
             aPlayer.pop("SpawnForced")
 
+        # save
+        aPlayer.save(aPlayerFile)
+
+def tagPlayers(worldFolder, scoreboardTags):
+    """ Gives all players the tags specified """
+    tagList = []
+    for aTag in scoreboardTags:
+        if type(aTag) is nbt.TAG_String:
+            tagList.append( aTag )
+        else:
+            tagList.append( nbt.TAG_String(aTag) )
+
+    if len(tagList) == 0:
+        return
+
+    for aPlayerFile in os.listdir(worldFolder+"/playerdata"):
+        aPlayerFile = worldFolder+"/playerdata/"+aPlayerFile
+        aPlayer = nbt.load(aPlayerFile)
+
         if "Tags" not in aPlayer:
             aPlayer["Tags"] = nbt.TAG_List()
-        if resetTag not in aPlayer["Tags"]:
-            aPlayer["Tags"].append(resetTag)
+        for aTag in tagList:
+            if aTag not in aPlayer["Tags"]:
+                aPlayer["Tags"].append(aTag)
 
         # save
         aPlayer.save(aPlayerFile)
 
-""" Resets the play time for the world, and the time in each chunk. """
 def resetRegionalDifficulty(world):
+    """ Resets the play time for the world, and the time in each chunk. """
 
     num_reset = 0
     num_missing_level_tag = 0
@@ -198,18 +218,18 @@ def resetRegionalDifficulty(world):
 ################################################################################
 # Functions that require dictionaries as arguments
 
-"""
-Fills a list of boxes with their specified blocks
-coordinatesToFill should be an iterable tuple or list of dictionaries, like this:
-
-(
-    {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-        "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
-    {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-        "replaceBlocks":True, "material":(35, 0), "materialName":"white wool"},
-)
-"""
 def fillBoxes(world, coordinatesToFill):
+    """
+    Fills a list of boxes with their specified blocks
+    coordinatesToFill should be an iterable tuple or list of dictionaries, like this:
+
+    (
+        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+            "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
+        {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+            "replaceBlocks":True, "material":(35, 0), "materialName":"white wool"},
+    )
+    """
     copyNum = 1
     copyMax = len(coordinatesToFill)
 
