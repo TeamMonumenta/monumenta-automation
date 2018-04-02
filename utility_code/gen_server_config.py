@@ -524,8 +524,25 @@ config = {
     },
 }
 
+
+# config should be the entire config map
+# data should be a tuple like ('server.properties', 'difficulty', 'difficulty=0')
+def add_config_if_not_set(config, data):
+    for key in config:
+        exists = False
+        for replacement in config[key]['config']:
+            if len(replacement) == 3 and data[0] in replacement[0] and data[1] in replacement[1]:
+                exists = True
+        if not exists:
+            config[key]['config'] += [data]
+
+    return config
+
 # Config additions that are specific to build or play server
 if (SERVER_TYPE == 'build'):
+    config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=0'))
+    config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
+
     config['region_1']['config'] += [
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
         ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
@@ -535,6 +552,9 @@ if (SERVER_TYPE == 'build'):
         ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
     ]
 else:
+    config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=2'))
+    config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
+
     config['region_1']['config'] += [
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=7G'),
         ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=7G'),
