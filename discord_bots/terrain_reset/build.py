@@ -18,7 +18,7 @@ import datetime
 
 client = discord.Client()
 channel = ""
-extraDebug = True
+extraDebug = False
 lock = False
 
 ################################################################################
@@ -109,17 +109,18 @@ async def run(cmd, ret=0):
     splitCmd = cmd.split(' ')
     if extraDebug:
         await display("Executing: ```" + str(splitCmd) + "```")
-    process = subprocess.run(splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = await process.communicate()
     rc = process.returncode
 
     if extraDebug:
-        stdout = process.stdout.decode('utf-8')
+        stdout = stdout.decode('utf-8')
         await display("Result: {}".format(rc))
         if stdout:
             await display("stdout from command '{}':".format(cmd))
             await display_verbatim(stdout)
 
-    stderr = process.stderr.decode('utf-8')
+    stderr = stderr.decode('utf-8')
     if stderr:
         await display("stderr from command '{}':".format(cmd))
         await display_verbatim(stderr)
@@ -186,7 +187,7 @@ generate_instances = [
 ]
 
 prep_reset_bundle = [
-    run("Stopping the region_1 shard..."),
+    display("Stopping the region_1 shard..."),
     run("mark2 send -n region_1 ~stop", None),
     sleep(5),
     run("mark2 send -n region_1 test", 1),
@@ -195,6 +196,10 @@ prep_reset_bundle = [
     run("mkdir -p /home/rock/tmpreset/TEMPLATE/region_1"),
     run("cp -a /home/rock/project_epic/region_1/Project_Epic-region_1 /home/rock/tmpreset/TEMPLATE/region_1/"),
 
+    display("Restarting the region_1 shard..."),
+    cd("/home/rock/project_epic/region_1"),
+    run("mark2 start"),
+
     display("Copying bungee..."),
     run("cp -a /home/rock/project_epic/bungee /home/rock/tmpreset/TEMPLATE/"),
 
@@ -202,8 +207,8 @@ prep_reset_bundle = [
     run("cp -a /home/rock/project_epic/purgatory /home/rock/tmpreset/POST_RESET/"),
 
     display("Copying tutorial..."),
-    run("mkdir /home/rock/tmpreset/POST_RESET/tutorial"),
-    run("cd /home/rock/tmpreset/POST_RESET/tutorial"),
+    run("mkdir -p /home/rock/tmpreset/POST_RESET/tutorial"),
+    cd("/home/rock/tmpreset/POST_RESET/tutorial"),
     run("tar xzf /home/rock/Project_Epic-tutorial.good.jan-12-2018.tgz"),
 
     display("Copying server_config..."),
@@ -212,6 +217,8 @@ prep_reset_bundle = [
     display("Packaging up reset bundle..."),
     cd("/home/rock/tmpreset"),
     run("tar czf /home/rock/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE"),
+
+    display("Reset bundle ready!"),
 ]
 
 terrain_reset = generate_instances + prep_reset_bundle
