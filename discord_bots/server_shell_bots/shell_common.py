@@ -45,39 +45,57 @@ def split_string(text):
 
     return result
 
-class Shell(object):
-    def __init__(self, client, debug=False):
-        self._client = client
+class ShellAction(object):
+    ################################################################################
+    # These methods should be implemented by the user
+
+    def __init__(self, debug=False):
         self._debug = debug
+        self._lock = False
+
+        # Implementor should populate these fields:
+        #self._commands = []
+
+    def getCommand(self):
+        raise NotImplementedError("Implement Me")
+
+    async def perm_stuff(self):
+        raise NotImplementedError("Implement Me")
+
+    async def help(self):
+        raise NotImplementedError("Implement Me")
+
+    ################################################################################
+    # These methods should be left alone
 
     async def sleep(self, seconds):
-        await display("Sleeping for " + str(seconds) + " seconds")
+        await self.display("Sleeping for " + str(seconds) + " seconds")
         await asyncio.sleep(seconds)
 
     async def cd(self, path):
-        if extraDebug:
-            await display("Changing path to `" + path + "`")
+        if self._debug:
+            await self.display("Changing path to `" + path + "`")
         os.chdir(path)
 
     async def run(self, cmd, ret=0):
         splitCmd = cmd.split(' ')
-        if extraDebug:
-            await display("Executing: ```" + str(splitCmd) + "```")
+        if self._debug:
+            await self.display("Executing: ```" + str(splitCmd) + "```")
         process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = await process.communicate()
         rc = process.returncode
 
-        if extraDebug:
+        if self._debug:
             stdout = stdout.decode('utf-8')
-            await display("Result: {}".format(rc))
+            await self.display("Result: {}".format(rc))
             if stdout:
-                await display("stdout from command '{}':".format(cmd))
-                await display_verbatim(stdout)
+                await self.display("stdout from command '{}':".format(cmd))
+                await self.displayVerbatim(stdout)
 
         stderr = stderr.decode('utf-8')
         if stderr:
-            await display("stderr from command '{}':".format(cmd))
-            await display_verbatim(stderr)
+            await self.display("stderr from command '{}':".format(cmd))
+            await self.displayVerbatim(stderr)
             # TODO: Remove likely
             #if ret != None and ret == 0:
                 #raise ValueError("Got unexpected stderr while processing '{}'".format(cmd))
@@ -85,18 +103,29 @@ class Shell(object):
         if ret != None and rc != ret:
             raise ValueError("Expected result {}, got result {} while processing '{}'".format(ret, rc, cmd))
 
-    async def display_verbatim(self, text):
+    async def displayVerbatim(self, text):
         for chunk in split_string(text):
-            await display("```" + chunk + "```")
+            await self.display("```" + chunk + "```")
 
     async def display(self, debuginfo):
         await self._client.send_message(self._channel, debuginfo)
 
-    async def do_actions(self, channel, actions):
+    async def doActions(self, client, channel):
+        self._client = client
         self._channel = channel
 
+        if self._lock:
+            await self.display('Error: action ' + self.getCommand() + ' is already being performed')
+            return
+        else:
+            await self.display('Performing action: ' + self.getCommand())
+
+        self._lock = True
+
         try:
-            for item in actions:
+            for item in self._commands:
                 await item
         except Exception as e:
             await self._client.send_message(self._channel, "**ERROR**: ```" + str(e) + "```")
+
+        self.lock = False
