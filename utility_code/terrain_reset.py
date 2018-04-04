@@ -8,65 +8,10 @@ merges them into a new world, dstWorld (destination).
 from lib_monumenta.terrain_reset import terrainReset
 import item_replace_list
 import entity_update_list
+from score_change_list import dungeonScoreRules
+from advancement_change_list import advancementRevokeList
 
 itemCountLog = "/home/rock/tmpreset/all_items.txt"
-
-# Yes, this could currently be a list of scores to reset globally.
-# I've formatted it this way to prepare for making it possible to
-# enter dungeons from the previous terrain reset.
-
-# This searches for scores matching Condition, makes a list of Names
-# appearing in the results, and runs actions for every name in the list.
-
-dungeonScoreRules = [
-    {
-        "condition":{"Objective":"D1Access","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"D1Access","Score":0},
-            {"Objective":"D1Finished","Score":0},
-        ]},
-    },
-    {
-        "condition":{"Objective":"D2Access","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"D2Access","Score":0},
-            {"Objective":"D2Finished","Score":0},
-        ]},
-    },
-    {
-        "condition":{"Objective":"D3Access","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"D3Access","Score":0},
-            {"Objective":"D3Finished","Score":0},
-        ]},
-    },
-    {
-        "condition":{"Objective":"D4Access","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"D4Access","Score":0},
-            {"Objective":"D4Finished","Score":0},
-        ]},
-    },
-    {
-        "condition":{"Objective":"D5Access","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"D5Access","Score":0},
-            {"Objective":"D5Finished","Score":0},
-        ]},
-    },
-    {
-        "condition":{"Objective":"DB1Access","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"DB1Access","Score":0},
-        ]},
-    },
-    {
-        "condition":{"Objective":"DRAccess","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"DRAccess","Score":0},
-        ]},
-    },
-]
 
 configList = [{
     "server":"region_1",
@@ -80,6 +25,8 @@ configList = [{
 
     # Reset dungeon scores
     "playerScoreChanges":dungeonScoreRules,
+
+    "revokeAdvancements":advancementRevokeList,
 
     "tpToSpawn":True,
     "tagPlayers":["resetMessage"],

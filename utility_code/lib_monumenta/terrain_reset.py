@@ -32,6 +32,7 @@ from lib_monumenta import scoreboard
 from lib_monumenta.common import fillBoxes, copyBoxes, copyFolder, copyFolders, copyFiles
 from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGlobally, tagPlayers
 from lib_monumenta.list_uuids import listUUIDs
+from lib_monumenta.advancements import advancements
 
 def terrainResetInstance(config, outputFile):
     # Redirect output to specified file
@@ -148,6 +149,11 @@ def terrainResetInstance(config, outputFile):
         worldScores.batchScoreChanges(config["playerScoreChanges"])
 
     worldScores.save()
+
+    if "revokeAdvancements" in config:
+        print "Revoking advancements from players..."
+        dstAdvancements = advancements(localDstFolder)
+        dstAdvancements.revoke(config["revokeAdvancements"])
 
     if "players" in config["itemReplaceLocations"]:
         itemReplacements.OnPlayers(localDstFolder)

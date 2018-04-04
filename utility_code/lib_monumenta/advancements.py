@@ -115,6 +115,6 @@ class advancements(object):
                             advs.pop(advKey)
                 advFile.save()
             except:
-                print "\r!!! Error occured with file "+fileName+"!\n"
+                print "!!! Error occured with file "+fileName+"!\n"
                 pass
 
