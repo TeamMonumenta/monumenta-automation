@@ -73,6 +73,7 @@ class advancements(object):
                 cachedItem["from"] = parsetime(toRevoke["from"])
             if "to" in toRevoke:
                 cachedItem["to"] = parsetime(toRevoke["to"])
+            cache.append(cachedItem)
 
         for fileName in self.fileList:
             try:
@@ -82,19 +83,23 @@ class advancements(object):
                 for change in cache:
                     if (
                         "advancement" in change and
-                        change["advancement"] in advs:
+                        change["advancement"] in advs
                     ):
                         advKeys = (change["advancement"],)
+                        if advKeys[0] not in advs:
+                            continue
                     else:
                         advKeys = advs.keys()
                     for advKey in advKeys:
-                        adv = advs[advKey]
+                        advCrit = advs[advKey]['criteria']
                         if "criteria" in change:
                             critList = (change["criteria"],)
+                            if critList[0] not in advCrit:
+                                continue
                         else:
-                            critList = adv.keys()
+                            critList = advCrit.keys()
                         for critKey in critList:
-                            timestamp = parsetime(adv[critKey])
+                            timestamp = parsetime(advCrit[critKey])
                             if (
                                 "from" in change and
                                 change["from"] > timestamp
@@ -105,9 +110,9 @@ class advancements(object):
                                 change["to"] < timestamp
                             ):
                                 continue
-                            adv.pop(critKey)
-                        if len(keys(adv)) == 0:
-                            advs.pop(advKeys)
+                            advCrit.pop(critKey)
+                        if len(advCrit.keys()) == 0:
+                            advs.pop(advKey)
                 advFile.save()
             except:
                 print "\r!!! Error occured with file "+fileName+"!\n"
