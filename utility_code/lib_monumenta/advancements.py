@@ -4,93 +4,112 @@
 import os
 import sys
 
-import multiprocessing as mp
-
 from json_file import jsonFile
+from dateutil.parser import parse as parsetime
 
-def renameAdvancements(worldDir,replaceList,maxProcesses=None):
-    """
-    If you want to rename an advancement without
-    it getting removed from players, use this.
+class advancements(object):
+    def __init__(self,worldDir):
+        """
+        A class to edit player advancements.
 
-    replaceList looks like this:
-    [
-        ["old","new"],
-        ["dungeons:yellow/find","monumenta:dungeons/yellow/find"],
-        ["dungeons:yellow/complete","monumenta:dungeons/yellow/complete"],
-    ]
+        Usage:
+        newObject = advancements(worldDir)
 
-    maxProcesses defaults to cpu count
-    """
-    print "Renaming advancements..."
-    print "Setting up threads..."
-    advancementPath = worldDir+"advancements/"
+        Each method saves changes in place.
+        """
+        if worldDir[-1] != '/':
+            self.worldDir = worldDir + '/'
+        else:
+            self.worldDir = worldDir
+        self.advDir = self.worldDir+"advancements/"
+        self.fileList = os.listdir(self.advDir)
 
-    if maxProcesses is None:
-        try:
-            maxProcesses = mp.cpu_count()
-        except NotImplementedError:
-            maxProcesses = 4
+    def renameAdvancements(self,replaceList):
+        """
+        Renames advancements. replaceList format is:
+        [
+          ["old:A","new:A"],
+          ["old:B","new:B"],
+        ]
+        """
+        for fileName in self.fileList:
+            try:
+                path = self.advDir + fileName
+                advFile = jsonFile(path)
+                for replacement in replaceList:
+                    old = replacement[0]
+                    if old in advFile.dict.keys():
+                        new = replacement[1]
+                        advFile.dict[new] = advFile.dict.pop(old)
+                advFile.save()
+            except:
+                print "\r!!! Error occured with file "+fileName+"!\n"
+                pass
 
-    processes = []
-    queue = mp.Queue()
+    def revoke(self,revokeList):
+        """
+        Revoke advancements or their criteria. Allows selecting by date.
+        revokeList format is:
+        [
+          # Remove all occurences of an advancement
+          {"advancement":"minecraft:the_end"},
+          # Remove all occurences of an advancement's criteria
+          {"advancement":"monumenta:jp_all","criteria":"NyrWindmill"},
+          # Remove all occurences of an advancement within a date range (must indicate timezone)
+          {"advancement":"slayer:bslayer5","from":"2018-03-31 02:00:00 -0400","to":"'2018-04-07 02:00:00 -0400'"},
+          # Remove all advancements within a date range (must indicate timezone)
+          {"from":"2018-03-31 02:00:00 -0400","to":"'2018-04-07 02:00:00 -0400'"},
+          # "from" does not require "to", and vice versa.
+        ]
+        """
+        cache = []
+        for toRevoke in revokeList:
+            cachedItem = {}
+            if "advancement" in toRevoke:
+                cachedItem["advancement"] = toRevoke["advancement"]
+            if "criteria" in toRevoke:
+                cachedItem["criteria"] = toRevoke["criteria"]
+            if "from" in toRevoke:
+                cachedItem["from"] = parsetime(toRevoke["from"])
+            if "to" in toRevoke:
+                cachedItem["to"] = parsetime(toRevoke["to"])
 
-    for i in range(maxProcesses):
-        target=_handleOneFile
-        args=({
-            "advDir":advancementPath,
-            "queue":queue,
-            "replaceList":replaceList,
-        },)
-
-        process = mp.Process(target=target, args=args)
-        process.start()
-        processes.append(process)
-
-    print "Editing files in place..."
-    fileList = os.listdir(worldDir+"advancements")
-    fileCount = len(fileList)
-    print "{}/{} queued".format(0,fileCount),
-    for i in range(fileCount):
-        print "\r{}/{} queued".format(i,fileCount),
-        fileName = fileList[i]
-        path = fileName
-        queue.put(path)
-    print "\r{}/{} queued".format(fileCount,fileCount)
-
-    for i in range(maxProcesses):
-        queue.put(True)
-
-    for p in processes:
-        p.join()
-
-    print "Done!"
-
-def _handleOneFile(arguements):
-    """
-    Don't run this function externally
-
-    When called as a process, it will get file
-    names to edit from the queue. It will exit
-    when it gets True.
-    """
-    advPath = arguements["advDir"]
-    queue = arguements["queue"]
-    replaceList = arguements["replaceList"]
-
-    fileName = queue.get()
-    while fileName is not True:
-        try:
-            path = advPath + fileName
-            advFile = jsonFile(path)
-            for replacement in replaceList:
-                old = replacement[0]
-                if old in advFile.dict.keys():
-                    new = replacement[1]
-                    advFile.dict[new] = advFile.dict.pop(old)
-            advFile.save()
-        except:
-            print "\r!!! Error occured with file "+fileName+"!\n"
-            pass
-        fileName = queue.get()
+        for fileName in self.fileList:
+            try:
+                path = self.advDir + fileName
+                advFile = jsonFile(path)
+                advs = advFile.dict
+                for change in cache:
+                    if (
+                        "advancement" in change and
+                        change["advancement"] in advs:
+                    ):
+                        advKeys = (change["advancement"],)
+                    else:
+                        advKeys = advs.keys()
+                    for advKey in advKeys:
+                        adv = advs[advKey]
+                        if "criteria" in change:
+                            critList = (change["criteria"],)
+                        else:
+                            critList = adv.keys()
+                        for critKey in critList:
+                            timestamp = parsetime(adv[critKey])
+                            if (
+                                "from" in change and
+                                change["from"] > timestamp
+                            ):
+                                continue
+                            if (
+                                "to" in change and
+                                change["to"] < timestamp
+                            ):
+                                continue
+                            adv.pop(critKey)
+                        if len(keys(adv)) == 0:
+                            advs.pop(advKeys)
+                advFile.save()
+            except:
+                print "\r!!! Error occured with file "+fileName+"!\n"
+                pass
 
