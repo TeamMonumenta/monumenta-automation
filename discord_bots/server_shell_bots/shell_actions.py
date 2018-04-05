@@ -1,6 +1,38 @@
 
 from shell_common import ShellAction, datestr
 
+privUsers = {
+    "Combustible": "302298391969267712",
+    "NickNackGus": "228226807353180162",
+    "rockenroll4life": "158655519588876288",
+    "Chipmunk": "144306298811318272",
+    "masterchris92": "163457917658333185",
+    "Kaladun": "164199966242373632",
+}
+
+privIds = privUsers.values()
+print(privIds)
+
+class DebugAction(ShellAction):
+    def __init__(self, debug=False):
+        super().__init__(debug)
+
+    def getCommand(self):
+        return "!debug"
+
+    def hasPermissions(self, author):
+        return True
+
+    async def doActions(self, client, channel, member):
+        self._client = client
+        self._channel = channel
+        self._member = member
+
+        await self.display("Your user ID is: " + member.id),
+        await self.display("Your roles are:"),
+        for role in member.roles:
+            await self.display("`" + role.name + "`: " + role.id),
+
 class TestAction(ShellAction):
     def __init__(self, debug=False):
         super().__init__(debug)
@@ -10,6 +42,24 @@ class TestAction(ShellAction):
 
     def getCommand(self):
         return "!test"
+
+    def hasPermissions(self, author):
+        return True
+
+class TestPrivilegedAction(ShellAction):
+    def __init__(self, debug=False):
+        super().__init__(debug)
+        self._commands = [
+            self.display("You've got the power"),
+        ]
+
+    def getCommand(self):
+        return "!testpriv"
+
+    def hasPermissions(self, author):
+        if author.id in privIds:
+            return True
+        return False
 
 class GenerateInstancesAction(ShellAction):
     def __init__(self, debug=False):
@@ -46,6 +96,11 @@ class GenerateInstancesAction(ShellAction):
 
     def getCommand(self):
         return "!generate instances"
+
+    def hasPermissions(self, author):
+        if author.id in privIds:
+            return True
+        return False
 
 class PrepareResetBundleAction(ShellAction):
     def __init__(self, debug=False):
@@ -87,3 +142,8 @@ class PrepareResetBundleAction(ShellAction):
 
     def getCommand(self):
         return "!prepare reset bundle"
+
+    def hasPermissions(self, author):
+        if author.id in privIds:
+            return True
+        return False

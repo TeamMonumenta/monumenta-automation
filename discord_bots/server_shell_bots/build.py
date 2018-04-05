@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 import discord
-from shell_actions import GenerateInstancesAction, PrepareResetBundleAction, TestAction
+from shell_actions import GenerateInstancesAction, PrepareResetBundleAction, TestAction, DebugAction, TestPrivilegedAction
 
 ################################################################################
 # Config / Environment
@@ -31,16 +31,25 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.channel == channel:
-        for action in actionList:
-            if message.content == action.getCommand():
-                await action.doActions(client, channel)
+        if message.content in actionDict:
+            action = actionDict[message.content]()
+            if not action.hasPermissions(message.author):
+                await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
+            else:
+                await action.doActions(client, channel, message.author)
+            return
 
 # The master list of commands this bot is able to handle
-actionList = [TestAction(), GenerateInstancesAction(), PrepareResetBundleAction()]
+actionDict = {}
+
+actionDict[DebugAction().getCommand()] = DebugAction
+actionDict[TestAction().getCommand()] = TestAction
+actionDict[GenerateInstancesAction().getCommand()] = GenerateInstancesAction
+actionDict[PrepareResetBundleAction().getCommand()] = PrepareResetBundleAction
+actionDict[TestPrivilegedAction().getCommand()] = TestPrivilegedAction
 
 print("Handling these commands:")
-for action in actionList:
-    print("  " + action.getCommand())
+print(actionDict.keys())
 
 ################################################################################
 # Entry point
