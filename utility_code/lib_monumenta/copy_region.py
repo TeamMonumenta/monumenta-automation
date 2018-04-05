@@ -32,7 +32,7 @@ def copyRegion(old,new,rx,rz):
     """
     if not copyFile(old,new):
         print "*** Region not copied; not edited destination file"
-        return
+        return False
     region = regionfile.MCRegionFile(new,(rx,rz))
     entityIter = IterEntities(["entities","block entities","tile ticks","search spawners"],_fixEntity,None)
     for index, offset in enumerate(region.offsets):
@@ -50,6 +50,7 @@ def copyRegion(old,new,rx,rz):
             data = chunkTag.save(compressed=False)
             region.saveChunk(cx, cz, data) # saves region file too
     region.close()
+    return True
 
 def _fixEntity(onMatchArgs,entityDetails):
     cx,cz = entityDetails["chunk pos"]

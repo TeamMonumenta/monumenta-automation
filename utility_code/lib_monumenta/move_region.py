@@ -38,7 +38,7 @@ def moveRegion(dirSrc,dirDst,rxSrc,rzSrc,rxDst,rzDst):
 
     if not moveFile(regionPathSrc,regionPathDst):
         print "*** Region not moved; not edited destination file"
-        return
+        return False
     region = regionfile.MCRegionFile(regionPathDst,(rxDst,rzDst))
     entityIter = IterEntities(["entities","block entities","tile ticks","search spawners"],_fixEntity,onMatchArgs)
     for index, offset in enumerate(region.offsets):
@@ -56,6 +56,7 @@ def moveRegion(dirSrc,dirDst,rxSrc,rzSrc,rxDst,rzDst):
             data = chunkTag.save(compressed=False)
             region.saveChunk(cx, cz, data) # saves region file too
     region.close()
+    return True
 
 def _fixEntity(onMatchArgs,entityDetails):
     dx,dz = onMatchArgs

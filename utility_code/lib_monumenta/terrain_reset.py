@@ -33,6 +33,7 @@ from lib_monumenta.common import fillBoxes, copyBoxes, copyFolder, copyFolders, 
 from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGlobally, tagPlayers
 from lib_monumenta.list_uuids import listUUIDs
 from lib_monumenta.advancements import advancements
+from lib_monumenta.move_region import moveRegion
 
 def terrainResetInstance(config, outputFile):
     # Redirect output to specified file
@@ -81,6 +82,57 @@ def terrainResetInstance(config, outputFile):
     # This lets us prune scores of dead entities.
     print "  Opening Destination World..."
     dstWorld = pymclevel.loadWorld(localDstFolder)
+
+    worldScores = scoreboard.scoreboard(localDstFolder)
+
+    if "playerScoreChanges" in config:
+        print "  Adjusting player scores (dungeon scores)..."
+        worldScores.batchScoreChanges(config["playerScoreChanges"])
+
+    if "preserveInstance" in config:
+        instanceConfig = config["preserveInstance"]
+        targetRegion = instanceConfig["targetRegion"]
+        dungeonScore = instanceConfig["dungeonScore"]
+        instancesPerWeek = 1000
+
+        dungeonScoreObjects = worldScores.searchScores(Objective=dungeonScore,Score={"min":1})
+        dungeonScores = set()
+        for scoreObject in dungeonScoreObjects:
+            dungeonScores.add(scoreObject["Objective"].value)
+        dungeonScores = sorted(list(dungeonScores))
+
+        for instanceID in dungeonScores:
+            # // is integer division
+            instanceWeek   = instanceID // instancesPerWeek
+            instanceInWeek = instanceID %  instancesPerWeek
+
+            newRx = targetRegion["x"] + instanceWeek
+            newRz = targetRegion["z"] + instanceInWeek
+            oldRx = newRx - 1
+            oldRz = newRz
+
+            if not moveRegion(
+                oldRegionDir,
+                newRegionDir,
+                dungeonRegion["x"],dungeonRegion["z"],
+                rx,rz
+            ):
+                # Failed to move the region file; this happens if the old file is missing.
+                # This does not indicate that the player's instance was removed intentionally.
+                dungeonScoreObjects = worldScores.searchScores(Objective=dungeonScore,Score=instanceID)
+                for scoreObject in dungeonScoreObjects:
+                    # Consider setting this value to -1 to indicate an error
+                    scoreObject["Objective"].value = 0
+                continue
+
+        # Move players to the same location in the next instance, or send them to spawn.
+        dungeonScoreObjects = worldScores.searchScores(Objective=dungeonScore)
+        for scoreObject in dungeonScoreObjects:
+            playerName = scoreObject["Name"].value
+            # We can't edit a player by name, only by UUID.
+            # If we can identify the player, we want to teleport them +512x,
+            # or to spawn if their score is 0. This would be dead simple if
+            # the scoreboard file stored players by UUID.
 
     ################################################################################
     # Perform world manipulations if required
@@ -141,13 +193,7 @@ def terrainResetInstance(config, outputFile):
 
     print "  Deleting scores for missing entities..."
     existingEntities = listUUIDs(dstWorld)
-    worldScores = scoreboard.scoreboard(localDstFolder)
     worldScores.pruneMissingEntities(existingEntities)
-
-    if "playerScoreChanges" in config:
-        print "  Adjusting player scores (dungeon scores)..."
-        worldScores.batchScoreChanges(config["playerScoreChanges"])
-
     worldScores.save()
 
     if "revokeAdvancements" in config:
