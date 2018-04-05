@@ -1,6 +1,9 @@
 
 from shell_common import ShellAction, datestr
 
+################################################################################
+# Common privilege code
+
 privUsers = {
     "Combustible": "302298391969267712",
     "NickNackGus": "228226807353180162",
@@ -13,6 +16,14 @@ privUsers = {
 privIds = privUsers.values()
 print(privIds)
 
+def isPrivileged(author):
+    if author.id in privIds:
+        return True
+    return False
+
+################################################################################
+# Simple test functions
+
 class DebugAction(ShellAction):
     def __init__(self, debug=False):
         super().__init__(debug)
@@ -23,15 +34,18 @@ class DebugAction(ShellAction):
     def hasPermissions(self, author):
         return True
 
+    def help(self):
+        return "Prints debugging information about the requestor"
+
     async def doActions(self, client, channel, member):
         self._client = client
         self._channel = channel
         self._member = member
 
-        await self.display("Your user ID is: " + member.id),
-        await self.display("Your roles are:"),
+        message = "Your user ID is: " + member.id + "\nYour roles are:"
         for role in member.roles:
-            await self.display("`" + role.name + "`: " + role.id),
+            message += "\n`" + role.name + "`: " + role.id
+        await self.display(message),
 
 class TestAction(ShellAction):
     def __init__(self, debug=False):
@@ -46,6 +60,9 @@ class TestAction(ShellAction):
     def hasPermissions(self, author):
         return True
 
+    def help(self):
+        return "Simple test action that does nothing"
+
 class TestPrivilegedAction(ShellAction):
     def __init__(self, debug=False):
         super().__init__(debug)
@@ -57,9 +74,29 @@ class TestPrivilegedAction(ShellAction):
         return "!testpriv"
 
     def hasPermissions(self, author):
-        if author.id in privIds:
-            return True
+        return isPrivileged(author)
+
+    def help(self):
+        return "Test if user has permission to use restricted commands"
+
+class TestUnprivilegedAction(ShellAction):
+    def __init__(self, debug=False):
+        super().__init__(debug)
+        self._commands = [
+            self.display("BUG: You definitely shouldn't have this much power"),
+        ]
+
+    def getCommand(self):
+        return "!testunpriv"
+
+    def hasPermissions(self, author):
         return False
+
+    def help(self):
+        return "Test that a restricted command fails for all users"
+
+################################################################################
+# Useful actions start here
 
 class ListShardsAction(ShellAction):
     def __init__(self, debug=False):
@@ -73,6 +110,9 @@ class ListShardsAction(ShellAction):
 
     def hasPermissions(self, author):
         return True
+
+    def help(self):
+        return "Lists currently running shards on this server"
 
 class GenerateInstancesAction(ShellAction):
     def __init__(self, debug=False):
@@ -111,9 +151,14 @@ class GenerateInstancesAction(ShellAction):
         return "!generate instances"
 
     def hasPermissions(self, author):
-        if author.id in privIds:
-            return True
-        return False
+        return isPrivileged(author)
+
+    def help(self):
+        return '''Dangerous!
+Deletes previous terrain reset data
+Temporarily brings down the dungeon shard to generate dungeon instances.
+Must be run before preparing the build server reset bundle
+'''
 
 class PrepareResetBundleAction(ShellAction):
     def __init__(self, debug=False):
@@ -157,6 +202,11 @@ class PrepareResetBundleAction(ShellAction):
         return "!prepare reset bundle"
 
     def hasPermissions(self, author):
-        if author.id in privIds:
-            return True
-        return False
+        return isPrivileged(author)
+
+    def help(self):
+        return '''Dangerous!
+Temporarily brings down the region_1 shard to prepare for terrain reset
+Packages up all of the pre-reset server components needed by the play server for reset
+Must be run before starting terrain reset on the play server
+'''

@@ -24,9 +24,13 @@ actionDict[ListShardsAction().getCommand()] = ListShardsAction
 actionDict[GenerateInstancesAction().getCommand()] = GenerateInstancesAction
 actionDict[PrepareResetBundleAction().getCommand()] = PrepareResetBundleAction
 actionDict[TestPrivilegedAction().getCommand()] = TestPrivilegedAction
+actionDict[TestUnprivilegedAction().getCommand()] = TestUnprivilegedAction
 
-print("Handling these commands:")
-print(actionDict.keys())
+botHelp = '''
+This is the monumenta build server bot.
+It runs on the build server's console.
+It can be used to run actions on the build server.
+'''
 
 ################################################################################
 # Discord event handlers
@@ -44,6 +48,19 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.channel.id in botChannels:
+        if message.content == "!help":
+            helptext = botHelp + '\n__Available Actions__'
+            for actionClass in actionDict.values():
+                action = actionClass()
+                if action.hasPermissions(message.author):
+                    helptext += "\n**" + action.getCommand() + "**"
+                else:
+                    helptext += "\n~~" + action.getCommand() + "~~"
+                helptext += "```" + action.help() + "```"
+
+            await client.send_message(message.channel, helptext)
+            return
+
         if message.content in actionDict:
             action = actionDict[message.content]()
             if not action.hasPermissions(message.author):
