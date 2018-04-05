@@ -70,10 +70,24 @@ def tempdir():
     finally:
         shutil.rmtree(dirpath)
 
+def moveFile(old, new):
+    if not os.path.exists(old):
+        print "*** '{}' does not exist, preserving original.".format(old)
+        return False
+    if os.path.exists(new):
+        os.remove(new)
+    if os.path.islink(old):
+        linkto = os.readlink(old)
+        os.symlink(linkto, new)
+        os.remove(old)
+    else:
+        shutil.move(old, new)
+    return True
+
 def copyFile(old, new):
     if not os.path.exists(old):
         print "*** '{}' does not exist, preserving original.".format(old)
-        return
+        return False
     if os.path.exists(new):
         os.remove(new)
     if os.path.islink(old):
@@ -81,6 +95,7 @@ def copyFile(old, new):
         os.symlink(linkto, new)
     else:
         shutil.copy2(old, new)
+    return True
 
 def copyFiles(oldDir, newDir, files):
     for aFile in files:

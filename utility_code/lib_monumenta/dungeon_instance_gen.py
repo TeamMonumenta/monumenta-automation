@@ -15,7 +15,7 @@ from pymclevel.box import BoundingBox, Vector
 
 from lib_monumenta.common import fillBoxes, copyFolder, tempdir, resetRegionalDifficulty
 from lib_monumenta.list_lootless_tile_entities import listLootlessTileEntities
-from lib_monumenta.copy_region_file import copyRegion
+from lib_monumenta.copy_region import copyRegion
 from lib_monumenta.timing import timings
 from lib_monumenta.gen_map_array import gen_map_array
 
@@ -75,14 +75,19 @@ def gen_dungeon_instance(config, dungeon, outputFile):
         nextStep(dungeonName + ": Copy done")
 
         print "  Creating dungeon instances..."
-        oldRegionFile = tempDungeonRefCopy + "/region/r.{}.{}.mca".format(dungeonRegion["x"],dungeonRegion["z"])
+        oldRegionDir = tempDungeonRefCopy + "/region"
+        newRegionDir = dstFolder + "region"
         rx=targetRegion["x"]
         rzInit=targetRegion["z"]
         for i in range(numDungeons):
             print "    {0}...".format(i)
             rz = rzInit + i
-            newRegionFile = dstFolder + "region/r.{}.{}.mca".format(rx,rz)
-            copyRegion(oldRegionFile,newRegionFile,rx,rz)
+            copyRegion(
+                oldRegionDir,
+                newRegionDir,
+                dungeonRegion["x"],dungeonRegion["z"],
+                rx,rz
+            )
         nextStep(dungeonName + ": Created instances")
 
         print "  Opening dungeon world..."

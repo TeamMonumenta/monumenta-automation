@@ -30,7 +30,9 @@ def copyRegion(old,new,rx,rz):
     Also Fixes entity positions
     after copying.
     """
-    copyFile(old,new)
+    if not copyFile(old,new):
+        print "*** Region not copied; not edited destination file"
+        return
     region = regionfile.MCRegionFile(new,(rx,rz))
     entityIter = IterEntities(["entities","block entities","tile ticks","search spawners"],_fixEntity,None)
     for index, offset in enumerate(region.offsets):
