@@ -178,7 +178,9 @@ class scoreboard(object):
         for entity in entitiesToKeep:
             uuidsToKeep.append(str(entity))
         numEntries = len(self.allScores)
-        prunedDryRun = 0
+        unpruned = 0
+        pruned = 0
+        print "    - {} entities found.".format(len(uuidsToKeep))
         for i in range(numEntries-1,-1,-1):
             aScore = self.allScores[i]
             owner = aScore["Name"].value
@@ -186,13 +188,12 @@ class scoreboard(object):
                 len(owner) == 36 and
                 owner not in uuidsToKeep
             ):
-                prunedDryRun += 1
-                #self.allScores.pop(i)
-        print "    - Dry run; scores not affected."
-        print "    - {} entities found.".format(len(uuidsToKeep))
-        if len(uuidsToKeep) > 0:
-            print "    - Example UUID: {}".format(uuidsToKeep[0])
-        print "    - {} scores pruned.".format(prunedDryRun)
+                pruned += 1
+            else:
+                unpruned += 1
+                self.allScores.pop(i)
+        print "    - {} scores pruned.".format(pruned)
+        print "    - {} scores not pruned.".format(unpruned)
 
     def batchScoreChanges(self,rules):
         for aRule in rules:

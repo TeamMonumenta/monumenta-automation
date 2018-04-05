@@ -21,7 +21,7 @@ class mcUUID(object):
         ):
             self.uuid = value[0] << 64 | value[1]
         elif type_value is dict:
-            self.uuid = value["uuidMost"] << 64 | value["uuidLeast"]
+            self.uuid = value["UUIDMost"] << 64 | value["UUIDLeast"]
         elif type_value is type(self):
             self.uuid = value.uuid
         else:
@@ -79,7 +79,7 @@ class mcUUID(object):
         )
 
     def asTuple(self):
-        uuidMost  = ( self.uuid >> 64 ) & 0xffffffffffffffff
-        uuidLeast = self.uuid & 0xffffffffffffffff
-        return ( uuidMost, uuidLeast )
+        UUIDMost  = ( self.uuid >> 64 ) & 0xffffffffffffffff
+        UUIDLeast = self.uuid & 0xffffffffffffffff
+        return ( UUIDMost, UUIDLeast )
 
