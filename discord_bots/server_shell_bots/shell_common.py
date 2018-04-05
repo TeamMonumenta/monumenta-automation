@@ -59,7 +59,7 @@ class ShellAction(object):
     def getCommand(self):
         raise NotImplementedError("Implement Me")
 
-    async def perm_stuff(self):
+    async def hasPermissions(self, member):
         raise NotImplementedError("Implement Me")
 
     async def help(self):
@@ -110,9 +110,10 @@ class ShellAction(object):
     async def display(self, debuginfo):
         await self._client.send_message(self._channel, debuginfo)
 
-    async def doActions(self, client, channel):
+    async def doActions(self, client, channel, member):
         self._client = client
         self._channel = channel
+        self._member = member
 
         if self._lock:
             await self.display('Error: action ' + self.getCommand() + ' is already being performed')
@@ -128,4 +129,4 @@ class ShellAction(object):
         except Exception as e:
             await self._client.send_message(self._channel, "**ERROR**: ```" + str(e) + "```")
 
-        self.lock = False
+        self._lock = False
