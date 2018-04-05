@@ -77,7 +77,7 @@ class ShellAction(object):
             await self.display("Changing path to `" + path + "`")
         os.chdir(path)
 
-    async def run(self, cmd, ret=0):
+    async def run(self, cmd, ret=0, displayOutput=False):
         splitCmd = cmd.split(' ')
         if self._debug:
             await self.display("Executing: ```" + str(splitCmd) + "```")
@@ -86,10 +86,14 @@ class ShellAction(object):
         rc = process.returncode
 
         if self._debug:
-            stdout = stdout.decode('utf-8')
             await self.display("Result: {}".format(rc))
-            if stdout:
+
+        stdout = stdout.decode('utf-8')
+        if stdout:
+            if self._debug:
                 await self.display("stdout from command '{}':".format(cmd))
+
+            if self._debug or displayOutput:
                 await self.displayVerbatim(stdout)
 
         stderr = stderr.decode('utf-8')
@@ -102,6 +106,8 @@ class ShellAction(object):
 
         if ret != None and rc != ret:
             raise ValueError("Expected result {}, got result {} while processing '{}'".format(ret, rc, cmd))
+
+        return stdout
 
     async def displayVerbatim(self, text):
         for chunk in split_string(text):
