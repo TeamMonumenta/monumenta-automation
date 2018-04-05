@@ -14,7 +14,8 @@ from shell_actions import *
 client = discord.Client()
 
 # List of channels this bot will consume messages in
-botChannels = ['420045459177078795']
+# monumenta-bot and general
+botChannels = ['420045459177078795', '186225508562763776']
 
 # List of actions this bot handles
 actionDict = {}
@@ -37,13 +38,10 @@ It can be used to run actions on the build server.
 
 @client.event
 async def on_ready():
-    global channel
-
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('------')
-    channel = client.get_channel('420045459177078795')
 
 @client.event
 async def on_message(message):
@@ -66,7 +64,7 @@ async def on_message(message):
             if not action.hasPermissions(message.author):
                 await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
             else:
-                await action.doActions(client, channel, message.author)
+                await action.doActions(client, message.channel, message.author)
             return
 
 ################################################################################
