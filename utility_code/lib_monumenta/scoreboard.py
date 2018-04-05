@@ -159,6 +159,20 @@ class scoreboard(object):
         if len(matches) > 1:
             raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
         elif len(matches) == 1:
+            matches[0]['Score'].value += Score
+        elif len(matches) == 0:
+            newScore = nbt.TAG_Compound()
+            newScore['Objective'] = nbt.TAG_String(Objective)
+            newScore['Locked'] = nbt.TAG_Byte(0)
+            newScore['Score'] = nbt.TAG_Int(Score)
+            newScore['Name'] = nbt.TAG_String(Name)
+            self.allScores.append(newScore)
+
+    def addScore(self,Name,Objective,Score):
+        matches = self.searchScores(Name=Name,Objective=Objective)
+        if len(matches) > 1:
+            raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
+        elif len(matches) == 1:
             matches[0]['Score'].value = Score
         elif len(matches) == 0:
             newScore = nbt.TAG_Compound()
@@ -205,6 +219,11 @@ class scoreboard(object):
                         Objective = toSet["Objective"]
                         Score = toSet["Score"]
                         self.setScore(Name,Objective,Score)
+                if "add" in aRule["actions"]:
+                    for toAdd in aRule["actions"]["add"]:
+                        Objective = toAdd["Objective"]
+                        Score = toAdd["Score"]
+                        self.addScore(Name,Objective,Score)
 
 ################################################################################
 # These are legacy functions that should be merged into the Scoreboard class
