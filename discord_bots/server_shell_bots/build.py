@@ -6,14 +6,27 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 import discord
-from shell_actions import GenerateInstancesAction, PrepareResetBundleAction, TestAction, DebugAction, TestPrivilegedAction
+from shell_actions import *
 
 ################################################################################
 # Config / Environment
 
 client = discord.Client()
 
-channel = ""
+# List of channels this bot will consume messages in
+botChannels = ['420045459177078795']
+
+# List of actions this bot handles
+actionDict = {}
+actionDict[DebugAction().getCommand()] = DebugAction
+actionDict[TestAction().getCommand()] = TestAction
+actionDict[ListShardsAction().getCommand()] = ListShardsAction
+actionDict[GenerateInstancesAction().getCommand()] = GenerateInstancesAction
+actionDict[PrepareResetBundleAction().getCommand()] = PrepareResetBundleAction
+actionDict[TestPrivilegedAction().getCommand()] = TestPrivilegedAction
+
+print("Handling these commands:")
+print(actionDict.keys())
 
 ################################################################################
 # Discord event handlers
@@ -30,7 +43,7 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.channel == channel:
+    if message.channel.id in botChannels:
         if message.content in actionDict:
             action = actionDict[message.content]()
             if not action.hasPermissions(message.author):
@@ -39,19 +52,8 @@ async def on_message(message):
                 await action.doActions(client, channel, message.author)
             return
 
-# The master list of commands this bot is able to handle
-actionDict = {}
-
-actionDict[DebugAction().getCommand()] = DebugAction
-actionDict[TestAction().getCommand()] = TestAction
-actionDict[GenerateInstancesAction().getCommand()] = GenerateInstancesAction
-actionDict[PrepareResetBundleAction().getCommand()] = PrepareResetBundleAction
-actionDict[TestPrivilegedAction().getCommand()] = TestPrivilegedAction
-
-print("Handling these commands:")
-print(actionDict.keys())
-
 ################################################################################
 # Entry point
+
 client.run('NDIwMDQ0ODMxMjg1NDQ0NjI5.DX49qQ.eIkPQMOllPAGKaaN8VInr6RKqHI')
 

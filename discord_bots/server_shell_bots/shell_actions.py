@@ -61,6 +61,19 @@ class TestPrivilegedAction(ShellAction):
             return True
         return False
 
+class ListShardsAction(ShellAction):
+    def __init__(self, debug=False):
+        super().__init__(debug)
+        self._commands = [
+            self.run("mark2 list", displayOutput=True),
+        ]
+
+    def getCommand(self):
+        return "!list shards"
+
+    def hasPermissions(self, author):
+        return True
+
 class GenerateInstancesAction(ShellAction):
     def __init__(self, debug=False):
         super().__init__(debug)
