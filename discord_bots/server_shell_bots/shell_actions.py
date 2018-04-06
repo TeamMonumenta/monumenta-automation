@@ -136,7 +136,7 @@ class GenerateInstancesAction(ShellAction):
 
             self.display("Unpacking the dungeon template..."),
             self.cd("/home/rock/tmpreset"),
-            self.run("tar xzf /home/rock/dungeon_template-keep-this-12-29-2017.tgz"),
+            self.run("tar xzf /home/rock/assets/dungeon_template.tgz"),
 
             self.display("Generating dungeon instances (this may take a while)..."),
             self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/dungeon_instance_gen.py"),
@@ -186,7 +186,7 @@ class PrepareResetBundleAction(ShellAction):
             self.display("Copying tutorial..."),
             self.run("mkdir -p /home/rock/tmpreset/POST_RESET/tutorial"),
             self.cd("/home/rock/tmpreset/POST_RESET/tutorial"),
-            self.run("tar xzf /home/rock/Project_Epic-tutorial.good.jan-12-2018.tgz"),
+            self.run("tar xzf /home/rock/assets/Project_Epic-tutorial.tgz"),
 
             self.display("Copying server_config..."),
             self.run("cp -a /home/rock/project_epic/server_config /home/rock/tmpreset/POST_RESET/"),
