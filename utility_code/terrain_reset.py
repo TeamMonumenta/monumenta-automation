@@ -11,7 +11,7 @@ import entity_update_list
 from score_change_list import dungeonScoreRules
 from advancement_change_list import advancementRevokeList
 
-itemCountLog = "/home/rock/tmpreset/all_items.txt"
+itemCountLog = "/home/rock/4_SHARED/tmpreset/all_items.txt"
 
 configList = [{
     "server":"region_1",
@@ -19,9 +19,9 @@ configList = [{
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
-    "localMainFolder":"/home/rock/tmpreset/PRE_RESET/region_1/Project_Epic-region_1/",
-    "localBuildFolder":"/home/rock/tmpreset/TEMPLATE/region_1/Project_Epic-region_1/",
-    "localDstFolder":"/home/rock/tmpreset/POST_RESET/region_1/Project_Epic-region_1/",
+    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/region_1/Project_Epic-region_1/",
+    "localBuildFolder":"/home/rock/4_SHARED/tmpreset/TEMPLATE/region_1/Project_Epic-region_1/",
+    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/region_1/Project_Epic-region_1/",
 
     # Reset dungeon scores
     "playerScoreChanges":dungeonScoreRules,
@@ -54,7 +54,7 @@ configList = [{
     # List of places where item replacements should be run - options are "players", "world", "schematics"
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players", "schematics",],
-    "itemLog":"/home/rock/tmpreset/items_region_1.txt",
+    "itemLog":"/home/rock/4_SHARED/tmpreset/items_region_1.txt",
 
     # List of places where entity updates should be run - options are "world", "schematics"
     "entityUpdates":entity_update_list.KingsValley,
@@ -117,8 +117,8 @@ configList = [{
 }, {
     "server":"betaplots",
 
-    "localMainFolder":"/home/rock/tmpreset/PRE_RESET/betaplots/Project_Epic-betaplots/",
-    "localDstFolder":"/home/rock/tmpreset/POST_RESET/betaplots/Project_Epic-betaplots/",
+    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/betaplots/Project_Epic-betaplots/",
+    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/betaplots/Project_Epic-betaplots/",
 
     "copyBaseFrom":"main",
 
@@ -130,12 +130,12 @@ configList = [{
     "itemReplaceLocations":["players", "world",],
     "entityUpdates":entity_update_list.KingsValley,
     "entityUpdateLocations":["world",],
-    "itemLog":"/home/rock/tmpreset/items_betaplots.txt",
+    "itemLog":"/home/rock/4_SHARED/tmpreset/items_betaplots.txt",
 }, {
     "server":"r1plots",
 
-    "localMainFolder":"/home/rock/tmpreset/PRE_RESET/r1plots/Project_Epic-r1plots/",
-    "localDstFolder":"/home/rock/tmpreset/POST_RESET/r1plots/Project_Epic-r1plots/",
+    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/r1plots/Project_Epic-r1plots/",
+    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/r1plots/Project_Epic-r1plots/",
 
     "copyBaseFrom":"main",
 
@@ -147,11 +147,11 @@ configList = [{
     "itemReplaceLocations":["players", "world",],
     "entityUpdates":entity_update_list.KingsValley,
     "entityUpdateLocations":["world",],
-    "itemLog":"/home/rock/tmpreset/items_r1plots.txt",
+    "itemLog":"/home/rock/4_SHARED/tmpreset/items_r1plots.txt",
 }, {
     "server":"white",
-    "localMainFolder":"/home/rock/tmpreset/PRE_RESET/white/Project_Epic-white/",
-    "localDstFolder":"/home/rock/tmpreset/POST_RESET/white/Project_Epic-white/",
+    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/white/Project_Epic-white/",
+    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/white/Project_Epic-white/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
@@ -162,11 +162,11 @@ configList = [{
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
-    "itemLog":"/home/rock/tmpreset/items_white.txt",
+    "itemLog":"/home/rock/4_SHARED/tmpreset/items_white.txt",
 }, {
     "server":"orange",
-    "localMainFolder":"/home/rock/tmpreset/PRE_RESET/orange/Project_Epic-orange/",
-    "localDstFolder":"/home/rock/tmpreset/POST_RESET/orange/Project_Epic-orange/",
+    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/orange/Project_Epic-orange/",
+    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/orange/Project_Epic-orange/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
@@ -177,11 +177,11 @@ configList = [{
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
-    "itemLog":"/home/rock/tmpreset/items_orange.txt",
+    "itemLog":"/home/rock/4_SHARED/tmpreset/items_orange.txt",
 }, {
     "server":"magenta",
-    "localMainFolder":"/home/rock/tmpreset/PRE_RESET/magenta/Project_Epic-magenta/",
-    "localDstFolder":"/home/rock/tmpreset/POST_RESET/magenta/Project_Epic-magenta/",
+    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/magenta/Project_Epic-magenta/",
+    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/magenta/Project_Epic-magenta/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
@@ -192,11 +192,11 @@ configList = [{
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
-    "itemLog":"/home/rock/tmpreset/items_magenta.txt",
+    "itemLog":"/home/rock/4_SHARED/tmpreset/items_magenta.txt",
 }, {
     "server":"lightblue",
-    "localMainFolder":"/home/rock/tmpreset/PRE_RESET/lightblue/Project_Epic-lightblue/",
-    "localDstFolder":"/home/rock/tmpreset/POST_RESET/lightblue/Project_Epic-lightblue/",
+    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/lightblue/Project_Epic-lightblue/",
+    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/lightblue/Project_Epic-lightblue/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
@@ -207,11 +207,11 @@ configList = [{
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
-    "itemLog":"/home/rock/tmpreset/items_lightblue.txt",
+    "itemLog":"/home/rock/4_SHARED/tmpreset/items_lightblue.txt",
 }, {
     "server":"yellow",
-    "localMainFolder":"/home/rock/tmpreset/PRE_RESET/yellow/Project_Epic-yellow/",
-    "localDstFolder":"/home/rock/tmpreset/POST_RESET/yellow/Project_Epic-yellow/",
+    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/yellow/Project_Epic-yellow/",
+    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/yellow/Project_Epic-yellow/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
@@ -222,11 +222,11 @@ configList = [{
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
-    "itemLog":"/home/rock/tmpreset/items_yellow.txt",
+    "itemLog":"/home/rock/4_SHARED/tmpreset/items_yellow.txt",
 }, {
     "server":"r1bonus",
-    "localMainFolder":"/home/rock/tmpreset/PRE_RESET/r1bonus/Project_Epic-r1bonus/",
-    "localDstFolder":"/home/rock/tmpreset/POST_RESET/r1bonus/Project_Epic-r1bonus/",
+    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/r1bonus/Project_Epic-r1bonus/",
+    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/r1bonus/Project_Epic-r1bonus/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
@@ -237,11 +237,11 @@ configList = [{
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
-    "itemLog":"/home/rock/tmpreset/items_r1bonus.txt",
+    "itemLog":"/home/rock/4_SHARED/tmpreset/items_r1bonus.txt",
 }, {
     "server":"roguelike",
-    "localMainFolder":"/home/rock/tmpreset/PRE_RESET/roguelike/Project_Epic-roguelike/",
-    "localDstFolder":"/home/rock/tmpreset/POST_RESET/roguelike/Project_Epic-roguelike/",
+    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/roguelike/Project_Epic-roguelike/",
+    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/roguelike/Project_Epic-roguelike/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/"],
     "copyMainFiles":["data/scoreboard.dat","data/villages.dat","data/villages_end.dat","data/advancements","data/functions","data/loot_tables"],
     "playerScoreChanges":dungeonScoreRules,
@@ -249,7 +249,7 @@ configList = [{
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players"],
-    "itemLog":"/home/rock/tmpreset/items_roguelike.txt",
+    "itemLog":"/home/rock/4_SHARED/tmpreset/items_roguelike.txt",
 }]
 
 terrainReset(configList)

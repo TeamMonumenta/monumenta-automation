@@ -11,9 +11,9 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MC
 from lib_monumenta.dungeon_instance_gen import gen_dungeon_instances
 
 config = {
-    "dungeonRefFolder":"/home/rock/tmpreset/Project_Epic-dungeon/",
-    "templateFolder":"/home/rock/tmpreset/Project_Epic-template/",
-    "outFolder":"/home/rock/tmpreset/dungeons-out/",
+    "dungeonRefFolder":"/home/rock/4_SHARED/tmpreset/Project_Epic-dungeon/",
+    "templateFolder":"/home/rock/4_SHARED/tmpreset/Project_Epic-template/",
+    "outFolder":"/home/rock/4_SHARED/tmpreset/dungeons-out/",
 
     # Dungeons are placed one per MC region file (32x32 chunks)
     # Each dungeon starts in the most-negative corner of the region
