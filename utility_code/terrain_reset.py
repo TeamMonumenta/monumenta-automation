@@ -154,10 +154,10 @@ configList = [{
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/white/Project_Epic-white/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
-    "preserveInstance":{
-        "dungeonScore":"D1Access",
-        "targetRegion":{"x":-3, "z":-2},
-    },
+    #"preserveInstance":{
+    #    "dungeonScore":"D1Access",
+    #    "targetRegion":{"x":-3, "z":-2},
+    #},
     "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
@@ -169,10 +169,10 @@ configList = [{
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/orange/Project_Epic-orange/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
-    "preserveInstance":{
-        "dungeonScore":"D2Access",
-        "targetRegion":{"x":-3, "z":-2},
-    },
+    #"preserveInstance":{
+    #    "dungeonScore":"D2Access",
+    #    "targetRegion":{"x":-3, "z":-2},
+    #},
     "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
@@ -184,10 +184,10 @@ configList = [{
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/magenta/Project_Epic-magenta/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
-    "preserveInstance":{
-        "dungeonScore":"D3Access",
-        "targetRegion":{"x":-3, "z":-2},
-    },
+    #"preserveInstance":{
+    #    "dungeonScore":"D3Access",
+    #    "targetRegion":{"x":-3, "z":-2},
+    #},
     "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
@@ -199,10 +199,10 @@ configList = [{
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/lightblue/Project_Epic-lightblue/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
-    "preserveInstance":{
-        "dungeonScore":"D4Access",
-        "targetRegion":{"x":-3, "z":-2},
-    },
+    #"preserveInstance":{
+    #    "dungeonScore":"D4Access",
+    #    "targetRegion":{"x":-3, "z":-2},
+    #},
     "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
@@ -214,10 +214,10 @@ configList = [{
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/yellow/Project_Epic-yellow/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
-    "preserveInstance":{
-        "dungeonScore":"D5Access",
-        "targetRegion":{"x":-3, "z":-2},
-    },
+    #"preserveInstance":{
+    #    "dungeonScore":"D5Access",
+    #    "targetRegion":{"x":-3, "z":-2},
+    #},
     "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,
@@ -229,10 +229,10 @@ configList = [{
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/r1bonus/Project_Epic-r1bonus/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
-    "preserveInstance":{
-        "dungeonScore":"DB1Access",
-        "targetRegion":{"x":-3, "z":-2},
-    },
+    #"preserveInstance":{
+    #    "dungeonScore":"DB1Access",
+    #    "targetRegion":{"x":-3, "z":-2},
+    #},
     "tagPlayers":["resetMessage"],
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValley,

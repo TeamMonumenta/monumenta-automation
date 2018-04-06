@@ -133,6 +133,8 @@ def terrainResetInstance(config, outputFile):
             # If we can identify the player, we want to teleport them +512x,
             # or to spawn if their score is 0. This would be dead simple if
             # the scoreboard file stored players by UUID.
+            # Note for next week: just teleport players who aren't at spawn, and
+            # if there's no region where they would land, send them to spawn.
 
     ################################################################################
     # Perform world manipulations if required

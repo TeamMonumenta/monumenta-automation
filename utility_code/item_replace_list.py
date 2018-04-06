@@ -7,7 +7,17 @@ from item_replace_list_loot_tables import KingsValleyLootTables
 blockReplacements = (
     ("minecraft:iron_block", "air"),
     ("minecraft:iron_ore", "air"),
-    ("minecraft:hopper", "air"),
+    #("minecraft:hopper", "air"),
+    ((154,0), "air"), # Hopper
+    ((154,2), "air"), # Hopper
+    ((154,3), "air"), # Hopper
+    ((154,4), "air"), # Hopper
+    ((154,5), "air"), # Hopper
+    ((154,8), "air"), # Hopper
+    ((154,10), "air"), # Hopper
+    ((154,11), "air"), # Hopper
+    ((154,12), "air"), # Hopper
+    ((154,13), "air"), # Hopper
     #("minecraft:gold_block", "air"), # probably fine
     #("minecraft:gold_ore", "air"),
     ("minecraft:diamond_block", "air"),
