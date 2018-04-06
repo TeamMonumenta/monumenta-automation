@@ -119,8 +119,8 @@ class GenerateInstancesAction(ShellAction):
         super().__init__(debug)
         self._commands = [
             self.display("Cleaning up old terrain reset data..."),
-            self.run("rm -rf /home/rock/tmpreset", None),
-            self.run("mkdir -p /home/rock/tmpreset"),
+            self.run("rm -rf /home/rock/4_SHARED/tmpreset", None),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset"),
 
             self.display("Stopping the dungeon shard..."),
             self.run("mark2 send -n dungeon ~stop", None),
@@ -128,22 +128,22 @@ class GenerateInstancesAction(ShellAction):
             self.run("mark2 send -n dungeon test", 1),
 
             self.display("Copying the dungeon master copies..."),
-            self.run("cp -a /home/rock/project_epic/dungeon/Project_Epic-dungeon /home/rock/tmpreset/Project_Epic-dungeon"),
+            self.run("cp -a /home/rock/project_epic/dungeon/Project_Epic-dungeon /home/rock/4_SHARED/tmpreset/Project_Epic-dungeon"),
 
             self.display("Restarting the dungeon shard..."),
             self.cd("/home/rock/project_epic/dungeon"),
             self.run("mark2 start"),
 
             self.display("Unpacking the dungeon template..."),
-            self.cd("/home/rock/tmpreset"),
+            self.cd("/home/rock/4_SHARED/tmpreset"),
             self.run("tar xzf /home/rock/assets/dungeon_template.tgz"),
 
             self.display("Generating dungeon instances (this may take a while)..."),
             self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/dungeon_instance_gen.py"),
-            self.run("mv /home/rock/tmpreset/dungeons-out /home/rock/tmpreset/POST_RESET"),
+            self.run("mv /home/rock/4_SHARED/tmpreset/dungeons-out /home/rock/4_SHARED/tmpreset/POST_RESET"),
 
             self.display("Cleaning up instance generation temp files..."),
-            self.run("rm -rf /home/rock/tmpreset/Project_Epic-dungeon /home/rock/tmpreset/Project_Epic-template"),
+            self.run("rm -rf /home/rock/4_SHARED/tmpreset/Project_Epic-dungeon /home/rock/4_SHARED/tmpreset/Project_Epic-template"),
             self.display("Dungeon instance generation complete!"),
         ]
 
@@ -170,30 +170,30 @@ class PrepareResetBundleAction(ShellAction):
             self.run("mark2 send -n region_1 test", 1),
 
             self.display("Copying region_1..."),
-            self.run("mkdir -p /home/rock/tmpreset/TEMPLATE/region_1"),
-            self.run("cp -a /home/rock/project_epic/region_1/Project_Epic-region_1 /home/rock/tmpreset/TEMPLATE/region_1/"),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/TEMPLATE/region_1"),
+            self.run("cp -a /home/rock/project_epic/region_1/Project_Epic-region_1 /home/rock/4_SHARED/tmpreset/TEMPLATE/region_1/"),
 
             self.display("Restarting the region_1 shard..."),
             self.cd("/home/rock/project_epic/region_1"),
             self.run("mark2 start"),
 
             self.display("Copying bungee..."),
-            self.run("cp -a /home/rock/project_epic/bungee /home/rock/tmpreset/TEMPLATE/"),
+            self.run("cp -a /home/rock/project_epic/bungee /home/rock/4_SHARED/tmpreset/TEMPLATE/"),
 
             self.display("Copying purgatory..."),
-            self.run("cp -a /home/rock/project_epic/purgatory /home/rock/tmpreset/POST_RESET/"),
+            self.run("cp -a /home/rock/project_epic/purgatory /home/rock/4_SHARED/tmpreset/POST_RESET/"),
 
             self.display("Copying tutorial..."),
-            self.run("mkdir -p /home/rock/tmpreset/POST_RESET/tutorial"),
-            self.cd("/home/rock/tmpreset/POST_RESET/tutorial"),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/tutorial"),
+            self.cd("/home/rock/4_SHARED/tmpreset/POST_RESET/tutorial"),
             self.run("tar xzf /home/rock/assets/Project_Epic-tutorial.tgz"),
 
             self.display("Copying server_config..."),
-            self.run("cp -a /home/rock/project_epic/server_config /home/rock/tmpreset/POST_RESET/"),
+            self.run("cp -a /home/rock/project_epic/server_config /home/rock/4_SHARED/tmpreset/POST_RESET/"),
 
             self.display("Packaging up reset bundle..."),
-            self.cd("/home/rock/tmpreset"),
-            self.run("tar czf /home/rock/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE"),
+            self.cd("/home/rock/4_SHARED/tmpreset"),
+            self.run("tar czf /home/rock/4_SHARED/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE"),
 
             self.display("Reset bundle ready!"),
         ]
