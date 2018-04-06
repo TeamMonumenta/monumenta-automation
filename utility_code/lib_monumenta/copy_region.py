@@ -17,24 +17,30 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from pymclevel import nbt
 from pymclevel import regionfile
 
-def copyRegion(old,new,rx,rz):
+def copyRegion(dirSrc,dirDst,rxSrc,rzSrc,rxDst,rzDst):
     """
-    copy the old region file "old"
-    to the new region file "new",
-    where both are full paths.
+    copy the old region file {dirSrc}/r.{rxSrc}.{rzSrc}.mca
+    to the new region file {dirDst}/r.{rxDst}.{rzDst}.mca
 
-    rx and rz should be the
-    numbers from new, like
-    r.{rx}.{rz}.mca
-
-    Also Fixes entity positions
-    after copying.
+    Also Fixes entity positions after copying.
     """
-    if not copyFile(old,new):
+    if dirSrc[-1] != '/':
+        dirSrc = dirSrc + '/'
+    regionPathSrc = "{}r.{}.{}.mca".format(dirSrc,rxSrc,rzSrc)
+
+    if dirDst[-1] != '/':
+        dirDst = dirDst + '/'
+    regionPathDst = "{}r.{}.{}.mca".format(dirDst,rxDst,rzDst)
+
+    dx = 512 * ( rxDst - rxSrc )
+    dz = 512 * ( rzDst - rzSrc )
+    onMatchArgs = (dx,dz)
+
+    if not copyFile(regionPathSrc,regionPathDst):
         print "*** Region not copied; not edited destination file"
         return False
     region = regionfile.MCRegionFile(new,(rx,rz))
-    entityIter = IterEntities(["entities","block entities","tile ticks","search spawners"],_fixEntity,None)
+    entityIter = IterEntities(["entities","block entities","tile ticks","search spawners"],_fixEntity,onMatchArgs)
     for index, offset in enumerate(region.offsets):
         if offset:
             cx = index & 0x1f
@@ -53,31 +59,25 @@ def copyRegion(old,new,rx,rz):
     return True
 
 def _fixEntity(onMatchArgs,entityDetails):
-    cx,cz = entityDetails["chunk pos"]
+    dx,dz = onMatchArgs
     entity = entityDetails["entity"]
-    minx = cx << 4
-    minz = cz << 4
-    rx = minx - (minx % 512)
-    rz = minz - (minz % 512)
 
     if "Pos" in entity:
-        entity["Pos"][0].value = rx + (entity["Pos"][0].value % 512)
-        entity["Pos"][2].value = rz + (entity["Pos"][2].value % 512)
+        entity["Pos"][0].value += dx
+        entity["Pos"][2].value += dz
     if "x" in entity:
-        entity["x"].value = rx + (entity["x"].value % 512)
-        entity["z"].value = rz + (entity["z"].value % 512)
+        entity["x"].value += dx
+        entity["z"].value += dz
     if "TileX" in entity:
         # Painting/item frame
-        entity["TileX"].value = rx + (entity["TileX"].value % 512)
-        entity["TileZ"].value = rz + (entity["TileZ"].value % 512)
+        entity["TileX"].value += dx
+        entity["TileZ"].value += dz
     if "BeamTarget" in entity and "X" in entity["BeamTarget"]:
-        # end crystal - not correct if we copy more than a 1x1 chunk!
-        entity["BeamTarget"]["X"] = rx + (entity["BeamTarget"]["X"] % 512)
-        entity["BeamTarget"]["Z"] = rz + (entity["BeamTarget"]["Z"] % 512)
+        entity["BeamTarget"]["X"] += dx
+        entity["BeamTarget"]["Z"] += dz
     if "ExitPortal" in entity and "X" in entity["ExitPortal"]:
-        # end portal gateway - not correct if we copy more than a 1x1 chunk!
-        entity["ExitPortal"]["X"] = rx + (entity["ExitPortal"]["X"] % 512)
-        entity["ExitPortal"]["Z"] = rz + (entity["ExitPortal"]["Z"] % 512)
+        entity["ExitPortal"]["X"] += dx
+        entity["ExitPortal"]["Z"] += dz
 
     if "UUIDMost" in entity:
         newUUID = mcUUID()

@@ -19,7 +19,7 @@ from pymclevel import regionfile
 
 def moveRegion(dirSrc,dirDst,rxSrc,rzSrc,rxDst,rzDst):
     """
-    copy the old region file {dirSrc}/r.{rxSrc}.{rzSrc}.mca
+    move the old region file {dirSrc}/r.{rxSrc}.{rzSrc}.mca
     to the new region file {dirDst}/r.{rxDst}.{rzDst}.mca
 
     Also Fixes entity positions after copying.
