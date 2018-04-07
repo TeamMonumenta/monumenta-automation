@@ -258,7 +258,7 @@ class StopAndBackupAction(ShellAction):
             self.run("rm -rf /home/rock/project_epic/lightblue/plugins/CoreProtect"),
             self.run("rm -r /home/rock/project_epic/yellow/Project_Epic-yellow/region"),
             self.run("rm -rf /home/rock/project_epic/yellow/plugins/CoreProtect"),
-            self.run("rm -r /home/rock/project_epic/r1bonus/Project_Epic-r2bonus/region"),
+            self.run("rm -r /home/rock/project_epic/r1bonus/Project_Epic-r1bonus/region"),
             self.run("rm -rf /home/rock/project_epic/r1bonus/plugins/CoreProtect"),
             self.run("rm -r /home/rock/project_epic/tutorial/Project_Epic-tutorial/region"),
             self.run("rm -rf /home/rock/project_epic/tutorial/plugins/CoreProtect"),
@@ -315,28 +315,29 @@ class TerrainResetAction(ShellAction):
             self.run("rm -rf /home/rock/4_SHARED/tmpreset/PRE_RESET/server_config"),
 
             self.display("Running actual terrain reset (this will take a while!)..."),
-            self.run("/home/rock/MCEdit-And-Automation/utility_code/terrain_reset.py"),
+            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/terrain_reset.py"),
 
             self.display("Preserving coreprotect and easywarp data for plots and region 1..."),
-            self.run("mkdir -p /home/rock/tmp/POST_RESET/betaplots/plugins/CoreProtect"),
-            self.run("mv /home/rock/tmp/PRE_RESET/betaplots/plugins/CoreProtect/database.db /home/rock/tmp/POST_RESET/betaplots/plugins/CoreProtect/database.db"),
-            self.run("mkdir -p /home/rock/tmp/POST_RESET/betaplots/plugins/EasyWarp"),
-            self.run("mv /home/rock/tmp/PRE_RESET/betaplots/plugins/EasyWarp/warps.yml /home/rock/tmp/POST_RESET/betaplots/plugins/EasyWarp/warps.yml"),
-            self.run("mkdir -p /home/rock/tmp/POST_RESET/r1plots/plugins/CoreProtect"),
-            self.run("mv /home/rock/tmp/PRE_RESET/r1plots/plugins/CoreProtect/database.db /home/rock/tmp/POST_RESET/r1plots/plugins/CoreProtect/database.db"),
-            self.run("mkdir -p /home/rock/tmp/POST_RESET/r1plots/plugins/EasyWarp"),
-            self.run("mv /home/rock/tmp/PRE_RESET/r1plots/plugins/EasyWarp/warps.yml /home/rock/tmp/POST_RESET/r1plots/plugins/EasyWarp/warps.yml"),
-            self.run("mkdir -p /home/rock/tmp/POST_RESET/region_1/plugins/CoreProtect"),
-            self.run("mv /home/rock/tmp/PRE_RESET/region_1/plugins/CoreProtect/database.db /home/rock/tmp/POST_RESET/region_1/plugins/CoreProtect/database.db"),
-            self.run("mkdir -p /home/rock/tmp/POST_RESET/region_1/plugins/EasyWarp"),
-            self.run("mv /home/rock/tmp/PRE_RESET/region_1/plugins/EasyWarp/warps.yml /home/rock/tmp/POST_RESET/region_1/plugins/EasyWarp/warps.yml"),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/betaplots/plugins/CoreProtect"),
+            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/betaplots/plugins/CoreProtect/database.db /home/rock/4_SHARED/tmpreset/POST_RESET/betaplots/plugins/CoreProtect/database.db"),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/betaplots/plugins/EasyWarp"),
+            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/betaplots/plugins/EasyWarp/warps.yml /home/rock/4_SHARED/tmpreset/POST_RESET/betaplots/plugins/EasyWarp/warps.yml"),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/r1plots/plugins/CoreProtect"),
+            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/r1plots/plugins/CoreProtect/database.db /home/rock/4_SHARED/tmpreset/POST_RESET/r1plots/plugins/CoreProtect/database.db"),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/r1plots/plugins/EasyWarp"),
+            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/r1plots/plugins/EasyWarp/warps.yml /home/rock/4_SHARED/tmpreset/POST_RESET/r1plots/plugins/EasyWarp/warps.yml"),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/region_1/plugins/CoreProtect"),
+            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/region_1/plugins/CoreProtect/database.db /home/rock/4_SHARED/tmpreset/POST_RESET/region_1/plugins/CoreProtect/database.db"),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/region_1/plugins/EasyWarp"),
+            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/region_1/plugins/EasyWarp/warps.yml /home/rock/4_SHARED/tmpreset/POST_RESET/region_1/plugins/EasyWarp/warps.yml"),
 
             self.display("Moving the build shard..."),
             self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/build /home/rock/4_SHARED/tmpreset/POST_RESET/"),
 
+            # TODO: This does not work as-is, doesn't see arguments for some reason...
             self.display("Generating per-shard config..."),
             self.cd("/home/rock/4_SHARED/tmpreset/POST_RESET"),
-            self.run("/home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play build betaplots lightblue magenta orange purgatory r1bonus r1plots region_1 roguelike tutorial white yellow"),
+            self.run("python /home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play build betaplots lightblue magenta orange purgatory r1bonus r1plots region_1 roguelike tutorial white yellow"),
 
             # TODO: This should probably fail if some are found
             self.display("Checking for broken symbolic links..."),
@@ -356,10 +357,12 @@ class TerrainResetAction(ShellAction):
             self.run("rm -r /home/rock/4_SHARED/tmpreset/PRE_RESET /home/rock/4_SHARED/tmpreset/TEMPLATE"),
 
             # TODO: path relative to this bot folder
+            # TODO: This does not work correctly because the files aren't copied from PRE_RESET
             self.display("Synchronizing the whitelist/opslist/banlist..."),
             self.run("/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/sync_whitelist.sh"),
 
             # TODO: path relative to this bot folder
+            # TODO: This does not work at all - likely the wrong shell used
             self.display("Starting all primary shards..."),
             self.run("/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_all_shards.sh"),
 
