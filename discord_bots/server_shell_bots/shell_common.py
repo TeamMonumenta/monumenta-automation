@@ -72,6 +72,7 @@ class ShellAction(object):
         await self.display("Sleeping for " + str(seconds) + " seconds")
         await asyncio.sleep(seconds)
 
+    # TODO - make sure this raises an error if the directory doesn't exist
     async def cd(self, path):
         if self._debug:
             await self.display("Changing path to `" + path + "`")

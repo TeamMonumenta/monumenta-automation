@@ -13,17 +13,22 @@ from shell_actions import *
 
 client = discord.Client()
 
+extraDebug = True
+
 # List of channels this bot will consume messages in
 # monumenta-bot and general
 botChannels = ['420045459177078795', '186225508562763776']
 
 # List of actions this bot handles
 actionDict = {}
-actionDict[DebugAction().getCommand()] = DebugAction
-actionDict[TestAction().getCommand()] = TestAction
+#actionDict[DebugAction().getCommand()] = DebugAction
+#actionDict[TestAction().getCommand()] = TestAction
 actionDict[ListShardsAction().getCommand()] = ListShardsAction
-actionDict[TestPrivilegedAction().getCommand()] = TestPrivilegedAction
-actionDict[TestUnprivilegedAction().getCommand()] = TestUnprivilegedAction
+#actionDict[TestPrivilegedAction().getCommand()] = TestPrivilegedAction
+#actionDict[TestUnprivilegedAction().getCommand()] = TestUnprivilegedAction
+actionDict[StopIn10MinutesAction().getCommand()] = StopIn10MinutesAction
+actionDict[StopAndBackupAction().getCommand()] = StopAndBackupAction
+actionDict[TerrainResetAction().getCommand()] = TerrainResetAction
 
 botHelp = '''
 This is the monumenta play server bot.
@@ -58,7 +63,7 @@ async def on_message(message):
             return
 
         if message.content in actionDict:
-            action = actionDict[message.content]()
+            action = actionDict[message.content](debug=extraDebug)
             if not action.hasPermissions(message.author):
                 await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
             else:
