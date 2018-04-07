@@ -141,8 +141,6 @@ config = {
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
                     "replaceBlocks":True, "material":(18, 4), "materialName":"oak leaves"},
             ),
-            "chestContentsLoreToIgnore":(),
-            "chestWhitelist":(),
         },{
             "name":"roguelike",
             "size":(464, 101, 464),
@@ -154,8 +152,6 @@ config = {
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
                     "replaceBlocks":True, "material":(213, 0), "materialName":"magma block"},
             ),
-            "chestContentsLoreToIgnore":(),
-            "chestWhitelist":(),
             "generateMaps":{"offset":{"x":320, "z":320}},
         },
     ),

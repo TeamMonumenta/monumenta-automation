@@ -43,8 +43,14 @@ def gen_dungeon_instance(config, dungeon, outputFile):
     dungeonName = dungeon["name"]
     dungeonRegion = dungeon["region"]
     dungeonSize = Vector(*dungeon["size"])
-    dungeonContentsLoreToIgnore = dungeon["chestContentsLoreToIgnore"]
-    dungeonChestWhitelist = dungeon["chestWhitelist"]
+    if "chestContentsLoreToIgnore" in dungeon:
+        dungeonContentsLoreToIgnore = dungeon["chestContentsLoreToIgnore"]
+    else:
+        dungeonContentsLoreToIgnore  = None
+    if "chestWhitelist" in dungeon:
+        dungeonChestWhitelist = dungeon["chestWhitelist"]
+    else:
+        dungeonChestWhitelist = None
     numDungeons = dungeon["numDungeons"]
     dstFolder = outFolder + dungeonName + '/Project_Epic-' + dungeonName + '/'
 

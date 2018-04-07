@@ -5,6 +5,12 @@ This lists the tile entities that lack
 a loot table within a box, filtering by type.
 """
 
+from __future__ import print_function
+import sys
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 ################################################################################
 # Function definitions
 
@@ -15,19 +21,19 @@ def containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints):
                 for loreIgnore in contentsLoreToIgnore:
                     if loreIgnore in lore.value:
                         if debugPrints:
-                            print "{0} at ({1},{2},{3}) contains item with lore '{4}' matching '{5}'".format(aTileEntity["id"].value,
+                            print("{0} at ({1},{2},{3}) contains item with lore '{4}' matching '{5}'".format(aTileEntity["id"].value,
                                     aTileEntity["x"].value,
                                     aTileEntity["y"].value,
                                     aTileEntity["z"].value,
                                     lore.value.encode('utf-8'),
-                                    loreIgnore)
+                                    loreIgnore))
                         return True
         except UnicodeEncodeError:
-            print "THIS SHOULDN'T HAPPEN"
+            print("THIS SHOULDN'T HAPPEN")
             continue
         except:
             if debugPrints:
-                print "Caught general exception in containsIgnoredContents"
+                print("Caught general exception in containsIgnoredContents")
             continue
     return False
 
@@ -36,7 +42,7 @@ def isWhitelisted(aTileEntity, chestWhitelist):
     y = aTileEntity["y"].value
     z = aTileEntity["z"].value
 
-    if (x,y,z) in chestWhitelist:
+    if chestWhitelist is None or (x,y,z) in chestWhitelist:
         return True
     return False
 
@@ -85,24 +91,24 @@ def listLootlessTileEntities(world, scanBox, tileEntitiesToCheck, contentsLoreTo
 
                     # Detect missing loot table
                     if ((not hasLootTable(aTileEntity)) and
-                        (not containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints)) and
+                        (not ((contentsLoreToIgnore is None) and containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints))) and
                         (not isWhitelisted(aTileEntity, chestWhitelist))):
                         lootless.append(aTileEntity)
 
                     # Detect fixed loot table seeds
                     elif (hasLootTableSeed(aTileEntity) and
-                          (not containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints)) and
+                          (not ((contentsLoreToIgnore is None) and containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints))) and
                           (not isWhitelisted(aTileEntity, chestWhitelist))):
                         lootless.append(aTileEntity)
 
                     elif "LootTableSeed" in aTileEntity:
-                        print aTileEntity
+                        print(aTileEntity)
         except KeyError:
             if debugPrints:
-                print "Got KeyError exception in chunk (" + str(cx) + "," + str(cz) + ")"
+                print("Got KeyError exception in chunk (" + str(cx) + "," + str(cz) + ")")
             continue
 
-    print "    {0} tile entities found without a loot table:".format(len(lootless))
+    eprint("    {0} tile entities found without a loot table:".format(len(lootless)))
     for aTileEntity in lootless:
         tileEntityID = aTileEntity["id"].value
         x = aTileEntity["x"].value
@@ -113,7 +119,7 @@ def listLootlessTileEntities(world, scanBox, tileEntitiesToCheck, contentsLoreTo
             theProblem = "has no loot table set."
         elif hasLootTableSeed(aTileEntity):
             theProblem = "has a fixed loot table seed."
-        print "      {0} {1} {2}".format(x, y, z)
+        eprint("      {0} {1} {2}".format(x, y, z))
 
-    print ""
+    eprint("")
 
