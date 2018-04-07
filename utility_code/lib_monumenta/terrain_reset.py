@@ -142,7 +142,9 @@ def terrainResetInstance(config, outputFile):
     print "  Deleting scores for missing entities..."
     existingEntities = listUUIDs(dstWorld)
     worldScores = scoreboard.scoreboard(localDstFolder)
-    worldScores.pruneMissingEntities(existingEntities)
+    # Disabled for now since it mangles fakeplayer scores
+    # worldScores.pruneMissingEntities(existingEntities)
+    #worldScores.pruneMissingEntities(existingEntities)
 
     if "playerScoreChanges" in config:
         print "  Adjusting player scores (dungeon scores)..."
