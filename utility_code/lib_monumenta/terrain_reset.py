@@ -195,7 +195,8 @@ def terrainResetInstance(config, outputFile):
 
     print "  Deleting scores for missing entities..."
     existingEntities = listUUIDs(dstWorld)
-    worldScores.pruneMissingEntities(existingEntities)
+    # Disabled for now since it mangles fakeplayer scores
+    # worldScores.pruneMissingEntities(existingEntities)
     worldScores.save()
 
     if "revokeAdvancements" in config:
