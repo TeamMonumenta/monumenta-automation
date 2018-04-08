@@ -153,6 +153,18 @@ config = {
                     "replaceBlocks":True, "material":(213, 0), "materialName":"magma block"},
             ),
             "generateMaps":{"offset":{"x":320, "z":320}},
+        },{
+            "name":"tutorial",
+            "size":(80, 72, 96),
+            "region":{"x":-2, "z":0},
+            "numDungeons":200,
+            "coordinatesToFill":(
+                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
+                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+                    "replaceBlocks":True, "material":(133, 0), "materialName":"emerald block"},
+            ),
+            "chestWhitelist":(),
         },
     ),
 

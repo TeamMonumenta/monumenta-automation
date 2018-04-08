@@ -183,11 +183,6 @@ class PrepareResetBundleAction(ShellAction):
             self.display("Copying purgatory..."),
             self.run("cp -a /home/rock/project_epic/purgatory /home/rock/4_SHARED/tmpreset/POST_RESET/"),
 
-            self.display("Copying tutorial..."),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/tutorial"),
-            self.cd("/home/rock/4_SHARED/tmpreset/POST_RESET/tutorial"),
-            self.run("tar xzf /home/rock/assets/Project_Epic-tutorial.tgz"),
-
             self.display("Copying server_config..."),
             self.run("cp -a /home/rock/project_epic/server_config /home/rock/4_SHARED/tmpreset/POST_RESET/"),
 
