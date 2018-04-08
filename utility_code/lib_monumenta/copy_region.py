@@ -39,14 +39,14 @@ def copyRegion(dirSrc,dirDst,rxSrc,rzSrc,rxDst,rzDst):
     if not copyFile(regionPathSrc,regionPathDst):
         print "*** Region not copied; not edited destination file"
         return False
-    region = regionfile.MCRegionFile(new,(rx,rz))
+    region = regionfile.MCRegionFile(regionPathDst,(rxDst,rzDst))
     entityIter = IterEntities(["entities","block entities","tile ticks","search spawners"],_fixEntity,onMatchArgs)
     for index, offset in enumerate(region.offsets):
         if offset:
             cx = index & 0x1f
             cz = index >> 5
-            cx += rx << 5
-            cz += rz << 5
+            cx += rxDst << 5
+            cz += rzDst << 5
 
             data = region.readChunk(cx, cz)
             chunkTag = nbt.load(buf=data)
