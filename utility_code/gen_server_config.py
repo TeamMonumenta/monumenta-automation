@@ -408,6 +408,22 @@ config = {
         'linked':server_config_min + luckperms_standalone + easywarp + socket4mc + coreprotect + worldedit + [('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),('plugins/TogglePvp.jar', '../../server_config/plugins/TogglePvp.jar')]
     },
 
+    'nightmare':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=10'),
+            ('spigot.yml', 'view-distance', '    view-distance: 10'),
+            ('server.properties', 'server-port', 'server-port=25576'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.26"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
+            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
+        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
+    ],'''),
+        ],
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+    },
+
     'purgatory':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=4'),
