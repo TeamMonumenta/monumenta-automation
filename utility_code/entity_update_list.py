@@ -117,6 +117,11 @@ KingsValleyBuild = entity_update.UpdateEntities([],[
     [
         {
             "id":"minecraft:villager",
+            "none":[
+                {
+                    "nbt":ur'''{Tags:["Mariya"]}''',
+                }
+            ]
         },
         [
             "nbt", "update", ur'''{Team:"IMMOVABLE_NPCS"}''',
