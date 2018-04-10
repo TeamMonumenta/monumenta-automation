@@ -116,6 +116,14 @@ KingsValleyBuild = entity_update.UpdateEntities([],[
     # Save these for last; don't want to forget to handle Elites properly, do we?
     [
         {
+            "id":"minecraft:villager",
+        },
+        [
+            "nbt", "update", ur'''{Team:"IMMOVABLE_NPCS"}''',
+        ]
+    ],
+    [
+        {
             "nbt":ur'''{Tags:["Elite"]}''',
         },
         [
