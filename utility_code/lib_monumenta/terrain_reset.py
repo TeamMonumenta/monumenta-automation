@@ -117,8 +117,8 @@ def terrainResetInstance(config, outputFile):
             if not moveRegion(
                 oldRegionDir,
                 newRegionDir,
-                dungeonRegion["x"],dungeonRegion["z"],
-                rx,rz
+                oldRx,oldRz,
+                newRx,newRz
             ):
                 # Failed to move the region file; this happens if the old file is missing.
                 # This does not indicate that the player's instance was removed intentionally.
