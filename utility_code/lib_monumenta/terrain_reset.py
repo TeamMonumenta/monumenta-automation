@@ -136,6 +136,10 @@ def terrainResetInstance(config, outputFile):
             # Note for next week: just teleport players who aren't at spawn, and
             # if there's no region where they would land, send them to spawn.
 
+    if "playerScoreChangesTest" in config:
+        print "  Adjusting player scores (dungeon scores test cleanup)..."
+        worldScores.batchScoreChanges(config["playerScoreChangesTest"])
+
     ################################################################################
     # Perform world manipulations if required
     if (
