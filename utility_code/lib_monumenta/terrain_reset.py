@@ -98,7 +98,7 @@ def terrainResetInstance(config, outputFile):
         dungeonScoreObjects = worldScores.searchScores(Objective=dungeonScore,Score={"min":1})
         dungeonScores = set()
         for scoreObject in dungeonScoreObjects:
-            dungeonScores.add(scoreObject["Objective"].value)
+            dungeonScores.add(scoreObject["Score"].value)
         dungeonScores = sorted(list(dungeonScores))
 
         for instanceID in dungeonScores:
@@ -122,7 +122,7 @@ def terrainResetInstance(config, outputFile):
                 dungeonScoreObjects = worldScores.searchScores(Objective=dungeonScore,Score=instanceID)
                 for scoreObject in dungeonScoreObjects:
                     # Consider setting this value to -1 to indicate an error
-                    scoreObject["Objective"].value = 0
+                    scoreObject["Score"].value = 0
                 continue
 
         # Move players to the same location in the next instance, or send them to spawn.
