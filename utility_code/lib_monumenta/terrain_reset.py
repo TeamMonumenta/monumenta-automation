@@ -101,6 +101,9 @@ def terrainResetInstance(config, outputFile):
             dungeonScores.add(scoreObject["Score"].value)
         dungeonScores = sorted(list(dungeonScores))
 
+        oldRegionDir = localMainFolder + 'region/'
+        newRegionDir = localDstFolder + 'region/'
+
         for instanceID in dungeonScores:
             # // is integer division
             instanceWeek   = instanceID // instancesPerWeek
