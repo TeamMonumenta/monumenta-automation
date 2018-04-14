@@ -110,7 +110,7 @@ def terrainResetInstance(config, outputFile):
             instanceInWeek = instanceID %  instancesPerWeek
 
             newRx = targetRegion["x"] + instanceWeek
-            newRz = targetRegion["z"] + instanceInWeek
+            newRz = targetRegion["z"] + instanceInWeek - 1 # index starts at 1
             oldRx = newRx - 1
             oldRz = newRz
 
@@ -129,15 +129,8 @@ def terrainResetInstance(config, outputFile):
                 continue
 
         # Move players to the same location in the next instance, or send them to spawn.
-        dungeonScoreObjects = worldScores.searchScores(Objective=dungeonScore)
-        for scoreObject in dungeonScoreObjects:
-            playerName = scoreObject["Name"].value
-            # We can't edit a player by name, only by UUID.
-            # If we can identify the player, we want to teleport them +512x,
-            # or to spawn if their score is 0. This would be dead simple if
-            # the scoreboard file stored players by UUID.
-            # Note for next week: just teleport players who aren't at spawn, and
-            # if there's no region where they would land, send them to spawn.
+        # Note for next week: just teleport players who aren't at spawn, and
+        # if there's no region where they would land, send them to spawn.
 
     if "playerScoreChangesTest" in config:
         print "  Adjusting player scores (dungeon scores test cleanup)..."

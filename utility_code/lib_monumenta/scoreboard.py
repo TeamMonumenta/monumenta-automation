@@ -159,7 +159,7 @@ class scoreboard(object):
         if len(matches) > 1:
             raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
         elif len(matches) == 1:
-            matches[0]['Score'].value += Score
+            matches[0]['Score'].value = Score
         elif len(matches) == 0:
             newScore = nbt.TAG_Compound()
             newScore['Objective'] = nbt.TAG_String(Objective)
@@ -173,7 +173,7 @@ class scoreboard(object):
         if len(matches) > 1:
             raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
         elif len(matches) == 1:
-            matches[0]['Score'].value = Score
+            matches[0]['Score'].value += Score
         elif len(matches) == 0:
             newScore = nbt.TAG_Compound()
             newScore['Objective'] = nbt.TAG_String(Objective)
