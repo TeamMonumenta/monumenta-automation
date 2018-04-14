@@ -227,6 +227,33 @@ class StopIn10MinutesAction(ShellAction):
         return '''Dangerous!
 Brings down all play server shards and backs them up in preparation for terrain reset.
 '''
+
+class FetchResetBundleAction(ShellAction):
+    def __init__(self, debug=False):
+        super().__init__(debug)
+        self._commands = [
+            self.display("Fetching reset bundle from build server..."),
+            self.run("rm -rf /home/rock/4_SHARED/tmpreset"),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset"),
+            self.run("sftp build:/home/rock/4_SHARED/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz /home/rock/4_SHARED/tmpreset/"),
+            self.display("Unpacking reset bundle..."),
+            self.cd("/home/rock/4_SHARED/tmpreset"),
+            self.run("tar xzf project_epic_build_template_pre_reset_" + datestr() + ".tgz"),
+            self.display("Reset bundle is prepped for reset."),
+        ]
+
+    def getCommand(self):
+        return "!fetch reset bundle"
+
+    def hasPermissions(self, author):
+        return isPrivileged(author)
+
+    def help(self):
+        return '''Dangerous!
+Deletes in-progress terrain reset info on the play server
+Downloads the terrain reset bundle from the build server and unpacks it
+'''
+
 class StopAndBackupAction(ShellAction):
     def __init__(self, debug=False):
         super().__init__(debug)
@@ -239,33 +266,17 @@ class StopAndBackupAction(ShellAction):
             self.run("mark2 send -n region_1 test", 1),
             self.sleep(5),
 
-            self.display("Performing full backup..."),
-            self.cd("/home/rock"),
-            self.run("tar czf /home/rock/1_ARCHIVE/project_epic_pre_reset_full_backup_" + datestr() + ".tgz project_epic"),
-
             self.display("Removing unneeded large files..."),
-            self.run("rm -r /home/rock/project_epic/white/Project_Epic-white/region"),
             self.run("rm -rf /home/rock/project_epic/white/plugins/CoreProtect"),
-            self.run("rm -r /home/rock/project_epic/orange/Project_Epic-orange/region"),
             self.run("rm -rf /home/rock/project_epic/orange/plugins/CoreProtect"),
-            self.run("rm -r /home/rock/project_epic/magenta/Project_Epic-magenta/region"),
             self.run("rm -rf /home/rock/project_epic/magenta/plugins/CoreProtect"),
-            self.run("rm -r /home/rock/project_epic/lightblue/Project_Epic-lightblue/region"),
             self.run("rm -rf /home/rock/project_epic/lightblue/plugins/CoreProtect"),
-            self.run("rm -r /home/rock/project_epic/yellow/Project_Epic-yellow/region"),
             self.run("rm -rf /home/rock/project_epic/yellow/plugins/CoreProtect"),
-            self.run("rm -r /home/rock/project_epic/r1bonus/Project_Epic-r1bonus/region"),
             self.run("rm -rf /home/rock/project_epic/r1bonus/plugins/CoreProtect"),
-            self.run("rm -r /home/rock/project_epic/tutorial/Project_Epic-tutorial/region"),
             self.run("rm -rf /home/rock/project_epic/tutorial/plugins/CoreProtect"),
-            self.run("rm -r /home/rock/project_epic/purgatory/Project_Epic-purgatory/region"),
             self.run("rm -rf /home/rock/project_epic/purgatory/plugins/CoreProtect"),
-            self.run("rm -r /home/rock/project_epic/roguelike/Project_Epic-roguelike/region"),
             self.run("rm -rf /home/rock/project_epic/roguelike/plugins/CoreProtect"),
             self.run("rm -rf /home/rock/project_epic/purgatory /home/rock/project_epic/tutorial"),
-            # TODO: Pretty sure these wildcards won't work
-            #self.run("rm ~/project_epic/server_config/*.jar"),
-            #self.run("rm ~/project_epic/server_config/plugins/*.jar"),
 
             self.display("Performing backup..."),
             self.cd("/home/rock"),
@@ -283,6 +294,7 @@ class StopAndBackupAction(ShellAction):
     def help(self):
         return '''Dangerous!
 Brings down all play server shards and backs them up in preparation for terrain reset.
+DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA
 '''
 
 class TerrainResetAction(ShellAction):
@@ -330,12 +342,15 @@ class TerrainResetAction(ShellAction):
             self.display("Moving the build shard..."),
             self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/build /home/rock/4_SHARED/tmpreset/POST_RESET/"),
 
-            # TODO: This does not work as-is, doesn't see arguments for some reason...
+            # TODO: path relative to this bot folder
+            self.display("Synchronizing the whitelist/opslist/banlist..."),
+            self.run("/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/sync_whitelist.sh /home/rock/4_SHARED/tmpreset/PRE_RESET/region_1 /home/rock/4_SHARED/tmpreset/POST_RESET"),
+
             self.display("Generating per-shard config..."),
             self.cd("/home/rock/4_SHARED/tmpreset/POST_RESET"),
-            self.run("python /home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play build betaplots lightblue magenta orange purgatory r1bonus r1plots region_1 roguelike tutorial white yellow"),
+            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play build betaplots lightblue magenta orange purgatory r1bonus r1plots region_1 roguelike tutorial white yellow"),
 
-            # TODO: This should probably fail if some are found
+            # TODO: This should probably print a warning and proceed anyway if some are found
             self.display("Checking for broken symbolic links..."),
             self.run("find /home/rock/4_SHARED/tmpreset/POST_RESET -xtype l"),
 
@@ -353,11 +368,6 @@ class TerrainResetAction(ShellAction):
             self.run("rm -r /home/rock/4_SHARED/tmpreset/PRE_RESET /home/rock/4_SHARED/tmpreset/TEMPLATE"),
 
             # TODO: path relative to this bot folder
-            # TODO: This does not work correctly because the files aren't copied from PRE_RESET
-            self.display("Synchronizing the whitelist/opslist/banlist..."),
-            self.run("/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/sync_whitelist.sh"),
-
-            # TODO: path relative to this bot folder
             # TODO: This does not work at all - likely the wrong shell used
             self.display("Starting all primary shards..."),
             self.run("/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_all_shards.sh"),
@@ -367,7 +377,7 @@ class TerrainResetAction(ShellAction):
             self.run("mark2 start"),
 
             self.display("Starting bungeecord..."),
-            self.cd("/home/rock/project_epic/vanilla"),
+            self.cd("/home/rock/project_epic/bungee"),
             self.run("mark2 start"),
         ]
     def getCommand(self):

@@ -6,6 +6,13 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 import discord
+
+# Handy utility for running an SSH agent with a key file for this shell
+# https://github.com/haarcuba/ssh-agent-setup
+import ssh_agent_setup
+ssh_agent_setup.setup()
+ssh_agent_setup.addKey('/home/rock/.ssh/id_rsa')
+
 from shell_actions import *
 
 ################################################################################
@@ -26,6 +33,7 @@ actionDict = {}
 actionDict[ListShardsAction().getCommand()] = ListShardsAction
 #actionDict[TestPrivilegedAction().getCommand()] = TestPrivilegedAction
 #actionDict[TestUnprivilegedAction().getCommand()] = TestUnprivilegedAction
+actionDict[FetchResetBundleAction().getCommand()] = FetchResetBundleAction
 actionDict[StopIn10MinutesAction().getCommand()] = StopIn10MinutesAction
 actionDict[StopAndBackupAction().getCommand()] = StopAndBackupAction
 actionDict[TerrainResetAction().getCommand()] = TerrainResetAction
