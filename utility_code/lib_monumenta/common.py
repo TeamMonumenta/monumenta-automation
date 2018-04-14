@@ -58,7 +58,7 @@ def replaceGlobally(world, replaceList):
     for oldBlock in replaceList:
         oldBlocks.append(world.materials[oldBlock])
     newBlock = world.materials["air"]
-    replace(world, oldBlocks, newBlock, aBox)
+    replace(world, oldBlocks, newBlock)
 
 # Create a temporary directory which is automatically removed afterwards, even if the script crashes
 # Use like:
