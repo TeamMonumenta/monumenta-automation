@@ -205,7 +205,8 @@ class scoreboard(object):
                 pruned += 1
             else:
                 unpruned += 1
-                self.allScores.pop(i)
+                # TODO This should remove the i'th search result, not allScores[i]!
+                #self.allScores.pop(i)
         print "    - {} scores pruned.".format(pruned)
         print "    - {} scores not pruned.".format(unpruned)
 
