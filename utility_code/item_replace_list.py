@@ -5,33 +5,23 @@ from lib_monumenta import item_replace
 from item_replace_list_loot_tables import KingsValleyLootTables
 
 blockReplacements = (
-    ("minecraft:iron_block", "air"),
-    ("minecraft:iron_ore", "air"),
-    #("minecraft:hopper", "air"),
-    ((154,0), "air"), # Hopper
-    ((154,2), "air"), # Hopper
-    ((154,3), "air"), # Hopper
-    ((154,4), "air"), # Hopper
-    ((154,5), "air"), # Hopper
-    ((154,8), "air"), # Hopper
-    ((154,10), "air"), # Hopper
-    ((154,11), "air"), # Hopper
-    ((154,12), "air"), # Hopper
-    ((154,13), "air"), # Hopper
-    #("minecraft:gold_block", "air"), # probably fine
-    #("minecraft:gold_ore", "air"),
-    ("minecraft:diamond_block", "air"),
-    ("minecraft:diamond_ore", "air"),
-    #("minecraft:emerald_block", "air"), # probably fine
-    #("minecraft:emerald_ore", "air"),
+    "minecraft:iron_block",
+    "minecraft:iron_ore",
+    #"minecraft:hopper",
+    (154,0), # Hopper
+    (154,2), # Hopper
+    (154,3), # Hopper
+    (154,4), # Hopper
+    (154,5), # Hopper
+    (154,8), # Hopper
+    (154,10), # Hopper
+    (154,11), # Hopper
+    (154,12), # Hopper
+    (154,13), # Hopper
+    "minecraft:diamond_block",
+    "minecraft:diamond_ore",
 
-    ("minecraft:beacon", "air"),
-
-    # We had a happy fix in lib_monumenta/common.py
-
-    # Not sure about this section
-    #("enchanting_Table", "air"),
-    #("quartz_ore", "air"),
+    "minecraft:beacon",
 )
 
 """

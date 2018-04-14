@@ -42,21 +42,23 @@ def getBox(pos1, pos2):
 
     return BoundingBox(origin, size)
 
-def replace(world, oldBlock, newBlock, box=None):
-    world.fillBlocks(box, newBlock, blocksToReplace=[oldBlock], noData=True)
+def replace(world, oldBlocks, newBlock, box=None):
+    world.fillBlocks(box, newBlock, blocksToReplace=oldBlocks, noData=True)
 
 def replaceBlocksInBoxes(world, replaceList, boxList):
     for aBox in boxList:
-        for replacePair in replaceList:
-            oldBlock = world.materials[replacePair[0]]
-            newBlock = world.materials[replacePair[1]]
-            replace(world, oldBlock, newBlock, aBox)
+        oldBlocks = []
+        for oldBlock in replaceList:
+            oldBlocks.append(world.materials[oldBlock])
+        newBlock = world.materials["air"]
+        replace(world, oldBlocks, newBlock, aBox)
 
 def replaceGlobally(world, replaceList):
-    for replacePair in replaceList:
-        oldBlock = world.materials[replacePair[0]]
-        newBlock = world.materials[replacePair[1]]
-        replace(world, oldBlock, newBlock)
+    oldBlocks = []
+    for oldBlock in replaceList:
+        oldBlocks.append(world.materials[oldBlock])
+    newBlock = world.materials["air"]
+    replace(world, oldBlocks, newBlock, aBox)
 
 # Create a temporary directory which is automatically removed afterwards, even if the script crashes
 # Use like:
