@@ -11,6 +11,8 @@ import demjson
 import collections
 import traceback
 
+gverbose = False
+
 def print_tag_as_replacement(itemType, tag):
     # Remove type specifiers for JSON parsing
     sanitizedTag = re.sub(r'(:[-\.0-9]+)[lLsSbBfFdD]*', r'\1', tag)
@@ -28,7 +30,8 @@ def print_tag_as_replacement(itemType, tag):
             # Remove formatting codes from name if present
             itemName = re.sub(u'§[a-z0-9]', '', decoded["display"]["Name"])
 
-            print >> sys.stderr, itemType + " - " + itemName
+            if gverbose:
+                print >> sys.stderr, itemType + " - " + itemName
 
             print '\t['
             print '\t\t{'
@@ -76,16 +79,33 @@ def fixup_file(filePath):
                         print >> sys.stderr, ""
                         return
 
-if ((len(sys.argv) != 2) or (not os.path.isdir(sys.argv[1]))):
-    sys.exit("Usage: " + sys.argv[0] + " </path/to/loot_tables>")
+def usage():
+    sys.exit("Usage: " + sys.argv[0] + " [--verbose] </path/to/loot_tables> <dir2> ...")
 
-lootPath = sys.argv[1]
+# Main entry point
+if (len(sys.argv) < 2):
+    usage()
 
-for root, dirs, files in os.walk(lootPath):
-    for file in files:
-        if file.endswith(".json"):
-             filePath = os.path.join(root, file)
-             #print(filePath)
-             fixup_file(filePath)
+lootFolders = [];
+for arg in sys.argv[1:]:
+    if (arg == "--verbose"):
+        gverbose = True
+    else:
+        if (not os.path.isdir(arg)):
+            usage()
+        lootFolders += [arg,]
 
-sys.exit("Done")
+if (len(lootFolders) < 1):
+    print "ERROR: No folders specified"
+    usage()
+
+for lootPath in lootFolders:
+    for root, dirs, files in os.walk(lootPath):
+        for file in files:
+            if file.endswith(".json"):
+                 filePath = os.path.join(root, file)
+                 #print(filePath)
+                 fixup_file(filePath)
+
+if gverbose:
+    print >> sys.stderr, "Done"
