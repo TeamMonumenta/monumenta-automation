@@ -234,6 +234,8 @@ class update(object):
                 newAction = actPrintLocation(actions)
             if action == "remove":
                 newAction = actRemove(actions)
+            if action == "tag":
+                newAction = actTag(actions)
 
             self._actions.append(newAction)
             if "init" in log_data["debug"]:
@@ -758,4 +760,32 @@ class actRemove(object):
 
     def str(self,prefix=u''):
         return prefix + u'└╴Delete the entity'
+
+class actTag(object):
+    """
+    Apply tags to an entity
+    """
+    def __init__(self,actionOptions):
+        self._tags = actionOptions.pop(0)
+
+    def run(self,entityDetails,log_data):
+        entity = entityDetails["entity"]
+        if "Tags" not in entity:
+            entity["Tags"] = nbt.TAG_List()
+        entityTags = entity["Tags"]
+        for scoreTag in self._tags:
+            if scoreTag[0] == '!':
+                # Remove tag
+                scoreTagNBT = nbt.TAG_String(scoreTag[1:])
+                for i in range(len(entityTags)-1,-1,-1):
+                    if entityTags[i].eq(scoreTagNBT):
+                        entityTags.pop(i)
+            else:
+                # Add tag
+                scoreTagNBT = nbt.TAG_String(scoreTag[1:])
+                if scoreTagNBT not in entityTags:
+                    entityTags.append(scoreTagNBT)
+
+    def str(self,prefix=u''):
+        return prefix + u'└╴Apply these tags: ' + repr(self._tags)
 
