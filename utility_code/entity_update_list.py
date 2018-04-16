@@ -49,6 +49,14 @@ KingsValleyBuild = entity_update.UpdateEntities([],[
             "tag", ["Elite","Invisible"],
         ]
     ],
+    [ # That space was going to drive me nuts
+        {
+            "name":" Skeletal Abomination",
+        },
+        [
+            "name", "set", "Skeletal Abomination",
+        ]
+    ],
     [
         {
             "id":"minecraft:spider",
