@@ -509,6 +509,40 @@ class matchNone(match):
                 result += u'\n' + match.str(subprefix)
             return result
 
+class matchTag(match):
+    """
+    Match scoreboard tags (supports "!tag" to find entities without "tag")
+    """
+    def __init__(self,matchOptions):
+        self._tags = matchOptions
+        self._hasTags = []
+        self._notTags = []
+        for scoreTag in self._tags:
+            if scoreTag[0] == '!':
+                # Doesn't have this tag
+                self._notTags.append(nbt.TAG_String(scoreTag[1:]))
+            else:
+                # Has this tag
+                self._hasTags.append(nbt.TAG_String(scoreTag))
+
+    def __eq__(self,entityDetails):
+        if "Tags" not in entityDetails["entity"]:
+            if len(self._hasTags) > 0:
+                return False
+            else:
+                return True
+        entityTags = entityDetails["entity"]["Tags"]
+        for scoreTag in self._notTags:
+            if scoreTag in entityTags:
+                return False
+        for scoreTag in self._hasTags:
+            if scoreTag not in entityTags:
+                return False
+        return True
+
+    def str(self,prefix=u''):
+        return prefix + u'└╴Entity matches scoreboard tags ' + self._tags
+
 
 # Action optimizers
 

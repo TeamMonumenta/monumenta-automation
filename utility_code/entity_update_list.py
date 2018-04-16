@@ -34,6 +34,23 @@ Each update definition is a list that contains a
 KingsValleyBuild = entity_update.UpdateEntities([],[
     [
         {
+            "any":[
+                {"name":'Air Wraith'},
+                {"name":'Earth Wraith'},
+                {"name":'Flame Wraith'},
+                {"name":'Water Wraith'},
+                {
+                    "name":'Ghost',
+                    "tag":["Elite"],
+                },
+            ]
+        },
+        [
+            "tag", ["Elite","Invisible"],
+        ]
+    ],
+    [
+        {
             "id":"minecraft:spider",
             "name":"Fanged Spider",
         },
