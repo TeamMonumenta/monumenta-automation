@@ -816,7 +816,7 @@ class actTag(object):
                         entityTags.pop(i)
             else:
                 # Add tag
-                scoreTagNBT = nbt.TAG_String(scoreTag[1:])
+                scoreTagNBT = nbt.TAG_String(scoreTag)
                 if scoreTagNBT not in entityTags:
                     entityTags.append(scoreTagNBT)
 
