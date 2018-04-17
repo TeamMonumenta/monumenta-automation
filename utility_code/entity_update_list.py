@@ -34,6 +34,14 @@ Each update definition is a list that contains a
 KingsValleyBuild = entity_update.UpdateEntities([],[
     [
         {
+            "tag":[u"lite"],
+        },
+        [
+            "tag", [u"!lite"],
+        ]
+    ],
+    [
+        {
             "id":"minecraft:mob_spawner",
             "nbt":ur'''{SpawnData:{CustomName:"Infernal Archer",id:"minecraft:skeleton"}}''',
         },
@@ -190,7 +198,7 @@ KingsValleyBuild = entity_update.UpdateEntities([],[
     ],
     [
         {
-            "nbt":ur'''{Tags:["Elite"]}''',
+            "tag":[u"Elite"],
         },
         [
             "name", "color", '6',
@@ -204,7 +212,7 @@ KingsValleyBuild = entity_update.UpdateEntities([],[
             }
         },
         [
-            "tag", ["Elite"],
+            "tag", [u"Elite"],
         ]
     ],
     [

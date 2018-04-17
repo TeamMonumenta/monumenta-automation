@@ -817,7 +817,7 @@ class actTag(object):
             else:
                 # Add tag
                 scoreTagNBT = nbt.TAG_String(scoreTag)
-                if scoreTagNBT not in entityTags:
+                if not any(scoreTagNBT.value == entityTag.value for entityTag in entityTags):
                     entityTags.append(scoreTagNBT)
 
     def str(self,prefix=u''):
