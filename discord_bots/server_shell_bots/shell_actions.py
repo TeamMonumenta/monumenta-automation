@@ -225,7 +225,7 @@ class StopIn10MinutesAction(ShellAction):
 
     def help(self):
         return '''Dangerous!
-Brings down all play server shards and backs them up in preparation for terrain reset.
+Starts a bungee shutdown timer for 10 minutes. Returns immediately.
 '''
 
 class FetchResetBundleAction(ShellAction):
