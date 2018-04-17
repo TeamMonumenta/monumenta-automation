@@ -533,10 +533,10 @@ class matchTag(match):
                 return True
         entityTags = entityDetails["entity"]["Tags"]
         for scoreTag in self._notTags:
-            if scoreTag in entityTags:
+            if any(scoreTag.value == entityTag.value for entityTag in entityTags):
                 return False
         for scoreTag in self._hasTags:
-            if scoreTag not in entityTags:
+            if not any(scoreTag.value == entityTag.value for entityTag in entityTags):
                 return False
         return True
 
@@ -810,9 +810,9 @@ class actTag(object):
         for scoreTag in self._tags:
             if scoreTag[0] == '!':
                 # Remove tag
-                scoreTagNBT = nbt.TAG_String(scoreTag[1:])
                 for i in range(len(entityTags)-1,-1,-1):
-                    if entityTags[i].eq(scoreTagNBT):
+                    toRemove = scoreTag[1:]
+                    if entityTags[i].value == toRemove:
                         entityTags.pop(i)
             else:
                 # Add tag
