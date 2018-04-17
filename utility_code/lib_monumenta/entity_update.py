@@ -269,6 +269,8 @@ class match(object):
                 newMatch = matchNBT(matchOptions[key])
             if key == "none":
                 newMatch = matchNone(matchOptions[key])
+            if key == "tag":
+                newMatch = matchTag(matchOptions[key])
             if newMatch is not None:
                 self._matches.append(newMatch)
 
@@ -520,10 +522,10 @@ class matchTag(match):
         for scoreTag in self._tags:
             if scoreTag[0] == '!':
                 # Doesn't have this tag
-                self._notTags.append(nbt.TAG_String(scoreTag[1:]))
+                self._notTags.append(scoreTag[1:])
             else:
                 # Has this tag
-                self._hasTags.append(nbt.TAG_String(scoreTag))
+                self._hasTags.append(scoreTag)
 
     def __eq__(self,entityDetails):
         if "Tags" not in entityDetails["entity"]:
@@ -532,11 +534,10 @@ class matchTag(match):
             else:
                 return True
         entityTags = entityDetails["entity"]["Tags"]
-        for scoreTag in self._notTags:
-            if any(scoreTag.value == entityTag.value for entityTag in entityTags):
-                return False
+        if any(entityTag.value in self._notTags for entityTag in entityTags):
+            return False
         for scoreTag in self._hasTags:
-            if not any(scoreTag.value == entityTag.value for entityTag in entityTags):
+            if not any(entityTag.value == scoreTag for entityTag in entityTags):
                 return False
         return True
 

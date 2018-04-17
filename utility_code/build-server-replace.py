@@ -11,7 +11,7 @@ import item_replace_list
 import entity_update_list
 
 configList = [{
-    "server":"region_1",
+    "server":"dungeon",
 
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
