@@ -34,6 +34,42 @@ Each update definition is a list that contains a
 KingsValleyBuild = entity_update.UpdateEntities([],[
     [
         {
+            "id":"minecraft:mob_spawner",
+            "nbt":ur'''{SpawnData:{CustomName:"Infernal Archer",id:"minecraft:skeleton"}}''',
+        },
+        [
+            "nbt", "update", ur'''{MaxNearbyEntities:8s,RequiredPlayerRange:16s,SpawnCount:2s,MaxSpawnDelay:600s,Delay:0s,id:"minecraft:mob_spawner",SpawnRange:4s,MinSpawnDelay:500s}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:skeleton",
+            "name":"Infernal Archer",
+        },
+        [
+            "nbt", "replace", ur'''{ArmorDropChances:[-327.67f,-327.67f,-327.67f,-327.67f],CustomName:"Infernal Archer",Health:24.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:7667712}}},{id:"minecraft:chainmail_leggings",Count:1b},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:7667712}}},{id:"minecraft:skull",Count:1b,tag:{SkullOwner:{Id:"7db94d06-a33c-44ac-963b-6258c3bd70c9",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTgyMzJiZGQ2NmJkOTlhMzdlNjM0MzZhMDQ3NjczNWVjNGY4NGRjOTg4NTE2NjE1MGIzODJhZGE3NTdmIn19fQ=="}]}}},Damage:3}],Attributes:[{Base:24,Name:"generic.maxHealth"},{Base:0.2d,Name:"generic.movementSpeed"},{Base:25,Name:"generic.followRange"}],HandDropChances:[-327.67f,-327.67f],id:"minecraft:skeleton",ActiveEffects:[{Duration:199980,Id:12,Amplifier:0}],HandItems:[{id:"minecraft:bow",Count:1b,tag:{ench:[{lvl:1,id:48},{lvl:2,id:49},{lvl:2,id:50}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Patterns:[{Pattern:"sc",Color:11},{Pattern:"mc",Color:1},{Pattern:"flo",Color:0},{Pattern:"bts",Color:1},{Pattern:"tts",Color:1}],Base:14}}}]}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:mob_spawner",
+            "nbt":ur'''{SpawnData:{id:"minecraft:vex",CustomName:"Seeker"}}''',
+        },
+        [
+            "nbt", "update", ur'''{MaxNearbyEntities:8s,RequiredPlayerRange:18s,SpawnCount:3s,MaxSpawnDelay:4000s,Delay:0s,id:"minecraft:mob_spawner",SpawnRange:4s,MinSpawnDelay:2000s}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:vex",
+            "name":"Seeker",
+        },
+        [
+            "nbt", "replace", ur'''{ArmorDropChances:[0.085f,0.085f,0.085f,-327.67f],CustomName:"Seeker",Health:6.0f,ArmorItems:[{},{},{},{id:"minecraft:skull",Count:1b,tag:{SkullOwner:{Id:"75c53779-1669-4fe7-8b3c-59d7b6439b5e",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTdiOTg4MjdkOTc5Mzg1NTE0YTkzNmY5YTU5Njg4MmQzMmQ4ZWY3NTY3ZTdkOWE1MjM5NzgyZjk0NWU2OGIwIn19fQ=="}]}}},Damage:3}],Fire:20000,Attributes:[{Base:6,Name:"generic.maxHealth"},{Base:25,Name:"generic.followRange"}],HandDropChances:[-327.67f,-327.67f],id:"minecraft:vex",ActiveEffects:[{Duration:199980,Id:2,Amplifier:0}],HandItems:[{id:"minecraft:stone_sword",Count:1b},{id:"minecraft:stone_sword",Count:1b}]}''',
+        ]
+    ],
+    [
+        {
             "any":[
                 {"name":'Air Wraith'},
                 {"name":'Earth Wraith'},
