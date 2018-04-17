@@ -38,5 +38,4 @@ configList = [{
 }]
 
 terrainReset(configList)
-print "Done"
 
