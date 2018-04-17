@@ -110,6 +110,7 @@ luckperms = luckperms_standalone + [
 
 monumenta = [
         ('plugins/Monumenta-Plugins.jar', '../../server_config/plugins/Monumenta-Plugins.jar'),
+        ('plugins/Monumenta_BossFights.jar', '../../server_config/plugins/Monumenta_BossFights.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
     ]
