@@ -18,6 +18,7 @@ import codecs
 import shutil
 import multiprocessing as mp
 import tempfile
+import traceback
 
 # The effective working directory for this script must always be the MCEdit-Unified directory
 # This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
@@ -250,7 +251,8 @@ def terrainResetInstance(config, outputFile, statusQueue):
 
         statusQueue.put({"server":config["server"],"done":True})
 
-    except Exception as e:
+    except:
+        e = traceback.format_exc()
         statusQueue.put({"server":config["server"],"done":True,"error":e})
 
 # Multiprocessing implementation based on:
@@ -320,9 +322,15 @@ def terrainReset(configList):
 
         if "done" in statusUpdate:
             p["process"].join()
-            logFile = codecs.open(p["outputFile"],'r',encoding='utf8')
-            print logFile.read()
-            logFile.close()
+            try:
+                logFile = codecs.open(p["outputFile"],'r',encoding='utf8')
+                print logFile.read()
+                logFile.close()
+            except:
+                print "Log file could not be read!"
+
+            if "error" not in statusUpdate:
+                print statusFrom + " completed successfully"
 
             processes.pop(statusFrom)
 
@@ -333,6 +341,7 @@ def terrainReset(configList):
             for p in processes.values():
                 p["process"].terminate()
 
-            raise statusUpdate["error"]
+            print statusUpdate["error"]
+            raise RuntimeError
 
     print "Done!"
