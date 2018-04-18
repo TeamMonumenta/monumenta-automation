@@ -164,17 +164,6 @@ config = {
                 {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
                     "replaceBlocks":True, "material":(214, 0), "materialName":"nether wart block"},
             ),
-        },{
-            "name":"tutorial",
-            "size":(80, 72, 96),
-            "region":{"x":-2, "z":0},
-            "numDungeons":200,
-            "coordinatesToFill":(
-                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
-                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
-                    "replaceBlocks":True, "material":(133, 0), "materialName":"emerald block"},
-            ),
             "chestWhitelist":(
                 (-1341, 128, 2154),
                 (-1358,  59, 2306),
@@ -190,6 +179,18 @@ config = {
                 (-1280,  77, 2177),
                 (-1280,  77, 2176),
             ),
+        },{
+            "name":"tutorial",
+            "size":(80, 72, 96),
+            "region":{"x":-2, "z":0},
+            "numDungeons":200,
+            "coordinatesToFill":(
+                {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+                    "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
+                {"name":"Indicator", "pos1":(-1450, 232, -1503), "pos2":(-1450, 232, -1503),
+                    "replaceBlocks":True, "material":(133, 0), "materialName":"emerald block"},
+            ),
+            "chestWhitelist":(),
         },
     ),
 
