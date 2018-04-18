@@ -36,6 +36,7 @@ server_config_to_copy = [
         ('permissions.yml',),
         ('spigot.yml',),
         ('wepif.yml',),
+        ('start.sh',),
         ('mark2-scripts.txt',),
         ('plugins/FastAsyncWorldEdit/config.yml',),
         ('plugins/NBTEditor/CustomItems/NBTEditor.yml',),
