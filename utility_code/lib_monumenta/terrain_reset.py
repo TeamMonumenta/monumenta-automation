@@ -322,15 +322,16 @@ def terrainReset(configList):
 
         if "done" in statusUpdate:
             p["process"].join()
+
+            if "error" not in statusUpdate:
+                print statusFrom + " completed successfully"
+
             try:
                 logFile = codecs.open(p["outputFile"],'r',encoding='utf8')
                 print logFile.read()
                 logFile.close()
             except:
                 print "Log file could not be read!"
-
-            if "error" not in statusUpdate:
-                print statusFrom + " completed successfully"
 
             processes.pop(statusFrom)
 
