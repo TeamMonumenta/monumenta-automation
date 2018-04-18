@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -20,7 +21,10 @@ from shell_actions import *
 
 client = discord.Client()
 
-extraDebug = True
+extraDebug = False
+for arg in sys.argv[1:]:
+    if arg == "--verbose" or arg == "-v":
+        extraDebug = True
 
 # List of channels this bot will consume messages in
 # monumenta-bot and general

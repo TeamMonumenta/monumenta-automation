@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -12,6 +13,11 @@ from shell_actions import *
 # Config / Environment
 
 client = discord.Client()
+
+extraDebug = False
+for arg in sys.argv[1:]:
+    if arg == "--verbose" or arg == "-v":
+        extraDebug = True
 
 # List of channels this bot will consume messages in
 # monumenta-bot and general
@@ -60,7 +66,7 @@ async def on_message(message):
             return
 
         if message.content in actionDict:
-            action = actionDict[message.content]()
+            action = actionDict[message.content](debug=extraDebug)
             if not action.hasPermissions(message.author):
                 await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
             else:
