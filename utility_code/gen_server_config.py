@@ -58,9 +58,12 @@ server_config_min_plus_data = server_config_min + [
     ]
 
 server_config = server_config_min_plus_data + [
-        ('plugins/ScriptedQuests/npcs', '../../../server_config/data/scriptedquests/npcs'),
-        ('plugins/ScriptedQuests/compass', '../../../server_config/data/scriptedquests/compass'),
-        ('plugins/ScriptedQuests/death', '../../../server_config/data/scriptedquests/death'),
+        ('plugins/ScriptedQuests/npcs/WORLDOOG', '../../../../server_config/data/scriptedquests/npcs/WORLDOOG'),
+        ('plugins/ScriptedQuests/npcs/common', '../../../../server_config/data/scriptedquests/npcs/common'),
+        ('plugins/ScriptedQuests/compass/WORLDOOG', '../../../../server_config/data/scriptedquests/compass/WORLDOOG'),
+        ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
+        ('plugins/ScriptedQuests/death/WORLDOOG', '../../../../server_config/data/scriptedquests/death/WORLDOOG'),
+        ('plugins/ScriptedQuests/death/common', '../../../../server_config/data/scriptedquests/death/common'),
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
     ]
 
@@ -443,7 +446,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=128M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=128M'),
         ],
-        'linked':server_config + advancements_disabled,
+        'linked':server_config_min + advancements_disabled,
     },
 
     'white':{
@@ -657,7 +660,9 @@ def gen_server_config(servername):
     linked = dest["linked"]
     for link in linked:
         linkname = servername + "/" + link[0]
+        targetname = link[1]
         linkname = linkname.replace('WORLDOOG', servername)
+        targetname = targetname.replace('WORLDOOG', servername)
 
         if (os.path.islink(linkname)):
             os.unlink(linkname)
@@ -675,7 +680,7 @@ def gen_server_config(servername):
         except OSError as e:
             pass
 
-        os.symlink(link[1], linkname)
+        os.symlink(targetname, linkname)
 
     print "Success - " + servername
 
