@@ -209,6 +209,7 @@ config = {
         {"name":"Monument", "type":"SafeZone", "pos1":"1160 0 -320", "pos2":"1400 256 -115"},
         {"name":"Mystic Grotto", "type":"SafeZone", "pos1":"317 61 309", "pos2":"383 106 392"},
         {"name":"Brown Co 57 Floating Island", "type":"SafeZone", "pos1":"887 0 -927", "pos2":"978 255 -899"},
+        {"name":"Tutorial Dungeon Flashback", "type":"SafeZone", "pos1":"1126 5 148", "pos2":"1177 35 224"},
         {"name":"Roguelike Entrance Puzzle", "type":"SafeZone", "pos1":"825 0 173", "pos2":"889 97 217"},
         {"name":"Vanilla Pilot", "type":"SafeZone", "pos1":"410 156 157", "pos2":"429 190 176"},
 
