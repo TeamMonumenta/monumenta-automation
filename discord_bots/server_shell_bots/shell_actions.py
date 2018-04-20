@@ -272,6 +272,7 @@ class StopAndBackupAction(ShellAction):
             self.run("rm -rf /home/rock/project_epic/magenta/plugins/CoreProtect"),
             self.run("rm -rf /home/rock/project_epic/lightblue/plugins/CoreProtect"),
             self.run("rm -rf /home/rock/project_epic/yellow/plugins/CoreProtect"),
+            self.run("rm -rf /home/rock/project_epic/nightmare/plugins/CoreProtect"),
             self.run("rm -rf /home/rock/project_epic/r1bonus/plugins/CoreProtect"),
             self.run("rm -rf /home/rock/project_epic/tutorial/plugins/CoreProtect"),
             self.run("rm -rf /home/rock/project_epic/purgatory/plugins/CoreProtect"),
