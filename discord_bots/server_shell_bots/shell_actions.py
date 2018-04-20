@@ -348,7 +348,7 @@ class TerrainResetAction(ShellAction):
 
             self.display("Generating per-shard config..."),
             self.cd("/home/rock/4_SHARED/tmpreset/POST_RESET"),
-            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play build betaplots lightblue magenta orange purgatory r1bonus r1plots region_1 roguelike tutorial white yellow"),
+            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play build betaplots lightblue magenta nightmare orange purgatory r1bonus r1plots region_1 roguelike tutorial white yellow"),
 
             # TODO: This should probably print a warning and proceed anyway if some are found
             self.display("Checking for broken symbolic links..."),

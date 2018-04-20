@@ -7,7 +7,7 @@ merges them into a new world, dstWorld (destination).
 
 from lib_monumenta.terrain_reset import terrainReset
 
-from shard_reset import region_1, r1plots, betaplots, white, orange, magenta, lightblue, yellow, r1bonus, roguelike
+from shard_reset import region_1, r1plots, betaplots, white, orange, magenta, lightblue, yellow, nightmare, r1bonus, roguelike
 
 itemCountLog = "/home/rock/4_SHARED/tmpreset/all_items.txt"
 
@@ -20,6 +20,7 @@ configList = [
     magenta.config,
     lightblue.config,
     yellow.config,
+    nightmare.config,
     r1bonus.config,
     roguelike.config,
 ]
