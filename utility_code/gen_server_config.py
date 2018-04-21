@@ -204,6 +204,7 @@ config = {
         {"name":"Yellow Wool Lobby", "type":"SafeZone", "pos1":"1141 39 3", "pos2":"1181 69 68"},
         {"name":"Bonus Lobby", "type":"SafeZone", "pos1":"295 10 -163", "pos2":"335 40 -98"},
         {"name":"Roguelike Lobby", "type":"SafeZone", "pos1":"766 7 156", "pos2":"814 45 235"},
+        {"name":"Kathryn's Trees", "type":"AdventureZone", "pos1":"875 105 206", "pos2":"889 134 187"},
         {"name":"Malevolent Reverie Lobby", "type":"SafeZone", "pos1":"1130 55 155", "pos2":"1172 88 222"},
 
         {"name":"Monument", "type":"SafeZone", "pos1":"1160 0 -320", "pos2":"1400 256 -115"},
