@@ -33,7 +33,7 @@ from lib_monumenta import scoreboard
 from lib_monumenta.common import fillBoxes, copyBoxes, copyFolder, copyFolders, copyFiles
 from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGlobally, tagPlayers
 from lib_monumenta.list_uuids import listUUIDs
-from lib_monumenta.advancements import advancements
+#from lib_monumenta.advancements import advancements
 from lib_monumenta.move_region import moveRegion
 
 def terrainResetInstance(config, outputFile, statusQueue):
@@ -201,7 +201,9 @@ def terrainResetInstance(config, outputFile, statusQueue):
         # worldScores.pruneMissingEntities(existingEntities)
         worldScores.save()
 
-        if "revokeAdvancements" in config:
+        # TODO Disabled to test if this is revoking advancements it shouldn't.
+        #if "revokeAdvancements" in config:
+        if False:
             print "Revoking advancements from players..."
             dstAdvancements = advancements(localDstFolder)
             dstAdvancements.revoke(config["revokeAdvancements"])
