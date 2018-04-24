@@ -25,8 +25,7 @@ config = {
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/region_1/Project_Epic-region_1/",
 
     # Reset dungeon scores
-    "playerScoreChanges":dungeonScoreTestRules,
-    "playerScoreChangesTest":dungeonScoreRules,
+    "playerScoreChanges":dungeonScoreRules,
 
     "revokeAdvancements":advancementRevokeList,
 

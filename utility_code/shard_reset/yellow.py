@@ -19,8 +19,7 @@ config = {
     "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/yellow/Project_Epic-yellow/",
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/yellow/Project_Epic-yellow/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
-    "playerScoreChanges":dungeonScoreTestRules,
-    "playerScoreChangesTest":dungeonScoreRules,
+    "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
         "dungeonScore":"D5Access",
         "targetRegion":{"x":-3, "z":-2},

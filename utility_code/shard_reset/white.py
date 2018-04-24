@@ -19,8 +19,7 @@ config = {
     "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/white/Project_Epic-white/",
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/white/Project_Epic-white/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
-    "playerScoreChanges":dungeonScoreTestRules,
-    "playerScoreChangesTest":dungeonScoreRules,
+    "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
         "dungeonScore":"D1Access",
         "targetRegion":{"x":-3, "z":-2},

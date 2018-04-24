@@ -19,8 +19,7 @@ config = {
     "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/orange/Project_Epic-orange/",
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/orange/Project_Epic-orange/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
-    "playerScoreChanges":dungeonScoreTestRules,
-    "playerScoreChangesTest":dungeonScoreRules,
+    "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
         "dungeonScore":"D2Access",
         "targetRegion":{"x":-3, "z":-2},

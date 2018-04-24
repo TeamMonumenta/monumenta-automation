@@ -19,8 +19,7 @@ config = {
     "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/lightblue/Project_Epic-lightblue/",
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/lightblue/Project_Epic-lightblue/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
-    "playerScoreChanges":dungeonScoreTestRules,
-    "playerScoreChangesTest":dungeonScoreRules,
+    "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
         "dungeonScore":"D4Access",
         "targetRegion":{"x":-3, "z":-2},

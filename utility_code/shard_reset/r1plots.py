@@ -23,8 +23,7 @@ config = {
     "copyBaseFrom":"main",
 
     "tagPlayers":["MidTransfer","resetMessage"],
-    "playerScoreChanges":dungeonScoreTestRules,
-    "playerScoreChangesTest":dungeonScoreRules,
+    "playerScoreChanges":dungeonScoreRules,
     "blockReplacements":item_replace_list.blockReplacements,
     "blockReplaceLocations":["world",],
     "itemReplacements":item_replace_list.KingsValley,

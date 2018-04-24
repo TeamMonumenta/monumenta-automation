@@ -19,8 +19,7 @@ config = {
     "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/r1bonus/Project_Epic-r1bonus/",
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/r1bonus/Project_Epic-r1bonus/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
-    "playerScoreChanges":dungeonScoreTestRules,
-    "playerScoreChangesTest":dungeonScoreRules,
+    "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
         "dungeonScore":"DB1Access",
         "targetRegion":{"x":-3, "z":-2},

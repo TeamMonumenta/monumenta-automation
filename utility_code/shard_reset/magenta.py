@@ -19,8 +19,7 @@ config = {
     "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/magenta/Project_Epic-magenta/",
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/magenta/Project_Epic-magenta/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
-    "playerScoreChanges":dungeonScoreTestRules,
-    "playerScoreChangesTest":dungeonScoreRules,
+    "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
         "dungeonScore":"D3Access",
         "targetRegion":{"x":-3, "z":-2},
