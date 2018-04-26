@@ -14,9 +14,21 @@ def eprint(*args, **kwargs):
 ################################################################################
 # Function definitions
 
-def containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints):
+def containsNoIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints):
+    if (
+        contentsLoreToIgnore is None or
+        len(contentsLoreToIgnore) == 0
+    ):
+        return True
     for item in aTileEntity["Items"]:
         try:
+            if (
+                "tag" not in item or
+                "display" not in item["tag"] or
+                "Lore" not in item["tag"]["display"]
+            ):
+                # This also skips the occasional empty item, as in {Slot:5b} or {}
+                continue
             for lore in item["tag"]["display"]["Lore"]:
                 for loreIgnore in contentsLoreToIgnore:
                     if loreIgnore in lore.value:
@@ -27,33 +39,33 @@ def containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints):
                                     aTileEntity["z"].value,
                                     lore.value.encode('utf-8'),
                                     loreIgnore))
-                        return True
+                        return False
         except UnicodeEncodeError:
-            print("THIS SHOULDN'T HAPPEN")
+            print("UnicodeEncodeError in containsNoIgnoredContents")
             continue
         except:
             if debugPrints:
-                print("Caught general exception in containsIgnoredContents")
+                print("Caught general exception in containsNoIgnoredContents")
             continue
-    return False
+    return True
 
-def isWhitelisted(aTileEntity, chestWhitelist):
+def isNotWhitelisted(aTileEntity, chestWhitelist):
     x = aTileEntity["x"].value
     y = aTileEntity["y"].value
     z = aTileEntity["z"].value
 
     if chestWhitelist is None or (x,y,z) in chestWhitelist:
-        return True
-    return False
-
-
-def hasLootTable(aTileEntity):
-    emptyLootTables = ("", "empty", "minecraft:", "minecraft:empty")
-    if "LootTable" not in aTileEntity:
-        return False
-    elif aTileEntity["LootTable"].value in emptyLootTables:
         return False
     return True
+
+
+def hasNoLootTable(aTileEntity):
+    emptyLootTables = ("", "empty", "minecraft:", "minecraft:empty")
+    if "LootTable" not in aTileEntity:
+        return True
+    elif aTileEntity["LootTable"].value in emptyLootTables:
+        return True
+    return False
 
 def hasLootTableSeed(aTileEntity):
     if "LootTableSeed" not in aTileEntity:
@@ -62,7 +74,7 @@ def hasLootTableSeed(aTileEntity):
         return False
     return True
 
-def listLootlessTileEntities(world, scanBox, tileEntitiesToCheck, contentsLoreToIgnore, chestWhitelist, debugPrints=False):
+def listLootlessTileEntities(world, scanBox, tileEntitiesToCheck, contentsLoreToIgnore, chestWhitelist, areaName, debugPrints=False):
     lootless = []
 
     # Build tile ID list, adding default namespace if needed
@@ -73,6 +85,8 @@ def listLootlessTileEntities(world, scanBox, tileEntitiesToCheck, contentsLoreTo
         else:
             tileIDList.append("minecraft:"+tileID)
 
+    # This is needed to avoid errors when a box contains chunks that do not exist
+    # This comment is to remind me of that problem
     allChunks = set(world.allChunks)
 
     # The function world.getTileEntitiesInBox() does not work.
@@ -87,18 +101,17 @@ def listLootlessTileEntities(world, scanBox, tileEntitiesToCheck, contentsLoreTo
             for aTileEntity in newTileEntities:
 
                 # Check if tileEntity is being scanned
-                if aTileEntity["id"].value in tileIDList:
-
+                if (
+                    aTileEntity["id"].value in tileIDList and
+                    isNotWhitelisted(aTileEntity, chestWhitelist) and
+                    containsNoIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints)
+                ):
                     # Detect missing loot table
-                    if ((not hasLootTable(aTileEntity)) and
-                        (not ((contentsLoreToIgnore is None) and containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints))) and
-                        (not isWhitelisted(aTileEntity, chestWhitelist))):
+                    if hasNoLootTable(aTileEntity):
                         lootless.append(aTileEntity)
 
                     # Detect fixed loot table seeds
-                    elif (hasLootTableSeed(aTileEntity) and
-                          (not ((contentsLoreToIgnore is None) and containsIgnoredContents(aTileEntity, contentsLoreToIgnore, debugPrints))) and
-                          (not isWhitelisted(aTileEntity, chestWhitelist))):
+                    elif hasLootTableSeed(aTileEntity):
                         lootless.append(aTileEntity)
 
                     elif "LootTableSeed" in aTileEntity:
@@ -108,14 +121,14 @@ def listLootlessTileEntities(world, scanBox, tileEntitiesToCheck, contentsLoreTo
                 print("Got KeyError exception in chunk (" + str(cx) + "," + str(cz) + ")")
             continue
 
-    eprint("    {0} tile entities found without a loot table:".format(len(lootless)))
+    eprint("    {0} tile entities found without a loot table in {1}:".format(len(lootless),areaName))
     for aTileEntity in lootless:
         tileEntityID = aTileEntity["id"].value
         x = aTileEntity["x"].value
         y = aTileEntity["y"].value
         z = aTileEntity["z"].value
         theProblem = ""
-        if not hasLootTable(aTileEntity):
+        if hasNoLootTable(aTileEntity):
             theProblem = "has no loot table set."
         elif hasLootTableSeed(aTileEntity):
             theProblem = "has a fixed loot table seed."

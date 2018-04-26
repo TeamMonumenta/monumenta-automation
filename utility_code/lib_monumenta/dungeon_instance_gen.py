@@ -73,7 +73,7 @@ def gen_dungeon_instance(config, dungeon, outputFile):
         nextStep(dungeonName + ": Opened reference world")
 
         print "  Scanning dungeon for chests without loot tables..."
-        listLootlessTileEntities(referenceWorld, dungeonBox, tileEntitiesToCheck, dungeonContentsLoreToIgnore, dungeonChestWhitelist)
+        listLootlessTileEntities(referenceWorld, dungeonBox, tileEntitiesToCheck, dungeonContentsLoreToIgnore, dungeonChestWhitelist, dungeonName)
         nextStep(dungeonName + ": Finished scan")
 
         print "  Copying template world as base..."
