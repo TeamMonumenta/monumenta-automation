@@ -180,7 +180,7 @@ def hopeify(lore,InfusedBy):
             hopeAdded == False and
             (
                 u"King's Valley" in loreEntry or
-                removeFormatting(loreEntry) == u''
+                len(removeFormatting(loreEntry)) == 0
             )
         ):
             newLore.append(nbt.TAG_String(hopeText))
@@ -188,9 +188,10 @@ def hopeify(lore,InfusedBy):
 
         if (
             nameAdded == False and
-            removeFormatting(loreEntry) == u''
+            len(removeFormatting(loreEntry)) == 0
         ):
             newLore.append(nbt.TAG_String(infusedByPrefix + InfusedBy))
+            nameAdded = True
 
         newLore.append(loreEntryTag)
 
