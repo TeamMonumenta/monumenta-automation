@@ -192,7 +192,7 @@ def hopeify(lore,InfusedBy):
         ):
             newLore.append(nbt.TAG_String(infusedByPrefix + InfusedBy))
 
-        newLore.append(loreEntryTag);
+        newLore.append(loreEntryTag)
 
     if nameAdded == False:
         newLore.append(nbt.TAG_String(infusedByPrefix + InfusedBy))
