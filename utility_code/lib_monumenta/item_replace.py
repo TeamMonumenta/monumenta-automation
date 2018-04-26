@@ -15,6 +15,11 @@ from pymclevel import nbt
 
 from lib_monumenta.iter_entity import IterEntities
 
+soulboundPrefix = u'Soulbound to '
+replicaText = u'§5§o* Replica Item *'
+hopeText = u'§7Hope'
+infusedByPrefix = u'Infused by '
+
 # used to ignore data values that aren't damage
 ItemsWithRealDamage = [
     ############
@@ -148,6 +153,54 @@ formatCodes = {
         {"id":u"r","display":u"Reset","technical":u"reset",},
     ],
 }
+
+def removeFormatting(formattedString):
+    nameNoFormat = formattedString
+    while u'§' in nameNoFormat:
+        i = nameNoFormat.find(u'§')
+        nameNoFormat = nameNoFormat[:i]+nameNoFormat[i+2:]
+    return nameNoFormat
+
+def hopeify(lore,InfusedBy):
+    newLore = nbt.TAG_List()
+    hopeAdded = False
+    nameAdded = False
+    kingsValleyFound = False
+
+    for loreEntryTag in lore:
+        loreEntry = loreEntryTag.value
+
+        if hopeText in loreEntry:
+            return lore
+
+        if u"King's Valley" in loreEntry:
+            kingsValleyFound = True
+
+        if (
+            hopeAdded == False and
+            (
+                u"King's Valley" in loreEntry or
+                removeFormatting(loreEntry) == u''
+            )
+        ):
+            newLore.append(nbt.TAG_String(hopeText))
+            hopeAdded = True
+
+        if (
+            nameAdded == False and
+            removeFormatting(loreEntry) == u''
+        ):
+            newLore.append(nbt.TAG_String(infusedByPrefix + InfusedBy))
+
+        newLore.append(loreEntryTag);
+
+    if nameAdded == False:
+        newLore.append(nbt.TAG_String(infusedByPrefix + InfusedBy))
+
+    if not kingsValleyFound:
+        return lore
+
+    return newLore
 
 ################################################################################
 # Item stack finding code
@@ -682,11 +735,8 @@ class matchName(match):
         elif self._name is None:
             return False
         else:
-            nameNoFormat = itemStack["tag"]["display"]["Name"].value
-            while u'§' in nameNoFormat:
-                i = nameNoFormat.find(u'§')
-                nameNoFormat = nameNoFormat[:i]+nameNoFormat[i+2:]
-            return nameNoFormat == self._name
+            formattedName = itemStack["tag"]["display"]["Name"].value
+            return removeFormatting(formattedName) == self._name
 
     def str(self,prefix=u''):
         if self._name == None:
@@ -1039,6 +1089,7 @@ class actNBT(object):
         tagsToRestore = nbt.TAG_Compound()
         soulbound = None
         isReplica = False
+        hopeifiedBy = None
         if "tag" in itemStack:
             tagsToRestore["tag"] = nbt.TAG_Compound()
             # armor color
@@ -1049,10 +1100,12 @@ class actNBT(object):
                     tagsToRestore["tag"]["display"]["color"] = displayTag["color"]
                 if "Lore" in displayTag:
                     for loreLine in displayTag["Lore"]:
-                        if u"* Soulbound to " in loreLine.value:
+                        if soulboundPrefix in loreLine.value:
                             soulbound = loreLine
-                        if loreLine.value == u'''§5§o* Replica Item *''':
+                        if replicaText == loreLine.value:
                             isReplica = True
+                        if infusedByPrefix in loreLine.value:
+                            hopeifiedBy = loreLine.value
             # banner/shield color/pattern
             if "BlockEntityTag" in itemStack["tag"]:
                 tagsToRestore["tag"]["BlockEntityTag"] = nbt.TAG_Compound()
@@ -1091,12 +1144,16 @@ class actNBT(object):
                     itemStack["tag"]["display"] = nbt.TAG_Compound()
                 if "Lore" not in itemStack["tag"]["display"]:
                     itemStack["tag"]["display"]["Lore"] = nbt.TAG_List()
+                lore = itemStack["tag"]["display"]["Lore"]
                 if soulbound is not None:
-                    itemStack["tag"]["display"]["Lore"].append(soulbound)
+                    lore.append(soulbound)
                 if isReplica:
-                    for loreLine in itemStack["tag"]["display"]["Lore"]:
+                    for loreLine in lore:
                         if u'''Unique''' in loreLine.value:
-                            loreLine.value = u'''§5§o* Replica Item *'''
+                            loreLine.value = replicaText
+                if hopeifiedBy is not None:
+                    lore = hopeify(lore,hopeifiedBy)
+                    itemStack["tag"]["display"]["Lore"] = lore
 
     def str(self,prefix=u''):
         if self._operation == "clear":
