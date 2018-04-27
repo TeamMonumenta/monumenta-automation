@@ -26,7 +26,7 @@ config = {
     "playerScoreChanges":dungeonScoreRules,
     "blockReplacements":item_replace_list.blockReplacements,
     "blockReplaceLocations":["world",],
-    "itemReplacements":item_replace_list.KingsValley,
+    "itemReplacements":item_replace_list.KingsValleyDungeon,
     "itemReplaceLocations":["players", "world",],
     "entityUpdates":entity_update_list.KingsValley,
     "entityUpdateLocations":["world",],

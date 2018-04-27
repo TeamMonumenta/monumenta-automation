@@ -602,7 +602,7 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     KingsValleyLootTables,
 ])
 
-KingsValley = item_replace.ReplaceItems([],[
+KingsValleyDungeon = item_replace.ReplaceItems([],[
     # Remove all items
     ############################################################################
     # Stuff that players shouldn't have had:
@@ -612,10 +612,6 @@ KingsValley = item_replace.ReplaceItems([],[
 
     [
         {"any":[
-            # Dungeon keys
-            {"nbt":ur'''{display:{Lore:["§e§lThis item will be deleted if attempted","§e§lto be taken out of dungeon!!!"]}}''',},
-            {"nbt":ur'''{display:{Lore:["§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction."]}}''',},
-
             # Iron:
             {"id":"minecraft:iron_ore"},
             {"id":"minecraft:iron_nugget"},
@@ -659,6 +655,28 @@ KingsValley = item_replace.ReplaceItems([],[
 
             # Luck items
             {"nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}'''},
+        ]},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=",0,
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+])
+
+KingsValley = item_replace.ReplaceItems([],[
+    # Remove all items
+    ############################################################################
+    # Stuff that players shouldn't have had:
+    ############################################################################
+
+    KingsValleyDungeon,
+
+    [
+        {"any":[
+            # Dungeon keys
+            {"nbt":ur'''{display:{Lore:["§e§lThis item will be deleted if attempted","§e§lto be taken out of dungeon!!!"]}}''',},
+            {"nbt":ur'''{display:{Lore:["§e§lTaking this item outside of the dungeon","§e§lwill result in its destruction."]}}''',},
         ]},
         [
             "id","minecraft:rotten_flesh",

@@ -23,7 +23,7 @@ config = {
     "playerScoreChanges":dungeonScoreRules,
     "tagPlayers":["MidTransfer","resetMessage"],
     "tpToSpawn":True,
-    "itemReplacements":item_replace_list.KingsValley,
+    "itemReplacements":item_replace_list.KingsValleyDungeon,
     "itemReplaceLocations":["players"],
     "itemLog":"/home/rock/4_SHARED/tmpreset/items_roguelike.txt",
 }
