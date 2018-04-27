@@ -56,14 +56,14 @@ class ShellAction(object):
         # Implementor should populate these fields:
         #self._commands = []
 
-    def getCommand(self):
-        raise NotImplementedError("Implement Me")
-
     async def hasPermissions(self, member):
         raise NotImplementedError("Implement Me")
 
     async def help(self):
-        raise NotImplementedError("Implement Me")
+        try:
+            return self.__doc__
+        except:
+            raise NotImplementedError("Implement Me")
 
     ################################################################################
     # These methods should be left alone

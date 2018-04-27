@@ -32,15 +32,15 @@ botChannels = ['420045459177078795', '186225508562763776']
 
 # List of actions this bot handles
 actionDict = {}
-#actionDict[DebugAction().getCommand()] = DebugAction
-#actionDict[TestAction().getCommand()] = TestAction
-actionDict[ListShardsAction().getCommand()] = ListShardsAction
-#actionDict[TestPrivilegedAction().getCommand()] = TestPrivilegedAction
-#actionDict[TestUnprivilegedAction().getCommand()] = TestUnprivilegedAction
-actionDict[FetchResetBundleAction().getCommand()] = FetchResetBundleAction
-actionDict[StopIn10MinutesAction().getCommand()] = StopIn10MinutesAction
-actionDict[StopAndBackupAction().getCommand()] = StopAndBackupAction
-actionDict[TerrainResetAction().getCommand()] = TerrainResetAction
+#actionDict[DebugAction().command] = DebugAction
+#actionDict[TestAction().command] = TestAction
+actionDict[ListShardsAction().command] = ListShardsAction
+#actionDict[TestPrivilegedAction().command] = TestPrivilegedAction
+#actionDict[TestUnprivilegedAction().command] = TestUnprivilegedAction
+actionDict[FetchResetBundleAction().command] = FetchResetBundleAction
+actionDict[StopIn10MinutesAction().command] = StopIn10MinutesAction
+actionDict[StopAndBackupAction().command] = StopAndBackupAction
+actionDict[TerrainResetAction().command] = TerrainResetAction
 
 botHelp = '''
 This is the monumenta play server bot.
@@ -66,9 +66,9 @@ async def on_message(message):
             for actionClass in actionDict.values():
                 action = actionClass()
                 if action.hasPermissions(message.author):
-                    helptext += "\n**" + action.getCommand() + "**"
+                    helptext += "\n**" + action.command + "**"
                 else:
-                    helptext += "\n~~" + action.getCommand() + "~~"
+                    helptext += "\n~~" + action.command + "~~"
                 helptext += "```" + action.help() + "```"
 
             await client.send_message(message.channel, helptext)

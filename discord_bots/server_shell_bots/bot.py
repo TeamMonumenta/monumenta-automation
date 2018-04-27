@@ -1,16 +1,34 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import sys
 import logging
 
 logging.basicConfig(level=logging.INFO)
 
 import discord
-from shell_actions import *
+from shell_actions import allActionsDict
 
 ################################################################################
 # Config / Environment
+
+configDir = os.path.expanduser("~/.monumeneta_bot/")
+
+botName = None
+with open(configDir+'bot_name','r') as f:
+    botName = f.readline()
+if botName is None:
+    sys.exit('Could not find ' + configDir+'bot_name')
+
+# List of actions this bot handles
+actionDict = {}
+with open(configDir+'commands','r') as f:
+    for line in f:
+        if line in allActionsDict:
+            actionDict[line] = allActionsDict[line]
+        else:
+            print 'Config error: No such command "{}"'.format(line)
 
 client = discord.Client()
 
@@ -23,21 +41,11 @@ for arg in sys.argv[1:]:
 # monumenta-bot and general
 botChannels = ['420045459177078795', '186225508562763776']
 
-# List of actions this bot handles
-actionDict = {}
-actionDict[DebugAction().command] = DebugAction
-actionDict[TestAction().command] = TestAction
-actionDict[ListShardsAction().command] = ListShardsAction
-actionDict[GenerateInstancesAction().command] = GenerateInstancesAction
-actionDict[PrepareResetBundleAction().command] = PrepareResetBundleAction
-actionDict[TestPrivilegedAction().command] = TestPrivilegedAction
-actionDict[TestUnprivilegedAction().command] = TestUnprivilegedAction
-
 botHelp = '''
-This is the monumenta build server bot.
-It runs on the build server's console.
-It can be used to run actions on the build server.
-'''
+This is the monumenta {0} server bot.
+It runs on the {0} server's console.
+It can be used to run actions on the {0} server.
+'''.format(botName)
 
 ################################################################################
 # Discord event handlers

@@ -1,5 +1,12 @@
+"""
+This is the list of all shell actions available to the discord bots;
+Please keep this list in alphabetical order within each category
+"""
 
 from shell_common import ShellAction, datestr
+
+allActions = []
+allActionsDict = {}
 
 ################################################################################
 # Common privilege code
@@ -26,17 +33,14 @@ def isPrivileged(author):
 # Simple test functions
 
 class DebugAction(ShellAction):
+    '''Prints debugging information about the requestor'''
+    command = "!debug"
+
     def __init__(self, debug=False):
         super().__init__(debug)
 
-    def getCommand(self):
-        return "!debug"
-
     def hasPermissions(self, author):
         return True
-
-    def help(self):
-        return "Prints debugging information about the requestor"
 
     async def doActions(self, client, channel, member):
         self._client = client
@@ -47,75 +51,84 @@ class DebugAction(ShellAction):
         for role in member.roles:
             message += "\n`" + role.name + "`: " + role.id
         await self.display(message),
+allActions.append(DebugAction)
 
 class TestAction(ShellAction):
+    '''Simple test action that does nothing'''
+    command = "!test"
+
     def __init__(self, debug=False):
         super().__init__(debug)
         self._commands = [
             self.display("Testing successful!"),
         ]
 
-    def getCommand(self):
-        return "!test"
-
     def hasPermissions(self, author):
         return True
-
-    def help(self):
-        return "Simple test action that does nothing"
+allActions.append(TestAction)
 
 class TestPrivilegedAction(ShellAction):
+    '''Test if user has permission to use restricted commands'''
+    command = "!testpriv"
+
     def __init__(self, debug=False):
         super().__init__(debug)
         self._commands = [
             self.display("You've got the power"),
         ]
 
-    def getCommand(self):
-        return "!testpriv"
-
     def hasPermissions(self, author):
         return isPrivileged(author)
-
-    def help(self):
-        return "Test if user has permission to use restricted commands"
+allActions.append(TestPrivilegedAction)
 
 class TestUnprivilegedAction(ShellAction):
+    '''Test that a restricted command fails for all users'''
+    command = "!testunpriv"
+
     def __init__(self, debug=False):
         super().__init__(debug)
         self._commands = [
             self.display("BUG: You definitely shouldn't have this much power"),
         ]
 
-    def getCommand(self):
-        return "!testunpriv"
-
     def hasPermissions(self, author):
         return False
-
-    def help(self):
-        return "Test that a restricted command fails for all users"
+allActions.append(TestUnprivilegedAction)
 
 ################################################################################
 # Useful actions start here
 
-class ListShardsAction(ShellAction):
+class FetchResetBundleAction(ShellAction):
+    '''Dangerous!
+Deletes in-progress terrain reset info on the play server
+Downloads the terrain reset bundle from the build server and unpacks it'''
+    command = "!fetch reset bundle"
+
     def __init__(self, debug=False):
         super().__init__(debug)
         self._commands = [
-            self.run("mark2 list", displayOutput=True),
+            self.display("Fetching reset bundle from build server..."),
+            self.run("rm -rf /home/rock/4_SHARED/tmpreset"),
+            self.run("mkdir -p /home/rock/4_SHARED/tmpreset"),
+            self.run("sftp build:/home/rock/4_SHARED/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz /home/rock/4_SHARED/tmpreset/"),
+            self.display("Unpacking reset bundle..."),
+            self.cd("/home/rock/4_SHARED/tmpreset"),
+            self.run("tar xzf project_epic_build_template_pre_reset_" + datestr() + ".tgz"),
+            self.display("Reset bundle is prepped for reset."),
         ]
 
-    def getCommand(self):
-        return "!list shards"
-
     def hasPermissions(self, author):
-        return True
-
-    def help(self):
-        return "Lists currently running shards on this server"
+        return isPrivileged(author)
+allActions.append(FetchResetBundleAction)
 
 class GenerateInstancesAction(ShellAction):
+    '''Dangerous!
+Deletes previous terrain reset data
+Temporarily brings down the dungeon shard to generate dungeon instances.
+Must be run before preparing the build server reset bundle
+'''
+    command = "!generate instances"
+
     def __init__(self, debug=False):
         super().__init__(debug)
         self._commands = [
@@ -148,20 +161,46 @@ class GenerateInstancesAction(ShellAction):
             self.display("Dungeon instance generation complete!"),
         ]
 
-    def getCommand(self):
-        return "!generate instances"
-
     def hasPermissions(self, author):
         return isPrivileged(author)
+allActions.append(GenerateInstancesAction)
 
-    def help(self):
-        return '''Dangerous!
-Deletes previous terrain reset data
-Temporarily brings down the dungeon shard to generate dungeon instances.
-Must be run before preparing the build server reset bundle
-'''
+class ListBotsAction(ShellAction):
+    '''Lists currently running bots'''
+    command = "!list bots"
+
+    def __init__(self, debug=False):
+        super().__init__(debug)
+        self._commands = [
+            self.display("Placeholder"),
+        ]
+
+    def hasPermissions(self, author):
+        return True
+allActions.append(ListBotsAction)
+
+class ListShardsAction(ShellAction):
+    '''Lists currently running shards on this server'''
+    command = "!list shards"
+
+    def __init__(self, debug=False):
+        super().__init__(debug)
+        self._commands = [
+            self.run("mark2 list", displayOutput=True),
+        ]
+
+    def hasPermissions(self, author):
+        return True
+allActions.append(ListShardsAction)
 
 class PrepareResetBundleAction(ShellAction):
+    '''Dangerous!
+Temporarily brings down the region_1 shard to prepare for terrain reset
+Packages up all of the pre-reset server components needed by the play server for reset
+Must be run before starting terrain reset on the play server
+'''
+    command = "!prepare reset bundle"
+
     def __init__(self, debug=False):
         super().__init__(debug)
         self._commands = [
@@ -194,67 +233,42 @@ class PrepareResetBundleAction(ShellAction):
             self.display("Reset bundle ready!"),
         ]
 
-    def getCommand(self):
-        return "!prepare reset bundle"
-
     def hasPermissions(self, author):
         return isPrivileged(author)
+allActions.append(PrepareResetBundleAction)
 
-    def help(self):
-        return '''Dangerous!
-Temporarily brings down the region_1 shard to prepare for terrain reset
-Packages up all of the pre-reset server components needed by the play server for reset
-Must be run before starting terrain reset on the play server
-'''
+class StartShardsAction(ShellAction):
+    '''Start all shards.'''
+    command = "!start shards"
 
-class StopIn10MinutesAction(ShellAction):
     def __init__(self, debug=False):
         super().__init__(debug)
         self._commands = [
-            self.display("Telling bungee it should stop in 10 minutes..."),
-            self.run("mark2 send -n bungee ~stop 10m;5m;3m;2m;1m;30s;10s", None),
-            # TODO: Something to wait for bungee to shut down
-            self.display("Done - bungee will shut down in 10 minutes."),
-        ]
+            # TODO: path relative to this bot folder
+            # TODO: This does not work at all - likely the wrong shell used
+            self.display("Starting all primary shards..."),
+            self.run("/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_all_shards.sh"),
 
-    def getCommand(self):
-        return "!stop in 10 minutes"
+            self.display("Starting the vanilla shard..."),
+            self.cd("/home/rock/3_VANILLA"),
+            self.run("mark2 start"),
+
+            self.display("Starting bungeecord..."),
+            self.cd("/home/rock/project_epic/bungee"),
+            self.run("mark2 start"),
+        ]
 
     def hasPermissions(self, author):
         return isPrivileged(author)
-
-    def help(self):
-        return '''Dangerous!
-Starts a bungee shutdown timer for 10 minutes. Returns immediately.
-'''
-
-class FetchResetBundleAction(ShellAction):
-    def __init__(self, debug=False):
-        super().__init__(debug)
-        self._commands = [
-            self.display("Fetching reset bundle from build server..."),
-            self.run("rm -rf /home/rock/4_SHARED/tmpreset"),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset"),
-            self.run("sftp build:/home/rock/4_SHARED/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz /home/rock/4_SHARED/tmpreset/"),
-            self.display("Unpacking reset bundle..."),
-            self.cd("/home/rock/4_SHARED/tmpreset"),
-            self.run("tar xzf project_epic_build_template_pre_reset_" + datestr() + ".tgz"),
-            self.display("Reset bundle is prepped for reset."),
-        ]
-
-    def getCommand(self):
-        return "!fetch reset bundle"
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
-
-    def help(self):
-        return '''Dangerous!
-Deletes in-progress terrain reset info on the play server
-Downloads the terrain reset bundle from the build server and unpacks it
-'''
+allActions.append(StartShardsAction)
 
 class StopAndBackupAction(ShellAction):
+    '''Dangerous!
+Brings down all play server shards and backs them up in preparation for terrain reset.
+DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA
+'''
+    command = "!stop and backup"
+
     def __init__(self, debug=False):
         super().__init__(debug)
         self._commands = [
@@ -286,19 +300,35 @@ class StopAndBackupAction(ShellAction):
             self.display("Backups complete! Ready for reset."),
         ]
 
-    def getCommand(self):
-        return "!stop and backup"
+    def hasPermissions(self, author):
+        return isPrivileged(author)
+allActions.append(StopAndBackupAction)
+
+class StopIn10MinutesAction(ShellAction):
+    '''Dangerous!
+Starts a bungee shutdown timer for 10 minutes. Returns immediately.
+'''
+    command = "!stop in 10 minutes"
+
+    def __init__(self, debug=False):
+        super().__init__(debug)
+        self._commands = [
+            self.display("Telling bungee it should stop in 10 minutes..."),
+            self.run("mark2 send -n bungee ~stop 10m;5m;3m;2m;1m;30s;10s", None),
+            # TODO: Something to wait for bungee to shut down
+            self.display("Done - bungee will shut down in 10 minutes."),
+        ]
 
     def hasPermissions(self, author):
         return isPrivileged(author)
-
-    def help(self):
-        return '''Dangerous!
-Brings down all play server shards and backs them up in preparation for terrain reset.
-DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA
-'''
+allActions.append(StopIn10MinutesAction)
 
 class TerrainResetAction(ShellAction):
+    '''Dangerous!
+Performs the terrain reset on the play server. Requires StopAndBackupAction.
+'''
+    command = "!terrain reset"
+
     def __init__(self, debug=False):
         super().__init__(debug)
         self._commands = [
@@ -367,28 +397,12 @@ class TerrainResetAction(ShellAction):
 
             self.display("Removing pre-reset artifacts..."),
             self.run("rm -r /home/rock/4_SHARED/tmpreset/PRE_RESET /home/rock/4_SHARED/tmpreset/TEMPLATE"),
-
-            # TODO: path relative to this bot folder
-            # TODO: This does not work at all - likely the wrong shell used
-            self.display("Starting all primary shards..."),
-            self.run("/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_all_shards.sh"),
-
-            self.display("Starting the vanilla shard..."),
-            self.cd("/home/rock/3_VANILLA"),
-            self.run("mark2 start"),
-
-            self.display("Starting bungeecord..."),
-            self.cd("/home/rock/project_epic/bungee"),
-            self.run("mark2 start"),
         ]
-    def getCommand(self):
-        return "!terrain reset"
 
     def hasPermissions(self, author):
         return isPrivileged(author)
+allActions.append(TerrainResetAction)
 
-    def help(self):
-        # TODO: More detail on how to run this
-        return '''Dangerous!
-Performs the terrain reset on the play server. Requires StopAndBackupAction.
-'''
+for action in allActions:
+    allActionsDict[action.command] = action
+
