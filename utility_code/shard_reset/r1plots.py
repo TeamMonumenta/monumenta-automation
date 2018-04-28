@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../")
 
 import item_replace_list
 import entity_update_list
-from score_change_list import dungeonScoreRules, dungeonScoreTestRules
+from score_change_list import dungeonScoreRules
 from advancement_change_list import advancementRevokeList
 
 config = {
