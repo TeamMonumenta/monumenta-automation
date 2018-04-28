@@ -22,12 +22,16 @@ botConfig["config_dir"] = os.path.expanduser("~/.monumeneta_bot/")
 loginInfo = None
 with open(botConfig["config_dir"]+'login','r') as f:
     loginInfo = f.readline()
+    if loginInfo[-1] == '\n':
+        loginInfo[:-1]
 if loginInfo is None:
     sys.exit('No login info is provided')
 
 botConfig["name"] = None
 with open(botConfig["config_dir"]+'bot_name','r') as f:
     botConfig["name"] = f.readline()
+    if botConfig["name"][-1] == '\n':
+        botConfig["name"][:-1]
 if botConfig["name"] is None:
     sys.exit('Could not find ' + botConfig["config_dir"] + 'bot_name')
 
