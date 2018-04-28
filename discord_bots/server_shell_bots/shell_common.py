@@ -125,10 +125,10 @@ class ShellAction(object):
         self._member = member
 
         if self._lock:
-            await self.display('Error: action ' + self.getCommand() + ' is already being performed')
+            await self.display('Error: action ' + self.command + ' is already being performed')
             return
         else:
-            await self.display('Performing action: ' + self.getCommand())
+            await self.display('Performing action: ' + self.command)
 
         self._lock = True
 
