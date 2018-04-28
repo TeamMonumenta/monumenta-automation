@@ -182,7 +182,7 @@ __Available Actions__'''.format(botConfig["name"])
                 actionClass.alwaysListening
             ):
                 continue
-            action = actionClass()
+            action = actionClass(botConfig, message)
             if action.hasPermissions(message.author):
                 helptext += "\n**" + action.command + "**"
             else:
@@ -488,5 +488,5 @@ def findBestMatch(botConfig,target):
             bestMatch = command
     if bestMatch == "":
         return None
-    return actionClass = actions[bestMatch]
+    return actions[bestMatch]
 

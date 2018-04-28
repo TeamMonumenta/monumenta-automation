@@ -29,10 +29,11 @@ if botConfig["name"] is None:
 botConfig["actions"] = {}
 with open(botConfig["config_dir"]+'commands','r') as f:
     for line in f:
+        line = line[:-1]
         if line in allActionsDict:
             botConfig["actions"][line] = allActionsDict[line]
         else:
-            print 'Config error: No such command "{}"'.format(line)
+            print('Config error: No such command "{}"'.format(line))
 if len(botConfig["actions"].keys()) == 0:
     sys.exit('Could not find ' + botConfig["config_dir"]+'commands')
 
