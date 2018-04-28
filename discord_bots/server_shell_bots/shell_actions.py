@@ -29,12 +29,14 @@ def isPrivileged(author):
         return True
     return False
 
+commandPrefix = '~'
+
 ################################################################################
 # Simple test functions
 
 class DebugAction(ShellAction):
     '''Prints debugging information about the requestor'''
-    command = "!debug"
+    command = commandPrefix + "debug"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -55,7 +57,7 @@ allActions.append(DebugAction)
 
 class TestAction(ShellAction):
     '''Simple test action that does nothing'''
-    command = "!test"
+    command = commandPrefix + "test"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -69,7 +71,7 @@ allActions.append(TestAction)
 
 class TestPrivilegedAction(ShellAction):
     '''Test if user has permission to use restricted commands'''
-    command = "!testpriv"
+    command = commandPrefix + "testpriv"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -83,7 +85,7 @@ allActions.append(TestPrivilegedAction)
 
 class TestUnprivilegedAction(ShellAction):
     '''Test that a restricted command fails for all users'''
-    command = "!testunpriv"
+    command = commandPrefix + "testunpriv"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -102,7 +104,7 @@ class FetchResetBundleAction(ShellAction):
     '''Dangerous!
 Deletes in-progress terrain reset info on the play server
 Downloads the terrain reset bundle from the build server and unpacks it'''
-    command = "!fetch reset bundle"
+    command = commandPrefix + "fetch reset bundle"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -126,7 +128,7 @@ class GenerateInstancesAction(ShellAction):
 Deletes previous terrain reset data
 Temporarily brings down the dungeon shard to generate dungeon instances.
 Must be run before preparing the build server reset bundle'''
-    command = "!generate instances"
+    command = commandPrefix + "generate instances"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -166,7 +168,7 @@ allActions.append(GenerateInstancesAction)
 
 class HelpAction(ShellAction):
     '''Lists commands available with this bot'''
-    command = "!help"
+    command = commandPrefix + "help"
     alwaysListening = True
 
     def __init__(self, botConfig, message):
@@ -198,7 +200,7 @@ allActions.append(HelpAction)
 
 class ListBotsAction(ShellAction):
     '''Lists currently running bots'''
-    command = "!list bots"
+    command = commandPrefix + "list bots"
     alwaysListening = True
 
     def __init__(self, botConfig, message):
@@ -213,7 +215,7 @@ allActions.append(ListBotsAction)
 
 class ListShardsAction(ShellAction):
     '''Lists currently running shards on this server'''
-    command = "!list shards"
+    command = commandPrefix + "list shards"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -230,7 +232,7 @@ class PrepareResetBundleAction(ShellAction):
 Temporarily brings down the region_1 shard to prepare for terrain reset
 Packages up all of the pre-reset server components needed by the play server for reset
 Must be run before starting terrain reset on the play server'''
-    command = "!prepare reset bundle"
+    command = commandPrefix + "prepare reset bundle"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -270,7 +272,7 @@ allActions.append(PrepareResetBundleAction)
 
 class StartShardsAction(ShellAction):
     '''Start all shards.'''
-    command = "!start shards"
+    command = commandPrefix + "start shards"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -302,7 +304,7 @@ Examples:
 `!select build` - select only the build bot
 `!select play play2` - select both the play bots
 `!select *` - select all bots'''
-    command = "!select"
+    command = commandPrefix + "select"
     alwaysListening = True
 
     def __init__(self, botConfig, message):
@@ -333,7 +335,7 @@ class StopAndBackupAction(ShellAction):
     '''Dangerous!
 Brings down all play server shards and backs them up in preparation for terrain reset.
 DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
-    command = "!stop and backup"
+    command = commandPrefix + "stop and backup"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -373,7 +375,7 @@ allActions.append(StopAndBackupAction)
 class StopIn10MinutesAction(ShellAction):
     '''Dangerous!
 Starts a bungee shutdown timer for 10 minutes. Returns immediately.'''
-    command = "!stop in 10 minutes"
+    command = commandPrefix + "stop in 10 minutes"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -391,7 +393,7 @@ allActions.append(StopIn10MinutesAction)
 class TerrainResetAction(ShellAction):
     '''Dangerous!
 Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
-    command = "!terrain reset"
+    command = commandPrefix + "terrain reset"
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])

@@ -19,6 +19,12 @@ botConfig["listening"] = True
 
 botConfig["config_dir"] = os.path.expanduser("~/.monumeneta_bot/")
 
+loginInfo = None
+with open(botConfig["config_dir"]+'login','r') as f:
+    loginInfo = f.readline()
+if loginInfo is None:
+    sys.exit('No login info is provided')
+
 botConfig["name"] = None
 with open(botConfig["config_dir"]+'bot_name','r') as f:
     botConfig["name"] = f.readline()
@@ -74,5 +80,5 @@ async def on_message(message):
 ################################################################################
 # Entry point
 
-client.run('NDIwMDQ0ODMxMjg1NDQ0NjI5.DX49qQ.eIkPQMOllPAGKaaN8VInr6RKqHI')
+client.run(loginInfo)
 
