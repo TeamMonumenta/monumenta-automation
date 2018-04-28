@@ -52,6 +52,7 @@ def terrainResetInstance(config, outputFile, statusQueue):
         blockReplacements = config["blockReplacements"] if ("blockReplacements" in config) else None
         itemReplacements = config["itemReplacements"] if ("itemReplacements" in config) else None
         entityUpdates = config["entityUpdates"] if ("entityUpdates" in config) else None
+        immovableFix  = config["immovableFix"] if ("immovableFix" in config) else None
         shouldResetDifficulty = config["resetRegionalDifficulty"] if ("resetRegionalDifficulty" in config) else False
 
         if "itemLog" in config:
@@ -143,7 +144,8 @@ def terrainResetInstance(config, outputFile, statusQueue):
             (
                 (
                     (itemReplacements is not None) or
-                    (entityUpdates is not None)
+                    (entityUpdates is not None) or
+                    (immovableFix is not None)
                 ) and
                 ("world" in config["itemReplaceLocations"])
             ) or
@@ -181,6 +183,10 @@ def terrainResetInstance(config, outputFile, statusQueue):
             if (entityUpdates is not None) and ("world" in config["entityUpdateLocations"]):
                 print "  Replacing specified items worldwide..."
                 entityUpdates.InWorld(dstWorld)
+
+            if immovableFix is not None:
+                print "  Making villagers immovable worldwide..."
+                immovableFix.InWorld(dstWorld)
 
             if (shouldResetDifficulty == True):
                 print "  Resetting difficulty..."

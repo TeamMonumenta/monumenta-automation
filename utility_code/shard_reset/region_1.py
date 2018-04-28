@@ -61,6 +61,8 @@ config = {
     "entityUpdates":entity_update_list.KingsValley,
     "entityUpdateLocations":["schematics",],
 
+    "immovableFix":entity_update_list.KingsValleyImmovable,
+
     "coordinatesToCopy":(
         # "name":"a unique name"
         # "pos1":(x1,y1,z1)

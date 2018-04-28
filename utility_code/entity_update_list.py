@@ -28,6 +28,24 @@ Each update definition is a list that contains a
     pattern matching list and a list of actions to perform
 """
 
+# Immovable team fix
+KingsValleyImmovable = entity_update.UpdateEntities([],[
+    [
+        {
+            "id":"minecraft:villager",
+            "none":[
+                {
+                    "nbt":ur'''{Tags:["Mariya"]}''',
+                }
+            ]
+        },
+        [
+            "nbt", "update", ur'''{Team:"IMMOVABLE_NPCS"}''',
+        ]
+    ],
+])
+
+
 # Try "init" to show what this list does; you can even
 # run this library as a script and skip the other stuff.
 #KingsValleyBuild = entity_update.UpdateEntities(["init"],[

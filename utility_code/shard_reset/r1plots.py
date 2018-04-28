@@ -30,6 +30,7 @@ config = {
     "itemReplaceLocations":["players", "world",],
     "entityUpdates":entity_update_list.KingsValley,
     "entityUpdateLocations":["world",],
+    "immovableFix":entity_update_list.KingsValleyImmovable,
     "itemLog":"/home/rock/4_SHARED/tmpreset/items_r1plots.txt",
 }
 
