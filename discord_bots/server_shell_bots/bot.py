@@ -8,7 +8,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 import discord
-from shell_actions import allActionsDict, findBestMatch
+from shell_actions import allActionsDict, findBestMatch, commandPrefix
 
 ################################################################################
 # Config / Environment
@@ -35,7 +35,7 @@ if botConfig["name"] is None:
 botConfig["actions"] = {}
 with open(botConfig["config_dir"]+'commands','r') as f:
     for line in f:
-        line = line[:-1]
+        line = commandPrefix + line[:-1]
         if line in allActionsDict:
             botConfig["actions"][line] = allActionsDict[line]
         else:
