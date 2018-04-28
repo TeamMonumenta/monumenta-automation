@@ -8,44 +8,44 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 import discord
-from shell_actions import allActionsDict
+from shell_actions import allActionsDict, findBestMatch
 
 ################################################################################
 # Config / Environment
 
-configDir = os.path.expanduser("~/.monumeneta_bot/")
+botConfig = {}
 
-botName = None
-with open(configDir+'bot_name','r') as f:
-    botName = f.readline()
-if botName is None:
-    sys.exit('Could not find ' + configDir+'bot_name')
+botConfig["listening"] = True
+
+botConfig["config_dir"] = os.path.expanduser("~/.monumeneta_bot/")
+
+botConfig["name"] = None
+with open(botConfig["config_dir"]+'bot_name','r') as f:
+    botConfig["name"] = f.readline()
+if botConfig["name"] is None:
+    sys.exit('Could not find ' + botConfig["config_dir"] + 'bot_name')
 
 # List of actions this bot handles
-actionDict = {}
-with open(configDir+'commands','r') as f:
+botConfig["actions"] = {}
+with open(botConfig["config_dir"]+'commands','r') as f:
     for line in f:
         if line in allActionsDict:
-            actionDict[line] = allActionsDict[line]
+            botConfig["actions"][line] = allActionsDict[line]
         else:
             print 'Config error: No such command "{}"'.format(line)
+if len(botConfig["actions"].keys()) == 0:
+    sys.exit('Could not find ' + botConfig["config_dir"]+'commands')
 
-client = discord.Client()
-
-extraDebug = False
+botConfig["extraDebug"] = False
 for arg in sys.argv[1:]:
     if arg == "--verbose" or arg == "-v":
-        extraDebug = True
+        botConfig["extraDebug"] = True
 
 # List of channels this bot will consume messages in
 # monumenta-bot and general
 botChannels = ['420045459177078795', '186225508562763776']
 
-botHelp = '''
-This is the monumenta {0} server bot.
-It runs on the {0} server's console.
-It can be used to run actions on the {0} server.
-'''.format(botName)
+client = discord.Client()
 
 ################################################################################
 # Discord event handlers
@@ -60,26 +60,15 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.channel.id in botChannels:
-        if message.content == "!help":
-            helptext = botHelp + '\n__Available Actions__'
-            for actionClass in actionDict.values():
-                action = actionClass()
-                if action.hasPermissions(message.author):
-                    helptext += "\n**" + action.command + "**"
-                else:
-                    helptext += "\n~~" + action.command + "~~"
-                helptext += "```" + action.help() + "```"
-
-            await client.send_message(message.channel, helptext)
+        actionClass = findBestMatch(botConfig,message.content)
+        if actionClass is None:
             return
-
-        if message.content in actionDict:
-            action = actionDict[message.content](debug=extraDebug)
-            if not action.hasPermissions(message.author):
-                await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
-            else:
-                await action.doActions(client, message.channel, message.author)
-            return
+        action = actionClass(botConfig,message)
+        if not action.hasPermissions(message.author):
+            await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
+        else:
+            await action.doActions(client, message.channel, message.author)
+        return
 
 ################################################################################
 # Entry point

@@ -36,8 +36,8 @@ class DebugAction(ShellAction):
     '''Prints debugging information about the requestor'''
     command = "!debug"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
 
     def hasPermissions(self, author):
         return True
@@ -57,8 +57,8 @@ class TestAction(ShellAction):
     '''Simple test action that does nothing'''
     command = "!test"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Testing successful!"),
         ]
@@ -71,8 +71,8 @@ class TestPrivilegedAction(ShellAction):
     '''Test if user has permission to use restricted commands'''
     command = "!testpriv"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("You've got the power"),
         ]
@@ -85,8 +85,8 @@ class TestUnprivilegedAction(ShellAction):
     '''Test that a restricted command fails for all users'''
     command = "!testunpriv"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("BUG: You definitely shouldn't have this much power"),
         ]
@@ -104,8 +104,8 @@ Deletes in-progress terrain reset info on the play server
 Downloads the terrain reset bundle from the build server and unpacks it'''
     command = "!fetch reset bundle"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Fetching reset bundle from build server..."),
             self.run("rm -rf /home/rock/4_SHARED/tmpreset"),
@@ -125,12 +125,11 @@ class GenerateInstancesAction(ShellAction):
     '''Dangerous!
 Deletes previous terrain reset data
 Temporarily brings down the dungeon shard to generate dungeon instances.
-Must be run before preparing the build server reset bundle
-'''
+Must be run before preparing the build server reset bundle'''
     command = "!generate instances"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Cleaning up old terrain reset data..."),
             self.run("rm -rf /home/rock/4_SHARED/tmpreset", None),
@@ -165,14 +164,47 @@ Must be run before preparing the build server reset bundle
         return isPrivileged(author)
 allActions.append(GenerateInstancesAction)
 
+class HelpAction(ShellAction):
+    '''Lists commands available with this bot'''
+    command = "!help"
+    alwaysListening = True
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        helptext = '''
+This is the monumenta {0} server bot.
+It runs on the {0} server's console.
+It can be used to run actions on the {0} server.
+__Available Actions__'''.format(botConfig["name"])
+        for actionClass in botConfig["actions"].values():
+            if not (
+                botConfig["listening"] or
+                actionClass.alwaysListening
+            ):
+                continue
+            action = actionClass()
+            if action.hasPermissions(message.author):
+                helptext += "\n**" + action.command + "**"
+            else:
+                helptext += "\n~~" + action.command + "~~"
+            helptext += "```" + action.__doc__ + "```"
+        self._commands = [
+            self.display(helptext),
+        ]
+
+    def hasPermissions(self, author):
+        return True
+allActions.append(HelpAction)
+
 class ListBotsAction(ShellAction):
     '''Lists currently running bots'''
     command = "!list bots"
+    alwaysListening = True
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
-            self.display("Placeholder"),
+            self.display('`' + botConfig["name"] + '`'),
         ]
 
     def hasPermissions(self, author):
@@ -183,8 +215,8 @@ class ListShardsAction(ShellAction):
     '''Lists currently running shards on this server'''
     command = "!list shards"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.run("mark2 list", displayOutput=True),
         ]
@@ -197,12 +229,11 @@ class PrepareResetBundleAction(ShellAction):
     '''Dangerous!
 Temporarily brings down the region_1 shard to prepare for terrain reset
 Packages up all of the pre-reset server components needed by the play server for reset
-Must be run before starting terrain reset on the play server
-'''
+Must be run before starting terrain reset on the play server'''
     command = "!prepare reset bundle"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Stopping the region_1 shard..."),
             self.run("mark2 send -n region_1 ~stop", None),
@@ -241,8 +272,8 @@ class StartShardsAction(ShellAction):
     '''Start all shards.'''
     command = "!start shards"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             # TODO: path relative to this bot folder
             # TODO: This does not work at all - likely the wrong shell used
@@ -262,15 +293,50 @@ class StartShardsAction(ShellAction):
         return isPrivileged(author)
 allActions.append(StartShardsAction)
 
+class SelectBotAction(ShellAction):
+    '''Make specified bots start listening for commands; unlisted bots stop listening.
+Syntax:
+`!select [botName] [botName2] ...`
+Examples:
+`!select` - deselect all bots
+`!select build` - select only the build bot
+`!select play play2` - select both the play bots
+`!select *` - select all bots'''
+    command = "!select"
+    alwaysListening = True
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        self._commands = []
+        if (
+            (
+                '*' in message.content or
+                botConfig["name"] in message.content
+            ) ^
+            botConfig["listening"]
+        ):
+            botConfig["listening"] = not botConfig["listening"]
+            if botConfig["listening"]:
+                self._commands = [
+                    self.display(botConfig["name"] + " is now listening for commands."),
+                ]
+            else:
+                self._commands = [
+                    self.display(botConfig["name"] + " is no longer listening for commands."),
+                ]
+
+    def hasPermissions(self, author):
+        return isPrivileged(author)
+allActions.append(SelectBotAction)
+
 class StopAndBackupAction(ShellAction):
     '''Dangerous!
 Brings down all play server shards and backs them up in preparation for terrain reset.
-DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA
-'''
+DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
     command = "!stop and backup"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Stopping all shards..."),
             self.run("mark2 sendall ~stop", None),
@@ -306,12 +372,11 @@ allActions.append(StopAndBackupAction)
 
 class StopIn10MinutesAction(ShellAction):
     '''Dangerous!
-Starts a bungee shutdown timer for 10 minutes. Returns immediately.
-'''
+Starts a bungee shutdown timer for 10 minutes. Returns immediately.'''
     command = "!stop in 10 minutes"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Telling bungee it should stop in 10 minutes..."),
             self.run("mark2 send -n bungee ~stop 10m;5m;3m;2m;1m;30s;10s", None),
@@ -325,12 +390,11 @@ allActions.append(StopIn10MinutesAction)
 
 class TerrainResetAction(ShellAction):
     '''Dangerous!
-Performs the terrain reset on the play server. Requires StopAndBackupAction.
-'''
+Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
     command = "!terrain reset"
 
-    def __init__(self, debug=False):
-        super().__init__(debug)
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Archiving the pre reset bundle backup..."),
             self.run("mv /home/rock/4_SHARED/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz /home/rock/1_ARCHIVE/"),
@@ -405,4 +469,24 @@ allActions.append(TerrainResetAction)
 
 for action in allActions:
     allActionsDict[action.command] = action
+
+def findBestMatch(botConfig,target):
+    '''Find the best matching command for a target message, igoring permissions.'''
+    bestMatch = ""
+    actions = botConfig["actions"]
+    for command in actions.keys():
+        actionClass = actions[command]
+        if not (
+            botConfig["listening"] or
+            actionClass.alwaysListening
+        ):
+            continue
+        if (
+            target[:len(command)] == command and
+            len(command) > len(bestMatch)
+        ):
+            bestMatch = command
+    if bestMatch == "":
+        return None
+    return actionClass = actions[bestMatch]
 

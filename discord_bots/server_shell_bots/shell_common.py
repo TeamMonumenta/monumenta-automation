@@ -59,6 +59,8 @@ class ShellAction(object):
     async def hasPermissions(self, member):
         raise NotImplementedError("Implement Me")
 
+    alwaysListening = False
+
     async def help(self):
         try:
             return self.__doc__
