@@ -23,29 +23,31 @@ loginInfo = None
 with open(botConfig["config_dir"]+'login','r') as f:
     loginInfo = f.readline()
     if loginInfo[-1] == '\n':
-        loginInfo[:-1]
+        loginInfo = loginInfo[:-1]
 if loginInfo is None:
     sys.exit('No login info is provided')
 
-botConfig["name"] = None
+botName = None
 with open(botConfig["config_dir"]+'bot_name','r') as f:
-    botConfig["name"] = f.readline()
-    if botConfig["name"][-1] == '\n':
-        botConfig["name"][:-1]
-if botConfig["name"] is None:
+    botName = f.readline()
+    if botName[-1] == '\n':
+        botName = botName[:-1]
+if botName is None:
     sys.exit('Could not find ' + botConfig["config_dir"] + 'bot_name')
+botConfig["name"] = botName
 
 # List of actions this bot handles
-botConfig["actions"] = {}
+botActions = {}
 with open(botConfig["config_dir"]+'commands','r') as f:
     for line in f:
         line = commandPrefix + line[:-1]
         if line in allActionsDict:
-            botConfig["actions"][line] = allActionsDict[line]
+            botActions[line] = allActionsDict[line]
         else:
             print('Config error: No such command "{}"'.format(line))
-if len(botConfig["actions"].keys()) == 0:
+if len(botActions.keys()) == 0:
     sys.exit('Could not find ' + botConfig["config_dir"]+'commands')
+botConfig["actions"] = botActions
 
 botConfig["extraDebug"] = False
 for arg in sys.argv[1:]:
