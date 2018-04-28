@@ -16,20 +16,18 @@ from advancement_change_list import advancementRevokeList
 
 config = {
     "server":"nightmare",
-
     "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/nightmare/Project_Epic-nightmare/",
     "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/nightmare/Project_Epic-nightmare/",
-
-    "copyBaseFrom":"main",
-
-    "tagPlayers":["MidTransfer","resetMessage"],
+    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
-    "blockReplacements":item_replace_list.blockReplacements,
-    "blockReplaceLocations":["world",],
+    "preserveInstance":{
+        "dungeonScore":"DCAccess",
+        "targetRegion":{"x":-3, "z":-2},
+    },
+    "tagPlayers":["MidTransfer","resetMessage"],
+    "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValleyDungeon,
-    "itemReplaceLocations":["players", "world",],
-    "entityUpdates":entity_update_list.KingsValley,
-    "entityUpdateLocations":["world",],
+    "itemReplaceLocations":["players"],
     "itemLog":"/home/rock/4_SHARED/tmpreset/items_nightmare.txt",
 }
 
