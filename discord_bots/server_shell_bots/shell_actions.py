@@ -38,7 +38,9 @@ class DebugAction(ShellAction):
     '''Prints debugging information about the requestor'''
     command = commandPrefix + "debug"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
 
     def hasPermissions(self, author):
@@ -59,7 +61,9 @@ class TestAction(ShellAction):
     '''Simple test action that does nothing'''
     command = commandPrefix + "test"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Testing successful!"),
@@ -73,7 +77,9 @@ class TestPrivilegedAction(ShellAction):
     '''Test if user has permission to use restricted commands'''
     command = commandPrefix + "testpriv"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("You've got the power"),
@@ -87,7 +93,9 @@ class TestUnprivilegedAction(ShellAction):
     '''Test that a restricted command fails for all users'''
     command = commandPrefix + "testunpriv"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("BUG: You definitely shouldn't have this much power"),
@@ -106,7 +114,9 @@ Deletes in-progress terrain reset info on the play server
 Downloads the terrain reset bundle from the build server and unpacks it'''
     command = commandPrefix + "fetch reset bundle"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Fetching reset bundle from build server..."),
@@ -130,7 +140,9 @@ Temporarily brings down the dungeon shard to generate dungeon instances.
 Must be run before preparing the build server reset bundle'''
     command = commandPrefix + "generate instances"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Cleaning up old terrain reset data..."),
@@ -171,10 +183,10 @@ class HelpAction(ShellAction):
     command = commandPrefix + "help"
     alwaysListening = True
 
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        if message is None:
+    def __init__(self, botConfig, message, run=True):
+        if not run:
             return
+        super().__init__(botConfig["extraDebug"])
         helptext = '''
 This is the monumenta {0} server bot.
 It runs on the {0} server's console.
@@ -186,7 +198,7 @@ __Available Actions__'''.format(botConfig["name"])
                 actionClass.alwaysListening
             ):
                 continue
-            action = actionClass(botConfig, None)
+            action = actionClass(botConfig, message, run=False)
             if action.hasPermissions(message.author):
                 helptext += "\n**" + action.command + "**"
             else:
@@ -205,7 +217,9 @@ class ListBotsAction(ShellAction):
     command = commandPrefix + "list bots"
     alwaysListening = True
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display('`' + botConfig["name"] + '`'),
@@ -219,7 +233,9 @@ class ListShardsAction(ShellAction):
     '''Lists currently running shards on this server'''
     command = commandPrefix + "list shards"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.run("mark2 list", displayOutput=True),
@@ -236,7 +252,9 @@ Packages up all of the pre-reset server components needed by the play server for
 Must be run before starting terrain reset on the play server'''
     command = commandPrefix + "prepare reset bundle"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Stopping the region_1 shard..."),
@@ -276,7 +294,9 @@ class StartShardsAction(ShellAction):
     '''Start all shards.'''
     command = commandPrefix + "start shards"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             # TODO: path relative to this bot folder
@@ -309,7 +329,9 @@ Examples:
     command = commandPrefix + "select"
     alwaysListening = True
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = []
         if (
@@ -339,7 +361,9 @@ Brings down all play server shards and backs them up in preparation for terrain 
 DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
     command = commandPrefix + "stop and backup"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Stopping all shards..."),
@@ -379,7 +403,9 @@ class StopIn10MinutesAction(ShellAction):
 Starts a bungee shutdown timer for 10 minutes. Returns immediately.'''
     command = commandPrefix + "stop in 10 minutes"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Telling bungee it should stop in 10 minutes..."),
@@ -397,7 +423,9 @@ class TerrainResetAction(ShellAction):
 Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
     command = commandPrefix + "terrain reset"
 
-    def __init__(self, botConfig, message):
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Archiving the pre reset bundle backup..."),
