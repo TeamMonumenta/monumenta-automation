@@ -173,6 +173,8 @@ class HelpAction(ShellAction):
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
+        if message is None:
+            return
         helptext = '''
 This is the monumenta {0} server bot.
 It runs on the {0} server's console.
@@ -184,7 +186,7 @@ __Available Actions__'''.format(botConfig["name"])
                 actionClass.alwaysListening
             ):
                 continue
-            action = actionClass(botConfig, message)
+            action = actionClass(botConfig, None)
             if action.hasPermissions(message.author):
                 helptext += "\n**" + action.command + "**"
             else:
