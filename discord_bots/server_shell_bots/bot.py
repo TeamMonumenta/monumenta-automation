@@ -4,6 +4,7 @@
 import os
 import sys
 import logging
+import json
 
 logging.basicConfig(level=logging.INFO)
 
@@ -19,6 +20,7 @@ botConfig["listening"] = True
 
 botConfig["config_dir"] = os.path.expanduser("~/.monumeneta_bot/")
 
+# Get bot's login info
 loginInfo = None
 with open(botConfig["config_dir"]+'login','r') as f:
     loginInfo = f.readline()
@@ -27,6 +29,7 @@ with open(botConfig["config_dir"]+'login','r') as f:
 if loginInfo is None:
     sys.exit('No login info is provided')
 
+# Set this bot's name (used to select specific bots)
 botName = None
 with open(botConfig["config_dir"]+'bot_name','r') as f:
     botName = f.readline()
@@ -48,6 +51,14 @@ with open(botConfig["config_dir"]+'commands','r') as f:
 if len(botActions.keys()) == 0:
     sys.exit('Could not find ' + botConfig["config_dir"]+'commands')
 botConfig["actions"] = botActions
+
+# List of shards we're expecting to find
+serverShards = {}
+with open(botConfig["config_dir"]+'shards','r') as f:
+    serverShards = json.load(f)
+if len(serverShards.keys()) == 0:
+    print "WARNING: No shards found."
+botConfig["shards"] = serverShards
 
 botConfig["extraDebug"] = False
 for arg in sys.argv[1:]:

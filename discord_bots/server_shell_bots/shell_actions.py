@@ -106,6 +106,103 @@ class TestUnprivilegedAction(ShellAction):
 allActions.append(TestUnprivilegedAction)
 
 ################################################################################
+# Always listening actions
+
+class HelpAction(ShellAction):
+    '''Lists commands available with this bot'''
+    command = commandPrefix + "help"
+    alwaysListening = True
+
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
+        super().__init__(botConfig["extraDebug"])
+        helptext = '''
+This is the monumenta {0} server bot.
+It runs on the {0} server's console.
+It can be used to run actions on the {0} server.
+__Available Actions__'''.format(botConfig["name"])
+        for actionClass in botConfig["actions"].values():
+            if not (
+                botConfig["listening"] or
+                actionClass.alwaysListening
+            ):
+                continue
+            action = actionClass(botConfig, message, run=False)
+            if action.hasPermissions(message.author):
+                helptext += "\n**" + action.command + "**"
+            else:
+                helptext += "\n~~" + action.command + "~~"
+            helptext += "```" + action.__doc__ + "```"
+        self._commands = [
+            self.display(helptext),
+        ]
+
+    def hasPermissions(self, author):
+        return True
+allActions.append(HelpAction)
+
+class ListBotsAction(ShellAction):
+    '''Lists currently running bots'''
+    command = commandPrefix + "list bots"
+    alwaysListening = True
+
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
+        super().__init__(botConfig["extraDebug"])
+        self._commands = [
+            self.display('`' + botConfig["name"] + '`'),
+        ]
+
+    def hasPermissions(self, author):
+        return True
+allActions.append(ListBotsAction)
+
+class SelectBotAction(ShellAction):
+    '''Make specified bots start listening for commands; unlisted bots stop listening.
+Syntax:
+`{0}select [botName] [botName2] ...`
+Examples:
+`{0}select` - deselect all bots
+`{0}select build` - select only the build bot
+`{0}select play play2` - select both the play bots
+`{0}select *` - select all bots'''.format(commandPrefix)
+    command = commandPrefix + "select"
+    alwaysListening = True
+
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(self.command):]
+        self._commands = []
+        if (
+            (
+                '*' in commandArgs or
+                botConfig["name"] in commandArgs
+            ) ^
+            botConfig["listening"]
+        ):
+            botConfig["listening"] = not botConfig["listening"]
+            if botConfig["listening"]:
+                self._commands = [
+                    self.display(botConfig["name"] + " is now listening for commands."),
+                ]
+            else:
+                self._commands = [
+                    self.display(botConfig["name"] + " is no longer listening for commands."),
+                ]
+        elif botConfig["listening"]:
+            self._commands = [
+                self.display(botConfig["name"] + " is still listening for commands."),
+            ]
+
+    def hasPermissions(self, author):
+        return isPrivileged(author)
+allActions.append(SelectBotAction)
+
+################################################################################
 # Useful actions start here
 
 class FetchResetBundleAction(ShellAction):
@@ -178,57 +275,6 @@ Must be run before preparing the build server reset bundle'''
         return isPrivileged(author)
 allActions.append(GenerateInstancesAction)
 
-class HelpAction(ShellAction):
-    '''Lists commands available with this bot'''
-    command = commandPrefix + "help"
-    alwaysListening = True
-
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
-        super().__init__(botConfig["extraDebug"])
-        helptext = '''
-This is the monumenta {0} server bot.
-It runs on the {0} server's console.
-It can be used to run actions on the {0} server.
-__Available Actions__'''.format(botConfig["name"])
-        for actionClass in botConfig["actions"].values():
-            if not (
-                botConfig["listening"] or
-                actionClass.alwaysListening
-            ):
-                continue
-            action = actionClass(botConfig, message, run=False)
-            if action.hasPermissions(message.author):
-                helptext += "\n**" + action.command + "**"
-            else:
-                helptext += "\n~~" + action.command + "~~"
-            helptext += "```" + action.__doc__ + "```"
-        self._commands = [
-            self.display(helptext),
-        ]
-
-    def hasPermissions(self, author):
-        return True
-allActions.append(HelpAction)
-
-class ListBotsAction(ShellAction):
-    '''Lists currently running bots'''
-    command = commandPrefix + "list bots"
-    alwaysListening = True
-
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
-        super().__init__(botConfig["extraDebug"])
-        self._commands = [
-            self.display('`' + botConfig["name"] + '`'),
-        ]
-
-    def hasPermissions(self, author):
-        return True
-allActions.append(ListBotsAction)
-
 class ListShardsAction(ShellAction):
     '''Lists currently running shards on this server'''
     command = commandPrefix + "list shards"
@@ -290,70 +336,42 @@ Must be run before starting terrain reset on the play server'''
         return isPrivileged(author)
 allActions.append(PrepareResetBundleAction)
 
-class StartShardsAction(ShellAction):
-    '''Start all shards.'''
-    command = commandPrefix + "start shards"
-
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
-        super().__init__(botConfig["extraDebug"])
-        self._commands = [
-            # TODO: path relative to this bot folder
-            # TODO: This does not work at all - likely the wrong shell used
-            self.display("Starting all primary shards..."),
-            self.run("/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_all_shards.sh"),
-
-            self.display("Starting the vanilla shard..."),
-            self.cd("/home/rock/3_VANILLA"),
-            self.run("mark2 start"),
-
-            self.display("Starting bungeecord..."),
-            self.cd("/home/rock/project_epic/bungee"),
-            self.run("mark2 start"),
-        ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
-allActions.append(StartShardsAction)
-
-class SelectBotAction(ShellAction):
-    '''Make specified bots start listening for commands; unlisted bots stop listening.
+class StartShardAction(ShellAction):
+    '''Start specified shards.
 Syntax:
-`!select [botName] [botName2] ...`
-Examples:
-`!select` - deselect all bots
-`!select build` - select only the build bot
-`!select play play2` - select both the play bots
-`!select *` - select all bots'''
-    command = commandPrefix + "select"
-    alwaysListening = True
+{0}start shard *
+{0}start shard region_1 region_2 orange'''.format(commandPrefix)
+    command = commandPrefix + "start shard"
 
     def __init__(self, botConfig, message, run=True):
         if not run:
             return
         super().__init__(botConfig["extraDebug"])
-        self._commands = []
-        if (
-            (
-                '*' in message.content or
-                botConfig["name"] in message.content
-            ) ^
-            botConfig["listening"]
-        ):
-            botConfig["listening"] = not botConfig["listening"]
-            if botConfig["listening"]:
-                self._commands = [
-                    self.display(botConfig["name"] + " is now listening for commands."),
-                ]
-            else:
-                self._commands = [
-                    self.display(botConfig["name"] + " is no longer listening for commands."),
-                ]
+        commandArgs = message.content[len(self.command):]
+
+        # TODO Should be made relative to the bot directory
+        baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_shards.sh"
+        shellCommand = baseShellCommand
+        if '*' in commandArgs:
+            for shard in botConfig["shards"].keys():
+                shellCommand += " " + botConfig[shard]["path"]
+        else:
+            for shard in botConfig["shards"].keys():
+                if shard in commandArgs:
+                    shellCommand += " " + botConfig[shard]["path"]
+
+        if shellCommand == baseShellCommand:
+            self._commands = [
+                self.display("No specified shards on this server."),
+            ]
+        else:
+            self._commands = [
+                self.run(shellCommand),
+            ]
 
     def hasPermissions(self, author):
         return isPrivileged(author)
-allActions.append(SelectBotAction)
+allActions.append(StartShardAction)
 
 class StopAndBackupAction(ShellAction):
     '''Dangerous!
@@ -498,6 +516,61 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
     def hasPermissions(self, author):
         return isPrivileged(author)
 allActions.append(TerrainResetAction)
+
+class WhitelistAction(ShellAction):
+    '''Control server whitelists
+`{0}whitelist` - list shard whitelist status
+`{0}whitelist enable *` - enable all shard whitelists, allows players to enter
+`{0}whitelist disable *` - disables all shard whitelists, allows only opped players to enter
+`{0}whitelist enable nightmare` - enable whitelist on only nightmare shard'''
+    command = commandPrefix + "whitelist"
+
+    def __init__(self, botConfig, message, run=True):
+        if not run:
+            return
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(self.command)+1:]
+
+        # TODO Should be made relative to the bot directory
+        enableString = " enable "
+        disableString = " disable "
+
+        if commandArgs[len(enableString):] == enableString:
+            baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/whitelist_shards_enable.sh"
+            commandArgs = commandArgs[:len(enableString)]
+
+        elif commandArgs[len(disableString):] == disableString:
+            baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/whitelist_shards_disable.sh"
+            commandArgs = commandArgs[:len(disableString)]
+
+        else:
+            baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/whitelist_shards_list.sh"
+            commandArgs = "*"
+
+        shellCommand = baseShellCommand
+        if '*' in commandArgs:
+            for shard in botConfig["shards"].keys():
+                shellCommand += " " + botConfig[shard]["path"]
+        else:
+            for shard in botConfig["shards"].keys():
+                if shard in commandArgs:
+                    shellCommand += " " + botConfig[shard]["path"]
+
+        if shellCommand == baseShellCommand:
+            self._commands = [
+                self.display("No specified shards on this server."),
+            ]
+        else:
+            self._commands = [
+                self.run(shellCommand),
+            ]
+
+    def hasPermissions(self, author):
+        return isPrivileged(author)
+allActions.append(WhitelistAction)
+
+################################################################################
+# No actions past here!
 
 for action in allActions:
     allActionsDict[action.command] = action
