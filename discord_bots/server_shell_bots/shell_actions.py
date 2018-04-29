@@ -370,7 +370,7 @@ PREFIXOOGstart shard region_1 region_2 orange'''
             ]
         else:
             self._commands = [
-                self.run(shellCommand),
+                self.run(shellCommand, displayOutput=True),
             ]
 
     def hasPermissions(self, author):
@@ -567,7 +567,7 @@ class WhitelistAction(ShellAction):
             ]
         else:
             self._commands = [
-                self.run(shellCommand),
+                self.run(shellCommand, displayOutput=True),
             ]
 
     def hasPermissions(self, author):
