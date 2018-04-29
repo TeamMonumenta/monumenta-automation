@@ -5,7 +5,7 @@ disable_whitelist() (
 	if [ -e whitelist.json.disabled ]; then
 	  print "Whitelist already disabled for $x"
 	else
-	  mv -f whitelist.json.disabled whitelist.json
+	  mv -f whitelist.json whitelist.json.disabled
 	  print "Whitelist disabled for $x"
 	fi
 )

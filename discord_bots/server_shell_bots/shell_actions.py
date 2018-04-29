@@ -178,7 +178,7 @@ Examples:
         if not run:
             return
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(self.command):]
+        commandArgs = message.content[len(self.command)+1:]
         self._commands = []
         if (
             (
@@ -350,7 +350,7 @@ PREFIXOOGstart shard region_1 region_2 orange'''
         if not run:
             return
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(self.command):]
+        commandArgs = message.content[len(self.command)+1:]
 
         # TODO Should be made relative to the bot directory
         baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_shards.sh"
@@ -536,37 +536,42 @@ class WhitelistAction(ShellAction):
         commandArgs = message.content[len(self.command)+1:]
 
         # TODO Should be made relative to the bot directory
-        enableString = " enable "
-        disableString = " disable "
+        enableString = "enable"
+        disableString = "disable"
 
-        if commandArgs[len(enableString):] == enableString:
+        if commandArgs[:len(enableString)] == enableString:
+            header = "running subcommand enable"
             baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/whitelist_shards_enable.sh"
-            commandArgs = commandArgs[:len(enableString)]
+            targetShards = commandArgs[len(enableString)+1:]
 
-        elif commandArgs[len(disableString):] == disableString:
+        elif commandArgs[:len(disableString)] == disableString:
+            header = "running subcommand disable"
             baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/whitelist_shards_disable.sh"
-            commandArgs = commandArgs[:len(disableString)]
+            targetShards = commandArgs[len(disableString)+1:]
 
         else:
+            header = "running subcommand list"
             baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/whitelist_shards_list.sh"
-            commandArgs = "*"
+            targetShards = "*"
 
         shellCommand = baseShellCommand
         allShards = botConfig["shards"]
-        if '*' in commandArgs:
+        if '*' in targetShards:
             for shard in allShards.keys():
                 shellCommand += " " + allShards[shard]["path"]
         else:
             for shard in allShards.keys():
-                if shard in commandArgs:
+                if shard in targetShards:
                     shellCommand += " " + allShards[shard]["path"]
 
         if shellCommand == baseShellCommand:
             self._commands = [
+                self.display(header),
                 self.display("No specified shards on this server."),
             ]
         else:
             self._commands = [
+                self.display(header),
                 self.run(shellCommand, displayOutput=True),
             ]
 
