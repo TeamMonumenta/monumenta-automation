@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.6
 # -*- coding: utf-8 -*-
 
 import os
@@ -57,7 +57,7 @@ serverShards = {}
 with open(botConfig["config_dir"]+'shards','r') as f:
     serverShards = json.load(f)
 if len(serverShards.keys()) == 0:
-    print "WARNING: No shards found."
+    print('WARNING: No shards found.')
 botConfig["shards"] = serverShards
 
 botConfig["extraDebug"] = False

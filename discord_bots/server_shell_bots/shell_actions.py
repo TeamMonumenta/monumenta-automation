@@ -1,3 +1,6 @@
+#!/usr/bin/env python3.6
+# -*- coding: utf-8 -*-
+
 """
 This is the list of all shell actions available to the discord bots;
 Please keep this list in alphabetical order within each category
@@ -133,7 +136,7 @@ __Available Actions__'''.format(botConfig["name"])
                 helptext += "\n**" + action.command + "**"
             else:
                 helptext += "\n~~" + action.command + "~~"
-            helptext += "```" + action.__doc__ + "```"
+            helptext += "```" + action.__doc__.replace('PREFIXOOG',commandPrefix) + "```"
         self._commands = [
             self.display(helptext),
         ]
@@ -162,12 +165,12 @@ allActions.append(ListBotsAction)
 class SelectBotAction(ShellAction):
     '''Make specified bots start listening for commands; unlisted bots stop listening.
 Syntax:
-`{0}select [botName] [botName2] ...`
+`PREFIXOOGselect [botName] [botName2] ...`
 Examples:
-`{0}select` - deselect all bots
-`{0}select build` - select only the build bot
-`{0}select play play2` - select both the play bots
-`{0}select *` - select all bots'''.format(commandPrefix)
+`PREFIXOOGselect` - deselect all bots
+`PREFIXOOGselect build` - select only the build bot
+`PREFIXOOGselect play play2` - select both the play bots
+`PREFIXOOGselect *` - select all bots'''
     command = commandPrefix + "select"
     alwaysListening = True
 
@@ -339,8 +342,8 @@ allActions.append(PrepareResetBundleAction)
 class StartShardAction(ShellAction):
     '''Start specified shards.
 Syntax:
-{0}start shard *
-{0}start shard region_1 region_2 orange'''.format(commandPrefix)
+PREFIXOOGstart shard *
+PREFIXOOGstart shard region_1 region_2 orange'''
     command = commandPrefix + "start shard"
 
     def __init__(self, botConfig, message, run=True):
@@ -352,13 +355,14 @@ Syntax:
         # TODO Should be made relative to the bot directory
         baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_shards.sh"
         shellCommand = baseShellCommand
+        allShards = botConfig["shards"]
         if '*' in commandArgs:
-            for shard in botConfig["shards"].keys():
-                shellCommand += " " + botConfig[shard]["path"]
+            for shard in allShards.keys():
+                shellCommand += " " + allShards[shard]["path"]
         else:
-            for shard in botConfig["shards"].keys():
+            for shard in allShards.keys():
                 if shard in commandArgs:
-                    shellCommand += " " + botConfig[shard]["path"]
+                    shellCommand += " " + allShards[shard]["path"]
 
         if shellCommand == baseShellCommand:
             self._commands = [
@@ -519,10 +523,10 @@ allActions.append(TerrainResetAction)
 
 class WhitelistAction(ShellAction):
     '''Control server whitelists
-`{0}whitelist` - list shard whitelist status
-`{0}whitelist enable *` - enable all shard whitelists, allows players to enter
-`{0}whitelist disable *` - disables all shard whitelists, allows only opped players to enter
-`{0}whitelist enable nightmare` - enable whitelist on only nightmare shard'''
+`PREFIXOOGwhitelist` - list shard whitelist status
+`PREFIXOOGwhitelist enable *` - enable all shard whitelists, allows players to enter
+`PREFIXOOGwhitelist disable *` - disables all shard whitelists, allows only opped players to enter
+`PREFIXOOGwhitelist enable nightmare` - enable whitelist on only nightmare shard'''
     command = commandPrefix + "whitelist"
 
     def __init__(self, botConfig, message, run=True):
@@ -548,13 +552,14 @@ class WhitelistAction(ShellAction):
             commandArgs = "*"
 
         shellCommand = baseShellCommand
+        allShards = botConfig["shards"]
         if '*' in commandArgs:
-            for shard in botConfig["shards"].keys():
-                shellCommand += " " + botConfig[shard]["path"]
+            for shard in allShards.keys():
+                shellCommand += " " + allShards[shard]["path"]
         else:
-            for shard in botConfig["shards"].keys():
+            for shard in allShards.keys():
                 if shard in commandArgs:
-                    shellCommand += " " + botConfig[shard]["path"]
+                    shellCommand += " " + allShards[shard]["path"]
 
         if shellCommand == baseShellCommand:
             self._commands = [

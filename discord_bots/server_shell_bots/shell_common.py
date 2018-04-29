@@ -1,3 +1,6 @@
+#!/usr/bin/env python3.6
+# -*- coding: utf-8 -*-
+
 #
 # Shell-scripting routines which can be combined to make discord command scripts
 #
@@ -60,12 +63,6 @@ class ShellAction(object):
         raise NotImplementedError("Implement Me")
 
     alwaysListening = False
-
-    async def help(self):
-        try:
-            return self.__doc__
-        except:
-            raise NotImplementedError("Implement Me")
 
     ################################################################################
     # These methods should be left alone
