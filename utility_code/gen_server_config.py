@@ -51,32 +51,32 @@ server_config_min = [
     ]
 
 server_config_min_plus_data = server_config_min + [
-        ('Project_Epic-WORLDOOG/data/functions', '../../../server_config/data/functions'),
-        ('Project_Epic-WORLDOOG/data/loot_tables', '../../../server_config/data/loot_tables'),
-        ('Project_Epic-WORLDOOG_the_end/data/functions', '../../../server_config/data/functions'),
-        ('Project_Epic-WORLDOOG_the_end/data/loot_tables', '../../../server_config/data/loot_tables'),
+        ('Project_Epic-{servername}/data/functions', '../../../server_config/data/functions'),
+        ('Project_Epic-{servername}/data/loot_tables', '../../../server_config/data/loot_tables'),
+        ('Project_Epic-{servername}_the_end/data/functions', '../../../server_config/data/functions'),
+        ('Project_Epic-{servername}_the_end/data/loot_tables', '../../../server_config/data/loot_tables'),
     ]
 
 server_config = server_config_min_plus_data + [
-        ('plugins/ScriptedQuests/npcs/WORLDOOG', '../../../../server_config/data/scriptedquests/npcs/WORLDOOG'),
+        ('plugins/ScriptedQuests/npcs/{servername}', '../../../../server_config/data/scriptedquests/npcs/{servername}'),
         ('plugins/ScriptedQuests/npcs/common', '../../../../server_config/data/scriptedquests/npcs/common'),
-        ('plugins/ScriptedQuests/compass/WORLDOOG', '../../../../server_config/data/scriptedquests/compass/WORLDOOG'),
+        ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
         ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
-        ('plugins/ScriptedQuests/death/WORLDOOG', '../../../../server_config/data/scriptedquests/death/WORLDOOG'),
+        ('plugins/ScriptedQuests/death/{servername}', '../../../../server_config/data/scriptedquests/death/{servername}'),
         ('plugins/ScriptedQuests/death/common', '../../../../server_config/data/scriptedquests/death/common'),
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
     ]
 
 advancements_disabled = [
-        ('Project_Epic-WORLDOOG/data/advancements', '../../../server_config/data/advancements_disabled'),
+        ('Project_Epic-{servername}/data/advancements', '../../../server_config/data/advancements_disabled'),
     ]
 
 advancements_r1 = [
-        ('Project_Epic-WORLDOOG/data/advancements', '../../../server_config/data/advancements'),
+        ('Project_Epic-{servername}/data/advancements', '../../../server_config/data/advancements'),
     ]
 
 structures = [
-        ('Project_Epic-WORLDOOG/structures', '../../server_config/structures'),
+        ('Project_Epic-{servername}/structures', '../../server_config/structures'),
     ]
 
 coreprotect = [
@@ -155,11 +155,11 @@ else:
     build_plugins = []
 
 # String replacements:
-# WORLDOOG - server name
-#('server.properties', 'motd', 'motd=Monumenta\: WORLDOOG shard'),
-#('plugins/Socket4MC/config.yml', 'name', 'name: "WORLDOOG"'),
-#('mark2.properties', 'plugin.backup.path', 'plugin.backup.path=../backups/WORLDOOG/WORLDOOG_{timestamp}.tar.gz'),
-#('server.properties', 'level-name', 'level-name=Project_Epic-WORLDOOG'),
+# {servername} - server name
+#('server.properties', 'motd', 'motd=Monumenta\: {servername} shard'),
+#('plugins/Socket4MC/config.yml', 'name', 'name: "{servername}"'),
+#('mark2.properties', 'plugin.backup.path', 'plugin.backup.path=../backups/{servername}/{servername}_{timestamp}.tar.gz'),
+#('server.properties', 'level-name', 'level-name=Project_Epic-{servername}'),
 
 template_dir = 'server_config/server_config_template'
 
@@ -604,7 +604,7 @@ def gen_server_config(servername):
     files = [i[0] for i in serverConfig]
     files = list(set(files))
 
-    # Copy those files and replace WORLDOOG with the appropriate string
+    # Copy those files and replace {servername} with the appropriate string
     for filename in files:
         old = template_dir + "/" + filename
         new = servername + "/" + filename
@@ -620,14 +620,14 @@ def gen_server_config(servername):
         with open(old, "rt") as fin:
             with open(new, "wt") as fout:
                 for line in fin:
-                    fout.write(line.replace('WORLDOOG', servername))
+                    fout.write(line.format(servername=servername))
                 fout.close()
             fin.close()
 
     # Do the per-file replacements
     for replacement in serverConfig:
         filename = servername + "/" + replacement[0]
-        filename = filename.replace('WORLDOOG', servername)
+        filename = filename.format(servername=servername)
         if (len(replacement) == 1):
             # Nothing to do here, just copying the file was enough
             continue;
@@ -663,8 +663,8 @@ def gen_server_config(servername):
     for link in linked:
         linkname = servername + "/" + link[0]
         targetname = link[1]
-        linkname = linkname.replace('WORLDOOG', servername)
-        targetname = targetname.replace('WORLDOOG', servername)
+        linkname = linkname.format(servername=servername)
+        targetname = targetname.format(servername=servername)
 
         if (os.path.islink(linkname)):
             os.unlink(linkname)
