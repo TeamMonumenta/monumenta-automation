@@ -15,21 +15,36 @@ allActionsDict = {}
 # Common privilege code
 
 privUsers = {
-    "Combustible": "302298391969267712",
-    "NickNackGus": "228226807353180162",
-    "rockenroll4life": "158655519588876288",
-    "Chipmunk": "144306298811318272",
-    "masterchris92": "163457917658333185",
-    "Kaladun": "164199966242373632",
-    #"rayman520": "257887001834029056",
+    "302298391969267712": {"name": "Combustible", "rights": [ "root" ]},
+    "228226807353180162": {"NickNackGus", "rights": [ "root" ]},
+    "158655519588876288": {"rockenroll4life", "rights": [ "normal" ]},
+    "144306298811318272": {"Chipmunk", "rights": [ "normal" ]},
+    "163457917658333185": {"masterchris92", "rights": [ "normal" ]},
+    "164199966242373632": {"Kaladun", "rights": [ "normal" ]},
+    #"257887001834029056": {"rayman520", "rights": [ "normal" ]},
 }
 
-privIds = privUsers.values()
-print(privIds)
-
-def isPrivileged(author):
-    if author.id in privIds:
+def rootPrivileged(author):
+    userInfo = privUsers.get( author.id, {"rights":[]} ):
+    userRights = userInfo.get("rights",[])
+    if "root" in userRights:
         return True
+    return False
+
+def normalPrivileged(author):
+    userInfo = privUsers.get( author.id, {} ):
+    userRights = userInfo.get("rights",[])
+    if (
+        "normal" in userRights or
+        "root" in userRights
+    ):
+        return True
+    return False
+
+def alwaysPriviliged(author):
+    return True
+
+def neverPriviliged(author):
     return False
 
 commandPrefix = '~'
@@ -40,14 +55,10 @@ commandPrefix = '~'
 class DebugAction(ShellAction):
     '''Prints debugging information about the requestor'''
     command = commandPrefix + "debug"
+    hasPermissions = alwaysPriviliged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-
-    def hasPermissions(self, author):
-        return True
 
     async def doActions(self, client, channel, member):
         self._client = client
@@ -57,55 +68,50 @@ class DebugAction(ShellAction):
         message = "Your user ID is: " + member.id + "\nYour roles are:"
         for role in member.roles:
             message += "\n`" + role.name + "`: " + role.id
+
+        userInfo = privUsers.get( author.id, {} )
+        userRights = userInfo.get("rights",["None"])
+        message += "Your access rights are:"
+        for aRight in userRights:
+            message += "\n`" + aRight + "`"
+
         await self.display(message),
 allActions.append(DebugAction)
 
 class TestAction(ShellAction):
     '''Simple test action that does nothing'''
     command = commandPrefix + "test"
+    hasPermissions = alwaysPriviliged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Testing successful!"),
         ]
-
-    def hasPermissions(self, author):
-        return True
 allActions.append(TestAction)
 
 class TestPrivilegedAction(ShellAction):
     '''Test if user has permission to use restricted commands'''
     command = commandPrefix + "testpriv"
+    hasPermissions = normalPrivileged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("You've got the power"),
         ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
 allActions.append(TestPrivilegedAction)
 
 class TestUnprivilegedAction(ShellAction):
     '''Test that a restricted command fails for all users'''
     command = commandPrefix + "testunpriv"
+    hasPermissions = neverPriviliged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("BUG: You definitely shouldn't have this much power"),
         ]
-
-    def hasPermissions(self, author):
-        return False
 allActions.append(TestUnprivilegedAction)
 
 ################################################################################
@@ -114,69 +120,59 @@ allActions.append(TestUnprivilegedAction)
 class HelpAction(ShellAction):
     '''Lists commands available with this bot'''
     command = commandPrefix + "help"
+    hasPermissions = alwaysPriviliged
     alwaysListening = True
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         helptext = '''
-This is the monumenta {0} server bot.
-It runs on the {0} server's console.
-It can be used to run actions on the {0} server.
-__Available Actions__'''.format(botConfig["name"])
+This is the monumenta {botName} server bot.
+It runs on the {botName} server's console.
+It can be used to run actions on the {botName} server.
+__Available Actions__'''.format(botName=botConfig["name"])
         for actionClass in botConfig["actions"].values():
             if not (
                 botConfig["listening"] or
                 actionClass.alwaysListening
             ):
                 continue
-            action = actionClass(botConfig, message, run=False)
-            if action.hasPermissions(message.author):
-                helptext += "\n**" + action.command + "**"
+            if actionClass.hasPermissions(message.author):
+                helptext += "\n**" + actionClass.command + "**"
             else:
-                helptext += "\n~~" + action.command + "~~"
-            helptext += "```" + action.__doc__.replace('PREFIXOOG',commandPrefix) + "```"
+                helptext += "\n~~" + actionClass.command + "~~"
+            helptext += "```" + actionClass.__doc__.format(cmdPrefix=commandPrefix) + "```"
         self._commands = [
             self.display(helptext),
         ]
-
-    def hasPermissions(self, author):
-        return True
 allActions.append(HelpAction)
 
 class ListBotsAction(ShellAction):
     '''Lists currently running bots'''
     command = commandPrefix + "list bots"
+    hasPermissions = normalPrivileged
     alwaysListening = True
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display('`' + botConfig["name"] + '`'),
         ]
-
-    def hasPermissions(self, author):
-        return True
 allActions.append(ListBotsAction)
 
 class SelectBotAction(ShellAction):
     '''Make specified bots start listening for commands; unlisted bots stop listening.
 Syntax:
-`PREFIXOOGselect [botName] [botName2] ...`
+`{cmdPrefix}select [botName] [botName2] ...`
 Examples:
-`PREFIXOOGselect` - deselect all bots
-`PREFIXOOGselect build` - select only the build bot
-`PREFIXOOGselect play play2` - select both the play bots
-`PREFIXOOGselect *` - select all bots'''
+`{cmdPrefix}select` - deselect all bots
+`{cmdPrefix}select build` - select only the build bot
+`{cmdPrefix}select play play2` - select both the play bots
+`{cmdPrefix}select *` - select all bots'''
     command = commandPrefix + "select"
+    hasPermissions = normalPrivileged
     alwaysListening = True
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(self.command)+1:]
         self._commands = []
@@ -200,9 +196,6 @@ Examples:
             self._commands = [
                 self.display(botConfig["name"] + " is still listening for commands."),
             ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
 allActions.append(SelectBotAction)
 
 ################################################################################
@@ -213,10 +206,9 @@ class FetchResetBundleAction(ShellAction):
 Deletes in-progress terrain reset info on the play server
 Downloads the terrain reset bundle from the build server and unpacks it'''
     command = commandPrefix + "fetch reset bundle"
+    hasPermissions = rootPrivileged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Fetching reset bundle from build server..."),
@@ -228,9 +220,6 @@ Downloads the terrain reset bundle from the build server and unpacks it'''
             self.run("tar xzf project_epic_build_template_pre_reset_" + datestr() + ".tgz"),
             self.display("Reset bundle is prepped for reset."),
         ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
 allActions.append(FetchResetBundleAction)
 
 class GenerateInstancesAction(ShellAction):
@@ -239,10 +228,9 @@ Deletes previous terrain reset data
 Temporarily brings down the dungeon shard to generate dungeon instances.
 Must be run before preparing the build server reset bundle'''
     command = commandPrefix + "generate instances"
+    hasPermissions = rootPrivileged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Cleaning up old terrain reset data..."),
@@ -273,25 +261,18 @@ Must be run before preparing the build server reset bundle'''
             self.run("rm -rf /home/rock/4_SHARED/tmpreset/Project_Epic-dungeon /home/rock/4_SHARED/tmpreset/Project_Epic-template"),
             self.display("Dungeon instance generation complete!"),
         ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
 allActions.append(GenerateInstancesAction)
 
 class ListShardsAction(ShellAction):
     '''Lists currently running shards on this server'''
     command = commandPrefix + "list shards"
+    hasPermissions = alwaysPrivileged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.run("mark2 list", displayOutput=True),
         ]
-
-    def hasPermissions(self, author):
-        return True
 allActions.append(ListShardsAction)
 
 class PrepareResetBundleAction(ShellAction):
@@ -300,10 +281,9 @@ Temporarily brings down the region_1 shard to prepare for terrain reset
 Packages up all of the pre-reset server components needed by the play server for reset
 Must be run before starting terrain reset on the play server'''
     command = commandPrefix + "prepare reset bundle"
+    hasPermissions = rootPrivileged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Stopping the region_1 shard..."),
@@ -334,21 +314,17 @@ Must be run before starting terrain reset on the play server'''
 
             self.display("Reset bundle ready!"),
         ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
 allActions.append(PrepareResetBundleAction)
 
 class StartShardAction(ShellAction):
     '''Start specified shards.
 Syntax:
-PREFIXOOGstart shard *
-PREFIXOOGstart shard region_1 region_2 orange'''
+{cmdPrefix}start shard *
+{cmdPrefix}start shard region_1 region_2 orange'''
     command = commandPrefix + "start shard"
+    hasPermissions = normalPrivileged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(self.command)+1:]
 
@@ -372,9 +348,6 @@ PREFIXOOGstart shard region_1 region_2 orange'''
             self._commands = [
                 self.run(shellCommand, displayOutput=True),
             ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
 allActions.append(StartShardAction)
 
 class StopAndBackupAction(ShellAction):
@@ -382,10 +355,9 @@ class StopAndBackupAction(ShellAction):
 Brings down all play server shards and backs them up in preparation for terrain reset.
 DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
     command = commandPrefix + "stop and backup"
+    hasPermissions = rootPrivileged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Stopping all shards..."),
@@ -415,19 +387,15 @@ DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
 
             self.display("Backups complete! Ready for reset."),
         ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
 allActions.append(StopAndBackupAction)
 
 class StopIn10MinutesAction(ShellAction):
     '''Dangerous!
 Starts a bungee shutdown timer for 10 minutes. Returns immediately.'''
     command = commandPrefix + "stop in 10 minutes"
+    hasPermissions = rootPrivileged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Telling bungee it should stop in 10 minutes..."),
@@ -435,19 +403,15 @@ Starts a bungee shutdown timer for 10 minutes. Returns immediately.'''
             # TODO: Something to wait for bungee to shut down
             self.display("Done - bungee will shut down in 10 minutes."),
         ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
 allActions.append(StopIn10MinutesAction)
 
 class TerrainResetAction(ShellAction):
     '''Dangerous!
 Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
     command = commandPrefix + "terrain reset"
+    hasPermissions = rootPrivileged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Archiving the pre reset bundle backup..."),
@@ -516,22 +480,18 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             self.display("Removing pre-reset artifacts..."),
             self.run("rm -r /home/rock/4_SHARED/tmpreset/PRE_RESET /home/rock/4_SHARED/tmpreset/TEMPLATE"),
         ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
 allActions.append(TerrainResetAction)
 
 class WhitelistAction(ShellAction):
     '''Control server whitelists
-`PREFIXOOGwhitelist` - list shard whitelist status
-`PREFIXOOGwhitelist enable *` - enable all shard whitelists, allows players to enter
-`PREFIXOOGwhitelist disable *` - disables all shard whitelists, allows only opped players to enter
-`PREFIXOOGwhitelist enable nightmare` - enable whitelist on only nightmare shard'''
+`{cmdPrefix}whitelist` - list shard whitelist status
+`{cmdPrefix}whitelist enable *` - enable all shard whitelists, allows players to enter
+`{cmdPrefix}whitelist disable *` - disables all shard whitelists, allows only opped players to enter
+`{cmdPrefix}whitelist enable nightmare` - enable whitelist on only nightmare shard'''
     command = commandPrefix + "whitelist"
+    hasPermissions = rootPrivileged
 
-    def __init__(self, botConfig, message, run=True):
-        if not run:
-            return
+    def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(self.command)+1:]
 
@@ -574,9 +534,6 @@ class WhitelistAction(ShellAction):
                 self.display(header),
                 self.run(shellCommand, displayOutput=True),
             ]
-
-    def hasPermissions(self, author):
-        return isPrivileged(author)
 allActions.append(WhitelistAction)
 
 ################################################################################
