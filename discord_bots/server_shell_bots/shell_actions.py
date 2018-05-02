@@ -24,15 +24,15 @@ privUsers = {
     #"257887001834029056": {"name": "rayman520", "rights": [ "normal" ]},
 }
 
-def rootPrivileged(author):
-    userInfo = privUsers.get( author.id, {"rights":[]} ):
+def rootPrivileged(selfIgnored,author):
+    userInfo = privUsers.get( author.id, {"rights":[]} )
     userRights = userInfo.get("rights",[])
     if "root" in userRights:
         return True
     return False
 
-def normalPrivileged(author):
-    userInfo = privUsers.get( author.id, {} ):
+def normalPrivileged(selfIgnored,author):
+    userInfo = privUsers.get( author.id, {} )
     userRights = userInfo.get("rights",[])
     if (
         "normal" in userRights or
@@ -41,10 +41,10 @@ def normalPrivileged(author):
         return True
     return False
 
-def alwaysPriviliged(author):
+def alwaysPrivileged(selfIgnored,author):
     return True
 
-def neverPriviliged(author):
+def neverPrivileged(selfIgnored,author):
     return False
 
 commandPrefix = '~'
@@ -55,7 +55,7 @@ commandPrefix = '~'
 class DebugAction(ShellAction):
     '''Prints debugging information about the requestor'''
     command = commandPrefix + "debug"
-    hasPermissions = alwaysPriviliged
+    hasPermissions = alwaysPrivileged
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -81,7 +81,7 @@ allActions.append(DebugAction)
 class TestAction(ShellAction):
     '''Simple test action that does nothing'''
     command = commandPrefix + "test"
-    hasPermissions = alwaysPriviliged
+    hasPermissions = alwaysPrivileged
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -105,7 +105,7 @@ allActions.append(TestPrivilegedAction)
 class TestUnprivilegedAction(ShellAction):
     '''Test that a restricted command fails for all users'''
     command = commandPrefix + "testunpriv"
-    hasPermissions = neverPriviliged
+    hasPermissions = neverPrivileged
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
@@ -120,7 +120,7 @@ allActions.append(TestUnprivilegedAction)
 class HelpAction(ShellAction):
     '''Lists commands available with this bot'''
     command = commandPrefix + "help"
-    hasPermissions = alwaysPriviliged
+    hasPermissions = alwaysPrivileged
     alwaysListening = True
 
     def __init__(self, botConfig, message):
