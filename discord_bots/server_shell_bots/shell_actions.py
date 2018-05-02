@@ -16,12 +16,12 @@ allActionsDict = {}
 
 privUsers = {
     "302298391969267712": {"name": "Combustible", "rights": [ "root" ]},
-    "228226807353180162": {"NickNackGus", "rights": [ "root" ]},
-    "158655519588876288": {"rockenroll4life", "rights": [ "normal" ]},
-    "144306298811318272": {"Chipmunk", "rights": [ "normal" ]},
-    "163457917658333185": {"masterchris92", "rights": [ "normal" ]},
-    "164199966242373632": {"Kaladun", "rights": [ "normal" ]},
-    #"257887001834029056": {"rayman520", "rights": [ "normal" ]},
+    "228226807353180162": {"name": "NickNackGus", "rights": [ "root" ]},
+    "158655519588876288": {"name": "rockenroll4life", "rights": [ "normal" ]},
+    "144306298811318272": {"name": "Chipmunk", "rights": [ "normal" ]},
+    "163457917658333185": {"name": "masterchris92", "rights": [ "normal" ]},
+    "164199966242373632": {"name": "Kaladun", "rights": [ "normal" ]},
+    #"257887001834029056": {"name": "rayman520", "rights": [ "normal" ]},
 }
 
 def rootPrivileged(author):
