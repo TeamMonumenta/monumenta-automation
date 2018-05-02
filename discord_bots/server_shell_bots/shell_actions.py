@@ -219,6 +219,7 @@ Downloads the terrain reset bundle from the build server and unpacks it'''
             self.cd("/home/rock/4_SHARED/tmpreset"),
             self.run("tar xzf project_epic_build_template_pre_reset_" + datestr() + ".tgz"),
             self.display("Reset bundle is prepped for reset."),
+            self.mention(),
         ]
 allActions.append(FetchResetBundleAction)
 
@@ -260,6 +261,7 @@ Must be run before preparing the build server reset bundle'''
             self.display("Cleaning up instance generation temp files..."),
             self.run("rm -rf /home/rock/4_SHARED/tmpreset/Project_Epic-dungeon /home/rock/4_SHARED/tmpreset/Project_Epic-template"),
             self.display("Dungeon instance generation complete!"),
+            self.mention(),
         ]
 allActions.append(GenerateInstancesAction)
 
@@ -313,6 +315,7 @@ Must be run before starting terrain reset on the play server'''
             self.run("tar czf /home/rock/4_SHARED/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE"),
 
             self.display("Reset bundle ready!"),
+            self.mention(),
         ]
 allActions.append(PrepareResetBundleAction)
 
@@ -386,6 +389,7 @@ DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
             self.run("tar czf /home/rock/1_ARCHIVE/project_epic_pre_reset_" + datestr() + ".tgz project_epic"),
 
             self.display("Backups complete! Ready for reset."),
+            self.mention(),
         ]
 allActions.append(StopAndBackupAction)
 
@@ -479,6 +483,9 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
             self.display("Removing pre-reset artifacts..."),
             self.run("rm -r /home/rock/4_SHARED/tmpreset/PRE_RESET /home/rock/4_SHARED/tmpreset/TEMPLATE"),
+
+            self.display("Done."),
+            self.mention(),
         ]
 allActions.append(TerrainResetAction)
 

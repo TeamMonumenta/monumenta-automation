@@ -116,6 +116,9 @@ class ShellAction(object):
     async def display(self, debuginfo):
         await self._client.send_message(self._channel, debuginfo)
 
+    async def mention(self):
+        await self._client.send_message(self._channel, self._member.mention)
+
     async def doActions(self, client, channel, member):
         self._client = client
         self._channel = channel
@@ -133,6 +136,7 @@ class ShellAction(object):
             for item in self._commands:
                 await item
         except Exception as e:
+            await self.mention()
             await self._client.send_message(self._channel, "**ERROR**: ```" + str(e) + "```")
 
         self._lock = False
