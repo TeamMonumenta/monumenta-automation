@@ -136,7 +136,7 @@ __Available Actions__'''.format(botName=botConfig["name"])
                 actionClass.alwaysListening
             ):
                 continue
-            if actionClass.hasPermissions(message.author):
+            if actionClass.hasPermissions(None,message.author):
                 helptext += "\n**" + actionClass.command + "**"
             else:
                 helptext += "\n~~" + actionClass.command + "~~"
