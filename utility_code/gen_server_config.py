@@ -620,14 +620,14 @@ def gen_server_config(servername):
         with open(old, "rt") as fin:
             with open(new, "wt") as fout:
                 for line in fin:
-                    fout.write(line.format(servername=servername))
+                    fout.write(line.replace("{servername}",servername))
                 fout.close()
             fin.close()
 
     # Do the per-file replacements
     for replacement in serverConfig:
         filename = servername + "/" + replacement[0]
-        filename = filename.format(servername=servername)
+        filename = filename.replace("{servername}",servername)
         if (len(replacement) == 1):
             # Nothing to do here, just copying the file was enough
             continue;
@@ -663,8 +663,8 @@ def gen_server_config(servername):
     for link in linked:
         linkname = servername + "/" + link[0]
         targetname = link[1]
-        linkname = linkname.format(servername=servername)
-        targetname = targetname.format(servername=servername)
+        linkname = linkname.replace("{servername}",servername)
+        targetname = targetname.replace("{servername}",servername)
 
         if (os.path.islink(linkname)):
             os.unlink(linkname)
