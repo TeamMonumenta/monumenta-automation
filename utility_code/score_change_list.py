@@ -55,5 +55,8 @@ dungeonScoreRules = [
     {"condition":{"Objective":"DRAccess","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"DRAccess","Score":0}]}},
+    {"condition":{"Objective":"Quest21","Score":{"min":102}},
+        "actions":{"set":[
+            {"Objective":"Quest21","Score":101}]}},
 ]
 
