@@ -2431,7 +2431,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Bloody Thorn''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBloody Thorn"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:2s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBloody Thorn"}}'''
 		]
 	],
 	[
@@ -2467,7 +2467,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Versatile Cutlass''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:18s},{lvl:1s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aVersatile Cutlass"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:18s},{lvl:2s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aVersatile Cutlass"}}'''
 		]
 	],
 	[
@@ -2476,7 +2476,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Molten Rapier''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMolten Rapier"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMolten Rapier"}}'''
 		]
 	],
 	[
@@ -2521,7 +2521,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Crushing Mace''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aCrushing Mace"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aCrushing Mace"}}'''
 		]
 	],
 	[
@@ -2530,7 +2530,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Phoenix Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aPhoenix Axe"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:4s,id:34s},{lvl:1s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aPhoenix Axe"}}'''
 		]
 	],
 	[
@@ -2602,7 +2602,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 			"name":u'''Swiftwood Buckler''',
 		},
 		[
-			"nbt", "replace", ur'''{HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:11,Pattern:"hh"},{Color:11,Pattern:"hhb"},{Color:3,Pattern:"gra"},{Color:11,Pattern:"gru"},{Color:11,Pattern:"gru"},{Color:11,Pattern:"gru"},{Color:3,Pattern:"gru"}]},display:{Lore:["§8King's Valley : Tier V"],Name:"§aSwiftwood Buckler"},AttributeModifiers:[{UUIDMost:3799174595893871670l,UUIDLeast:-8604776829862673178l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:11,Pattern:"hh"},{Color:11,Pattern:"hhb"},{Color:3,Pattern:"gra"},{Color:11,Pattern:"gru"},{Color:11,Pattern:"gru"},{Color:11,Pattern:"gru"},{Color:3,Pattern:"gru"}]},display:{Lore:["§8King's Valley : Tier V"],Name:"§aSwiftwood Buckler"},AttributeModifiers:[{UUIDMost:3799174595893871670l,UUIDLeast:-8604776829862673178l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -2643,11 +2643,11 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:blaze_rod",
+			"id":"minecraft:stone_shovel",
 			"name":u'''Pyromancer's Staff''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:17s},{lvl:3s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier V"],Name:"§aPyromancer's Staff"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:17s},{lvl:4s,id:34s},{lvl:1s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier V"],Name:"§aPyromancer's Staff"}}'''
 		]
 	],
 	[
@@ -3899,6 +3899,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 		},
 		[
 			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:1s},{lvl:2s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§8King's Valley : §6Patron Made","§8Alas poor skull, they got pwn4d"],Name:"§5§lEntropic Skull"},AttributeModifiers:[{UUIDMost:-3064219100859248973l,UUIDLeast:-8672896259970709443l,Amount:-0.08d,Slot:"head",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Silvered Sight''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:10s}],Unbreakable:1,HideFlags:2,display:{Lore:["§7Darksight","§r§8King's Valley : §r§6Patron Made","§8Those who have Silver Sight are","§8destined to be great warriors.","§r","§7When on head:","§r§9 +3 Max Health","§9 +0.5 Armor"],color:8554408,Name:"§r§7§lSilvered Sight"},AttributeModifiers:[{UUIDMost:-2228449523491911225l,UUIDLeast:-5020477060364325736l,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-9147749144222480393l,UUIDLeast:-7028620375446294600l,Amount:0.5d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
