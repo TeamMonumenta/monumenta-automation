@@ -142,6 +142,12 @@ voxelsniper = [
         ('plugins/VoxelSniper/config.yml', '../../../server_config/plugins/VoxelSniper/config.yml'),
     ]
 
+# Analytics plugin - only for the play server!
+plan = [
+        ('plugins/Plan.jar', '../../server_config/plugins/Plan.jar'),
+        ('plugins/Plan', '../../server_config/data/plugins/{servername}/Plan'),
+    ]
+
 # Index of nodes:
 #   server_config
 #   advancements_disabled
@@ -549,6 +555,10 @@ else:
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
         ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
     ]
+
+    # Player analytics plugin only for play server
+    for key in config:
+        config[key]['linked'] = config[key]['linked'] + plan
 
 def gen_server_config(servername):
     if not(servername in config):
