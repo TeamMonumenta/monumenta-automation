@@ -52,46 +52,20 @@ KingsValleyImmovable = entity_update.UpdateEntities([],[
 KingsValleyBuild = entity_update.UpdateEntities([],[
     [
         {
-            "tag":[u"lite"],
-        },
-        [
-            "tag", [u"!lite"],
-        ]
-    ],
-    [
-        {
             "id":"minecraft:mob_spawner",
-            "nbt":ur'''{SpawnData:{CustomName:"Infernal Archer",id:"minecraft:skeleton"}}''',
+            "nbt":ur'''{SpawnData:{CustomName:"Buried Remains",id:"minecraft:skeleton"}}''',
         },
         [
-            "nbt", "update", ur'''{MaxNearbyEntities:8s,RequiredPlayerRange:16s,SpawnCount:2s,MaxSpawnDelay:600s,Delay:0s,id:"minecraft:mob_spawner",SpawnRange:4s,MinSpawnDelay:500s}''',
+            "nbt", "update", ur'''{MaxNearbyEntities:10s,RequiredPlayerRange:16s,SpawnCount:4s,MaxSpawnDelay:300s,Delay:0s,id:"minecraft:mob_spawner",SpawnRange:4s,MinSpawnDelay:100s}''',
         ]
     ],
     [
         {
             "id":"minecraft:skeleton",
-            "name":"Infernal Archer",
+            "name":"Buried Remains",
         },
         [
-            "nbt", "replace", ur'''{ArmorDropChances:[-327.67f,-327.67f,-327.67f,-327.67f],CustomName:"Infernal Archer",Health:24.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:7667712}}},{id:"minecraft:chainmail_leggings",Count:1b},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:7667712}}},{id:"minecraft:skull",Count:1b,tag:{SkullOwner:{Id:"7db94d06-a33c-44ac-963b-6258c3bd70c9",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTgyMzJiZGQ2NmJkOTlhMzdlNjM0MzZhMDQ3NjczNWVjNGY4NGRjOTg4NTE2NjE1MGIzODJhZGE3NTdmIn19fQ=="}]}}},Damage:3}],Attributes:[{Base:24,Name:"generic.maxHealth"},{Base:0.2d,Name:"generic.movementSpeed"},{Base:25,Name:"generic.followRange"}],HandDropChances:[-327.67f,-327.67f],id:"minecraft:skeleton",ActiveEffects:[{Duration:199980,Id:12,Amplifier:0}],HandItems:[{id:"minecraft:bow",Count:1b,tag:{ench:[{lvl:1,id:48},{lvl:2,id:49},{lvl:2,id:50}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Patterns:[{Pattern:"sc",Color:11},{Pattern:"mc",Color:1},{Pattern:"flo",Color:0},{Pattern:"bts",Color:1},{Pattern:"tts",Color:1}],Base:14}}}]}''',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:mob_spawner",
-            "nbt":ur'''{SpawnData:{id:"minecraft:vex",CustomName:"Seeker"}}''',
-        },
-        [
-            "nbt", "update", ur'''{MaxNearbyEntities:8s,RequiredPlayerRange:18s,SpawnCount:3s,MaxSpawnDelay:4000s,Delay:0s,id:"minecraft:mob_spawner",SpawnRange:4s,MinSpawnDelay:2000s}''',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:vex",
-            "name":"Seeker",
-        },
-        [
-            "nbt", "replace", ur'''{ArmorDropChances:[0.085f,0.085f,0.085f,-327.67f],CustomName:"Seeker",Health:6.0f,ArmorItems:[{},{},{},{id:"minecraft:skull",Count:1b,tag:{SkullOwner:{Id:"75c53779-1669-4fe7-8b3c-59d7b6439b5e",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTdiOTg4MjdkOTc5Mzg1NTE0YTkzNmY5YTU5Njg4MmQzMmQ4ZWY3NTY3ZTdkOWE1MjM5NzgyZjk0NWU2OGIwIn19fQ=="}]}}},Damage:3}],Fire:20000,Attributes:[{Base:6,Name:"generic.maxHealth"},{Base:25,Name:"generic.followRange"}],HandDropChances:[-327.67f,-327.67f],id:"minecraft:vex",ActiveEffects:[{Duration:199980,Id:2,Amplifier:0}],HandItems:[{id:"minecraft:stone_sword",Count:1b},{id:"minecraft:stone_sword",Count:1b}]}''',
+            "nbt", "replace", ur'''{CustomName:"Buried Remains",Passengers:[{Potion:{id:"minecraft:splash_potion",Count:1b,tag:{CustomPotionColor:12566463,CustomPotionEffects:[{Duration:1,Id:7b,Amplifier:0b}],Potion:"minecraft:harming"}},id:"minecraft:potion"}],Health:20.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:11579568}}},{},{},{}],Attributes:[{Base:20,Name:"generic.maxHealth"},{Base:24,Name:"generic.followRange"},{Base:0.15d,Name:"generic.knockbackResistance"},{Base:3,Name:"generic.attackDamage"}],id:"minecraft:skeleton",CustomNameVisible:0b,HandItems:[{id:"minecraft:bone",Count:1b},{id:"minecraft:bone",Count:1b}]}''',
         ]
     ],
     [
@@ -126,78 +100,6 @@ KingsValleyBuild = entity_update.UpdateEntities([],[
         },
         [
             "nbt", "update", ur'''{Health:12.0f,ActiveEffects:[{Ambient:1b,ShowParticles:1b,Duration:1200,Id:16b,Amplifier:0b}],HandItems:[{id:"minecraft:stone_sword",Count:1b,tag:{ench:[{lvl:5s,id:16s}]},Damage:0s},{}]}''',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:mob_spawner",
-            "nbt":ur'''{SpawnData:{Tags:["Elite","FatigueAura"]}}''',
-        },
-        [
-            "nbt", "update", ur'''{SpawnCount:1s,SpawnRange:4s,RequiredPlayerRange:30s,Delay:10s,MinSpawnDelay:32767s,MaxSpawnDelay:32767s,MaxNearbyEntities:30s}''',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:mob_spawner",
-            "nbt":ur'''{SpawnData:{Tags:["Elite","HungerAura"]}}''',
-        },
-        [
-            "nbt", "update", ur'''{SpawnCount:1s,SpawnRange:4s,RequiredPlayerRange:30s,Delay:10s,MinSpawnDelay:32767s,MaxSpawnDelay:32767s,MaxNearbyEntities:30s}''',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:mob_spawner",
-            "nbt":ur'''{SpawnData:{Tags:["Elite","SlownessAura"]}}''',
-        },
-        [
-            "nbt", "update", ur'''{SpawnCount:1s,SpawnRange:4s,RequiredPlayerRange:30s,Delay:10s,MinSpawnDelay:32767s,MaxSpawnDelay:32767s,MaxNearbyEntities:30s}''',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:mob_spawner",
-            "nbt":ur'''{SpawnData:{Tags:["Elite","WeaknessAura"]}}''',
-        },
-        [
-            "nbt", "update", ur'''{SpawnCount:1s,SpawnRange:4s,RequiredPlayerRange:30s,Delay:10s,MinSpawnDelay:32767s,MaxSpawnDelay:32767s,MaxNearbyEntities:30s}''',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:wither_skeleton",
-            "name":"Harbinger of Fatigue",
-        },
-        [
-            "nbt", "replace", ur'''{PersistenceRequired:1b,id:"minecraft:wither_skeleton",CustomName:"Harbinger of Fatigue",CustomNameVisible:1b,Tags:["Elite","FatigueAura"],ArmorItems:[{id:"minecraft:golden_boots",Count:1b,tag:{ench:[{id:0s,lvl:2s},{id:4s,lvl:4s}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:2359296}}},{id:"minecraft:golden_chestplate",Count:1b,tag:{ench:[{id:0s,lvl:2s},{id:4s,lvl:4s}]}},{id:"minecraft:skull",Damage:3s,Count:1b,tag:{SkullOwner:{Id:"9eee34ea-2c9f-47a1-98f8-34105af45215",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVmMzE3ZmFhOGRjZjEzYTJmYzE4ZWEwYmYwYTA3MzZhNGZmOTVjMjg1MDFiYjFjZmE0MzAyNTQyMjc4ZjhhIn19fQ=="}]}}}}],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{ench:[{id:16s,lvl:10s}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:1,Patterns:[{Pattern:"tt",Color:0},{Pattern:"cbo",Color:0},{Pattern:"bt",Color:0},{Pattern:"bts",Color:1},{Pattern:"tts",Color:1}]}}}],ArmorDropChances:[-327.67F,-327.67F,-327.67F,-327.67F],HandDropChances:[-327.67F,-327.67F],Attributes:[{Name:"generic.maxHealth",Base:60.0d},{Name:"generic.movementSpeed",Base:0.21d},{Name:"generic.followRange",Base:25.0d}],Health:60.0f,ActiveEffects:[{Id:11b,Amplifier:0b,Duration:199980}]}''',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:wither_skeleton",
-            "name":"Harbinger of Hunger",
-        },
-        [
-            "nbt", "replace", ur'''{PersistenceRequired:1b,id:"minecraft:wither_skeleton",CustomName:"Harbinger of Hunger",CustomNameVisible:1b,Tags:["Elite","HungerAura"],ArmorItems:[{id:"minecraft:golden_boots",Count:1b,tag:{ench:[{id:0s,lvl:2s},{id:4s,lvl:4s}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:2359296}}},{id:"minecraft:golden_chestplate",Count:1b,tag:{ench:[{id:0s,lvl:2s},{id:4s,lvl:4s}]}},{id:"minecraft:skull",Damage:3s,Count:1b,tag:{SkullOwner:{Id:"9eee34ea-2c9f-47a1-98f8-34105af45215",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVmMzE3ZmFhOGRjZjEzYTJmYzE4ZWEwYmYwYTA3MzZhNGZmOTVjMjg1MDFiYjFjZmE0MzAyNTQyMjc4ZjhhIn19fQ=="}]}}}}],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{ench:[{id:16s,lvl:10s}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:1,Patterns:[{Pattern:"tt",Color:0},{Pattern:"cbo",Color:0},{Pattern:"bt",Color:0},{Pattern:"bts",Color:1},{Pattern:"tts",Color:1}]}}}],ArmorDropChances:[-327.67F,-327.67F,-327.67F,-327.67F],HandDropChances:[-327.67F,-327.67F],Attributes:[{Name:"generic.maxHealth",Base:60.0d},{Name:"generic.movementSpeed",Base:0.21d},{Name:"generic.followRange",Base:25.0d}],Health:60.0f,ActiveEffects:[{Id:11b,Amplifier:0b,Duration:199980}]}''',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:wither_skeleton",
-            "name":"Harbinger of Slowness",
-        },
-        [
-            "nbt", "replace", ur'''{PersistenceRequired:1b,id:"minecraft:wither_skeleton",CustomName:"Harbinger of Slowness",CustomNameVisible:1b,Tags:["Elite","SlownessAura"],ArmorItems:[{id:"minecraft:golden_boots",Count:1b,tag:{ench:[{id:0s,lvl:2s},{id:4s,lvl:4s}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:2359296}}},{id:"minecraft:golden_chestplate",Count:1b,tag:{ench:[{id:0s,lvl:2s},{id:4s,lvl:4s}]}},{id:"minecraft:skull",Damage:3s,Count:1b,tag:{SkullOwner:{Id:"9eee34ea-2c9f-47a1-98f8-34105af45215",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVmMzE3ZmFhOGRjZjEzYTJmYzE4ZWEwYmYwYTA3MzZhNGZmOTVjMjg1MDFiYjFjZmE0MzAyNTQyMjc4ZjhhIn19fQ=="}]}}}}],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{ench:[{id:16s,lvl:10s}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:1,Patterns:[{Pattern:"tt",Color:0},{Pattern:"cbo",Color:0},{Pattern:"bt",Color:0},{Pattern:"bts",Color:1},{Pattern:"tts",Color:1}]}}}],ArmorDropChances:[-327.67F,-327.67F,-327.67F,-327.67F],HandDropChances:[-327.67F,-327.67F],Attributes:[{Name:"generic.maxHealth",Base:60.0d},{Name:"generic.movementSpeed",Base:0.21d},{Name:"generic.followRange",Base:25.0d}],Health:60.0f,ActiveEffects:[{Id:11b,Amplifier:0b,Duration:199980}]}''',
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:wither_skeleton",
-            "name":"Harbinger of Weakness",
-        },
-        [
-            "nbt", "replace", ur'''{PersistenceRequired:1b,id:"minecraft:wither_skeleton",CustomName:"Harbinger of Weakness",CustomNameVisible:1b,Tags:["Elite","WeaknessAura"],ArmorItems:[{id:"minecraft:golden_boots",Count:1b,tag:{ench:[{id:0s,lvl:2s},{id:4s,lvl:4s}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:2359296}}},{id:"minecraft:golden_chestplate",Count:1b,tag:{ench:[{id:0s,lvl:2s},{id:4s,lvl:4s}]}},{id:"minecraft:skull",Damage:3s,Count:1b,tag:{SkullOwner:{Id:"9eee34ea-2c9f-47a1-98f8-34105af45215",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVmMzE3ZmFhOGRjZjEzYTJmYzE4ZWEwYmYwYTA3MzZhNGZmOTVjMjg1MDFiYjFjZmE0MzAyNTQyMjc4ZjhhIn19fQ=="}]}}}}],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{ench:[{id:16s,lvl:10s}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:1,Patterns:[{Pattern:"tt",Color:0},{Pattern:"cbo",Color:0},{Pattern:"bt",Color:0},{Pattern:"bts",Color:1},{Pattern:"tts",Color:1}]}}}],ArmorDropChances:[-327.67F,-327.67F,-327.67F,-327.67F],HandDropChances:[-327.67F,-327.67F],Attributes:[{Name:"generic.maxHealth",Base:60.0d},{Name:"generic.movementSpeed",Base:0.21d},{Name:"generic.followRange",Base:25.0d}],Health:60.0f,ActiveEffects:[{Id:11b,Amplifier:0b,Duration:199980}]}''',
         ]
     ],
     # Save these for last; don't want to forget to handle Elites properly, do we?
