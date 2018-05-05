@@ -378,45 +378,6 @@ config = {
         'linked':server_config_min_plus_data + advancements_disabled + base_plugins + coreprotect + build_plugins,
     },
 
-    'vanilla':{
-        'config':[
-            ('eula.txt',),
-            ('commands.yml',),
-            ('help.yml',),
-            ('permissions.yml',),
-            ('spigot.yml',),
-            ('wepif.yml',),
-            # Note - mark2-scripts.txt is static!
-            ('plugins/FastAsyncWorldEdit/config.yml',),
-            ('plugins/CoreProtect/config.yml',),
-            ('plugins/Monumenta-Plugins/config.yml',),
-            ('plugins/Monumenta-Plugins/Properties.json',),
-
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('server.properties', 'difficulty', 'difficulty=3'),
-            ('server.properties', 'generate-structures', 'generate-structures=true'),
-            ('server.properties', 'server-port', 'server-port=25575'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('spigot.yml', 'save-structure-info', '    save-structure-info: true'),
-            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.27"'),
-            ('server.properties', 'difficulty', 'difficulty=3'),
-            ('server.properties', 'gamemode', 'gamemode=0'),
-            ('server.properties', 'allow-nether', 'allow-nether=true'),
-            ('server.properties', 'white-list', 'white-list=false'),
-            ('server.properties', 'spawn-protection', 'spawn-protection=16'),
-            ('server.properties', 'pvp', 'pvp=true'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2048M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2048M'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": ["region_1"],'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Spawn", "type":"SafeZone", "pos1":"-1520 43 1087", "pos2":"-1475 255 1126"}
-    ],'''),
-        ],
-        'linked':server_config_min + luckperms_standalone + easywarp + socket4mc + coreprotect + worldedit + [('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),('plugins/TogglePvp.jar', '../../server_config/plugins/TogglePvp.jar')]
-    },
-
     'nightmare':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=10'),
