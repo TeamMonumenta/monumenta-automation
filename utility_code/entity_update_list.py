@@ -52,54 +52,29 @@ KingsValleyImmovable = entity_update.UpdateEntities([],[
 KingsValleyBuild = entity_update.UpdateEntities([],[
     [
         {
-            "id":"minecraft:mob_spawner",
-            "nbt":ur'''{SpawnData:{CustomName:"Buried Remains",id:"minecraft:skeleton"}}''',
-        },
-        [
-            "nbt", "update", ur'''{MaxNearbyEntities:10s,RequiredPlayerRange:16s,SpawnCount:4s,MaxSpawnDelay:300s,Delay:0s,id:"minecraft:mob_spawner",SpawnRange:4s,MinSpawnDelay:100s}''',
-        ]
-    ],
-    [
-        {
             "id":"minecraft:skeleton",
             "name":"Buried Remains",
         },
         [
-            "nbt", "replace", ur'''{CustomName:"Buried Remains",Passengers:[{Potion:{id:"minecraft:splash_potion",Count:1b,tag:{CustomPotionColor:12566463,CustomPotionEffects:[{Duration:1,Id:7b,Amplifier:0b}],Potion:"minecraft:harming"}},id:"minecraft:potion"}],Health:20.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:11579568}}},{},{},{}],Attributes:[{Base:20,Name:"generic.maxHealth"},{Base:24,Name:"generic.followRange"},{Base:0.15d,Name:"generic.knockbackResistance"},{Base:3,Name:"generic.attackDamage"}],id:"minecraft:skeleton",CustomNameVisible:0b,HandItems:[{id:"minecraft:bone",Count:1b},{id:"minecraft:bone",Count:1b}]}''',
+            "nbt", "replace", ur'''{CustomName:"Buried Remains",Passengers:[{Potion:{id:"minecraft:splash_potion",Count:1b,tag:{CustomPotionColor:12566463,CustomPotionEffects:[{Duration:1,Id:7b,Amplifier:0b}],Potion:"minecraft:harming"}},id:"minecraft:potion"}],Health:15.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:11579568}}},{},{},{}],Attributes:[{Base:15,Name:"generic.maxHealth"},{Base:24,Name:"generic.followRange"},{Base:0.15d,Name:"generic.knockbackResistance"},{Base:3,Name:"generic.attackDamage"}],id:"minecraft:skeleton",CustomNameVisible:0b,HandItems:[{id:"minecraft:bone",Count:1b},{id:"minecraft:bone",Count:1b}]}''',
         ]
     ],
     [
         {
-            "any":[
-                {"name":'Air Wraith'},
-                {"name":'Earth Wraith'},
-                {"name":'Flame Wraith'},
-                {"name":'Water Wraith'},
-                {
-                    "name":'Ghost',
-                    "tag":["Elite"],
-                },
-            ]
+            "id":"minecraft:creeper",
+            "nbt":ur'''{Fuse:20,Attributes:[{Base:0.26d,Name:"generic.movementSpeed"}],id:"minecraft:creeper"}'''
         },
         [
-            "tag", ["Elite","Invisible"],
-        ]
-    ],
-    [ # That space was going to drive me nuts
-        {
-            "name":" Skeletal Abomination",
-        },
-        [
-            "name", "set", "Skeletal Abomination",
+            "name", "set", ur"Foul Creeper",
         ]
     ],
     [
         {
-            "id":"minecraft:spider",
-            "name":"Fanged Spider",
+            "id":"minecraft:creeper",
+            "nbt":ur'''{powered:1,Health:20.0f,Attributes:[{Base:20,Name:"generic.maxHealth"}],id:"minecraft:creeper"}'''
         },
         [
-            "nbt", "update", ur'''{Health:12.0f,ActiveEffects:[{Ambient:1b,ShowParticles:1b,Duration:1200,Id:16b,Amplifier:0b}],HandItems:[{id:"minecraft:stone_sword",Count:1b,tag:{ench:[{lvl:5s,id:16s}]},Damage:0s},{}]}''',
+            "name", "set", ur"Charged Creeper",
         ]
     ],
     # Save these for last; don't want to forget to handle Elites properly, do we?
