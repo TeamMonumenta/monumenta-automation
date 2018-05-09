@@ -17,8 +17,8 @@ from advancement_change_list import advancementRevokeList
 config = {
     "server":"betaplots",
 
-    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/betaplots/Project_Epic-betaplots/",
-    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/betaplots/Project_Epic-betaplots/",
+    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/betaplots/Project_Epic-betaplots/",
+    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/Project_Epic-betaplots/",
 
     "copyBaseFrom":"main",
 
@@ -30,6 +30,6 @@ config = {
     "itemReplaceLocations":["players", "world",],
     "entityUpdates":entity_update_list.KingsValley,
     "entityUpdateLocations":["world",],
-    "itemLog":"/home/rock/4_SHARED/tmpreset/items_betaplots.txt",
+    "itemLog":"/home/rock/5_SCRATCH/tmpreset/items_betaplots.txt",
 }
 

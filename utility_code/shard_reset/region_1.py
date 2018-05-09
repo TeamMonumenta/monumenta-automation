@@ -20,9 +20,9 @@ config = {
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
-    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/region_1/Project_Epic-region_1/",
-    "localBuildFolder":"/home/rock/4_SHARED/tmpreset/TEMPLATE/region_1/Project_Epic-region_1/",
-    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/region_1/Project_Epic-region_1/",
+    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_1/Project_Epic-region_1/",
+    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_1/Project_Epic-region_1/",
+    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/Project_Epic-region_1/",
 
     # Reset dungeon scores
     "playerScoreChanges":dungeonScoreRules,
@@ -55,7 +55,7 @@ config = {
     # List of places where item replacements should be run - options are "players", "world", "schematics"
     "itemReplacements":item_replace_list.KingsValley,
     "itemReplaceLocations":["players", "schematics",],
-    "itemLog":"/home/rock/4_SHARED/tmpreset/items_region_1.txt",
+    "itemLog":"/home/rock/5_SCRATCH/tmpreset/items_region_1.txt",
 
     # List of places where entity updates should be run - options are "world", "schematics"
     "entityUpdates":entity_update_list.KingsValley,

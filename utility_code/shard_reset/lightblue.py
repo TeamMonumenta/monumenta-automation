@@ -16,8 +16,8 @@ from advancement_change_list import advancementRevokeList
 
 config = {
     "server":"lightblue",
-    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/lightblue/Project_Epic-lightblue/",
-    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/lightblue/Project_Epic-lightblue/",
+    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/lightblue/Project_Epic-lightblue/",
+    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/lightblue/Project_Epic-lightblue/",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
@@ -28,6 +28,6 @@ config = {
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValleyDungeon,
     "itemReplaceLocations":["players"],
-    "itemLog":"/home/rock/4_SHARED/tmpreset/items_lightblue.txt",
+    "itemLog":"/home/rock/5_SCRATCH/tmpreset/items_lightblue.txt",
 }
 

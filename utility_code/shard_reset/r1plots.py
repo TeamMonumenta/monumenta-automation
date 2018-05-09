@@ -17,8 +17,8 @@ from advancement_change_list import advancementRevokeList
 config = {
     "server":"r1plots",
 
-    "localMainFolder":"/home/rock/4_SHARED/tmpreset/PRE_RESET/r1plots/Project_Epic-r1plots/",
-    "localDstFolder":"/home/rock/4_SHARED/tmpreset/POST_RESET/r1plots/Project_Epic-r1plots/",
+    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/r1plots/Project_Epic-r1plots/",
+    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/Project_Epic-r1plots/",
 
     "copyBaseFrom":"main",
 
@@ -31,6 +31,6 @@ config = {
     "entityUpdates":entity_update_list.KingsValley,
     "entityUpdateLocations":["world",],
     "immovableFix":entity_update_list.KingsValleyImmovable,
-    "itemLog":"/home/rock/4_SHARED/tmpreset/items_r1plots.txt",
+    "itemLog":"/home/rock/5_SCRATCH/tmpreset/items_r1plots.txt",
 }
 

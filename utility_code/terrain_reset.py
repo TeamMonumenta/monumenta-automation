@@ -9,7 +9,7 @@ from lib_monumenta.terrain_reset import terrainReset
 
 from shard_reset import region_1, r1plots, betaplots, white, orange, magenta, lightblue, yellow, nightmare, r1bonus, roguelike
 
-itemCountLog = "/home/rock/4_SHARED/tmpreset/all_items.txt"
+itemCountLog = "/home/rock/5_SCRATCH/tmpreset/all_items.txt"
 
 configList = [
     region_1.config,

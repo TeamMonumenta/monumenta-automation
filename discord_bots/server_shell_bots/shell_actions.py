@@ -211,14 +211,12 @@ Downloads the terrain reset bundle from the build server and unpacks it'''
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
-            self.display("Fetching reset bundle from build server..."),
-            self.run("rm -rf /home/rock/4_SHARED/tmpreset"),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset"),
-            self.run("sftp build:/home/rock/4_SHARED/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz /home/rock/4_SHARED/tmpreset/"),
             self.display("Unpacking reset bundle..."),
-            self.cd("/home/rock/4_SHARED/tmpreset"),
-            self.run("tar xzf project_epic_build_template_pre_reset_" + datestr() + ".tgz"),
-            self.display("Reset bundle is prepped for reset."),
+            self.run("rm -rf /home/rock/5_SCRATCH/tmpreset", None),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset"),
+            self.cd("/home/rock/5_SCRATCH/tmpreset"),
+            self.run("tar xzf /home/rock/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz"),
+            self.display("Build server template data retrieved and ready for reset."),
             self.mention(),
         ]
 allActions.append(FetchResetBundleAction)
@@ -235,8 +233,8 @@ Must be run before preparing the build server reset bundle'''
         super().__init__(botConfig["extraDebug"])
         self._commands = [
             self.display("Cleaning up old terrain reset data..."),
-            self.run("rm -rf /home/rock/4_SHARED/tmpreset", None),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset"),
+            self.run("rm -rf /home/rock/5_SCRATCH/tmpreset", None),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset"),
 
             self.display("Stopping the dungeon shard..."),
             self.run("mark2 send -n dungeon ~stop", None),
@@ -244,22 +242,22 @@ Must be run before preparing the build server reset bundle'''
             self.run("mark2 send -n dungeon test", 1),
 
             self.display("Copying the dungeon master copies..."),
-            self.run("cp -a /home/rock/project_epic/dungeon/Project_Epic-dungeon /home/rock/4_SHARED/tmpreset/Project_Epic-dungeon"),
+            self.run("cp -a /home/rock/project_epic/dungeon/Project_Epic-dungeon /home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon"),
 
             self.display("Restarting the dungeon shard..."),
             self.cd("/home/rock/project_epic/dungeon"),
             self.run("mark2 start"),
 
             self.display("Unpacking the dungeon template..."),
-            self.cd("/home/rock/4_SHARED/tmpreset"),
+            self.cd("/home/rock/5_SCRATCH/tmpreset"),
             self.run("tar xzf /home/rock/assets/dungeon_template.tgz"),
 
             self.display("Generating dungeon instances (this may take a while)..."),
             self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/dungeon_instance_gen.py"),
-            self.run("mv /home/rock/4_SHARED/tmpreset/dungeons-out /home/rock/4_SHARED/tmpreset/POST_RESET"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/dungeons-out /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
 
             self.display("Cleaning up instance generation temp files..."),
-            self.run("rm -rf /home/rock/4_SHARED/tmpreset/Project_Epic-dungeon /home/rock/4_SHARED/tmpreset/Project_Epic-template"),
+            self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon /home/rock/5_SCRATCH/tmpreset/Project_Epic-template"),
             self.display("Dungeon instance generation complete!"),
             self.mention(),
         ]
@@ -294,25 +292,25 @@ Must be run before starting terrain reset on the play server'''
             self.run("mark2 send -n region_1 test", 1),
 
             self.display("Copying region_1..."),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/TEMPLATE/region_1"),
-            self.run("cp -a /home/rock/project_epic/region_1/Project_Epic-region_1 /home/rock/4_SHARED/tmpreset/TEMPLATE/region_1/"),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_1"),
+            self.run("cp -a /home/rock/project_epic/region_1/Project_Epic-region_1 /home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_1/"),
 
             self.display("Restarting the region_1 shard..."),
             self.cd("/home/rock/project_epic/region_1"),
             self.run("mark2 start"),
 
             self.display("Copying bungee..."),
-            self.run("cp -a /home/rock/project_epic/bungee /home/rock/4_SHARED/tmpreset/TEMPLATE/"),
+            self.run("cp -a /home/rock/project_epic/bungee /home/rock/5_SCRATCH/tmpreset/TEMPLATE/"),
 
             self.display("Copying purgatory..."),
-            self.run("cp -a /home/rock/project_epic/purgatory /home/rock/4_SHARED/tmpreset/POST_RESET/"),
+            self.run("cp -a /home/rock/project_epic/purgatory /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
 
             self.display("Copying server_config..."),
-            self.run("cp -a /home/rock/project_epic/server_config /home/rock/4_SHARED/tmpreset/POST_RESET/"),
+            self.run("cp -a /home/rock/project_epic/server_config /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
 
             self.display("Packaging up reset bundle..."),
-            self.cd("/home/rock/4_SHARED/tmpreset"),
-            self.run("tar czf /home/rock/4_SHARED/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE"),
+            self.cd("/home/rock/5_SCRATCH/tmpreset"),
+            self.run("tar czf /home/rock/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE"),
 
             self.display("Reset bundle ready!"),
             self.mention(),
@@ -421,67 +419,59 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
-            self.display("Archiving the pre reset bundle backup..."),
-            self.run("mv /home/rock/4_SHARED/tmpreset/project_epic_build_template_pre_reset_" + datestr() + ".tgz /home/rock/1_ARCHIVE/"),
-
-            # TODO: Check that ~/4_SHARED/tmpreset exists and ~/4_SHARED/tmpreset/PRE_RESET doesn't
+            # TODO: Check that all shards are stopped
             self.display("Moving the project_epic directory to PRE_RESET"),
-            self.run("mv /home/rock/project_epic /home/rock/4_SHARED/tmpreset/PRE_RESET"),
+            self.run("mv /home/rock/project_epic /home/rock/5_SCRATCH/tmpreset/PRE_RESET"),
 
             self.display("Copying bungeecord..."),
-            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/bungee /home/rock/4_SHARED/tmpreset/POST_RESET/"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/bungee /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
             # TODO: Update automatically
-            self.display("TODO: UPDATE BUNGEE NUMBER!"),
-
-            # No longer need to update server versions...
+            self.display("TODO: You must manually update the version number in bungee's config.yml!"),
 
             self.display("Preserving luckperms data..."),
-            self.run("rm -rf /home/rock/4_SHARED/tmpreset/POST_RESET/server_config/plugins/LuckPerms/yaml-storage"),
-            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/server_config/plugins/LuckPerms/yaml-storage /home/rock/4_SHARED/tmpreset/POST_RESET/server_config/plugins/LuckPerms/yaml-storage"),
+            self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/POST_RESET/server_config/plugins/LuckPerms/yaml-storage"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/server_config/plugins/LuckPerms/yaml-storage /home/rock/5_SCRATCH/tmpreset/POST_RESET/server_config/plugins/LuckPerms/yaml-storage"),
 
             self.display("Removing pre-reset server_config..."),
-            self.run("rm -rf /home/rock/4_SHARED/tmpreset/PRE_RESET/server_config"),
+            self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/PRE_RESET/server_config"),
 
             self.display("Running actual terrain reset (this will take a while!)..."),
             self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/terrain_reset.py"),
 
             self.display("Preserving coreprotect and easywarp data for plots and region 1..."),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/betaplots/plugins/CoreProtect"),
-            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/betaplots/plugins/CoreProtect/database.db /home/rock/4_SHARED/tmpreset/POST_RESET/betaplots/plugins/CoreProtect/database.db"),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/betaplots/plugins/EasyWarp"),
-            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/betaplots/plugins/EasyWarp/warps.yml /home/rock/4_SHARED/tmpreset/POST_RESET/betaplots/plugins/EasyWarp/warps.yml"),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/r1plots/plugins/CoreProtect"),
-            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/r1plots/plugins/CoreProtect/database.db /home/rock/4_SHARED/tmpreset/POST_RESET/r1plots/plugins/CoreProtect/database.db"),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/r1plots/plugins/EasyWarp"),
-            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/r1plots/plugins/EasyWarp/warps.yml /home/rock/4_SHARED/tmpreset/POST_RESET/r1plots/plugins/EasyWarp/warps.yml"),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/region_1/plugins/CoreProtect"),
-            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/region_1/plugins/CoreProtect/database.db /home/rock/4_SHARED/tmpreset/POST_RESET/region_1/plugins/CoreProtect/database.db"),
-            self.run("mkdir -p /home/rock/4_SHARED/tmpreset/POST_RESET/region_1/plugins/EasyWarp"),
-            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/region_1/plugins/EasyWarp/warps.yml /home/rock/4_SHARED/tmpreset/POST_RESET/region_1/plugins/EasyWarp/warps.yml"),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/plugins/CoreProtect"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/betaplots/plugins/CoreProtect/database.db /home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/plugins/CoreProtect/database.db"),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/plugins/EasyWarp"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/betaplots/plugins/EasyWarp/warps.yml /home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/plugins/EasyWarp/warps.yml"),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/plugins/CoreProtect"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/r1plots/plugins/CoreProtect/database.db /home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/plugins/CoreProtect/database.db"),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/plugins/EasyWarp"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/r1plots/plugins/EasyWarp/warps.yml /home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/plugins/EasyWarp/warps.yml"),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/plugins/CoreProtect"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_1/plugins/CoreProtect/database.db /home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/plugins/CoreProtect/database.db"),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/plugins/EasyWarp"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_1/plugins/EasyWarp/warps.yml /home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/plugins/EasyWarp/warps.yml"),
 
             self.display("Moving the build shard..."),
-            self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/build /home/rock/4_SHARED/tmpreset/POST_RESET/"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/build /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
 
             self.display("Generating per-shard config..."),
-            self.cd("/home/rock/4_SHARED/tmpreset/POST_RESET"),
+            self.cd("/home/rock/5_SCRATCH/tmpreset/POST_RESET"),
             self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play build betaplots lightblue magenta nightmare orange purgatory r1bonus r1plots region_1 roguelike tutorial white yellow"),
 
             # TODO: This should probably print a warning and proceed anyway if some are found
             self.display("Checking for broken symbolic links..."),
-            self.run("find /home/rock/4_SHARED/tmpreset/POST_RESET -xtype l"),
+            self.run("find /home/rock/5_SCRATCH/tmpreset/POST_RESET -xtype l", displayOutput=True),
 
             self.display("Renaming the reset directory..."),
-            self.run("mv /home/rock/4_SHARED/tmpreset/POST_RESET /home/rock/4_SHARED/tmpreset/project_epic"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/POST_RESET /home/rock/5_SCRATCH/tmpreset/project_epic"),
 
             self.display("Backing up post-reset artifacts..."),
-            self.cd("/home/rock/4_SHARED/tmpreset"),
+            self.cd("/home/rock/5_SCRATCH/tmpreset"),
             self.run("tar czf /home/rock/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic"),
 
             self.display("Moving the project_epic result back where it should be..."),
-            self.run("mv /home/rock/4_SHARED/tmpreset/project_epic /home/rock/"),
-
-            self.display("Removing pre-reset artifacts..."),
-            self.run("rm -r /home/rock/4_SHARED/tmpreset/PRE_RESET /home/rock/4_SHARED/tmpreset/TEMPLATE"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/project_epic /home/rock/"),
 
             self.display("Done."),
             self.mention(),
@@ -490,7 +480,6 @@ allActions.append(TerrainResetAction)
 
 class WhitelistAction(ShellAction):
     '''Control server whitelists
-`{cmdPrefix}whitelist` - list shard whitelist status
 `{cmdPrefix}whitelist enable *` - enable all shard whitelists, allows players to enter
 `{cmdPrefix}whitelist disable *` - disables all shard whitelists, allows only opped players to enter
 `{cmdPrefix}whitelist enable nightmare` - enable whitelist on only nightmare shard'''
