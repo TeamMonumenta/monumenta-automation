@@ -35,13 +35,20 @@ from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGl
 from lib_monumenta.list_uuids import listUUIDs
 #from lib_monumenta.advancements import advancements
 from lib_monumenta.move_region import moveRegion
+from lib_monumenta.timing import timings
 
 def terrainResetInstance(config, outputFile, statusQueue):
+    shardName = config["server"]
     try:
         # Redirect output to specified file
         sys.stdout = codecs.getwriter('utf8')(open(outputFile, "w"))
 
-        print "Starting reset for server {0}...".format(config["server"])
+        mainTiming = timings(enabled=True)
+        nextStep = mainTiming.nextStep
+        
+        nextStep("[TIMING] Thread started")
+
+        print "Starting reset for server {0}...".format(shardName)
 
         ################################################################################
         # Assign variables
@@ -57,6 +64,8 @@ def terrainResetInstance(config, outputFile, statusQueue):
 
         if "itemLog" in config:
             itemReplacements.enableGlobalCount()
+
+        nextStep("[TIMING] Config read")
 
         ################################################################################
         # Copy folders
@@ -81,16 +90,23 @@ def terrainResetInstance(config, outputFile, statusQueue):
             print "  Copying files from main world..."
             copyFiles(localMainFolder, localDstFolder, config["copyMainFiles"])
 
+        nextStep("[TIMING] Copied base files/folders")
+
         # We need to read DstWorld, even if we don't edit it.
         # This lets us prune scores of dead entities.
         print "  Opening Destination World..."
         dstWorld = pymclevel.loadWorld(localDstFolder)
 
+        nextStep("[TIMING] Loaded world")
+
         worldScores = scoreboard.scoreboard(localDstFolder)
+
+        nextStep("[TIMING] Loaded scoreboard")
 
         if "playerScoreChanges" in config:
             print "  Adjusting player scores (dungeon scores)..."
             worldScores.batchScoreChanges(config["playerScoreChanges"])
+            nextStep("[TIMING] Handled dungeon scores")
 
         if "preserveInstance" in config:
             instanceConfig = config["preserveInstance"]
@@ -103,6 +119,7 @@ def terrainResetInstance(config, outputFile, statusQueue):
             for scoreObject in dungeonScoreObjects:
                 dungeonScores.add(scoreObject["Score"].value)
             dungeonScores = sorted(list(dungeonScores))
+            nextStep("[TIMING] Preserve dungeon instances: scores updated")
 
             oldRegionDir = localMainFolder + 'region/'
             newRegionDir = localDstFolder + 'region/'
@@ -130,10 +147,7 @@ def terrainResetInstance(config, outputFile, statusQueue):
                         # Consider setting this value to -1 to indicate an error
                         scoreObject["Score"].value = 0
                     continue
-
-            # Move players to the same location in the next instance, or send them to spawn.
-            # Note for next week: just teleport players who aren't at spawn, and
-            # if there's no region where they would land, send them to spawn.
+            nextStep("[TIMING] Preserved dungeon instances")
 
         ################################################################################
         # Perform world manipulations if required
@@ -154,10 +168,12 @@ def terrainResetInstance(config, outputFile, statusQueue):
 
             print "  Opening old play World..."
             srcWorld = pymclevel.loadWorld(localMainFolder)
+            nextStep("[TIMING] Loaded old play world")
 
             if "coordinatesToFill" in config:
                 print "  Filling selected regions with specified blocks..."
                 fillBoxes(dstWorld, config["coordinatesToFill"])
+                nextStep("[TIMING] Filled selected regions (magic blocks)")
 
             if "coordinatesToCopy" in config:
                 if ("coordinatesDebug" in config) and (config["coordinatesDebug"] == True):
@@ -171,37 +187,48 @@ def terrainResetInstance(config, outputFile, statusQueue):
 
                     print "  Copying needed terrain from the main world..."
                     copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"], tmpBlockReplacements, tmpItemReplacements, tmpEntityUpdates)
+                    nextStep("[TIMING] Copied regions (includes block, item, and entity changes)")
 
             if (blockReplacements is not None) and ("world" in config["blockReplaceLocations"]):
                 print "  Replacing specified blocks worldwide..."
                 replaceGlobally(dstWorld, blockReplacements)
+                nextStep("[TIMING] Replaced blocks throughout the world")
 
             if (itemReplacements is not None) and ("world" in config["itemReplaceLocations"]):
                 print "  Replacing specified items worldwide..."
                 itemReplacements.InWorld(dstWorld)
+                nextStep("[TIMING] Finished item replacements throughout the world")
 
             if (entityUpdates is not None) and ("world" in config["entityUpdateLocations"]):
-                print "  Replacing specified items worldwide..."
+                print "  Updated specified entities worldwide..."
                 entityUpdates.InWorld(dstWorld)
+                nextStep("[TIMING] Finished entity updates throughout the world")
 
             if immovableFix is not None:
                 print "  Making villagers immovable worldwide..."
                 immovableFix.InWorld(dstWorld)
+                nextStep("[TIMING] Made villagers unpushable worldwide (hopefully)")
 
             if (shouldResetDifficulty == True):
                 print "  Resetting difficulty..."
                 resetRegionalDifficulty(dstWorld)
+                nextStep("[TIMING] Reset difficulty in world")
 
             print "  Generating lights (should only happen on block changes!)...."
             dstWorld.generateLights()
+            nextStep("[TIMING] Finished generating lighting")
             print "  Saving...."
             dstWorld.saveInPlace()
+            nextStep("[TIMING] Saved")
 
         print "  Deleting scores for missing entities..."
         existingEntities = listUUIDs(dstWorld)
+        nextStep("[TIMING] Found UUIDs in world")
         # Disabled for now since it mangles fakeplayer scores
         # worldScores.pruneMissingEntities(existingEntities)
+        # nextStep("[TIMING] Pruned scores of missing entities.")
         worldScores.save()
+        nextStep("[TIMING] Saved scoreboard changes")
 
         # TODO Disabled to test if this is revoking advancements it shouldn't.
         #if "revokeAdvancements" in config:
@@ -209,17 +236,21 @@ def terrainResetInstance(config, outputFile, statusQueue):
             print "Revoking advancements from players..."
             dstAdvancements = advancements(localDstFolder)
             dstAdvancements.revoke(config["revokeAdvancements"])
+            nextStep("[TIMING] Revoked advancements for bug fixes")
 
         if "players" in config["itemReplaceLocations"]:
             itemReplacements.OnPlayers(localDstFolder)
+            nextStep("[TIMING] Replaced items on players")
 
         if "safetyTpLocation" in config:
             print "  Moving players to safety..."
             movePlayers(localDstFolder, config["safetyTpLocation"])
+            nextStep("[TIMING] Teleported players to specified location")
 
         if "tagPlayers" in config:
             print "  Giving scoreboard tags to players..."
             tagPlayers(localDstFolder,config["tagPlayers"])
+            nextStep("[TIMING] Tagged players")
 
         if (
             "tpToSpawn" in config and
@@ -243,21 +274,25 @@ def terrainResetInstance(config, outputFile, statusQueue):
                 ):
                     spawnY -= 1
             movePlayers(localDstFolder, (spawnX,spawnY,spawnZ,0.0,0.0))
+            nextStep("[TIMING] Teleported players to spawn")
 
         try:
             shutil.rmtree(localDstFolder+"##MCEDIT.TEMP##", ignore_errors=True)
             os.remove(localDstFolder+"mcedit_waypoints.dat")
         except Exception as e:
             pass
+        nextStep("[TIMING] Removed temporary MCEdit files/folders")
 
         if "itemLog" in config:
             itemReplacements.SaveGlobalLog(config["itemLog"])
+            nextStep("[TIMING] Saved item log")
 
-        statusQueue.put({"server":config["server"],"done":True})
+        nextStep("[TIMING] Declared self as done")
+        statusQueue.put({"server":shardName,"done":True})
 
     except:
         e = traceback.format_exc()
-        statusQueue.put({"server":config["server"],"done":True,"error":e})
+        statusQueue.put({"server":shardName,"done":True,"error":e})
 
 # Multiprocessing implementation based on:
 # http://sebastianraschka.com/Articles/2014_multiprocessing.html
