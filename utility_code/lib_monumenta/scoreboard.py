@@ -18,14 +18,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from pymclevel import nbt
 
 ################################################################################
-# Function definitions
-
-def scoreboardPath(worldFolder):
-    if worldFolder[-1] != "/":
-        worldFolder = worldFolder + "/"
-    return worldFolder + "data/scoreboard.dat"
-
-################################################################################
 # Functions that display stuff while they work
 
 class scoreboard(object):
@@ -33,7 +25,10 @@ class scoreboard(object):
         self.load(worldFolder)
 
     def load(self,worldFolder):
-        self.filePath = scoreboardPath(worldFolder)
+        self.filePath = worldFolder
+        if self.filePath[-1] != "/":
+            self.filePath = self.filePath + "/"
+        self.filePath += "data/scoreboard.dat"
         self.nbt = nbt.load(self.filePath)
         self.allScores = self.nbt['data']['PlayerScores']
 
@@ -232,38 +227,10 @@ class scoreboard(object):
 # Due to what is probably a naming mistake, leaving these uncommented results
 # in Python hanging while trying to import this library. Oops.
 '''
-def getObjectiveValues(worldFolder,objective):
-    """
-    For a given objective name, find any value of
-    that objective and print who has which values
-    """
-    filePath = scoreboardPath(worldFolder)
-    scoreboard = nbt.load(filePath)
-    for aScore in scoreboard["data"]["PlayerScores"]:
-        if aScore["Objective"].value == objective:
-            print aScore["Score"].value, "-", aScore["Name"].value
-
-def findMatchingObjectiveScores(worldFolder,objective,matchingScores=range(-2147483648,2147483648)):
-    """
-    For a given objective name,
-    list players whose values are
-    in the list of selected values
-    scores is a list, such as
-    [3,5,8]
-    range(7,9+1) # for 7 through 9
-    the default is any score
-    """
-    filePath = scoreboardPath(worldFolder)
-    scoreboard = nbt.load(filePath)
-
-    found = {}
-
-    for aScore in scoreboard["data"]["PlayerScores"]:
-        if aScore["Objective"].value == objective:
-            if aScore["Score"].value in matchingScores:
-                found[aScore["Name"].value] = aScore["Score"].value
-
-    return found
+def scoreboardPath(worldFolder):
+    if worldFolder[-1] != "/":
+        worldFolder = worldFolder + "/"
+    return worldFolder + "data/scoreboard.dat"
 
 def updateIGNs(worldFolder,replacementList):
     """
