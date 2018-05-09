@@ -3,14 +3,13 @@
 
 import sys
 import os
-import shutil
 import re
 
 SERVER_TYPE='build'
 
 # Main entry point
 if (len(sys.argv) < 2):
-    sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> <dir2> ...")
+    sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> [dir2] ...")
 
 server_list = [];
 for arg in sys.argv[1:]:
@@ -21,7 +20,7 @@ for arg in sys.argv[1:]:
 
 if (len(server_list) < 1):
     print "ERROR: No folders specified"
-    sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> <dir2> ...")
+    sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> [dir2] ...")
 
 if SERVER_TYPE == 'build':
     print "Using build server settings!"

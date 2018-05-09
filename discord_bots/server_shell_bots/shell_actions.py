@@ -422,12 +422,17 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             # TODO: Check that all shards are stopped
             self.display("Moving the project_epic directory to PRE_RESET"),
             self.run("mv /home/rock/project_epic /home/rock/5_SCRATCH/tmpreset/PRE_RESET"),
+        ]
 
-            self.display("Copying bungeecord..."),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/bungee /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
-            # TODO: Update automatically
-            self.display("TODO: You must manually update the version number in bungee's config.yml!"),
+        if "bungee" in botConfig["shards"].keys():
+            self._commands += [
+                self.display("Copying bungeecord..."),
+                self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/bungee /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
+                # TODO: Update automatically
+                self.display("TODO: You must manually update the version number in bungee's config.yml!"),
+            ]
 
+        self._commands += [
             self.display("Preserving luckperms data..."),
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/POST_RESET/server_config/plugins/LuckPerms/yaml-storage"),
             self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/server_config/plugins/LuckPerms/yaml-storage /home/rock/5_SCRATCH/tmpreset/POST_RESET/server_config/plugins/LuckPerms/yaml-storage"),
@@ -436,7 +441,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/PRE_RESET/server_config"),
 
             self.display("Running actual terrain reset (this will take a while!)..."),
-            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/terrain_reset.py"),
+            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/terrain_reset.py " + " ".join(map(str, botConfig["shards"].keys()))),
 
             self.display("Preserving coreprotect and easywarp data for plots and region 1..."),
             self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/plugins/CoreProtect"),
