@@ -462,10 +462,6 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             self.display("Moving the build shard..."),
             self.run("mv /home/rock/4_SHARED/tmpreset/PRE_RESET/build /home/rock/4_SHARED/tmpreset/POST_RESET/"),
 
-            # TODO: path relative to this bot folder
-            self.display("Synchronizing the whitelist/opslist/banlist..."),
-            self.run("/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/sync_whitelist.sh /home/rock/4_SHARED/tmpreset/PRE_RESET/region_1 /home/rock/4_SHARED/tmpreset/POST_RESET"),
-
             self.display("Generating per-shard config..."),
             self.cd("/home/rock/4_SHARED/tmpreset/POST_RESET"),
             self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play build betaplots lightblue magenta nightmare orange purgatory r1bonus r1plots region_1 roguelike tutorial white yellow"),
@@ -505,44 +501,36 @@ class WhitelistAction(ShellAction):
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(self.command)+1:]
 
-        # TODO Should be made relative to the bot directory
         enableString = "enable"
         disableString = "disable"
 
         if commandArgs[:len(enableString)] == enableString:
-            header = "running subcommand enable"
-            baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/whitelist_shards_enable.sh"
+            header = "Enabling"
+            baseShellCommand = "whitelist on"
             targetShards = commandArgs[len(enableString)+1:]
 
         elif commandArgs[:len(disableString)] == disableString:
-            header = "running subcommand disable"
-            baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/whitelist_shards_disable.sh"
+            header = "Disabling"
+            baseShellCommand = "whitelist off"
             targetShards = commandArgs[len(disableString)+1:]
-
-        else:
-            header = "running subcommand list"
-            baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/whitelist_shards_list.sh"
-            targetShards = "*"
 
         shellCommand = baseShellCommand
         allShards = botConfig["shards"]
+        self._commands = []
+
         if '*' in targetShards:
             for shard in allShards.keys():
-                shellCommand += " " + allShards[shard]["path"]
+                self._commands.append(self.display(header + " whitelist for " + shard))
+                self._commands.append(self.run("mark2 send -n " + shard + " " + baseShellCommand))
         else:
             for shard in allShards.keys():
                 if shard in targetShards:
-                    shellCommand += " " + allShards[shard]["path"]
+                    self._commands.append(self.display(header + " whitelist for " + shard))
+                    self._commands.append(self.run("mark2 send -n " + shard + " " + baseShellCommand))
 
-        if shellCommand == baseShellCommand:
+        if len(self._commands) <= 0:
             self._commands = [
-                self.display(header),
                 self.display("No specified shards on this server."),
-            ]
-        else:
-            self._commands = [
-                self.display(header),
-                self.run(shellCommand, displayOutput=True),
             ]
 allActions.append(WhitelistAction)
 
