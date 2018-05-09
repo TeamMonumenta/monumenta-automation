@@ -418,13 +418,17 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
+
+        resetdir = "/home/rock/5_SCRATCH/tmpreset"
+        allShards = botConfig["shards"].keys()
+
         self._commands = [
             # TODO: Check that all shards are stopped
             self.display("Moving the project_epic directory to PRE_RESET"),
             self.run("mv /home/rock/project_epic /home/rock/5_SCRATCH/tmpreset/PRE_RESET"),
         ]
 
-        if "bungee" in botConfig["shards"].keys():
+        if "bungee" in allShards:
             self._commands += [
                 self.display("Copying bungeecord..."),
                 self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/bungee /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
@@ -435,34 +439,35 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         self._commands += [
             self.display("Preserving luckperms data..."),
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/POST_RESET/server_config/plugins/LuckPerms/yaml-storage"),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/server_config/plugins/LuckPerms/yaml-storage /home/rock/5_SCRATCH/tmpreset/POST_RESET/server_config/plugins/LuckPerms/yaml-storage"),
+            self.run("mv {0}/PRE_RESET/{1} {0}/POST_RESET/{1}".format(resetdir, "server_config/plugins/LuckPerms/yaml-storage")),
 
             self.display("Removing pre-reset server_config..."),
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/PRE_RESET/server_config"),
 
             self.display("Running actual terrain reset (this will take a while!)..."),
-            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/terrain_reset.py " + " ".join(map(str, botConfig["shards"].keys()))),
+            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/terrain_reset.py " + " ".join(map(str, allShards))),
+        ]
 
-            self.display("Preserving coreprotect and easywarp data for plots and region 1..."),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/plugins/CoreProtect"),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/betaplots/plugins/CoreProtect/database.db /home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/plugins/CoreProtect/database.db"),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/plugins/EasyWarp"),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/betaplots/plugins/EasyWarp/warps.yml /home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/plugins/EasyWarp/warps.yml"),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/plugins/CoreProtect"),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/r1plots/plugins/CoreProtect/database.db /home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/plugins/CoreProtect/database.db"),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/plugins/EasyWarp"),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/r1plots/plugins/EasyWarp/warps.yml /home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/plugins/EasyWarp/warps.yml"),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/plugins/CoreProtect"),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_1/plugins/CoreProtect/database.db /home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/plugins/CoreProtect/database.db"),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/plugins/EasyWarp"),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_1/plugins/EasyWarp/warps.yml /home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/plugins/EasyWarp/warps.yml"),
+        for shard in ["r1plots", "betaplots", "region_1"]:
+            if shard in allShards:
+                self._commands += [
+                    self.display("Preserving coreprotect and easywarp data for {0}...".format(shard)),
+                    self.run("mkdir -p {0}/POST_RESET/{1}/plugins/CoreProtect".format(resetdir, shard)),
+                    self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, shard, "plugins/CoreProtect/database.db")),
+                    self.run("mkdir -p {0}/POST_RESET/{1}/plugins/EasyWarp".format(resetdir, shard)),
+                    self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, shard, "plugins/EasyWarp/warps.yml")),
+                ]
 
-            self.display("Moving the build shard..."),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/build /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
+        if "build" in allShards:
+            self._commands += [
+                self.display("Moving the build shard..."),
+                self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/build /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
+            ]
 
+        self._commands += [
             self.display("Generating per-shard config..."),
             self.cd("/home/rock/5_SCRATCH/tmpreset/POST_RESET"),
-            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play build betaplots lightblue magenta nightmare orange purgatory r1bonus r1plots region_1 roguelike tutorial white yellow"),
+            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play " + " ".join(map(str, allShards))),
 
             # TODO: This should probably print a warning and proceed anyway if some are found
             self.display("Checking for broken symbolic links..."),
@@ -509,15 +514,15 @@ class WhitelistAction(ShellAction):
             targetShards = commandArgs[len(disableString)+1:]
 
         shellCommand = baseShellCommand
-        allShards = botConfig["shards"]
+        allShards = botConfig["shards"].keys()
         self._commands = []
 
         if '*' in targetShards:
-            for shard in allShards.keys():
+            for shard in allShards:
                 self._commands.append(self.display(header + " whitelist for " + shard))
                 self._commands.append(self.run("mark2 send -n " + shard + " " + baseShellCommand))
         else:
-            for shard in allShards.keys():
+            for shard in allShards:
                 if shard in targetShards:
                     self._commands.append(self.display(header + " whitelist for " + shard))
                     self._commands.append(self.run("mark2 send -n " + shard + " " + baseShellCommand))
