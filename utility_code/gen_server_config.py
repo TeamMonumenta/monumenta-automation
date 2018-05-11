@@ -219,6 +219,7 @@ config = {
         {"name":"Roguelike Entrance Puzzle", "type":"SafeZone", "pos1":"825 0 173", "pos2":"889 97 217"},
         {"name":"Vanilla Pilot", "type":"SafeZone", "pos1":"410 156 157", "pos2":"429 190 176"},
         {"name":"Mansion Vault", "type":"SafeZone", "pos1":"-14 84 -231", "pos2":"10 102 -202"},
+        {"name":"Replica Hall", "type":"SafeZone", "pos1":"-2133 44 551", "pos2":"-2077 113 798"},
 
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
         {"name":"Siege Of Highwatch", "type":"AdventureZone", "pos1":"1505 102 -178", "pos2":"1631 256 -16"},
