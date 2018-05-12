@@ -63,6 +63,7 @@ server_config = server_config_min_plus_data + [
         ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
         ('plugins/ScriptedQuests/death/{servername}', '../../../../server_config/data/scriptedquests/death/{servername}'),
         ('plugins/ScriptedQuests/death/common', '../../../../server_config/data/scriptedquests/death/common'),
+        ('plugins/Monumenta_Speedruns/speedruns/racefiles', '../../../../server_config/data/speedruns/racefiles/{servername}'),
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
     ]
 
@@ -116,6 +117,7 @@ monumenta = [
         ('plugins/Monumenta_BossFights.jar', '../../server_config/plugins/Monumenta_BossFights.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
+        ('plugins/Monumenta_Speedruns.jar', '../../server_config/plugins/Monumenta_Speedruns.jar'),
     ]
 
 nbteditor = [
