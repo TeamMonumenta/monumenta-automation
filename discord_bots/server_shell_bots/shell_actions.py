@@ -451,15 +451,19 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         for shard in ["r1plots", "betaplots", "region_1"]:
             if shard in allShards:
                 self._commands += [
-                    self.display("Preserving coreprotect, speedruns, and easywarp data for {0}...".format(shard)),
+                    self.display("Preserving coreprotect, and easywarp data for {0}...".format(shard)),
                     self.run("mkdir -p {0}/POST_RESET/{1}/plugins/CoreProtect".format(resetdir, shard)),
                     self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, shard, "plugins/CoreProtect/database.db")),
                     self.run("mkdir -p {0}/POST_RESET/{1}/plugins/EasyWarp".format(resetdir, shard)),
                     self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, shard, "plugins/EasyWarp/warps.yml")),
-                    self.run("mkdir -p {0}/POST_RESET/{1}/plugins/Monumenta_Speedruns/speedruns".format(resetdir, shard)),
-                    self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, shard, "plugins/Monumenta_Speedruns/speedruns/leaderboards")),
-                    self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, shard, "plugins/Monumenta_Speedruns/speedruns/playerdata")),
                 ]
+
+        if "region_1" in allShards:
+            self._commands += [
+                self.run("mkdir -p {0}/POST_RESET/{1}/plugins/Monumenta_Speedruns/speedruns".format(resetdir, "region_1")),
+                self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, "region_1", "plugins/Monumenta_Speedruns/speedruns/leaderboards")),
+                self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, "region_1", "plugins/Monumenta_Speedruns/speedruns/playerdata")),
+            ]
 
         if "build" in allShards:
             self._commands += [
