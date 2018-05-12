@@ -432,8 +432,9 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             self._commands += [
                 self.display("Copying bungeecord..."),
                 self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/bungee /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
-                # TODO: Update automatically
-                self.display("TODO: You must manually update the version number in bungee's config.yml!"),
+
+                # Update bungee's server version in the MOTD. Yes, this really is horrific
+                self.run('''perl -p -i -e 's|(\s*motd:.*Beta 2\.)(\d+)|join "", $1, 1+$2|e' /home/rock/5_SCRATCH/tmpreset/POST_RESET/bungee/config.yml'''),
             ]
 
         self._commands += [
