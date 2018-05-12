@@ -384,7 +384,7 @@ DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
 
             self.display("Performing backup..."),
             self.cd("/home/rock"),
-            self.run("tar czf /home/rock/1_ARCHIVE/project_epic_pre_reset_" + datestr() + ".tgz project_epic"),
+            self.run("tar czf /home/rock/1_ARCHIVE/project_epic_pre_reset_" + botConfig["name"] + "_" + datestr() + ".tgz project_epic"),
 
             self.display("Backups complete! Ready for reset."),
             self.mention(),
@@ -481,7 +481,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
             self.display("Backing up post-reset artifacts..."),
             self.cd("/home/rock/5_SCRATCH/tmpreset"),
-            self.run("tar czf /home/rock/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic"),
+            self.run("tar czf /home/rock/1_ARCHIVE/project_epic_post_reset_" + botConfig["name"] + "_" + datestr() + ".tgz project_epic"),
 
             self.display("Moving the project_epic result back where it should be..."),
             self.run("mv /home/rock/5_SCRATCH/tmpreset/project_epic /home/rock/"),
