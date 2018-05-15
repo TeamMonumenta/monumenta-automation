@@ -174,7 +174,7 @@ Examples:
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(self.command)+1:]
+        commandArgs = message.content[len(self.command)+1:].split()
         self._commands = []
         if (
             (
