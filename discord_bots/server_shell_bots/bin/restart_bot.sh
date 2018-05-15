@@ -1,7 +1,7 @@
 #!/usr/bin/zsh
 # DO NOT RUN THIS COMMAND EXCEPT AS THE BOT
-mypath=$0:A
-cd $mypath
+mydir=${0:a:h}
+cd $mydir
 
 # PID of existing bot passed as arguement
 bot_PID=$1
