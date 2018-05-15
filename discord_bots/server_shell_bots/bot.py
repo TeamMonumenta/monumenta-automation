@@ -16,8 +16,8 @@ from shell_actions import allActionsDict, findBestMatch, commandPrefix
 
 botConfig = {}
 
+botConfig["main_pid"] = os.getpid()
 botConfig["listening"] = True
-
 botConfig["config_dir"] = os.path.expanduser("~/.monumeneta_bot/")
 
 # Get bot's login info

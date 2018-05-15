@@ -317,6 +317,27 @@ Must be run before starting terrain reset on the play server'''
         ]
 allActions.append(PrepareResetBundleAction)
 
+class RestartBotAction(ShellAction):
+    '''Restart this bot. Used to update to the latest version.
+Do not use while the bot is running actions.
+Syntax:
+`{cmdPrefix}restart bot` restart bot with no arguements
+`{cmdPrefix}restart bot ...` restart bot with arguements <...>
+'''
+    command = commandPrefix + "restart bot"
+    hasPermissions = rootPrivileged
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+
+        commandArgs = message.content[len(self.command)+1:]
+        # TODO Should be made relative to the bot directory
+        shellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/restart_bot.sh"
+        self._commands = [
+            self.run(shellCommand + " " + str(botConfig["main_pid"]) + commandArgs + " &"),
+        ]
+allActions.append(StartShardAction)
+
 class StartShardAction(ShellAction):
     '''Start specified shards.
 Syntax:
