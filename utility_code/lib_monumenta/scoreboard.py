@@ -39,7 +39,7 @@ class scoreboard(object):
             saveTo = worldFolder + "data/scoreboard.dat"
         self.nbt.save(saveTo)
 
-    def searchScores(self,Conditions={},Name=None,Objective=None,Score=None,Locked=None):
+    def searchScores(self,Conditions={},Name=None,Objective=[],Score=None,Locked=None,Cache=None):
         if "Name" in Conditions:
             Name = Conditions["Name"]
         if "Objective" in Conditions:
@@ -48,17 +48,20 @@ class scoreboard(object):
             Score = Conditions["Score"]
         if "Locked" in Conditions:
             Locked = Conditions["Locked"]
+        if type(Objective) == list or type(Objective) == tuple:
+            Objectives = Objective
+        else:
+            Objectives = [Objective]
+        if Cache is None:
+            Cache = self.allScores
         matchingScores = []
-        for _aScore in self.allScores:
+        for _aScore in Cache:
             if (
                 Name is not None and
                 _aScore['Name'].value != Name
             ):
                 continue
-            if (
-                Objective is not None and
-                _aScore['Objective'].value != Objective
-            ):
+            if _aScore['Objective'].value not in Objectives:
                 continue
             if (
                 type(Score) is int and
@@ -136,12 +139,12 @@ class scoreboard(object):
                 continue
             self.allScores.pop(i)
 
-    def getScore(self,Name,Objective,Fallback=None):
+    def getScore(self,Name,Objective,Fallback=None,Cache=None):
         """
         Return Name's score for Objective;
         if not found, return Fallback
         """
-        matches = self.searchScores(Name=Name,Objective=Objective)
+        matches = self.searchScores(Name=Name,Objective=Objective,Cache=Cache)
         if len(matches) > 1:
             raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
         elif len(matches) == 1:
@@ -149,8 +152,8 @@ class scoreboard(object):
         elif len(matches) == 0:
             return Fallback
 
-    def setScore(self,Name,Objective,Score):
-        matches = self.searchScores(Name=Name,Objective=Objective)
+    def setScore(self,Name,Objective,Score,Cache=None):
+        matches = self.searchScores(Name=Name,Objective=Objective,Cache=Cache)
         if len(matches) > 1:
             raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
         elif len(matches) == 1:
@@ -162,9 +165,13 @@ class scoreboard(object):
             newScore['Score'] = nbt.TAG_Int(Score)
             newScore['Name'] = nbt.TAG_String(Name)
             self.allScores.append(newScore)
+            try:
+                Cache.append(newScore)
+            except:
+                pass
 
-    def addScore(self,Name,Objective,Score):
-        matches = self.searchScores(Name=Name,Objective=Objective)
+    def addScore(self,Name,Objective,Score,Cache=None):
+        matches = self.searchScores(Name=Name,Objective=Objective,Cache=Cache)
         if len(matches) > 1:
             raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
         elif len(matches) == 1:
@@ -176,6 +183,10 @@ class scoreboard(object):
             newScore['Score'] = nbt.TAG_Int(Score)
             newScore['Name'] = nbt.TAG_String(Name)
             self.allScores.append(newScore)
+            try:
+                Cache.append(newScore)
+            except:
+                pass
 
     def pruneMissingEntities(self,entitiesToKeep):
         """
@@ -206,20 +217,33 @@ class scoreboard(object):
         print "    - {} scores not pruned.".format(unpruned)
 
     def batchScoreChanges(self,rules):
+        # Generate a cache
+        Objectives = set()
         for aRule in rules:
-            matchedConditions = self.searchScores(Conditions=aRule["condition"])
+            Objectives.add(aRule["conditions"]["Objective"])
+            if "set" in aRule["actions"]:
+                for toSet in aRule["actions"]["set"]:
+                    Objectives.add(toSet["Objective"])
+            if "add" in aRule["actions"]:
+                for toAdd in aRule["actions"]["add"]:
+                    Objectives.add(toAdd["Objective"])
+        Cache = self.searchScores(Objective=list(Objectives))
+
+        # Now modify the scoreboard as needed
+        for aRule in rules:
+            matchedConditions = self.searchScores(Conditions=aRule["condition"],Cache=Cache)
             for aMatchingScore in matchedConditions:
                 Name = aMatchingScore["Name"].value
                 if "set" in aRule["actions"]:
                     for toSet in aRule["actions"]["set"]:
                         Objective = toSet["Objective"]
                         Score = toSet["Score"]
-                        self.setScore(Name,Objective,Score)
+                        self.setScore(Name,Objective,Score,Cache=Cache)
                 if "add" in aRule["actions"]:
                     for toAdd in aRule["actions"]["add"]:
                         Objective = toAdd["Objective"]
                         Score = toAdd["Score"]
-                        self.addScore(Name,Objective,Score)
+                        self.addScore(Name,Objective,Score,Cache=Cache)
 
 ################################################################################
 # These are legacy functions that should be merged into the Scoreboard class
