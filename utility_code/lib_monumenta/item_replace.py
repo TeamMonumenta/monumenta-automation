@@ -544,6 +544,8 @@ class replacement(object):
                 newAction = actPrintItem(actions)
             if action == "remove":
                 newAction = actRemove(actions)
+            if action == "unhope":
+                newAction = actUnhope(actions)
 
             self._actions.append(newAction)
             if "init" in log_data["debug"]:
@@ -1101,12 +1103,12 @@ class actNBT(object):
                     tagsToRestore["tag"]["display"]["color"] = displayTag["color"]
                 if "Lore" in displayTag:
                     for loreLine in displayTag["Lore"]:
-                        if soulboundPrefix in loreLine.value:
+                        if soulboundPrefix == loreLine.value[:len(soulboundPrefix)]:
                             soulbound = loreLine
                         if replicaText == loreLine.value:
                             isReplica = True
-                        if infusedByPrefix in loreLine.value:
-                            hopeifiedBy = loreLine.value
+                        if infusedByPrefix == loreLine.value[:len(infusedByPrefix)]:
+                            hopeifiedBy = loreLine.value[len(infusedByPrefix):]
             # banner/shield color/pattern
             if "BlockEntityTag" in itemStack["tag"]:
                 tagsToRestore["tag"]["BlockEntityTag"] = nbt.TAG_Compound()
@@ -1140,7 +1142,11 @@ class actNBT(object):
             # for a good reason. If we put it back, we put
             # player customizations back.
             itemStack.update(tagsToRestore)
-            if soulbound is not None:
+            if (
+                soulbound is not None or
+                isReplica or
+                hopeifiedBy is not None
+            ):
                 if "display" not in itemStack["tag"]:
                     itemStack["tag"]["display"] = nbt.TAG_Compound()
                 if "Lore" not in itemStack["tag"]["display"]:
@@ -1245,4 +1251,29 @@ class actScoreboard(object):
             itemStack["Damage"].value = newVal
             return
 """
+
+class actUnhope(object):
+    """
+    Removes hope from any infused items; this should only be run the week before the 100% working fix is in place.
+    """
+    def __init__(self,actionOptions):
+        "No initialization required"
+
+    def run(self,itemStack,log_data):
+        hopeInfused = False
+        if "tag" in itemStack:
+            if "display" in itemStack["tag"]:
+                displayTag = itemStack["tag"]["display"]
+                if "Lore" in displayTag:
+                    loreTag = displayTag["Lore"]
+                    for i in range(len(loreTag)-1,-1,-1):
+                        loreLine = loreTag[i]
+                        if infusedByPrefix == loreLine.value[:len(infusedByPrefix)]:
+                            hopeInfused = True
+                            loreTag.pop(i)
+                        if hopeInfused and hopeText == loreLine.value:
+                            loreTag.pop(i)
+
+    def str(self,prefix=u''):
+        return prefix + u'└╴Remove Hope (only if infused by player)'
 
