@@ -336,7 +336,7 @@ Syntax:
         self._commands = [
             self.run(shellCommand + " " + str(botConfig["main_pid"]) + commandArgs + " &"),
         ]
-allActions.append(StartShardAction)
+allActions.append(RestartBotAction)
 
 class StartShardAction(ShellAction):
     '''Start specified shards.
