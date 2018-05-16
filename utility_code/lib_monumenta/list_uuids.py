@@ -17,7 +17,7 @@ from lib_monumenta.iter_entity import IterEntities
 from lib_monumenta.mcUUID import mcUUID
 
 def listUUIDs(world):
-    allUUIDs = set()
+    allUUIDs = []
     entityIter = IterEntities(
         [
             "entities"
@@ -26,7 +26,7 @@ def listUUIDs(world):
         allUUIDs
     )
     entityIter.InWorld(world)
-    return list(allUUIDs)
+    return list(set(allUUIDs))
 
 def _OnEntities(allUUIDs,entityDetails):
     if entityDetails["entity type"] != "entity":
@@ -37,5 +37,5 @@ def _OnEntities(allUUIDs,entityDetails):
     UUIDMost  = entity["UUIDMost"].value
     UUIDLeast = entity["UUIDLeast"].value
     entityUUID = mcUUID( (UUIDMost,UUIDLeast) )
-    allUUIDs.add(entityUUID)
+    allUUIDs.append(entityUUID)
 

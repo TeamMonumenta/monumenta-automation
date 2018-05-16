@@ -220,7 +220,7 @@ class scoreboard(object):
         # Generate a cache
         Objectives = set()
         for aRule in rules:
-            Objectives.add(aRule["conditions"]["Objective"])
+            Objectives.add(aRule["condition"]["Objective"])
             if "set" in aRule["actions"]:
                 for toSet in aRule["actions"]["set"]:
                     Objectives.add(toSet["Objective"])
