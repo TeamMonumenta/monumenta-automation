@@ -610,6 +610,7 @@ KingsValleyDungeon = item_replace.ReplaceItems([],[
 
     KingsValleyBuild,
 
+    [{"any":None},["unhope"]],
     [
         {"any":[
             # Iron:
