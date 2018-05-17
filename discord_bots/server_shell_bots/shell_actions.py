@@ -125,6 +125,8 @@ class HelpAction(ShellAction):
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(self.command)+1:].split()
+        # any -v style arguments should go here
+        targetCommand = " ".join(commandArgs)
         if len(commandArgs) == 0:
             helptext = '''__Available Actions__'''
             for actionClass in botConfig["actions"].values():
@@ -137,13 +139,13 @@ class HelpAction(ShellAction):
                     helptext += "\n**" + actionClass.command + "**"
                 else:
                     helptext += "\n~~" + actionClass.command + "~~"
-            helptext += "\nRun `~help <command> [<command 2> ...]` for more info."
+            helptext += "\nRun `~help <command>` for more info."
         else:
-            helptext = '''__Available Actions__'''
+            helptext = '''__Help on:__'''
             for actionClass in botConfig["actions"].values():
                 if not (
-                    commandPrefix + actionClass.command in commandArgs or
-                    actionClass.command in commandArgs
+                    actionClass.command == commandPrefix + targetCommand or
+                    actionClass.command == targetCommand
                 ):
                     continue
                 if not (
@@ -156,7 +158,6 @@ class HelpAction(ShellAction):
                 else:
                     helptext += "\n~~" + actionClass.command + "~~"
                 helptext += "```" + actionClass.__doc__.format(cmdPrefix=commandPrefix) + "```"
-            helptext += "\nRun `~help <command>` for more info."
         self._commands = [
             self.display(helptext),
         ]
