@@ -125,22 +125,39 @@ class HelpAction(ShellAction):
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        helptext = '''
-This is the monumenta {botName} server bot.
-It runs on the {botName} server's console.
-It can be used to run actions on the {botName} server.
-__Available Actions__'''.format(botName=botConfig["name"])
-        for actionClass in botConfig["actions"].values():
-            if not (
-                botConfig["listening"] or
-                actionClass.alwaysListening
-            ):
-                continue
-            if actionClass.hasPermissions(None,message.author):
-                helptext += "\n**" + actionClass.command + "**"
-            else:
-                helptext += "\n~~" + actionClass.command + "~~"
-            helptext += "```" + actionClass.__doc__.format(cmdPrefix=commandPrefix) + "```"
+        commandArgs = message.content[len(self.command)+1:].split()
+        if len(commandArgs) == 0:
+            helptext = '''__Available Actions__'''
+            for actionClass in botConfig["actions"].values():
+                if not (
+                    botConfig["listening"] or
+                    actionClass.alwaysListening
+                ):
+                    continue
+                if actionClass.hasPermissions(None,message.author):
+                    helptext += "\n**" + actionClass.command + "**"
+                else:
+                    helptext += "\n~~" + actionClass.command + "~~"
+            helptext += "\nRun `~help <command> [<command 2> ...]` for more info."
+        else:
+            helptext = '''__Available Actions__'''
+            for actionClass in botConfig["actions"].values():
+                if not (
+                    commandPrefix + actionClass.command in commandArgs or
+                    actionClass.command in commandArgs
+                ):
+                    continue
+                if not (
+                    botConfig["listening"] or
+                    actionClass.alwaysListening
+                ):
+                    continue
+                if actionClass.hasPermissions(None,message.author):
+                    helptext += "\n**" + actionClass.command + "**"
+                else:
+                    helptext += "\n~~" + actionClass.command + "~~"
+                helptext += "```" + actionClass.__doc__.format(cmdPrefix=commandPrefix) + "```"
+            helptext += "\nRun `~help <command>` for more info."
         self._commands = [
             self.display(helptext),
         ]
