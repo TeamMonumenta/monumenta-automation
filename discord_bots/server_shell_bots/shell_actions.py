@@ -398,6 +398,7 @@ DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
+        allShards = botConfig["shards"].keys()
         self._commands = [
             self.display("Stopping all shards..."),
             self.run("mark2 sendall ~stop", None),
@@ -421,6 +422,14 @@ DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
             self.run("rm -rf /home/rock/project_epic/purgatory /home/rock/project_epic/tutorial"),
 
             self.display("Performing backup..."),
+        ]
+        if "region_1" in allShards:
+            self._commands += [
+                self.run("cp -a /home/rock/project_epic/region_1/banned-ips.json /home/rock/4_SHARED/op-ban-sync/"),
+                self.run("cp -a /home/rock/project_epic/region_1/banned-players.json /home/rock/4_SHARED/op-ban-sync/"),
+                self.run("cp -a /home/rock/project_epic/region_1/ops.json /home/rock/4_SHARED/op-ban-sync/"),
+            ]
+        self._commands += [
             self.cd("/home/rock"),
             self.run("tar czf /home/rock/1_ARCHIVE/project_epic_pre_reset_" + botConfig["name"] + "_" + datestr() + ".tgz project_epic"),
 
@@ -501,6 +510,15 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
                 self.run("mkdir -p {0}/POST_RESET/{1}/plugins/Monumenta_Speedruns/speedruns".format(resetdir, "region_1")),
                 self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, "region_1", "plugins/Monumenta_Speedruns/speedruns/leaderboards")),
                 self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, "region_1", "plugins/Monumenta_Speedruns/speedruns/playerdata")),
+            ]
+
+        for shard in allShards:
+            if shard in ["build","bungee"]:
+                continue
+            self._commands += [
+                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/banned-ips.json /home/rock/project_epic/{}/".format(shard)),
+                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/banned-players.json /home/rock/project_epic/{}/".format(shard)),
+                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/ops.json /home/rock/project_epic/{}/".format(shard)),
             ]
 
         if "build" in allShards:
