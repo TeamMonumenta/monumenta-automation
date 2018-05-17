@@ -121,7 +121,6 @@ class HelpAction(ShellAction):
     '''Lists commands available with this bot'''
     command = commandPrefix + "help"
     hasPermissions = alwaysPrivileged
-    alwaysListening = True
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
