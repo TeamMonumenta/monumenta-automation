@@ -334,7 +334,7 @@ Syntax:
         # TODO Should be made relative to the bot directory
         shellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/restart_bot.sh"
         self._commands = [
-            self.run(shellCommand + " " + str(botConfig["main_pid"]) + commandArgs + " &"),
+            self.run("{cmd} {pid} {arg} &".format(cmd=shellCommand,pid=botConfig["main_pid"],arg=commandArgs)),
         ]
 allActions.append(RestartBotAction)
 
