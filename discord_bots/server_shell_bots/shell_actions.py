@@ -425,9 +425,9 @@ DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
         ]
         if "region_1" in allShards:
             self._commands += [
-                self.run("cp -a /home/rock/project_epic/region_1/banned-ips.json /home/rock/4_SHARED/op-ban-sync/"),
-                self.run("cp -a /home/rock/project_epic/region_1/banned-players.json /home/rock/4_SHARED/op-ban-sync/"),
-                self.run("cp -a /home/rock/project_epic/region_1/ops.json /home/rock/4_SHARED/op-ban-sync/"),
+                self.run("cp -a /home/rock/project_epic/region_1/banned-ips.json /home/rock/4_SHARED/op-ban-sync/region_1/"),
+                self.run("cp -a /home/rock/project_epic/region_1/banned-players.json /home/rock/4_SHARED/op-ban-sync/region_1/"),
+                self.run("cp -a /home/rock/project_epic/region_1/ops.json /home/rock/4_SHARED/op-ban-sync/region_1/"),
             ]
         self._commands += [
             self.cd("/home/rock"),
