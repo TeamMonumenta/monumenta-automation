@@ -512,19 +512,19 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
                 self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, "region_1", "plugins/Monumenta_Speedruns/speedruns/playerdata")),
             ]
 
-        for shard in allShards:
-            if shard in ["build","bungee"]:
-                continue
-            self._commands += [
-                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/banned-ips.json /home/rock/project_epic/{}/".format(shard)),
-                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/banned-players.json /home/rock/project_epic/{}/".format(shard)),
-                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/ops.json /home/rock/project_epic/{}/".format(shard)),
-            ]
-
         if "build" in allShards:
             self._commands += [
                 self.display("Moving the build shard..."),
                 self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/build /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
+            ]
+
+        for shard in allShards:
+            if shard in ["build","bungee"]:
+                continue
+            self._commands += [
+                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/banned-ips.json /home/rock/5_SCRATCH/tmpreset/POST_RESET/{}/".format(shard)),
+                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/banned-players.json /home/rock/5_SCRATCH/tmpreset/POST_RESET/{}/".format(shard)),
+                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/ops.json /home/rock/5_SCRATCH/tmpreset/POST_RESET/".format(shard)),
             ]
 
         self._commands += [
