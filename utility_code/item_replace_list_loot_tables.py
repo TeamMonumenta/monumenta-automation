@@ -6,668 +6,101 @@ from lib_monumenta import item_replace
 KingsValleyLootTables = item_replace.ReplaceItems([],[
 	[
 		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Turtle Flippers''',
+			"id":"minecraft:golden_boots",
+			"name":u'''King's Sabatons''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Flippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:3s,id:2s},{lvl:1s,id:70s}],display:{Lore:["§7Hope","§6King's Valley : §lEPIC"],Name:"§b§l§nKing's Sabatons"},AttributeModifiers:[{UUIDMost:3501364431898363217l,UUIDLeast:-7168568964464722073l,Amount:0.15d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"},{UUIDMost:5805861576375026441l,UUIDLeast:-7198359331380377644l,Amount:2.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Turtle Pants''',
+			"id":"minecraft:golden_leggings",
+			"name":u'''King's Greaves''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:70s}],display:{Lore:["§7Hope","§6King's Valley : §lEPIC"],Name:"§b§l§nKing's Greaves"},AttributeModifiers:[{UUIDMost:-1681439092783625680l,UUIDLeast:-9051004955773025556l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:666275396508009266l,UUIDLeast:-8464215050565667033l,Amount:4.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-4559720644080876637l,UUIDLeast:-6825188797889418349l,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:leather_chestplate",
-			"name":u'''Turtle Vest''',
+			"name":u'''Ebola Shirt''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:6s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+			"nbt", "replace", ur'''{Unbreakable:1,display:{Lore:["§7Stylish","§bLeather Armor","* Unique Event Item *","§cWe are small, but our legend spreads like Ebola.","§4Uganda 2018"],color:16711680,Name:"§c§lEbola Shirt"}}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Turtle Helm''',
+			"id":"minecraft:golden_sword",
+			"name":u'''Light of Salvation''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:5s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:1s,id:19s},{lvl:1s,id:20s}],Unbreakable:1,HideFlags:2,display:{Lore:["§7Radiant","§7Hope","§4King's Valley : Artifact","§l","§7When in main hand:","§7 1.6 Attack Speed","§7 3 Attack Damage"],Name:"§e§l§nLight of Salvation"},AttributeModifiers:[{UUIDMost:4598269408375358984l,UUIDLeast:-7980334193493528635l,Amount:0.0d,AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-3549468348533027207l,UUIDLeast:-5101475887946467451l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-8751945831914649559l,UUIDLeast:-7565408329895997931l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:fishing_rod",
-			"name":u'''Angler's Rod''',
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Stylish Black Shirt''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:62s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fAngler's Rod"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:lever",
-			"name":u'''Damaged Hilt''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§8Carved with elegant flowers"],Name:"§fDamaged Hilt"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:fish",
-			"name":u'''Magic Fish''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:61s}],HideFlags:1,display:{Lore:["§7Gills","§8King's Valley : Uncommon","§7Gives water breathing when","§7held in your offhand."],Name:"§b§lMagic Fish"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:shield",
-			"name":u'''Turtle Shield''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],BlockEntityTag:{Base:6,Patterns:[{Color:2,Pattern:"bri"}]},display:{Lore:["§8King's Valley : Uncommon"],Name:"§b§lTurtle Shield"},AttributeModifiers:[{UUIDMost:-2699735906624845463l,UUIDLeast:-6308071593572563623l,Amount:-0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-407094390218668203l,UUIDLeast:-9013419339908919017l,Amount:0.4d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{display:{Lore:["§7Stylish","§9Cloth Armor","§7Emits smoke particles when worn"],color:1048592,Name:"§7Stylish Black Shirt"},AttributeModifiers:[{UUIDMost:456904653548765814l,UUIDLeast:-4616658641294366570l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:bow",
-			"name":u'''Oncoming Tide''',
+			"name":u'''Cupid's Bow''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:49s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§b§lOncoming Tide"},AttributeModifiers:[{UUIDMost:1004903320127294777l,UUIDLeast:-6735527447459109365l,Amount:0.07d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:1s,id:7s}],display:{Lore:["§7Regeneration","§dMainhand Regeneration","* Unique Event Item *","§dValentine's 2018"],Name:"§d§lCupid's Bow"}}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:cooked_fish",
-			"name":u'''Regal Salmon''',
+			"id":"minecraft:coal",
+			"name":u'''Animated Coal''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],display:{Lore:["§d* Quest Item *","#Q16I02"],Name:"§6§lRegal Salmon"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:rabbit",
-			"name":u'''Zombie Meat''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Name:"§fZombie Meat"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:cooked_rabbit",
-			"name":u'''Cooked Zombie Meat''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Name:"§fCooked Zombie Meat"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:splash_potion",
-			"name":u'''Extinguisher''',
-		},
-		[
-			"nbt", "replace", ur'''{CustomPotionColor:16756736,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:200,Id:12b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§fExtinguisher"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:splash_potion",
-			"name":u'''Antidote''',
-		},
-		[
-			"nbt", "replace", ur'''{CustomPotionColor:4239424,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:40,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:30,Id:19b,Amplifier:2b}],Potion:"minecraft:empty",display:{Lore:["§7Removes Poison II and lower"],Name:"§fAntidote"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:quartz",
-			"name":u'''Bone Shard''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§8Broken, but could be rebuilt"],Name:"§fBone Shard"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:cooked_beef",
-			"name":u'''Cooked Horse Meat''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Name:"§fCooked Horse Meat"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:beef",
-			"name":u'''Horse Meat''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Name:"§fHorse Meat"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:splash_potion",
-			"name":u'''Antidote''',
-		},
-		[
-			"nbt", "replace", ur'''{CustomPotionColor:4239424,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:40,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:30,Id:19b,Amplifier:2b}],Potion:"minecraft:empty",display:{Lore:["§7Removes Poison II and lower"],Name:"§fAntidote"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:splash_potion",
-			"name":u'''Potion of Salvation''',
-		},
-		[
-			"nbt", "replace", ur'''{CustomPotionColor:13947904,CustomPotionEffects:[{Ambient:0b,ShowParticles:0b,Duration:600,Id:22b,Amplifier:1b},{Ambient:1b,ShowParticles:1b,Duration:100,Id:10b,Amplifier:1b}],Potion:"minecraft:awkward",display:{Name:"§fPotion of Salvation"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:sugar",
-			"name":u'''Pulsating Dust''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:48s}],display:{Lore:["Distilled power from strong items"],Name:"§b§lPulsating Dust"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Living Thorn''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:18s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fLiving Thorn"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Crusader's Sword''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fCrusader's Sword"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Light Scimitar''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:3s,id:22s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fLight Scimitar"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Flamewreath Splinter''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:2s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fFlamewreath Splinter"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Thief's Dagger''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:4s,id:21s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fThief's Dagger"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Brigand's Rapier''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:20s},{lvl:2s,id:21s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fBrigand's Rapier"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Honed Claymore''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fHoned Claymore"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Ritual Knife''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fRitual Knife"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Trusty Dagger''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:18s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fTrusty Dagger"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Scoundrel's Rapier''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier III"],Name:"§fScoundrel's Rapier"},AttributeModifiers:[{UUIDMost:157078l,UUIDLeast:786990l,Amount:2d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Poisoned Shank''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier III"],Name:"§fPoisoned Shank"},AttributeModifiers:[{UUIDMost:298381l,UUIDLeast:495523l,Amount:0.15d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_axe",
-			"name":u'''Meteor Hammer''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fMeteor Hammer"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_axe",
-			"name":u'''Tempered Mace''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fTempered Mace"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_axe",
-			"name":u'''Woodsman's Axe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fWoodsman's Axe"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_axe",
-			"name":u'''Heavy Warhammer''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:34s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fHeavy Warhammer"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_axe",
-			"name":u'''Jagged Cleaver''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fJagged Cleaver"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_axe",
-			"name":u'''Inferno Axe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fInferno Axe"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_pickaxe",
-			"name":u'''Sapper's Tool''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:2s,id:34s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fSapper's Tool"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_pickaxe",
-			"name":u'''Masterwork Pickaxe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fMasterwork Pickaxe"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_pickaxe",
-			"name":u'''Runic Pickaxe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:2s,id:35s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fRunic Pickaxe"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_pickaxe",
-			"name":u'''Resiliant Pickaxe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fResiliant Pickaxe"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_shovel",
-			"name":u'''Arrowmeld''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s},{lvl:3s,id:35s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fArrowmeld"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:shield",
-			"name":u'''Hardened Shield''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:3,Pattern:"hh"},{Color:3,Pattern:"hhb"},{Color:7,Pattern:"bri"},{Color:3,Pattern:"bri"},{Color:7,Pattern:"bo"}]},display:{Lore:["§8King's Valley : Tier III"],Name:"§fHardened Shield"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bow",
-			"name":u'''Hawk's Talon''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fHawk's Talon"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bow",
-			"name":u'''Crossbow''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:49s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fCrossbow"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bow",
-			"name":u'''Searing Bow''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:50s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fSearing Bow"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:fishing_rod",
-			"name":u'''Angler's Rod''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:62s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fAngler's Rod"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lAnimated Coal"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stick",
-			"name":u'''Apprentice's Wand''',
+			"name":u'''Prehensile Stick''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier III"],Name:"§fApprentice's Wand"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lPrehensile Stick"}}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:stick",
-			"name":u'''Consecrated Wand''',
+			"id":"minecraft:wooden_sword",
+			"name":u'''Rod of the Onodrim''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:1s,id:19s},{lvl:1s,id:21s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier III"],Name:"§fConsecrated Wand"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:1s,id:70s}],display:{Lore:["* Unique Event Item *","Winter 2017"],Name:"§9§lRod of the Onodrim"},AttributeModifiers:[{UUIDMost:2512866317016583848l,UUIDLeast:-8695731667534274344l,Amount:-0.4d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:2801717605841978307l,UUIDLeast:-4821070712928009977l,Amount:-0.2d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:5435604988355234856l,UUIDLeast:-7278734017423574959l,Amount:0.6d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:stone_hoe",
-			"name":u'''Ruffian's Scythe''',
+			"id":"minecraft:snowball",
+			"name":u'''Everlasting Snow''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:1s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier III","§8","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§fRuffian's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lEverlasting Snow"}}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Sky Mage Coif''',
+			"id":"minecraft:carrot",
+			"name":u'''Olfactory Carrot''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Coif"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Sky Mage Cloak''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Sky Mage Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Robe"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Sky Mage Slippers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Slippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Scoundrel's Hood''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Hood"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Scoundrel's Tunic''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Scoundrel's Trousers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Scoundrel's Slippers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Slippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Spellweave Hat''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Hat"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Spellweave Tunic''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Spellweave Trousers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Spellweave Shoes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Blast Visor''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Visor"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Blast Vest''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Vest"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Blast Apron''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Apron"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Blast Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Boots"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Burnt Helm''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Helm"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Burnt Cloak''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Cloak"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Burnt Leggings''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Leggings"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Burnt Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Boots"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Warlock Helm''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Warlock Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Robe"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Warlock Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Robe"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Warlock Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lOlfactory Carrot"}}'''
 		]
 	],
 	[
@@ -744,6 +177,915 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Telum Immoriel''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:22s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7The Black Willows","§8Another toy for Fangride to play with","§7","§7When in main hand:","§7 0.8 Attack Speed","§7 12 Attack Damage"],Name:"§6§lTelum Immoriel"},AttributeModifiers:[{UUIDMost:962659l,UUIDLeast:90631l,Amount:11.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:345591l,UUIDLeast:876260l,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:sapling",
+			"name":u'''Chimarian Wand''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:2s,id:17s},{lvl:2s,id:18s},{lvl:1s,id:20s}],display:{Lore:["§eKing's Valley : Rare","§7The Black Willows","§8We need more trees!","§8* Magic Wand *"],Name:"§2§lChimarian Wand"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:quartz",
+			"name":u'''Render's Ruthless Claw''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:8s,id:16s}],display:{Lore:["§eKing's Valley : Rare","§7The Black Willows","§8Simplistic, but effective"],Name:"§3§lRender's Ruthless Claw"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_pickaxe",
+			"name":u'''Helician Spitzhacke''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:3s,id:34s}],HideFlags:3,display:{Lore:["§7Effizienz II","§7Unbreaking III","§eKing's Valley : Rare","§7The Black Willows","§8Now with German efficiency!","§7","§7When in main hand:","§7 1.2 Attack Speed","§7 3 Attack Damage","§9 +0.5 Knockback Resistance","§9 +3 Armor"],Name:"§1§lHelician Spitzhacke"},AttributeModifiers:[{UUIDMost:203618l,UUIDLeast:725165l,Amount:0.5d,Slot:"mainhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"},{UUIDMost:961145l,UUIDLeast:133590l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:670193l,UUIDLeast:659361l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:641625l,UUIDLeast:480595l,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:red_flower",
+			"name":u'''Teewie's Eternal Tulip''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],HideFlags:1,display:{Lore:["§eKing's Valley : Rare","§7The Black Willows","§8Part of the flower crown worn by Princess Teewie","§8many centuries ago"],Name:"§d§lTeewie's Eternal Tulip"},AttributeModifiers:[{UUIDMost:-2576588526142208534l,UUIDLeast:-8215095133131934612l,Amount:3.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-7377653646270249488l,UUIDLeast:-4833595088129389224l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Busty's Hot Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:70s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§7The Black Willows","§8Caution: Highly Combustible!"],color:14059296,Name:"§4§lBusty's Hot Pants"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Brown Corp Uniform''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§7The Black Willows","§8What do they ever do besides hanging out?"],color:6704179,Name:"§5§lBrown Corp Uniform"},AttributeModifiers:[{UUIDMost:-395305911349064079l,UUIDLeast:-6975068402520238575l,Amount:2.0d,Slot:"chest",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:8894152384868271503l,UUIDLeast:-5148525816173331419l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:sugar",
+			"name":u'''Pulsating Dust''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:48s}],display:{Lore:["Distilled power from strong items"],Name:"§b§lPulsating Dust"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Ironwood Blade''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fIronwood Blade"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Carved Dagger''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fCarved Dagger"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Oaken Broadsword''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fOaken Broadsword"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Scorching Splinter''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:20s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fScorching Splinter"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Flensing Knife''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:18s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fFlensing Knife"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Hunter's Stake''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fHunter's Stake"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Serrated Shiv''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier I"],Name:"§fSerrated Shiv"},AttributeModifiers:[{UUIDMost:298381l,UUIDLeast:495523l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_axe",
+			"name":u'''Swiftwood Axe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSwiftwood Axe"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_axe",
+			"name":u'''Squire's Hammer''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSquire's Hammer"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_axe",
+			"name":u'''Smoldering Hatchet''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSmoldering Hatchet"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_pickaxe",
+			"name":u'''Swiftwood Pickaxe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSwiftwood Pickaxe"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_pickaxe",
+			"name":u'''Lucky Pick''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:35s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fLucky Pick"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_pickaxe",
+			"name":u'''Ironwood Pick''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fIronwood Pick"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_shovel",
+			"name":u'''Swiftwood Shovel''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSwiftwood Shovel"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:fishing_rod",
+			"name":u'''Novice's Fishing Rod''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:62s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fNovice's Fishing Rod"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stick",
+			"name":u'''Weak Wand''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:20s},{lvl:1s,id:19s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier I"],Name:"§fWeak Wand"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:shield",
+			"name":u'''Weak Shield''',
+		},
+		[
+			"nbt", "replace", ur'''{HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:3,Pattern:"hh"},{Color:3,Pattern:"hhb"},{Color:15,Pattern:"rud"},{Color:3,Pattern:"rud"},{Color:15,Pattern:"tt"},{Color:3,Pattern:"tt"},{Color:3,Pattern:"bri"}]},display:{Lore:["§8King's Valley : Tier I"],Name:"§fWeak Shield"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Sturdy Cloth Cap''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Cap"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Sturdy Cloth Shirt''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Shirt"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Sturdy Cloth Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Sturdy Cloth Shoes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Infused Cloth Helm''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Infused Cloth Cloak''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Infused Cloth Leggings''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Leggings"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Infused Cloth Shoes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Padded Cloth Coif''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Coif"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Padded Cloth Tunic''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Padded Cloth Trousers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Padded Cloth Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Leafweave Veil''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Veil"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Leafweave Vest''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Leafweave Trousers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Leafweave Sandals''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Sandals"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Binding Coif''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Coif"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Binding Robes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Robes"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Binding Robes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Robes"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Binding Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Hobnailed Helm''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Hobnailed Vest''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Hobnailed Leggings''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Leggings"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Hobnailed Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_hoe",
+			"name":u'''Weak Scythe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:1s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier I","§8","§7When in main hand:","§7 2 Attack Speed","§7 3 Attack Damage"],Name:"§rWeak Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:rabbit_hide",
+			"name":u'''Immaculate Hide''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8Delightfully fuzzy"],Name:"§fImmaculate Hide"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Bloody Thorn''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:2s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBloody Thorn"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Eternal Crescent''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:70s},{lvl:3s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aEternal Crescent"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Macuahuitl''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMacuahuitl"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Reliable Longsword''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aReliable Longsword"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Versatile Cutlass''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:18s},{lvl:2s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aVersatile Cutlass"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Molten Rapier''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMolten Rapier"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Polished Gladius''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:3s,id:34s},{lvl:3s,id:19s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aPolished Gladius"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:golden_sword",
+			"name":u'''Eldritch Blade''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier V"],Name:"§aEldritch Blade"},AttributeModifiers:[{UUIDMost:81922l,UUIDLeast:79311l,Amount:0.15d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"},{UUIDMost:298381l,UUIDLeast:495523l,Amount:0.2d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Scout's Companion''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier V"],Name:"§aScout's Companion"},AttributeModifiers:[{UUIDMost:637136l,UUIDLeast:234308l,Amount:2d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:743378l,UUIDLeast:575520l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_axe",
+			"name":u'''Blessed Axe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:4s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBlessed Axe"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_axe",
+			"name":u'''Crushing Mace''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aCrushing Mace"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_axe",
+			"name":u'''Phoenix Axe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:4s,id:34s},{lvl:1s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aPhoenix Axe"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_axe",
+			"name":u'''Soulhammer''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aSoulhammer"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_pickaxe",
+			"name":u'''Evanescent''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:1s,id:71s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aEvanescent"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_pickaxe",
+			"name":u'''Undying Chisel''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aUndying Chisel"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_pickaxe",
+			"name":u'''Truerune Pick''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:4s,id:35s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aTruerune Pick"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_shovel",
+			"name":u'''Undying Trowel''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aUndying Trowel"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_hoe",
+			"name":u'''Executioner's Scythe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:17s},{lvl:3s,id:34s},{lvl:2s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier V","§8","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§aExecutioner's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_hoe",
+			"name":u'''Windborn Scythe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier V","§8","§7When in main hand:","§7 2 Attack Speed","§7 5 Attack Damage","§l","§7When in off hand:","§9 +12% Speed"],Name:"§aWindborn Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:4741036782941654280l,UUIDLeast:-8811754788537177381l,Amount:0.12d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:shield",
+			"name":u'''Swiftwood Buckler''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:11,Pattern:"hh"},{Color:11,Pattern:"hhb"},{Color:3,Pattern:"gra"},{Color:11,Pattern:"gru"},{Color:11,Pattern:"gru"},{Color:11,Pattern:"gru"},{Color:3,Pattern:"gru"}]},display:{Lore:["§8King's Valley : Tier V"],Name:"§aSwiftwood Buckler"},AttributeModifiers:[{UUIDMost:3799174595893871670l,UUIDLeast:-8604776829862673178l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:shield",
+			"name":u'''Soulguard''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:70s}],HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:3,Pattern:"hh"},{Color:3,Pattern:"hhb"},{Color:10,Pattern:"gru"},{Color:3,Pattern:"gru"},{Color:2,Pattern:"flo"},{Color:10,Pattern:"mc"}]},display:{Lore:["§8King's Valley : Tier V"],Name:"§aSoulguard"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Blazing Crossbow''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:49s},{lvl:1s,id:50s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBlazing Crossbow"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Korbaran Shortbow''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:48s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aKorbaran Shortbow"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:fishing_rod",
+			"name":u'''Mermaid's Touch''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:62s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMermaid's Touch"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_shovel",
+			"name":u'''Pyromancer's Staff''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:17s},{lvl:4s,id:34s},{lvl:1s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier V"],Name:"§aPyromancer's Staff"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stick",
+			"name":u'''Wand of Storms''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:3s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier V"],Name:"§aWand of Storms"},AttributeModifiers:[{UUIDMost:120619l,UUIDLeast:372763l,Amount:0.07d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Nereid Cap''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s},{lvl:1s,id:5s},{lvl:1s,id:6s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Cap"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Nereid Tunic''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s},{lvl:1s,id:5s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Tunic"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Nereid Leggings''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s},{lvl:1s,id:5s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Leggings"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Nereid Sandals''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:8s},{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Sandals"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Hardened Leather Cap''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Cap"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Hardened Leather Tunic''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Tunic"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Hardened Leather Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Pants"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Hardened Leather Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Boots"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Scout's Leathers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:692165l,UUIDLeast:277777l,Amount:0.03d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:692165l,UUIDLeast:277777l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Scout's Leathers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:752165l,UUIDLeast:297777l,Amount:0.03d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:752165l,UUIDLeast:297777l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Scout's Leathers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:732165l,UUIDLeast:337777l,Amount:0.03d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:764261l,UUIDLeast:337777l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Scout's Leathers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:3s,id:2s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:632165l,UUIDLeast:237777l,Amount:0.03d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:632165l,UUIDLeast:237777l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Soulleather Veil''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Veil"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Soulleather Cloak''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Cloak"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Soulleather Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Robe"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Soulleather Shoes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Shoes"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Viridian Mage Hat''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:2s,id:1s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Hat"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Viridian Mage Robes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Robes"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Viridian Mage Robes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Robes"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Viridian Mage Robes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Robes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Dualsun Hood''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Hood"},AttributeModifiers:[{UUIDMost:3410419544452450231l,UUIDLeast:-5482257300623082461l,Amount:1.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-7224057274751827505l,UUIDLeast:-6818848218977621316l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Dualsun Cloak''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Cloak"},AttributeModifiers:[{UUIDMost:-895514479119021132l,UUIDLeast:-6538819203639619634l,Amount:1.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-845493126176553328l,UUIDLeast:-6934174944561962248l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Dualsun Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Robe"},AttributeModifiers:[{UUIDMost:-3224490652004365870l,UUIDLeast:-8490984991565425765l,Amount:1.0d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:5309333526597813727l,UUIDLeast:-8167831153772325916l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Dualsun Shoes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Shoes"},AttributeModifiers:[{UUIDMost:-1243331979226886434l,UUIDLeast:-7990746417674087296l,Amount:1.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-5110990380665716018l,UUIDLeast:-5231967837950058796l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
 			"id":"minecraft:leather_boots",
 			"name":u'''Fur Boots''',
 		},
@@ -789,11 +1131,623 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:rabbit_hide",
-			"name":u'''Immaculate Hide''',
+			"id":"minecraft:shield",
+			"name":u'''Rusty Shield''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Lore:["§8Delightfully fuzzy"],Name:"§fImmaculate Hide"}}'''
+			"nbt", "replace", ur'''{HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:3,Pattern:"hh"},{Color:3,Pattern:"hhb"},{Color:1,Pattern:"gra"},{Color:3,Pattern:"gra"},{Color:1,Pattern:"gru"},{Color:3,Pattern:"gru"}]},display:{Name:"§fRusty Shield"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Cloth Cap''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Cap"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Cloth Shirt''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Shirt"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Cloth Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Cloth Shoes''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:lingering_potion",
+			"name":u'''Strong Barrier Potion''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:160,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:400,Id:2b,Amplifier:4b},{Ambient:1b,ShowParticles:1b,Duration:400,Id:4b,Amplifier:0b},{Ambient:1b,ShowParticles:1b,Duration:400,Id:19b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§aStrong Barrier Potion"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:lingering_potion",
+			"name":u'''Strong Sanctify Potion''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:240,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:900,Id:22b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§aStrong Sanctify Potion"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:flower_pot",
+			"name":u'''Ancient Relic''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["Uncommon Ingredient"],Name:"§b§lAncient Relic"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:double_plant",
+			"name":u'''Swiftwood Leaf''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["Uncommon Ingredient"],Name:"§b§lSwiftwood Leaf"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:prismarine_crystals",
+			"name":u'''Guardian Scales''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["Uncommon Ingredient"],Name:"§b§lGuardian Scales"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:blaze_powder",
+			"name":u'''Crystalized Fire''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["Uncommon Ingredient"],Name:"§b§lCrystalized Fire"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Vicious Thorn''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fVicious Thorn"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Godwood Sword''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fGodwood Sword"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Druidic Broadsword''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:20s},{lvl:2s,id:22s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDruidic Broadsword"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Ponderous Branch''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:4s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fPonderous Branch"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Nest's Bane''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fNest's Bane"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Officer's Blade''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fOfficer's Blade"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Infernal Dagger''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fInfernal Dagger"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Masterwork Sabre''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:5s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fMasterwork Sabre"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Duelist's Sword''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDuelist's Sword"},AttributeModifiers:[{UUIDMost:298381l,UUIDLeast:495523l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:157078l,UUIDLeast:786990l,Amount:2d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Assassin's Dagger''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier IV"],Name:"§fAssassin's Dagger"},AttributeModifiers:[{UUIDMost:743378l,UUIDLeast:575520l,Amount:0.15d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_axe",
+			"name":u'''Falling Comet''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:34s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fFalling Comet"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_axe",
+			"name":u'''Deforester''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDeforester"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_axe",
+			"name":u'''Cutter''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fCutter"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_axe",
+			"name":u'''Divine Cleaver''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:1s,id:21s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDivine Cleaver"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_axe",
+			"name":u'''Battle Axe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBattle Axe"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_pickaxe",
+			"name":u'''Bluescourge Chisel''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBluescourge Chisel"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_pickaxe",
+			"name":u'''Coal Devourer''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:4s,id:35s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fCoal Devourer"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_pickaxe",
+			"name":u'''Balanced Adze''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBalanced Adze"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_pickaxe",
+			"name":u'''Bountiful Chisel''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:35s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBountiful Chisel"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_hoe",
+			"name":u'''Rebel's Scythe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:34s},{lvl:2s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§rRebel's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_hoe",
+			"name":u'''Salubric Scythe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:18s},{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage","§9","§7When in off hand:","§9 +3 Max Health"],Name:"§fSalubric Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:7295232332495012583l,UUIDLeast:-7792231053812809931l,Amount:3.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:shield",
+			"name":u'''Ironwrought Shield''',
+		},
+		[
+			"nbt", "replace", ur'''{HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:8,Pattern:"hh"},{Color:8,Pattern:"hhb"},{Color:3,Pattern:"bl"},{Color:3,Pattern:"tr"},{Color:3,Pattern:"br"},{Color:3,Pattern:"tl"},{Color:8,Pattern:"sc"},{Color:3,Pattern:"ms"},{Color:8,Pattern:"bo"}]},display:{Lore:["§8King's Valley : Tier IV"],Name:"§fIronwrought Shield"},AttributeModifiers:[{UUIDMost:477084l,UUIDLeast:816028l,Amount:0.25d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:shield",
+			"name":u'''Spiked Buckler''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:19s}],HideFlags:34,BlockEntityTag:{Base:0,Patterns:[{Color:7,Pattern:"hh"},{Color:7,Pattern:"hhb"},{Color:3,Pattern:"bl"},{Color:3,Pattern:"tl"},{Color:3,Pattern:"tr"},{Color:3,Pattern:"br"},{Color:7,Pattern:"bt"},{Color:7,Pattern:"tt"},{Color:3,Pattern:"drs"},{Color:3,Pattern:"dls"},{Color:3,Pattern:"sc"}]},display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2.0 Attack Speed","§7 4 Attack Damage"],Name:"§fSpiked Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799l,UUIDLeast:-7099076830009706309l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-4645625362179865008l,UUIDLeast:-5457813405958071294l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Pyromancer's Bow''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:50s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fPyromancer's Bow"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Composite Bow''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:1s,id:49s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fComposite Bow"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_shovel",
+			"name":u'''Gardener''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fGardener"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stick",
+			"name":u'''Journeyman's Staff''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier IV"],Name:"§fJourneyman's Staff"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bone",
+			"name":u'''Shaman's Staff''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:18s},{lvl:1s,id:19s},{lvl:1s,id:71s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier IV"],Name:"§fShaman's Staff"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Cerulean Mage Hat''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:1s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Hat"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Cerulean Mage Robes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Robes"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Cerulean Mage Robes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Robes"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Cerulean Mage Robes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Robes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Molten Hood''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Hood"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Molten Cloak''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Molten Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Molten Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Choleric Helm''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Choleric Cloak''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Choleric Leggings''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Leggings"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Choleric Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Heavy Leather Cap''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],Name:"§fHeavy Leather Cap"},AttributeModifiers:[{UUIDMost:1199056757440006902l,UUIDLeast:-5031645011434854220l,Amount:0.12d,Slot:"head",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-5675263151546941074l,UUIDLeast:-7630602400151360780l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Heavy Leather Tunic''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],Name:"§fHeavy Leather Tunic"},AttributeModifiers:[{UUIDMost:-7851645031876899907l,UUIDLeast:-7264920938634085936l,Amount:0.12d,Slot:"chest",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-6308125112336758355l,UUIDLeast:-6141357313852679154l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Heavy Leather Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],Name:"§fHeavy Leather Pants"},AttributeModifiers:[{UUIDMost:-5282638418670238374l,UUIDLeast:-7237081583653115127l,Amount:0.12d,Slot:"legs",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-2983299289300778334l,UUIDLeast:-4622743005847896684l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Heavy Leather Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],Name:"§fHeavy Leather Boots"},AttributeModifiers:[{UUIDMost:-6971162542843608331l,UUIDLeast:-9087580478696796047l,Amount:0.12d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:1131969840074081731l,UUIDLeast:-7625908944711840236l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Brigand's Coif''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Coif"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Brigand's Tunic''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Tunic"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Brigand's Trousers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Trousers"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Brigand's Shoes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Shoes"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Gemcrust Coif''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Coif"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Gemcrust Vest''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Vest"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Gemcrust Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Pants"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Gemcrust Shoes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Shoes"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Explorer's Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:8s},{lvl:1s,id:0s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:3445134,Name:"§fExplorer's Boots"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Explorer's Cap''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:5s},{lvl:1s,id:6s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:755048,Name:"§fExplorer's Cap"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Plaguehide Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Boots"},AttributeModifiers:[{UUIDMost:19971159992297292l,UUIDLeast:11701631750427272l,Amount:2d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:50620023180411213l,UUIDLeast:56580625667548148l,Amount:0.05d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:61536614628787790l,UUIDLeast:12067686387522583l,Amount:1d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Plaguehide Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Pants"},AttributeModifiers:[{UUIDMost:7398196116790600l,UUIDLeast:33239325481073366l,Amount:2d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:61910509039675723l,UUIDLeast:13746144420287990l,Amount:0.05d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:14165244533123147l,UUIDLeast:22637248009267620l,Amount:2d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Plaguehide Torso''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Torso"},AttributeModifiers:[{UUIDMost:71978911221471809l,UUIDLeast:25260044972271010l,Amount:2d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:19117308396094024l,UUIDLeast:9968568939286539l,Amount:0.05d,Slot:"chest",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:8440217748974405l,UUIDLeast:3552643124966103l,Amount:3d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Plaguehide Cap''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Cap"},AttributeModifiers:[{UUIDMost:22907356139724361l,UUIDLeast:55634361538278368l,Amount:2d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:50813337862916683l,UUIDLeast:38856196263924788l,Amount:0.05d,Slot:"head",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:22347000550566221l,UUIDLeast:68212466135762333l,Amount:1d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
@@ -866,114 +1820,6 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 		},
 		[
 			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§3King's Valley"],color:14277081,Name:"§6§lAngelic Pants"},AttributeModifiers:[{UUIDMost:2767629973749578l,UUIDLeast:26549136928073536l,Amount:5d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:flower_pot",
-			"name":u'''Ancient Relic''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["Uncommon Ingredient"],Name:"§b§lAncient Relic"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:double_plant",
-			"name":u'''Swiftwood Leaf''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["Uncommon Ingredient"],Name:"§b§lSwiftwood Leaf"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:prismarine_crystals",
-			"name":u'''Guardian Scales''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["Uncommon Ingredient"],Name:"§b§lGuardian Scales"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:blaze_powder",
-			"name":u'''Crystalized Fire''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["Uncommon Ingredient"],Name:"§b§lCrystalized Fire"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Explorer's Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:8s},{lvl:1s,id:0s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:3445134,Name:"§fExplorer's Boots"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Explorer's Cap''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:5s},{lvl:1s,id:6s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:755048,Name:"§fExplorer's Cap"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Plaguehide Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Boots"},AttributeModifiers:[{UUIDMost:19971159992297292l,UUIDLeast:11701631750427272l,Amount:2d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:50620023180411213l,UUIDLeast:56580625667548148l,Amount:0.05d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:61536614628787790l,UUIDLeast:12067686387522583l,Amount:1d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Plaguehide Pants''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Pants"},AttributeModifiers:[{UUIDMost:7398196116790600l,UUIDLeast:33239325481073366l,Amount:2d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:61910509039675723l,UUIDLeast:13746144420287990l,Amount:0.05d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:14165244533123147l,UUIDLeast:22637248009267620l,Amount:2d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Plaguehide Torso''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Torso"},AttributeModifiers:[{UUIDMost:71978911221471809l,UUIDLeast:25260044972271010l,Amount:2d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:19117308396094024l,UUIDLeast:9968568939286539l,Amount:0.05d,Slot:"chest",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:8440217748974405l,UUIDLeast:3552643124966103l,Amount:3d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Plaguehide Cap''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:675072,Name:"§aPlaguehide Cap"},AttributeModifiers:[{UUIDMost:22907356139724361l,UUIDLeast:55634361538278368l,Amount:2d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:50813337862916683l,UUIDLeast:38856196263924788l,Amount:0.05d,Slot:"head",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:22347000550566221l,UUIDLeast:68212466135762333l,Amount:1d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:lingering_potion",
-			"name":u'''Strong Barrier Potion''',
-		},
-		[
-			"nbt", "replace", ur'''{CustomPotionColor:160,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:400,Id:2b,Amplifier:4b},{Ambient:1b,ShowParticles:1b,Duration:400,Id:4b,Amplifier:0b},{Ambient:1b,ShowParticles:1b,Duration:400,Id:19b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§aStrong Barrier Potion"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:lingering_potion",
-			"name":u'''Strong Sanctify Potion''',
-		},
-		[
-			"nbt", "replace", ur'''{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:240,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:900,Id:22b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§aStrong Sanctify Potion"}}'''
 		]
 	],
 	[
@@ -1491,65 +2337,227 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Telum Immoriel''',
+			"id":"minecraft:leather_boots",
+			"name":u'''Guardian Hide Boots''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:22s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§7The Black Willows","§8Another toy for Fangride to play with","§7","§7When in main hand:","§7 0.8 Attack Speed","§7 12 Attack Damage"],Name:"§6§lTelum Immoriel"},AttributeModifiers:[{UUIDMost:962659l,UUIDLeast:90631l,Amount:11.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:345591l,UUIDLeast:876260l,Amount:-3.2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:sapling",
-			"name":u'''Chimarian Wand''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:2s,id:17s},{lvl:2s,id:18s},{lvl:1s,id:20s}],display:{Lore:["§eKing's Valley : Rare","§7The Black Willows","§8We need more trees!","§8* Magic Wand *"],Name:"§2§lChimarian Wand"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:quartz",
-			"name":u'''Render's Ruthless Claw''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:8s,id:16s}],display:{Lore:["§eKing's Valley : Rare","§7The Black Willows","§8Simplistic, but effective"],Name:"§3§lRender's Ruthless Claw"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_pickaxe",
-			"name":u'''Helician Spitzhacke''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:3s,id:34s}],HideFlags:3,display:{Lore:["§7Effizienz II","§7Unbreaking III","§eKing's Valley : Rare","§7The Black Willows","§8Now with German efficiency!","§7","§7When in main hand:","§7 1.2 Attack Speed","§7 3 Attack Damage","§9 +0.5 Knockback Resistance","§9 +3 Armor"],Name:"§1§lHelician Spitzhacke"},AttributeModifiers:[{UUIDMost:203618l,UUIDLeast:725165l,Amount:0.5d,Slot:"mainhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"},{UUIDMost:961145l,UUIDLeast:133590l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:670193l,UUIDLeast:659361l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:641625l,UUIDLeast:480595l,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:red_flower",
-			"name":u'''Teewie's Eternal Tulip''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],HideFlags:1,display:{Lore:["§eKing's Valley : Rare","§7The Black Willows","§8Part of the flower crown worn by Princess Teewie","§8many centuries ago"],Name:"§d§lTeewie's Eternal Tulip"},AttributeModifiers:[{UUIDMost:-2576588526142208534l,UUIDLeast:-8215095133131934612l,Amount:3.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-7377653646270249488l,UUIDLeast:-4833595088129389224l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:70s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:10599120,Name:"§fGuardian Hide Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:leather_leggings",
-			"name":u'''Busty's Hot Pants''',
+			"name":u'''Guardian Hide Pants''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:1s},{lvl:1s,id:70s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§7The Black Willows","§8Caution: Highly Combustible!"],color:14059296,Name:"§4§lBusty's Hot Pants"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:70s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:10599120,Name:"§fGuardian Hide Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:leather_chestplate",
-			"name":u'''Brown Corp Uniform''',
+			"name":u'''Guardian Hide Vest''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§7The Black Willows","§8What do they ever do besides hanging out?"],color:6704179,Name:"§5§lBrown Corp Uniform"},AttributeModifiers:[{UUIDMost:-395305911349064079l,UUIDLeast:-6975068402520238575l,Amount:2.0d,Slot:"chest",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:8894152384868271503l,UUIDLeast:-5148525816173331419l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:70s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:10599120,Name:"§fGuardian Hide Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Guardian Hide Helm''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:70s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:10599120,Name:"§fGuardian Hide Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Offering's Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:7895314803459967566l,UUIDLeast:-4684285381480027934l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Offering's Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:2421209759494129265l,UUIDLeast:-7639468242547147097l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Offering's Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:4172809477985159313l,UUIDLeast:-6315940985289442365l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Offering's Hood''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Hood"},AttributeModifiers:[{UUIDMost:-1020269136855678533l,UUIDLeast:-8988064621405004682l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Sacrificial Blade''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:20s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§fSacrificial Blade"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_axe",
+			"name":u'''The Ravager''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§eKing's Valley : Rare","§6Fallen Menagerie","§8There is nothing more fierce","§8than a Jaguar enraged."],Name:"§3§lThe Ravager"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stick",
+			"name":u'''Shapeshifter's Wand''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:19s}],display:{Lore:["§8* Magic Wand *","§eKing's Valley : Rare","§6Fallen Menagerie","§8The Lunatics transform when","§8the time is right."],Name:"§2§lShapeshifter's Wand"},AttributeModifiers:[{UUIDMost:-6875693728534016758l,UUIDLeast:-4803955762994063049l,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-8999057979425928886l,UUIDLeast:-6793904886171895238l,Amount:5.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Boots of Vitality''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:5s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6Fallen Menagerie","§8Worn by jailors to keep them healthy.","§8These boots exude an odd aura."],color:4521728,Name:"§2§lBoots of Vitality"},AttributeModifiers:[{UUIDMost:47288061869184321l,UUIDLeast:31209886326295287l,Amount:2.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:67642567772660032l,UUIDLeast:69671216077991960l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Cultist's Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:10s},{lvl:1s,id:70s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6Fallen Menagerie","§8Step into line. Join us..."],color:8857897,Name:"§d§lCultist's Robe"},AttributeModifiers:[{UUIDMost:42188985747894336l,UUIDLeast:58789894930970307l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:26258638605899072l,UUIDLeast:65484620952030853l,Amount:0.1d,Slot:"chest",AttributeName:"generic.attackSpeed",Operation:1,Name:"generic.attackSpeed"},{UUIDMost:-7523851246731247303l,UUIDLeast:-6521249364252678471l,Amount:1.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:quartz",
+			"name":u'''Purified Claw''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:17s},{lvl:1s,id:19s}],display:{Lore:["§eKing's Valley : Rare","§6Fallen Menagerie","§8The claws of a Jaguar,","§8The soul of the Jungle."],Name:"§9§lPurified Claw"},AttributeModifiers:[{UUIDMost:-980822700820772406l,UUIDLeast:-6364738682707359156l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Wildthrasher''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:3s,id:34s},{lvl:1s,id:20s}],display:{Lore:["§eKing's Valley : Rare","§6Fallen Menagerie","§8Nature strikes back as the Beastmen howl"],Name:"§a§lWildthrasher"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Bonepiercer''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:1s,id:49s},{lvl:1s,id:50s},{lvl:1s,id:34s}],display:{Lore:["§eKing's Valley : Rare","§6Fallen Menagerie","§8Pierce the flesh, and the bones will follow","§8 -Hawk Proverb"],Name:"§f§lBonepiercer"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:golden_axe",
+			"name":u'''Arachnobane''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:18s},{lvl:7s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§eKing's Valley : Rare","§6Fallen Menagerie","§8It seems there's a reason there is","§8no Spider tribe."],Name:"§d§lArachnobane"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_axe",
+			"name":u'''Soulcrusher''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:8s,id:16s},{lvl:3s,id:34s}],display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Crush the body, crush the soul","§8crush the life that makes them whole."],Name:"§6§lSoulcrusher"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:golden_sword",
+			"name":u'''Doom's Edge''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:22s},{lvl:1s,id:71s}],display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Those sent into the temple were","§8doomed from the start."],Name:"§6§lDoom's Edge"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:golden_hoe",
+			"name":u'''Reaper's Harvest''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:17s},{lvl:1s,id:70s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Death stalked the halls of","§8the Plagueroot Temple.","§7","§7When in main hand:","§7 1 Attack Speed","§7 3 Attack Damage"],Name:"§6§lReaper's Harvest"},AttributeModifiers:[{UUIDMost:8976644567604022855l,UUIDLeast:-7318916035691686042l,Amount:-3.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:7551800705775586544l,UUIDLeast:-5250539558224500715l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:totem_of_undying",
+			"name":u'''Idol of Immortality''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§eKing's Valley : Rare","§fWhen you are about to die, this item provides","§fAbsorption and Regeneration, destroying itself","§fin the process.","§5Plagueroot Temple","§8What good is eternal life when you cannot leave?"],Name:"§6§lIdol of Immortality"},AttributeModifiers:[{UUIDMost:6936855416015769157l,UUIDLeast:-5146628686682897060l,Amount:3.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-4476995786822302589l,UUIDLeast:-4856746282580489681l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:shield",
+			"name":u'''Tlaxan Bulwark''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],HideFlags:32,BlockEntityTag:{Base:2,Patterns:[{Color:0,Pattern:"gru"},{Color:0,Pattern:"cre"},{Color:0,Pattern:"flo"},{Color:0,Pattern:"moj"},{Color:0,Pattern:"tts"},{Color:0,Pattern:"bts"}]},display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Shields are no good to the dead"],Name:"§2§lTlaxan Bulwark"},AttributeModifiers:[{UUIDMost:8279654741628239l,UUIDLeast:50644245966137402l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Basilisk Scales''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Hide of ancient beasts, wracked","§8with a sickness beyond death."],color:54286,Name:"§2§lBasilisk Scales"},AttributeModifiers:[{UUIDMost:1217047145548364l,UUIDLeast:62197310443051283l,Amount:4.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Plaguebringer''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:7s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§5Plagueroot Temple","§8There is sickness in the depths.","§8Now it travels with you."],color:283658,Name:"§2§lPlaguebringer"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:skull",
+			"name":u'''Tlaxan Mask''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:4s},{lvl:2s,id:5s},{lvl:1s,id:10s}],SkullOwner:{Id:"c659cdd4-e436-4977-a6a7-d5518ebecfbb",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFlMzg1NWY5NTJjZDRhMDNjMTQ4YTk0NmUzZjgxMmE1OTU1YWQzNWNiY2I1MjYyN2VhNGFjZDQ3ZDMwODEifX19"}]}},display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Even the Tlaxans fell to the sickness"],Name:"§4§lTlaxan Mask"},AttributeModifiers:[{UUIDMost:32937979772523592l,UUIDLeast:12523234267159625l,Amount:0.15d,Slot:"head",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"}]}'''
 		]
 	],
 	[
@@ -1726,672 +2734,6 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	[
 		{
 			"id":"minecraft:leather_boots",
-			"name":u'''Guardian Hide Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:70s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:10599120,Name:"§fGuardian Hide Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Guardian Hide Pants''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:70s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:10599120,Name:"§fGuardian Hide Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Guardian Hide Vest''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:70s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:10599120,Name:"§fGuardian Hide Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Guardian Hide Helm''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:70s},{lvl:3s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:10599120,Name:"§fGuardian Hide Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Offering's Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:7895314803459967566l,UUIDLeast:-4684285381480027934l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Offering's Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:2421209759494129265l,UUIDLeast:-7639468242547147097l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Offering's Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Robe"},AttributeModifiers:[{UUIDMost:4172809477985159313l,UUIDLeast:-6315940985289442365l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Offering's Hood''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Uncommon"],color:16719872,Name:"§fOffering's Hood"},AttributeModifiers:[{UUIDMost:-1020269136855678533l,UUIDLeast:-8988064621405004682l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Sacrificial Blade''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:20s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§fSacrificial Blade"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Vicious Thorn''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fVicious Thorn"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Godwood Sword''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fGodwood Sword"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Druidic Broadsword''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:20s},{lvl:2s,id:22s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDruidic Broadsword"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Ponderous Branch''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:4s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fPonderous Branch"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Nest's Bane''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fNest's Bane"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Officer's Blade''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fOfficer's Blade"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Infernal Dagger''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fInfernal Dagger"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Masterwork Sabre''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:5s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fMasterwork Sabre"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Duelist's Sword''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDuelist's Sword"},AttributeModifiers:[{UUIDMost:298381l,UUIDLeast:495523l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"},{UUIDMost:157078l,UUIDLeast:786990l,Amount:2d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Assassin's Dagger''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier IV"],Name:"§fAssassin's Dagger"},AttributeModifiers:[{UUIDMost:743378l,UUIDLeast:575520l,Amount:0.15d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_axe",
-			"name":u'''Falling Comet''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:34s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fFalling Comet"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_axe",
-			"name":u'''Deforester''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDeforester"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_axe",
-			"name":u'''Cutter''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fCutter"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_axe",
-			"name":u'''Divine Cleaver''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:1s,id:21s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fDivine Cleaver"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_axe",
-			"name":u'''Battle Axe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBattle Axe"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_pickaxe",
-			"name":u'''Bluescourge Chisel''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBluescourge Chisel"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_pickaxe",
-			"name":u'''Coal Devourer''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:4s,id:35s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fCoal Devourer"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_pickaxe",
-			"name":u'''Balanced Adze''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBalanced Adze"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_pickaxe",
-			"name":u'''Bountiful Chisel''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:35s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fBountiful Chisel"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_hoe",
-			"name":u'''Rebel's Scythe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:34s},{lvl:2s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§rRebel's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_hoe",
-			"name":u'''Salubric Scythe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:18s},{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage","§9","§7When in off hand:","§9 +3 Max Health"],Name:"§fSalubric Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:7295232332495012583l,UUIDLeast:-7792231053812809931l,Amount:3.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:shield",
-			"name":u'''Ironwrought Shield''',
-		},
-		[
-			"nbt", "replace", ur'''{HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:8,Pattern:"hh"},{Color:8,Pattern:"hhb"},{Color:3,Pattern:"bl"},{Color:3,Pattern:"tr"},{Color:3,Pattern:"br"},{Color:3,Pattern:"tl"},{Color:8,Pattern:"sc"},{Color:3,Pattern:"ms"},{Color:8,Pattern:"bo"}]},display:{Lore:["§8King's Valley : Tier IV"],Name:"§fIronwrought Shield"},AttributeModifiers:[{UUIDMost:477084l,UUIDLeast:816028l,Amount:0.25d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:shield",
-			"name":u'''Spiked Buckler''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:19s}],HideFlags:34,BlockEntityTag:{Base:0,Patterns:[{Color:7,Pattern:"hh"},{Color:7,Pattern:"hhb"},{Color:3,Pattern:"bl"},{Color:3,Pattern:"tl"},{Color:3,Pattern:"tr"},{Color:3,Pattern:"br"},{Color:7,Pattern:"bt"},{Color:7,Pattern:"tt"},{Color:3,Pattern:"drs"},{Color:3,Pattern:"dls"},{Color:3,Pattern:"sc"}]},display:{Lore:["§8King's Valley : Tier IV","§8","§7When in main hand:","§7 2.0 Attack Speed","§7 4 Attack Damage"],Name:"§fSpiked Buckler"},AttributeModifiers:[{UUIDMost:6962219233119978799l,UUIDLeast:-7099076830009706309l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-4645625362179865008l,UUIDLeast:-5457813405958071294l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bow",
-			"name":u'''Pyromancer's Bow''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:50s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fPyromancer's Bow"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bow",
-			"name":u'''Composite Bow''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:1s,id:49s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fComposite Bow"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_shovel",
-			"name":u'''Gardener''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier IV"],Name:"§fGardener"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stick",
-			"name":u'''Journeyman's Staff''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:19s},{lvl:2s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier IV"],Name:"§fJourneyman's Staff"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bone",
-			"name":u'''Shaman's Staff''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:18s},{lvl:1s,id:19s},{lvl:1s,id:71s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier IV"],Name:"§fShaman's Staff"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Cerulean Mage Hat''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:1s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Hat"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Cerulean Mage Robes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Robes"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Cerulean Mage Robes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Robes"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Cerulean Mage Robes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:5214175,Name:"§fCerulean Mage Robes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Molten Hood''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Hood"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Molten Cloak''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Molten Pants''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Molten Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:16756736,Name:"§fMolten Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Choleric Helm''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Choleric Cloak''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Choleric Leggings''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Leggings"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Choleric Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s},{lvl:5s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier IV"],color:6356736,Name:"§fCholeric Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Heavy Leather Cap''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],Name:"§fHeavy Leather Cap"},AttributeModifiers:[{UUIDMost:1199056757440006902l,UUIDLeast:-5031645011434854220l,Amount:0.12d,Slot:"head",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-5675263151546941074l,UUIDLeast:-7630602400151360780l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Heavy Leather Tunic''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],Name:"§fHeavy Leather Tunic"},AttributeModifiers:[{UUIDMost:-7851645031876899907l,UUIDLeast:-7264920938634085936l,Amount:0.12d,Slot:"chest",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-6308125112336758355l,UUIDLeast:-6141357313852679154l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Heavy Leather Pants''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],Name:"§fHeavy Leather Pants"},AttributeModifiers:[{UUIDMost:-5282638418670238374l,UUIDLeast:-7237081583653115127l,Amount:0.12d,Slot:"legs",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-2983299289300778334l,UUIDLeast:-4622743005847896684l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Heavy Leather Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],Name:"§fHeavy Leather Boots"},AttributeModifiers:[{UUIDMost:-6971162542843608331l,UUIDLeast:-9087580478696796047l,Amount:0.12d,Slot:"feet",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:1131969840074081731l,UUIDLeast:-7625908944711840236l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Brigand's Coif''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Coif"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Brigand's Tunic''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Tunic"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Brigand's Trousers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Trousers"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Brigand's Shoes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:8425600,Name:"§fBrigand's Shoes"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Gemcrust Coif''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Coif"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Gemcrust Vest''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Vest"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Gemcrust Pants''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Pants"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Gemcrust Shoes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:1s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier IV"],color:16711935,Name:"§fGemcrust Shoes"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:shield",
-			"name":u'''Rusty Shield''',
-		},
-		[
-			"nbt", "replace", ur'''{HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:3,Pattern:"hh"},{Color:3,Pattern:"hhb"},{Color:1,Pattern:"gra"},{Color:3,Pattern:"gra"},{Color:1,Pattern:"gru"},{Color:3,Pattern:"gru"}]},display:{Name:"§fRusty Shield"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Cloth Cap''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Cap"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Cloth Shirt''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Shirt"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Cloth Pants''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Cloth Shoes''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§9Cloth Armor"],color:16768959,Name:"§fCloth Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_axe",
-			"name":u'''The Ravager''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§eKing's Valley : Rare","§6Fallen Menagerie","§8There is nothing more fierce","§8than a Jaguar enraged."],Name:"§3§lThe Ravager"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stick",
-			"name":u'''Shapeshifter's Wand''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:1s,id:19s}],display:{Lore:["§8* Magic Wand *","§eKing's Valley : Rare","§6Fallen Menagerie","§8The Lunatics transform when","§8the time is right."],Name:"§2§lShapeshifter's Wand"},AttributeModifiers:[{UUIDMost:-6875693728534016758l,UUIDLeast:-4803955762994063049l,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-8999057979425928886l,UUIDLeast:-6793904886171895238l,Amount:5.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Boots of Vitality''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:5s,id:34s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6Fallen Menagerie","§8Worn by jailors to keep them healthy.","§8These boots exude an odd aura."],color:4521728,Name:"§2§lBoots of Vitality"},AttributeModifiers:[{UUIDMost:47288061869184321l,UUIDLeast:31209886326295287l,Amount:2.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:67642567772660032l,UUIDLeast:69671216077991960l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Cultist's Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:10s},{lvl:1s,id:70s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§6Fallen Menagerie","§8Step into line. Join us..."],color:8857897,Name:"§d§lCultist's Robe"},AttributeModifiers:[{UUIDMost:42188985747894336l,UUIDLeast:58789894930970307l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:26258638605899072l,UUIDLeast:65484620952030853l,Amount:0.1d,Slot:"chest",AttributeName:"generic.attackSpeed",Operation:1,Name:"generic.attackSpeed"},{UUIDMost:-7523851246731247303l,UUIDLeast:-6521249364252678471l,Amount:1.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:quartz",
-			"name":u'''Purified Claw''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:17s},{lvl:1s,id:19s}],display:{Lore:["§eKing's Valley : Rare","§6Fallen Menagerie","§8The claws of a Jaguar,","§8The soul of the Jungle."],Name:"§9§lPurified Claw"},AttributeModifiers:[{UUIDMost:-980822700820772406l,UUIDLeast:-6364738682707359156l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Wildthrasher''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:3s,id:34s},{lvl:1s,id:20s}],display:{Lore:["§eKing's Valley : Rare","§6Fallen Menagerie","§8Nature strikes back as the Beastmen howl"],Name:"§a§lWildthrasher"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bow",
-			"name":u'''Bonepiercer''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:1s,id:49s},{lvl:1s,id:50s},{lvl:1s,id:34s}],display:{Lore:["§eKing's Valley : Rare","§6Fallen Menagerie","§8Pierce the flesh, and the bones will follow","§8 -Hawk Proverb"],Name:"§f§lBonepiercer"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:golden_axe",
-			"name":u'''Arachnobane''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:4s,id:18s},{lvl:7s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§eKing's Valley : Rare","§6Fallen Menagerie","§8It seems there's a reason there is","§8no Spider tribe."],Name:"§d§lArachnobane"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
 			"name":u'''Thaumaturge's Robes''',
 		},
 		[
@@ -2428,937 +2770,523 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	[
 		{
 			"id":"minecraft:wooden_sword",
-			"name":u'''Bloody Thorn''',
+			"name":u'''Living Thorn''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:2s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBloody Thorn"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:18s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fLiving Thorn"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:wooden_sword",
-			"name":u'''Eternal Crescent''',
+			"name":u'''Crusader's Sword''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:70s},{lvl:3s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aEternal Crescent"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fCrusader's Sword"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Light Scimitar''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:3s,id:22s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fLight Scimitar"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Flamewreath Splinter''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:2s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fFlamewreath Splinter"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Thief's Dagger''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:4s,id:21s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fThief's Dagger"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_sword",
-			"name":u'''Macuahuitl''',
+			"name":u'''Brigand's Rapier''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMacuahuitl"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:20s},{lvl:2s,id:21s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fBrigand's Rapier"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_sword",
-			"name":u'''Reliable Longsword''',
+			"name":u'''Honed Claymore''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aReliable Longsword"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fHoned Claymore"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_sword",
-			"name":u'''Versatile Cutlass''',
+			"name":u'''Ritual Knife''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:18s},{lvl:2s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aVersatile Cutlass"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fRitual Knife"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_sword",
-			"name":u'''Molten Rapier''',
+			"name":u'''Trusty Dagger''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMolten Rapier"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:18s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fTrusty Dagger"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_sword",
-			"name":u'''Polished Gladius''',
+			"name":u'''Scoundrel's Rapier''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:3s,id:34s},{lvl:3s,id:19s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aPolished Gladius"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:golden_sword",
-			"name":u'''Eldritch Blade''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier V"],Name:"§aEldritch Blade"},AttributeModifiers:[{UUIDMost:81922l,UUIDLeast:79311l,Amount:0.15d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"generic.knockbackResistance"},{UUIDMost:298381l,UUIDLeast:495523l,Amount:0.2d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier III"],Name:"§fScoundrel's Rapier"},AttributeModifiers:[{UUIDMost:157078l,UUIDLeast:786990l,Amount:2d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_sword",
-			"name":u'''Scout's Companion''',
+			"name":u'''Poisoned Shank''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier V"],Name:"§aScout's Companion"},AttributeModifiers:[{UUIDMost:637136l,UUIDLeast:234308l,Amount:2d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"},{UUIDMost:743378l,UUIDLeast:575520l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier III"],Name:"§fPoisoned Shank"},AttributeModifiers:[{UUIDMost:298381l,UUIDLeast:495523l,Amount:0.15d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_axe",
+			"name":u'''Meteor Hammer''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fMeteor Hammer"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_axe",
+			"name":u'''Tempered Mace''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fTempered Mace"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_axe",
-			"name":u'''Blessed Axe''',
+			"name":u'''Woodsman's Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:4s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBlessed Axe"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fWoodsman's Axe"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_axe",
-			"name":u'''Crushing Mace''',
+			"name":u'''Heavy Warhammer''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:17s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aCrushing Mace"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:34s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fHeavy Warhammer"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_axe",
-			"name":u'''Phoenix Axe''',
+			"name":u'''Jagged Cleaver''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:4s,id:34s},{lvl:1s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aPhoenix Axe"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fJagged Cleaver"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_axe",
-			"name":u'''Soulhammer''',
+			"name":u'''Inferno Axe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aSoulhammer"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:2s,id:20s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fInferno Axe"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:wooden_pickaxe",
-			"name":u'''Evanescent''',
+			"name":u'''Sapper's Tool''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:4s,id:32s},{lvl:1s,id:71s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aEvanescent"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:2s,id:34s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fSapper's Tool"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_pickaxe",
-			"name":u'''Undying Chisel''',
+			"name":u'''Masterwork Pickaxe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aUndying Chisel"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fMasterwork Pickaxe"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_pickaxe",
-			"name":u'''Truerune Pick''',
+			"name":u'''Runic Pickaxe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:4s,id:35s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aTruerune Pick"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:2s,id:35s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fRunic Pickaxe"}}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:stone_shovel",
-			"name":u'''Undying Trowel''',
+			"id":"minecraft:stone_pickaxe",
+			"name":u'''Resiliant Pickaxe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aUndying Trowel"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_hoe",
-			"name":u'''Executioner's Scythe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:17s},{lvl:3s,id:34s},{lvl:2s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier V","§8","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§aExecutioner's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_hoe",
-			"name":u'''Windborn Scythe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier V","§8","§7When in main hand:","§7 2 Attack Speed","§7 5 Attack Damage","§l","§7When in off hand:","§9 +12% Speed"],Name:"§aWindborn Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:4741036782941654280l,UUIDLeast:-8811754788537177381l,Amount:0.12d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:shield",
-			"name":u'''Swiftwood Buckler''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:11,Pattern:"hh"},{Color:11,Pattern:"hhb"},{Color:3,Pattern:"gra"},{Color:11,Pattern:"gru"},{Color:11,Pattern:"gru"},{Color:11,Pattern:"gru"},{Color:3,Pattern:"gru"}]},display:{Lore:["§8King's Valley : Tier V"],Name:"§aSwiftwood Buckler"},AttributeModifiers:[{UUIDMost:3799174595893871670l,UUIDLeast:-8604776829862673178l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:shield",
-			"name":u'''Soulguard''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:70s}],HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:3,Pattern:"hh"},{Color:3,Pattern:"hhb"},{Color:10,Pattern:"gru"},{Color:3,Pattern:"gru"},{Color:2,Pattern:"flo"},{Color:10,Pattern:"mc"}]},display:{Lore:["§8King's Valley : Tier V"],Name:"§aSoulguard"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bow",
-			"name":u'''Blazing Crossbow''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:49s},{lvl:1s,id:50s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aBlazing Crossbow"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bow",
-			"name":u'''Korbaran Shortbow''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:48s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aKorbaran Shortbow"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:fishing_rod",
-			"name":u'''Mermaid's Touch''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:4s,id:62s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Tier V"],Name:"§aMermaid's Touch"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_shovel",
-			"name":u'''Pyromancer's Staff''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:17s},{lvl:4s,id:34s},{lvl:1s,id:19s},{lvl:3s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier V"],Name:"§aPyromancer's Staff"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stick",
-			"name":u'''Wand of Storms''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:3s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier V"],Name:"§aWand of Storms"},AttributeModifiers:[{UUIDMost:120619l,UUIDLeast:372763l,Amount:0.07d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Nereid Cap''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s},{lvl:1s,id:5s},{lvl:1s,id:6s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Cap"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Nereid Tunic''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s},{lvl:1s,id:5s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Tunic"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Nereid Leggings''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s},{lvl:1s,id:5s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Leggings"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Nereid Sandals''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:8s},{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:4s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:1073407,Name:"§aNereid Sandals"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Hardened Leather Cap''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Cap"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Hardened Leather Tunic''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Tunic"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Hardened Leather Pants''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Pants"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Hardened Leather Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:3s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10506272,Name:"§aHardened Leather Boots"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Scout's Leathers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:692165l,UUIDLeast:277777l,Amount:0.03d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:692165l,UUIDLeast:277777l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Scout's Leathers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:752165l,UUIDLeast:297777l,Amount:0.03d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:752165l,UUIDLeast:297777l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Scout's Leathers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:732165l,UUIDLeast:337777l,Amount:0.03d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:764261l,UUIDLeast:337777l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Scout's Leathers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:34s},{lvl:3s,id:2s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:10240,Name:"§aScout's Leathers"},AttributeModifiers:[{UUIDMost:632165l,UUIDLeast:237777l,Amount:0.03d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:632165l,UUIDLeast:237777l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Soulleather Veil''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Veil"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Soulleather Cloak''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Cloak"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Soulleather Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Robe"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Soulleather Shoes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s},{lvl:1s,id:71s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16777215,Name:"§aSoulleather Shoes"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Viridian Mage Hat''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:2s,id:1s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Hat"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Viridian Mage Robes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:2s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Robes"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Viridian Mage Robes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Robes"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Viridian Mage Robes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier V"],color:1105920,Name:"§aViridian Mage Robes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Dualsun Hood''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Hood"},AttributeModifiers:[{UUIDMost:3410419544452450231l,UUIDLeast:-5482257300623082461l,Amount:1.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-7224057274751827505l,UUIDLeast:-6818848218977621316l,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Dualsun Cloak''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Cloak"},AttributeModifiers:[{UUIDMost:-895514479119021132l,UUIDLeast:-6538819203639619634l,Amount:1.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-845493126176553328l,UUIDLeast:-6934174944561962248l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Dualsun Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Robe"},AttributeModifiers:[{UUIDMost:-3224490652004365870l,UUIDLeast:-8490984991565425765l,Amount:1.0d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:5309333526597813727l,UUIDLeast:-8167831153772325916l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Dualsun Shoes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:1s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier V"],color:16773120,Name:"§aDualsun Shoes"},AttributeModifiers:[{UUIDMost:-1243331979226886434l,UUIDLeast:-7990746417674087296l,Amount:1.0d,Slot:"feet",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-5110990380665716018l,UUIDLeast:-5231967837950058796l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Ironwood Blade''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fIronwood Blade"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Carved Dagger''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fCarved Dagger"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Oaken Broadsword''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:1s,id:22s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fOaken Broadsword"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Scorching Splinter''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:20s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fScorching Splinter"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Flensing Knife''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:18s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fFlensing Knife"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Hunter's Stake''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fHunter's Stake"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Serrated Shiv''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Tier I"],Name:"§fSerrated Shiv"},AttributeModifiers:[{UUIDMost:298381l,UUIDLeast:495523l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_axe",
-			"name":u'''Swiftwood Axe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSwiftwood Axe"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_axe",
-			"name":u'''Squire's Hammer''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:1s,id:19s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSquire's Hammer"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_axe",
-			"name":u'''Smoldering Hatchet''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSmoldering Hatchet"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_pickaxe",
-			"name":u'''Swiftwood Pickaxe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSwiftwood Pickaxe"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_pickaxe",
-			"name":u'''Lucky Pick''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:35s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fLucky Pick"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_pickaxe",
-			"name":u'''Ironwood Pick''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fIronwood Pick"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fResiliant Pickaxe"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:wooden_shovel",
-			"name":u'''Swiftwood Shovel''',
+			"name":u'''Arrowmeld''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fSwiftwood Shovel"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:fishing_rod",
-			"name":u'''Novice's Fishing Rod''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:62s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : Tier I"],Name:"§fNovice's Fishing Rod"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stick",
-			"name":u'''Weak Wand''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:20s},{lvl:1s,id:19s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier I"],Name:"§fWeak Wand"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:34s},{lvl:3s,id:35s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fArrowmeld"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:shield",
-			"name":u'''Weak Shield''',
+			"name":u'''Hardened Shield''',
 		},
 		[
-			"nbt", "replace", ur'''{HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:3,Pattern:"hh"},{Color:3,Pattern:"hhb"},{Color:15,Pattern:"rud"},{Color:3,Pattern:"rud"},{Color:15,Pattern:"tt"},{Color:3,Pattern:"tt"},{Color:3,Pattern:"bri"}]},display:{Lore:["§8King's Valley : Tier I"],Name:"§fWeak Shield"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Sturdy Cloth Cap''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Cap"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Sturdy Cloth Shirt''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Shirt"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Sturdy Cloth Pants''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Sturdy Cloth Shoes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16768959,Name:"§fSturdy Cloth Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Infused Cloth Helm''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Infused Cloth Cloak''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Infused Cloth Leggings''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Leggings"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Infused Cloth Shoes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:16752543,Name:"§fInfused Cloth Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Padded Cloth Coif''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Coif"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Padded Cloth Tunic''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Padded Cloth Trousers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Padded Cloth Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:10461087,Name:"§fPadded Cloth Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Leafweave Veil''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Veil"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Leafweave Vest''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Leafweave Trousers''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Leafweave Sandals''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:12582847,Name:"§fLeafweave Sandals"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Binding Coif''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Coif"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Binding Robes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Robes"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Binding Robes''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Robes"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Binding Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:4194304,Name:"§fBinding Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Hobnailed Helm''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Hobnailed Vest''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Hobnailed Leggings''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Leggings"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_boots",
-			"name":u'''Hobnailed Boots''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:3s},{lvl:1s,id:7s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier I"],color:7393328,Name:"§fHobnailed Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_hoe",
-			"name":u'''Weak Scythe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s},{lvl:1s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier I","§8","§7When in main hand:","§7 2 Attack Speed","§7 3 Attack Damage"],Name:"§rWeak Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_axe",
-			"name":u'''Soulcrusher''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:8s,id:16s},{lvl:3s,id:34s}],display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Crush the body, crush the soul","§8crush the life that makes them whole."],Name:"§6§lSoulcrusher"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:golden_sword",
-			"name":u'''Doom's Edge''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:22s},{lvl:1s,id:71s}],display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Those sent into the temple were","§8doomed from the start."],Name:"§6§lDoom's Edge"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:golden_hoe",
-			"name":u'''Reaper's Harvest''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:4s,id:17s},{lvl:1s,id:70s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Death stalked the halls of","§8the Plagueroot Temple.","§7","§7When in main hand:","§7 1 Attack Speed","§7 3 Attack Damage"],Name:"§6§lReaper's Harvest"},AttributeModifiers:[{UUIDMost:8976644567604022855l,UUIDLeast:-7318916035691686042l,Amount:-3.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:7551800705775586544l,UUIDLeast:-5250539558224500715l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:totem_of_undying",
-			"name":u'''Idol of Immortality''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§eKing's Valley : Rare","§fWhen you are about to die, this item provides","§fAbsorption and Regeneration, destroying itself","§fin the process.","§5Plagueroot Temple","§8What good is eternal life when you cannot leave?"],Name:"§6§lIdol of Immortality"},AttributeModifiers:[{UUIDMost:6936855416015769157l,UUIDLeast:-5146628686682897060l,Amount:3.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-4476995786822302589l,UUIDLeast:-4856746282580489681l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:shield",
-			"name":u'''Tlaxan Bulwark''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],HideFlags:32,BlockEntityTag:{Base:2,Patterns:[{Color:0,Pattern:"gru"},{Color:0,Pattern:"cre"},{Color:0,Pattern:"flo"},{Color:0,Pattern:"moj"},{Color:0,Pattern:"tts"},{Color:0,Pattern:"bts"}]},display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Shields are no good to the dead"],Name:"§2§lTlaxan Bulwark"},AttributeModifiers:[{UUIDMost:8279654741628239l,UUIDLeast:50644245966137402l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Basilisk Scales''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:34s}],display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Hide of ancient beasts, wracked","§8with a sickness beyond death."],color:54286,Name:"§2§lBasilisk Scales"},AttributeModifiers:[{UUIDMost:1217047145548364l,UUIDLeast:62197310443051283l,Amount:4.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"generic.maxHealth"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Plaguebringer''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:1s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:7s}],display:{Lore:["§bLeather Armor","§eKing's Valley : Rare","§5Plagueroot Temple","§8There is sickness in the depths.","§8Now it travels with you."],color:283658,Name:"§2§lPlaguebringer"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:skull",
-			"name":u'''Tlaxan Mask''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:4s,id:4s},{lvl:2s,id:5s},{lvl:1s,id:10s}],SkullOwner:{Id:"c659cdd4-e436-4977-a6a7-d5518ebecfbb",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFlMzg1NWY5NTJjZDRhMDNjMTQ4YTk0NmUzZjgxMmE1OTU1YWQzNWNiY2I1MjYyN2VhNGFjZDQ3ZDMwODEifX19"}]}},display:{Lore:["§eKing's Valley : Rare","§5Plagueroot Temple","§8Even the Tlaxans fell to the sickness"],Name:"§4§lTlaxan Mask"},AttributeModifiers:[{UUIDMost:32937979772523592l,UUIDLeast:12523234267159625l,Amount:0.15d,Slot:"head",AttributeName:"generic.attackDamage",Operation:1,Name:"generic.attackDamage"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Elder Scales''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:5s},{lvl:2s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:7s}],display:{Lore:["§eKing's Valley : Rare","§cEphemereal Corridors","§8The waves do not remember, but the beasts","§8below will never forget."],color:1169881,Name:"§3§lElder Scales"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:golden_pickaxe",
-			"name":u'''Shimmering Wave''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:34s},{lvl:1s,id:70s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§cEphemereal Corridors","§8None can remember all lost beneath the waves.","§7","§7When in main hand:","§7 1.2 Attack Speed","§7 2 Attack Damage","§9 +7% Speed"],Name:"§9§lShimmering Wave"},AttributeModifiers:[{UUIDMost:-4761154948318345564l,UUIDLeast:-7224472869249880999l,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-19440140102777687l,UUIDLeast:-7366782564164377860l,Amount:1.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:780205686961490279l,UUIDLeast:-7471059635921067285l,Amount:0.07d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:chainmail_helmet",
-			"name":u'''Hellborn Crown''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§eKing's Valley : Rare","§cEphemeral Corridors","§8A crown for the Crimson King."],Name:"§4§lHellborn Crown"},AttributeModifiers:[{UUIDMost:379758l,UUIDLeast:617489l,Amount:0.05d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:282280l,UUIDLeast:923322l,Amount:2.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:-3581384299597379461l,UUIDLeast:-8581973643124513272l,Amount:1.0d,Slot:"head",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s}],HideFlags:32,BlockEntityTag:{Base:0,Patterns:[{Color:3,Pattern:"hh"},{Color:3,Pattern:"hhb"},{Color:7,Pattern:"bri"},{Color:3,Pattern:"bri"},{Color:7,Pattern:"bo"}]},display:{Lore:["§8King's Valley : Tier III"],Name:"§fHardened Shield"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:bow",
-			"name":u'''Heatwave''',
+			"name":u'''Hawk's Talon''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:48s},{lvl:1s,id:49s},{lvl:1s,id:50s},{lvl:2s,id:34s}],display:{Lore:["§eKing's Valley : Rare","§cEphemeral Corridors","§8Firey passion sparks memories that","§8span generations."],Name:"§4§lHeatwave"},AttributeModifiers:[{UUIDMost:1953985229413762026l,UUIDLeast:-7788873909617989122l,Amount:0.05d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4460626849743783254l,UUIDLeast:-4613216353505383089l,Amount:1.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fHawk's Talon"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Crossbow''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:49s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fCrossbow"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Searing Bow''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:50s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fSearing Bow"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:fishing_rod",
+			"name":u'''Angler's Rod''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:62s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fAngler's Rod"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stick",
+			"name":u'''Apprentice's Wand''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier III"],Name:"§fApprentice's Wand"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stick",
+			"name":u'''Consecrated Wand''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:17s},{lvl:1s,id:19s},{lvl:1s,id:21s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Tier III"],Name:"§fConsecrated Wand"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_hoe",
+			"name":u'''Ruffian's Scythe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:17s},{lvl:1s,id:34s},{lvl:1s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier III","§8","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§fRuffian's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Sky Mage Coif''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Coif"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Sky Mage Cloak''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Cloak"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Sky Mage Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Robe"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Sky Mage Slippers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:2s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:10531071,Name:"§fSky Mage Slippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Scoundrel's Hood''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Hood"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Scoundrel's Tunic''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Scoundrel's Trousers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Scoundrel's Slippers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:4s},{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:2109472,Name:"§fScoundrel's Slippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Spellweave Hat''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Hat"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Spellweave Tunic''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Tunic"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Spellweave Trousers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Trousers"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Spellweave Shoes''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:11555008,Name:"§fSpellweave Shoes"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Blast Visor''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Visor"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Blast Vest''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Vest"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Blast Apron''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Apron"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Blast Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:5597999,Name:"§fBlast Boots"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Burnt Helm''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Helm"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Burnt Cloak''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Cloak"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Burnt Leggings''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Leggings"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Burnt Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"§fBurnt Boots"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Warlock Helm''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_chestplate",
+			"name":u'''Warlock Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Robe"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Warlock Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Robe"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Warlock Boots''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:1s},{lvl:4s,id:34s},{lvl:1s,id:10s},{lvl:1s,id:3s},{lvl:1s,id:4s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier III"],color:14725264,Name:"§fWarlock Boots"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:rabbit_foot",
+			"name":u'''Thumper's Paw''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:19s}],display:{Lore:["* Event Item *","§eEaster 2018"],Name:"§e§lThumper's Paw"},AttributeModifiers:[{UUIDMost:2077553840456682437l,UUIDLeast:-7554520846310408001l,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Desert Explorer''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:5s,id:2s}],display:{Lore:["§eKing's Valley : Rare","§cEphemeral Corridors","§8The Crimson King traveled far after his birth.","§8What he found in the world proved his cause."],color:12759680,Name:"§e§lDesert Explorer"},AttributeModifiers:[{UUIDMost:2367943038892720258l,UUIDLeast:-9218447296705209579l,Amount:0.25d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-1681188778291804665l,UUIDLeast:-7635237611773886596l,Amount:-3.0d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:golden_sword",
+			"name":u'''Phoenix Spellblade''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:1s,id:70s},{lvl:5s,id:20s},{lvl:4s,id:22s}],HideFlags:2,display:{Lore:["§8* Magic Wand *","§eKing's Valley : Rare","§cEphemeral Corridors","§8Memories rise from the ashes,","§8but fade like embers in the night.","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 6 Attack Damage"],Name:"§4§lPhoenix Spellblade"},AttributeModifiers:[{UUIDMost:1199492919208527277l,UUIDLeast:-8591107790182166399l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-6641988833548811160l,UUIDLeast:-7903616741035893090l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:tipped_arrow",
+			"name":u'''Arrow of Decay''',
+		},
+		[
+			"nbt", "replace", ur'''{HideFlags:35,CustomPotionColor:4849664,CustomPotionEffects:[{Duration:240,Id:20b,Amplifier:0b}],Potion:"minecraft:empty",display:{Lore:["§cWither (0:12)"],Name:"§rArrow of Decay"}}'''
 		]
 	],
 	[
@@ -3399,29 +3327,38 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:tipped_arrow",
-			"name":u'''Arrow of Decay''',
+			"id":"minecraft:chainmail_helmet",
+			"name":u'''Hellborn Crown''',
 		},
 		[
-			"nbt", "replace", ur'''{HideFlags:35,CustomPotionColor:4849664,CustomPotionEffects:[{Duration:240,Id:20b,Amplifier:0b}],Potion:"minecraft:empty",display:{Lore:["§cWither (0:12)"],Name:"§rArrow of Decay"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:1s},{lvl:2s,id:34s}],display:{Lore:["§eKing's Valley : Rare","§cEphemeral Corridors","§8A crown for the Crimson King."],Name:"§4§lHellborn Crown"},AttributeModifiers:[{UUIDMost:379758l,UUIDLeast:617489l,Amount:0.05d,Slot:"head",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:282280l,UUIDLeast:923322l,Amount:2.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:-3581384299597379461l,UUIDLeast:-8581973643124513272l,Amount:1.0d,Slot:"head",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Desert Explorer''',
+			"id":"minecraft:bow",
+			"name":u'''Heatwave''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:34s},{lvl:5s,id:2s}],display:{Lore:["§eKing's Valley : Rare","§cEphemeral Corridors","§8The Crimson King traveled far after his birth.","§8What he found in the world proved his cause."],color:12759680,Name:"§e§lDesert Explorer"},AttributeModifiers:[{UUIDMost:2367943038892720258l,UUIDLeast:-9218447296705209579l,Amount:0.25d,Slot:"legs",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-1681188778291804665l,UUIDLeast:-7635237611773886596l,Amount:-3.0d,Slot:"legs",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:48s},{lvl:1s,id:49s},{lvl:1s,id:50s},{lvl:2s,id:34s}],display:{Lore:["§eKing's Valley : Rare","§cEphemeral Corridors","§8Firey passion sparks memories that","§8span generations."],Name:"§4§lHeatwave"},AttributeModifiers:[{UUIDMost:1953985229413762026l,UUIDLeast:-7788873909617989122l,Amount:0.05d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4460626849743783254l,UUIDLeast:-4613216353505383089l,Amount:1.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:golden_sword",
-			"name":u'''Phoenix Spellblade''',
+			"id":"minecraft:leather_helmet",
+			"name":u'''Elder Scales''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:1s,id:70s},{lvl:5s,id:20s},{lvl:4s,id:22s}],HideFlags:2,display:{Lore:["§8* Magic Wand *","§eKing's Valley : Rare","§cEphemeral Corridors","§8Memories rise from the ashes,","§8but fade like embers in the night.","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 6 Attack Damage"],Name:"§4§lPhoenix Spellblade"},AttributeModifiers:[{UUIDMost:1199492919208527277l,UUIDLeast:-8591107790182166399l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-6641988833548811160l,UUIDLeast:-7903616741035893090l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:5s},{lvl:2s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:7s}],display:{Lore:["§eKing's Valley : Rare","§cEphemereal Corridors","§8The waves do not remember, but the beasts","§8below will never forget."],color:1169881,Name:"§3§lElder Scales"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:golden_pickaxe",
+			"name":u'''Shimmering Wave''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:34s},{lvl:1s,id:70s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§cEphemereal Corridors","§8None can remember all lost beneath the waves.","§7","§7When in main hand:","§7 1.2 Attack Speed","§7 2 Attack Damage","§9 +7% Speed"],Name:"§9§lShimmering Wave"},AttributeModifiers:[{UUIDMost:-4761154948318345564l,UUIDLeast:-7224472869249880999l,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-19440140102777687l,UUIDLeast:-7366782564164377860l,Amount:1.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:780205686961490279l,UUIDLeast:-7471059635921067285l,Amount:0.07d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -3543,6 +3480,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
+			"id":"minecraft:redstone",
+			"name":u'''Corrupted Malevolence''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:48s}],display:{Lore:["§eKing's Valley : Rare","§4Malevolent Reverie","§8Can be transmogrified into rare items."],Name:"§4§lCorrupted Malevolence"}}'''
+		]
+	],
+	[
+		{
 			"id":"minecraft:dye",
 			"name":u'''Blood Charm''',
 		},
@@ -3651,15 +3597,6 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:redstone",
-			"name":u'''Corrupted Malevolence''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:48s}],display:{Lore:["§eKing's Valley : Rare","§4Malevolent Reverie","§8Can be transmogrified into rare items."],Name:"§4§lCorrupted Malevolence"}}'''
-		]
-	],
-	[
-		{
 			"id":"minecraft:shield",
 			"name":u'''Meat Shield''',
 		},
@@ -3714,15 +3651,6 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:rabbit_foot",
-			"name":u'''Thumper's Paw''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:19s}],display:{Lore:["* Event Item *","§eEaster 2018"],Name:"§e§lThumper's Paw"},AttributeModifiers:[{UUIDMost:2077553840456682437l,UUIDLeast:-7554520846310408001l,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
 			"id":"minecraft:dragon_breath",
 			"name":u'''Concentrated Experience''',
 		},
@@ -3741,15 +3669,6 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"gold_nugget",
-			"name":u'''Pulsating Gold''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:10s,id:48s}],display:{Lore:["§8Epic Crafting Ingredient"],Name:"§6§lPulsating Gold"}}'''
-		]
-	],
-	[
-		{
 			"id":"minecraft:skull",
 			"name":u'''C'Axtal's Corrupted Mask''',
 		},
@@ -3759,20 +3678,191 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:shield",
-			"name":u'''Sanctifying Guard''',
+			"id":"minecraft:stone_hoe",
+			"name":u'''Highland Scythe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:19s}],HideFlags:32,BlockEntityTag:{Base:10,Patterns:[{Color:15,Pattern:"bo"},{Color:15,Pattern:"mr"},{Color:6,Pattern:"flo"},{Color:7,Pattern:"tts"},{Color:7,Pattern:"bts"}]},display:{Lore:["§7Mainhand Regeneration","§8King's Valley : §6Patron Made","§8Made with Sage wisdom"],Name:"§a§lSanctifying Guard"},AttributeModifiers:[{UUIDMost:1287381409643709352l,UUIDLeast:-7880782928783714372l,Amount:4.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:4065928328244447087l,UUIDLeast:-8906003175754769214l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:2452519509611594002l,UUIDLeast:-9038091112074494442l,Amount:-0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:17s},{lvl:3s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["* Unique Item *","§8","§7When in main hand:","§7 2 Attack Speed","§7 3 Attack Damage"],Name:"§d§lHighland Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:stone_axe",
-			"name":u'''Scalawag's Hatchet''',
+			"id":"minecraft:stone_hoe",
+			"name":u'''Reaper's Scythe''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:32s},{lvl:1s,id:34s}],display:{Lore:["* Unique Item *"],Name:"§b§lScalawag's Hatchet"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:4s,id:17s},{lvl:5s,id:34s}],HideFlags:2,display:{Lore:["* Unique Item *","§8","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§2§lReaper's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"gold_nugget",
+			"name":u'''Pulsating Gold''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:10s,id:48s}],display:{Lore:["§8Epic Crafting Ingredient"],Name:"§6§lPulsating Gold"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bone",
+			"name":u'''Charm of C'Zanil''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§7Regeneration","§8* Magic Wand *","§eKing's Valley : §lEnhanced Rare"],Name:"§6§lCharm of C'Zanil"},AttributeModifiers:[{UUIDMost:-1371131983094264777l,UUIDLeast:-5382187275748050885l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1147813372249458141l,UUIDLeast:-5241124910695973213l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4237906884953785636l,UUIDLeast:-5624009317461119834l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:dye",
+			"name":u'''Ephemeral Key Fragment''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§7Shattered fragments of a dungeon key.","§7Maybe these could be reforged by someone?"],Name:"§c§lEphemeral Key Fragment"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Busty's Hotter Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:4s,id:1s},{lvl:1s,id:70s},{lvl:4s,id:3s}],display:{Lore:["§bLeather Armor","§eKing's Valley : §lEnhanced Rare","§fThe legs are flaming with stress!"],color:14059296,Name:"§4§lBusty's Hotter Pants"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:record_ward",
+			"name":u'''Embalmer's Mixtape''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8An old record for an old Embalmer.","§8Questionably eerie, yet soothing."],Name:"§2§lEmbalmer's Mixtape"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:record_strad",
+			"name":u'''Web-Covered Classics''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8Coated in a thick webbing,","§8this track is oddly upbeat."],Name:"§f§lWeb-Covered Classics"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:record_mall",
+			"name":u'''Obsidian Hits''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8A disc made out of solid obsidian.","§8It has a nice chime to it."],Name:"§5§lObsidian Hits"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:record_13",
+			"name":u'''Sandy-Smooth Jazz''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8The sand grains in the disc","§8add a pleasant metallic ring."],Name:"§6§lSandy-Smooth Jazz"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:clay_ball",
+			"name":u'''Burdened Stone''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§6§lBurdened Stone"},AttributeModifiers:[{UUIDMost:1533226517562609431l,UUIDLeast:-6398042709746424447l,Amount:-0.1d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-8773735443779992269l,UUIDLeast:-8038567590932003071l,Amount:-2.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-1805071597428191759l,UUIDLeast:-8809138101270845723l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-5381934911278069713l,UUIDLeast:-6206268774793144820l,Amount:0.8d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:record_stal",
+			"name":u'''Far-Out Chakram''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:6s,id:16s}],display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§f§lFar-Out Chakram"},AttributeModifiers:[{UUIDMost:3654580523198464199l,UUIDLeast:-8443708639368984981l,Amount:1.0d,Slot:"mainhand",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:-8344933023111888536l,UUIDLeast:-6069473158666389222l,Amount:0.3d,Slot:"mainhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:2522124462433389080l,UUIDLeast:-6652562632949158686l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:rabbit_foot",
+			"name":u'''Plunderer's Charm''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:33s}],display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§3§lPlunderer's Charm"},AttributeModifiers:[{UUIDMost:-317900719640657618l,UUIDLeast:-6343954015115936234l,Amount:0.15d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-7818994650597865844l,UUIDLeast:-7720542574073167446l,Amount:0.12d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Swiftwood Longbow''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:48s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§3§lSwiftwood Longbow"},AttributeModifiers:[{UUIDMost:-8641871752849043493l,UUIDLeast:-7622612742186920344l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:3883145082035193920l,UUIDLeast:-7515329855548103219l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-8670808613469731742l,UUIDLeast:-9047016488534870822l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:blaze_powder",
+			"name":u'''Soul of Conflagration''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§4§lSoul of Conflagration"},AttributeModifiers:[{UUIDMost:-7769405553159353316l,UUIDLeast:-5980438255535144460l,Amount:0.16d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:6881167597771049715l,UUIDLeast:-5128578317340387122l,Amount:1.5d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:wooden_sword",
+			"name":u'''Slicing Wind''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:1s,id:70s},{lvl:3s,id:22s}],HideFlags:2,display:{Lore:["§8King's Valley : §lEnhanced Uncommon","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 5.5 Attack Damage","§9 +10% Speed"],Name:"§b§lSlicing Wind"},AttributeModifiers:[{UUIDMost:2533482495801970563l,UUIDLeast:-9003299790244515489l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-5824020502991386004l,UUIDLeast:-6534476216028313182l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-6771036207707566305l,UUIDLeast:-6537146721220613023l,Amount:0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Firestorm Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:1s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : §lEnhanced Uncommon"],color:11206656,Name:"§4§lFirestorm Robe"},AttributeModifiers:[{UUIDMost:-3906240411837903389l,UUIDLeast:-7890992669234016346l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-5045052515200971090l,UUIDLeast:-8131580841934236396l,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:rotten_flesh",
+			"name":u'''High-Quality Beef''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:71s}],display:{Lore:["§d* Quest Item *","#Q17I02"],Name:"§6§lHigh-Quality Beef"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:bow",
+			"name":u'''Highstorm''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:48s},{lvl:3s,id:34s},{lvl:1s,id:51s}],display:{Lore:["* Unique Item *","* Irreparable *"],Name:"§6§lHighstorm"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:shield",
+			"name":u'''Morphic Shield''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:70s}],BlockEntityTag:{Base:13,Patterns:[{Color:0,Pattern:"gra"},{Color:15,Pattern:"mc"}]},display:{Lore:["* Unique Item *","§8As everlasting as a Memory"],Name:"§5§lMorphic Shield"},AttributeModifiers:[{UUIDMost:576781l,UUIDLeast:877205l,Amount:0.03d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_sword",
+			"name":u'''Watcher's Sword''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:3s,id:34s}],display:{Lore:["* Unique Item *","§8Quis Custodeit Ipsos Custodets?"],Name:"§d§lWatcher's Sword"}}'''
 		]
 	],
 	[
@@ -3795,11 +3885,11 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:stone_sword",
-			"name":u'''Watcher's Sword''',
+			"id":"minecraft:stone_axe",
+			"name":u'''Silver Knight's Hammer''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:17s},{lvl:3s,id:34s}],display:{Lore:["* Unique Item *","§8Quis Custodeit Ipsos Custodets?"],Name:"§d§lWatcher's Sword"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:17s},{lvl:1s,id:70s}],display:{Lore:["* Unique Item *","§8A mighty weapon of heroes past"],Name:"§b§lSilver Knight's Hammer"}}'''
 		]
 	],
 	[
@@ -3823,46 +3913,64 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	[
 		{
 			"id":"minecraft:shield",
-			"name":u'''Morphic Shield''',
+			"name":u'''Sanctifying Guard''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:70s}],BlockEntityTag:{Base:13,Patterns:[{Color:0,Pattern:"gra"},{Color:15,Pattern:"mc"}]},display:{Lore:["* Unique Item *","§8As everlasting as a Memory"],Name:"§5§lMorphic Shield"},AttributeModifiers:[{UUIDMost:576781l,UUIDLeast:877205l,Amount:0.03d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:rotten_flesh",
-			"name":u'''High-Quality Beef''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:71s}],display:{Lore:["§d* Quest Item *","#Q17I02"],Name:"§6§lHigh-Quality Beef"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bow",
-			"name":u'''Highstorm''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:48s},{lvl:3s,id:34s},{lvl:1s,id:51s}],display:{Lore:["* Unique Item *","* Irreparable *"],Name:"§6§lHighstorm"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:2s,id:19s}],HideFlags:32,BlockEntityTag:{Base:10,Patterns:[{Color:15,Pattern:"bo"},{Color:15,Pattern:"mr"},{Color:6,Pattern:"flo"},{Color:7,Pattern:"tts"},{Color:7,Pattern:"bts"}]},display:{Lore:["§7Mainhand Regeneration","§8King's Valley : §6Patron Made","§8Made with Sage wisdom"],Name:"§a§lSanctifying Guard"},AttributeModifiers:[{UUIDMost:1287381409643709352l,UUIDLeast:-7880782928783714372l,Amount:4.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:4065928328244447087l,UUIDLeast:-8906003175754769214l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:2452519509611594002l,UUIDLeast:-9038091112074494442l,Amount:-0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:stone_axe",
-			"name":u'''Silver Knight's Hammer''',
+			"name":u'''Scalawag's Hatchet''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:2s,id:17s},{lvl:1s,id:70s}],display:{Lore:["* Unique Item *","§8A mighty weapon of heroes past"],Name:"§b§lSilver Knight's Hammer"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:32s},{lvl:1s,id:34s}],display:{Lore:["* Unique Item *"],Name:"§b§lScalawag's Hatchet"}}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:feather",
-			"name":u'''Holy Feather''',
+			"id":"minecraft:leather_helmet",
+			"name":u'''Silvered Sight''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Lore:["§8Considered sacred by many"],Name:"§rHoly Feather"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:10s}],Unbreakable:1,HideFlags:2,display:{Lore:["§7Darksight","§r§8King's Valley : §r§6Patron Made","§8Those who have Silver Sight are","§8destined to be great warriors.","§r","§7When on head:","§r§9 +3 Max Health","§9 +0.5 Armor"],color:8554408,Name:"§r§7§lSilvered Sight"},AttributeModifiers:[{UUIDMost:-2228449523491911225l,UUIDLeast:-5020477060364325736l,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-9147749144222480393l,UUIDLeast:-7028620375446294600l,Amount:0.5d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather",
+			"name":u'''Polar Bear Hide''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8A large cut of durable hide"],Name:"§fPolar Bear Hide"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:skull",
+			"name":u'''Entropic Skull''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:1s},{lvl:2s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§8King's Valley : §6Patron Made","§8Alas poor skull, they got pwn4d"],Name:"§5§lEntropic Skull"},AttributeModifiers:[{UUIDMost:-3064219100859248973l,UUIDLeast:-8672896259970709443l,Amount:-0.08d,Slot:"head",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Gem Encrusted Manpance''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:8s},{lvl:3s,id:5s},{lvl:1s,id:70s}],display:{Lore:["§cCurse of Vanishing?","§bLeather Armor","§8King's Valley : §6Patron Made","§8Forged with the sweetest Gems"],color:12571378,Name:"§9§lGem Encrusted Manpance"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_hoe",
+			"name":u'''Ruby Scythe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:5s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s}],HideFlags:2,display:{Lore:["§8King's Valley : Uncommon","§8Made of a gleaming Red Rock","§l","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§c§lRuby Scythe"},AttributeModifiers:[{UUIDMost:-9180044814077834571l,UUIDLeast:-5198006168436150311l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-3443662273770534894l,UUIDLeast:-8014295939910783312l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -3885,92 +3993,20 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
+			"id":"minecraft:feather",
+			"name":u'''Holy Feather''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8Considered sacred by many"],Name:"§rHoly Feather"}}'''
+		]
+	],
+	[
+		{
 			"id":"minecraft:dye",
 			"name":u'''Water Gem''',
 		},
 		[
 			"nbt", "replace", ur'''{display:{Lore:["§8Sharded, but could be rebuilt"],Name:"§rWater Gem"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:skull",
-			"name":u'''Entropic Skull''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:1s},{lvl:2s,id:4s},{lvl:1s,id:10s}],display:{Lore:["§8King's Valley : §6Patron Made","§8Alas poor skull, they got pwn4d"],Name:"§5§lEntropic Skull"},AttributeModifiers:[{UUIDMost:-3064219100859248973l,UUIDLeast:-8672896259970709443l,Amount:-0.08d,Slot:"head",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Silvered Sight''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:10s}],Unbreakable:1,HideFlags:2,display:{Lore:["§7Darksight","§r§8King's Valley : §r§6Patron Made","§8Those who have Silver Sight are","§8destined to be great warriors.","§r","§7When on head:","§r§9 +3 Max Health","§9 +0.5 Armor"],color:8554408,Name:"§r§7§lSilvered Sight"},AttributeModifiers:[{UUIDMost:-2228449523491911225l,UUIDLeast:-5020477060364325736l,Amount:3.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-9147749144222480393l,UUIDLeast:-7028620375446294600l,Amount:0.5d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_hoe",
-			"name":u'''Ruby Scythe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:5s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s}],HideFlags:2,display:{Lore:["§8King's Valley : Uncommon","§8Made of a gleaming Red Rock","§l","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§c§lRuby Scythe"},AttributeModifiers:[{UUIDMost:-9180044814077834571l,UUIDLeast:-5198006168436150311l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-3443662273770534894l,UUIDLeast:-8014295939910783312l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Gem Encrusted Manpance''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:3s,id:8s},{lvl:3s,id:5s},{lvl:1s,id:70s}],display:{Lore:["§cCurse of Vanishing?","§bLeather Armor","§8King's Valley : §6Patron Made","§8Forged with the sweetest Gems"],color:12571378,Name:"§9§lGem Encrusted Manpance"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather",
-			"name":u'''Polar Bear Hide''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§8A large cut of durable hide"],Name:"§fPolar Bear Hide"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Infernal Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:11206656,Name:"§4§lInfernal Robe"},AttributeModifiers:[{UUIDMost:-3906240411837903389l,UUIDLeast:-7890992669234016346l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:5753471876015473889l,UUIDLeast:-7352350150367536802l,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:clay_ball",
-			"name":u'''Ponderous Stone''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Uncommon"],Name:"§6§lPonderous Stone"},AttributeModifiers:[{UUIDMost:-8784931189073293981l,UUIDLeast:-5336435319922077366l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-3784013313986900216l,UUIDLeast:-9150198598510123427l,Amount:-0.25d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-2473186416011490271l,UUIDLeast:-6797638087243652569l,Amount:-4.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:blaze_powder",
-			"name":u'''Blazing Soul''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon"],Name:"§4§lBlazing Soul"},AttributeModifiers:[{UUIDMost:828307l,UUIDLeast:820066l,Amount:1d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:716656l,UUIDLeast:252102l,Amount:0.08d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"generic.attackSpeed"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:golden_sword",
-			"name":u'''Lingering Flame''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:5s,id:20s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§6§lLingering Flame"}}'''
 		]
 	],
 	[
@@ -3984,15 +4020,6 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:record_stal",
-			"name":u'''Groovy Chakram''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§f§lGroovy Chakram"},AttributeModifiers:[{UUIDMost:2601567444108069946l,UUIDLeast:-5216243073072645588l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
 			"id":"minecraft:stone_sword",
 			"name":u'''Vermin's Scourge''',
 		},
@@ -4002,11 +4029,11 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:rabbit_foot",
-			"name":u'''Raider's Charm''',
+			"id":"minecraft:wooden_sword",
+			"name":u'''Cutting Breeze''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon"],Name:"§3§lRaider's Charm"},AttributeModifiers:[{UUIDMost:9079877381156259287l,UUIDLeast:-5393155205560440172l,Amount:0.125d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:8287496261883872097l,UUIDLeast:-5825817392529307077l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:22s}],HideFlags:2,display:{Lore:["§8King's Valley : Uncommon","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 5.5 Attack Damage","§9 +7.5% Speed"],Name:"§b§lCutting Breeze"},AttributeModifiers:[{UUIDMost:2533482495801970563l,UUIDLeast:-9003299790244515489l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-5824020502991386004l,UUIDLeast:-6534476216028313182l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:5731965308627600231l,UUIDLeast:-6508277300744269122l,Amount:0.075d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -4016,6 +4043,60 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 		},
 		[
 			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§3§lSwiftwood Shortbow"},AttributeModifiers:[{UUIDMost:-6988194619003155857l,UUIDLeast:-5808010696763356504l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:7252551692242076597l,UUIDLeast:-9043457864470459739l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:blaze_powder",
+			"name":u'''Blazing Soul''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon"],Name:"§4§lBlazing Soul"},AttributeModifiers:[{UUIDMost:828307l,UUIDLeast:820066l,Amount:1d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:716656l,UUIDLeast:252102l,Amount:0.08d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"generic.attackSpeed"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stone_hoe",
+			"name":u'''Blighted Scythe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:3s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s},{lvl:3s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Uncommon","§8","§7When in main hand:","§7 2 Attack Speed","§7 4.5 Attack Damage","§c -1 Armor"],Name:"§4§lBlighted Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-6247475251793607498l,UUIDLeast:-7993135500588112887l,Amount:-1.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Infernal Robe''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:1s}],display:{Lore:["§bLeather Armor","§8King's Valley : Uncommon"],color:11206656,Name:"§4§lInfernal Robe"},AttributeModifiers:[{UUIDMost:-3906240411837903389l,UUIDLeast:-7890992669234016346l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:5753471876015473889l,UUIDLeast:-7352350150367536802l,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:stick",
+			"name":u'''Blackroot's Fury''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:19s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Uncommon"],Name:"§d§lBlackroot's Fury"},AttributeModifiers:[{UUIDMost:440231l,UUIDLeast:487582l,Amount:1d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_helmet",
+			"name":u'''Chitin Helmet''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:3s}],display:{Lore:["§8King's Valley : Uncommon"],color:16772518,Name:"§7§lChitin Helmet"},AttributeModifiers:[{UUIDMost:333040l,UUIDLeast:702481l,Amount:2d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:record_stal",
+			"name":u'''Groovy Chakram''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§f§lGroovy Chakram"},AttributeModifiers:[{UUIDMost:2601567444108069946l,UUIDLeast:-5216243073072645588l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -4038,191 +4119,29 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Cutting Breeze''',
+			"id":"minecraft:clay_ball",
+			"name":u'''Ponderous Stone''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:22s}],HideFlags:2,display:{Lore:["§8King's Valley : Uncommon","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 5.5 Attack Damage","§9 +7.5% Speed"],Name:"§b§lCutting Breeze"},AttributeModifiers:[{UUIDMost:2533482495801970563l,UUIDLeast:-9003299790244515489l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-5824020502991386004l,UUIDLeast:-6534476216028313182l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:5731965308627600231l,UUIDLeast:-6508277300744269122l,Amount:0.075d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : Uncommon"],Name:"§6§lPonderous Stone"},AttributeModifiers:[{UUIDMost:-8784931189073293981l,UUIDLeast:-5336435319922077366l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-3784013313986900216l,UUIDLeast:-9150198598510123427l,Amount:-0.25d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-2473186416011490271l,UUIDLeast:-6797638087243652569l,Amount:-4.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:leather_helmet",
-			"name":u'''Chitin Helmet''',
+			"id":"minecraft:golden_sword",
+			"name":u'''Lingering Flame''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:3s}],display:{Lore:["§8King's Valley : Uncommon"],color:16772518,Name:"§7§lChitin Helmet"},AttributeModifiers:[{UUIDMost:333040l,UUIDLeast:702481l,Amount:2d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stick",
-			"name":u'''Blackroot's Fury''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:19s}],display:{Lore:["§8* Magic Wand *","§8King's Valley : Uncommon"],Name:"§d§lBlackroot's Fury"},AttributeModifiers:[{UUIDMost:440231l,UUIDLeast:487582l,Amount:1d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_hoe",
-			"name":u'''Blighted Scythe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:3s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s},{lvl:3s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Uncommon","§8","§7When in main hand:","§7 2 Attack Speed","§7 4.5 Attack Damage","§c -1 Armor"],Name:"§4§lBlighted Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-6247475251793607498l,UUIDLeast:-7993135500588112887l,Amount:-1.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_hoe",
-			"name":u'''Reaper's Scythe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:16s},{lvl:4s,id:17s},{lvl:5s,id:34s}],HideFlags:2,display:{Lore:["* Unique Item *","§8","§7When in main hand:","§7 2 Attack Speed","§7 4 Attack Damage"],Name:"§2§lReaper's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stone_hoe",
-			"name":u'''Highland Scythe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:17s},{lvl:3s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["* Unique Item *","§8","§7When in main hand:","§7 2 Attack Speed","§7 3 Attack Damage"],Name:"§d§lHighland Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Busty's Hotter Pants''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:4s,id:1s},{lvl:1s,id:70s},{lvl:4s,id:3s}],display:{Lore:["§bLeather Armor","§eKing's Valley : §lEnhanced Rare","§fThe legs are flaming with stress!"],color:14059296,Name:"§4§lBusty's Hotter Pants"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bone",
-			"name":u'''Charm of C'Zanil''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:4s,id:16s},{lvl:2s,id:19s},{lvl:1s,id:20s}],display:{Lore:["§7Regeneration","§8* Magic Wand *","§eKing's Valley : §lEnhanced Rare"],Name:"§6§lCharm of C'Zanil"},AttributeModifiers:[{UUIDMost:-1371131983094264777l,UUIDLeast:-5382187275748050885l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:1147813372249458141l,UUIDLeast:-5241124910695973213l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:4237906884953785636l,UUIDLeast:-5624009317461119834l,Amount:0.05d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:dye",
-			"name":u'''Ephemeral Key Fragment''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§7Shattered fragments of a dungeon key.","§7Maybe these could be reforged by someone?"],Name:"§c§lEphemeral Key Fragment"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:bow",
-			"name":u'''Swiftwood Longbow''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:48s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§3§lSwiftwood Longbow"},AttributeModifiers:[{UUIDMost:-8641871752849043493l,UUIDLeast:-7622612742186920344l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:3883145082035193920l,UUIDLeast:-7515329855548103219l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-8670808613469731742l,UUIDLeast:-9047016488534870822l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Slicing Wind''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:1s,id:70s},{lvl:3s,id:22s}],HideFlags:2,display:{Lore:["§8King's Valley : §lEnhanced Uncommon","§7","§7When in main hand:","§7 1.6 Attack Speed","§7 5.5 Attack Damage","§9 +10% Speed"],Name:"§b§lSlicing Wind"},AttributeModifiers:[{UUIDMost:2533482495801970563l,UUIDLeast:-9003299790244515489l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-5824020502991386004l,UUIDLeast:-6534476216028313182l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-6771036207707566305l,UUIDLeast:-6537146721220613023l,Amount:0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:record_stal",
-			"name":u'''Far-Out Chakram''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:6s,id:16s}],display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§f§lFar-Out Chakram"},AttributeModifiers:[{UUIDMost:3654580523198464199l,UUIDLeast:-8443708639368984981l,Amount:1.0d,Slot:"mainhand",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:-8344933023111888536l,UUIDLeast:-6069473158666389222l,Amount:0.3d,Slot:"mainhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:2522124462433389080l,UUIDLeast:-6652562632949158686l,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:blaze_powder",
-			"name":u'''Soul of Conflagration''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:20s}],display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§4§lSoul of Conflagration"},AttributeModifiers:[{UUIDMost:-7769405553159353316l,UUIDLeast:-5980438255535144460l,Amount:0.16d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:6881167597771049715l,UUIDLeast:-5128578317340387122l,Amount:1.5d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:leather_leggings",
-			"name":u'''Firestorm Robe''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:0s},{lvl:3s,id:1s},{lvl:3s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : §lEnhanced Uncommon"],color:11206656,Name:"§4§lFirestorm Robe"},AttributeModifiers:[{UUIDMost:-3906240411837903389l,UUIDLeast:-7890992669234016346l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-5045052515200971090l,UUIDLeast:-8131580841934236396l,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s},{lvl:5s,id:20s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§6§lLingering Flame"}}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:rabbit_foot",
-			"name":u'''Plunderer's Charm''',
+			"name":u'''Raider's Charm''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:33s}],display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§3§lPlunderer's Charm"},AttributeModifiers:[{UUIDMost:-317900719640657618l,UUIDLeast:-6343954015115936234l,Amount:0.15d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-7818994650597865844l,UUIDLeast:-7720542574073167446l,Amount:0.12d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:clay_ball",
-			"name":u'''Burdened Stone''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§8King's Valley : §lEnhanced Uncommon"],Name:"§6§lBurdened Stone"},AttributeModifiers:[{UUIDMost:1533226517562609431l,UUIDLeast:-6398042709746424447l,Amount:-0.1d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-8773735443779992269l,UUIDLeast:-8038567590932003071l,Amount:-2.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:-1805071597428191759l,UUIDLeast:-8809138101270845723l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-5381934911278069713l,UUIDLeast:-6206268774793144820l,Amount:0.8d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:record_mall",
-			"name":u'''Obsidian Hits''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8A disc made out of solid obsidian.","§8It has a nice chime to it."],Name:"§5§lObsidian Hits"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:record_ward",
-			"name":u'''Embalmer's Mixtape''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8An old record for an old Embalmer.","§8Questionably eerie, yet soothing."],Name:"§2§lEmbalmer's Mixtape"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:record_strad",
-			"name":u'''Web-Covered Classics''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8Coated in a thick webbing,","§8this track is oddly upbeat."],Name:"§f§lWeb-Covered Classics"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:record_13",
-			"name":u'''Sandy-Smooth Jazz''',
-		},
-		[
-			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon","§cEphemeral Corridors","§8The sand grains in the disc","§8add a pleasant metallic ring."],Name:"§6§lSandy-Smooth Jazz"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:lingering_potion",
-			"name":u'''Weak Sanctify Potion''',
-		},
-		[
-			"nbt", "replace", ur'''{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:300,Id:10b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§fWeak Sanctify Potion"}}'''
+			"nbt", "replace", ur'''{display:{Lore:["§8King's Valley : Uncommon"],Name:"§3§lRaider's Charm"},AttributeModifiers:[{UUIDMost:9079877381156259287l,UUIDLeast:-5393155205560440172l,Amount:0.125d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:8287496261883872097l,UUIDLeast:-5825817392529307077l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
@@ -4232,6 +4151,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 		},
 		[
 			"nbt", "replace", ur'''{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:300,Id:10b,Amplifier:1b},{Ambient:1b,ShowParticles:1b,Duration:600,Id:22b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§fSanctify Potion"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:splash_potion",
+			"name":u'''Extinguisher''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:16756736,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:200,Id:12b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§fExtinguisher"}}'''
 		]
 	],
 	[
@@ -4254,6 +4182,60 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
+			"id":"minecraft:lingering_potion",
+			"name":u'''Weak Sanctify Potion''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:300,Id:10b,Amplifier:0b}],Potion:"minecraft:empty",display:{Name:"§fWeak Sanctify Potion"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:rabbit",
+			"name":u'''Zombie Meat''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Name:"§fZombie Meat"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:cooked_rabbit",
+			"name":u'''Cooked Zombie Meat''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Name:"§fCooked Zombie Meat"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:splash_potion",
+			"name":u'''Antidote''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:4239424,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:40,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:30,Id:19b,Amplifier:2b}],Potion:"minecraft:empty",display:{Lore:["§7Removes Poison II and lower"],Name:"§fAntidote"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:cooked_beef",
+			"name":u'''Cooked Horse Meat''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Name:"§fCooked Horse Meat"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:beef",
+			"name":u'''Horse Meat''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Name:"§fHorse Meat"}}'''
+		]
+	],
+	[
+		{
 			"id":"minecraft:splash_potion",
 			"name":u'''Extinguisher''',
 		},
@@ -4263,101 +4245,119 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
 	],
 	[
 		{
-			"id":"minecraft:leather_chestplate",
-			"name":u'''Ebola Shirt''',
+			"id":"minecraft:splash_potion",
+			"name":u'''Antidote''',
 		},
 		[
-			"nbt", "replace", ur'''{Unbreakable:1,display:{Lore:["§7Stylish","§bLeather Armor","* Unique Event Item *","§cWe are small, but our legend spreads like Ebola.","§4Uganda 2018"],color:16711680,Name:"§c§lEbola Shirt"}}'''
+			"nbt", "replace", ur'''{CustomPotionColor:4239424,CustomPotionEffects:[{Ambient:1b,ShowParticles:1b,Duration:40,Id:10b,Amplifier:2b},{Ambient:1b,ShowParticles:1b,Duration:30,Id:19b,Amplifier:2b}],Potion:"minecraft:empty",display:{Lore:["§7Removes Poison II and lower"],Name:"§fAntidote"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:quartz",
+			"name":u'''Bone Shard''',
+		},
+		[
+			"nbt", "replace", ur'''{display:{Lore:["§8Broken, but could be rebuilt"],Name:"§fBone Shard"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:splash_potion",
+			"name":u'''Potion of Salvation''',
+		},
+		[
+			"nbt", "replace", ur'''{CustomPotionColor:13947904,CustomPotionEffects:[{Ambient:0b,ShowParticles:0b,Duration:600,Id:22b,Amplifier:1b},{Ambient:1b,ShowParticles:1b,Duration:100,Id:10b,Amplifier:1b}],Potion:"minecraft:awkward",display:{Name:"§fPotion of Salvation"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_boots",
+			"name":u'''Turtle Flippers''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Flippers"},AttributeModifiers:[{UUIDMost:290399l,UUIDLeast:1103793l,Amount:0.75d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:leather_leggings",
+			"name":u'''Turtle Pants''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:8s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Pants"},AttributeModifiers:[{UUIDMost:280399l,UUIDLeast:1003793l,Amount:1.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:leather_chestplate",
-			"name":u'''Stylish Black Shirt''',
+			"name":u'''Turtle Vest''',
 		},
 		[
-			"nbt", "replace", ur'''{display:{Lore:["§7Stylish","§9Cloth Armor","§7Emits smoke particles when worn"],color:1048592,Name:"§7Stylish Black Shirt"},AttributeModifiers:[{UUIDMost:456904653548765814l,UUIDLeast:-4616658641294366570l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:6s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Vest"},AttributeModifiers:[{UUIDMost:270399l,UUIDLeast:903793l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:golden_leggings",
-			"name":u'''King's Greaves''',
+			"id":"minecraft:leather_helmet",
+			"name":u'''Turtle Helm''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:0s},{lvl:1s,id:70s}],display:{Lore:["§7Hope","§6King's Valley : §lEPIC"],Name:"§b§l§nKing's Greaves"},AttributeModifiers:[{UUIDMost:-1681439092783625680l,UUIDLeast:-9051004955773025556l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armorToughness",Operation:0,Name:"Modifier"},{UUIDMost:666275396508009266l,UUIDLeast:-8464215050565667033l,Amount:4.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-4559720644080876637l,UUIDLeast:-6825188797889418349l,Amount:0.1d,Slot:"legs",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:5s},{lvl:2s,id:3s}],display:{Lore:["§9Cloth Armor","§8King's Valley : Tier II"],color:36912,Name:"§fTurtle Helm"},AttributeModifiers:[{UUIDMost:260399l,UUIDLeast:803793l,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:golden_sword",
-			"name":u'''Light of Salvation''',
+			"id":"minecraft:fishing_rod",
+			"name":u'''Angler's Rod''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:32s},{lvl:1s,id:19s},{lvl:1s,id:20s}],Unbreakable:1,HideFlags:2,display:{Lore:["§7Radiant","§7Hope","§4King's Valley : Artifact","§l","§7When in main hand:","§7 1.6 Attack Speed","§7 3 Attack Damage"],Name:"§e§l§nLight of Salvation"},AttributeModifiers:[{UUIDMost:4598269408375358984l,UUIDLeast:-7980334193493528635l,Amount:0.0d,AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-3549468348533027207l,UUIDLeast:-5101475887946467451l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-8751945831914649559l,UUIDLeast:-7565408329895997931l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{ench:[{lvl:3s,id:62s},{lvl:2s,id:34s}],display:{Lore:["§8King's Valley : Tier III"],Name:"§fAngler's Rod"}}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:golden_boots",
-			"name":u'''King's Sabatons''',
+			"id":"minecraft:lever",
+			"name":u'''Damaged Hilt''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:4s},{lvl:3s,id:2s},{lvl:1s,id:70s}],display:{Lore:["§7Hope","§6King's Valley : §lEPIC"],Name:"§b§l§nKing's Sabatons"},AttributeModifiers:[{UUIDMost:3501364431898363217l,UUIDLeast:-7168568964464722073l,Amount:0.15d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"},{UUIDMost:5805861576375026441l,UUIDLeast:-7198359331380377644l,Amount:2.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+			"nbt", "replace", ur'''{display:{Lore:["§8Carved with elegant flowers"],Name:"§fDamaged Hilt"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:fish",
+			"name":u'''Magic Fish''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:61s}],HideFlags:1,display:{Lore:["§7Gills","§8King's Valley : Uncommon","§7Gives water breathing when","§7held in your offhand."],Name:"§b§lMagic Fish"}}'''
+		]
+	],
+	[
+		{
+			"id":"minecraft:shield",
+			"name":u'''Turtle Shield''',
+		},
+		[
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],BlockEntityTag:{Base:6,Patterns:[{Color:2,Pattern:"bri"}]},display:{Lore:["§8King's Valley : Uncommon"],Name:"§b§lTurtle Shield"},AttributeModifiers:[{UUIDMost:-2699735906624845463l,UUIDLeast:-6308071593572563623l,Amount:-0.05d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-407094390218668203l,UUIDLeast:-9013419339908919017l,Amount:0.4d,Slot:"offhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
 			"id":"minecraft:bow",
-			"name":u'''Cupid's Bow''',
+			"name":u'''Oncoming Tide''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:48s},{lvl:1s,id:7s}],display:{Lore:["§7Regeneration","§dMainhand Regeneration","* Unique Event Item *","§dValentine's 2018"],Name:"§d§lCupid's Bow"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:49s},{lvl:1s,id:70s}],display:{Lore:["§8King's Valley : Uncommon"],Name:"§b§lOncoming Tide"},AttributeModifiers:[{UUIDMost:1004903320127294777l,UUIDLeast:-6735527447459109365l,Amount:0.07d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
 		]
 	],
 	[
 		{
-			"id":"minecraft:coal",
-			"name":u'''Animated Coal''',
+			"id":"minecraft:cooked_fish",
+			"name":u'''Regal Salmon''',
 		},
 		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lAnimated Coal"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:stick",
-			"name":u'''Prehensile Stick''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lPrehensile Stick"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:wooden_sword",
-			"name":u'''Rod of the Onodrim''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:3s,id:32s},{lvl:1s,id:70s}],display:{Lore:["* Unique Event Item *","Winter 2017"],Name:"§9§lRod of the Onodrim"},AttributeModifiers:[{UUIDMost:2512866317016583848l,UUIDLeast:-8695731667534274344l,Amount:-0.4d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:2801717605841978307l,UUIDLeast:-4821070712928009977l,Amount:-0.2d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:5435604988355234856l,UUIDLeast:-7278734017423574959l,Amount:0.6d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:carrot",
-			"name":u'''Olfactory Carrot''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lOlfactory Carrot"}}'''
-		]
-	],
-	[
-		{
-			"id":"minecraft:snowball",
-			"name":u'''Everlasting Snow''',
-		},
-		[
-			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["* Event Item *","Winter 2017"],Name:"§6§lEverlasting Snow"}}'''
+			"nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],display:{Lore:["§d* Quest Item *","#Q16I02"],Name:"§6§lRegal Salmon"}}'''
 		]
 	],
 ])
