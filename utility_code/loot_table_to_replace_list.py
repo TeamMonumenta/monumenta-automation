@@ -3,81 +3,70 @@
 
 import os
 import sys
-import re
-from tempfile import mkstemp
-from shutil import move
-from os import fdopen, remove
-import demjson
-import collections
-import traceback
 
-gverbose = False
+from lib_monumenta.json_file import jsonFile
+from lib_monumenta.item_replace import removeFormatting
 
-def print_tag_as_replacement(itemType, tag):
-    # Remove type specifiers for JSON parsing
-    sanitizedTag = re.sub(r'(:[-\.0-9]+)[lLsSbBfFdD]*', r'\1', tag)
+# The effective working directory for this script must always be the MCEdit-Unified directory
+# This is NOT how we should be doing this, but I don't see how to fix pymclevel to be standalone again.
+os.chdir(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../MCEdit-Unified/"))
 
-    # May throw exception
-    decoded = demjson.decode(sanitizedTag)
+# Import pymclevel from MCLevel-Unified
+from pymclevel import nbt
 
-    # Don't replace normal potion types
-    if "minecraft:potion" in itemType:
-        return;
-
-    # Only automatically replace items that have display names
-    if "display" in decoded:
-        if "Name" in decoded["display"]:
-            # Remove formatting codes from name if present
-            itemName = re.sub(u'§[a-z0-9]', '', decoded["display"]["Name"])
-
+def replacements_from_loot_table(loot_table):
+    if "pools" not in loot_table:
+        return
+    for pool in loot_table["pools"]:
+        if "entries" not in pool:
+            continue
+        for entry in pool["entries"]:
+            if "type" not in entry:
+                continue
+            if entry["type"] != "item":
+                continue
+            if "name" not in entry:
+                continue
+            item_id = entry["name"]
+            # Don't replace normal potion types
+            if "minecraft:potion" in item_id:
+                continue
+            if "functions" not in entry:
+                continue
+            item_tag_json = None
+            item_name = None
+            for function in entry["functions"]:
+                if "function" not in function:
+                    continue
+                function_type = function["function"]
+                if function_type == "set_nbt":
+                    if "tag" not in function:
+                        continue
+                    item_tag_json = function["tag"]
+                    item_tag_nbt = nbt.json_to_tag(item_tag_json)
+                    if (
+                        "display" not in item_tag_nbt or
+                        "name" not in item_tag_nbt["display"]
+                    ):
+                        continue
+                    item_name = item_tag_nbt["display"]["name"].value
+                    item_name = removeFormatting(item_name)
+            if item_name is None:
+                continue
+            if item_tag_json is None:
+                continue
             if gverbose:
-                print >> sys.stderr, itemType + " - " + itemName
-
-            print '\t['
-            print '\t\t{'
-            print '\t\t\t"id":"' + itemType + '",'
-            print '\t\t\t"name":u\'\'\'' + itemName + '\'\'\','
-            print '\t\t},'
-            print '\t\t['
-            print '\t\t\t"nbt", "replace", ur\'\'\'' + tag + '\'\'\''
-            print '\t\t]'
-            print '\t],'
-
-# Apply NBT tag fixups to all NBT strings found in a loot table file
-def fixup_file(filePath):
-    # Create temp file
-    fh, abs_path = mkstemp()
-    with fdopen(fh,'w') as new_file:
-        with open(filePath) as old_file:
-            lastType = "";
-            for line in old_file:
-                # Read lines from original file, modify them, and write them to the new file
-
-                # Only operate on tag strings
-                m = re.search(r'(^\s*"name":\s*")(.*)"\s*,*\s*$', line)
-                if m:
-                    preamble = m.group(1)
-                    lastType = m.group(2)
-
-                m = re.search(r'(^\s*"tag":\s*")(\{.*})"\s*$', line)
-                if m:
-                    preamble = m.group(1)
-                    tag = m.group(2)
-
-                    # Remove backslashes
-                    tag = tag.replace("\\", "")
-
-                    try:
-                        print_tag_as_replacement(lastType, tag)
-
-                    except Exception:
-                        print >> sys.stderr, "Skipping file: " + filePath
-                        print >> sys.stderr, "Failing tag was: '" + tag + "'"
-                        traceback.print_exc()
-                        print >> sys.stderr, "This is only a warning, processing will continue for other items"
-                        print >> sys.stderr, ""
-                        print >> sys.stderr, ""
-                        return
+                print >> sys.stderr, item_id + " - " + item_name
+            print "  ["
+            print "    {"
+            print "      'id':'{" + item_id + "}',"
+            print "      'name':u'''" + item_name + "''',"
+            print "    },"
+            print "    ["
+            print "      'nbt', 'replace', ur'''" + tag + "'''"
+            print "    ]"
+            print "  ],"
 
 def usage():
     sys.exit("Usage: " + sys.argv[0] + " [--verbose] </path/to/loot_tables> <dir2> ...")
@@ -105,7 +94,9 @@ for lootPath in lootFolders:
             if file.endswith(".json"):
                  filePath = os.path.join(root, file)
                  #print(filePath)
-                 fixup_file(filePath)
+                 loot_table = jsonFile(filePath)
+                 #fixup_file(filePath)
+                 replacements_from_loot_table(loot_table.dict)
 
 if gverbose:
     print >> sys.stderr, "Done"
