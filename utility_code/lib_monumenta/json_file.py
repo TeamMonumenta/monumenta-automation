@@ -3,6 +3,7 @@
 
 # Don't rename this to json.py - it'll break things
 
+import codecs
 import json
 
 class jsonFile(object):
@@ -29,7 +30,10 @@ class jsonFile(object):
             return
         with open(path,'r') as f:
             try:
-                self.dict = json.load(f)
+                fContent = codecs.getreader('utf8')(f).read()
+                if fContent[0] == unichr(0xfeff):
+                    fContent = fContent[1:]
+                self.dict = json.loads(fContent)
             except:
                 print "Error loading '{}':".format(path)
                 raise
