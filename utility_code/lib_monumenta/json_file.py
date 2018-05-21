@@ -28,7 +28,11 @@ class jsonFile(object):
             self.dict = {}
             return
         with open(path,'r') as f:
-            self.dict = json.load(f)
+            try:
+                self.dict = json.load(f)
+            except:
+                print "Error loading '{}':".format(path)
+                raise
             f.close()
 
     def save(self,path=None,indent=2,separators=(',', ': '),sort_keys=False):
