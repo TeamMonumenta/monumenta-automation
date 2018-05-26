@@ -79,7 +79,7 @@ def replacements_from_loot_table(loot_table):
                 print >> sys.stderr, item_id + " - " + item_name
             result += u"  [\n"
             result += u"    {\n"
-            result += u"      'id':'{" + item_id + u"}',\n"
+            result += u"      'id':'" + item_id + u"',\n"
             result += u"      'name':u'''" + item_name + u"''',\n"
             result += u"    },\n"
             result += u"    [\n"

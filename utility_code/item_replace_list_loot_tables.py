@@ -6,7 +6,7 @@ from lib_monumenta import item_replace
 KingsValleyLootTables = item_replace.ReplaceItems([],[
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Turtle Flippers''',
     },
     [
@@ -15,7 +15,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Turtle Pants''',
     },
     [
@@ -24,7 +24,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Turtle Vest''',
     },
     [
@@ -33,7 +33,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Turtle Helm''',
     },
     [
@@ -42,7 +42,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:fishing_rod}',
+      'id':'minecraft:fishing_rod',
       'name':u'''Angler's Rod''',
     },
     [
@@ -51,7 +51,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:lever}',
+      'id':'minecraft:lever',
       'name':u'''Damaged Hilt''',
     },
     [
@@ -60,7 +60,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:fish}',
+      'id':'minecraft:fish',
       'name':u'''Magic Fish''',
     },
     [
@@ -69,7 +69,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Turtle Shield''',
     },
     [
@@ -78,7 +78,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Oncoming Tide''',
     },
     [
@@ -87,7 +87,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:cooked_fish}',
+      'id':'minecraft:cooked_fish',
       'name':u'''Regal Salmon''',
     },
     [
@@ -96,7 +96,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:rabbit}',
+      'id':'minecraft:rabbit',
       'name':u'''Zombie Meat''',
     },
     [
@@ -105,7 +105,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:cooked_rabbit}',
+      'id':'minecraft:cooked_rabbit',
       'name':u'''Cooked Zombie Meat''',
     },
     [
@@ -114,7 +114,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:quartz}',
+      'id':'minecraft:quartz',
       'name':u'''Bone Shard''',
     },
     [
@@ -123,7 +123,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:cooked_beef}',
+      'id':'minecraft:cooked_beef',
       'name':u'''Cooked Horse Meat''',
     },
     [
@@ -132,7 +132,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:beef}',
+      'id':'minecraft:beef',
       'name':u'''Horse Meat''',
     },
     [
@@ -141,7 +141,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Topaz Cap''',
     },
     [
@@ -150,7 +150,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Watcher's Sword''',
     },
     [
@@ -159,7 +159,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_helmet}',
+      'id':'minecraft:golden_helmet',
       'name':u'''Jeweled Tiara''',
     },
     [
@@ -168,7 +168,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:sugar}',
+      'id':'minecraft:sugar',
       'name':u'''Pulsating Dust''',
     },
     [
@@ -177,7 +177,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Living Thorn''',
     },
     [
@@ -186,7 +186,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Crusader's Sword''',
     },
     [
@@ -195,7 +195,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Light Scimitar''',
     },
     [
@@ -204,7 +204,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Flamewreath Splinter''',
     },
     [
@@ -213,7 +213,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Thief's Dagger''',
     },
     [
@@ -222,7 +222,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Brigand's Rapier''',
     },
     [
@@ -231,7 +231,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Honed Claymore''',
     },
     [
@@ -240,7 +240,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Ritual Knife''',
     },
     [
@@ -249,7 +249,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Trusty Dagger''',
     },
     [
@@ -258,7 +258,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Scoundrel's Rapier''',
     },
     [
@@ -267,7 +267,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Poisoned Shank''',
     },
     [
@@ -276,7 +276,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_axe}',
+      'id':'minecraft:wooden_axe',
       'name':u'''Meteor Hammer''',
     },
     [
@@ -285,7 +285,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_axe}',
+      'id':'minecraft:wooden_axe',
       'name':u'''Tempered Mace''',
     },
     [
@@ -294,7 +294,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Woodsman's Axe''',
     },
     [
@@ -303,7 +303,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Heavy Warhammer''',
     },
     [
@@ -312,7 +312,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Jagged Cleaver''',
     },
     [
@@ -321,7 +321,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Inferno Axe''',
     },
     [
@@ -330,7 +330,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_pickaxe}',
+      'id':'minecraft:wooden_pickaxe',
       'name':u'''Sapper's Tool''',
     },
     [
@@ -339,7 +339,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Masterwork Pickaxe''',
     },
     [
@@ -348,7 +348,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Runic Pickaxe''',
     },
     [
@@ -357,7 +357,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Resiliant Pickaxe''',
     },
     [
@@ -366,7 +366,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_shovel}',
+      'id':'minecraft:wooden_shovel',
       'name':u'''Arrowmeld''',
     },
     [
@@ -375,7 +375,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Hardened Shield''',
     },
     [
@@ -384,7 +384,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Hawk's Talon''',
     },
     [
@@ -393,7 +393,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Crossbow''',
     },
     [
@@ -402,7 +402,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Searing Bow''',
     },
     [
@@ -411,7 +411,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:fishing_rod}',
+      'id':'minecraft:fishing_rod',
       'name':u'''Angler's Rod''',
     },
     [
@@ -420,7 +420,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stick}',
+      'id':'minecraft:stick',
       'name':u'''Apprentice's Wand''',
     },
     [
@@ -429,7 +429,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stick}',
+      'id':'minecraft:stick',
       'name':u'''Consecrated Wand''',
     },
     [
@@ -438,7 +438,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Ruffian's Scythe''',
     },
     [
@@ -447,7 +447,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Sky Mage Coif''',
     },
     [
@@ -456,7 +456,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Sky Mage Cloak''',
     },
     [
@@ -465,7 +465,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Sky Mage Robe''',
     },
     [
@@ -474,7 +474,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Sky Mage Slippers''',
     },
     [
@@ -483,7 +483,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Scoundrel's Hood''',
     },
     [
@@ -492,7 +492,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Scoundrel's Tunic''',
     },
     [
@@ -501,7 +501,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Scoundrel's Trousers''',
     },
     [
@@ -510,7 +510,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Scoundrel's Slippers''',
     },
     [
@@ -519,7 +519,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Spellweave Hat''',
     },
     [
@@ -528,7 +528,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Spellweave Tunic''',
     },
     [
@@ -537,7 +537,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Spellweave Trousers''',
     },
     [
@@ -546,7 +546,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Spellweave Shoes''',
     },
     [
@@ -555,7 +555,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Blast Visor''',
     },
     [
@@ -564,7 +564,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Blast Vest''',
     },
     [
@@ -573,7 +573,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Blast Apron''',
     },
     [
@@ -582,7 +582,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Blast Boots''',
     },
     [
@@ -591,7 +591,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Burnt Helm''',
     },
     [
@@ -600,7 +600,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Burnt Cloak''',
     },
     [
@@ -609,7 +609,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Burnt Leggings''',
     },
     [
@@ -618,7 +618,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Burnt Boots''',
     },
     [
@@ -627,7 +627,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Warlock Helm''',
     },
     [
@@ -636,7 +636,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Warlock Robe''',
     },
     [
@@ -645,7 +645,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Warlock Robe''',
     },
     [
@@ -654,7 +654,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Warlock Boots''',
     },
     [
@@ -663,7 +663,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Zephyric Sandals''',
     },
     [
@@ -672,7 +672,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Ancient Robes''',
     },
     [
@@ -681,7 +681,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''C'Zanil's Shroud''',
     },
     [
@@ -690,7 +690,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:skull}',
+      'id':'minecraft:skull',
       'name':u'''Phantom's Hood''',
     },
     [
@@ -699,7 +699,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bone}',
+      'id':'minecraft:bone',
       'name':u'''Wand of C'Zanil''',
     },
     [
@@ -708,7 +708,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Quetzalcoatl's Wrath''',
     },
     [
@@ -717,7 +717,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Ashheart Dagger''',
     },
     [
@@ -726,7 +726,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_pickaxe}',
+      'id':'minecraft:wooden_pickaxe',
       'name':u'''Ashfloe Chisel''',
     },
     [
@@ -735,7 +735,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Fur Boots''',
     },
     [
@@ -744,7 +744,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Fur Leggings''',
     },
     [
@@ -753,7 +753,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Fur Tunic''',
     },
     [
@@ -762,7 +762,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Fur Cap''',
     },
     [
@@ -771,7 +771,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Hide Shield''',
     },
     [
@@ -780,7 +780,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:rabbit_hide}',
+      'id':'minecraft:rabbit_hide',
       'name':u'''Immaculate Hide''',
     },
     [
@@ -789,7 +789,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_chestplate}',
+      'id':'minecraft:golden_chestplate',
       'name':u'''King's Warden''',
     },
     [
@@ -798,7 +798,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Angelic Sword''',
     },
     [
@@ -807,7 +807,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Mithril Cleaver''',
     },
     [
@@ -816,7 +816,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:blaze_rod}',
+      'id':'minecraft:blaze_rod',
       'name':u'''Hell's Fury''',
     },
     [
@@ -825,7 +825,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_sword}',
+      'id':'minecraft:golden_sword',
       'name':u'''Soulvenom Dagger''',
     },
     [
@@ -834,7 +834,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Obsidian Pickaxe''',
     },
     [
@@ -843,7 +843,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Keeper of the Jungle''',
     },
     [
@@ -852,7 +852,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Angelic Pants''',
     },
     [
@@ -861,7 +861,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:flower_pot}',
+      'id':'minecraft:flower_pot',
       'name':u'''Ancient Relic''',
     },
     [
@@ -870,7 +870,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:double_plant}',
+      'id':'minecraft:double_plant',
       'name':u'''Swiftwood Leaf''',
     },
     [
@@ -879,7 +879,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:prismarine_crystals}',
+      'id':'minecraft:prismarine_crystals',
       'name':u'''Guardian Scales''',
     },
     [
@@ -888,7 +888,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:blaze_powder}',
+      'id':'minecraft:blaze_powder',
       'name':u'''Crystalized Fire''',
     },
     [
@@ -897,7 +897,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Explorer's Boots''',
     },
     [
@@ -906,7 +906,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Explorer's Cap''',
     },
     [
@@ -915,7 +915,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Plaguehide Boots''',
     },
     [
@@ -924,7 +924,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Plaguehide Pants''',
     },
     [
@@ -933,7 +933,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Plaguehide Torso''',
     },
     [
@@ -942,7 +942,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Plaguehide Cap''',
     },
     [
@@ -951,7 +951,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Prismatic Blade''',
     },
     [
@@ -960,7 +960,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Searing Wrath''',
     },
     [
@@ -969,7 +969,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:book}',
+      'id':'minecraft:book',
       'name':u'''Tome of Arcane Horrors''',
     },
     [
@@ -978,7 +978,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Arcane Storm''',
     },
     [
@@ -987,7 +987,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stick}',
+      'id':'minecraft:stick',
       'name':u'''Thaumaturge's Greed''',
     },
     [
@@ -996,7 +996,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:chainmail_boots}',
+      'id':'minecraft:chainmail_boots',
       'name':u'''Chains of the Damned''',
     },
     [
@@ -1005,7 +1005,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Boreas Greaves''',
     },
     [
@@ -1014,7 +1014,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Archmage's Vestment''',
     },
     [
@@ -1023,7 +1023,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Tempered Ironwood Blade''',
     },
     [
@@ -1032,7 +1032,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Sculpted Dagger''',
     },
     [
@@ -1041,7 +1041,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Ashen Broadsword''',
     },
     [
@@ -1050,7 +1050,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Priest's Stake''',
     },
     [
@@ -1059,7 +1059,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Versatile Knife''',
     },
     [
@@ -1068,7 +1068,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Searing Gladius''',
     },
     [
@@ -1077,7 +1077,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Burning Rapier''',
     },
     [
@@ -1086,7 +1086,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Soldier's Blade''',
     },
     [
@@ -1095,7 +1095,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Granite Sabre''',
     },
     [
@@ -1104,7 +1104,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Rogue's Knife''',
     },
     [
@@ -1113,7 +1113,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Survivalist's Sword''',
     },
     [
@@ -1122,7 +1122,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Warhammer''',
     },
     [
@@ -1131,7 +1131,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Masterwork Axe''',
     },
     [
@@ -1140,7 +1140,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_axe}',
+      'id':'minecraft:wooden_axe',
       'name':u'''Honed Swiftwood Axe''',
     },
     [
@@ -1149,7 +1149,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_axe}',
+      'id':'minecraft:wooden_axe',
       'name':u'''Versatile Axe''',
     },
     [
@@ -1158,7 +1158,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_axe}',
+      'id':'minecraft:wooden_axe',
       'name':u'''Smoldering Mace''',
     },
     [
@@ -1167,7 +1167,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_pickaxe}',
+      'id':'minecraft:wooden_pickaxe',
       'name':u'''Bluefell Chisel''',
     },
     [
@@ -1176,7 +1176,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Miner's Pick''',
     },
     [
@@ -1185,7 +1185,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Granite Pickaxe''',
     },
     [
@@ -1194,7 +1194,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_shovel}',
+      'id':'minecraft:wooden_shovel',
       'name':u'''Grassbane''',
     },
     [
@@ -1203,7 +1203,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stick}',
+      'id':'minecraft:stick',
       'name':u'''Student's Wand''',
     },
     [
@@ -1212,7 +1212,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:blaze_rod}',
+      'id':'minecraft:blaze_rod',
       'name':u'''Flame Wand''',
     },
     [
@@ -1221,7 +1221,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Peasant's Scythe''',
     },
     [
@@ -1230,7 +1230,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Ironwood Bow''',
     },
     [
@@ -1239,7 +1239,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Longbow''',
     },
     [
@@ -1248,7 +1248,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Bandit's Cap''',
     },
     [
@@ -1257,7 +1257,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Bandit's Tunic''',
     },
     [
@@ -1266,7 +1266,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Bandit's Trousers''',
     },
     [
@@ -1275,7 +1275,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Bandit's Boots''',
     },
     [
@@ -1284,7 +1284,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Crimson Mage Hat''',
     },
     [
@@ -1293,7 +1293,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Crimson Mage Robes''',
     },
     [
@@ -1302,7 +1302,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Crimson Mage Robes''',
     },
     [
@@ -1311,7 +1311,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Crimson Mage Robes''',
     },
     [
@@ -1320,7 +1320,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Thornskin Veil''',
     },
     [
@@ -1329,7 +1329,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Thornskin Robe''',
     },
     [
@@ -1338,7 +1338,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Thornskin Robe''',
     },
     [
@@ -1347,7 +1347,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Thornskin Shoes''',
     },
     [
@@ -1356,7 +1356,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Alchemist's Helm''',
     },
     [
@@ -1365,7 +1365,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Alchemist's Apron''',
     },
     [
@@ -1374,7 +1374,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Alchemist's Robe''',
     },
     [
@@ -1383,7 +1383,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Alchemist's Boots''',
     },
     [
@@ -1392,7 +1392,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Turtle Helm''',
     },
     [
@@ -1401,7 +1401,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Turtle Vest''',
     },
     [
@@ -1410,7 +1410,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Turtle Pants''',
     },
     [
@@ -1419,7 +1419,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Turtle Flippers''',
     },
     [
@@ -1428,7 +1428,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Puresilk Coif''',
     },
     [
@@ -1437,7 +1437,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Puresilk Tunic''',
     },
     [
@@ -1446,7 +1446,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Puresilk Leggings''',
     },
     [
@@ -1455,7 +1455,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Puresilk Slippers''',
     },
     [
@@ -1464,7 +1464,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Telum Immoriel''',
     },
     [
@@ -1473,7 +1473,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:sapling}',
+      'id':'minecraft:sapling',
       'name':u'''Chimarian Wand''',
     },
     [
@@ -1482,7 +1482,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:quartz}',
+      'id':'minecraft:quartz',
       'name':u'''Render's Ruthless Claw''',
     },
     [
@@ -1491,7 +1491,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Helician Spitzhacke''',
     },
     [
@@ -1500,7 +1500,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:red_flower}',
+      'id':'minecraft:red_flower',
       'name':u'''Teewie's Eternal Tulip''',
     },
     [
@@ -1509,7 +1509,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Busty's Hot Pants''',
     },
     [
@@ -1518,7 +1518,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Brown Corp Uniform''',
     },
     [
@@ -1527,7 +1527,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Stormborn Runeblade''',
     },
     [
@@ -1536,7 +1536,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Earthbound Runeblade''',
     },
     [
@@ -1545,7 +1545,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Iceborn Runeblade''',
     },
     [
@@ -1554,7 +1554,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Giant's Axe''',
     },
     [
@@ -1563,7 +1563,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Pebblebane''',
     },
     [
@@ -1572,7 +1572,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Stormborn Boots''',
     },
     [
@@ -1581,7 +1581,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Earthbound Pants''',
     },
     [
@@ -1590,7 +1590,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Iceborn Helmet''',
     },
     [
@@ -1599,7 +1599,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Imperial Bulwark''',
     },
     [
@@ -1608,7 +1608,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Demonbreath''',
     },
     [
@@ -1617,7 +1617,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bone}',
+      'id':'minecraft:bone',
       'name':u'''Deathchill Staff''',
     },
     [
@@ -1626,7 +1626,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Cryptkeeper's Scythe''',
     },
     [
@@ -1635,7 +1635,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Spirit Blade''',
     },
     [
@@ -1644,7 +1644,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Shadow Spike''',
     },
     [
@@ -1653,7 +1653,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Tempest Caller''',
     },
     [
@@ -1662,7 +1662,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Shadowborn Boots''',
     },
     [
@@ -1671,7 +1671,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Voidguard''',
     },
     [
@@ -1680,7 +1680,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Kismet's Blessing''',
     },
     [
@@ -1689,7 +1689,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Brimstone Scythe''',
     },
     [
@@ -1698,7 +1698,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Guardian Hide Boots''',
     },
     [
@@ -1707,7 +1707,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Guardian Hide Pants''',
     },
     [
@@ -1716,7 +1716,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Guardian Hide Vest''',
     },
     [
@@ -1725,7 +1725,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Guardian Hide Helm''',
     },
     [
@@ -1734,7 +1734,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Offering's Robe''',
     },
     [
@@ -1743,7 +1743,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Offering's Robe''',
     },
     [
@@ -1752,7 +1752,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Offering's Robe''',
     },
     [
@@ -1761,7 +1761,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Offering's Hood''',
     },
     [
@@ -1770,7 +1770,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Sacrificial Blade''',
     },
     [
@@ -1779,7 +1779,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Vicious Thorn''',
     },
     [
@@ -1788,7 +1788,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Godwood Sword''',
     },
     [
@@ -1797,7 +1797,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Druidic Broadsword''',
     },
     [
@@ -1806,7 +1806,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Ponderous Branch''',
     },
     [
@@ -1815,7 +1815,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Nest's Bane''',
     },
     [
@@ -1824,7 +1824,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Officer's Blade''',
     },
     [
@@ -1833,7 +1833,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Infernal Dagger''',
     },
     [
@@ -1842,7 +1842,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Masterwork Sabre''',
     },
     [
@@ -1851,7 +1851,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Duelist's Sword''',
     },
     [
@@ -1860,7 +1860,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Assassin's Dagger''',
     },
     [
@@ -1869,7 +1869,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_axe}',
+      'id':'minecraft:wooden_axe',
       'name':u'''Falling Comet''',
     },
     [
@@ -1878,7 +1878,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_axe}',
+      'id':'minecraft:wooden_axe',
       'name':u'''Deforester''',
     },
     [
@@ -1887,7 +1887,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Cutter''',
     },
     [
@@ -1896,7 +1896,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Divine Cleaver''',
     },
     [
@@ -1905,7 +1905,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Battle Axe''',
     },
     [
@@ -1914,7 +1914,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_pickaxe}',
+      'id':'minecraft:wooden_pickaxe',
       'name':u'''Bluescourge Chisel''',
     },
     [
@@ -1923,7 +1923,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_pickaxe}',
+      'id':'minecraft:wooden_pickaxe',
       'name':u'''Coal Devourer''',
     },
     [
@@ -1932,7 +1932,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Balanced Adze''',
     },
     [
@@ -1941,7 +1941,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Bountiful Chisel''',
     },
     [
@@ -1950,7 +1950,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Rebel's Scythe''',
     },
     [
@@ -1959,7 +1959,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Salubric Scythe''',
     },
     [
@@ -1968,7 +1968,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Ironwrought Shield''',
     },
     [
@@ -1977,7 +1977,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Spiked Buckler''',
     },
     [
@@ -1986,7 +1986,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Pyromancer's Bow''',
     },
     [
@@ -1995,7 +1995,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Composite Bow''',
     },
     [
@@ -2004,7 +2004,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_shovel}',
+      'id':'minecraft:stone_shovel',
       'name':u'''Gardener''',
     },
     [
@@ -2013,7 +2013,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stick}',
+      'id':'minecraft:stick',
       'name':u'''Journeyman's Staff''',
     },
     [
@@ -2022,7 +2022,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bone}',
+      'id':'minecraft:bone',
       'name':u'''Shaman's Staff''',
     },
     [
@@ -2031,7 +2031,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Cerulean Mage Hat''',
     },
     [
@@ -2040,7 +2040,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Cerulean Mage Robes''',
     },
     [
@@ -2049,7 +2049,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Cerulean Mage Robes''',
     },
     [
@@ -2058,7 +2058,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Cerulean Mage Robes''',
     },
     [
@@ -2067,7 +2067,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Molten Hood''',
     },
     [
@@ -2076,7 +2076,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Molten Cloak''',
     },
     [
@@ -2085,7 +2085,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Molten Pants''',
     },
     [
@@ -2094,7 +2094,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Molten Boots''',
     },
     [
@@ -2103,7 +2103,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Choleric Helm''',
     },
     [
@@ -2112,7 +2112,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Choleric Cloak''',
     },
     [
@@ -2121,7 +2121,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Choleric Leggings''',
     },
     [
@@ -2130,7 +2130,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Choleric Boots''',
     },
     [
@@ -2139,7 +2139,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Heavy Leather Cap''',
     },
     [
@@ -2148,7 +2148,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Heavy Leather Tunic''',
     },
     [
@@ -2157,7 +2157,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Heavy Leather Pants''',
     },
     [
@@ -2166,7 +2166,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Heavy Leather Boots''',
     },
     [
@@ -2175,7 +2175,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Brigand's Coif''',
     },
     [
@@ -2184,7 +2184,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Brigand's Tunic''',
     },
     [
@@ -2193,7 +2193,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Brigand's Trousers''',
     },
     [
@@ -2202,7 +2202,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Brigand's Shoes''',
     },
     [
@@ -2211,7 +2211,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Gemcrust Coif''',
     },
     [
@@ -2220,7 +2220,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Gemcrust Vest''',
     },
     [
@@ -2229,7 +2229,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Gemcrust Pants''',
     },
     [
@@ -2238,7 +2238,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Gemcrust Shoes''',
     },
     [
@@ -2247,7 +2247,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Rusty Shield''',
     },
     [
@@ -2256,7 +2256,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Cloth Cap''',
     },
     [
@@ -2265,7 +2265,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Cloth Shirt''',
     },
     [
@@ -2274,7 +2274,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Cloth Pants''',
     },
     [
@@ -2283,7 +2283,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Cloth Shoes''',
     },
     [
@@ -2292,7 +2292,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''The Ravager''',
     },
     [
@@ -2301,7 +2301,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stick}',
+      'id':'minecraft:stick',
       'name':u'''Shapeshifter's Wand''',
     },
     [
@@ -2310,7 +2310,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Boots of Vitality''',
     },
     [
@@ -2319,7 +2319,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Cultist's Robe''',
     },
     [
@@ -2328,7 +2328,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:quartz}',
+      'id':'minecraft:quartz',
       'name':u'''Purified Claw''',
     },
     [
@@ -2337,7 +2337,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Wildthrasher''',
     },
     [
@@ -2346,7 +2346,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Bonepiercer''',
     },
     [
@@ -2355,7 +2355,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_axe}',
+      'id':'minecraft:golden_axe',
       'name':u'''Arachnobane''',
     },
     [
@@ -2364,7 +2364,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Thaumaturge's Robes''',
     },
     [
@@ -2373,7 +2373,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Thaumaturge's Robes''',
     },
     [
@@ -2382,7 +2382,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Thaumaturge's Robes''',
     },
     [
@@ -2391,7 +2391,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Thaumaturge's Hood''',
     },
     [
@@ -2400,7 +2400,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Bloody Thorn''',
     },
     [
@@ -2409,7 +2409,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Eternal Crescent''',
     },
     [
@@ -2418,7 +2418,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Macuahuitl''',
     },
     [
@@ -2427,7 +2427,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Reliable Longsword''',
     },
     [
@@ -2436,7 +2436,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Versatile Cutlass''',
     },
     [
@@ -2445,7 +2445,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Molten Rapier''',
     },
     [
@@ -2454,7 +2454,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Polished Gladius''',
     },
     [
@@ -2463,7 +2463,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_sword}',
+      'id':'minecraft:golden_sword',
       'name':u'''Eldritch Blade''',
     },
     [
@@ -2472,7 +2472,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Scout's Companion''',
     },
     [
@@ -2481,7 +2481,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Blessed Axe''',
     },
     [
@@ -2490,7 +2490,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Crushing Mace''',
     },
     [
@@ -2499,7 +2499,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Phoenix Axe''',
     },
     [
@@ -2508,7 +2508,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Soulhammer''',
     },
     [
@@ -2517,7 +2517,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_pickaxe}',
+      'id':'minecraft:wooden_pickaxe',
       'name':u'''Evanescent''',
     },
     [
@@ -2526,7 +2526,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Undying Chisel''',
     },
     [
@@ -2535,7 +2535,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_pickaxe}',
+      'id':'minecraft:stone_pickaxe',
       'name':u'''Truerune Pick''',
     },
     [
@@ -2544,7 +2544,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_shovel}',
+      'id':'minecraft:stone_shovel',
       'name':u'''Undying Trowel''',
     },
     [
@@ -2553,7 +2553,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Executioner's Scythe''',
     },
     [
@@ -2562,7 +2562,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Windborn Scythe''',
     },
     [
@@ -2571,7 +2571,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Swiftwood Buckler''',
     },
     [
@@ -2580,7 +2580,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Soulguard''',
     },
     [
@@ -2589,7 +2589,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Blazing Crossbow''',
     },
     [
@@ -2598,7 +2598,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Korbaran Shortbow''',
     },
     [
@@ -2607,7 +2607,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:fishing_rod}',
+      'id':'minecraft:fishing_rod',
       'name':u'''Mermaid's Touch''',
     },
     [
@@ -2616,7 +2616,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_shovel}',
+      'id':'minecraft:stone_shovel',
       'name':u'''Pyromancer's Staff''',
     },
     [
@@ -2625,7 +2625,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stick}',
+      'id':'minecraft:stick',
       'name':u'''Wand of Storms''',
     },
     [
@@ -2634,7 +2634,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Nereid Cap''',
     },
     [
@@ -2643,7 +2643,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Nereid Tunic''',
     },
     [
@@ -2652,7 +2652,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Nereid Leggings''',
     },
     [
@@ -2661,7 +2661,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Nereid Sandals''',
     },
     [
@@ -2670,7 +2670,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Hardened Leather Cap''',
     },
     [
@@ -2679,7 +2679,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Hardened Leather Tunic''',
     },
     [
@@ -2688,7 +2688,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Hardened Leather Pants''',
     },
     [
@@ -2697,7 +2697,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Hardened Leather Boots''',
     },
     [
@@ -2706,7 +2706,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Scout's Leathers''',
     },
     [
@@ -2715,7 +2715,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Scout's Leathers''',
     },
     [
@@ -2724,7 +2724,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Scout's Leathers''',
     },
     [
@@ -2733,7 +2733,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Scout's Leathers''',
     },
     [
@@ -2742,7 +2742,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Soulleather Veil''',
     },
     [
@@ -2751,7 +2751,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Soulleather Cloak''',
     },
     [
@@ -2760,7 +2760,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Soulleather Robe''',
     },
     [
@@ -2769,7 +2769,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Soulleather Shoes''',
     },
     [
@@ -2778,7 +2778,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Viridian Mage Hat''',
     },
     [
@@ -2787,7 +2787,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Viridian Mage Robes''',
     },
     [
@@ -2796,7 +2796,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Viridian Mage Robes''',
     },
     [
@@ -2805,7 +2805,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Viridian Mage Robes''',
     },
     [
@@ -2814,7 +2814,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Dualsun Hood''',
     },
     [
@@ -2823,7 +2823,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Dualsun Cloak''',
     },
     [
@@ -2832,7 +2832,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Dualsun Robe''',
     },
     [
@@ -2841,7 +2841,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Dualsun Shoes''',
     },
     [
@@ -2850,7 +2850,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Ironwood Blade''',
     },
     [
@@ -2859,7 +2859,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Carved Dagger''',
     },
     [
@@ -2868,7 +2868,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Oaken Broadsword''',
     },
     [
@@ -2877,7 +2877,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Scorching Splinter''',
     },
     [
@@ -2886,7 +2886,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Flensing Knife''',
     },
     [
@@ -2895,7 +2895,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Hunter's Stake''',
     },
     [
@@ -2904,7 +2904,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Serrated Shiv''',
     },
     [
@@ -2913,7 +2913,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_axe}',
+      'id':'minecraft:wooden_axe',
       'name':u'''Swiftwood Axe''',
     },
     [
@@ -2922,7 +2922,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_axe}',
+      'id':'minecraft:wooden_axe',
       'name':u'''Squire's Hammer''',
     },
     [
@@ -2931,7 +2931,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_axe}',
+      'id':'minecraft:wooden_axe',
       'name':u'''Smoldering Hatchet''',
     },
     [
@@ -2940,7 +2940,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_pickaxe}',
+      'id':'minecraft:wooden_pickaxe',
       'name':u'''Swiftwood Pickaxe''',
     },
     [
@@ -2949,7 +2949,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_pickaxe}',
+      'id':'minecraft:wooden_pickaxe',
       'name':u'''Lucky Pick''',
     },
     [
@@ -2958,7 +2958,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_pickaxe}',
+      'id':'minecraft:wooden_pickaxe',
       'name':u'''Ironwood Pick''',
     },
     [
@@ -2967,7 +2967,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_shovel}',
+      'id':'minecraft:wooden_shovel',
       'name':u'''Swiftwood Shovel''',
     },
     [
@@ -2976,7 +2976,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:fishing_rod}',
+      'id':'minecraft:fishing_rod',
       'name':u'''Novice's Fishing Rod''',
     },
     [
@@ -2985,7 +2985,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stick}',
+      'id':'minecraft:stick',
       'name':u'''Weak Wand''',
     },
     [
@@ -2994,7 +2994,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Weak Shield''',
     },
     [
@@ -3003,7 +3003,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Sturdy Cloth Cap''',
     },
     [
@@ -3012,7 +3012,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Sturdy Cloth Shirt''',
     },
     [
@@ -3021,7 +3021,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Sturdy Cloth Pants''',
     },
     [
@@ -3030,7 +3030,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Sturdy Cloth Shoes''',
     },
     [
@@ -3039,7 +3039,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Infused Cloth Helm''',
     },
     [
@@ -3048,7 +3048,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Infused Cloth Cloak''',
     },
     [
@@ -3057,7 +3057,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Infused Cloth Leggings''',
     },
     [
@@ -3066,7 +3066,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Infused Cloth Shoes''',
     },
     [
@@ -3075,7 +3075,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Padded Cloth Coif''',
     },
     [
@@ -3084,7 +3084,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Padded Cloth Tunic''',
     },
     [
@@ -3093,7 +3093,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Padded Cloth Trousers''',
     },
     [
@@ -3102,7 +3102,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Padded Cloth Boots''',
     },
     [
@@ -3111,7 +3111,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Leafweave Veil''',
     },
     [
@@ -3120,7 +3120,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Leafweave Vest''',
     },
     [
@@ -3129,7 +3129,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Leafweave Trousers''',
     },
     [
@@ -3138,7 +3138,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Leafweave Sandals''',
     },
     [
@@ -3147,7 +3147,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Binding Coif''',
     },
     [
@@ -3156,7 +3156,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Binding Robes''',
     },
     [
@@ -3165,7 +3165,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Binding Robes''',
     },
     [
@@ -3174,7 +3174,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Binding Boots''',
     },
     [
@@ -3183,7 +3183,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Hobnailed Helm''',
     },
     [
@@ -3192,7 +3192,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Hobnailed Vest''',
     },
     [
@@ -3201,7 +3201,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Hobnailed Leggings''',
     },
     [
@@ -3210,7 +3210,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Hobnailed Boots''',
     },
     [
@@ -3219,7 +3219,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Weak Scythe''',
     },
     [
@@ -3228,7 +3228,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Soulcrusher''',
     },
     [
@@ -3237,7 +3237,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_sword}',
+      'id':'minecraft:golden_sword',
       'name':u'''Doom's Edge''',
     },
     [
@@ -3246,7 +3246,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_hoe}',
+      'id':'minecraft:golden_hoe',
       'name':u'''Reaper's Harvest''',
     },
     [
@@ -3255,7 +3255,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:totem_of_undying}',
+      'id':'minecraft:totem_of_undying',
       'name':u'''Idol of Immortality''',
     },
     [
@@ -3264,7 +3264,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Tlaxan Bulwark''',
     },
     [
@@ -3273,7 +3273,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Basilisk Scales''',
     },
     [
@@ -3282,7 +3282,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Plaguebringer''',
     },
     [
@@ -3291,7 +3291,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:skull}',
+      'id':'minecraft:skull',
       'name':u'''Tlaxan Mask''',
     },
     [
@@ -3300,7 +3300,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Elder Scales''',
     },
     [
@@ -3309,7 +3309,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_pickaxe}',
+      'id':'minecraft:golden_pickaxe',
       'name':u'''Shimmering Wave''',
     },
     [
@@ -3318,7 +3318,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:chainmail_helmet}',
+      'id':'minecraft:chainmail_helmet',
       'name':u'''Hellborn Crown''',
     },
     [
@@ -3327,7 +3327,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Heatwave''',
     },
     [
@@ -3336,7 +3336,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Whispers of the Blizzard''',
     },
     [
@@ -3345,7 +3345,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Frostbite Scythe''',
     },
     [
@@ -3354,7 +3354,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_sword}',
+      'id':'minecraft:golden_sword',
       'name':u'''Arachnidruid Cutlass''',
     },
     [
@@ -3363,7 +3363,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_boots}',
+      'id':'minecraft:golden_boots',
       'name':u'''Imperial Boots''',
     },
     [
@@ -3372,7 +3372,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:tipped_arrow}',
+      'id':'minecraft:tipped_arrow',
       'name':u'''Arrow of Decay''',
     },
     [
@@ -3381,7 +3381,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Desert Explorer''',
     },
     [
@@ -3390,7 +3390,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_sword}',
+      'id':'minecraft:golden_sword',
       'name':u'''Phoenix Spellblade''',
     },
     [
@@ -3399,7 +3399,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:skull}',
+      'id':'minecraft:skull',
       'name':u'''Ender Eyes''',
     },
     [
@@ -3408,7 +3408,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Enderwrath''',
     },
     [
@@ -3417,7 +3417,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Bluescale Torso''',
     },
     [
@@ -3426,7 +3426,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:chainmail_leggings}',
+      'id':'minecraft:chainmail_leggings',
       'name':u'''Ironscale Leggings''',
     },
     [
@@ -3435,7 +3435,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Frostbite''',
     },
     [
@@ -3444,7 +3444,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Magmahide Shield''',
     },
     [
@@ -3453,7 +3453,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_shovel}',
+      'id':'minecraft:stone_shovel',
       'name':u'''Greyskull's Spellcaster''',
     },
     [
@@ -3462,7 +3462,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Poison Ivy''',
     },
     [
@@ -3471,7 +3471,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Soulvenom Bow''',
     },
     [
@@ -3480,7 +3480,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Dreamweave Boots''',
     },
     [
@@ -3489,7 +3489,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Dreamweave Leggings''',
     },
     [
@@ -3498,7 +3498,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Dreamweave Vest''',
     },
     [
@@ -3507,7 +3507,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Dreamweave Hat''',
     },
     [
@@ -3516,7 +3516,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:dye}',
+      'id':'minecraft:dye',
       'name':u'''Blood Charm''',
     },
     [
@@ -3525,7 +3525,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:dye}',
+      'id':'minecraft:dye',
       'name':u'''Speed Charm''',
     },
     [
@@ -3534,7 +3534,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:dye}',
+      'id':'minecraft:dye',
       'name':u'''Life Charm''',
     },
     [
@@ -3543,7 +3543,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:dye}',
+      'id':'minecraft:dye',
       'name':u'''Earth Charm''',
     },
     [
@@ -3552,7 +3552,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Corrupted Morphic Shield''',
     },
     [
@@ -3561,7 +3561,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Corrupted Scalawag's Hatchet''',
     },
     [
@@ -3570,7 +3570,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_sword}',
+      'id':'minecraft:golden_sword',
       'name':u'''Corrupted Geomantic Dagger''',
     },
     [
@@ -3579,7 +3579,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Corrupted Watcher's Sword''',
     },
     [
@@ -3588,7 +3588,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Corrupted Steelsiege''',
     },
     [
@@ -3597,7 +3597,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Corrupted Tyrolean Boots''',
     },
     [
@@ -3606,7 +3606,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Corrupted Water Robe''',
     },
     [
@@ -3615,7 +3615,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_helmet}',
+      'id':'minecraft:golden_helmet',
       'name':u'''Corrupted Jeweled Tiara''',
     },
     [
@@ -3624,7 +3624,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:redstone}',
+      'id':'minecraft:redstone',
       'name':u'''Corrupted Malevolence''',
     },
     [
@@ -3633,7 +3633,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Meat Shield''',
     },
     [
@@ -3642,7 +3642,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Infernal Cap''',
     },
     [
@@ -3651,7 +3651,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Infernal Tunic''',
     },
     [
@@ -3660,7 +3660,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Infernal Pants''',
     },
     [
@@ -3669,7 +3669,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Infernal Boots''',
     },
     [
@@ -3678,7 +3678,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:prismarine_crystals}',
+      'id':'minecraft:prismarine_crystals',
       'name':u'''Fear Shard''',
     },
     [
@@ -3687,7 +3687,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:rabbit_foot}',
+      'id':'minecraft:rabbit_foot',
       'name':u'''Thumper's Paw''',
     },
     [
@@ -3696,7 +3696,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:dragon_breath}',
+      'id':'minecraft:dragon_breath',
       'name':u'''Concentrated Experience''',
     },
     [
@@ -3705,7 +3705,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:magma_cream}',
+      'id':'minecraft:magma_cream',
       'name':u'''Royal Crystal''',
     },
     [
@@ -3714,7 +3714,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{gold_nugget}',
+      'id':'gold_nugget',
       'name':u'''Pulsating Gold''',
     },
     [
@@ -3723,7 +3723,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:skull}',
+      'id':'minecraft:skull',
       'name':u'''C'Axtal's Corrupted Mask''',
     },
     [
@@ -3732,7 +3732,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Scalawag's Hatchet''',
     },
     [
@@ -3741,7 +3741,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Tyrolean Boots''',
     },
     [
@@ -3750,7 +3750,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Murano's Dagger''',
     },
     [
@@ -3759,7 +3759,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Water Robe''',
     },
     [
@@ -3768,7 +3768,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Crushing Depths''',
     },
     [
@@ -3777,7 +3777,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Morphic Shield''',
     },
     [
@@ -3786,7 +3786,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:rotten_flesh}',
+      'id':'minecraft:rotten_flesh',
       'name':u'''High-Quality Beef''',
     },
     [
@@ -3795,7 +3795,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Highstorm''',
     },
     [
@@ -3804,7 +3804,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_axe}',
+      'id':'minecraft:stone_axe',
       'name':u'''Silver Knight's Hammer''',
     },
     [
@@ -3813,7 +3813,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Sanctifying Guard''',
     },
     [
@@ -3822,7 +3822,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:feather}',
+      'id':'minecraft:feather',
       'name':u'''Holy Feather''',
     },
     [
@@ -3831,7 +3831,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:feather}',
+      'id':'minecraft:feather',
       'name':u'''Sharpened Holy Feather''',
     },
     [
@@ -3840,7 +3840,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:shield}',
+      'id':'minecraft:shield',
       'name':u'''Eventide''',
     },
     [
@@ -3849,7 +3849,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:dye}',
+      'id':'minecraft:dye',
       'name':u'''Water Gem''',
     },
     [
@@ -3858,7 +3858,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Entropic Razor''',
     },
     [
@@ -3867,7 +3867,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Silvered Sight''',
     },
     [
@@ -3876,7 +3876,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Ruby Scythe''',
     },
     [
@@ -3885,7 +3885,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Gem Encrusted Manpance''',
     },
     [
@@ -3894,7 +3894,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather}',
+      'id':'minecraft:leather',
       'name':u'''Polar Bear Hide''',
     },
     [
@@ -3903,7 +3903,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Infernal Robe''',
     },
     [
@@ -3912,7 +3912,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:clay_ball}',
+      'id':'minecraft:clay_ball',
       'name':u'''Ponderous Stone''',
     },
     [
@@ -3921,7 +3921,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:blaze_powder}',
+      'id':'minecraft:blaze_powder',
       'name':u'''Blazing Soul''',
     },
     [
@@ -3930,7 +3930,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_sword}',
+      'id':'minecraft:golden_sword',
       'name':u'''Lingering Flame''',
     },
     [
@@ -3939,7 +3939,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_boots}',
+      'id':'minecraft:leather_boots',
       'name':u'''Oncoming Wave''',
     },
     [
@@ -3948,7 +3948,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:record_stal}',
+      'id':'minecraft:record_stal',
       'name':u'''Groovy Chakram''',
     },
     [
@@ -3957,7 +3957,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Vermin's Scourge''',
     },
     [
@@ -3966,7 +3966,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:rabbit_foot}',
+      'id':'minecraft:rabbit_foot',
       'name':u'''Raider's Charm''',
     },
     [
@@ -3975,7 +3975,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Swiftwood Shortbow''',
     },
     [
@@ -3984,7 +3984,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:dye}',
+      'id':'minecraft:dye',
       'name':u'''Fangride's Cat Dung''',
     },
     [
@@ -3993,7 +3993,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Fangridian Cattcrappe''',
     },
     [
@@ -4002,7 +4002,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Cutting Breeze''',
     },
     [
@@ -4011,7 +4011,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_helmet}',
+      'id':'minecraft:leather_helmet',
       'name':u'''Chitin Helmet''',
     },
     [
@@ -4020,7 +4020,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stick}',
+      'id':'minecraft:stick',
       'name':u'''Blackroot's Fury''',
     },
     [
@@ -4029,7 +4029,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Blighted Scythe''',
     },
     [
@@ -4038,7 +4038,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Cupid's Bow''',
     },
     [
@@ -4047,7 +4047,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Ebola Shirt''',
     },
     [
@@ -4056,7 +4056,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:skull}',
+      'id':'minecraft:skull',
       'name':u'''Zombie Plushy''',
     },
     [
@@ -4065,7 +4065,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Stylish Black Shirt''',
     },
     [
@@ -4074,7 +4074,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_leggings}',
+      'id':'minecraft:golden_leggings',
       'name':u'''King's Greaves''',
     },
     [
@@ -4083,7 +4083,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_sword}',
+      'id':'minecraft:golden_sword',
       'name':u'''Light of Salvation''',
     },
     [
@@ -4092,7 +4092,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:golden_boots}',
+      'id':'minecraft:golden_boots',
       'name':u'''King's Sabatons''',
     },
     [
@@ -4101,7 +4101,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Reaper's Scythe''',
     },
     [
@@ -4110,7 +4110,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_hoe}',
+      'id':'minecraft:stone_hoe',
       'name':u'''Highland Scythe''',
     },
     [
@@ -4119,7 +4119,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:chainmail_leggings}',
+      'id':'minecraft:chainmail_leggings',
       'name':u'''Steelscale Leggings''',
     },
     [
@@ -4128,7 +4128,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stone_sword}',
+      'id':'minecraft:stone_sword',
       'name':u'''Rosethorn Blade''',
     },
     [
@@ -4137,7 +4137,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Busty's Hotter Pants''',
     },
     [
@@ -4146,7 +4146,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Arcane Hailstorm''',
     },
     [
@@ -4155,7 +4155,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_chestplate}',
+      'id':'minecraft:leather_chestplate',
       'name':u'''Warded Vestment''',
     },
     [
@@ -4164,7 +4164,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Quetzalcoatl's Fury''',
     },
     [
@@ -4173,7 +4173,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bone}',
+      'id':'minecraft:bone',
       'name':u'''Charm of C'Zanil''',
     },
     [
@@ -4182,7 +4182,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:dye}',
+      'id':'minecraft:dye',
       'name':u'''Ephemeral Key Fragment''',
     },
     [
@@ -4191,7 +4191,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:bow}',
+      'id':'minecraft:bow',
       'name':u'''Swiftwood Longbow''',
     },
     [
@@ -4200,7 +4200,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Slicing Wind''',
     },
     [
@@ -4209,7 +4209,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:record_stal}',
+      'id':'minecraft:record_stal',
       'name':u'''Far-Out Chakram''',
     },
     [
@@ -4218,7 +4218,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:blaze_powder}',
+      'id':'minecraft:blaze_powder',
       'name':u'''Soul of Conflagration''',
     },
     [
@@ -4227,7 +4227,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:leather_leggings}',
+      'id':'minecraft:leather_leggings',
       'name':u'''Firestorm Robe''',
     },
     [
@@ -4236,7 +4236,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:rabbit_foot}',
+      'id':'minecraft:rabbit_foot',
       'name':u'''Plunderer's Charm''',
     },
     [
@@ -4245,7 +4245,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:clay_ball}',
+      'id':'minecraft:clay_ball',
       'name':u'''Burdened Stone''',
     },
     [
@@ -4254,7 +4254,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:record_mall}',
+      'id':'minecraft:record_mall',
       'name':u'''Obsidian Hits''',
     },
     [
@@ -4263,7 +4263,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:record_ward}',
+      'id':'minecraft:record_ward',
       'name':u'''Embalmer's Mixtape''',
     },
     [
@@ -4272,7 +4272,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:record_strad}',
+      'id':'minecraft:record_strad',
       'name':u'''Web-Covered Classics''',
     },
     [
@@ -4281,7 +4281,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:record_13}',
+      'id':'minecraft:record_13',
       'name':u'''Sandy-Smooth Jazz''',
     },
     [
@@ -4290,7 +4290,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:coal}',
+      'id':'minecraft:coal',
       'name':u'''Animated Coal''',
     },
     [
@@ -4299,7 +4299,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:stick}',
+      'id':'minecraft:stick',
       'name':u'''Prehensile Stick''',
     },
     [
@@ -4308,7 +4308,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:wooden_sword}',
+      'id':'minecraft:wooden_sword',
       'name':u'''Rod of the Onodrim''',
     },
     [
@@ -4317,7 +4317,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:carrot}',
+      'id':'minecraft:carrot',
       'name':u'''Olfactory Carrot''',
     },
     [
@@ -4326,7 +4326,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:snowball}',
+      'id':'minecraft:snowball',
       'name':u'''Everlasting Snow''',
     },
     [
@@ -4335,7 +4335,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:glowstone_dust}',
+      'id':'minecraft:glowstone_dust',
       'name':u'''Soul Dust''',
     },
     [
@@ -4344,7 +4344,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:redstone}',
+      'id':'minecraft:redstone',
       'name':u'''Blood Dust''',
     },
     [
@@ -4353,7 +4353,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:dye}',
+      'id':'minecraft:dye',
       'name':u'''Fierce Soul''',
     },
     [
@@ -4362,7 +4362,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:glowstone_dust}',
+      'id':'minecraft:glowstone_dust',
       'name':u'''Soul Dust''',
     },
     [
@@ -4371,7 +4371,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:glowstone_dust}',
+      'id':'minecraft:glowstone_dust',
       'name':u'''Soul Dust''',
     },
     [
@@ -4380,7 +4380,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:glowstone_dust}',
+      'id':'minecraft:glowstone_dust',
       'name':u'''Soul Dust''',
     },
     [
@@ -4389,7 +4389,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:glowstone_dust}',
+      'id':'minecraft:glowstone_dust',
       'name':u'''Soul Dust''',
     },
     [
@@ -4398,7 +4398,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
-      'id':'{minecraft:redstone}',
+      'id':'minecraft:redstone',
       'name':u'''Blood Dust''',
     },
     [
