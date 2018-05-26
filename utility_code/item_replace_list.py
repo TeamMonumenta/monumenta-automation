@@ -184,58 +184,6 @@ itemReplacements = [
 ]
 """
 
-""" Items that aren't going in this list (for now at least)
-    # Remove any gold ore that is present
-    [
-        {"id":"minecraft:gold_ore"},
-        [
-            "name","set",u"Decayed Item",
-        ]
-    ],
-    # Remove any gold nuggets that are present
-    [
-        {"id":"minecraft:gold_nugget"},
-        [
-            "name","set",u"Decayed Item",
-        ]
-    ],
-    # Remove any gold ingots that are present
-    [
-        {"id":"minecraft:gold_ingot"},
-        [
-            "name","set",u"Decayed Item",
-        ]
-    ],
-    # Remove any gold blocks that are present
-    [
-        {"id":"minecraft:gold_block"},
-        [
-            "name","set",u"Decayed Item",
-        ]
-    ],
-    # Remove any emerald ore that is present
-    [
-        {"id":"minecraft:emerald_ore"},
-        [
-            "name","set",u"Decayed Item",
-        ]
-    ],
-    # Remove any emeralds that are present
-    [
-        {"id":"minecraft:emerald"},
-        [
-            "name","set",u"Decayed Item",
-        ]
-    ],
-    # Remove any emerald blocks that are present
-    [
-        {"id":"minecraft:emerald_block"},
-        [
-            "name","set",u"Decayed Item",
-        ]
-    ],
-"""
-
 # Use this to replace nothing
 itemReplacementsNone = item_replace.ReplaceItems()
 
@@ -251,9 +199,6 @@ itemReplacementsRemoveAll = item_replace.ReplaceItems([],[
 KingsValleyBuild = item_replace.ReplaceItems([],[
     ############################################################################
     # Oh dear, these shouldn't be in the build world...
-
-    # You see nothing!
-    [{"id":"minecraft:elytra",},["remove",]],
 
     [
         {"any":[
@@ -291,29 +236,15 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     ################
     # leather
 
-    # Topaz Cap
+    # Unlucky Topaz Cap
     [
         {
             "id":"minecraft:leather_helmet",
             "name":u'''Topaz Cap''',
-            "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
+            "nbt":ur'''{display:{Lore:["§6The luck has decayed into health"]}}''',
         },
         [
-            "print", "Lucky Topaz Cap still needed",
-            "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
-        ]
-    ],
-
-    # Topaz Cap <- Amber Cap
-    [
-        {
-            "id":"minecraft:leather_helmet",
-            "name":u'''Amber Cap''',
-            "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
-        },
-        [
-            "print", "Lucky Amber Cap still needed",
-            "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lTopaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:34s}],display:{Lore:["§9Cloth Armor","* Unique Item *","§6The luck has decayed into health"],color:16776960,Name:"§6§lUnlucky Topaz Cap"},AttributeModifiers:[{UUIDMost:-4372966254504623356L,UUIDLeast:-5757139819161180185L,Amount:0.75d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-6920208193525167582L,UUIDLeast:-9012692505744652313L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 
@@ -336,11 +267,10 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
         {
             "id":"minecraft:golden_helmet",
             "name":u'''Jeweled Tiara''',
-            "nbt":ur'''{AttributeModifiers:[{AttributeName:"generic.luck"}]}''',
+            "nbt":ur'''{display:{Lore:["§6The luck has decayed into health"]}}''',
         },
         [
-            "print", "Lucky Jeweled Tiara still needed",
-            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lJeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+            "nbt", "replace", ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:34s}],display:{Lore:["* Unique Item *","§6The luck has decayed into health"],Name:"§d§lUnlucky Jeweled Tiara"},AttributeModifiers:[{UUIDMost:992743L,UUIDLeast:9295615L,Amount:1.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:2252054273775257919L,UUIDLeast:-6258579311022731853L,Amount:2.0d,Slot:"head",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
         ]
     ],
 
