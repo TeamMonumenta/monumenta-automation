@@ -1143,9 +1143,9 @@ class actNBT(object):
             # player customizations back.
             itemStack.update(tagsToRestore)
             if (
-                soulbound is not None or
+                (soulbound is not None) or
                 isReplica or
-                hopeifiedBy is not None
+                (hopeifiedBy is not None)
             ):
                 if "display" not in itemStack["tag"]:
                     itemStack["tag"]["display"] = nbt.TAG_Compound()
