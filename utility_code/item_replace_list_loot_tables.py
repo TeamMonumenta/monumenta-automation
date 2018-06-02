@@ -1531,7 +1531,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Stormborn Runeblade''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:16s},{lvl:1s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§6Rock's Little Casino","","§7When in main hand:","§7 2 Attack Speed","§7 6.5 Attack Damage","§9 +10% Speed"],Name:"§3§lStormborn Runeblade"},AttributeModifiers:[{UUIDMost:44607095061251400l,UUIDLeast:17181972604100280l,Amount:0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:32717593065480005l,UUIDLeast:13800488484714149l,Amount:4d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:18508304389737284l,UUIDLeast:65266891060907778l,Amount:-2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§6Rock's Little Casino","","§7When in main hand:","§7 2 Attack Speed","§7 6.5 Attack Damage","§9 +10% Speed"],Name:"§3§lStormborn Runeblade"},AttributeModifiers:[{UUIDMost:44607095061251400l,UUIDLeast:17181972604100280l,Amount:0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:32717593065480005l,UUIDLeast:13800488484714149l,Amount:4d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:18508304389737284l,UUIDLeast:65266891060907778l,Amount:-2d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
     ]
   ],
   [
@@ -1540,7 +1540,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Earthbound Runeblade''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§6Rock's Little Casino","","§7When in main hand:","§7 1.6 Attack Speed","§7 6.5 Attack Damage","§9 +2 Armor"],Name:"§2§lEarthbound Runeblade"},AttributeModifiers:[{UUIDMost:67445053026503759l,UUIDLeast:20777435665232169l,Amount:4d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:57037229736289856l,UUIDLeast:7096337185411272l,Amount:2d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:29541336158339146l,UUIDLeast:50859522055085541l,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:16s},{lvl:2s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§6Rock's Little Casino","","§7When in main hand:","§7 1.6 Attack Speed","§7 6.5 Attack Damage","§9 +2 Armor","§9 +0.1 Knockback Resistance"],Name:"§2§lEarthbound Runeblade"},AttributeModifiers:[{UUIDMost:67445053026503759L,UUIDLeast:20777435665232169L,Amount:4.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:57037229736289856L,UUIDLeast:7096337185411272L,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"},{UUIDMost:29541336158339146L,UUIDLeast:50859522055085541L,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"},{UUIDMost:6577557009373743011L,UUIDLeast:-7193696176099758336L,Amount:0.1d,Slot:"mainhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"}]}'''
     ]
   ],
   [
@@ -1549,7 +1549,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Iceborn Runeblade''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:17s},{lvl:3s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§6Rock's Little Casino","","§7When in main hand:"," §71.2 Attack Speed"," §78 Attack Damage"," §c-10% Speed"],Name:"§b§lIceborn Runeblade"},AttributeModifiers:[{UUIDMost:68342020398380105l,UUIDLeast:18376432692088500l,Amount:-0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:20792108251577155l,UUIDLeast:44880469650724553l,Amount:4d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:49556179849667657l,UUIDLeast:15931220204059978l,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:5s,id:16s},{lvl:1s,id:17s},{lvl:3s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§6Rock's Little Casino","","§7When in main hand:"," §71.6 Attack Speed"," §78 Attack Damage"," §c-10% Speed"],Name:"§b§lIceborn Runeblade"},AttributeModifiers:[{UUIDMost:68342020398380105L,UUIDLeast:18376432692088500L,Amount:-0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:20792108251577155L,UUIDLeast:44880469650724553L,Amount:4.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"generic.attackDamage"},{UUIDMost:49556179849667657L,UUIDLeast:15931220204059978L,Amount:-2.4d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"generic.attackSpeed"}]}'''
     ]
   ],
   [
