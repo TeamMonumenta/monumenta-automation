@@ -158,11 +158,11 @@ def terrainResetInstance(config, outputFile, statusQueue):
             (
                 (
                     (itemReplacements is not None) or
-                    (entityUpdates is not None) or
-                    (immovableFix is not None)
+                    (entityUpdates is not None)
                 ) and
                 ("world" in config["itemReplaceLocations"])
             ) or
+            (immovableFix is not None) or
             (shouldResetDifficulty == True)
         ):
 
