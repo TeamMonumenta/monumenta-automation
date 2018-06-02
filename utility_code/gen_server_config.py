@@ -43,6 +43,7 @@ server_config_to_copy = [
         ('plugins/OpenInv/config.yml',),
         ('plugins/Monumenta-Plugins/config.yml',),
         ('plugins/Monumenta-Plugins/Properties.json',),
+        ('plugins/VentureChat/config.yml',),
     ]
 
 server_config_min = [
@@ -149,13 +150,20 @@ plan = [
         ('plugins/Plan', '../../server_config/data/plugins/{servername}/Plan'),
     ]
 
+venturechat = [
+        ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
+        ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
+        ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
+        ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
+    ]
+
 # Index of nodes:
 #   server_config
 #   advancements_disabled
 #   advancements_r1
 #   structures
 
-base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit
+base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit + venturechat
 if (SERVER_TYPE == 'build'):
     build_plugins = speedchanger + nbteditor + voxelsniper
 else:
