@@ -128,7 +128,9 @@ class ShellAction(object):
             await self.display('Error: action ' + self.command + ' is already being performed')
             return
         else:
-            await self.display('Performing action: ' + self.command)
+            if not self.alwaysListening:
+                # Always listening commands are usually one-line near-instant output commands; easier to follow without clutter.
+                await self.display('Performing action: ' + self.command)
 
         self._lock = True
 
