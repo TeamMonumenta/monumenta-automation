@@ -524,6 +524,12 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
                 self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/build /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
             ]
 
+        if "tutorial" in allShards:
+            self._commands += [
+                self.display("Moving the tutorial shard..."),
+                self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/tutorial /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
+            ]
+
         for shard in allShards:
             if shard in ["build","bungee"]:
                 continue
