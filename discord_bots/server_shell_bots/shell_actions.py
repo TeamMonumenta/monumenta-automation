@@ -309,6 +309,7 @@ Must be run before starting terrain reset on the play server'''
             self.run("mark2 send -n region_1 test", 1),
 
             self.display("Copying region_1..."),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
             self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_1"),
             self.run("cp -a /home/rock/project_epic/region_1/Project_Epic-region_1 /home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_1/"),
 
@@ -320,11 +321,10 @@ Must be run before starting terrain reset on the play server'''
             self.run("cp -a /home/rock/project_epic/bungee /home/rock/5_SCRATCH/tmpreset/TEMPLATE/"),
 
             self.display("Copying purgatory..."),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
-            self.run("cp -a /home/rock/project_epic/purgatory /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
+            self.run("cp -a /home/rock/project_epic/purgatory /home/rock/5_SCRATCH/tmpreset/TEMPLATE/"),
 
             self.display("Copying server_config..."),
-            self.run("cp -a /home/rock/project_epic/server_config /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
+            self.run("cp -a /home/rock/project_epic/server_config /home/rock/5_SCRATCH/tmpreset/TEMPLATE/"),
 
             self.display("Packaging up reset bundle..."),
             self.cd("/home/rock/5_SCRATCH/tmpreset"),
@@ -476,6 +476,8 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         self._commands = [
             # TODO: Check that all shards are stopped
             self.display("Moving the project_epic directory to PRE_RESET"),
+            self.run("cp -a /home/rock/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
+            self.run("cp -a /home/rock/5_SCRATCH/tmpreset/TEMPLATE/purgatory /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
             self.run("mv /home/rock/project_epic /home/rock/5_SCRATCH/tmpreset/PRE_RESET"),
         ]
 
