@@ -540,6 +540,18 @@ KingsValleyDungeon = item_replace.ReplaceItems([],[
 
     KingsValleyBuild,
 
+    # Void Apple fix (To run June 9th, then stop using this replacement)
+    [
+        {
+            "id":"minecraft:golden_apple",
+            "name":u'''Void Apple''',
+        },
+        [
+            "nbt","replace",ur'''{display:{Name:"§5Void Apple",Lore:["§4An apple infused with Void itself","§4Consuming it causes instant and unpreventable death"]},ench:[{id:71s,lvl:1s}]}''',
+            "count","max",1,
+        ]
+    ]
+
     [
         {"any":[
             # Iron:
