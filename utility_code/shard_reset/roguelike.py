@@ -17,7 +17,9 @@ from advancement_change_list import advancementRevokeList
 config = {
     "server":"roguelike",
     "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/roguelike/Project_Epic-roguelike/",
+    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/roguelike/Project_Epic-roguelike/",
     "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/roguelike/Project_Epic-roguelike/",
+    "copyBaseFrom":"build",
     "copyMainFolders":["advancements/", "playerdata/", "stats/"],
     "copyMainFiles":["data/scoreboard.dat","data/villages.dat","data/villages_end.dat","data/advancements","data/functions","data/loot_tables"],
     "playerScoreChanges":dungeonScoreRules,

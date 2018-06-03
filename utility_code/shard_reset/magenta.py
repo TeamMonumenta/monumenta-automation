@@ -17,7 +17,9 @@ from advancement_change_list import advancementRevokeList
 config = {
     "server":"magenta",
     "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/magenta/Project_Epic-magenta/",
+    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/magenta/Project_Epic-magenta/",
     "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/magenta/Project_Epic-magenta/",
+    "copyBaseFrom":"build",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{

@@ -271,7 +271,7 @@ Must be run before preparing the build server reset bundle'''
 
             self.display("Generating dungeon instances (this may take a while)..."),
             self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/dungeon_instance_gen.py"),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/dungeons-out /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
+            self.run("mv /home/rock/5_SCRATCH/tmpreset/dungeons-out /home/rock/5_SCRATCH/tmpreset/TEMPLATE"),
 
             self.display("Cleaning up instance generation temp files..."),
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon /home/rock/5_SCRATCH/tmpreset/Project_Epic-template"),
@@ -320,6 +320,7 @@ Must be run before starting terrain reset on the play server'''
             self.run("cp -a /home/rock/project_epic/bungee /home/rock/5_SCRATCH/tmpreset/TEMPLATE/"),
 
             self.display("Copying purgatory..."),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
             self.run("cp -a /home/rock/project_epic/purgatory /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
 
             self.display("Copying server_config..."),

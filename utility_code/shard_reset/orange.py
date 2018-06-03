@@ -17,7 +17,9 @@ from advancement_change_list import advancementRevokeList
 config = {
     "server":"orange",
     "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/orange/Project_Epic-orange/",
+    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/orange/Project_Epic-orange/",
     "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/orange/Project_Epic-orange/",
+    "copyBaseFrom":"build",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{

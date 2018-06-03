@@ -17,7 +17,9 @@ from advancement_change_list import advancementRevokeList
 config = {
     "server":"nightmare",
     "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/nightmare/Project_Epic-nightmare/",
+    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/nightmare/Project_Epic-nightmare/",
     "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/nightmare/Project_Epic-nightmare/",
+    "copyBaseFrom":"build",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{

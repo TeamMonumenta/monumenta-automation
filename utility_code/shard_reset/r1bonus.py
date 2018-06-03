@@ -17,7 +17,9 @@ from advancement_change_list import advancementRevokeList
 config = {
     "server":"r1bonus",
     "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/r1bonus/Project_Epic-r1bonus/",
+    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/r1bonus/Project_Epic-r1bonus/",
     "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/r1bonus/Project_Epic-r1bonus/",
+    "copyBaseFrom":"build",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{

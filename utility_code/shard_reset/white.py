@@ -17,7 +17,9 @@ from advancement_change_list import advancementRevokeList
 config = {
     "server":"white",
     "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/white/Project_Epic-white/",
+    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/white/Project_Epic-white/",
     "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/white/Project_Epic-white/",
+    "copyBaseFrom":"build",
     "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
     "playerScoreChanges":dungeonScoreRules,
     "preserveInstance":{
