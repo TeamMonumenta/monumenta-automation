@@ -551,7 +551,7 @@ KingsValleyDungeon = item_replace.ReplaceItems([],[
             "nbt", ur'''{{display:{Name:"§5Void Potion",Lore:["§4A potion infused with Void itself","§4Consuming it causes instant and unpreventable death"]},Potion:"minecraft:empty",CustomPotionEffects:[{Id:7b,Amplifier:9b,Duration:1s,Ambient:0b,ShowParticles:1b}]}}''',
             "count", "=", 1
         ]
-    ]
+    ],
 
     [
         {"any":[
