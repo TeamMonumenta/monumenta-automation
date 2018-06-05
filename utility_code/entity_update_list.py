@@ -33,11 +33,7 @@ KingsValleyImmovable = entity_update.UpdateEntities([],[
     [
         {
             "id":"minecraft:villager",
-            "none":[
-                {
-                    "nbt":ur'''{Tags:["Mariya"]}''',
-                }
-            ]
+            "tag":[u"!Mariya"],
         },
         [
             "nbt", "update", ur'''{Team:"IMMOVABLE_NPCS"}''',
@@ -78,19 +74,7 @@ KingsValleyBuild = entity_update.UpdateEntities([],[
         ]
     ],
     # Save these for last; don't want to forget to handle Elites properly, do we?
-    [
-        {
-            "id":"minecraft:villager",
-            "none":[
-                {
-                    "nbt":ur'''{Tags:["Mariya"]}''',
-                }
-            ]
-        },
-        [
-            "nbt", "update", ur'''{Team:"IMMOVABLE_NPCS"}''',
-        ]
-    ],
+    KingsValleyImmovable,
     [
         {
             "tag":[u"Elite"],
