@@ -96,7 +96,7 @@ def run(worldFolder,logFolder):
                 z = aCmdBlock[2]
                 cmd = unicode(aCmdBlock[3])
 
-                strBuffer += u"{0}, {1}, {2}, {3}\n".format(x,y,z,cmd)
+                strBuffer += u"/tp @s {0} {1} {2}, {3}\n".format(x,y,z,cmd)
 
             f = open(logFolder+"/"+cmdBlockType+".txt","a")
             f.write(strBuffer.encode('utf8'))
