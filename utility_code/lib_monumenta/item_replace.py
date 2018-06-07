@@ -248,6 +248,18 @@ class ReplaceItems(object):
         if "global count" not in self.log_data["global"]:
             self.log_data["global"]["global count"] = {}
 
+    def InChunkTag(self,chunkTag):
+        if self.replacements is None:
+            return
+        self.log_data["current"] = {}
+        self.entityIter.InChunkTag(chunkTag)
+
+    def InChunk(self,chunk):
+        if self.replacements is None:
+            return
+        self.log_data["current"] = {}
+        self.entityIter.InChunk(chunk)
+
     def InWorld(self,world):
         if self.replacements is None:
             return

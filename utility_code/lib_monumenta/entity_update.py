@@ -90,6 +90,18 @@ class UpdateEntities(object):
             self.log_data["global"]["global count"]["entities"] = {}
             self.log_data["global"]["global count"]["block entities"] = {}
 
+    def InChunkTag(self,chunkTag):
+        if self.updates is None:
+            return
+        self.log_data["current"] = {}
+        self.entityIter.InChunkTag(chunkTag)
+
+    def InChunk(self,chunk):
+        if self.updates is None:
+            return
+        self.log_data["current"] = {}
+        self.entityIter.InChunk(chunk)
+
     def InWorld(self,world):
         if self.updates is None:
             return
