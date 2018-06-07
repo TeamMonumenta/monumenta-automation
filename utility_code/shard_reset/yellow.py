@@ -30,6 +30,7 @@ config = {
     "tpToSpawn":True,
     "itemReplacements":item_replace_list.KingsValleyDungeon,
     "itemReplaceLocations":["players"],
+    "entityUpdates":entity_update_list.KingsValley,
     "itemLog":"/home/rock/5_SCRATCH/tmpreset/items_yellow.txt",
 }
 
