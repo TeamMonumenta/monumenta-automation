@@ -138,7 +138,9 @@ def terrainResetInstance(config, outputFile, statusQueue):
                     oldRegionDir,
                     newRegionDir,
                     oldRx,oldRz,
-                    newRx,newRz
+                    newRx,newRz,
+                    itemReplacements,
+                    entityUpdates
                 ):
                     # Failed to move the region file; this happens if the old file is missing.
                     # This does not indicate that the player's instance was removed intentionally.

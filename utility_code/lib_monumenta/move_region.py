@@ -17,7 +17,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from pymclevel import nbt
 from pymclevel import regionfile
 
-def moveRegion(dirSrc,dirDst,rxSrc,rzSrc,rxDst,rzDst):
+def moveRegion(dirSrc,dirDst,rxSrc,rzSrc,rxDst,rzDst,itemReplacements=None,entityUpdates=None):
     """
     move the old region file {dirSrc}/r.{rxSrc}.{rzSrc}.mca
     to the new region file {dirDst}/r.{rxDst}.{rzDst}.mca
@@ -53,6 +53,10 @@ def moveRegion(dirSrc,dirDst,rxSrc,rzSrc,rxDst,rzDst):
             chunkTag['Level']['xPos'].value = cx
             chunkTag['Level']['zPos'].value = cz
             entityIter.InChunkTag(chunkTag)
+            if itemReplacements is not None:
+                itemReplacements.InChunkTag(chunkTag)
+            if entityUpdates is not None:
+                entityUpdates.InChunkTag(chunkTag)
             data = chunkTag.save(compressed=False)
             region.saveChunk(cx, cz, data) # saves region file too
     region.close()
