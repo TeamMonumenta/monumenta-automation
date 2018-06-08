@@ -31,6 +31,7 @@ config = {
     "itemReplacements":item_replace_list.KingsValleyDungeon,
     "itemReplaceLocations":["players"],
     "entityUpdates":entity_update_list.KingsValley,
+    "entityUpdateLocations":[],
     "itemLog":"/home/rock/5_SCRATCH/tmpreset/items_nightmare.txt",
 }
 
