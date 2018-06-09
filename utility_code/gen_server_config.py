@@ -337,6 +337,7 @@ config = {
 
     'build':{
         'config':server_config_to_copy + [
+            ('server.properties', 'white-list', 'white-list=true'),
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25599'),
