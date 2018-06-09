@@ -43,7 +43,6 @@ server_config_to_copy = [
         ('plugins/OpenInv/config.yml',),
         ('plugins/Monumenta-Plugins/config.yml',),
         ('plugins/Monumenta-Plugins/Properties.json',),
-        ('plugins/VentureChat/config.yml',),
     ]
 
 server_config_min = [
@@ -154,7 +153,9 @@ venturechat = [
         ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
+        ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
         ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
+        ('plugins/VentureChat/config.yml', '../../../server_config/plugins/VentureChat/config.yml'),
     ]
 
 # Index of nodes:
