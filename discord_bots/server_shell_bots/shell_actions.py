@@ -536,7 +536,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             self._commands += [
                 self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/banned-ips.json /home/rock/5_SCRATCH/tmpreset/POST_RESET/{}/".format(shard)),
                 self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/banned-players.json /home/rock/5_SCRATCH/tmpreset/POST_RESET/{}/".format(shard)),
-                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/ops.json /home/rock/5_SCRATCH/tmpreset/POST_RESET/".format(shard)),
+                self.run("cp -af /home/rock/4_SHARED/op-ban-sync/region_1/ops.json /home/rock/5_SCRATCH/tmpreset/POST_RESET/{}/".format(shard)),
             ]
 
         self._commands += [
