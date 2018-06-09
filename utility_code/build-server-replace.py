@@ -11,13 +11,13 @@ import item_replace_list
 import entity_update_list
 
 configList = [{
-    "server":"dungeon",
+    "server":"region_1",
 
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
-    "localMainFolder":"/home/rock/project_epic/dungeon/Project_Epic-dungeon-prereplaceitems/",
-    "localDstFolder":"/home/rock/project_epic/dungeon/Project_Epic-dungeon/",
+    "localMainFolder":"/home/rock/project_epic/region_1/Project_Epic-region_1-prereplaceitems/",
+    "localDstFolder":"/home/rock/project_epic/region_1/Project_Epic-region_1/",
 
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"main",
