@@ -103,13 +103,13 @@ worldedit = [
 
 luckperms_standalone = [
         ('plugins/LuckPerms.jar', '../../server_config/plugins/LuckPerms.jar'),
-        ('plugins/LuckPerms/config.yml', '../../../server_config/plugins/LuckPerms/config.yml'),
+        ('plugins/LuckPerms/lib', '../../../server_config/plugins/LuckPerms/{}/lib'.format(SERVER_TYPE)),
+        ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
     ]
-
-luckperms = luckperms_standalone + [
-        ('plugins/LuckPerms/yaml-storage/groups', '../../../../server_config/plugins/LuckPerms/yaml-storage/groups'),
-        ('plugins/LuckPerms/yaml-storage/tracks', '../../../../server_config/plugins/LuckPerms/yaml-storage/tracks'),
-        ('plugins/LuckPerms/yaml-storage/users', '../../../../server_config/plugins/LuckPerms/yaml-storage/users'),
+luckperms = [
+        ('plugins/LuckPerms.jar', '../../server_config/plugins/LuckPerms.jar'),
+        ('plugins/LuckPerms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
+        ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
     ]
 
 monumenta = [
@@ -155,7 +155,7 @@ venturechat = [
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
         ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
-        ('plugins/VentureChat/config.yml', '../../../server_config/plugins/VentureChat/config.yml'),
+        ('plugins/VentureChat/config.yml', '../../../server_config/plugins/VentureChat/{}/config.yml'.format(SERVER_TYPE)),
     ]
 
 # Index of nodes:
@@ -166,9 +166,7 @@ venturechat = [
 
 base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit + venturechat
 if (SERVER_TYPE == 'build'):
-    build_plugins = speedchanger + nbteditor + voxelsniper
-else:
-    build_plugins = []
+    base_plugins += speedchanger + nbteditor + voxelsniper
 
 # String replacements:
 # {servername} - server name
@@ -253,7 +251,7 @@ config = {
         {"name":"Farr race", "type":"AdventureZone", "pos1":"1036 99 -119", "pos2":"1051 112 -105"}
     ],'''),
         ],
-        'linked':server_config + advancements_r1 + base_plugins + coreprotect + build_plugins,
+        'linked':server_config + advancements_r1 + base_plugins + coreprotect,
     },
 
     'region_2':{
@@ -268,7 +266,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'tutorial':{
@@ -288,7 +286,7 @@ config = {
         {"name":"New Player Lobby", "type":"SafeZone", "pos1":"-1456 0 -1216", "pos2":"-1425 255 -1185"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + build_plugins,
+        'linked':server_config + advancements_disabled + base_plugins,
     },
 
     'dungeon':{
@@ -304,7 +302,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'roguelike':{
@@ -320,7 +318,7 @@ config = {
         {"name":"Lobby and reward room", "type":"SafeZone", "pos1":"-9999999 60 -9999999", "pos2":"9999999 255 9999999"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'test':{
@@ -332,7 +330,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
         ],
-        'linked':server_config + advancements_r1 + base_plugins + build_plugins,
+        'linked':server_config + advancements_r1 + base_plugins,
     },
 
     'build':{
@@ -351,7 +349,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": ["region_1"],'),
         ],
-        'linked':server_config_min + advancements_disabled + luckperms_standalone + easywarp + monumenta + socket4mc + coreprotect + worldedit + speedchanger + nbteditor + voxelsniper,
+        'linked':server_config_min + advancements_disabled + luckperms_standalone + easywarp + monumenta + socket4mc + coreprotect + worldedit + speedchanger + nbteditor + voxelsniper + venturechat,
     },
 
     'mobs':{
@@ -367,7 +365,7 @@ config = {
         {"name":"Diamond Platform", "type":"AdventureZone", "pos1":"-1002 69 -1483", "pos2":"-1032 57 -1456"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'r1plots':{
@@ -384,7 +382,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 0,'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect + build_plugins,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
     },
 
     'betaplots':{
@@ -399,7 +397,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
         ],
-        'linked':server_config_min_plus_data + advancements_disabled + base_plugins + coreprotect + build_plugins,
+        'linked':server_config_min_plus_data + advancements_disabled + base_plugins + coreprotect,
     },
 
     'nightmare':{
