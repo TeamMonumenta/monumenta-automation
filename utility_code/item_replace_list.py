@@ -354,6 +354,41 @@ KingsValleyBuild = item_replace.ReplaceItems([],[
     KingsValleyLootTables,
 ])
 
+ArenaItems = item_replace.ReplaceItems([],[
+    # Remove all overpowered / unobtainable arena items
+
+    [
+        {"any":[
+            {'id':'minecraft:golden_axe','name':u'''Soul Devouring Axe'''},
+            {'id':'minecraft:bow','name':u'''Bound Bow'''},
+            {'id':'minecraft:dye','name':u'''Ice Charm'''},
+            {'id':'minecraft:stone_shovel','name':u'''Advanced Booper'''},
+            {'id':'minecraft:dye','name':u'''Fire Charm'''},
+            {'id':'minecraft:stone_shovel','name':u'''Basic Booper'''},
+            {'id':'minecraft:dye','name':u'''Supreme Speed Charm'''},
+            {'id':'minecraft:dye','name':u'''Superior Blood Charm'''},
+            {'id':'minecraft:sign','name':u'''Battlesign'''},
+            {'id':'minecraft:leather_helmet','name':u'''Crown of the Forbidden Yew'''},
+            {'id':'minecraft:leather_boots','name':u'''Galoshes of the Waves and Winds'''},
+            {'id':'minecraft:golden_shovel','name':u'''Soul Devouring Booper'''},
+            {'id':'minecraft:dye','name':u'''Hope Charm'''},
+            {'id':'minecraft:leather_leggings','name':u'''Starshine Pants'''},
+            {'id':'minecraft:leather_chestplate','name':u'''Uniform of the Arena Champion'''},
+            {'id':'minecraft:stone_sword','name':u'''Advanced Stone Sword'''},
+            {'id':'minecraft:sign','name':u'''Advanced Battlesign'''},
+            {'id':'minecraft:stone_axe','name':u'''Advanced Stone Axe'''},
+            {'id':'minecraft:stone_sword','name':u'''Broken Ancient Blade'''},
+            {'id':'minecraft:golden_sword','name':u'''Soul Devouring Sword'''},
+            {'id':'minecraft:dye','name':u'''Agility Charm'''},
+        ]},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=",0,
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+])
+
 KingsValleyDungeon = item_replace.ReplaceItems([],[
     # Remove all items
     ############################################################################
@@ -361,6 +396,7 @@ KingsValleyDungeon = item_replace.ReplaceItems([],[
     ############################################################################
 
     KingsValleyBuild,
+    ArenaItems,
 
     # Remove Void Apple potions (there was a typo that caused an error last reset)
     [
