@@ -685,7 +685,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''C'Zanil's Shroud''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:4s},{lvl:2s,id:34s}],display:{Lore:["§7Regeneration","§eKing's Valley : Rare","§fHalls of Wind and Blood","§8Even in death, C'Zanil's ritual lives on","§9","§7When on body:","§c 0 Armor"],color:41215,Name:"§6§lC'Zanil's Shroud"},AttributeModifiers:[]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:4s},{lvl:2s,id:34s}],display:{Lore:["§7Regeneration","§8King's Valley : §eRare","§fHalls of Wind and Blood","§8Even in death, C'Zanil's ritual lives on","§9","§7When on body:","§c 0 Armor"],color:41215,Name:"§6§lC'Zanil's Shroud"},AttributeModifiers:[]}'''
     ]
   ],
   [
@@ -1630,7 +1630,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Cryptkeeper's Scythe''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:18s},{lvl:4s,id:34s}],HideFlags:2,display:{Lore:["§eKing's Valley : Rare","§6Rock's Little Casino","§7","§7When in main hand:","§7 2 Attack Speed","§7 6 Attack Damage","§7","§7When in off hand:","§9 +2 Armor","§9 +1 Attack Damage"],Name:"§8§lCryptkeeper's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-3549740715683920811l,UUIDLeast:-5007827127384468665l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-309718873454917986l,UUIDLeast:-6703149036569285791l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:18s},{lvl:4s,id:34s}],HideFlags:2,display:{Lore:["§8King's Valley : §eRare","§6Rock's Little Casino","§7","§7When in main hand:","§7 2 Attack Speed","§7 6 Attack Damage","§7","§7When in off hand:","§9 +2 Armor","§9 +1 Attack Damage"],Name:"§8§lCryptkeeper's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-3549740715683920811l,UUIDLeast:-5007827127384468665l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-309718873454917986l,UUIDLeast:-6703149036569285791l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
     ]
   ],
   [
@@ -3300,11 +3300,29 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
+      'id':'minecraft:stone_sword',
+      'name':u'''Yurei''',
+    },
+    [
+      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:10s}],HideFlags:1,display:{Lore:["§8King's Valley : §eRare","§cEphemeral Corridors","§8Though faint, some memories","§8cling on forever."],Name:"§f§lYurei"},AttributeModifiers:[{UUIDMost:-1987815169135654068l,UUIDLeast:-6982392386500172265l,Amount:4.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:4446494267199997087l,UUIDLeast:-7462324322213207688l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:chainmail_chestplate',
+      'name':u'''Edge of Death''',
+    },
+    [
+      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:0s},{lvl:1s,id:70s}],HideFlags:2,display:{Lore:["§8King's Valley : §eRare","§cEphemeral Corridors","§8As death loomed over the Crimson King,","§8he parted the veil and found true power.","§7","§7When on body:","§9 +5% Speed","§9 +10% Attack Speed","§9 +15% Attack Damage","§9 +1 Attack Damage","§c  0 Armor"],Name:"§f§lEdge of Death"},AttributeModifiers:[{UUIDMost:9138744897479134149l,UUIDLeast:-8733287527487764017l,Amount:0.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:6760905333417918769l,UUIDLeast:-5388228417652302363l,Amount:1.0d,Slot:"chest",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-9082180167542290781l,UUIDLeast:-5912474229596086495l,Amount:0.15d,Slot:"chest",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"},{UUIDMost:4268649753071796795l,UUIDLeast:-4676279827039382603l,Amount:0.1d,Slot:"chest",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-6295317988728682859l,UUIDLeast:-8442881832643955189l,Amount:0.05d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+    ]
+  ],
+  [
+    {
       'id':'minecraft:leather_helmet',
       'name':u'''Elder Scales''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:5s},{lvl:2s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:7s}],display:{Lore:["§8King's Valley : §eRare","§cEphemereal Corridors","§8The waves do not remember, but the beasts","§8below will never forget."],color:1169881,Name:"§3§lElder Scales"}}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:0s},{lvl:2s,id:5s},{lvl:2s,id:34s},{lvl:1s,id:70s},{lvl:4s,id:7s}],display:{Lore:["§8King's Valley : §eRare","§cEphemeral Corridors","§8The waves do not remember, but the beasts","§8below will never forget."],color:1169881,Name:"§3§lElder Scales"}}'''
     ]
   ],
   [
@@ -3313,7 +3331,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Shimmering Wave''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:34s},{lvl:1s,id:70s}],HideFlags:2,display:{Lore:["§8King's Valley : §eRare","§cEphemereal Corridors","§8None can remember all lost beneath the waves.","§7","§7When in main hand:","§7 1.2 Attack Speed","§7 2 Attack Damage","§9 +7% Speed"],Name:"§9§lShimmering Wave"},AttributeModifiers:[{UUIDMost:-4761154948318345564l,UUIDLeast:-7224472869249880999l,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-19440140102777687l,UUIDLeast:-7366782564164377860l,Amount:1.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:780205686961490279l,UUIDLeast:-7471059635921067285l,Amount:0.07d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:32s},{lvl:1s,id:34s},{lvl:1s,id:70s}],HideFlags:2,display:{Lore:["§8King's Valley : §eRare","§cEphemeral Corridors","§8None can remember all lost beneath the waves.","§7","§7When in main hand:","§7 1.2 Attack Speed","§7 2 Attack Damage","§9 +7% Speed"],Name:"§9§lShimmering Wave"},AttributeModifiers:[{UUIDMost:-4761154948318345564l,UUIDLeast:-7224472869249880999l,Amount:-2.8d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:-19440140102777687l,UUIDLeast:-7366782564164377860l,Amount:1.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:780205686961490279l,UUIDLeast:-7471059635921067285l,Amount:0.07d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
     ]
   ],
   [
@@ -3724,10 +3742,28 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   [
     {
       'id':'minecraft:skull',
+      'name':u'''C'Axtal's Decayed Mask''',
+    },
+    [
+      'nbt', 'replace', ur'''{ench:[{lvl:4s,id:4s},{lvl:2s,id:5s}],SkullOwner:{Id:"05b9f5c4-fb70-40cd-a2c2-628bcd40e0e7",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWE2MzE0ZWFjMzQ0MTZjZTEwYWIyMmMyZTFjNGRjYjQ3MmEzZmViOThkNGUwNGQzZmJiYjg1YTlhNDcxYjE4In19fQ=="}]}},display:{Lore:["§8King's Valley : §4Artifact","§8The Soulspeaker betrayed the jungle,","§8so the jungle demanded loyalty."],Name:"§4§lC'Axtal's Decayed Mask"},AttributeModifiers:[{UUIDMost:-945277440611236711l,UUIDLeast:-5271032316072729819l,Amount:0.15d,Slot:"head",AttributeName:"generic.attackDamage",Operation:1,Name:"Modifier"}]}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
       'name':u'''C'Axtal's Corrupted Mask''',
     },
     [
-      'nbt', 'replace', ur'''{SkullOwner:{Id:"05b9f5c4-fb70-40cd-a2c2-628bcd40e0e7",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWE2MzE0ZWFjMzQ0MTZjZTEwYWIyMmMyZTFjNGRjYjQ3MmEzZmViOThkNGUwNGQzZmJiYjg1YTlhNDcxYjE4In19fQ=="}]}},display:{Lore:["§7Hope","§8The mask is overrun by the jungle's wrath."],Name:"§4§lC'Axtal's Corrupted Mask"}}'''
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"05b9f5c4-fb70-40cd-a2c2-628bcd40e0e7",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWE2MzE0ZWFjMzQ0MTZjZTEwYWIyMmMyZTFjNGRjYjQ3MmEzZmViOThkNGUwNGQzZmJiYjg1YTlhNDcxYjE4In19fQ=="}]}},display:{Lore:["§7Hope","§8King's Valley : §4Artifact","§8The mask is overrun by the jungle's wrath."],Name:"§4§lC'Axtal's Corrupted Mask"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:leather_boots',
+      'name':u'''Runner's Boots''',
+    },
+    [
+      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:3s}],display:{Lore:["§bLeather Armor","* Unique Item *"],Name:"§9§lRunner's Boots"},AttributeModifiers:[{UUIDMost:-5185967407378314082l,UUIDLeast:-7187134603101492151l,Amount:0.05d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-185716126693898375l,UUIDLeast:-9131684138411499279l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
     ]
   ],
   [
@@ -3737,6 +3773,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
     },
     [
       'nbt', 'replace', ur'''{ench:[{lvl:1s,id:16s},{lvl:1s,id:32s},{lvl:1s,id:34s}],display:{Lore:["§8King's Valley : §5Unique"],Name:"§b§lScalawag's Hatchet"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Fishing Trophy''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"9ab07d41-5d45-4081-8d7d-e50476421f38",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzQ5MzEzMDUzN2ZjNGQzNThjZGIzODdjOWRiMDgwODg4NDZiOGJlNTRmMWMxMWMyNTZhMzdlYjRjNjM4YzAifX19"}]}},display:{Lore:["§fAn inscription says:","§7'Early to bed, early to rise,","§7Fish like hell and make up lies'"],Name:"§6§lFishing Trophy"}}'''
     ]
   ],
   [
