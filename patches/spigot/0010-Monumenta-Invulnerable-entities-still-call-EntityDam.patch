@@ -51,7 +51,7 @@ index ee2d1f9a..f1ccd5ee 100644
 +				modifiers.put(DamageModifier.BASE, (double)f);
 +				modifierFunctions.put(DamageModifier.BASE, ZERO);
 +
-+				CraftEventFactory.callEntityDamageEvent(damagesource.getEntity(), this, DamageCause.CUSTOM, modifiers, modifierFunctions);
++				CraftEventFactory.callEntityDamageEvent(damagesource.getEntity(), this, DamageCause.ENTITY_ATTACK, modifiers, modifierFunctions);
 +			}
 +       } else {
              final boolean human = this instanceof EntityHuman;
