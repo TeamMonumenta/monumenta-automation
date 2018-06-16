@@ -490,10 +490,6 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             ]
 
         self._commands += [
-            self.display("Preserving luckperms data..."),
-            self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/POST_RESET/server_config/plugins/LuckPerms/yaml-storage"),
-            self.run("mv {0}/PRE_RESET/{1} {0}/POST_RESET/{1}".format(resetdir, "server_config/plugins/LuckPerms/yaml-storage")),
-
             self.display("Removing pre-reset server_config..."),
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/PRE_RESET/server_config"),
 
