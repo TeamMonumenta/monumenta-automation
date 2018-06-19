@@ -242,10 +242,10 @@ config = {
         {"name":"Haunted House Quest", "type":"AdventureZone", "pos1":"1000 7 72", "pos2":"1042 38 108"},
         {"name":"Lost In My Mind - Bunker", "type":"AdventureZone", "pos1":"572 93 243", "pos2":"582 111 262"},
 
-        {"name":"Starrier Night - Gaius Tower", "type":"AdventureZone", "pos1":"-101 115 71", "pos2":"-118 70 88"},
-        {"name":"Starrier Night - Lowtide Montana", "type":"SafeZone", "pos1":"735 120 420", "pos2":"721 101 413"},
+        {"name":"Starrier Night - Gaius Tower", "type":"AdventureZone", "pos1":"-99 115 69", "pos2":"-120 70 93"},
+        {"name":"Starrier Night - Lowtide Montana", "type":"SafeZone", "pos1":"739 121 433", "pos2":"717 97 409"},
         {"name":"Starrier Night - Fishing Huts Bunker", "type":"AdventureZone", "pos1":"-408 43 -15", "pos2":"-384 28 9"},
-        {"name":"Starrier Night - Fishing Hut Bunker Entrance", "type":"AdventureZone", "pos1":"-392 84 1", "pos2":"-400 87 9"},
+        {"name":"Starrier Night - Fishing Hut Bunker Entrance", "type":"AdventureZone", "pos1":"-401 80 -8", "pos2":"-391 90 4"},
 
         {"name":"post-monument Sage Draiikali", "type":"AdventureZone", "pos1":"1220 0 -126", "pos2":"1242 255 -103"},
         {"name":"Farr race", "type":"AdventureZone", "pos1":"1036 99 -119", "pos2":"1051 112 -105"}
