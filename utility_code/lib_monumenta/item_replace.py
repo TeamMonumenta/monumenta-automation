@@ -15,7 +15,7 @@ from pymclevel import nbt
 
 from lib_monumenta.iter_entity import IterEntities
 
-soulboundPrefix = u'Soulbound to '
+soulboundPrefix = u'* Soulbound to '
 replicaText = u'§5§o* Replica Item *'
 hopeText = u'§7Hope'
 infusedByPrefix = u'Infused by '
