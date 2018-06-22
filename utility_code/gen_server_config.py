@@ -365,7 +365,13 @@ config = {
         {"name":"Diamond Platform", "type":"AdventureZone", "pos1":"-1002 69 -1483", "pos2":"-1032 57 -1456"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + advancements_disabled + coreprotect + easywarp + luckperms + openinv + socket4mc + worldedit + venturechat + [
+            ('plugins/Monumenta-Plugins.jar', '/home/epic/mob_shard_plugins/Monumenta-Plugins.jar'),
+            ('plugins/Monumenta_BossFights.jar', '/home/epic/mob_shard_plugins/Monumenta_BossFights.jar'),
+            ('plugins/ScriptedQuests.jar', '/home/epic/mob_shard_plugins/ScriptedQuests.jar'),
+            ('plugins/EpicStructureManagement.jar', '/home/epic/mob_shard_plugins/EpicStructureManagement.jar'),
+            ('plugins/Monumenta_Speedruns.jar', '/home/epic/mob_shard_plugins/Monumenta_Speedruns.jar'),
+        ]
     },
 
     'r1plots':{
