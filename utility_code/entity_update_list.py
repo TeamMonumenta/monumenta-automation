@@ -36,7 +36,7 @@ KingsValleyImmovable = entity_update.UpdateEntities([],[
             "tag":[u"!Mariya"],
         },
         [
-            "nbt", "update", ur'''{Team:"IMMOVABLE_NPCS"}''',
+            "tag", [u"IMMOVABLE_NPCS"],
         ]
     ],
 ])
@@ -46,31 +46,38 @@ KingsValleyImmovable = entity_update.UpdateEntities([],[
 # run this library as a script and skip the other stuff.
 #KingsValleyBuild = entity_update.UpdateEntities(["init"],[
 KingsValleyBuild = entity_update.UpdateEntities([],[
-    [
+    [ # Data types are less strict when comparing with our code, but be careful of tags that are (or should be!) missing in spawners; Pos, Motion, Rotation, UUID, anything with Spigot/Bukkit, WorldUUID, Fire, OnGround, etc. Basically just take out everything that isn't needed.
         {
-            "id":"minecraft:skeleton",
-            "name":"Buried Remains",
+            "id":"minecraft:zombie",
+            "nbt":ur'''{Health:15.0f,CustomName:"Mansion Wraith"}''',
         },
         [
-            "nbt", "replace", ur'''{CustomName:"Buried Remains",Passengers:[{Potion:{id:"minecraft:splash_potion",Count:1b,tag:{CustomPotionColor:12566463,CustomPotionEffects:[{Duration:1,Id:7b,Amplifier:0b}],Potion:"minecraft:harming"}},id:"minecraft:potion"}],Health:15.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:11579568}}},{},{},{}],Attributes:[{Base:15,Name:"generic.maxHealth"},{Base:24,Name:"generic.followRange"},{Base:0.15d,Name:"generic.knockbackResistance"},{Base:3,Name:"generic.attackDamage"}],id:"minecraft:skeleton",CustomNameVisible:0b,HandItems:[{id:"minecraft:bone",Count:1b},{id:"minecraft:bone",Count:1b}]}''',
+            "name", "set", ur"Soulleather Banshee",
+        ]
+    ],
+    [ # TODO needs fix; will delete other attributes because attributes are stored as a list!
+        {
+            "name":"Mansion Wraith"
+        },
+        [
+            "nbt", "update", ur'''{Attributes:[{Base:20.0d,Name:"generic.maxHealth"},{Base:1.0d,Name:"generic.knockbackResistance"},{Base:0.24d,Name:"generic.movementSpeed"},{Base:2.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:35.0d,Name:"generic.followRange"},{Base:3.0d,Name:"generic.attackDamage"}],Health:20.0f}''',
+        ]
+    ],
+    [ # TODO double check data types when setting here; NBT will break if the types are set wrong (ie attributes need to be type Double {0.0d})
+        {
+            "name":"Animated Potions"
+        },
+        [
+            "id", "minecraft:creeper",
+            "nbt", "replace", ur'''{CustomName:"Animated Potions",Health:15f,ExplosionRadius:0b,Fuse:30s,Tags:["boss_invisible"],Passengers:[{id:"minecraft:potion",Passengers:[{id:"minecraft:potion",Passengers:[{id:"minecraft:potion",Passengers:[{id:"minecraft:potion",Potion:{id:"minecraft:splash_potion",Count:1b,tag:{Potion:"minecraft:water",CustomPotionColor:3684408,CustomPotionEffects:[{Id:7b,Amplifier:2b,Duration:20}]}}}],Potion:{id:"minecraft:splash_potion",Count:1b,tag:{Potion:"minecraft:water",CustomPotionColor:6381921,CustomPotionEffects:[{Id:18b,Amplifier:0b,Duration:600}]}}}],Potion:{id:"minecraft:splash_potion",Count:1b,tag:{Potion:"minecraft:water",CustomPotionColor:10066329,CustomPotionEffects:[{Id:2b,Amplifier:1b,Duration:600}]}}}],Potion:{id:"minecraft:splash_potion",Count:1b,tag:{Potion:"minecraft:water",CustomPotionColor:13092807,CustomPotionEffects:[{Id:15b,Amplifier:0b,Duration:100}]}}}],Attributes:[{Name:generic.maxHealth,Base:15d},{Name:generic.movementSpeed,Base:0.33d}]}''',
         ]
     ],
     [
         {
-            "id":"minecraft:creeper",
-            "nbt":ur'''{Fuse:20,Attributes:[{Base:0.26d,Name:"generic.movementSpeed"}],id:"minecraft:creeper"}'''
+            "name":"Tidal Terror",
         },
         [
-            "name", "set", ur"Foul Creeper",
-        ]
-    ],
-    [
-        {
-            "id":"minecraft:creeper",
-            "nbt":ur'''{powered:1,Health:20.0f,Attributes:[{Base:20,Name:"generic.maxHealth"}],id:"minecraft:creeper"}'''
-        },
-        [
-            "name", "set", ur"Charged Creeper",
+            "nbt", "update", ur'''{Fuse:35s}''',
         ]
     ],
     # Save these for last; don't want to forget to handle Elites properly, do we?
