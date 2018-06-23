@@ -3763,7 +3763,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Runner's Boots''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:3s}],display:{Lore:["§bLeather Armor","* Unique Item *"],Name:"§9§lRunner's Boots"},AttributeModifiers:[{UUIDMost:-5185967407378314082l,UUIDLeast:-7187134603101492151l,Amount:0.05d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-185716126693898375l,UUIDLeast:-9131684138411499279l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:34s},{lvl:1s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : §5Unique"],Name:"§9§lRunner's Boots"},AttributeModifiers:[{UUIDMost:-5185967407378314082l,UUIDLeast:-7187134603101492151l,Amount:0.05d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"},{UUIDMost:-185716126693898375l,UUIDLeast:-9131684138411499279l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
     ]
   ],
   [
@@ -4079,6 +4079,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
     },
     [
       'nbt', 'replace', ur'''{ench:[{lvl:2s,id:16s},{lvl:3s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s},{lvl:3s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Uncommon","§8","§7When in main hand:","§7 2 Attack Speed","§7 4.5 Attack Damage","§c -1 Armor"],Name:"§4§lBlighted Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-6247475251793607498l,UUIDLeast:-7993135500588112887l,Amount:-1.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:record_wait',
+      'name':u'''Lofi Hip Hop Radio 24/7 Chill Gaming / Study Beats''',
+    },
+    [
+      'nbt', 'replace', ur'''{HideFlags:63,display:{Lore:["§7INTRNTR - Copyrighted Music","§8King's Valley : Uncommon","§8It has a picture of an anime girl","§8on it. All she does is study..."],Name:"§d§lLofi Hip Hop Radio 24/7 Chill Gaming / Study Beats"}}'''
     ]
   ],
   [
