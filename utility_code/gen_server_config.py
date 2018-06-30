@@ -252,6 +252,11 @@ config = {
         {"name":"Starrier Night - Fishing Huts Bunker", "type":"AdventureZone", "pos1":"-408 43 -15", "pos2":"-384 28 9"},
         {"name":"Starrier Night - Fishing Hut Bunker Entrance", "type":"AdventureZone", "pos1":"-401 80 -8", "pos2":"-391 90 4"},
 
+        {"name":"Nelfine 2 - New Lab", "type":"AdventureZone", "pos1":"813 54 -243", "pos2":"767 8 -135"},
+        {"name":"Nelfine 2 - Destroyed Lab", "type":"AdventureZone", "pos1":"323 63 426", "pos2":"393 115 499"},
+        {"name":"Nelfine 2 - Arian Office Replica", "type":"AdventureZone", "pos1":"1248 156 -120", "pos2":"1266 132 -98"},
+        {"name":"Nelfine 2 - Old Farr", "type":"AdventureZone", "pos1":"892 256 415", "pos2":"771 172 541"},
+
         {"name":"Orange Quest 1", "type":"AdventureZone", "pos1":"315 125 -239", "pos2":"343 102 -202"},
         {"name":"Orange Quest 2", "type":"AdventureZone", "pos1":"350 81 -137", "pos2":"376 66 -104"},
 
