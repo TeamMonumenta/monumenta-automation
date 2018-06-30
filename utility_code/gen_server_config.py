@@ -158,6 +158,11 @@ venturechat = [
         ('plugins/VentureChat/config.yml', '../../../server_config/plugins/VentureChat/{}/config.yml'.format(SERVER_TYPE)),
     ]
 
+nicky = [
+        ('plugins/Nicky.jar', '../../server_config/plugins/Nicky.jar'),
+        ('plugins/Nicky', '../../server_config/plugins/Nicky'),
+    ]
+
 # Index of nodes:
 #   server_config
 #   advancements_disabled
@@ -589,7 +594,7 @@ else:
 
     # Player analytics plugin only for play server
     for key in config:
-        config[key]['linked'] = config[key]['linked'] + plan
+        config[key]['linked'] = config[key]['linked'] + plan + nicky
 
 def gen_server_config(servername):
     if not(servername in config):
