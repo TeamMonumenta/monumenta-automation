@@ -59,7 +59,7 @@ class ShellAction(object):
         # Implementor should populate these fields:
         #self._commands = []
 
-    async def hasPermissions(self, member):
+    async def hasPermissions(self, author):
         raise NotImplementedError("Implement Me")
 
     alwaysListening = False
@@ -117,12 +117,12 @@ class ShellAction(object):
         await self._client.send_message(self._channel, debuginfo)
 
     async def mention(self):
-        await self._client.send_message(self._channel, self._member.mention)
+        await self._client.send_message(self._channel, self._author.mention)
 
-    async def doActions(self, client, channel, member):
+    async def doActions(self, client, channel, author):
         self._client = client
         self._channel = channel
-        self._member = member
+        self._author = author
 
         if self._lock:
             await self.display('Error: action ' + self.command + ' is already being performed')
