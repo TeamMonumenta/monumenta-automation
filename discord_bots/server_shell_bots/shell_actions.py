@@ -29,6 +29,8 @@ privUsers = {
 groupByRole = {
     # Bot Moderator (TE)
     "464571038613766146": "@moderator",
+    # Bot Skill Info (TE)
+    "464598658449670145": "+skill info",
 }
 
 permissionGroups = {
@@ -412,6 +414,19 @@ Syntax:
             self.run("{cmd} {pid} {arg} &".format(cmd=shellCommand,pid=botConfig["main_pid"],arg=commandArgs)),
         ]
 allActions.append(RestartBotAction)
+
+class SkillInfoAction(ShellAction):
+    '''Print out skill info; used to update the public Google spreadsheet.
+This will be updated to use the Google Sheets API at some point so it won't need to be updated manually.'''
+    command = "skill info"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        self._commands = [
+            self.run("/home/tim/github/TeamEpic/MCEdit-And-Automation/utility_code/skill_info.py", displayOutput=True),
+        ]
+allActions.append(SkillInfoAction)
 
 class StartShardAction(ShellAction):
     '''Start specified shards.
