@@ -257,8 +257,10 @@ config = {
         {"name":"Nelfine 2 - Arian Office Replica", "type":"AdventureZone", "pos1":"1248 156 -120", "pos2":"1266 132 -98"},
         {"name":"Nelfine 2 - Old Farr", "type":"AdventureZone", "pos1":"892 256 415", "pos2":"771 172 541"},
 
-        {"name":"Orange Quest 1", "type":"AdventureZone", "pos1":"315 125 -239", "pos2":"343 102 -202"},
-        {"name":"Orange Quest 2", "type":"AdventureZone", "pos1":"350 81 -137", "pos2":"376 66 -104"},
+        {"name":"Orange Quest Entrance Locked", "type":"AdventureZone", "pos1":"315 125 -239", "pos2":"343 102 -202"},
+        {"name":"Orange Quest Entrance Outside", "type":"AdventureZone", "pos1":"350 81 -137", "pos2":"376 66 -104"},
+        {"name":"Orange Quest Crypt", "type":"SafeZone", "pos1":"297 28 1598", "pos2":"463 191 1821"},
+        {"name":"Orange Quest Arena", "type":"AdventureZone", "pos1":"353 65 1538", "pos2":"425 127 1597"},
 
         {"name":"post-monument Sage Draiikali", "type":"AdventureZone", "pos1":"1220 0 -126", "pos2":"1242 255 -103"},
         {"name":"Farr race", "type":"AdventureZone", "pos1":"1036 99 -119", "pos2":"1051 112 -105"}
