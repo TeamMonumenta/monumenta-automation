@@ -37,19 +37,19 @@ permissionGroups = {
         "-testunpriv",
     ],
     "@moderator": [
-        "debug",
-        "test",
-        "testpriv",
-        "help",
-        "list bots",
-        "select",
-        "list shards",
-        "start shard",
-        "whitelist",
+        "+debug",
+        "+test",
+        "+testpriv",
+        "+help",
+        "+list bots",
+        "+select",
+        "+list shards",
+        "+start shard",
+        "+whitelist",
     ],
     "@everyone": [
-        "debug",
-        "help",
+        "+debug",
+        "+help",
     ],
     "@restricted": [
         "-*",
@@ -59,17 +59,22 @@ permissionGroups = {
 def checkPermissions(selfAct,author):
     result = False
     target = selfAct.command
-    
+
     userInfo = privUsers.get( author.id, {"rights":["@everyone"]} )
     # This is a copy, not a reference
     userRights = list(userInfo.get("rights",["@everyone"]))
+    alreadyChecked = set()
     for role in author.roles:
-        userRights = groupByRole.get(role.id,[]) + userRights
+        permGroupName = groupByRole.get(role.id,None)
+        if permGroupName is not None:
+            userRights = [permGroupName] + userRights
     while len(userRights) > 0:
         perm = userRights.pop(0)
         if perm[0] == "@":
             # Permission group
-            userRights = permissionGroups[perm[1:]] + userRights
+            if perm not in alreadyChecked:
+                alreadyChecked.add(perm)
+                userRights = permissionGroups[perm] + userRights
             continue
         givenPerm = ( perm[0] == "+" )
         if (
@@ -95,25 +100,36 @@ class DebugAction(ShellAction):
         self._channel = channel
         self._author = author
 
-        message = "Your user ID is: " + author.id + "\nYour roles are:"
+        message = "Your user ID is: " + author.id + "\n\nYour roles are:"
         for role in author.roles:
             message += "\n`" + role.name + "`: " + role.id
 
-        userInfo = privUsers.get( author.id, {} )
-        userRights = userInfo.get("rights",["None"])
-        message += "Your access rights are:\n```\n"
-        roleStack = [ {"index":0,"rights":userRights} ]
-        while len(roleStack) > 0:
-            depth = len(roleStack)
-            role = roleStack[depth-1]
-            if role["index"] == len(role["rights"]):
-                roleStack.pop()
+        message += "\n\nYour access rights are:\n```\n"
+        userInfo = privUsers.get( author.id, {"rights":["@everyone"]} )
+        userRights = userInfo.get("rights",["@everyone"])
+
+        for role in author.roles:
+            permGroupName = groupByRole.get(role.id,None)
+            if permGroupName is not None:
+                userRights = [permGroupName] + userRights
+
+        groupStack = [ {"index":0,"rights":userRights} ]
+        alreadyChecked = set()
+        while len(groupStack) > 0:
+            depth = len(groupStack)
+            group = groupStack[depth-1]
+            if group["index"] == len(group["rights"]):
+                groupStack.pop()
                 continue
-            aRight = role["rights"][ role["index"] ]
-            role["index"] += 1
+            aRight = group["rights"][ group["index"] ]
+            group["index"] += 1
             message += "  "*depth + aRight + "\n"
-            if aRight[0] == "@":
-                roleStack.append({"index":0,"rights":permissionGroups[aRight]})
+            if (
+                aRight[0] == "@" and
+                aRight not in alreadyChecked
+            ):
+                alreadyChecked.add(aRight)
+                groupStack.append({"index":0,"rights":permissionGroups[aRight]})
         message += "```"
 
         await self.display(message),
@@ -176,7 +192,7 @@ class HelpAction(ShellAction):
                     actionClass.alwaysListening
                 ):
                     continue
-                if actionClass.hasPermissions(None,message.author):
+                if actionClass.hasPermissions(actionClass,message.author):
                     helptext += "\n**" + commandPrefix + actionClass.command + "**"
                 else:
                     helptext += "\n~~" + commandPrefix + actionClass.command + "~~"
@@ -194,11 +210,11 @@ class HelpAction(ShellAction):
                     actionClass.alwaysListening
                 ):
                     continue
-                if actionClass.hasPermissions(None,message.author):
+                if actionClass.hasPermissions(actionClass,message.author):
                     helptext += "\n**" + commandPrefix + actionClass.command + "**"
                 else:
                     helptext += "\n~~" + commandPrefix + actionClass.command + "~~"
-                helptext += "```" + actionClass.__doc__.replace('{cmdPrefix}'},commandPrefix) + "```"
+                helptext += "```" + actionClass.__doc__.replace('{cmdPrefix}',commandPrefix) + "```"
         self._commands = [
             self.display(helptext),
         ]
