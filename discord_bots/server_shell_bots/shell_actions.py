@@ -653,7 +653,7 @@ Also useful for the stage server, which needs to be started from a working backu
             self._commands = errorCommands
         elif commandArgs[0] == 'list':
             self._commands = [
-                self.cd("/home/rock/4_SHARED/")
+                self.cd("/home/rock/4_SHARED/"),
                 self.run("ls project_epic_pre_reset_{server}_* | sed 's/project_epic_pre_reset_{server}_//' | sed 's/.tgz//'".replace('{server}',playName), displayOutput=True),
             ]
         elif commandArgs[0] == 'restore':
@@ -661,7 +661,7 @@ Also useful for the stage server, which needs to be started from a working backu
                 self._commands = errorCommands
             else:
                 self._commands = [
-                    self.cd("/home/rock/")
+                    self.cd("/home/rock/"),
                     self.run("rm -rf /home/rock/project_epic"),
                     self.run("tar xzf 4_SHARED/project_epic_pre_reset_{server}_{file}.tgz".replace('{server}',playName).replace('{file}',commandArgs[1])),
                     self.display("Restored {file}".replace('{file}',commandArgs[1])),
