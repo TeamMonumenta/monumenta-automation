@@ -183,7 +183,7 @@ class HelpAction(ShellAction):
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(self.command)+1:].split()
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
         # any -v style arguments should go here
         targetCommand = " ".join(commandArgs)
         if len(commandArgs) == 0:
@@ -407,7 +407,7 @@ Syntax:
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        commandArgs = message.content[len(self.command)+1:]
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
         # TODO Should be made relative to the bot directory
         shellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/restart_bot.sh"
         self._commands = [
@@ -424,9 +424,47 @@ This will be updated to use the Google Sheets API at some point so it won't need
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
-            self.run("/home/tim/github/TeamEpic/MCEdit-And-Automation/utility_code/skill_info.py", displayOutput=True),
+            self.run("/home/rock/MCEdit-And-Automation/utility_code/skill_info.py", displayOutput=True),
         ]
 allActions.append(SkillInfoAction)
+
+class TerrainResetRecoveryAction(ShellAction):
+    '''Used to list and restore pre-terrain reset backups in case something goes wrong.
+Also useful for the stage server, which needs to be started from a working backup.'''
+    command = "terrain reset recovery"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
+        errorCommands = [
+            self.display('''Syntax:
+```
+{cmdPrefix}terrain reset recovery list
+{cmdPrefix}terrain reset recovery restore <file>
+```'''.replace('{cmdPrefix}',cmdPrefix)),
+        ]
+        botName = botConfig["name"]
+        playName = botName.replace("stage","play")
+        if len(commandArgs) == 0:
+            self._commands = errorCommands
+        elif commandArgs[0] == 'list':
+            self._commands = [
+                self.cd("/home/rock/4_SHARED/") # TODO HERE
+                self.run("ls project_epic_pre_reset_{server}_* | sed 's/project_epic_pre_reset_{server}_//' | sed 's/.tgz//'".replace('{server}',playName), displayOutput=True),
+            ]
+        elif commandArgs[0] == 'restore':
+            if len(commandArgs) < 2:
+                self._commands = errorCommands
+            else:
+                self._commands = [
+                    self.cd("/home/rock/")
+                    self.run("tar xzf 4_SHARED/project_epic_pre_reset_{server}_{file}.tgz".replace('{server}',playName).replace('{file}',commandArgs[1])),
+                    self.display("Restored {file}".replace('{file}',commandArgs[1])),
+                ]
+        else:
+            self._commands = errorCommands
+allActions.append(TerrainResetRecoveryAction)
 
 class StartShardAction(ShellAction):
     '''Start specified shards.
@@ -438,7 +476,7 @@ Syntax:
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(self.command)+1:]
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
 
         # TODO Should be made relative to the bot directory
         baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_shards.sh"
@@ -641,7 +679,7 @@ class WhitelistAction(ShellAction):
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(self.command)+1:]
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
 
         enableString = "enable"
         disableString = "disable"

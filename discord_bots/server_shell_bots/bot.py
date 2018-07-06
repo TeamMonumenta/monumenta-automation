@@ -66,8 +66,11 @@ for arg in sys.argv[1:]:
         botConfig["extraDebug"] = True
 
 # List of channels this bot will consume messages in
-# monumenta-bot and general
-botChannels = ['420045459177078795', '186225508562763776']
+
+botChannels = [
+    '420045459177078795', # monumenta-bot
+    #'186225508562763776', # general
+]
 
 client = discord.Client()
 
