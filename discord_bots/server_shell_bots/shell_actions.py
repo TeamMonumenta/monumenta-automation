@@ -407,7 +407,7 @@ Syntax:
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
+        commandArgs = message.content[len(commandPrefix + self.command)+1:]
         # TODO Should be made relative to the bot directory
         shellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/restart_bot.sh"
         self._commands = [
@@ -438,7 +438,7 @@ Syntax:
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
+        commandArgs = message.content[len(commandPrefix + self.command)+1:]
 
         # TODO Should be made relative to the bot directory
         baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_shards.sh"
@@ -680,7 +680,7 @@ class WhitelistAction(ShellAction):
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
+        commandArgs = message.content[len(commandPrefix + self.command)+1:]
 
         enableString = "enable"
         disableString = "disable"
