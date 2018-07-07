@@ -3304,7 +3304,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Yurei''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:10s}],HideFlags:1,display:{Lore:["§8King's Valley : §eRare","§cEphemeral Corridors","§8Though faint, some memories","§8cling on forever."],Name:"§f§lYurei"},AttributeModifiers:[{UUIDMost:-1987815169135654068l,UUIDLeast:-6982392386500172265l,Amount:4.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:4446494267199997087l,UUIDLeast:-7462324322213207688l,Amount:0.1d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:10s}],HideFlags:1,display:{Lore:["§8King's Valley : §eRare","§cEphemeral Corridors","§8Though faint, some memories","§8cling on forever."],Name:"§f§lYurei"},AttributeModifiers:[{UUIDMost:-1987815169135654068l,UUIDLeast:-6982392386500172265l,Amount:4.0d,Slot:"offhand",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"},{UUIDMost:4446494267199997087l,UUIDLeast:-7462324322213207688l,Amount:0.12d,Slot:"offhand",AttributeName:"generic.attackSpeed",Operation:1,Name:"Modifier"}]}'''
     ]
   ],
   [
