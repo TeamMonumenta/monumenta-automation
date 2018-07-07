@@ -259,7 +259,8 @@ config = {
 
         {"name":"Orange Quest Entrance Locked", "type":"AdventureZone", "pos1":"315 125 -239", "pos2":"343 102 -202"},
         {"name":"Orange Quest Entrance Outside", "type":"AdventureZone", "pos1":"350 81 -137", "pos2":"376 66 -104"},
-        {"name":"Orange Quest Crypt", "type":"AdventureZone", "pos1":"297 28 1598", "pos2":"463 191 1821"},
+        {"name":"Orange Quest Crypt", "type":"SafeZone", "pos1":"297 28 1598", "pos2":"427 191 1821"},
+        {"name":"Orange Quest Alchemy", "type":"AdventureZone", "pos1":"428 28 1598", "pos2":"463 191 1821"},
         {"name":"Orange Quest Arena", "type":"AdventureZone", "pos1":"353 65 1538", "pos2":"425 127 1597"},
 
         {"name":"post-monument Sage Draiikali", "type":"AdventureZone", "pos1":"1220 0 -126", "pos2":"1242 255 -103"},
