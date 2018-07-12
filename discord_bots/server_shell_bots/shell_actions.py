@@ -678,7 +678,7 @@ allActions.append(TerrainResetAction)
 
 class ViewScoresAction(ShellAction):
     '''View player scores on Region 1. Run without arguements for syntax.'''
-    command = "skill info"
+    command = "view scores"
     hasPermissions = checkPermissions
 
     def __init__(self, botConfig, message):
