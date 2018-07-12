@@ -683,12 +683,13 @@ class ViewScoresAction(ShellAction):
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split
-        cmdString = "/home/rock/MCEdit-And-Automation/utility_code/skill_info.py"
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
+        cmdString = "/home/rock/MCEdit-And-Automation/utility_code/view_scores.py"
         while len(commandArgs) > 0:
-            cmdString = cmdString + " '" + commandArgs.pop(0) + "'"
+            cmdString = cmdString + " " + commandArgs.pop(0)
         self._commands = [
             self.run(cmdString, displayOutput=True),
+            self.display("Done."),
         ]
 allActions.append(ViewScoresAction)
 
