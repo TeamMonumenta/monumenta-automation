@@ -428,6 +428,51 @@ This will be updated to use the Google Sheets API at some point so it won't need
         ]
 allActions.append(SkillInfoAction)
 
+class StageAction(ShellAction):
+    '''List and restore pre-terrain reset backups. Intended for use with
+the stage servers. NOT YET WORKING.
+
+Syntax:
+```
+{cmdPrefix}stage list
+{cmdPrefix}stage restore <file>
+```'''
+    command = "stage"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
+        usage = [
+            self.display('''Syntax:
+```
+{cmdPrefix}stage list
+{cmdPrefix}stage restore <file>
+```'''.replace('{cmdPrefix}',cmdPrefix)),
+        ]
+        botName = botConfig["name"]
+        playName = botName.replace("stage","play")
+        if len(commandArgs) == 0:
+            self._commands = usage
+        elif commandArgs[0] == 'list':
+            self._commands = [
+                self.cd("/home/rock/4_SHARED/"),
+                self.run("ls project_epic_pre_reset_{server}_* | sed 's/project_epic_pre_reset_{server}_//' | sed 's/.tgz//'".replace('{server}',playName), displayOutput=True),
+            ]
+        elif commandArgs[0] == 'restore':
+            if len(commandArgs) < 2:
+                self._commands = usage
+            else:
+                self._commands = [
+                    self.cd("/home/rock/"),
+                    self.run("rm -rf /home/rock/project_epic"),
+                    self.run("tar xzf 4_SHARED/project_epic_pre_reset_{server}_{file}.tgz".replace('{server}',playName).replace('{file}',commandArgs[1])),
+                    self.display("Restored {file}".replace('{file}',commandArgs[1])),
+                ]
+        else:
+            self._commands = usage
+allActions.append(StageAction)
+
 class StartShardAction(ShellAction):
     '''Start specified shards.
 Syntax:
@@ -631,50 +676,21 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         ]
 allActions.append(TerrainResetAction)
 
-class TerrainResetRecoveryAction(ShellAction):
-    '''Used to list and restore pre-terrain reset backups in case something goes wrong.
-Also useful for the stage server, which needs to be started from a working backup.
-
-Syntax:
-```
-{cmdPrefix}terrain reset recovery list
-{cmdPrefix}terrain reset recovery restore <file>
-```'''
-    command = "terrain reset recovery"
+class ViewScoresAction(ShellAction):
+    '''View player scores on Region 1. Run without arguements for syntax.'''
+    command = "skill info"
     hasPermissions = checkPermissions
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-        usage = [
-            self.display('''Syntax:
-```
-{cmdPrefix}terrain reset recovery list
-{cmdPrefix}terrain reset recovery restore <file>
-```'''.replace('{cmdPrefix}',cmdPrefix)),
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split
+        cmdString = "/home/rock/MCEdit-And-Automation/utility_code/skill_info.py"
+        while len(commandArgs) > 0:
+            cmdString = cmdString + " '" + commandArgs.pop(0) + "'"
+        self._commands = [
+            self.run(cmdString, displayOutput=True),
         ]
-        botName = botConfig["name"]
-        playName = botName.replace("stage","play")
-        if len(commandArgs) == 0:
-            self._commands = usage
-        elif commandArgs[0] == 'list':
-            self._commands = [
-                self.cd("/home/rock/4_SHARED/"),
-                self.run("ls project_epic_pre_reset_{server}_* | sed 's/project_epic_pre_reset_{server}_//' | sed 's/.tgz//'".replace('{server}',playName), displayOutput=True),
-            ]
-        elif commandArgs[0] == 'restore':
-            if len(commandArgs) < 2:
-                self._commands = usage
-            else:
-                self._commands = [
-                    self.cd("/home/rock/"),
-                    self.run("rm -rf /home/rock/project_epic"),
-                    self.run("tar xzf 4_SHARED/project_epic_pre_reset_{server}_{file}.tgz".replace('{server}',playName).replace('{file}',commandArgs[1])),
-                    self.display("Restored {file}".replace('{file}',commandArgs[1])),
-                ]
-        else:
-            self._commands = usage
-allActions.append(TerrainResetRecoveryAction)
+allActions.append(ViewScoresAction)
 
 class WhitelistAction(ShellAction):
     '''Control server whitelists

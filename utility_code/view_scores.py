@@ -1,19 +1,6 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
-
-import sys
-import ast
-from lib_monumenta.scoreboard import scoreboard
-
-sys.argv.pop(0)
-
-duplicatesOnly = False
-if sys.argv[0] == '-d':
-    duplicatesOnly = True
-    sys.argv.pop(0)
-
-if len(sys.argv) == 0:
-    print '''view scores [-d] Conditions [Order]
+'''view scores [-d] Conditions [Order]
 
   -d shows duplicate scores only (ie, same apartment)
 
@@ -38,6 +25,24 @@ Examples:
   Show duplicate apartment scores:
 view scores -d {"Objective":"Apartment","Score":{"min":1}} Objective Score Name
 '''
+
+import sys
+import ast
+from lib_monumenta.scoreboard import scoreboard
+
+sys.argv.pop(0)
+
+if len(sys.argv) == 0:
+    print __doc__
+    exit()
+
+duplicatesOnly = False
+if sys.argv[0] == '-d':
+    duplicatesOnly = True
+    sys.argv.pop(0)
+
+if len(sys.argv) == 0:
+    print __doc__
     exit()
 
 Conditions = ast.literal_eval(sys.argv[0])
@@ -114,7 +119,7 @@ for score in unsorted:
 # Header
 result = ""
 for i in range(4):
-    strFormat = '{^' + str( maxCharCounts[i] ) + '},'
+    strFormat = '{:^' + str( maxCharCounts[i] ) + '},'
     result += strFormat.format(Order[i])
 
 result += '\n'
@@ -122,19 +127,19 @@ result += '\n'
 # Table contents
 score = ['','','','']
 for keyA in sorted(scoreMap.keys()):
-    strFormat = '{' + alignment[0] + maxCharCounts[0] + '},\n'
+    strFormat = '{:' + alignment[0] + str( maxCharCounts[0] ) + '},'
     score[0] = strFormat.format(keyA)
     mapA = scoreMap[keyA]
     for keyB in sorted(mapA.keys()):
-        strFormat = '{' + alignment[1] + maxCharCounts[1] + '},\n'
+        strFormat = '{:' + alignment[1] + str( maxCharCounts[1] ) + '},'
         score[1] = strFormat.format(keyB)
         mapB = mapA[keyB]
         for keyC in sorted(mapB.keys()):
-            strFormat = '{' + alignment[2] + maxCharCounts[2] + '},\n'
+            strFormat = '{:' + alignment[2] + str( maxCharCounts[2] ) + '},'
             score[2] = strFormat.format(keyC)
             keyD = mapB[keyC]
 
-            strFormat = '{' + alignment[3] + maxCharCounts[3] + '},\n'
+            strFormat = '{:' + alignment[3] + str( maxCharCounts[3] ) + '},'
             score[3] = strFormat.format(keyD)
 
             result += ''.join(score) + '\n'
