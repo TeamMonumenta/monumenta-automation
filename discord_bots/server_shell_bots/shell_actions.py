@@ -633,14 +633,20 @@ allActions.append(TerrainResetAction)
 
 class TerrainResetRecoveryAction(ShellAction):
     '''Used to list and restore pre-terrain reset backups in case something goes wrong.
-Also useful for the stage server, which needs to be started from a working backup.'''
+Also useful for the stage server, which needs to be started from a working backup.
+
+Syntax:
+```
+{cmdPrefix}terrain reset recovery list
+{cmdPrefix}terrain reset recovery restore <file>
+```'''
     command = "terrain reset recovery"
     hasPermissions = checkPermissions
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-        errorCommands = [
+        usage = [
             self.display('''Syntax:
 ```
 {cmdPrefix}terrain reset recovery list
@@ -650,7 +656,7 @@ Also useful for the stage server, which needs to be started from a working backu
         botName = botConfig["name"]
         playName = botName.replace("stage","play")
         if len(commandArgs) == 0:
-            self._commands = errorCommands
+            self._commands = usage
         elif commandArgs[0] == 'list':
             self._commands = [
                 self.cd("/home/rock/4_SHARED/"),
@@ -658,7 +664,7 @@ Also useful for the stage server, which needs to be started from a working backu
             ]
         elif commandArgs[0] == 'restore':
             if len(commandArgs) < 2:
-                self._commands = errorCommands
+                self._commands = usage
             else:
                 self._commands = [
                     self.cd("/home/rock/"),
@@ -667,7 +673,7 @@ Also useful for the stage server, which needs to be started from a working backu
                     self.display("Restored {file}".replace('{file}',commandArgs[1])),
                 ]
         else:
-            self._commands = errorCommands
+            self._commands = usage
 allActions.append(TerrainResetRecoveryAction)
 
 class WhitelistAction(ShellAction):

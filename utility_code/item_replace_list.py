@@ -389,6 +389,37 @@ ArenaItems = item_replace.ReplaceItems([],[
     ],
 ])
 
+OrangeAlchemyItems = item_replace.ReplaceItems([],[
+    # Duplicate of what happens in the clear items function for this puzzle
+
+    [
+        {"any":[
+            {'id':'minecraft:potion','nbt':ur'''{Potion:"minecraft:awkward"}'''},
+            {'id':'minecraft:spider_eye','nbt':ur'''{display:{Name:"§fEye of the Beast"}}'''},
+            {'id':'minecraft:speckled_melon','nbt':ur'''{display:{Name:"§fSpeckled Melon Slice"}}'''},
+            {'id':'minecraft:rabbit_foot','nbt':ur'''{display:{Name:"§fJackal's Foot"}}'''},
+            {'id':'minecraft:gunpowder','nbt':ur'''{display:{Name:"§fPhoenix Ash"}}'''},
+            {'id':'minecraft:glass_bottle','nbt':ur'''{display:{Name:"§fAncient Water Jug"}}'''},
+            {'id':'minecraft:redstone','nbt':ur'''{display:{Name:"§fDemonic Dust"}}'''},
+            {'id':'minecraft:glowstone_dust','nbt':ur'''{display:{Name:"§fPixie Dust"}}'''},
+            {'id':'minecraft:potion','nbt':ur'''{Potion:"minecraft:leaping"}'''},
+            {'id':'minecraft:potion','nbt':ur'''{Potion:"minecraft:long_leaping"}'''},
+            {'id':'minecraft:potion','nbt':ur'''{Potion:"minecraft:strong_leaping"}'''},
+            {'id':'minecraft:splash_potion','nbt':ur'''{Potion:"minecraft:leaping"}'''},
+            {'id':'minecraft:splash_potion','nbt':ur'''{Potion:"minecraft:long_leaping"}'''},
+            {'id':'minecraft:splash_potion','nbt':ur'''{Potion:"minecraft:strong_leaping"}'''},
+            {'id':'minecraft:lingering_potion','nbt':ur'''{Potion:"minecraft:leaping"}'''},
+            {'id':'minecraft:lingering_potion','nbt':ur'''{Potion:"minecraft:long_leaping"}'''},
+            {'id':'minecraft:lingering_potion','nbt':ur'''{Potion:"minecraft:strong_leaping"}'''},
+        ]},
+        [
+            "id","minecraft:rotten_flesh",
+            "damage","=",0,
+            "nbt","replace",ur'''{ench:[{lvl:1s,id:71s}],display:{Name:"§cDecayed Item",Lore:["You had something","you shouldn't have,","didn't you?"]}}''',
+        ]
+    ],
+])
+
 KingsValleyDungeon = item_replace.ReplaceItems([],[
     # Remove all items
     ############################################################################
@@ -472,6 +503,7 @@ KingsValley = item_replace.ReplaceItems([],[
     ############################################################################
 
     KingsValleyDungeon,
+    OrangeAlchemyItems,
 
     [
         {"any":[
