@@ -31,6 +31,8 @@ groupByRole = {
     "464571038613766146": "@moderator",
     # Bot Skill Info (TE)
     "464598658449670145": "+skill info",
+    # Moderator (Public)
+    "313067199579422722": "+view scores",
 }
 
 permissionGroups = {
@@ -677,7 +679,9 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 allActions.append(TerrainResetAction)
 
 class ViewScoresAction(ShellAction):
-    '''View player scores on Region 1. Run without arguements for syntax.'''
+    '''View player scores on Region 1. Run without arguements for syntax.
+Note: the values from this command could be 15 minutes behind the play server.
+Do not use for debugging quests or other scores that are likely to change often.'''
     command = "view scores"
     hasPermissions = checkPermissions
 
