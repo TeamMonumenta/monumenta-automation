@@ -1630,7 +1630,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Cryptkeeper's Scythe''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:5s,id:16s},{lvl:2s,id:18s},{lvl:4s,id:34s}],HideFlags:2,display:{Lore:["§8King's Valley : §eRare","§6Rock's Little Casino","§7","§7When in main hand:","§7 2 Attack Speed","§7 6 Attack Damage","§7","§7When in off hand:","§9 +2 Armor","§9 +1 Attack Damage"],Name:"§8§lCryptkeeper's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-3549740715683920811l,UUIDLeast:-5007827127384468665l,Amount:2.0d,Slot:"offhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-309718873454917986l,UUIDLeast:-6703149036569285791l,Amount:1.0d,Slot:"offhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:6s,id:16s},{lvl:2s,id:18s},{lvl:4s,id:34s}],HideFlags:2,display:{Lore:["§8King's Valley : §eRare","§6Rock's Little Casino","§7","§7When in main hand:","§7 2 Attack Speed","§7 6.5 Attack Damage"],Name:"§8§lCryptkeeper's Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
     ]
   ],
   [
@@ -1693,7 +1693,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Brimstone Scythe''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:5s,id:16s},{lvl:4s,id:34s},{lvl:2s,id:19s},{lvl:5s,id:20s}],HideFlags:2,display:{Lore:["§8King's Valley : §eRare","§3King's Valley","","§7When in main hand:","§7 2 Attack Speed","§7 6 Attack Damage"],Name:"§4§lBrimstone Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:5s,id:16s},{lvl:4s,id:34s},{lvl:1s,id:19s},{lvl:5s,id:20s}],HideFlags:2,display:{Lore:["§8King's Valley : §eRare","§3King's Valley","","§7When in main hand:","§7 2 Attack Speed","§7 6 Attack Damage"],Name:"§4§lBrimstone Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
     ]
   ],
   [
@@ -2566,7 +2566,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Windborn Scythe''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:3s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier V","§8","§7When in main hand:","§7 2 Attack Speed","§7 5 Attack Damage","§l","§7When in off hand:","§9 +12% Speed"],Name:"§aWindborn Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:4741036782941654280l,UUIDLeast:-8811754788537177381l,Amount:0.12d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:3s,id:16s},{lvl:2s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§8King's Valley : Tier V","§8","§7When in main hand:","§7 2 Attack Speed","§7 5 Attack Damage","§9 +10% Speed"],Name:"§aWindborn Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:4741036782941654280l,UUIDLeast:-8811754788537177381l,Amount:0.1d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}'''
     ]
   ],
   [
@@ -3714,6 +3714,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
+      'id':'minecraft:quartz',
+      'name':u'''Adventurer's Crystal''',
+    },
+    [
+      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:51s}],HideFlags:1,display:{Lore:["§fA reward for conquering","§fan amplified location"],Name:"§6§lAdventurer's Crystal"}}'''
+    ]
+  ],
+  [
+    {
       'id':'minecraft:dragon_breath',
       'name':u'''Concentrated Experience''',
     },
@@ -4078,7 +4087,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Blighted Scythe''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:16s},{lvl:3s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s},{lvl:3s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Uncommon","§8","§7When in main hand:","§7 2 Attack Speed","§7 4.5 Attack Damage","§c -1 Armor"],Name:"§4§lBlighted Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-6247475251793607498l,UUIDLeast:-7993135500588112887l,Amount:-1.0d,Slot:"mainhand",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:3s,id:16s},{lvl:2s,id:34s},{lvl:1s,id:19s},{lvl:1s,id:20s},{lvl:3s,id:21s}],HideFlags:2,display:{Lore:["§8King's Valley : Uncommon","§8","§7When in main hand:","§7 2 Attack Speed","§7 5 Attack Damage"],Name:"§4§lBlighted Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
     ]
   ],
   [
@@ -4106,6 +4115,15 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
     },
     [
       'nbt', 'replace', ur'''{display:{Lore:["§7Stylish","§9Cloth Armor","§7Emits smoke particles when worn"],color:1048592,Name:"§7Stylish Black Shirt"},AttributeModifiers:[{UUIDMost:456904653548765814l,UUIDLeast:-4616658641294366570l,Amount:1.5d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Bread Plushie''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"5384d228-671d-4e0c-aa72-d4331835efb2",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTE5OTdkYTY0MDQzYjI4NDgyMjExNTY0M2E2NTRmZGM0ZThhNzIyNjY2NGI0OGE0ZTFkYmI1NTdiNWMwZmUxNCJ9fX0="}]}},display:{Name:"§fBread Plushie"}}'''
     ]
   ],
   [
@@ -4151,6 +4169,159 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
     },
     [
       'nbt', 'replace', ur'''{ench:[{lvl:3s,id:17s},{lvl:3s,id:34s},{lvl:2s,id:19s}],HideFlags:2,display:{Lore:["§8King's Valley : §5Unique","§8","§7When in main hand:","§7 2 Attack Speed","§7 3 Attack Damage"],Name:"§d§lHighland Scythe"},AttributeModifiers:[{UUIDMost:6433490404641818817l,UUIDLeast:-8593178968434576189l,Amount:-2.0d,Slot:"mainhand",AttributeName:"generic.attackSpeed",Operation:0,Name:"Modifier"},{UUIDMost:3288944914052894654l,UUIDLeast:-5839775210248136997l,Amount:2.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Bandit Leader Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:4s}],SkullOwner:{Id:"56a75ceb-3e56-4e35-9921-22cd0fd80ad1",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWRmMzU4NjlhMDcwZjE3YzEzZmU1YjgxYjlkODVjNjgzM2FjNmFiOTdiZjFkZjNjOGViZjY4YmZhNzM3YzQifX19"}]}},display:{Name:"Bandit Leader Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Bandit''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"f778d9a1-3995-4be4-8853-d2c788e94230",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE4YjkyOTM4MWFiNWZiZWIwY2NiNzFkM2ZjYjhlMzk2MzJlMjUyZmI1NDQxNzFiYzBlNTc3YmMwYjFkIn19fQ=="}]}},display:{Name:"Bandit"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:stained_glass',
+      'name':u'''Air Wraith Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{display:{Name:"Air Wraith Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Silent Master Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"6d1fefde-d3a4-718b-8875-eb5e9ed2a9cf",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY1NzVmY2NjYWRhZTg3YzA4NDJmNTNkZTVlMGZmYTc1ODUxNjk2ODY2ZDgxZTFiNzI4MjgzNDhkYjUyNTYifX19"}]}},display:{Name:"Silent Master Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:stained_glass',
+      'name':u'''Air Shade Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{display:{Name:"Air Shade Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Bandit Executioner Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"f778d9a1-3995-4be4-8853-d2c788e94230",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE4YjkyOTM4MWFiNWZiZWIwY2NiNzFkM2ZjYjhlMzk2MzJlMjUyZmI1NDQxNzFiYzBlNTc3YmMwYjFkIn19fQ=="}]}},display:{Name:"Bandit Executioner Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Secret Keeper Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"6d1fefde-d3a4-718b-8875-eb5e9ed2a9cf",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY1NzVmY2NjYWRhZTg3YzA4NDJmNTNkZTVlMGZmYTc1ODUxNjk2ODY2ZDgxZTFiNzI4MjgzNDhkYjUyNTYifX19"}]}},display:{Name:"Secret Keeper Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Blood Lich Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{display:{Name:"Blood Lich Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Apprentice Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"6d1fefde-d3a4-718b-8875-eb5e9ed2a9cf",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY1NzVmY2NjYWRhZTg3YzA4NDJmNTNkZTVlMGZmYTc1ODUxNjk2ODY2ZDgxZTFiNzI4MjgzNDhkYjUyNTYifX19"}]}},display:{Name:"Apprentice Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:dirt',
+      'name':u'''Earth Wraith Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{display:{Name:"Earth Wraith Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Flame Shade Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"1d807ac3-018d-46ee-98b3-51a9f3d9ba4a",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjY5NjVlNmE1ODY4NGMyNzdkMTg3MTdjZWM5NTlmMjgzM2E3MmRmYTk1NjYxMDE5ZGJjZGYzZGJmNjZiMDQ4In19fQ=="}]}},display:{Name:"Flame Shade Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Bandit Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"f778d9a1-3995-4be4-8853-d2c788e94230",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE4YjkyOTM4MWFiNWZiZWIwY2NiNzFkM2ZjYjhlMzk2MzJlMjUyZmI1NDQxNzFiYzBlNTc3YmMwYjFkIn19fQ=="}]}},display:{Name:"Bandit Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:stained_glass',
+      'name':u'''Water Shade Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{display:{Name:"Water Shade Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:stained_glass',
+      'name':u'''Water Wraith Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{display:{Name:"Water Wraith Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Flame Wraith Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"1d807ac3-018d-46ee-98b3-51a9f3d9ba4a",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjY5NjVlNmE1ODY4NGMyNzdkMTg3MTdjZWM5NTlmMjgzM2E3MmRmYTk1NjYxMDE5ZGJjZGYzZGJmNjZiMDQ4In19fQ=="}]}},display:{Name:"Flame Wraith Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:skull',
+      'name':u'''Bandit Sniper Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{SkullOwner:{Id:"f778d9a1-3995-4be4-8853-d2c788e94230",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE4YjkyOTM4MWFiNWZiZWIwY2NiNzFkM2ZjYjhlMzk2MzJlMjUyZmI1NDQxNzFiYzBlNTc3YmMwYjFkIn19fQ=="}]}},display:{Name:"Bandit Sniper Skull"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:leaves',
+      'name':u'''Earth Shade Skull''',
+    },
+    [
+      'nbt', 'replace', ur'''{display:{Name:"Earth Shade Skull"}}'''
     ]
   ],
   [
