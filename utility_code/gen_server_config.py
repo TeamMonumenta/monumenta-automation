@@ -163,13 +163,18 @@ nicky = [
         ('plugins/Nicky', '../../server_config/plugins/Nicky'),
     ]
 
+vanish = [
+        ('plugins/VanishNoPacket.jar', '../../server_config/plugins/VanishNoPacket.jar'),
+        ('plugins/VanishNoPacket', '../../server_config/plugins/VanishNoPacket'),
+    ]
+
 # Index of nodes:
 #   server_config
 #   advancements_disabled
 #   advancements_r1
 #   structures
 
-base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit + venturechat
+base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit + venturechat + vanish
 if (SERVER_TYPE == 'build'):
     base_plugins += speedchanger + nbteditor + voxelsniper
 
