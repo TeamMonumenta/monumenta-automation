@@ -263,6 +263,8 @@ config = {
         {"name":"Orange Quest Alchemy", "type":"AdventureZone", "pos1":"428 28 1598", "pos2":"463 191 1821"},
         {"name":"Orange Quest Arena", "type":"AdventureZone", "pos1":"353 65 1538", "pos2":"425 127 1597"},
 
+        {"name":"Sewer Gate", "type":"AdventureZone", "pos1":"482 88 134", "pos2":"518 59 94"},
+
         {"name":"post-monument Sage Draiikali", "type":"AdventureZone", "pos1":"1220 0 -126", "pos2":"1242 255 -103"},
         {"name":"Farr race", "type":"AdventureZone", "pos1":"1036 99 -119", "pos2":"1051 112 -105"}
     ],'''),
