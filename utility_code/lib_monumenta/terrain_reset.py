@@ -223,12 +223,11 @@ def terrainResetInstance(config, outputFile, statusQueue):
             dstWorld.saveInPlace()
             nextStep("[TIMING] Saved")
 
-        #print "  Deleting scores for missing entities..."
-        #existingEntities = listUUIDs(dstWorld)
-        #nextStep("[TIMING] Found UUIDs in world")
-        # Disabled for now since it mangles fakeplayer scores
-        #worldScores.pruneMissingEntities(existingEntities)
-        #nextStep("[TIMING] Pruned scores of missing entities.")
+        print "  <DRY RUN!> Deleting scores for missing entities..."
+        existingEntities = listUUIDs(dstWorld)
+        nextStep("[TIMING] Found UUIDs in world")
+        worldScores.pruneMissingEntities(existingEntities)
+        nextStep("[TIMING] Pruned scores of missing entities.")
         worldScores.save()
         nextStep("[TIMING] Saved scoreboard changes")
 

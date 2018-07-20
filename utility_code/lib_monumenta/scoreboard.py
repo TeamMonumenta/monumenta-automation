@@ -197,24 +197,38 @@ class scoreboard(object):
         uuidsToKeep = []
         for entity in entitiesToKeep:
             uuidsToKeep.append(str(entity))
+        preserved = nbt.TAG_List()
+        pruned = nbt.TAG_List()
         numEntries = len(self.allScores)
-        unpruned = 0
-        pruned = 0
         print "    - {} entities found.".format(len(uuidsToKeep))
-        for i in range(numEntries-1,-1,-1):
-            aScore = self.allScores[i]
+        for aScore in self.allScores:
             owner = aScore["Name"].value
             if (
                 len(owner) == 36 and
                 owner not in uuidsToKeep
             ):
-                pruned += 1
+                pruned.append(aScore)
             else:
-                unpruned += 1
-                # TODO This should remove the i'th search result, not allScores[i]!
-                #self.allScores.pop(i)
-        print "    - {} scores pruned.".format(pruned)
-        print "    - {} scores not pruned.".format(unpruned)
+                preserved.append(aScore)
+        print "    - {} scores pruned.".format(len(pruned))
+        print "    - {} scores preserved.".format(len(preserved))
+        failed = 0
+        for aScore in preserved:
+            owner = aScore["Name"].value
+            if (
+                len(owner) == 36 and
+                owner not in uuidsToKeep
+            ):
+                failed += 1
+        failed = 0
+        for aScore in pruned:
+            owner = aScore["Name"].value
+            if not (
+                len(owner) == 36 and
+                owner not in uuidsToKeep
+            ):
+                failed += 1
+        print "    - {} pruned scores failed inspection.".format(failed)
 
     def batchScoreChanges(self,rules):
         # Generate a cache
