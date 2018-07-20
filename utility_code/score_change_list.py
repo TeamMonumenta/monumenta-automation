@@ -62,7 +62,7 @@ AptIdleRule = [
 
     # Testing for players who have a tutorial score;
     # because no fake player needs an AptIdle score
-    {"condition":{"Objective":"Tutorial","Score":{"min":0}},
+    {"condition":{"Objective":"Apartment","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"AptIdle","Score":30}]}},
 ]
