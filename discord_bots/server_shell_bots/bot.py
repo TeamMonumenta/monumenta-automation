@@ -101,5 +101,11 @@ async def on_message(message):
 ################################################################################
 # Entry point
 
-client.run(loginInfo)
+try:
+    client.run(loginInfo)
+    print("No error detected from outside the client")
+except:
+    print("The following error was visible from outside the client, and may be used to restart it:")
+    raise
+print("Terminating")
 
