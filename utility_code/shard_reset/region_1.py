@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../")
 
 import item_replace_list
 import entity_update_list
-from score_change_list import dungeonScoreRules
+from score_change_list import dungeonScoreRules, AptIdleRule
 from advancement_change_list import advancementRevokeList
 
 config = {
@@ -25,7 +25,7 @@ config = {
     "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/Project_Epic-region_1/",
 
     # Reset dungeon scores
-    "playerScoreChanges":dungeonScoreRules,
+    "playerScoreChanges":dungeonScoreRules+AptIdleRule,
 
     "revokeAdvancements":advancementRevokeList,
 

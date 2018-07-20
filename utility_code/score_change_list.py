@@ -57,3 +57,13 @@ dungeonScoreRules = [
             {"Objective":"DRAccess","Score":0}]}},
 ]
 
+AptIdleRule = [
+    # Temporary - used for terrain reset on June 20th/21st, 2018
+
+    # Testing for players who have a tutorial score;
+    # because no fake player needs an AptIdle score
+    {"condition":{"Objective":"Tutorial","Score":{"min":0}},
+        "actions":{"set":[
+            {"Objective":"AptIdle","Score":30}]}},
+]
+
