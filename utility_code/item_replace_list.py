@@ -442,6 +442,62 @@ KingsValleyDungeon = item_replace.ReplaceItems([],[
         ]
     ],
 
+    # Dungeon keys
+    [
+        {
+            "id":"minecraft:stained_glass",
+            "name":u'''White Key''',
+        },
+        [
+            "nbt", "replace", ur'''{display:{Lore:["* Grants access to the white wool dungeon *","* 1+ players required *"],Name:"§f§lWhite Key"}}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:stained_glass",
+            "name":u'''Orange Key''',
+        },
+        [
+            "nbt", "replace", ur'''{display:{Lore:["* Grants access to the orange wool dungeon *","* 1+ players required *"],Name:"§f§lOrange Key"}}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:stained_glass",
+            "name":u'''Magenta Key''',
+        },
+        [
+            "nbt", "replace", ur'''{display:{Lore:["* Grants access to the magenta wool dungeon *","* 1+ players required *"],Name:"§f§lMagenta Key"}}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:stained_glass",
+            "name":u'''Light Blue Key''',
+        },
+        [
+            "nbt", "replace", ur'''{display:{Lore:["* Grants access to the light blue wool dungeon *","* 1+ players required *"],Name:"§f§lLight Blue Key"}}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:stained_glass",
+            "name":u'''Yellow Key''',
+        },
+        [
+            "nbt", "replace", ur'''{display:{Lore:["* Grants access to the yellow wool dungeon *","* 1+ players required *"],Name:"§f§lYellow Key"}}''',
+        ]
+    ],
+    [
+        {
+            "id":"minecraft:leaves2",
+            "name":u'''Bonus Key''',
+        },
+        [
+            "nbt", "replace", ur'''{display:{Lore:["* Grants access to the King's Valley bonus dungeon *","* 1+ players required *"],Name:"§f§lBonus Key"}}''',
+        ]
+    ],
+
     [
         {"any":[
             # Iron:
