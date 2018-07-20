@@ -497,6 +497,15 @@ KingsValleyDungeon = item_replace.ReplaceItems([],[
             "nbt", "replace", ur'''{display:{Lore:["* Grants access to the King's Valley bonus dungeon *","* 1+ players required *"],Name:"§f§lBonus Key"}}''',
         ]
     ],
+    [
+        {
+            "id":"minecraft:nether_wart_block",
+            "name":u'''Nightmare Key''',
+        },
+        [
+            "nbt", "replace", ur'''{ench:[{lvl:1s,id:51s}],display:{Lore:["* Grants access to the Nightmare raid dungeon *","* 1+ players required *"],Name:"§f§lNightmare Key"}}''',
+        ]
+    ],
 
     [
         {"any":[
