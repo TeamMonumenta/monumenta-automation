@@ -56,6 +56,8 @@ class scoreboard(object):
             Cache = self.allScores
         matchingScores = []
         for _aScore in Cache:
+            # If statements have inverted logic;
+            # a match is if all statements are false.
             if (
                 Name is not None and
                 _aScore['Name'].value != Name
@@ -83,6 +85,18 @@ class scoreboard(object):
                 type(Score) is dict and
                 "max" in Score and
                 _aScore['Score'].value > Score["max"]
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "in" in Score and
+                _aScore['Score'].value not in Score["in"]
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "not_in" in Score and
+                _aScore['Score'].value in Score["not_in"]
             ):
                 continue
             if (
