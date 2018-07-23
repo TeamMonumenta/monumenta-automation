@@ -353,6 +353,40 @@ class ListShardsAction(ShellAction):
         ]
 allActions.append(ListShardsAction)
 
+class RepairBlockEntitiesAction(ShellAction):
+    '''Repair Block Entities in specified worlds.
+Syntax:
+{cmdPrefix}repair block entities *
+{cmdPrefix}repair block entities region_1 region_2 orange'''
+    command = "repair block entities"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(commandPrefix + self.command)+1:]
+
+        # TODO Should be made relative to the bot directory
+        baseShellCommand = "/home/rock/MCEdit-And-Automation/utility_code/RepairBlockEntities.py"
+        shellCommand = baseShellCommand
+        allShards = botConfig["shards"]
+        if '*' in commandArgs:
+            for shard in allShards.keys():
+                shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
+        else:
+            for shard in allShards.keys():
+                if shard in commandArgs:
+                    shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
+
+        if shellCommand == baseShellCommand:
+            self._commands = [
+                self.display("No specified shards on this server."),
+            ]
+        else:
+            self._commands = [
+                self.run(shellCommand, displayOutput=True),
+            ]
+allActions.append(StartShardAction)
+
 class PrepareResetBundleAction(ShellAction):
     '''Dangerous!
 Temporarily brings down the region_1 shard to prepare for terrain reset
