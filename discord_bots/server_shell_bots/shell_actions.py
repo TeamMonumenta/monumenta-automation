@@ -371,11 +371,13 @@ Syntax:
         allShards = botConfig["shards"]
         if '*' in commandArgs:
             for shard in allShards.keys():
-                shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
+                if shard != "bungee":
+                    shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
         else:
             for shard in allShards.keys():
                 if shard in commandArgs:
-                    shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
+                    if shard != "bungee":
+                        shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
 
         if shellCommand == baseShellCommand:
             self._commands = [
