@@ -55,8 +55,8 @@ while len(processes.keys()) > 0:
     
     print("Results from {}:".format(statusFrom))
     if "msg" in statusUpdate:
-        print(statusUpdate["msg"])
-    print("Done with {}.".format(statusFrom))
+        print(statusUpdate["msg"]),
+    print("Done with {}.\n".format(statusFrom))
 
 print "Done!"
 
