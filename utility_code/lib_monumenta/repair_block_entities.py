@@ -45,6 +45,8 @@ expectedBlocks = {
 }
 
 def repair_block_entities(worldDir):
+    good = 0
+    bad = 0
     world = pymclevel.loadWorld(worldDir)
     for cx,cz in world.allChunks:
         chunk = world.getChunk(cx,cz)
@@ -68,19 +70,23 @@ def repair_block_entities(worldDir):
                 "y" not in blockEntity or
                 "z" not in blockEntity
             ):
-                print("- Block entity not saved correctly in chunk ({},{})".format(cx,cz))
+                bad += 1
                 continue
 
             blockEntityId = blockEntity["id"].value
-            x,y,z = blockEntity["x"],blockEntity["y"],blockEntity["z"]
-            blockId = chunk.blockAt(x,z,y) # This is the correct order for a chunk
+            x = blockEntity["x"].value
+            y = blockEntity["y"].value
+            z = blockEntity["z"].value
+            blockId = world.blockAt(x,y,z)
             if blockId not in expectedBlocks[blockEntityId]:
-                print("- Block entity ID {} at {} {} {} is in invalid block ID {}".format(blockEntityId,x,y,z,blockId))
+                bad += 1
                 continue
 
+            good += 1
             validBlockEntities.append(blockEntity)
 
         chunkTag["Level"]["TileEntities"] = validBlockEntities
         chunk.chunkChanged(False) # needsLighting=False
     world.saveInPlace()
+    print("{} good block entities preserved, {} bad block entities removed.".format(good,bad))
 

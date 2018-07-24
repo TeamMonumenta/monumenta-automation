@@ -366,7 +366,7 @@ Syntax:
         commandArgs = message.content[len(commandPrefix + self.command)+1:]
 
         # TODO Should be made relative to the bot directory
-        baseShellCommand = "/home/rock/MCEdit-And-Automation/utility_code/RepairBlockEntities.py"
+        baseShellCommand = "/home/rock/MCEdit-And-Automation/utility_code/repair_block_entities.py"
         shellCommand = baseShellCommand
         allShards = botConfig["shards"]
         if '*' in commandArgs:
@@ -384,8 +384,9 @@ Syntax:
         else:
             self._commands = [
                 self.run(shellCommand, displayOutput=True),
+                self.mention(),
             ]
-allActions.append(StartShardAction)
+allActions.append(RepairBlockEntitiesAction)
 
 class PrepareResetBundleAction(ShellAction):
     '''Dangerous!
