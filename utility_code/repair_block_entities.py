@@ -30,7 +30,7 @@ def attempt_on_shard(worldDir,statusQueue):
         print("Done with world: " + worldDir)
     except:
         print("Caught exception on world:" + worldDir)
-        e = traceback.format_exc()
+        print(traceback.format_exc())
         pass
 
     sys.stdout = old_stdout
