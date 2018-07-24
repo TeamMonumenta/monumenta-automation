@@ -55,26 +55,5 @@ dungeonScoreRules = [
     {"condition":{"Objective":"DRAccess","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"DRAccess","Score":0}]}},
-    # Temporary fix to evict players from apartments if they were inactive for 30 days before July 20th, 2018.
-    # Make sure to remove after terrain reset
-    {
-        "condition":{
-            "Objective":"Apartment",
-            "Score":{
-                "not_in":[0, 214, 312, 329, 408, 427, 428, 431, 432, 501, 502, 503, 504, 505, 506, 507, 508, 517, 601, 624, 704]
-            }
-        },
-        "actions":{"set":[
-            {"Objective":"Apartment","Score":0}]}},
-]
-
-AptIdleRule = [
-    # Temporary - used for terrain reset on June 20th/21st, 2018
-
-    # Testing for players who have a tutorial score;
-    # because no fake player needs an AptIdle score
-    {"condition":{"Objective":"Apartment","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"AptIdle","Score":30}]}},
 ]
 
