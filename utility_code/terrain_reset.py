@@ -8,29 +8,9 @@ merges them into a new world, dstWorld (destination).
 import sys
 
 from lib_monumenta.terrain_reset import terrainReset
-from shard_reset import region_1, r1plots, betaplots, white, orange, magenta, lightblue, yellow, nightmare, r1bonus, roguelike
+from shard_reset import allConfigDict
 
 itemCountLog = "/home/rock/5_SCRATCH/tmpreset/all_items.txt"
-
-allConfigDict = {
-    "region_1": region_1.config,
-    "r1plots": r1plots.config,
-    "betaplots": betaplots.config,
-    "white": white.config,
-    "orange": orange.config,
-    "magenta": magenta.config,
-    "lightblue": lightblue.config,
-    "yellow": yellow.config,
-    "nightmare": nightmare.config,
-    "r1bonus": r1bonus.config,
-    "roguelike": roguelike.config,
-
-    # These are valid shards but no terrain reset action exists for them
-    "bungee": None,
-    "build": None,
-    "tutorial": None,
-    "purgatory": None,
-}
 
 if (len(sys.argv) < 2):
     sys.exit("Usage: {} <server1> [server2] ...".format(sys.argv[0]))
