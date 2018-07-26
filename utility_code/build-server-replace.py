@@ -4,6 +4,8 @@
 This replaces items within the build server
 """
 
+import sys
+
 from lib_monumenta.terrain_reset import terrainReset
 from shard_build import allConfigDict
 
