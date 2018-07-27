@@ -168,6 +168,17 @@ vanish = [
         ('plugins/VanishNoPacket', '../../server_config/plugins/VanishNoPacket'),
     ]
 
+gobrush = [
+        ('plugins/goBrush.jar', '../../server_config/plugins/goBrush.jar'),
+        ('plugins/goBrush', '../../server_config/plugins/goBrush'),
+    ]
+
+dynmap = [
+        ('plugins/dynmap.jar', '../../server_config/plugins/dynmap.jar'),
+        # TODO: per-shard config? Only on R2 for now
+    ]
+
+
 # Index of nodes:
 #   server_config
 #   advancements_disabled
@@ -176,7 +187,7 @@ vanish = [
 
 base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit + venturechat + vanish
 if (SERVER_TYPE == 'build'):
-    base_plugins += speedchanger + nbteditor + voxelsniper
+    base_plugins += speedchanger + nbteditor + voxelsniper + gobrush
 
 # String replacements:
 # {servername} - server name
@@ -289,7 +300,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + advancements_disabled + base_plugins + coreprotect + dynmap,
     },
 
     'tutorial':{
