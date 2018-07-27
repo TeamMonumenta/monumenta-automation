@@ -71,13 +71,13 @@ config = {
         # "replaceItems":True/False
         # "material":(id,dmg) # what to fill with
         # "materialName":"block name" # comment
-        {"name":"Apartments_100",         "pos1":( -874,  99,   44), "pos2":(-809,  96,   44), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_200",         "pos1":( -874,  99,   36), "pos2":(-809,  96,   36), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_300",         "pos1":( -874,  99,   31), "pos2":(-809,  96,   31), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_400",         "pos1":( -874,  99,   23), "pos2":(-809,  96,   23), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_500",         "pos1":( -864,  99,   10), "pos2":(-813,  96,   10), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_600",         "pos1":( -864,  99,    5), "pos2":(-813,  96,    5), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
-        {"name":"Apartments_700_800",     "pos1":( -874,  99,   18), "pos2":(-809,  96,   18), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_101-132",     "pos1":( -811,  99,   44), "pos2":(-873,  99,   44), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_201-232",     "pos1":( -811,  99,   36), "pos2":(-873,  99,   36), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_301-332",     "pos1":( -811,  99,   31), "pos2":(-873,  99,   31), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_401-432",     "pos1":( -811,  99,   23), "pos2":(-873,  99,   23), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_501-524",     "pos1":( -815,  99,   10), "pos2":(-861,  99,   10), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_601-624",     "pos1":( -815,  99,    5), "pos2":(-861,  99,    5), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+        {"name":"Apartments_701-816",     "pos1":( -811,  99,   18), "pos2":(-873,  99,   18), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
         {"name":"Apartments_units",       "pos1":( -817, 109,   87), "pos2":(-859, 164,   16), "replaceBlocks":False, "replaceItems":True,  "updateEntities":True,  "material":( 41,  0), "materialName":"gold"},
         {"name":"Guild_Room",             "pos1":( -800, 109,  -75), "pos2":(-758, 104, -102), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
         {"name":"Guild_1",                "pos1":( -586,   0,  137), "pos2":(-622, 255,  105), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
