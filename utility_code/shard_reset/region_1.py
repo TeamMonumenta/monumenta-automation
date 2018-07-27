@@ -102,20 +102,6 @@ config = {
         {"name":"Guild_24",               "pos1":( -564,   0, -192), "pos2":(-600, 255, -224), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
         {"name":"Guild_26",               "pos1":( -596,   0,  -46), "pos2":(-564, 255,  -10), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
         {"name":"Guild_27",               "pos1":( -548,   0,  -64), "pos2":(-580, 255, -100), "replaceBlocks":True,  "replaceItems":True,  "updateEntities":True,  "material":( 19,  0), "materialName":"sponge"},
-
-        # These are coordinates for the plots around the capital and are no longer needed, but kept just in case
-        #{"name":"Plot_Pressure_Plates",   "pos1":( -719, 106, -118), "pos2":(-665, 106,  -74), "replaceBlocks":False, "replaceItems":True,  "material":( 41,  0), "materialName":"gold"},
-        #{"name":"Section_1",              "pos1":(-1130,   0, -267), "pos2":(-897, 255,  318), "replaceBlocks":True,  "replaceItems":True,  "material":( 41,  0), "materialName":"gold"},
-        #{"name":"Section_2",              "pos1":( -896,   0,  208), "pos2":(-512, 255,  318), "replaceBlocks":True,  "replaceItems":True,  "material":( 57,  0), "materialName":"diamond"},
-        #{"name":"Section_3",              "pos1":( -896,   0,  207), "pos2":(-788, 255,  119), "replaceBlocks":True,  "replaceItems":True,  "material":( 42,  0), "materialName":"iron"},
-        #{"name":"Section_4",              "pos1":( -896,   0, -267), "pos2":(-825, 255,  -28), "replaceBlocks":True,  "replaceItems":True,  "material":( 22,  0), "materialName":"lapis"},
-        #{"name":"Section_5",              "pos1":( -512,   0,  207), "pos2":(-640, 255, -273), "replaceBlocks":True,  "replaceItems":True,  "material":( 24,  0), "materialName":"sandstone"},
-        #{"name":"Section_6",              "pos1":( -824,   0, -169), "pos2":(-641, 255, -272), "replaceBlocks":True,  "replaceItems":True,  "material":(152,  0), "materialName":"redstone"},
-        #{"name":"Section_7",              "pos1":( -641,   0, -168), "pos2":(-677, 255, -132), "replaceBlocks":True,  "replaceItems":True,  "material":(155,  0), "materialName":"quartz"},
-        #{"name":"Section_8",              "pos1":( -774,   0, -168), "pos2":(-813, 255, -150), "replaceBlocks":True,  "replaceItems":True,  "material":( 17, 14), "materialName":"birch wood"},
-        #{"name":"Section_9",              "pos1":( -641,   0,  -25), "pos2":(-655, 255,  -52), "replaceBlocks":True,  "replaceItems":True,  "material":( 17, 15), "materialName":"jungle wood"},
-        #{"name":"Section_10",             "pos1":( -680,   0,  183), "pos2":(-641, 255,  207), "replaceBlocks":True,  "replaceItems":True,  "material":( 19,  0), "materialName":"sponge"},
-        #{"name":"Section_11",             "pos1":( -668,   0,  -14), "pos2":(-641, 255,   25), "replaceBlocks":True,  "replaceItems":True,  "material":(  1,  1), "materialName":"granite"},
     ),
 }
 
