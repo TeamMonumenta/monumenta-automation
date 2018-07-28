@@ -243,6 +243,10 @@ class scoreboard(object):
             ):
                 failed += 1
         print "    - {} pruned scores failed inspection.".format(failed)
+        if failed == 0:
+            self.allScores = pruned
+        else:
+            print "    - ! Score pruning canceled; scores unchanged."
 
     def batchScoreChanges(self,rules):
         # Generate a cache
