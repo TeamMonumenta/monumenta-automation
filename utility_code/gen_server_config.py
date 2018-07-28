@@ -185,9 +185,11 @@ dynmap = [
 #   advancements_r1
 #   structures
 
-base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit + venturechat + vanish
+base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit + venturechat
 if (SERVER_TYPE == 'build'):
     base_plugins += speedchanger + nbteditor + voxelsniper + gobrush
+else:
+    base_plugins += vanish
 
 # String replacements:
 # {servername} - server name
