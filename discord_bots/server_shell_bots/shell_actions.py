@@ -31,17 +31,17 @@ class listening():
         self._set = set()
 
     def isListening(self,key):
-        if type(message) is not tuple:
+        if type(key) is not tuple:
             key = (key.channel.id,key.author.id)
         return key in self._set
 
     def select(self,key):
-        if type(message) is not tuple:
+        if type(key) is not tuple:
             key = (key.channel.id,key.author.id)
         self._set.add(key)
 
     def deselect(self,key):
-        if type(message) is not tuple:
+        if type(key) is not tuple:
             key = (key.channel.id,key.author.id)
         self._set.remove(key)
 
@@ -52,7 +52,7 @@ class listening():
             self.deselect(key)
 
     def toggle(self,key):
-        if type(message) is not tuple:
+        if type(key) is not tuple:
             key = (key.channel.id,key.author.id)
         if self.isListening(key):
             self.deselect(key)
