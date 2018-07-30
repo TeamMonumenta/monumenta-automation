@@ -33,17 +33,17 @@ class listening():
     def isListening(self,key):
         if type(key) is not tuple:
             key = (key.channel.id,key.author.id)
-        return key in self._set
+        return key not in self._set
 
     def select(self,key):
         if type(key) is not tuple:
             key = (key.channel.id,key.author.id)
-        self._set.add(key)
+        self._set.remove(key)
 
     def deselect(self,key):
         if type(key) is not tuple:
             key = (key.channel.id,key.author.id)
-        self._set.remove(key)
+        self._set.add(key)
 
     def set(self,key,value):
         if value:

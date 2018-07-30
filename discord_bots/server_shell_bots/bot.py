@@ -85,7 +85,7 @@ async def on_ready():
     print(client.user.id)
     print('------')
     for channel in botChannels:
-        client.send_message(channel, botName + " started and now listening.")
+        await client.send_message(channel, botName + " started and now listening.")
 
 @client.event
 async def on_message(message):
