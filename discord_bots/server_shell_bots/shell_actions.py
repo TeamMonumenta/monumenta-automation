@@ -332,7 +332,7 @@ Currently exposes all valid git syntax, including syntax that *will* softlock th
             return
         self._commands = [
             self.cd(_top_level),
-            self.run("git " + commandArgs, displayOutput=True),
+            self.run(commandArgs, displayOutput=True),
         ]
 allActions.append(GitAction)
 
