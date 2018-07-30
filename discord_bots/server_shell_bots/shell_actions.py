@@ -26,6 +26,39 @@ def escapeDangerous(dangerString):
 allActions = []
 allActionsDict = {}
 
+class listening():
+    def __init__(self):
+        self._set = set()
+
+    def isListening(self,key):
+        if type(message) is not tuple:
+            key = (key.channel.id,key.author.id)
+        return key in self._set
+
+    def select(self,key):
+        if type(message) is not tuple:
+            key = (key.channel.id,key.author.id)
+        self._set.add(key)
+
+    def deselect(self,key):
+        if type(message) is not tuple:
+            key = (key.channel.id,key.author.id)
+        self._set.remove(key)
+
+    def set(self,key,value):
+        if value:
+            self.select(key)
+        else:
+            self.deselect(key)
+
+    def toggle(self,key):
+        if type(message) is not tuple:
+            key = (key.channel.id,key.author.id)
+        if self.isListening(key):
+            self.deselect(key)
+        else:
+            self.select(key)
+
 ################################################################################
 # Common privilege code
 
@@ -205,11 +238,6 @@ class HelpAction(ShellAction):
         if len(commandArgs) == 0:
             helptext = '''__Available Actions__'''
             for actionClass in botConfig["actions"].values():
-                if not (
-                    botConfig["listening"] or
-                    actionClass.alwaysListening
-                ):
-                    continue
                 if actionClass.hasPermissions(actionClass,message.author):
                     helptext += "\n**" + commandPrefix + actionClass.command + "**"
                 else:
@@ -221,11 +249,6 @@ class HelpAction(ShellAction):
                 if not (
                     actionClass.command == targetCommand or
                     commandPrefix + actionClass.command == targetCommand
-                ):
-                    continue
-                if not (
-                    botConfig["listening"] or
-                    actionClass.alwaysListening
                 ):
                     continue
                 if actionClass.hasPermissions(actionClass,message.author):
@@ -273,10 +296,10 @@ Examples:
                 '*' in commandArgs or
                 botConfig["name"] in commandArgs
             ) ^
-            botConfig["listening"]
+            botConfig["listening"].isListening(message)
         ):
-            botConfig["listening"] = not botConfig["listening"]
-            if botConfig["listening"]:
+            botConfig["listening"].toggle(message)
+            if botConfig["listening"].isListening(message):
                 self._commands = [
                     self.display(botConfig["name"] + " is now listening for commands."),
                 ]
@@ -284,7 +307,7 @@ Examples:
                 self._commands = [
                     self.display(botConfig["name"] + " is no longer listening for commands."),
                 ]
-        elif botConfig["listening"]:
+        elif botConfig["listening"].isListening(message):
             self._commands = [
                 self.display(botConfig["name"] + " is still listening for commands."),
             ]
@@ -332,7 +355,7 @@ Currently exposes all valid git syntax, including syntax that *will* softlock th
             return
         self._commands = [
             self.cd(_top_level),
-            self.display("Running " + repr(commandArgs)),
+            self.display("Running `" + commandArgs + "`"),
             self.run(commandArgs, displayOutput=True),
         ]
 allActions.append(GitAction)
@@ -845,15 +868,16 @@ allActions.append(WhitelistAction)
 for action in allActions:
     allActionsDict[action.command] = action
 
-def findBestMatch(botConfig,target):
+def findBestMatch(botConfig,message):
     '''Find the best matching command for a target message, igoring permissions.'''
+    target = message.content
     bestMatch = ""
     actions = botConfig["actions"]
     for command in actions.keys():
         prefixedCommand = commandPrefix + command
         actionClass = actions[command]
         if not (
-            botConfig["listening"] or
+            botConfig["listening"].isListening(message) or
             actionClass.alwaysListening
         ):
             continue

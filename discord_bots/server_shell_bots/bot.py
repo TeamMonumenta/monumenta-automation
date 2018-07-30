@@ -9,7 +9,7 @@ import json
 logging.basicConfig(level=logging.INFO)
 
 import discord
-from shell_actions import allActionsDict, findBestMatch
+from shell_actions import allActionsDict, findBestMatch, listening
 
 ################################################################################
 # Config / Environment
@@ -17,7 +17,7 @@ from shell_actions import allActionsDict, findBestMatch
 botConfig = {}
 
 botConfig["main_pid"] = os.getpid()
-botConfig["listening"] = True
+botConfig["listening"] = listening()
 botConfig["config_dir"] = os.path.expanduser("~/.monumeneta_bot/")
 
 # Get bot's login info
@@ -84,11 +84,13 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+    for channel in botChannels:
+        client.send_message(channel, botName + " started and now listening.")
 
 @client.event
 async def on_message(message):
     if message.channel.id in botChannels:
-        actionClass = findBestMatch(botConfig,message.content)
+        actionClass = findBestMatch(botConfig,message)
         if actionClass is None:
             return
         action = actionClass(botConfig,message)
