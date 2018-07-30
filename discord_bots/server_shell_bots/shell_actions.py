@@ -6,6 +6,11 @@ This is the list of all shell actions available to the discord bots;
 Please keep this list in alphabetical order within each category
 """
 
+import os
+_file_depth = 3
+_file = os.path.abspath(__file__)
+_top_level = os.path.abspath( os.path.join( _file, '../'*_file_depth ) )
+
 from shell_common import ShellAction, datestr
 
 commandPrefix = '~'
@@ -42,13 +47,14 @@ permissionGroups = {
     ],
     "@moderator": [
         "+debug",
-        "+test",
-        "+testpriv",
         "+help",
         "+list bots",
-        "+select",
         "+list shards",
+        "+r1address to english",
+        "+select",
         "+start shard",
+        "+test",
+        "+testpriv",
         "+whitelist",
     ],
     "@everyone": [
@@ -331,7 +337,7 @@ Must be run before preparing the build server reset bundle'''
             self.run("tar xzf /home/rock/assets/dungeon_template.tgz"),
 
             self.display("Generating dungeon instances (this may take a while)..."),
-            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/dungeon_instance_gen.py"),
+            self.run("python2 " + _top_level + "/utility_code/dungeon_instance_gen.py"),
             self.run("mv /home/rock/5_SCRATCH/tmpreset/dungeons-out /home/rock/5_SCRATCH/tmpreset/TEMPLATE"),
 
             self.display("Cleaning up instance generation temp files..."),
@@ -365,8 +371,7 @@ Syntax:
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(commandPrefix + self.command)+1:]
 
-        # TODO Should be made relative to the bot directory
-        baseShellCommand = "/home/rock/MCEdit-And-Automation/utility_code/repair_block_entities.py"
+        baseShellCommand = _top_level + "/utility_code/repair_block_entities.py"
         shellCommand = baseShellCommand
         allShards = botConfig["shards"]
         if '*' in commandArgs:
@@ -433,6 +438,25 @@ Must be run before starting terrain reset on the play server'''
         ]
 allActions.append(PrepareResetBundleAction)
 
+class R1AddressToEnglishAction(ShellAction):
+    '''Convert R1Address scores to a human-readable format
+Syntax:
+~r1address to english address1 [address2] ...'''
+    command = "r1address to english"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
+        cmdString = _top_level + "/utility_code/r1address_to_english.py"
+        while len(commandArgs) > 0:
+            cmdString = cmdString + " " + commandArgs.pop(0)
+        self._commands = [
+            self.run(cmdString, displayOutput=True),
+            self.display("Done."),
+        ]
+allActions.append(R1AddressToEnglishAction)
+
 class RestartBotAction(ShellAction):
     '''Restart this bot. Used to update to the latest version.
 Do not use while the bot is running actions.
@@ -447,8 +471,7 @@ Syntax:
         super().__init__(botConfig["extraDebug"])
 
         commandArgs = message.content[len(commandPrefix + self.command)+1:]
-        # TODO Should be made relative to the bot directory
-        shellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/restart_bot.sh"
+        shellCommand = _top_level + "/discord_bots/server_shell_bots/bin/restart_bot.sh"
         self._commands = [
             self.run("{cmd} {pid} {arg} &".format(cmd=shellCommand,pid=botConfig["main_pid"],arg=commandArgs)),
         ]
@@ -463,7 +486,7 @@ This will be updated to use the Google Sheets API at some point so it won't need
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
-            self.run("/home/rock/MCEdit-And-Automation/utility_code/skill_info.py", displayOutput=True),
+            self.run(_top_level + "/utility_code/skill_info.py", displayOutput=True),
         ]
 allActions.append(SkillInfoAction)
 
@@ -524,8 +547,7 @@ Syntax:
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(commandPrefix + self.command)+1:]
 
-        # TODO Should be made relative to the bot directory
-        baseShellCommand = "/home/rock/MCEdit-And-Automation/discord_bots/server_shell_bots/bin/start_shards.sh"
+        baseShellCommand = _top_level + "/discord_bots/server_shell_bots/bin/start_shards.sh"
         shellCommand = baseShellCommand
         allShards = botConfig["shards"]
         if '*' in commandArgs:
@@ -650,7 +672,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/PRE_RESET/server_config"),
 
             self.display("Running actual terrain reset (this will take a while!)..."),
-            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/terrain_reset.py " + " ".join(allShards)),
+            self.run("python2 " + _top_level + "/utility_code/terrain_reset.py " + " ".join(allShards)),
         ]
 
         for shard in ["r1plots", "betaplots", "region_1"]:
@@ -694,7 +716,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         self._commands += [
             self.display("Generating per-shard config..."),
             self.cd("/home/rock/5_SCRATCH/tmpreset/POST_RESET"),
-            self.run("python2 /home/rock/MCEdit-And-Automation/utility_code/gen_server_config.py --play " + " ".join(allShards)),
+            self.run("python2 " + _top_level + "/utility_code/gen_server_config.py --play " + " ".join(allShards)),
 
             # TODO: This should probably print a warning and proceed anyway if some are found
             self.display("Checking for broken symbolic links..."),
@@ -725,7 +747,7 @@ Do not use for debugging quests or other scores that are likely to change often.
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-        cmdString = "/home/rock/MCEdit-And-Automation/utility_code/view_scores.py"
+        cmdString = _top_level + "/utility_code/view_scores.py"
         while len(commandArgs) > 0:
             cmdString = cmdString + " " + commandArgs.pop(0)
         self._commands = [
