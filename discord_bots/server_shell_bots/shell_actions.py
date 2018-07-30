@@ -14,6 +14,14 @@ _top_level = os.path.abspath( os.path.join( _file, '../'*_file_depth ) )
 from shell_common import ShellAction, datestr
 
 commandPrefix = '~'
+dangerousCharacters = ';<>*|`&$!#()[]{}:\'"'
+def escapeDangerous(dangerString):
+    if not any(c in dangerString for c in dangerousCharacters):
+        return dangerString
+    safeString = dangerString
+    for c in dangerousCharacters:
+        safeString.replace(c,'\\'+c)
+    return safeString
 
 allActions = []
 allActionsDict = {}
@@ -305,6 +313,29 @@ Downloads the terrain reset bundle from the build server and unpacks it'''
         ]
 allActions.append(FetchResetBundleAction)
 
+class GitAction(ShellAction):
+    '''Dangerous!
+Doesn't have a good way to tell if changes are in progress.
+Check in #server-ops before using.
+
+Currently exposes all valid git syntax, including syntax that *will* softlock this action.'''
+    command = "git"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(commandPrefix):]
+        if len(commandArgs) > 3 and commandArgs[3] != ' ':
+            self._commands = [
+                self.display("Space expected at 4th character past prefix: " + repr(commandArgs)),
+            ]
+            return
+        self._commands = [
+            self.cd(_top_level),
+            self.run("git " + commandArgs, displayOutput=True),
+        ]
+allActions.append(GitAction)
+
 class GenerateInstancesAction(ShellAction):
     '''Dangerous!
 Deletes previous terrain reset data
@@ -449,8 +480,14 @@ Syntax:
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
         cmdString = _top_level + "/utility_code/r1address_to_english.py"
+        self._commands = []
         while len(commandArgs) > 0:
-            cmdString = cmdString + " " + commandArgs.pop(0)
+            newVal = commandArgs.pop(0)
+            try:
+                newVal = int(newVal)
+                cmdString = cmdString + " " + str(newVal)
+            except:
+                self.display(repr(newVal) + " is not a number."),
         self._commands = [
             self.run(cmdString, displayOutput=True),
             self.display("Done."),
@@ -545,7 +582,7 @@ Syntax:
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:]
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
 
         baseShellCommand = _top_level + "/discord_bots/server_shell_bots/bin/start_shards.sh"
         shellCommand = baseShellCommand
