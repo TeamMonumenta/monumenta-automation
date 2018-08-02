@@ -12,6 +12,8 @@ contain spaces. Conditions can be in one of the following formats:
 {"Objective":["Guild","Apartment"]}: Shows all guild and apartment scores
 {"Objective":"Guild","Score":{"min":1}}: Show all Guild scores that are at least 1
 {"Objective":"Guild","Score":10}: Show all Guild scores that are exactly 10
+{"Objective":"Apartment","Score":{"in":[11,12,17]}}: Show apartment scores that are 11, 12, and 17
+{"Objective":"Quest22","Score":{"not_in":[0,2]}}: Show Quest22 scores that are not 0 or 2
 {"Objective":"Quest01","Locked":False}: Show only unlocked scores; this is legacy
 {}: Shows everything. You almost certainly want to avoid this one.
 

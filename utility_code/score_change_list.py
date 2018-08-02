@@ -57,3 +57,9 @@ dungeonScoreRules = [
             {"Objective":"DRAccess","Score":0}]}},
 ]
 
+eventApartmentScoreFix = [
+    {"condition":{"Objective":"Apartment","Score":{"in":range(100,900,2)}},
+        "actions":{"set":[
+            {"Objective":"AptIdle","Score":30}]}},
+]
+
