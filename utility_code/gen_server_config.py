@@ -49,7 +49,11 @@ server_config_min = [
         ('spigot.jar', '../server_config/spigot.jar'),
     ]
 
-server_config_min_plus_data = server_config_min + [
+structures = [
+        ('Project_Epic-{servername}/structures', '../../server_config/structures'),
+    ]
+
+server_config_min_plus_data = server_config_min + structures + [
         ('Project_Epic-{servername}/data/functions', '../../../server_config/data/functions'),
         ('Project_Epic-{servername}/data/loot_tables', '../../../server_config/data/loot_tables'),
         ('Project_Epic-{servername}_the_end/data/functions', '../../../server_config/data/functions'),
@@ -73,10 +77,6 @@ advancements_disabled = [
 
 advancements_r1 = [
         ('Project_Epic-{servername}/data/advancements', '../../../server_config/data/advancements'),
-    ]
-
-structures = [
-        ('Project_Epic-{servername}/structures', '../../server_config/structures'),
     ]
 
 coreprotect = [
