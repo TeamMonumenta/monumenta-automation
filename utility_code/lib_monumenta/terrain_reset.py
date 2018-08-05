@@ -228,8 +228,10 @@ def terrainResetInstance(config, outputFile, statusQueue):
         #nextStep("[TIMING] Found UUIDs in world")
         #worldScores.pruneMissingEntities(existingEntities)
         #nextStep("[TIMING] Pruned scores of missing entities.")
-        #worldScores.save()
-        #nextStep("[TIMING] Saved scoreboard changes")
+
+        # Save the scoreboards. This is always necessary regardless of pruning entities!
+        worldScores.save()
+        nextStep("[TIMING] Saved scoreboard changes")
 
         # TODO Disabled to test if this is revoking advancements it shouldn't.
         #if "revokeAdvancements" in config:
