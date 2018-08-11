@@ -265,6 +265,9 @@ config = {
         {"name":"Haunted House Quest", "type":"AdventureZone", "pos1":"1000 7 72", "pos2":"1042 38 108"},
         {"name":"Lost In My Mind - Bunker", "type":"AdventureZone", "pos1":"572 93 243", "pos2":"582 111 262"},
         {"name":"Crew To Remember", "type":"AdventureZone", "pos1":"-1443 130 21", "pos2":"-1530 82 -90"},
+        {"name":"Crew To Remember Smuggler Drop", "type":"AdventureZone", "pos1":"-60 60 -4", "pos2":"-48 46 8"},
+        {"name":"Xin Old", "type":"AdventureZone", "pos1":"798 172 -393", "pos2":"781 161 -376"},
+        {"name":"Xin New", "type":"AdventureZone", "pos1":"1092 99 -234", "pos2":"1076 116 -218"},
 
         {"name":"Starrier Night - Gaius Tower", "type":"AdventureZone", "pos1":"-99 115 69", "pos2":"-120 70 93"},
         {"name":"Starrier Night - Lowtide Montana", "type":"SafeZone", "pos1":"739 121 433", "pos2":"717 97 409"},
