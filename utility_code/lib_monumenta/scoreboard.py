@@ -17,141 +17,29 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 # Import pymclevel from pymclevel-Unified
 from pymclevel import nbt
 
+################################################################################
+# Functions that display stuff while they work
+
 class scoreboard(object):
-    """
-    An object that represents a scoreboard.dat file, and allows
-    its data to be read, searched, edited, and deleted.
-    """
     def __init__(self,worldFolder):
-        """
-        Create a new scoreboard object from a scoreboard.dat file.
-        Provided path must contain a data folder.
-        """
         self.load(worldFolder)
 
     def load(self,worldFolder):
-        """
-        Load a scoreboard.dat file. Provided path must contain a data folder.
-        """
         self.filePath = worldFolder
         if self.filePath[-1] != "/":
             self.filePath = self.filePath + "/"
         self.filePath += "data/scoreboard.dat"
         self.nbt = nbt.load(self.filePath)
-        self.allObjectives = self.nbt['data']['Objectives']
         self.allScores = self.nbt['data']['PlayerScores']
 
     def save(self,worldFolder=None):
-        """
-        Save this scoreboard data to the specified world folder, which must
-        contain a data folder.
-        If no path is provided, this saves the loaded scoreboard file in place.
-        """
         if worldFolder is None:
             saveTo = self.filePath
         else:
             saveTo = worldFolder + "data/scoreboard.dat"
         self.nbt.save(saveTo)
 
-    def _scoreMatches(self,aScore,Name=None,Objective=None,Score=None,Locked=None):
-        """
-        Internal function to test if a single score object matches the conditions specified.
-        Any criteria can be None or left out to ignore.
-
-        - Name is a player IGN or entity UUID string.
-        - Objective is an objective name as a string, or a list of objective names.
-        - Score is the integer value of a score; it can also be a dictionary with
-          one or more of the following keys:
-            - "min" (int): match if Score >= min
-            - "max" (int): match if Score <= min
-            - "in" (list): match if Score in list
-            - "not_in" (list): match if Score not in list
-          For these lists, the range function can generate a range of values when
-          written as Python. This does not work when parsed from outside sources,
-          as it could allow execution of arbitrary code.
-        - Locked is 0 if enabled, 1 if disabled. This only applies to the objective
-          type trigger, but is specified as 0 for other types.
-        """
-        if (
-            Name is not None and
-            aScore['Name'].value != Name
-        ):
-            return False
-        if (
-            Objectives is not None and
-            aScore['Objective'].value not in Objectives
-        ):
-            return False
-        if (
-            type(Score) is int and
-            aScore['Score'].value != Score
-        ):
-            return False
-        if (
-            type(Score) is list and
-            aScore['Score'].value not in Score
-        ):
-            return False
-        if (
-            type(Score) is dict and
-            "min" in Score and
-            aScore['Score'].value < Score["min"]
-        ):
-            return False
-        if (
-            type(Score) is dict and
-            "max" in Score and
-            aScore['Score'].value > Score["max"]
-        ):
-            return False
-        if (
-            type(Score) is dict and
-            "in" in Score and
-            aScore['Score'].value not in Score["in"]
-        ):
-            return False
-        if (
-            type(Score) is dict and
-            "not_in" in Score and
-            aScore['Score'].value in Score["not_in"]
-        ):
-            return False
-        if (
-            Locked is not None and
-            aScore['Locked'].value != Locked
-        ):
-            return False
-        return True
-
-    def searchScores(self,Conditions={},Name=None,Objective=None,Score=None,Locked=None,Cache=None):
-        """
-        Return a list of scores that match specified criteria.
-
-        Any criteria can be None or left out to ignore.
-
-        - Name is a player IGN or entity UUID string.
-        - Objective is an objective name as a string, or a list of objective names.
-        - Score is the integer value of a score; it can also be a dictionary with
-          one or more of the following keys:
-            - "min" (int): match if Score >= min
-            - "max" (int): match if Score <= min
-            - "in" (list): match if Score in list
-            - "not_in" (list): match if Score not in list
-          For these lists, the range function can generate a range of values when
-          written as Python. This does not work when parsed from outside sources,
-          as it could allow execution of arbitrary code.
-        - Locked is 0 if enabled, 1 if disabled. This only applies to the objective
-          type trigger, but is specified as 0 for other types.
-
-        - Conditions is a dictionary that overrides any of the above conditions if
-          a key of the same name is provided.
-
-        The results of a search can be used as a Cache to speed up future searches.
-        Caches update the master score list directly by reference, but if any score
-        is deleted from the master score list, all caches are invalid. Similarly,
-        adding scores that should be in a cache using a different cache or the
-        master list invalidates that cache.
-        """
+    def searchScores(self,Conditions={},Name=None,Objective=[],Score=None,Locked=None,Cache=None):
         if "Name" in Conditions:
             Name = Conditions["Name"]
         if "Objective" in Conditions:
@@ -160,70 +48,115 @@ class scoreboard(object):
             Score = Conditions["Score"]
         if "Locked" in Conditions:
             Locked = Conditions["Locked"]
-        Objectives = None
         if type(Objective) == list or type(Objective) == tuple:
             Objectives = Objective
-        elif type(Objective) == None:
+        else:
             Objectives = [Objective]
         if Cache is None:
             Cache = self.allScores
         matchingScores = []
         for _aScore in Cache:
-            if not self._scoreMatches(_aScore,Name=Name,Objective=Objective,Score=Score,Locked=Locked):
+            # If statements have inverted logic;
+            # a match is if all statements are false.
+            if (
+                Name is not None and
+                _aScore['Name'].value != Name
+            ):
+                continue
+            if _aScore['Objective'].value not in Objectives:
+                continue
+            if (
+                type(Score) is int and
+                _aScore['Score'].value != Score
+            ):
+                continue
+            if (
+                type(Score) is list and
+                _aScore['Score'].value not in Score
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "min" in Score and
+                _aScore['Score'].value < Score["min"]
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "max" in Score and
+                _aScore['Score'].value > Score["max"]
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "in" in Score and
+                _aScore['Score'].value not in Score["in"]
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "not_in" in Score and
+                _aScore['Score'].value in Score["not_in"]
+            ):
+                continue
+            if (
+                Locked is not None and
+                _aScore['Locked'].value != Locked
+            ):
                 continue
             matchingScores.append(_aScore)
         return matchingScores
 
-    def resetScores(self,Conditions=None,Name=None,Objective=None,Score=None,Locked=None):
+    def resetScores(self,Name=None,Objective=None,Score=None,Locked=None):
         """
-        Reset all scores matching the specified criteria, and return True.
-        If an error occurs, no changes are made, and False is returned instead.
+        Reset all scores matching the specified criteria
         """
-        if "Name" in Conditions:
-            Name = Conditions["Name"]
-        if "Objective" in Conditions:
-            Objective = Conditions["Objective"]
-        if "Score" in Conditions:
-            Score = Conditions["Score"]
-        if "Locked" in Conditions:
-            Locked = Conditions["Locked"]
-        Objectives = None
-        if type(Objective) == list or type(Objective) == tuple:
-            Objectives = Objective
-        elif type(Objective) == None:
-            Objectives = [Objective]
-
-        preserved = nbt.TAG_List()
-        pruned = nbt.TAG_List()
-
-        for _aScore in self.allScores:
-            if self._scoreMatches(_aScore,Name=Name,Objective=Objective,Score=Score,Locked=Locked):
-                pruned.append(_aScore)
-            else:
-                preserved.append(_aScore)
-        print "    - {} scores pruned.".format(len(pruned))
-        print "    - {} scores preserved.".format(len(preserved))
-        failed = 0
-        for _aScore in pruned:
-            if not self._scoreMatches(_aScore,Name=Name,Objective=Objective,Score=Score,Locked=Locked):
-                failed += 1
-        for _aScore in preserved:
-            if self._scoreMatches(_aScore,Name=Name,Objective=Objective,Score=Score,Locked=Locked):
-                failed += 1
-        print "    - {} pruned scores failed inspection.".format(failed)
-        if failed == 0:
-            self.allScores = pruned
-            return True
-        else:
-            print "    - ! Scores not reset."
-            return False
+        numEntries = len(self.allScores)
+        for i in range(numEntries-1,-1,-1):
+            _aScore = self.allScores[i]
+            if (
+                Name is not None and
+                _aScore['Name'].value != Name
+            ):
+                continue
+            if (
+                Objective is not None and
+                _aScore['Objective'].value != Objective
+            ):
+                continue
+            if (
+                type(Score) is int and
+                _aScore['Score'].value != Score
+            ):
+                continue
+            if (
+                type(Score) is list and
+                _aScore['Score'].value not in Score
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "min" in Score and
+                _aScore['Score'].value < Score["min"]
+            ):
+                continue
+            if (
+                type(Score) is dict and
+                "max" in Score and
+                _aScore['Score'].value > Score["max"]
+            ):
+                continue
+            if (
+                Locked is not None and
+                _aScore['Locked'].value != Locked
+            ):
+                continue
+            self.allScores.pop(i)
 
     def getScore(self,Name,Objective,Fallback=None,Cache=None):
         """
         Return Name's score for Objective;
-        if not found, return Fallback (default is None)
-
-        A Cache can be provided to speed up the search for this score.
+        if not found, return Fallback
         """
         matches = self.searchScores(Name=Name,Objective=Objective,Cache=Cache)
         if len(matches) > 1:
@@ -234,11 +167,6 @@ class scoreboard(object):
             return Fallback
 
     def setScore(self,Name,Objective,Score,Cache=None):
-        """
-        Set Name's Objective score to Score
-
-        A Cache can be provided to speed up the search for this score.
-        """
         matches = self.searchScores(Name=Name,Objective=Objective,Cache=Cache)
         if len(matches) > 1:
             raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
@@ -257,11 +185,6 @@ class scoreboard(object):
                 pass
 
     def addScore(self,Name,Objective,Score,Cache=None):
-        """
-        Add Score to Name's Objective score
-
-        A Cache can be provided to speed up the search for this score.
-        """
         matches = self.searchScores(Name=Name,Objective=Objective,Cache=Cache)
         if len(matches) > 1:
             raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
@@ -281,11 +204,10 @@ class scoreboard(object):
 
     def pruneMissingEntities(self,entitiesToKeep):
         """
-        This deletes entities that have UUID's not found in entitiesToKeep,
-        while leaving player scores alone.
+        Player names cannot exceed 16 characters; UUID's are
+        always 36 characters (4 hyphens and 32 hexadecimal digits).
+        This deletes entities that have UUID's not found in entitiesToKeep
         """
-        # Player names cannot exceed 16 characters; UUID's are
-        # always 36 characters (4 hyphens and 32 hexadecimal digits).
         uuidsToKeep = []
         for entity in entitiesToKeep:
             uuidsToKeep.append(str(entity))
@@ -312,6 +234,7 @@ class scoreboard(object):
                 owner not in uuidsToKeep
             ):
                 failed += 1
+        failed = 0
         for aScore in pruned:
             owner = aScore["Name"].value
             if not (
@@ -326,74 +249,20 @@ class scoreboard(object):
             print "    - ! Score pruning canceled; scores unchanged."
 
     def batchScoreChanges(self,rules):
-        """
-        Edit scores in bulk; uses an internal cache to speed up edits.
-
-        Example:
-        scoreboard.batchScoreChanges(
-            [
-                {
-                    "condition": {
-                        "Objective": "D1Access",
-                        "Score": {
-                            "min": 1
-                        }
-                    },
-                    "actions": {
-                        "add": [
-                            {
-                                "Objective": "D1Access",
-                                "Score": 1000
-                            }
-                        ]
-                    }
-                },
-                {
-                    "condition": {
-                        "Objective": "D1Access",
-                        "Score": {
-                            "min": 2000
-                        }
-                    },
-                    "actions": {
-                        "set": [
-                            {
-                                "Objective": "D1Access",
-                                "Score": 0
-                            },
-                            {
-                                "Objective": "D1Finished",
-                                "Score": 0
-                            }
-                        ]
-                    }
-                },
-            ]
-        )
-        """
         # Generate a cache
         Objectives = set()
-        #AllRuleObjectives = []
         for aRule in rules:
-            RuleObjectives = set()
-            RuleObjectives.add(aRule["condition"]["Objective"])
+            Objectives.add(aRule["condition"]["Objective"])
             if "set" in aRule["actions"]:
                 for toSet in aRule["actions"]["set"]:
-                    RuleObjectives.add(toSet["Objective"])
+                    Objectives.add(toSet["Objective"])
             if "add" in aRule["actions"]:
                 for toAdd in aRule["actions"]["add"]:
-                    RuleObjectives.add(toAdd["Objective"])
-            #AllRuleObjectives.append(RuleObjectives)
-            Objectives.update(RuleObjectives)
+                    Objectives.add(toAdd["Objective"])
         Cache = self.searchScores(Objective=list(Objectives))
 
         # Now modify the scoreboard as needed
-        for i in range(len(rules)):
-            aRule = rules[i]
-            #RuleObjectives = AllRuleObjectives[i]
-            # This would help a fair bit, but invalidate the larger cache :/
-            #RuleCache = self.searchScores(Objective=list(Objectives),Cache=Cache)
-
+        for aRule in rules:
             matchedConditions = self.searchScores(Conditions=aRule["condition"],Cache=Cache)
             for aMatchingScore in matchedConditions:
                 Name = aMatchingScore["Name"].value
@@ -408,45 +277,54 @@ class scoreboard(object):
                         Score = toAdd["Score"]
                         self.addScore(Name,Objective,Score,Cache=Cache)
 
-    def _objectiveMatches(self,anObjective,CriteriaName=None,DisplayName=None,Name=None,RenderType=None):
-        """
-        Internal function to test if a single objective object matches the conditions specified.
-        Any criteria can be None or left out to ignore.
-        """
-        if (
-            CriteriaName is not None and
-            aScore['CriteriaName'].value not in CriteriaName
-        ):
-            return False
-        if (
-            DisplayName is not None and
-            aScore['DisplayName'].value not in DisplayName
-        ):
-            return False
-        if (
-            Name is not None and
-            aScore['Name'].value not in Name
-        ):
-            return False
-        if (
-            RenderType is not None and
-            aScore['RenderType'].value not in RenderType
-        ):
-            return False
-        return True
-
-    def searchObjectives(self,Conditions={},CriteriaName=None,DisplayName=None,Name=None,RenderType=None):
-        """
-        NYI
-        """
-        raise NotImplemented
-
 ################################################################################
 # These are legacy functions that should be merged into the Scoreboard class
 # or otherwise removed. To be decided.
 # Due to what is probably a naming mistake, leaving these uncommented results
 # in Python hanging while trying to import this library. Oops.
 '''
+def scoreboardPath(worldFolder):
+    if worldFolder[-1] != "/":
+        worldFolder = worldFolder + "/"
+    return worldFolder + "data/scoreboard.dat"
+
+def updateIGNs(worldFolder,replacementList):
+    """
+    For any scoreboard value matching oldName, update to newName
+    replacementList["oldName"] = "newName"
+    """
+    # Good news! Scoreboard tags are stored in each player.dat
+    # Just need to move the scores to the new player.
+    print "Updating IGNs, one moment..."
+    filePath = scoreboardPath(worldFolder)
+    scoreboard = nbt.load(filePath)
+
+    lastDisplayedTime = int(time.time())
+    numChanged = 0
+
+    for aScore in scoreboard["data"]["PlayerScores"]:
+        aScoreOwner = aScore["Name"].value
+        if aScoreOwner in replacementList:
+            aScore["Name"].value = replacementList[aScoreOwner]
+            numChanged+=1
+        if lastDisplayedTime != int(time.time()):
+            print "{0} score owners changed.".format(numChanged)
+            lastDisplayedTime = int(time.time())
+    print "{0} score owners changed.".format(numChanged)
+    print "Updated all objective owners."
+
+    print "Checking teams..."
+    # Not displaying updates as we go here;
+    # This list is much shorter to handle.
+    for aTeam in scoreboard["data"]["Teams"]:
+        for aPlayer in aTeam["Players"]:
+            ign = aPlayer.value
+            if ign in replacementList:
+                aPlayer.value = replacementList[ign]
+    print "Players moved to correct teams."
+    scoreboard.save(filePath)
+    print "Saved."
+
 def debugScoreboard(worldFolder):
     """
     Print any errors in scoreboard.dat
