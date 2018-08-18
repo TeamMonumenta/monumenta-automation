@@ -226,6 +226,7 @@ config = {
         {"name":"Capital", "type":"Capital", "pos1":"-1130 0 -284", "pos2":"-498 256 344"},
 
         {"name":"Nyr", "type":"SafeZone", "pos1":"-181 0 -166", "pos2":"-79 256 14"},
+        {"name":"NyrAddon", "type":"SafeZone", "pos1":"-229 1 -126", "pos2":"-182 33 -79"},
         {"name":"Farr", "type":"SafeZone", "pos1":"538 0 100", "pos2":"658 256 229"},
         {"name":"Highwatch", "type":"SafeZone", "pos1":"1130 0 -156", "pos2":"1217 256 -76"},
         {"name":"Lowtide Chef Quest Basement", "type":"AdventureZone", "pos1":"729 56 452", "pos2":"752 43 487"},
@@ -248,7 +249,6 @@ config = {
         {"name":"Brown Co 57 Floating Island", "type":"SafeZone", "pos1":"887 0 -927", "pos2":"978 255 -899"},
         {"name":"Tutorial Dungeon Flashback", "type":"SafeZone", "pos1":"1126 5 148", "pos2":"1177 35 224"},
         {"name":"Roguelike Entrance Puzzle", "type":"SafeZone", "pos1":"825 0 173", "pos2":"889 97 217"},
-        {"name":"Vanilla Pilot", "type":"SafeZone", "pos1":"410 156 157", "pos2":"429 190 176"},
         {"name":"Mansion Vault", "type":"SafeZone", "pos1":"-14 84 -231", "pos2":"10 102 -202"},
         {"name":"Replica Hall", "type":"SafeZone", "pos1":"-2133 44 551", "pos2":"-2077 113 798"},
 
