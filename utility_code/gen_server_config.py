@@ -69,6 +69,7 @@ server_config = server_config_min_plus_data + [
         ('plugins/ScriptedQuests/death/common', '../../../../server_config/data/scriptedquests/death/common'),
         ('plugins/Monumenta_Speedruns/speedruns/racefiles', '../../../../server_config/data/speedruns/racefiles/{servername}'),
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
+        ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
     ]
 
 advancements_disabled = [
@@ -227,6 +228,7 @@ config = {
 
         {"name":"Nyr", "type":"SafeZone", "pos1":"-181 0 -166", "pos2":"-79 256 14"},
         {"name":"NyrAddon", "type":"SafeZone", "pos1":"-229 1 -126", "pos2":"-182 33 -79"},
+        {"name":"NyrSewer", "type":"SafeZone", "pos1":"-170 28 -75", "pos2":"-217 0 -126"},
         {"name":"Farr", "type":"SafeZone", "pos1":"538 0 100", "pos2":"658 256 229"},
         {"name":"Highwatch", "type":"SafeZone", "pos1":"1130 0 -156", "pos2":"1217 256 -76"},
         {"name":"Lowtide Chef Quest Basement", "type":"AdventureZone", "pos1":"729 56 452", "pos2":"752 43 487"},
@@ -266,6 +268,7 @@ config = {
         {"name":"Lost In My Mind - Bunker", "type":"AdventureZone", "pos1":"572 93 243", "pos2":"582 111 262"},
         {"name":"Crew To Remember", "type":"AdventureZone", "pos1":"-1443 130 21", "pos2":"-1530 82 -90"},
         {"name":"Crew To Remember Smuggler Drop", "type":"AdventureZone", "pos1":"-60 60 -4", "pos2":"-48 46 8"},
+        {"name":"Crew To Remember Cabin", "type":"AdventureZone", "pos1":"642 52 475", "pos2":"660 40 491"},
         {"name":"Xin Old", "type":"AdventureZone", "pos1":"798 172 -393", "pos2":"781 161 -376"},
         {"name":"Xin New", "type":"AdventureZone", "pos1":"1092 99 -234", "pos2":"1076 116 -218"},
 
