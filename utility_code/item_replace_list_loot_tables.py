@@ -168,6 +168,33 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
   ],
   [
     {
+      'id':'minecraft:leather_Leggings',
+      'name':u'''Sea Legs''',
+    },
+    [
+      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:6s},{lvl:4s,id:34s},{lvl:2s,id:3s}],display:{Lore:["§bLeather Armor","§8King's Valley : §5Unique","§8Yarr, ye got yer sea legs now!"],Name:"§b§lSea Legs"},AttributeModifiers:[{UUIDMost:2930716886104819868l,UUIDLeast:-5822166020546953801l,Amount:0.15d,Slot:"legs",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:1168099689856322567l,UUIDLeast:-5453022176639299899l,Amount:2.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:dragon_breath',
+      'name':u'''Concentrated Experience''',
+    },
+    [
+      'nbt', 'replace', ur'''{ench:[{lvl:1s,id:48s}],HideFlags:1,display:{Lore:["§7Worth 8 enchanting bottles"],Name:"§6Concentrated Experience"}}'''
+    ]
+  ],
+  [
+    {
+      'id':'minecraft:leather_chestplate',
+      'name':u'''Monk's Robe''',
+    },
+    [
+      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:0s},{lvl:4s,id:34s}],display:{Lore:["§bLeather Armor","§8King's Valley : §5Unique","§8Strength through simplicity"],Name:"§b§lMonk's Robe"},AttributeModifiers:[{UUIDMost:-6228477965826962820l,UUIDLeast:-7419976790974406104l,Amount:3.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"},{UUIDMost:-1373763489897427408l,UUIDLeast:-7249036763477634505l,Amount:2.0d,Slot:"chest",AttributeName:"generic.maxHealth",Operation:0,Name:"Modifier"}]}'''
+    ]
+  ],
+  [
+    {
       'id':'minecraft:sugar',
       'name':u'''Pulsating Dust''',
     },
@@ -1576,7 +1603,7 @@ KingsValleyLootTables = item_replace.ReplaceItems([],[
       'name':u'''Stormborn Boots''',
     },
     [
-      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:4s},{lvl:3s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§8King's Valley : §eRare","§6Rock's Little Casino"],Name:"§3§lStormborn Boots"},AttributeModifiers:[{UUIDMost:8168110272590147l,UUIDLeast:66575962804257055l,Amount:0.05d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:55068906034949703l,UUIDLeast:23695059647787143l,Amount:1d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
+      'nbt', 'replace', ur'''{ench:[{lvl:2s,id:4s},{lvl:3s,id:34s},{lvl:2s,id:2s}],display:{Lore:["§8King's Valley : §eRare","§6Rock's Little Casino"],color:16775894,Name:"§3§lStormborn Boots"},AttributeModifiers:[{UUIDMost:8168110272590147l,UUIDLeast:66575962804257055l,Amount:0.05d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"generic.movementSpeed"},{UUIDMost:55068906034949703l,UUIDLeast:23695059647787143l,Amount:1.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"generic.armor"}]}'''
     ]
   ],
   [
