@@ -43,6 +43,7 @@ server_config_to_copy = [
         ('plugins/OpenInv/config.yml',),
         ('plugins/Monumenta-Plugins/config.yml',),
         ('plugins/Monumenta-Plugins/Properties.json',),
+        ('plugins/Votifier/config.yml',),
     ]
 
 server_config_min = [
@@ -179,6 +180,10 @@ dynmap = [
         # TODO: per-shard config? Only on R2 for now
     ]
 
+votifier = [
+        ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
+    ]
+
 
 # Index of nodes:
 #   server_config
@@ -190,7 +195,7 @@ base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedi
 if (SERVER_TYPE == 'build'):
     base_plugins += speedchanger + nbteditor + voxelsniper + gobrush
 else:
-    base_plugins += vanish
+    base_plugins += vanish + votifier
 
 # String replacements:
 # {servername} - server name
@@ -199,7 +204,7 @@ else:
 #('mark2.properties', 'plugin.backup.path', 'plugin.backup.path=../backups/{servername}/{servername}_{timestamp}.tar.gz'),
 #('server.properties', 'level-name', 'level-name=Project_Epic-{servername}'),
 
-template_dir = 'server_config/server_config_template'
+template_dir = 'server_config/data/server_config_template'
 
 config = {
 
