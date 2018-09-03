@@ -55,5 +55,8 @@ dungeonScoreRules = [
     {"condition":{"Objective":"DRAccess","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"DRAccess","Score":0}]}},
+    {"condition":{"Objective":"VotesWeekly","Score":{"min":1}},
+        "actions":{"set":[
+            {"Objective":"VotesWeekly","Score":0}]}},
 ]
 
