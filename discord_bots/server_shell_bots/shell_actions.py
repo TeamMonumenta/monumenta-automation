@@ -802,6 +802,12 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             self.display("Done."),
             self.mention(),
         ]
+
+        if "region_1" in allShards:
+            self._commands += [
+                self.display("Raffle results:"),
+                self.run("python2 " + _top_level + "/utility_code/raffle_results.py", displayOutput=True)
+            ]
 allActions.append(TerrainResetAction)
 
 class ViewScoresAction(ShellAction):

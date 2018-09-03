@@ -30,10 +30,3 @@ terrainReset(configList)
 print "Saving items found after replacement to {}".format(itemCountLog)
 print "Shards reset successfully: {}".format(resetList)
 
-if "region_1" in resetList:
-    print "Raffle results:\n\n"
-
-    rafflefp = open( allConfigDict["region_1"]["VoteRaffleLog"], "r" )
-    print rafflefp.read()
-    rafflefp.close()
-

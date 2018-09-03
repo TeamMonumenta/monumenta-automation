@@ -40,13 +40,14 @@ def voteRaffle(scoreboard,logPath):
 
         totalVotes += numVotes
 
-    logfp.write("Total votes this week: {}\n\n".format(totalVotes))
+    logfp.write("Total votes this week: {}\n".format(totalVotes))
 
     if totalVotes == 0:
         logfp.close
         return
 
-    numWinners = ceil( len(voteNames) / 10.0 )
+    numWinners = int( ceil( len(voteNames) / 10.0 ) )
+    logfp.write( "Since there are {} voters this week, there will be {} winners.\n\n".format( len(voteNames), numWinners ) )
 
     for numVotes in sorted( voteNamesByCounts.keys(), reverse=True ):
         logfp.write("{} votes:{}\n\n".format(
@@ -56,11 +57,8 @@ def voteRaffle(scoreboard,logPath):
 
     winners = list( random.choice( voteNames, replace=False, size=numWinners, p=normalized(voteCounts) ) )
     for winner in winners:
-        scoreboard.addScore( winner, "VotesWeekly", 1, Cache=raffleCache )
+        scoreboard.addScore( winner, "VoteRaffle", 1, Cache=raffleCache )
     logfp.write( "This week's winners: " + ", ".join( sorted( winners ) ) )
-
-    for aScore in weeklyScores:
-        aScore["Score"].value = 0
 
     logfp.close()
 
