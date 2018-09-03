@@ -65,26 +65,32 @@ class listening():
 privUsers = {
     "302298391969267712": {"name": "Combustible", "rights": [ "@root" ]},
     "228226807353180162": {"name": "NickNackGus", "rights": [ "@root" ]},
-    "158655519588876288": {"name": "rockenroll4life", "rights": [ "@moderator" ]},
-    "144306298811318272": {"name": "Chipmunk", "rights": [ "@moderator" ]},
-    "163457917658333185": {"name": "masterchris92", "rights": [ "@moderator" ]},
-    "164199966242373632": {"name": "Kaladun", "rights": [ "@moderator" ]},
-    #"257887001834029056": {"name": "rayman520", "rights": [ "@moderator" ]},
 }
 
 groupByRole = {
-    # Bot Moderator (TE)
-    "464571038613766146": "@moderator",
+    # Team Epic (TE)
+    "341032989787947008": "@team epic",
     # Bot Skill Info (TE)
     "464598658449670145": "+skill info",
     # Moderator (Public)
-    "313067199579422722": "+view scores",
+    "313067199579422722": "@moderator",
 }
 
 permissionGroups = {
     "@root": [
         "+*",
         "-testunpriv",
+    ],
+    "@team epic": [
+        "+debug",
+        "+help",
+        "+list bots",
+        "+list shards",
+        "+r1address to english",
+        "+select",
+        "+start shard",
+        "+test",
+        "+testpriv",
     ],
     "@moderator": [
         "+debug",
@@ -96,7 +102,7 @@ permissionGroups = {
         "+start shard",
         "+test",
         "+testpriv",
-        "+whitelist",
+        "+view scores",
     ],
     "@everyone": [
         "+debug",

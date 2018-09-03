@@ -69,8 +69,8 @@ for arg in sys.argv[1:]:
 
 botChannels = [
     '420045459177078795', # monumenta-bot
-    #'186225508562763776', # general
-    '467361088460029954', # moderation-bot (public discord)
+    '467361088460029954', # moderation-bot (public discord, moderators + TE only)
+    '486019840134610965', # epic-bot (public discord, publicly visible, used for terrain reset)
 ]
 
 client = discord.Client()
