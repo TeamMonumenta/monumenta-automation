@@ -35,6 +35,7 @@ from lib_monumenta.common import resetRegionalDifficulty, movePlayers, replaceGl
 from lib_monumenta.list_uuids import listUUIDs
 #from lib_monumenta.advancements import advancements
 from lib_monumenta.move_region import moveRegion
+from lib_monumenta.raffle import voteRaffle
 from lib_monumenta.timing import timings
 
 def terrainResetInstance(config, outputFile, statusQueue):
@@ -102,6 +103,12 @@ def terrainResetInstance(config, outputFile, statusQueue):
         worldScores = scoreboard.scoreboard(localDstFolder)
 
         nextStep("[TIMING] Loaded scoreboard")
+
+        if "VoteRaffleLog" in config:
+            print "Starting weekly voting raffle..."
+            voteRaffle( worldScores, config["VoteRaffleLog"] )
+
+            nextStep("[TIMING] Raffle done")
 
         if "playerScoreChanges" in config:
             print "  Adjusting player scores (dungeon scores)..."

@@ -27,6 +27,8 @@ config = {
     # Reset dungeon scores
     "playerScoreChanges":dungeonScoreRules,
 
+    "VoteRaffleLog":"/home/rock/5_SCRATCH/tmpreset/raffle_vote.txt",
+
     "revokeAdvancements":advancementRevokeList,
 
     "tpToSpawn":True,
