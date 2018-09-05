@@ -18,7 +18,9 @@ from lib_monumenta.iter_entity import IterEntities
 soulboundPrefix = u'* Soulbound to '
 replicaText = u'§5§o* Replica Item *'
 hopeText = u'§7Hope'
-infusedByPrefix = u'Infused by '
+hopeifiedByPrefix = u'Infused by '
+gildText = u'§7Gilded'
+gildedByPrefix = u'Enhanced by '
 
 # used to ignore data values that aren't damage
 ItemsWithRealDamage = [
@@ -190,13 +192,55 @@ def hopeify(lore,InfusedBy):
             nameAdded == False and
             len(removeFormatting(loreEntry)) == 0
         ):
-            newLore.append(nbt.TAG_String(infusedByPrefix + InfusedBy))
+            newLore.append(nbt.TAG_String(hopeifiedByPrefix + InfusedBy))
             nameAdded = True
 
         newLore.append(loreEntryTag)
 
     if nameAdded == False:
-        newLore.append(nbt.TAG_String(infusedByPrefix + InfusedBy))
+        newLore.append(nbt.TAG_String(hopeifiedByPrefix + InfusedBy))
+
+    if not kingsValleyFound:
+        return lore
+
+    return newLore
+
+def gild(lore,GildedBy):
+    newLore = nbt.TAG_List()
+    gildAdded = False
+    nameAdded = False
+    kingsValleyFound = False
+
+    for loreEntryTag in lore:
+        loreEntry = loreEntryTag.value
+
+        if gildText in loreEntry:
+            return lore
+
+        if u"King's Valley" in loreEntry:
+            kingsValleyFound = True
+
+        if (
+            gildAdded == False and
+            (
+                u"King's Valley" in loreEntry or
+                len(removeFormatting(loreEntry)) == 0
+            )
+        ):
+            newLore.append(nbt.TAG_String(gildText))
+            gildAdded = True
+
+        if (
+            nameAdded == False and
+            len(removeFormatting(loreEntry)) == 0
+        ):
+            newLore.append(nbt.TAG_String(gildedByPrefix + GildedBy))
+            nameAdded = True
+
+        newLore.append(loreEntryTag)
+
+    if nameAdded == False:
+        newLore.append(nbt.TAG_String(gildedByPrefix + GildedBy))
 
     if not kingsValleyFound:
         return lore
@@ -1105,6 +1149,7 @@ class actNBT(object):
         soulbound = None
         isReplica = False
         hopeifiedBy = None
+        gildedBy = None
         if "tag" in itemStack:
             tagsToRestore["tag"] = nbt.TAG_Compound()
             # armor color
@@ -1119,8 +1164,10 @@ class actNBT(object):
                             soulbound = loreLine
                         if replicaText == loreLine.value:
                             isReplica = True
-                        if infusedByPrefix == loreLine.value[:len(infusedByPrefix)]:
-                            hopeifiedBy = loreLine.value[len(infusedByPrefix):]
+                        if hopeifiedByPrefix == loreLine.value[:len(hopeifiedByPrefix)]:
+                            hopeifiedBy = loreLine.value[len(hopeifiedByPrefix):]
+                        if gildedByPrefix == loreLine.value[:len(gildedByPrefix)]:
+                            gildedBy = loreLine.value[len(gildedByPrefix):]
             # banner/shield color/pattern
             if "BlockEntityTag" in itemStack["tag"]:
                 tagsToRestore["tag"]["BlockEntityTag"] = nbt.TAG_Compound()
@@ -1157,7 +1204,8 @@ class actNBT(object):
             if (
                 (soulbound is not None) or
                 isReplica or
-                (hopeifiedBy is not None)
+                (hopeifiedBy is not None) or
+                (gildedBy is not None)
             ):
                 if "display" not in itemStack["tag"]:
                     itemStack["tag"]["display"] = nbt.TAG_Compound()
@@ -1172,6 +1220,9 @@ class actNBT(object):
                             loreLine.value = replicaText
                 if hopeifiedBy is not None:
                     lore = hopeify(lore,hopeifiedBy)
+                    itemStack["tag"]["display"]["Lore"] = lore
+                if gildedBy is not None:
+                    lore = gild(lore,gildedBy)
                     itemStack["tag"]["display"]["Lore"] = lore
 
     def str(self,prefix=u''):
@@ -1280,7 +1331,7 @@ class actUnhope(object):
                     loreTag = displayTag["Lore"]
                     for i in range(len(loreTag)-1,-1,-1):
                         loreLine = loreTag[i]
-                        if infusedByPrefix == loreLine.value[:len(infusedByPrefix)]:
+                        if hopeifiedByPrefix == loreLine.value[:len(hopeifiedByPrefix)]:
                             hopeInfused = True
                             loreTag.pop(i)
                         if hopeInfused and hopeText == loreLine.value:
