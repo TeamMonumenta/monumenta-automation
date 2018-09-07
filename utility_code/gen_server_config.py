@@ -220,8 +220,8 @@ config = {
 
     'region_1':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=11'),
-            ('spigot.yml', 'view-distance', '    view-distance: 11'),
+            ('server.properties', 'view-distance', 'view-distance=9'),
+            ('spigot.yml', 'view-distance', '    view-distance: 9'),
             ('server.properties', 'server-port', 'server-port=25566'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /setblock -1449 1 -1440 redstone_block'),
             ('plugins/Monumenta-Plugins/Properties.json', '"dailyResetEnabled":', '"dailyResetEnabled": true,'),
