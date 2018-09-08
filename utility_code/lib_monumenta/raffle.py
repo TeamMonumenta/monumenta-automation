@@ -46,7 +46,7 @@ def voteRaffle(scoreboard,logPath):
         logfp.close
         return
 
-    numWinners = 1
+    numWinners = 2
     #numWinners = int( ceil( len(voteNames) / 10.0 ) )
     #logfp.write( "Since there are {} voters this week, there will be {} winners.\n\n".format( len(voteNames), numWinners ) )
 
