@@ -43,7 +43,6 @@ server_config_to_copy = [
         ('plugins/OpenInv/config.yml',),
         ('plugins/Monumenta-Plugins/config.yml',),
         ('plugins/Monumenta-Plugins/Properties.json',),
-        ('plugins/Votifier/config.yml',),
     ]
 
 server_config_min = [
@@ -182,6 +181,7 @@ dynmap = [
 
 votifier = [
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
+        ('plugins/Votifier', '../../server_config/data/plugins/region_1/Votifier'),
     ]
 
 
@@ -195,7 +195,7 @@ base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedi
 if (SERVER_TYPE == 'build'):
     base_plugins += speedchanger + nbteditor + voxelsniper + gobrush
 else:
-    base_plugins += vanish + votifier
+    base_plugins += vanish
 
 # String replacements:
 # {servername} - server name
@@ -304,7 +304,7 @@ config = {
         {"name":"Farr race", "type":"AdventureZone", "pos1":"1036 99 -119", "pos2":"1051 112 -105"}
     ],'''),
         ],
-        'linked':server_config + advancements_r1 + base_plugins + coreprotect,
+        'linked':server_config + advancements_r1 + base_plugins + coreprotect + votifier,
     },
 
     'region_2':{
