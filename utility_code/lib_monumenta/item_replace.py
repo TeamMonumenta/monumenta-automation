@@ -20,7 +20,7 @@ replicaText = u'§5§o* Replica Item *'
 hopeText = u'§7Hope'
 hopeifiedByPrefix = u'Infused by '
 gildText = u'§7Gilded'
-gildedByPrefix = u'Enhanced by '
+gildedByPrefix = u'Gilded by '
 
 # used to ignore data values that aren't damage
 ItemsWithRealDamage = [
