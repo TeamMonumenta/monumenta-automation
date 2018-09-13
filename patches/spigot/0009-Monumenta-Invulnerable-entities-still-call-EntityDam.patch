@@ -1,7 +1,7 @@
-From 89b7a45ab5b750afa26deaeb8fae47668543fd24 Mon Sep 17 00:00:00 2001
+From 5530846187c2db7bdbea3d654a21fc450133e490 Mon Sep 17 00:00:00 2001
 From: Monumenta <monumenta.mgmt@gmail.com>
 Date: Sun, 14 Jan 2018 20:41:40 -0500
-Subject: [PATCH 10/10] Monumenta - Invulnerable entities still call
+Subject: [PATCH 09/10] Monumenta - Invulnerable entities still call
  EntityDamageByEntityEvent
 
 ---
@@ -11,10 +11,10 @@ Subject: [PATCH 10/10] Monumenta - Invulnerable entities still call
  3 files changed, 21 insertions(+), 12 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index ee2d1f9a..f1ccd5ee 100644
+index fd050c5f..64b26247 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -31,6 +31,12 @@ import org.bukkit.event.entity.EntityTeleportEvent;
+@@ -32,6 +32,12 @@ import org.bukkit.event.entity.EntityTeleportEvent;
  import org.bukkit.event.player.PlayerItemConsumeEvent;
  // CraftBukkit end
  
@@ -27,7 +27,7 @@ index ee2d1f9a..f1ccd5ee 100644
  import org.bukkit.craftbukkit.SpigotTimings; // Spigot
  
  public abstract class EntityLiving extends Entity {
-@@ -812,6 +818,7 @@ public abstract class EntityLiving extends Entity {
+@@ -910,6 +916,7 @@ public abstract class EntityLiving extends Entity {
  
      public boolean damageEntity(DamageSource damagesource, float f) {
          if (this.isInvulnerable(damagesource)) {
@@ -35,7 +35,7 @@ index ee2d1f9a..f1ccd5ee 100644
              return false;
          } else if (this.world.isClientSide) {
              return false;
-@@ -1273,9 +1280,20 @@ public abstract class EntityLiving extends Entity {
+@@ -1374,9 +1381,20 @@ public abstract class EntityLiving extends Entity {
          }
      }
  
@@ -58,10 +58,10 @@ index ee2d1f9a..f1ccd5ee 100644
              float originalDamage = f;
              Function<Double, Double> hardHat = new Function<Double, Double>() {
 diff --git a/src/main/java/net/minecraft/server/EntityParrot.java b/src/main/java/net/minecraft/server/EntityParrot.java
-index f31d9b31..eb1ef40c 100644
+index fe9dafbd..c9bf69d9 100644
 --- a/src/main/java/net/minecraft/server/EntityParrot.java
 +++ b/src/main/java/net/minecraft/server/EntityParrot.java
-@@ -272,16 +272,7 @@ public class EntityParrot extends EntityPerchable implements EntityBird {
+@@ -306,16 +306,7 @@ public class EntityParrot extends EntityPerchable implements EntityBird {
      }
  
      public boolean damageEntity(DamageSource damagesource, float f) {
@@ -80,10 +80,10 @@ index f31d9b31..eb1ef40c 100644
  
      public int getVariant() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index bc84dd30..c661bf98 100644
+index 002c483e..d39232d6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -569,7 +569,7 @@ public class CraftEventFactory {
+@@ -592,7 +592,7 @@ public class CraftEventFactory {
          throw new IllegalStateException(String.format("Unhandled damage of %s from %s", entity, source.translationIndex));
      }
  

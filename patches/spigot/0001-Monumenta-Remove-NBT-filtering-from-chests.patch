@@ -1,20 +1,21 @@
-From de437b82dbc966306355c228e36488ae5c8ad288 Mon Sep 17 00:00:00 2001
+From 89c92117b32604494696e124746e177255d6723c Mon Sep 17 00:00:00 2001
 From: BuildTools <unconfigured@null.spigotmc.org>
 Date: Fri, 18 Aug 2017 21:48:22 -0700
 Subject: [PATCH 01/10] Monumenta - Remove NBT filtering from chests
 
 ---
- src/main/java/net/minecraft/server/TileEntityChest.java | 6 ------
- 1 file changed, 6 deletions(-)
+ src/main/java/net/minecraft/server/TileEntityChest.java | 7 -------
+ 1 file changed, 7 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/TileEntityChest.java b/src/main/java/net/minecraft/server/TileEntityChest.java
-index 3b5af473..e8a3ceff 100644
+index ad601a39..ef10cd7d 100644
 --- a/src/main/java/net/minecraft/server/TileEntityChest.java
 +++ b/src/main/java/net/minecraft/server/TileEntityChest.java
-@@ -362,10 +362,4 @@ public class TileEntityChest extends TileEntityLootable implements ITickable {
-         return this.items;
+@@ -284,11 +284,4 @@ public class TileEntityChest extends TileEntityLootable implements ITickable {
+         tileentitychest.a(tileentitychest1.q());
+         tileentitychest1.a(nonnulllist);
      }
- 
+-
 -    // CraftBukkit start
 -    @Override
 -    public boolean isFilteredNBT() {

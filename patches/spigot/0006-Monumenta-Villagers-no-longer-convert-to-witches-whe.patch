@@ -1,4 +1,4 @@
-From ab390ce49fb269e442effc84ca9743182e2375ca Mon Sep 17 00:00:00 2001
+From 029a92db0098099cf6bb6ede2d085a43fad8dff5 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Tue, 31 Oct 2017 17:46:54 -0700
 Subject: [PATCH 06/10] Monumenta - Villagers no longer convert to witches when
@@ -9,10 +9,10 @@ Subject: [PATCH 06/10] Monumenta - Villagers no longer convert to witches when
  1 file changed, 1 insertion(+), 14 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityVillager.java b/src/main/java/net/minecraft/server/EntityVillager.java
-index fe137ed0..319e39a7 100644
+index 32e327e4..90fae25d 100644
 --- a/src/main/java/net/minecraft/server/EntityVillager.java
 +++ b/src/main/java/net/minecraft/server/EntityVillager.java
-@@ -619,20 +619,7 @@ public class EntityVillager extends EntityAgeable implements NPC, IMerchant {
+@@ -607,20 +607,7 @@ public class EntityVillager extends EntityAgeable implements NPC, IMerchant {
      }
  
      public void onLightningStrike(EntityLightning entitylightning) {
@@ -20,7 +20,7 @@ index fe137ed0..319e39a7 100644
 -            EntityWitch entitywitch = new EntityWitch(this.world);
 -
 -            entitywitch.setPositionRotation(this.locX, this.locY, this.locZ, this.yaw, this.pitch);
--            entitywitch.prepare(this.world.D(new BlockPosition(entitywitch)), (GroupDataEntity) null);
+-            entitywitch.prepare(this.world.getDamageScaler(new BlockPosition(entitywitch)), (GroupDataEntity) null, (NBTTagCompound) null);
 -            entitywitch.setNoAI(this.isNoAI());
 -            if (this.hasCustomName()) {
 -                entitywitch.setCustomName(this.getCustomName());
@@ -33,7 +33,7 @@ index fe137ed0..319e39a7 100644
 +        return;
      }
  
-     public InventorySubcontainer dq() {
+     public InventorySubcontainer dD() {
 -- 
 2.14.1
 

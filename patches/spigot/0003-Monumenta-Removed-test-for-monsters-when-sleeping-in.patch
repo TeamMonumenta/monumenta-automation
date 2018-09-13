@@ -1,32 +1,31 @@
-From cb6a87e36c8c9ad6db82b855755e55c819c9e18a Mon Sep 17 00:00:00 2001
+From eedfa979d6dd1c0e3e615745ec6cf9e6ceb0d63f Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Thu, 5 Oct 2017 21:45:16 -0700
 Subject: [PATCH 03/10] Monumenta - Removed test for monsters when sleeping in
  beds
 
 ---
- src/main/java/net/minecraft/server/EntityHuman.java | 8 --------
- 1 file changed, 8 deletions(-)
+ src/main/java/net/minecraft/server/EntityHuman.java | 7 -------
+ 1 file changed, 7 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index c374efd7..48a1b536 100644
+index 9996c7f7..50f23346 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -1213,14 +1213,6 @@ public abstract class EntityHuman extends EntityLiving {
-             if (!this.a(blockposition, enumdirection)) {
-                 return EntityHuman.EnumBedResult.TOO_FAR_AWAY;
+@@ -1265,13 +1265,6 @@ public abstract class EntityHuman extends EntityLiving {
              }
+ 
+             if (!this.u()) {
+-                double d0 = 8.0D;
+-                double d1 = 5.0D;
+-                List list = this.world.a(EntityMonster.class, new AxisAlignedBB((double) blockposition.getX() - 8.0D, (double) blockposition.getY() - 5.0D, (double) blockposition.getZ() - 8.0D, (double) blockposition.getX() + 8.0D, (double) blockposition.getY() + 5.0D, (double) blockposition.getZ() + 8.0D), (Predicate) (new EntityHuman.c(this, null)));
 -
--            double d0 = 8.0D;
--            double d1 = 5.0D;
--            List list = this.world.a(EntityMonster.class, new AxisAlignedBB((double) blockposition.getX() - 8.0D, (double) blockposition.getY() - 5.0D, (double) blockposition.getZ() - 8.0D, (double) blockposition.getX() + 8.0D, (double) blockposition.getY() + 5.0D, (double) blockposition.getZ() + 8.0D), (Predicate) (new EntityHuman.c(this, null)));
--
--            if (!list.isEmpty()) {
--                return EntityHuman.EnumBedResult.NOT_SAFE;
--            }
+-                if (!list.isEmpty()) {
+-                    return EntityHuman.EnumBedResult.NOT_SAFE;
+-                }
+             }
          }
  
-         if (this.isPassenger()) {
 -- 
 2.14.1
 

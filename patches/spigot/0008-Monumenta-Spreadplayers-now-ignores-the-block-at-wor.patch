@@ -1,7 +1,7 @@
-From 28791b477a40b7acbda455ba5616146d61f55bf8 Mon Sep 17 00:00:00 2001
+From 6542044a144a764e19c8675dd1a705a3580d1745 Mon Sep 17 00:00:00 2001
 From: Monumenta <monumenta.mgmt@gmail.com>
 Date: Fri, 12 Jan 2018 19:54:34 -0500
-Subject: [PATCH 09/10] Monumenta - Spreadplayers now ignores the block at
+Subject: [PATCH 08/10] Monumenta - Spreadplayers now ignores the block at
  world height
 
 Signed-off-by: Monumenta <monumenta.mgmt@gmail.com>
@@ -10,26 +10,26 @@ Signed-off-by: Monumenta <monumenta.mgmt@gmail.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/CommandSpreadPlayers.java b/src/main/java/net/minecraft/server/CommandSpreadPlayers.java
-index c79679e6..9a93338a 100644
+index 0a8d2b8e..1c03bc8a 100644
 --- a/src/main/java/net/minecraft/server/CommandSpreadPlayers.java
 +++ b/src/main/java/net/minecraft/server/CommandSpreadPlayers.java
-@@ -308,7 +308,7 @@ public class CommandSpreadPlayers extends CommandAbstract {
+@@ -261,7 +261,7 @@ public class CommandSpreadPlayers {
          }
  
-         public int a(World world) {
+         public int a(IBlockAccess iblockaccess) {
 -            BlockPosition blockposition = new BlockPosition(this.a, 256.0D, this.b);
 +            BlockPosition blockposition = new BlockPosition(this.a, 255.0D, this.b);
  
              do {
                  if (blockposition.getY() <= 0) {
-@@ -322,7 +322,7 @@ public class CommandSpreadPlayers extends CommandAbstract {
+@@ -275,7 +275,7 @@ public class CommandSpreadPlayers {
          }
  
-         public boolean b(World world) {
+         public boolean b(IBlockAccess iblockaccess) {
 -            BlockPosition blockposition = new BlockPosition(this.a, 256.0D, this.b);
 +            BlockPosition blockposition = new BlockPosition(this.a, 255.0D, this.b);
  
-             Material material;
+             IBlockData iblockdata;
  
 -- 
 2.14.1

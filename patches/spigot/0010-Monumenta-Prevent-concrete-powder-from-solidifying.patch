@@ -1,0 +1,26 @@
+From e756af8a56a0eafec51c8c41c96455e2644052ad Mon Sep 17 00:00:00 2001
+From: Byron Marohn <combustible@live.com>
+Date: Thu, 13 Sep 2018 17:26:47 -0400
+Subject: [PATCH 10/10] Monumenta - Prevent concrete powder from solidifying
+
+Signed-off-by: Byron Marohn <combustible@live.com>
+---
+ src/main/java/net/minecraft/server/BlockConcretePowder.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/BlockConcretePowder.java b/src/main/java/net/minecraft/server/BlockConcretePowder.java
+index 792e59e5..cc4f5496 100644
+--- a/src/main/java/net/minecraft/server/BlockConcretePowder.java
++++ b/src/main/java/net/minecraft/server/BlockConcretePowder.java
+@@ -69,7 +69,7 @@ public class BlockConcretePowder extends BlockFalling {
+     }
+ 
+     private static boolean x(IBlockData iblockdata) {
+-        return iblockdata.s().a(TagsFluid.WATER);
++        return false;
+     }
+ 
+     public IBlockData updateState(IBlockData iblockdata, EnumDirection enumdirection, IBlockData iblockdata1, GeneratorAccess generatoraccess, BlockPosition blockposition, BlockPosition blockposition1) {
+-- 
+2.14.1
+

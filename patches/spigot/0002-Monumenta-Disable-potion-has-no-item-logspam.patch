@@ -1,4 +1,4 @@
-From 8a7561ae2d94b643c66031624450097bb405052b Mon Sep 17 00:00:00 2001
+From 1cb042d6449ba6fb28ac468e7c9cc57b7ef98f4f Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Wed, 27 Sep 2017 18:46:14 -0700
 Subject: [PATCH 02/10] Monumenta - Disable potion has no item logspam
@@ -8,10 +8,10 @@ Subject: [PATCH 02/10] Monumenta - Disable potion has no item logspam
  1 file changed, 4 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityPotion.java b/src/main/java/net/minecraft/server/EntityPotion.java
-index 80d09488..6a8ebcb1 100644
+index 36e03cb5..63724fc1 100644
 --- a/src/main/java/net/minecraft/server/EntityPotion.java
 +++ b/src/main/java/net/minecraft/server/EntityPotion.java
-@@ -52,10 +52,6 @@ public class EntityPotion extends EntityProjectile {
+@@ -43,10 +43,6 @@ public class EntityPotion extends EntityProjectile {
          ItemStack itemstack = (ItemStack) this.getDataWatcher().get(EntityPotion.f);
  
          if (itemstack.getItem() != Items.SPLASH_POTION && itemstack.getItem() != Items.LINGERING_POTION) {
