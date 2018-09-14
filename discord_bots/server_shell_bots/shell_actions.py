@@ -805,6 +805,9 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         if "region_1" in allShards:
             self._commands += [
+                self.display("Renaming advancements (fully tested this time, don't worry)."),
+                self.run("python3 " + _top_level + "/utility_code/advancement_rename_simple.py")
+
                 self.display("Raffle results:"),
                 self.run("python2 " + _top_level + "/utility_code/raffle_results.py", displayOutput=True)
             ]
