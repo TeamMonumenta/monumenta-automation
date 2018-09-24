@@ -70,6 +70,8 @@ privUsers = {
 groupByRole = {
     # Team Epic (TE)
     "341032989787947008": "@team epic",
+    # Intern (TE)
+    "390269554657460226": "@intern",
     # Bot Skill Info (TE)
     "464598658449670145": "+skill info",
     # Moderator (Public)
@@ -89,6 +91,18 @@ permissionGroups = {
         "+r1address to english",
         "+select",
         "+start shard",
+        "+stop shard",
+        "+test",
+        "+testpriv",
+    ],
+    "@intern": [
+        "+debug",
+        "+help",
+        "+list bots",
+        "+list shards",
+        "+select",
+        "+start shard",
+        "+stop shard",
         "+test",
         "+testpriv",
     ],
@@ -100,6 +114,7 @@ permissionGroups = {
         "+r1address to english",
         "+select",
         "+start shard",
+        "+stop shard",
         "+test",
         "+testpriv",
         "+view scores",
@@ -705,6 +720,39 @@ Starts a bungee shutdown timer for 10 minutes. Returns immediately.'''
             self.mention(),
         ]
 allActions.append(StopIn10MinutesAction)
+
+class StopShardAction(ShellAction):
+    '''Stop specified shards.
+Syntax:
+{cmdPrefix}start shard *
+{cmdPrefix}start shard region_1 region_2 orange'''
+    command = "stop shard"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
+
+        baseShellCommand = _top_level + "/discord_bots/server_shell_bots/bin/stop_shards.sh"
+        shellCommand = baseShellCommand
+        allShards = botConfig["shards"]
+        if '*' in commandArgs:
+            for shard in allShards.keys():
+                shellCommand += " " + allShards[shard]["path"]
+        else:
+            for shard in allShards.keys():
+                if shard in commandArgs:
+                    shellCommand += " " + allShards[shard]["path"]
+
+        if shellCommand == baseShellCommand:
+            self._commands = [
+                self.display("No specified shards on this server."),
+            ]
+        else:
+            self._commands = [
+                self.run(shellCommand, displayOutput=True),
+            ]
+allActions.append(StopShardAction)
 
 class TerrainResetAction(ShellAction):
     '''Dangerous!
