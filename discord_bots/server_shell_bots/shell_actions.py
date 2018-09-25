@@ -423,6 +423,37 @@ Must be run before preparing the build server reset bundle'''
         ]
 allActions.append(GenerateInstancesAction)
 
+class GetErrorsAction(ShellAction):
+    '''Get the last minute of error log data from a given shard.
+Syntax:
+{cmdPrefix}get errors region_1'''
+    command = "get errors"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
+
+        if len(commandArgs) != 1:
+            self._commands = [
+                self.display("You must specify exactly one shard per command."),
+            ]
+
+        shard = commandArgs[0]
+        allShards = botConfig["shards"]
+        if shard in allShards.keys():
+            self._commands = [
+                self.cd(allShards[shard]["path"]),
+                self.cd("logs"),
+                self.run('''grep --text -A2 "$(date --date='-1 minute' +'%H:%M'):.*Server thread/ERROR" latest.log''', displayOutput=True),
+                self.run('''grep --text -A2 "$(date +'%H:%M'):.*Server thread/ERROR" latest.log''', displayOutput=True),
+            ]
+        else:
+            self._commands = [
+                self.display("No specified shards on this server."),
+            ]
+allActions.append(GetErrorsAction)
+
 class ListShardsAction(ShellAction):
     '''Lists currently running shards on this server'''
     command = "list shards"
@@ -724,8 +755,8 @@ allActions.append(StopIn10MinutesAction)
 class StopShardAction(ShellAction):
     '''Stop specified shards.
 Syntax:
-{cmdPrefix}start shard *
-{cmdPrefix}start shard region_1 region_2 orange'''
+{cmdPrefix}stop shard *
+{cmdPrefix}stop shard region_1 region_2 orange'''
     command = "stop shard"
     hasPermissions = checkPermissions
 
@@ -738,11 +769,11 @@ Syntax:
         allShards = botConfig["shards"]
         if '*' in commandArgs:
             for shard in allShards.keys():
-                shellCommand += " " + allShards[shard]["path"]
+                shellCommand += " " + shard
         else:
             for shard in allShards.keys():
                 if shard in commandArgs:
-                    shellCommand += " " + allShards[shard]["path"]
+                    shellCommand += " " + shard
 
         if shellCommand == baseShellCommand:
             self._commands = [
