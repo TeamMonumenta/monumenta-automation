@@ -445,8 +445,7 @@ Syntax:
             self._commands = [
                 self.cd(allShards[shard]["path"]),
                 self.cd("logs"),
-                self.run('''grep --text -A2 "$(date --date='-1 minute' +'%H:%M'):.*Server thread/ERROR" latest.log''', displayOutput=True),
-                self.run('''grep --text -A2 "$(date +'%H:%M'):.*Server thread/ERROR" latest.log''', displayOutput=True),
+                self.run(_top_level + "/discord_bots/server_shell_bots/bin/get_errors.sh", displayOutput=True),
             ]
         else:
             self._commands = [
