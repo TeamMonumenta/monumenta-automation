@@ -1,3 +1,6 @@
 [submodule "MCEdit-Unified"]
 	path = MCEdit-Unified
 	url = git@github.com:TeamEpic/MCEdit-Unified.git
+[submodule "quarry"]
+	path = quarry
+	url = git@github.com:TeamEpic/quarry.git
