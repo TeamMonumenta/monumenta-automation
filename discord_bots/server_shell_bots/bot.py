@@ -67,11 +67,13 @@ for arg in sys.argv[1:]:
 
 # List of channels this bot will consume messages in
 
-botChannels = [
-    '420045459177078795', # monumenta-bot
-    '467361088460029954', # moderation-bot (public discord, moderators + TE only)
-    '486019840134610965', # epic-bot (public discord, publicly visible, used for terrain reset)
-]
+botChannelNames = {
+    '420045459177078795':'monumenta-bot (dev discord)',
+    '467361088460029954':'moderation-bot (public discord, moderators + TE only)',
+    '486019840134610965':'epic-bot (public discord, publicly visible, used for terrain reset)',
+}
+
+botChannels = list(botChannelNames.keys())
 
 client = discord.Client()
 
@@ -85,8 +87,11 @@ async def on_ready():
     print(client.user.id)
     print('------')
     for channelId in botChannels:
-        channel = client.get_channel(channelId)
-        await client.send_message(channel, botName + " started and now listening.")
+        try:
+            channel = client.get_channel(channelId)
+            await client.send_message(channel, botName + " started and now listening.")
+        except:
+            print( "Cannot connect to channel: " + botChannelNames[channelId] )
 
 @client.event
 async def on_message(message):

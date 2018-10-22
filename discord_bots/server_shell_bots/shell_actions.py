@@ -783,7 +783,7 @@ Syntax:
             ]
         else:
             self._commands = [
-                self.run(shellCommand, displayOutput=True),
+                self.run(shellCommand),
             ]
 allActions.append(StopShardAction)
 
