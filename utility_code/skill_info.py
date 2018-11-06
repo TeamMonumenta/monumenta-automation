@@ -1,14 +1,7 @@
-#!/usr/bin/env python2.7
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
-"""
-WARNING!
-This is very unoptimized. A cache would speed this up significantly.
-I'm glad this pointed out that problem for terrain reset, though.
-"""
-
-from lib_monumenta import scoreboard
-from lib_monumenta.timing import timings
+from lib_py3.scoreboard import Scoreboard
+from lib_py3.timing import timings
 
 mainTiming = timings(enabled=True)
 nextStep = mainTiming.nextStep
@@ -98,9 +91,21 @@ for skills in classSkills:
     for skill in skills:
         Objectives.append(skill["Objective"])
 
-worldScores = scoreboard.scoreboard("/home/rock/project_epic/region_1/Project_Epic-region_1")
-Cache = worldScores.searchScores(Objective=Objectives)
-searchResults = worldScores.searchScores(Objective="Class",Score={"min":1,"max":len(classList)},Cache=Cache)
+worldScores = Scoreboard("/home/rock/project_epic/region_1/Project_Epic-region_1")
+
+nextStep("Building caches")
+
+GlobalCache = worldScores.get_cache(Objective=Objectives)
+TotalLevelCache = worldScores.get_cache(Objective="TotalLevel",Cache=GlobalCache)
+SkillCache = worldScores.get_cache(Objective="Skill",Cache=GlobalCache)
+
+for skills in classSkills:
+    for skill in skills:
+        skill["Cache"] = worldScores.get_cache(Objective=skill["Objective"],Score={"min":1,"max":maxSkillLevel},Cache=GlobalCache)
+
+nextStep("Caches complete")
+
+searchResults = worldScores.search_scores(Objective="Class",Score={"min":1,"max":len(classList)},Cache=GlobalCache)
 
 playersByClass = {}
 # 0th item is total regardless of skill points
@@ -111,11 +116,11 @@ for skillPoints in range(1,maxSkillPoints+1):
         playersByClass[(classNum,skillPoints)] = []
 
 for aScoreEntry in searchResults:
-    player = aScoreEntry["Name"].value
-    playerClass = aScoreEntry["Score"].value
+    player = aScoreEntry.at_path("Name").value
+    playerClass = aScoreEntry.at_path("Score").value
 
-    playerTotalLevel = worldScores.getScore(Name=player,Objective="TotalLevel",Fallback=0,Cache=Cache)
-    playerSkillPointsLeft = worldScores.getScore(Name=player,Objective="Skill",Fallback=0,Cache=Cache)
+    playerTotalLevel = worldScores.get_score(Name=player,Objective="TotalLevel",Fallback=0,Cache=TotalLevelCache)
+    playerSkillPointsLeft = worldScores.get_score(Name=player,Objective="Skill",Fallback=0,Cache=SkillCache)
     playerSkillCount = playerTotalLevel - playerSkillPointsLeft
     try:
         playersByClass[(playerClass,playerSkillCount)].append(player)
@@ -124,16 +129,16 @@ for aScoreEntry in searchResults:
     except:
         pass
 
-print "Percentage of players with X skill points spent:"
+print("Percentage of players with X skill points spent:")
 for skillPoints in range(1,maxSkillPoints+1):
     percent = 100.0 * totalWithClass[skillPoints] / totalWithClass[0]
-    print "{0:>2} points, {1:6.2f}%".format(skillPoints,percent)
+    print("{0:>2} points, {1:6.2f}%".format(skillPoints,percent))
 
-print "Class by skill points"
+print("Class by skill points")
 line = "         ,"
 for skillPoints in range(1,maxSkillPoints+1):
     line += "{0:>7},".format(skillPoints)
-print line
+print(line)
 for classNum in range(len(classList)):
     className = classList[classNum]
     line = "{0:<9},".format(className)
@@ -141,16 +146,16 @@ for classNum in range(len(classList)):
         totalMembers = len(playersByClass[(classNum+1,skillPoints)])
         percentUsage = 100.0 * totalMembers / totalWithClass[skillPoints]
         line += "{0:6.2f}%,".format(percentUsage)
-    print line
+    print(line)
 
 for skillPoints in range(1,maxSkillPoints+1):
-    print "=--="*20
-    print "Players with {} skill points selected:".format(skillPoints)
+    print("=--="*20)
+    print("Players with {} skill points selected:".format(skillPoints))
     for classNum in range(len(classList)):
         className = classList[classNum]
 
-        print "="*80
-        print className
+        print("="*80)
+        print(className)
 
         skillList = classSkills[classNum]
         
@@ -159,9 +164,9 @@ for skillPoints in range(1,maxSkillPoints+1):
 
         percentUsage = 100.0 * totalMembers / totalWithClass[skillPoints]
 
-        print "-"*80
-        print "{} Members".format(totalMembers)
-        print "{0:6.2f}% of players play this class".format(percentUsage)
+        print("-"*80)
+        print("{} Members".format(totalMembers))
+        print("{0:6.2f}% of players play this class".format(percentUsage))
 
         if totalMembers == 0:
             continue
@@ -181,8 +186,9 @@ for skillPoints in range(1,maxSkillPoints+1):
             for skillId in range(len(skillList)):
                 skill = skillList[skillId]
                 skillObjective = skill["Objective"]
+                skillCache = skill["Cache"]
 
-                level = worldScores.getScore(Name=player,Objective=skillObjective,Fallback=0,Cache=Cache)
+                level = worldScores.get_score(Name=player,Objective=skillObjective,Fallback=0,Cache=skillCache)
                 if level == 0:
                     continue
                 if level > maxSkillLevel:
@@ -192,25 +198,26 @@ for skillPoints in range(1,maxSkillPoints+1):
                 for specSkillId in range(len(skillList)):
                     specSkill = skillList[specSkillId]
                     specSkillObjective = specSkill["Objective"]
+                    specSkillCache = specSkill["Cache"]
 
-                    specLevel = worldScores.getScore(Name=player,Objective=specSkillObjective,Fallback=0,Cache=Cache)
+                    specLevel = worldScores.get_score(Name=player,Objective=specSkillObjective,Fallback=0,Cache=specSkillCache)
                     if specLevel == 0:
                         continue
                     if specLevel > maxSkillLevel:
                         continue
                     specSheet[(skillId,level)][(specSkillId,specLevel)] += 1
 
-        print "-"*80
+        print("-"*80)
         for skillId in range(len(skillList)):
             skill = skillList[skillId]
             skillName = skill["Name"]
 
             for level in range(1,maxSkillLevel+1):
                 percentThisSkill = 100.0 * playersUsingSkill[(skillId,level)] / totalMembers
-                print "{0:6.2f}% of {1} players use {2} {3}".format(percentThisSkill,className,skillName,level)
+                print("{0:6.2f}% of {1} players use {2} {3}".format(percentThisSkill,className,skillName,level))
 
-        print "-"*80
-        print "For players using skill A, this percent use skill B:"
+        print("-"*80)
+        print("For players using skill A, this percent use skill B:")
         header = "       ,"
         toPrint = []
         for skillId in range(len(skillList)):
@@ -231,10 +238,10 @@ for skillPoints in range(1,maxSkillPoints+1):
                         thisLine += "{0:6.2f}%,".format(percentThisSpec)
                 toPrint.append(thisLine)
 
-        print header
+        print(header)
         for thisLine in toPrint:
-            print thisLine
-        print "-"*80
+            print(thisLine)
+        print("-"*80)
 
 nextStep("Done")
 
