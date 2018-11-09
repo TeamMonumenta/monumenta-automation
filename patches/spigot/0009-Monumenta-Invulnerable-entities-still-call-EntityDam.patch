@@ -1,7 +1,7 @@
-From 5530846187c2db7bdbea3d654a21fc450133e490 Mon Sep 17 00:00:00 2001
+From 6f16216385835fa0c4ebeddcfa231045b41cef3c Mon Sep 17 00:00:00 2001
 From: Monumenta <monumenta.mgmt@gmail.com>
 Date: Sun, 14 Jan 2018 20:41:40 -0500
-Subject: [PATCH 09/10] Monumenta - Invulnerable entities still call
+Subject: [PATCH 09/11] Monumenta - Invulnerable entities still call
  EntityDamageByEntityEvent
 
 ---
@@ -11,7 +11,7 @@ Subject: [PATCH 09/10] Monumenta - Invulnerable entities still call
  3 files changed, 21 insertions(+), 12 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index fd050c5f..64b26247 100644
+index 6081ffca..766ebf42 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -32,6 +32,12 @@ import org.bukkit.event.entity.EntityTeleportEvent;
@@ -58,7 +58,7 @@ index fd050c5f..64b26247 100644
              float originalDamage = f;
              Function<Double, Double> hardHat = new Function<Double, Double>() {
 diff --git a/src/main/java/net/minecraft/server/EntityParrot.java b/src/main/java/net/minecraft/server/EntityParrot.java
-index fe9dafbd..c9bf69d9 100644
+index 86488e97..2929cae0 100644
 --- a/src/main/java/net/minecraft/server/EntityParrot.java
 +++ b/src/main/java/net/minecraft/server/EntityParrot.java
 @@ -306,16 +306,7 @@ public class EntityParrot extends EntityPerchable implements EntityBird {
@@ -80,10 +80,10 @@ index fe9dafbd..c9bf69d9 100644
  
      public int getVariant() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 002c483e..d39232d6 100644
+index 5ff75877..51d25b51 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -592,7 +592,7 @@ public class CraftEventFactory {
+@@ -652,7 +652,7 @@ public class CraftEventFactory {
          throw new IllegalStateException(String.format("Unhandled damage of %s from %s", entity, source.translationIndex));
      }
  

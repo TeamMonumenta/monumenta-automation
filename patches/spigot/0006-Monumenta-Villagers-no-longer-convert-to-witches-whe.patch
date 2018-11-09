@@ -1,7 +1,7 @@
-From 029a92db0098099cf6bb6ede2d085a43fad8dff5 Mon Sep 17 00:00:00 2001
+From ed0a50bf58021470a7dcf0c511153bf17c226686 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Tue, 31 Oct 2017 17:46:54 -0700
-Subject: [PATCH 06/10] Monumenta - Villagers no longer convert to witches when
+Subject: [PATCH 06/11] Monumenta - Villagers no longer convert to witches when
  struck by lightning
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 06/10] Monumenta - Villagers no longer convert to witches when
  1 file changed, 1 insertion(+), 14 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityVillager.java b/src/main/java/net/minecraft/server/EntityVillager.java
-index 32e327e4..90fae25d 100644
+index 5e523490..51238724 100644
 --- a/src/main/java/net/minecraft/server/EntityVillager.java
 +++ b/src/main/java/net/minecraft/server/EntityVillager.java
 @@ -607,20 +607,7 @@ public class EntityVillager extends EntityAgeable implements NPC, IMerchant {
