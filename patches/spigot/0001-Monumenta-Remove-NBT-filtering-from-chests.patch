@@ -1,7 +1,7 @@
 From bad83145520d7b59dbfe20e982db447f03a85389 Mon Sep 17 00:00:00 2001
 From: BuildTools <unconfigured@null.spigotmc.org>
 Date: Fri, 18 Aug 2017 21:48:22 -0700
-Subject: [PATCH 01/11] Monumenta - Remove NBT filtering from chests
+Subject: [PATCH 01/12] Monumenta - Remove NBT filtering from chests
 
 ---
  src/main/java/net/minecraft/server/TileEntityChest.java | 7 -------

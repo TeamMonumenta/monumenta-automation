@@ -1,7 +1,7 @@
 From 6159b0721497184ab4bfb3de90746e4e431c8538 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Mon, 17 Sep 2018 22:03:48 -0400
-Subject: [PATCH 11/11] Monumenta - Coral is always waterlogged
+Subject: [PATCH 11/12] Monumenta - Coral is always waterlogged
 
 TODO: Patch one spigot actually modifies BlockCoralBase
 
