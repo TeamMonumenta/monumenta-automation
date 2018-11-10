@@ -28,102 +28,90 @@ else:
     print "Using play server settings!"
 
 server_config_to_copy = [
-        ('eula.txt',),
         ('bukkit.yml',),
         ('commands.yml',),
+        ('eula.txt',),
         ('help.yml',),
-        ('permissions.yml',),
-        ('spigot.yml',),
-        ('wepif.yml',),
-        ('start.sh',),
+        ('mark2.properties',),
         ('mark2-scripts.txt',),
-        ('plugins/FastAsyncWorldEdit/config.yml',),
-        ('plugins/NBTEditor/CustomItems/NBTEditor.yml',),
+        ('permissions.yml',),
+        ('server.properties',),
+        ('spigot.yml',),
+        ('start.sh',),
+        ('wepif.yml',),
         ('plugins/CoreProtect/config.yml',),
-        ('plugins/OpenInv/config.yml',),
+        ('plugins/FastAsyncWorldEdit/config.yml',),
+        ('plugins/FastAsyncWorldEdit/config-legacy.yml',),
         ('plugins/Monumenta-Plugins/config.yml',),
         ('plugins/Monumenta-Plugins/Properties.json',),
+        ('plugins/OpenInv/config.yml',),
+        ('plugins/ProtocolLib/config.yml',),
+        ('plugins/Socket4MC/config.yml',),
+        ('plugins/Vault/config.yml',),
     ]
+
 
 server_config_min = [
         ('spigot.jar', '../server_config/spigot.jar'),
+        ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
+        ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
+        ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
+        ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
+        ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
+        ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
+        ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
+        ('plugins/VentureChat/config.yml', '../../../server_config/plugins/VentureChat/{}/config.yml'.format(SERVER_TYPE)),
     ]
 
-structures = [
+server_config = server_config_min + [
         ('Project_Epic-{servername}/structures', '../../server_config/structures'),
+        ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks'),
+        ('Project_Epic-{servername}_the_end/datapacks', '../../../server_config/data/datapacks'),
+        ('Project_Epic-{servername}_the_end/datapacks', '../../../server_config/data/datapacks'),
     ]
 
-server_config_min_plus_data = server_config_min + structures + [
-        ('Project_Epic-{servername}/data/functions', '../../../server_config/data/functions'),
-        ('Project_Epic-{servername}/data/loot_tables', '../../../server_config/data/loot_tables'),
-        ('Project_Epic-{servername}_the_end/data/functions', '../../../server_config/data/functions'),
-        ('Project_Epic-{servername}_the_end/data/loot_tables', '../../../server_config/data/loot_tables'),
-    ]
-
-server_config = server_config_min_plus_data + [
+monumenta = [
+        ('plugins/EpicWarps.jar', '../../server_config/plugins/EpicWarps.jar'),
+        ('plugins/EpicWarps/config.yml', '../../../server_config/plugins/EpicWarps/config.yml'),
+        ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/ScriptedQuests/npcs/{servername}', '../../../../server_config/data/scriptedquests/npcs/{servername}'),
         ('plugins/ScriptedQuests/npcs/common', '../../../../server_config/data/scriptedquests/npcs/common'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
         ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
         ('plugins/ScriptedQuests/death/{servername}', '../../../../server_config/data/scriptedquests/death/{servername}'),
         ('plugins/ScriptedQuests/death/common', '../../../../server_config/data/scriptedquests/death/common'),
-        ('plugins/Monumenta_Speedruns/speedruns/racefiles', '../../../../server_config/data/speedruns/racefiles/{servername}'),
+        ('plugins/ScriptedQuests/races/{servername}', '../../../../server_config/data/scriptedquests/races/{servername}'),
+        ('plugins/ScriptedQuests/races/common', '../../../../server_config/data/scriptedquests/races/common'),
+        ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
-    ]
-
-advancements_disabled = [
-        ('Project_Epic-{servername}/data/advancements', '../../../server_config/data/advancements_disabled'),
-    ]
-
-advancements_r1 = [
-        ('Project_Epic-{servername}/data/advancements', '../../../server_config/data/advancements'),
+        ('plugins/Monumenta-Plugins.jar', '../../server_config/plugins/Monumenta-Plugins.jar'),
+        ('plugins/Monumenta_BossFights.jar', '../../server_config/plugins/Monumenta_BossFights.jar'),
     ]
 
 coreprotect = [
         ('plugins/CoreProtect.jar', '../../server_config/plugins/CoreProtect.jar'),
     ]
 
-easywarp = [
-        ('plugins/EasyWarp.jar', '../../server_config/plugins/EasyWarp.jar'),
-        ('plugins/EasyWarp/config.yml', '../../../server_config/plugins/EasyWarp/config.yml'),
-    ]
-
 worldedit = [
         ('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit.jar'),
-        ('plugins/WorldEdit.jar', '../../server_config/plugins/WorldEdit.jar'),
-        ('plugins/WorldEdit/config.yml', '../../../server_config/plugins/WorldEdit/config.yml'),
-        ('plugins/WorldEdit/schematics', '../../../server_config/plugins/WorldEdit/schematics'),
-
-    # Build Commands (WorldEdit Craftscripts) - 1.8 installed currently
-        ('plugins/js.jar', '../../server_config/plugins/js.jar'),
-        ('plugins/WorldEdit/bo2s', '../../../server_config/plugins/WorldEdit/bo2s'),
-        ('plugins/WorldEdit/craftscripts', '../../../server_config/plugins/WorldEdit/craftscripts'),
-        ('plugins/WorldEdit/shapes', '../../../server_config/plugins/WorldEdit/shapes'),
+        ('plugins/DummyFawe.jar', '../../server_config/plugins/DummyFawe.jar'),
+        ('plugins/FastAsyncWorldEdit/commands', '../../../server_config/plugins/FastAsyncWorldEdit/commands'),
+        ('plugins/FastAsyncWorldEdit/schematics', '/home/rock/4_SHARED/schematics'),
     ]
 
 luckperms_standalone = [
         ('plugins/LuckPerms.jar', '../../server_config/plugins/LuckPerms.jar'),
         ('plugins/LuckPerms/lib', '../../../server_config/plugins/LuckPerms/{}/lib'.format(SERVER_TYPE)),
-        ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
     ]
 luckperms = [
         ('plugins/LuckPerms.jar', '../../server_config/plugins/LuckPerms.jar'),
         ('plugins/LuckPerms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
-        ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
-    ]
-
-monumenta = [
-        ('plugins/Monumenta-Plugins.jar', '../../server_config/plugins/Monumenta-Plugins.jar'),
-        ('plugins/Monumenta_BossFights.jar', '../../server_config/plugins/Monumenta_BossFights.jar'),
-        ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
-        ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
-        ('plugins/Monumenta_Speedruns.jar', '../../server_config/plugins/Monumenta_Speedruns.jar'),
     ]
 
 nbteditor = [
         ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
-        ('plugins/NBTEditor/config.yml', '../../../server_config/plugins/NBTEditor/config.yml'),
+        ('plugins/NBTEditor', '../../server_config/plugins/NBTEditor'),
     ]
 
 openinv = [
@@ -140,8 +128,6 @@ speedchanger = [
 
 voxelsniper = [
         ('plugins/FastAsyncVoxelSniper.jar', '../../server_config/plugins/FastAsyncVoxelSniper.jar'),
-        ('plugins/VoxelSniper.jar', '../../server_config/plugins/VoxelSniper.jar'),
-        ('plugins/VoxelSniper/config.yml', '../../../server_config/plugins/VoxelSniper/config.yml'),
     ]
 
 # Analytics plugin - only for the play server!
@@ -150,52 +136,16 @@ plan = [
         ('plugins/Plan', '../../server_config/data/plugins/{servername}/Plan'),
     ]
 
-venturechat = [
-        ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
-        ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
-        ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
-        ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
-        ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
-        ('plugins/VentureChat/config.yml', '../../../server_config/plugins/VentureChat/{}/config.yml'.format(SERVER_TYPE)),
-    ]
-
-nicky = [
-        ('plugins/Nicky.jar', '../../server_config/plugins/Nicky.jar'),
-        ('plugins/Nicky', '../../server_config/plugins/Nicky'),
-    ]
-
-vanish = [
-        ('plugins/VanishNoPacket.jar', '../../server_config/plugins/VanishNoPacket.jar'),
-        ('plugins/VanishNoPacket', '../../server_config/plugins/VanishNoPacket'),
-    ]
-
-gobrush = [
-        ('plugins/goBrush.jar', '../../server_config/plugins/goBrush.jar'),
-        ('plugins/goBrush', '../../server_config/plugins/goBrush'),
-    ]
-
-dynmap = [
-        ('plugins/dynmap.jar', '../../server_config/plugins/dynmap.jar'),
-        # TODO: per-shard config? Only on R2 for now
-    ]
-
-votifier = [
-        ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
-        ('plugins/Votifier', '../../server_config/data/plugins/region_1/Votifier'),
-    ]
-
 
 # Index of nodes:
 #   server_config
-#   advancements_disabled
-#   advancements_r1
 #   structures
 
-base_plugins = easywarp + luckperms + monumenta + openinv + socket4mc + worldedit + venturechat
+base_plugins = luckperms + monumenta + openinv + socket4mc + worldedit + coreprotect
 if (SERVER_TYPE == 'build'):
-    base_plugins += speedchanger + nbteditor + voxelsniper + gobrush
+    base_plugins += speedchanger + nbteditor + voxelsniper
 else:
-    base_plugins += vanish
+    base_plugins += []
 
 # String replacements:
 # {servername} - server name
@@ -304,7 +254,10 @@ config = {
         {"name":"Farr race", "type":"AdventureZone", "pos1":"1036 99 -119", "pos2":"1051 112 -105"}
     ],'''),
         ],
-        'linked':server_config + advancements_r1 + base_plugins + coreprotect + votifier,
+        'linked':server_config + base_plugins + [
+            ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
+            ('plugins/Votifier', '../../server_config/data/plugins/region_1/Votifier'),
+        ],
     },
 
     'region_2':{
@@ -319,7 +272,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect + dynmap,
+        'linked':server_config + base_plugins,
     },
 
     'tutorial':{
@@ -339,7 +292,7 @@ config = {
         {"name":"New Player Lobby", "type":"SafeZone", "pos1":"-1456 0 -1216", "pos2":"-1425 255 -1185"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins,
+        'linked':server_config + base_plugins,
     },
 
     'dungeon':{
@@ -355,7 +308,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 
     'roguelike':{
@@ -371,7 +324,7 @@ config = {
         {"name":"Lobby and reward room", "type":"SafeZone", "pos1":"-9999999 60 -9999999", "pos2":"9999999 255 9999999"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 
     'test':{
@@ -383,7 +336,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
         ],
-        'linked':server_config + advancements_r1 + base_plugins,
+        'linked':server_config + base_plugins,
     },
 
     'build':{
@@ -402,9 +355,10 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": ["region_1"],'),
         ],
-        'linked':server_config_min + advancements_disabled + luckperms_standalone + easywarp + monumenta + socket4mc + coreprotect + worldedit + speedchanger + nbteditor + voxelsniper + venturechat,
+        'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper
     },
 
+    # TODO
     'mobs':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=6'),
@@ -418,7 +372,7 @@ config = {
         {"name":"Diamond Platform", "type":"AdventureZone", "pos1":"-1002 69 -1483", "pos2":"-1032 57 -1456"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + coreprotect + easywarp + luckperms + openinv + socket4mc + worldedit + venturechat + nbteditor + [
+        'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + [
             ('plugins/Monumenta-Plugins.jar', '/home/epic/mob_shard_plugins/Monumenta-Plugins.jar'),
             ('plugins/Monumenta_BossFights.jar', '/home/epic/mob_shard_plugins/Monumenta_BossFights.jar'),
             ('plugins/ScriptedQuests.jar', '/home/epic/mob_shard_plugins/ScriptedQuests.jar'),
@@ -436,12 +390,10 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.8"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
-            #('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
-            #('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
             ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 0,'),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 
     'betaplots':{
@@ -456,7 +408,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
         ],
-        'linked':server_config_min_plus_data + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 
     'nightmare':{
@@ -472,7 +424,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 
     'purgatory':{
@@ -491,7 +443,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=128M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=128M'),
         ],
-        'linked':server_config_min + advancements_disabled,
+        'linked':server_config_min,
     },
 
     'white':{
@@ -507,7 +459,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 
     'orange':{
@@ -523,7 +475,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 
     'magenta':{
@@ -539,7 +491,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 
     'lightblue':{
@@ -555,7 +507,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 
     'yellow':{
@@ -571,7 +523,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 
     'r1bonus':{
@@ -587,7 +539,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + advancements_disabled + base_plugins + coreprotect,
+        'linked':server_config + base_plugins,
     },
 }
 
