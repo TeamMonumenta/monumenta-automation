@@ -598,6 +598,9 @@ class World(object):
                                     new_blocks = BlockArray.from_nbt(new_section, block_map)
                                     old_blocks = BlockArray.from_nbt(old_section, block_map)
 
+                                    new_section.at_path('BlockLight').value = old_section.at_path('BlockLight').value
+                                    new_section.at_path('SkyLight').value = old_section.at_path('SkyLight').value
+
                                     for by in self._bounded_range(min_y,max_y,cy,16):
                                         for bz in self._bounded_range(min_z,max_z,32*rz+cz,16):
                                             for bx in self._bounded_range(min_x,max_x,32*rx+cx,16):
@@ -618,9 +621,9 @@ class World(object):
                                     if old_chunk.body.has_path( 'Level.' + category ):
                                         for tile_entity in old_chunk.body.at_path( 'Level.' + category ).value:
                                             if tile_entity.has_path('Pos'):
-                                                tile_x = tile_entity.at_path(Pos[0]).value
-                                                tile_y = tile_entity.at_path(Pos[1]).value
-                                                tile_z = tile_entity.at_path(Pos[2]).value
+                                                tile_x = tile_entity.at_path('Pos[0]').value
+                                                tile_y = tile_entity.at_path('Pos[1]').value
+                                                tile_z = tile_entity.at_path('Pos[2]').value
                                             else:
                                                 tile_x = tile_entity.at_path('x').value
                                                 tile_y = tile_entity.at_path('y').value
@@ -637,9 +640,9 @@ class World(object):
                                     if new_chunk.body.has_path( 'Level.' + category ):
                                         for tile_entity in new_chunk.body.at_path( 'Level.' + category ).value:
                                             if tile_entity.has_path('Pos'):
-                                                tile_x = tile_entity.at_path(Pos[0]).value
-                                                tile_y = tile_entity.at_path(Pos[1]).value
-                                                tile_z = tile_entity.at_path(Pos[2]).value
+                                                tile_x = tile_entity.at_path('Pos[0]').value
+                                                tile_y = tile_entity.at_path('Pos[1]').value
+                                                tile_z = tile_entity.at_path('Pos[2]').value
                                             else:
                                                 tile_x = tile_entity.at_path('x').value
                                                 tile_y = tile_entity.at_path('y').value
@@ -660,5 +663,5 @@ class World(object):
                                     elif len(NewEntities) > 0:
                                         new_chunk.body.at_path('Level').value[ category ] = nbt.TagList( NewEntities )
 
-                                region.save_chunk(chunk)
+                                new_region.save_chunk(new_chunk)
 
