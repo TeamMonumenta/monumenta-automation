@@ -592,7 +592,7 @@ else:
         if "build" in key:
             config[key]['linked'] = config[key]['linked'] + plan
         else:
-            config[key]['linked'] = config[key]['linked'] + plan + nicky
+            config[key]['linked'] = config[key]['linked'] + plan
 
 
 def gen_server_config(servername):
