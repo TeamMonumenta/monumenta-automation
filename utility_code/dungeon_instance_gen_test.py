@@ -2,7 +2,7 @@
 
 import os
 
-from lib_py3.copy_region import copyRegion
+from lib_py3.copy_region import copy_region
 
 config = {
     "dungeonRefFolder":"/home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon/",
@@ -21,39 +21,39 @@ config = {
         {
             "name":"white",
             "region":{"x":-3, "z":-2},
-            "numDungeons":4,
+            "numDungeons":50,
         },{
             "name":"orange",
             "region":{"x":-3, "z":-1},
-            "numDungeons":4,
+            "numDungeons":50,
         },{
             "name":"magenta",
             "region":{"x":-3, "z":0},
-            "numDungeons":4,
+            "numDungeons":50,
         },{
             "name":"lightblue",
             "region":{"x":-3, "z":1},
-            "numDungeons":4,
+            "numDungeons":50,
         },{
             "name":"yellow",
             "region":{"x":-3, "z":2},
-            "numDungeons":4,
+            "numDungeons":50,
         },{
             "name":"r1bonus",
             "region":{"x":-3, "z":3},
-            "numDungeons":4,
+            "numDungeons":50,
         },{
             "name":"roguelike",
             "region":{"x":-2, "z":-1},
-            "numDungeons":20,
+            "numDungeons":1,
         },{
             "name":"nightmare",
             "region":{"x":-3, "z":4},
-            "numDungeons":4,
+            "numDungeons":50,
         },{
             "name":"tutorial",
             "region":{"x":-2, "z":0},
-            "numDungeons":40,
+            "numDungeons":200,
         },
     ),
     "spawnRegion":{"x":-3, "z":-3},
@@ -82,7 +82,7 @@ for dungeon in dungeons:
     os.makedirs(os.path.join(dstFolder,"region"),mode=0o775,exist_ok=True)
 
     spawnRegion = config["spawnRegion"]
-    copyRegion(
+    copy_region(
         oldRegionDir,
         newRegionDir,
         spawnRegion["x"],spawnRegion["z"],
@@ -94,7 +94,7 @@ for dungeon in dungeons:
     for i in range(numDungeons):
         print("\rWorking on {}...{}/{}".format(dungeonName,i+1,numDungeons),end="")
         rz = rzInit + i
-        copyRegion(
+        copy_region(
             oldRegionDir,
             newRegionDir,
             dungeonRegion["x"],dungeonRegion["z"],

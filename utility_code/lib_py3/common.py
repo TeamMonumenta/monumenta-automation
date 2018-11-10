@@ -5,21 +5,21 @@ import sys
 
 import shutil
 
-class always_equal(object):
+class AlwaysEqual(object):
     def __init__(self):
         pass
     def __eq__(self,other):
         return True
-AlwaysEqual = always_equal()
+always_equal = AlwaysEqual()
 
-class never_equal(object):
+class NeverEqual(object):
     def __init__(self):
         pass
     def __eq__(self,other):
         return False
-NeverEqual = never_equal()
+never_equal = NeverEqual()
 
-def moveFile(old, new):
+def move_file(old, new):
     if not os.path.exists(old):
         print("*** '{}' does not exist, preserving original.".format(old))
         return False
@@ -33,7 +33,7 @@ def moveFile(old, new):
         shutil.move(old, new)
     return True
 
-def copyFile(old, new):
+def copy_file(old, new):
     if not os.path.exists(old):
         print("*** '{}' does not exist, preserving original.".format(old))
         return False
@@ -46,7 +46,7 @@ def copyFile(old, new):
         shutil.copy2(old, new)
     return True
 
-def copyFolder(old, new):
+def copy_folder(old, new):
     # This does not check if it's a path or a file, but there's another function for that case.
     if not os.path.exists(old):
         print("*** '{}' does not exist, preserving original.".format(old))
@@ -54,11 +54,11 @@ def copyFolder(old, new):
     shutil.rmtree(new, ignore_errors=True)
     shutil.copytree(old, new, symlinks=True)
 
-def copyFolders(old, new, subfolders):
+def copy_folders(old, new, subfolders):
     for folder in subfolders:
         print("    Copying " + folder + "...")
         try:
-            copyFolder(os.path.join(old,folder), os.path.join(new,folder))
+            copy_folder(os.path.join(old,folder), os.path.join(new,folder))
         except:
             print("*** " + folder + " could not be copied, may not exist.")
 

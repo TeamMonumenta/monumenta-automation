@@ -10,7 +10,7 @@ import weakref
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 
-from lib_py3.common import AlwaysEqual
+from lib_py3.common import always_equal
 
 class ScoreCondition(object):
     """
@@ -129,7 +129,7 @@ class Scoreboard(object):
         """
         A cache of scores to speed up future searches.
         """
-        def __init__(self,scores,parent=None,conditions=AlwaysEqual):
+        def __init__(self,scores,parent=None,conditions=always_equal):
             self.parent = parent
             self.conditions = conditions
             self.children = weakref.WeakSet()

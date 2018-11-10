@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 from lib_py3.scoreboard import Scoreboard
-from lib_py3.timing import timings
+from lib_py3.timing import Timings
 
-mainTiming = timings(enabled=True)
+mainTiming = Timings(enabled=True)
 nextStep = mainTiming.nextStep
 nextStep("Init")
 

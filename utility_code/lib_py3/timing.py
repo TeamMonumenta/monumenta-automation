@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 import time
 
-class timings():
+class Timings():
     def __init__(self,enabled=True):
         self.enabled = enabled
-        self.timeFunction = time.time
+        self.time_function = time.time
         if self.enabled:
-            self.start = self.timeFunction()
+            self.start = self.time_function()
             self.last = self.start
 
     def nextStep(self,msg="Unnamed step."):
         if self.enabled:
-            timeNow = self.timeFunction()
-            timeTotal = self._formatTime(timeNow - self.start)
-            timeDelta = self._formatTime(timeNow - self.last)
-            self.last = timeNow
-            print( "[{}, {}] {}".format(timeTotal,timeDelta,msg) )
+            time_now = self.time_function()
+            time_total = self._formatTime(time_now - self.start)
+            time_delta = self._formatTime(time_now - self.last)
+            self.last = time_now
+            print( "[{}, {}] {}".format(time_total,time_delta,msg) )
 
     def _formatTime(self,seconds):
         h = int(seconds/3600)

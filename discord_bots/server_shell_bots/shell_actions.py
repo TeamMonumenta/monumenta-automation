@@ -87,6 +87,7 @@ permissionGroups = {
         "+debug",
         "+help",
         "+list bots",
+        "+dump error commands",
         "+get errors",
         "+list shards",
         "+r1address to english",
@@ -100,6 +101,7 @@ permissionGroups = {
         "+debug",
         "+help",
         "+list bots",
+        "+dump error commands",
         "+get errors",
         "+list shards",
         "+select",
@@ -339,6 +341,19 @@ allActions.append(SelectBotAction)
 
 ################################################################################
 # Useful actions start here
+
+class DumpErrorCommandsAction(ShellAction):
+    '''Display command blocks with potential errors to:
+data/commands_to_update/*.txt'''
+    command = "dump error commands"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        self._commands = [
+            self.run(_top_level + "/utility_code/dump_error_commands.py", displayOutput=True),
+        ]
+allActions.append(DumpErrorCommandsAction)
 
 class FetchResetBundleAction(ShellAction):
     '''Dangerous!
