@@ -66,13 +66,11 @@ server_config_min = [
 server_config = server_config_min + [
         ('Project_Epic-{servername}/structures', '../../server_config/structures'),
         ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks'),
-        ('Project_Epic-{servername}_the_end/datapacks', '../../../server_config/data/datapacks'),
-        ('Project_Epic-{servername}_the_end/datapacks', '../../../server_config/data/datapacks'),
+        ('Project_Epic-{servername}_the_end/datapacks', '../../server_config/data/datapacks'),
     ]
 
 monumenta = [
         ('plugins/EpicWarps.jar', '../../server_config/plugins/EpicWarps.jar'),
-        ('plugins/EpicWarps/config.yml', '../../../server_config/plugins/EpicWarps/config.yml'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/ScriptedQuests/npcs/{servername}', '../../../../server_config/data/scriptedquests/npcs/{servername}'),
         ('plugins/ScriptedQuests/npcs/common', '../../../../server_config/data/scriptedquests/npcs/common'),
@@ -86,7 +84,7 @@ monumenta = [
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
         ('plugins/Monumenta-Plugins.jar', '../../server_config/plugins/Monumenta-Plugins.jar'),
-        ('plugins/Monumenta_BossFights.jar', '../../server_config/plugins/Monumenta_BossFights.jar'),
+        ('plugins/Monumenta-Bossfights.jar', '../../server_config/plugins/Monumenta-Bossfights.jar'),
     ]
 
 coreprotect = [
@@ -101,11 +99,11 @@ worldedit = [
     ]
 
 luckperms_standalone = [
-        ('plugins/LuckPerms.jar', '../../server_config/plugins/LuckPerms.jar'),
+        ('plugins/LuckPerms-Bukkit.jar', '../../server_config/plugins/LuckPerms-Bukkit.jar'),
         ('plugins/LuckPerms/lib', '../../../server_config/plugins/LuckPerms/{}/lib'.format(SERVER_TYPE)),
     ]
 luckperms = [
-        ('plugins/LuckPerms.jar', '../../server_config/plugins/LuckPerms.jar'),
+        ('plugins/LuckPerms-Bukkit.jar', '../../server_config/plugins/LuckPerms-Bukkit.jar'),
         ('plugins/LuckPerms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
     ]
 
@@ -374,7 +372,7 @@ config = {
         ],
         'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + [
             ('plugins/Monumenta-Plugins.jar', '/home/epic/mob_shard_plugins/Monumenta-Plugins.jar'),
-            ('plugins/Monumenta_BossFights.jar', '/home/epic/mob_shard_plugins/Monumenta_BossFights.jar'),
+            ('plugins/Monumenta-Bossfights.jar', '/home/epic/mob_shard_plugins/Monumenta-Bossfights.jar'),
             ('plugins/ScriptedQuests.jar', '/home/epic/mob_shard_plugins/ScriptedQuests.jar'),
             ('plugins/EpicStructureManagement.jar', '/home/epic/mob_shard_plugins/EpicStructureManagement.jar'),
             ('plugins/Monumenta_Speedruns.jar', '/home/epic/mob_shard_plugins/Monumenta_Speedruns.jar'),
