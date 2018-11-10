@@ -22,6 +22,7 @@ for shard in os.listdir('/home/rock/project_epic'):
         datapacks.append( 'file/' + shard )
 
     world = World( os.path.join( '/home/rock/project_epic', shard, 'Project_Epic-' + shard ) )
+    world.disabled_data_packs = list(set(world.enabled_data_packs + world.disabled_data_packs).difference(set(datapacks)))
     world.enabled_data_packs = datapacks
     world.save_data_packs()
     world.save()
