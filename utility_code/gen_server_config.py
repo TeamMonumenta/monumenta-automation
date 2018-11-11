@@ -64,7 +64,7 @@ server_config_min = [
     ]
 
 server_config = server_config_min + [
-        ('Project_Epic-{servername}/structures', '../../server_config/structures'),
+        ('Project_Epic-{servername}/generated', '../../server_config/data/generated'),
         ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks'),
         ('Project_Epic-{servername}_the_end/datapacks', '../../server_config/data/datapacks'),
     ]
