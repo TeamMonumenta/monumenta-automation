@@ -1,4 +1,7 @@
 plot_to_address = {
+# format is:
+# R1Plot:R1Address,
+# Or for a given R1Plot score, their R1Address is/should be on the right
       1:398,
       2:516,
       3:265,
@@ -291,6 +294,12 @@ plot_to_address = {
 }
 
 address_to_coord = (
+# format is:
+# (StreetID, StreetNumber, x, y, z),
+# For a given Street ID (see the map) and Street Number in section 0,0,
+# entering a plot puts you at x,y,z.
+# For section sx,sz, multiply sx and sz by 768 and add to x and z.
+# Players' plotx,ploty,plotz scores should be set accordingly.
     (0,1,-2561,53,727),
     (0,2,-2533,53,733),
     (0,3,-2560,53,752),
