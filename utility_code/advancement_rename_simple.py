@@ -252,6 +252,11 @@ allRenamed = (
     ("monumenta:seasonal_events/2017","monumenta:trophies/events/2017/root"),
     ("monumenta:seasonal_events/2017/halloween","monumenta:trophies/events/2017/halloween"),
     ("monumenta:seasonal_events/2017/winter","monumenta:trophies/events/2017/winter"),
+
+    ("monumenta:challenges/speedruns/r1/mariya\\u0027s_game/0","monumenta:speedster/r1/mariyas_game/0"),
+    ("monumenta:challenges/speedruns/r1/mariya\\u0027s_game/1","monumenta:speedster/r1/mariyas_game/1"),
+    ("monumenta:challenges/speedruns/r1/mariya\\u0027s_game/2","monumenta:speedster/r1/mariyas_game/2"),
+    ("monumenta:challenges/speedruns/r1/mariya\\u0027s_game/3","monumenta:speedster/r1/mariyas_game/3"),
 )
 
 def fix_file(filePath,allRenamed):
