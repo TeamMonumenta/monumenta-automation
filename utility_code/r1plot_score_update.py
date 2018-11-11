@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 from lib_py3.scoreboard import Scoreboard
 from r1plot_lookup import lut
 
@@ -60,5 +61,6 @@ for shard in os.listdir('/home/rock/project_epic'):
     ):
         continue
 
+    print(shard)
     scoreboard = Scoreboard( os.path.join( '/home/rock/project_epic', shard, 'Project_Epic-' + shard ) )
 
