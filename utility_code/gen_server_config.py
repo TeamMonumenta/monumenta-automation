@@ -234,6 +234,8 @@ config = {
         {"name":"Crew To Remember Cabin", "type":"AdventureZone", "pos1":"642 52 475", "pos2":"660 40 491"},
         {"name":"Xin Old", "type":"AdventureZone", "pos1":"798 172 -393", "pos2":"781 161 -376"},
         {"name":"Xin New", "type":"AdventureZone", "pos1":"1092 99 -234", "pos2":"1076 116 -218"},
+        {"name":"Azacors Arena", "type":"AdventureZone", "pos1":"873 216 -465", "pos2":"769 169 -524"},
+        {"name":"Azacor Witch Hut", "type":"AdventureZone", "pos1":"1443 166 164", "pos2":"1475 191 192"},
 
         {"name":"Starrier Night - Gaius Tower", "type":"AdventureZone", "pos1":"-99 115 69", "pos2":"-120 70 93"},
         {"name":"Starrier Night - Lowtide Montana", "type":"SafeZone", "pos1":"739 121 433", "pos2":"717 97 409"},
