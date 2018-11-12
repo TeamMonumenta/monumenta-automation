@@ -69,7 +69,7 @@ server_config = server_config_min + [
         ('Project_Epic-{servername}_the_end/datapacks', '../../server_config/data/datapacks'),
     ]
 
-monumenta = [
+monumenta_without_mobs_plugins = [
         ('plugins/EpicWarps.jar', '../../server_config/plugins/EpicWarps.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/ScriptedQuests/npcs/{servername}', '../../../../server_config/data/scriptedquests/npcs/{servername}'),
@@ -83,6 +83,8 @@ monumenta = [
         ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
+    ]
+monumenta = monumenta_without_mobs_plugins + [
         ('plugins/Monumenta-Plugins.jar', '../../server_config/plugins/Monumenta-Plugins.jar'),
         ('plugins/Monumenta-Bossfights.jar', '../../server_config/plugins/Monumenta-Bossfights.jar'),
     ]
@@ -96,6 +98,12 @@ worldedit = [
         ('plugins/DummyFawe.jar', '../../server_config/plugins/DummyFawe.jar'),
         ('plugins/FastAsyncWorldEdit/commands', '../../../server_config/plugins/FastAsyncWorldEdit/commands'),
         ('plugins/FastAsyncWorldEdit/schematics', '/home/rock/4_SHARED/schematics'),
+    ]
+
+dynmap = [
+        ('plugins/Dynmap.jar', '../../server_config/plugins/Dynmap.jar'),
+        ('plugins/dynmap/configuration.txt', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/configuration.txt'),
+        ('plugins/dynmap/worlds.txt', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/worlds.txt'),
     ]
 
 luckperms_standalone = [
@@ -252,7 +260,7 @@ config = {
         {"name":"Farr race", "type":"AdventureZone", "pos1":"1036 99 -119", "pos2":"1051 112 -105"}
     ],'''),
         ],
-        'linked':server_config + base_plugins + [
+        'linked':server_config + base_plugins + dynmap + [
             ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
             ('plugins/Votifier', '../../server_config/data/plugins/region_1/Votifier'),
         ],
@@ -270,7 +278,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + base_plugins,
+        'linked':server_config + base_plugins + dynmap,
     },
 
     'tutorial':{
@@ -306,7 +314,7 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + base_plugins,
+        'linked':server_config + base_plugins + dynmap,
     },
 
     'roguelike':{
@@ -356,7 +364,6 @@ config = {
         'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper
     },
 
-    # TODO
     'mobs':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=6'),
@@ -370,12 +377,9 @@ config = {
         {"name":"Diamond Platform", "type":"AdventureZone", "pos1":"-1002 69 -1483", "pos2":"-1032 57 -1456"}
     ],'''),
         ],
-        'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + [
+        'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + dynmap + monumenta_without_mobs_plugins + [
             ('plugins/Monumenta-Plugins.jar', '/home/epic/mob_shard_plugins/Monumenta-Plugins.jar'),
             ('plugins/Monumenta-Bossfights.jar', '/home/epic/mob_shard_plugins/Monumenta-Bossfights.jar'),
-            ('plugins/ScriptedQuests.jar', '/home/epic/mob_shard_plugins/ScriptedQuests.jar'),
-            ('plugins/EpicStructureManagement.jar', '/home/epic/mob_shard_plugins/EpicStructureManagement.jar'),
-            ('plugins/Monumenta_Speedruns.jar', '/home/epic/mob_shard_plugins/Monumenta_Speedruns.jar'),
         ]
     },
 
