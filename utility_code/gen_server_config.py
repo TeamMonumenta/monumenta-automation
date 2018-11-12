@@ -61,6 +61,8 @@ server_config_min = [
         ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
         ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
         ('plugins/VentureChat/config.yml', '../../../server_config/plugins/VentureChat/{}/config.yml'.format(SERVER_TYPE)),
+        ('plugins/BKCommonLib.jar', '../../server_config/plugins/BKCommonLib.jar'),
+        ('plugins/LightCleaner.jar', '../../server_config/plugins/LightCleaner.jar'),
     ]
 
 server_config = server_config_min + [
