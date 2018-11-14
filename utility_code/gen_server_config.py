@@ -605,10 +605,11 @@ else:
 
     # Player analytics plugin only for play server
     for key in config:
-        if "build" in key:
-            config[key]['linked'] = config[key]['linked'] + plan
-        else:
-            config[key]['linked'] = config[key]['linked'] + plan
+        if not "purgatory" in key:
+            if "build" in key:
+                config[key]['linked'] = config[key]['linked'] + plan
+            else:
+                config[key]['linked'] = config[key]['linked'] + plan
 
 
 def gen_server_config(servername):
