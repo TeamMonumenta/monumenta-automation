@@ -101,6 +101,10 @@ class World(object):
         self.find_data_packs()
 
     @property
+    def player(self):
+        return self.level_dat.at_path('Data.Player')
+
+    @property
     def spawn(self):
         x = self.level_dat.at_path('Data.SpawnX').value
         y = self.level_dat.at_path('Data.SpawnY').value

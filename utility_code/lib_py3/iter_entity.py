@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+raise NotImplemented("This isn't even a full skeleton of a class yet.")
+
 import os
 import sys
 
