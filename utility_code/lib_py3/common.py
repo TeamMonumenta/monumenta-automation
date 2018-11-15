@@ -54,11 +54,15 @@ def copy_folder(old, new):
     shutil.rmtree(new, ignore_errors=True)
     shutil.copytree(old, new, symlinks=True)
 
-def copy_folders(old, new, subfolders):
-    for folder in subfolders:
-        print("    Copying " + folder + "...")
-        try:
-            copy_folder(os.path.join(old,folder), os.path.join(new,folder))
-        except:
-            print("*** " + folder + " could not be copied, may not exist.")
+def copy_path(old, new, path):
+    if os.path.isdir(os.path.join(old, path)):
+        copy_folder(os.path.join(old, path), os.path.join(new, path))
+    else:
+        copy_file(os.path.join(old, path), os.path.join(new, path))
 
+def copy_paths(old, new, paths):
+    for path in paths:
+        try:
+            copy_path(old, new, path);
+        except:
+            print("*** " + path + " could not be copied, may not exist.")

@@ -3,6 +3,8 @@
 import os
 
 from lib_py3.copy_region import copy_region
+from lib_py3.common import copy_paths
+from lib_py3.world import World
 
 config = {
     "dungeonRefFolder":"/home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon/",
@@ -56,9 +58,22 @@ config = {
             "numDungeons":200,
         },
     ),
+
+    # Chunk to copy directly from the reference folder
     "spawnRegion":{"x":-3, "z":-3},
-    # Dungeons placed in region -3,-2 - a region is 32x32 chunks
+
+    # Dungeon instances start nn region -3,-2 and move in +z - a region is 32x32 chunks
     "targetRegion":{"x":-3, "z":-2},
+
+    # Files/directories to copy from reference
+    "copyPaths":[
+        "level.dat",
+    ],
+
+    # Blocks to set
+    "setBlocks":[
+        {'pos': [-1441, 2, -1441], 'block': {'name': 'minecraft:air'} },
+    ],
 }
 
 dungeons = config["dungeons"]
@@ -67,20 +82,24 @@ for dungeon in dungeons:
     dungeonName = dungeon["name"]
 
     dungeonRefFolder = config["dungeonRefFolder"]
-    outFolder = config["outFolder"]
     targetRegion = config["targetRegion"]
     dungeonRegion = dungeon["region"]
     numDungeons = dungeon["numDungeons"]
-    dstFolder = os.path.join(outFolder,dungeonName,'Project_Epic-'+dungeonName)
-    
+    dstFolder = os.path.join(config["outFolder"],dungeonName,'Project_Epic-'+dungeonName)
+
     oldRegionDir = os.path.join(dungeonRefFolder,"region")
     newRegionDir = os.path.join(       dstFolder,"region")
 
     # New!
     print("Working on {}...0/{}".format(dungeonName,numDungeons),end="")
 
+    # Create target directories
     os.makedirs(os.path.join(dstFolder,"region"),mode=0o775,exist_ok=True)
 
+    # Copy files/directories
+    copy_paths(dungeonRefFolder, dstFolder, config["copyPaths"])
+
+    # Copy spawn chunks
     spawnRegion = config["spawnRegion"]
     copy_region(
         oldRegionDir,
@@ -89,6 +108,7 @@ for dungeon in dungeons:
         spawnRegion["x"],spawnRegion["z"]
     )
 
+    # Instance the dungeons
     rx=targetRegion["x"]
     rzInit=targetRegion["z"]
     for i in range(numDungeons):
@@ -100,5 +120,12 @@ for dungeon in dungeons:
             dungeonRegion["x"],dungeonRegion["z"],
             rx,rz
         )
+
+    # Set blocks
+    if "blocks" in config:
+        world = World(dstFolder)
+        for block in config["blocks"]:
+            world.set_block(block["pos"], block)
+
     print("")
 
