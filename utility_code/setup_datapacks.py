@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+raise NotImplemented("This was not working as last tested, and needs additional testing.")
+
 import os
 
 from lib_py3.world import World

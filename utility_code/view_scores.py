@@ -1,5 +1,15 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
+"""
+Note from the distant future of 1.13!
+
+We have an updated library for this, but because scoreboard.dat is
+*almost* exactly how it was in 1.12, this still works fine for the
+Discord bot. I'll worry about updating it later.
+
+- Tim 
+"""
+
 '''view scores [-d] Conditions [Order]
 
   -d shows duplicate scores only (ie, same apartment)

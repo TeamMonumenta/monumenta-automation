@@ -1,5 +1,4 @@
-#!/usr/bin/env python2.7
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 # This searches for scores matching Condition, makes a list of Names
 # appearing in the results, and runs actions for every name in the list.
