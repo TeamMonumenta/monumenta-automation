@@ -328,6 +328,15 @@ class Scoreboard(object):
             print("    - ! Scores not reset.")
             return False
 
+    def restore_scores(self,other,Conditions=None,Name=None,Objective=None,Score=None,Locked=None):
+        """
+        Restore scores matching Conditions in self to the scores matching Conditions in other.
+        Removes scores not found in other.
+        """
+        self.reset_scores(Conditions,Name,Objective,Score,Locked)
+        for score in other.search_scores(Conditions,Name,Objective,Score,Locked):
+            self.all_scores.append(score)
+
     def get_score(self,Name,Objective,Fallback=None,Cache=None):
         """
         Return Name's score for Objective;
