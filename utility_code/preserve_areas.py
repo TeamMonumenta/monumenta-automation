@@ -4,6 +4,20 @@ import os
 
 from lib_py3.world import World
 
+################################################################################
+# Roll back player.dat, player's advancement file, player's stats, and scores
+# When: Week of Nov 10 - Nov 17
+# Reason: stealing from the market
+# IGN: BlackCat_FH
+# UUID: dd428d17-ae23-4e3e-b0ff-0a56e2deda43
+
+nov17_r1plots_rollback = (
+        {"name":"shop plot A",               "pos1":(-2760,  76,  831), "pos2":(-2751,  80,  820), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+        {"name":"shop plot B",               "pos1":(-2764,  76,  784), "pos2":(-2773,  85,  790), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+        {"name":"shop plot C",               "pos1":( -811,  99,   31), "pos2":( -873,  99,   31), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+        {"name":"BlackCat_FH's player plot", "pos1":(-2641,  48,  210), "pos2":(-2617,  98,  228), "replaceBlocks":False, "replaceItems":False, "updateEntities":False, "material":( 41,  0), "materialName":"gold"},
+)
+
 coordinatesToCopy = (
         # "name":"a unique name"
         # "pos1":(x1,y1,z1)
