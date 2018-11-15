@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
 import os
+import sys
+import codecs
+import multiprocessing as mp
+import tempfile
+import traceback
 
 from lib_py3.copy_region import copy_region
 from lib_py3.common import copy_paths
@@ -76,56 +81,118 @@ config = {
     ],
 }
 
-dungeons = config["dungeons"]
-
-for dungeon in dungeons:
+# Generate instances for a single dungeon
+def generateDungeonInstances(config, dungeon, outputFile, statusQueue):
     dungeonName = dungeon["name"]
 
-    dungeonRefFolder = config["dungeonRefFolder"]
-    targetRegion = config["targetRegion"]
-    dungeonRegion = dungeon["region"]
-    numDungeons = dungeon["numDungeons"]
-    dstFolder = os.path.join(config["outFolder"],dungeonName,'Project_Epic-'+dungeonName)
+    try:
+        # Redirect output to specified file
+        sys.stdout = codecs.getwriter('utf8')(open(outputFile, "wb"))
 
-    oldRegionDir = os.path.join(dungeonRefFolder,"region")
-    newRegionDir = os.path.join(       dstFolder,"region")
+        ##################################################################################
+        dungeonRefFolder = config["dungeonRefFolder"]
+        targetRegion = config["targetRegion"]
+        dungeonRegion = dungeon["region"]
+        numDungeons = dungeon["numDungeons"]
+        dstFolder = os.path.join(config["outFolder"],dungeonName,'Project_Epic-'+dungeonName)
 
-    # New!
-    print("Working on {}...0/{}".format(dungeonName,numDungeons),end="")
+        oldRegionDir = os.path.join(dungeonRefFolder,"region")
+        newRegionDir = os.path.join(       dstFolder,"region")
 
-    # Create target directories
-    os.makedirs(os.path.join(dstFolder,"region"),mode=0o775,exist_ok=True)
+        # New!
+        print("Working on {}...0/{}".format(dungeonName,numDungeons))
 
-    # Copy files/directories
-    copy_paths(dungeonRefFolder, dstFolder, config["copyPaths"])
+        # Create target directories
+        os.makedirs(os.path.join(dstFolder,"region"),mode=0o775,exist_ok=True)
 
-    # Copy spawn chunks
-    spawnRegion = config["spawnRegion"]
-    copy_region(
-        oldRegionDir,
-        newRegionDir,
-        spawnRegion["x"],spawnRegion["z"],
-        spawnRegion["x"],spawnRegion["z"]
-    )
+        # Copy files/directories
+        copy_paths(dungeonRefFolder, dstFolder, config["copyPaths"])
 
-    # Instance the dungeons
-    rx=targetRegion["x"]
-    rzInit=targetRegion["z"]
-    for i in range(numDungeons):
-        print("\rWorking on {}...{}/{}".format(dungeonName,i+1,numDungeons),end="")
-        rz = rzInit + i
+        # Copy spawn chunks
+        spawnRegion = config["spawnRegion"]
         copy_region(
             oldRegionDir,
             newRegionDir,
-            dungeonRegion["x"],dungeonRegion["z"],
-            rx,rz
+            spawnRegion["x"],spawnRegion["z"],
+            spawnRegion["x"],spawnRegion["z"]
         )
 
-    # Set blocks
-    if "blocks" in config:
-        world = World(dstFolder)
-        for block in config["blocks"]:
-            world.set_block(block["pos"], block)
+        # Instance the dungeons
+        rx=targetRegion["x"]
+        rzInit=targetRegion["z"]
+        for i in range(numDungeons):
+            print("\rWorking on {}...{}/{}".format(dungeonName,i+1,numDungeons))
+            rz = rzInit + i
+            copy_region(
+                oldRegionDir,
+                newRegionDir,
+                dungeonRegion["x"],dungeonRegion["z"],
+                rx,rz
+            )
 
-    print("")
+        # Set blocks
+        if "blocks" in config:
+            world = World(dstFolder)
+            for block in config["blocks"]:
+                world.set_block(block["pos"], block)
 
+        print("")
+        ##################################################################################
+
+        statusQueue.put({"server":dungeonName,"done":True})
+
+    except:
+        e = traceback.format_exc()
+        statusQueue.put({"server":dungeonName,"done":True,"error":e})
+
+
+
+# Multiprocessing implementation based on:
+# http://sebastianraschka.com/Articles/2014_multiprocessing.html
+
+# Run each config item in parallel
+print("Generating instances. There will be no output here until finished.")
+
+processes = {}
+statusQueue = mp.Queue()
+for dungeon in config["dungeons"]:
+    dungeonName = dungeon["name"]
+    outputFile = tempfile.mktemp()
+    processes[dungeonName] = {
+        "process":mp.Process(target=generateDungeonInstances, args=(config, dungeon, outputFile, statusQueue)),
+        "outputFile":outputFile,
+    }
+
+for p in processes.values():
+    p["process"].start()
+
+while len(processes.keys()) > 0:
+    statusUpdate = statusQueue.get()
+    statusFrom = statusUpdate["server"]
+    p = processes[statusFrom]
+
+    if "done" in statusUpdate:
+        p["process"].join()
+
+        if "error" not in statusUpdate:
+            print(statusFrom + " completed successfully")
+
+        try:
+            logFile = codecs.open(p["outputFile"],'rb',encoding='utf8')
+            print(logFile.read())
+            logFile.close()
+        except:
+            print("Log file could not be read!")
+
+        processes.pop(statusFrom)
+
+    if "error" in statusUpdate:
+        print("\n!!! " + statusFrom + " has crashed.\n")
+
+        # stop all other subprocesses
+        for p in processes.values():
+            p["process"].terminate()
+
+        raise RuntimeError(str(statusUpdate["error"]))
+
+print("Done!")
