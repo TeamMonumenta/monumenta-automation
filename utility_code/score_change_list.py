@@ -3,7 +3,7 @@
 # This searches for scores matching Condition, makes a list of Names
 # appearing in the results, and runs actions for every name in the list.
 
-dungeonScoreRules = [
+dungeon_score_rules = [
     {"condition":{"Objective":"D1Access","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"D1Access","Score":1000}]}},

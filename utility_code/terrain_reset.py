@@ -9,6 +9,8 @@ from lib_py3.move_region import MoveRegion
 from lib_py3.scoreboard import Scoreboard
 from lib_py3.player import Player
 
+from score_change_list import dungeon_score_rules
+
 def terrainResetInstance(config):
     shardName = config["server"]
 
@@ -139,63 +141,6 @@ def terrainResetInstance(config):
 #~                 spawnY -= 1
 #~         movePlayers(localDstFolder, (spawnX,spawnY,spawnZ,0.0,0.0))
 
-dungeonScoreRules = [
-    {"condition":{"Objective":"D1Access","Score":{"min":1}},
-        "actions":{"add":[
-            {"Objective":"D1Access","Score":1000}]}},
-    {"condition":{"Objective":"D1Access","Score":{"min":2000}},
-        "actions":{"set":[
-            {"Objective":"D1Access","Score":0},
-            {"Objective":"D1Finished","Score":0}]}},
-    {"condition":{"Objective":"D2Access","Score":{"min":1}},
-        "actions":{"add":[
-            {"Objective":"D2Access","Score":1000}]}},
-    {"condition":{"Objective":"D2Access","Score":{"min":2000}},
-        "actions":{"set":[
-            {"Objective":"D2Access","Score":0},
-            {"Objective":"D2Finished","Score":0}]}},
-    {"condition":{"Objective":"D3Access","Score":{"min":1}},
-        "actions":{"add":[
-            {"Objective":"D3Access","Score":1000}]}},
-    {"condition":{"Objective":"D3Access","Score":{"min":2000}},
-        "actions":{"set":[
-            {"Objective":"D3Access","Score":0},
-            {"Objective":"D3Finished","Score":0}]}},
-    {"condition":{"Objective":"D4Access","Score":{"min":1}},
-        "actions":{"add":[
-            {"Objective":"D4Access","Score":1000}]}},
-    {"condition":{"Objective":"D4Access","Score":{"min":2000}},
-        "actions":{"set":[
-            {"Objective":"D4Access","Score":0},
-            {"Objective":"D4Finished","Score":0}]}},
-    {"condition":{"Objective":"D5Access","Score":{"min":1}},
-        "actions":{"add":[
-            {"Objective":"D5Access","Score":1000}]}},
-    {"condition":{"Objective":"D5Access","Score":{"min":2000}},
-        "actions":{"set":[
-            {"Objective":"D5Access","Score":0},
-            {"Objective":"D5Finished","Score":0}]}},
-    {"condition":{"Objective":"DCAccess","Score":{"min":1}},
-        "actions":{"add":[
-            {"Objective":"DCAccess","Score":1000}]}},
-    {"condition":{"Objective":"DCAccess","Score":{"min":2000}},
-        "actions":{"set":[
-            {"Objective":"DCAccess","Score":0}]}},
-    {"condition":{"Objective":"DB1Access","Score":{"min":1}},
-        "actions":{"add":[
-            {"Objective":"DB1Access","Score":1000}]}},
-    {"condition":{"Objective":"DB1Access","Score":{"min":2000}},
-        "actions":{"set":[
-            {"Objective":"DB1Access","Score":0}]}},
-    {"condition":{"Objective":"DRAccess","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"DRAccess","Score":0}]}},
-    {"condition":{"Objective":"VotesWeekly","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"VotesWeekly","Score":0}]}},
-]
-
-
 config = {
     "server":"orange",
     "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/orange/Project_Epic-orange/",
@@ -203,7 +148,7 @@ config = {
     "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/orange/Project_Epic-orange/",
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data"],
-    "playerScoreChanges":dungeonScoreRules,
+    "playerScoreChanges":dungeon_score_rules,
     "preserveInstance":{
         "dungeonScore":"D2Access",
         "targetRegion":{"x":-3, "z":-2},
