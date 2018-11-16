@@ -24,13 +24,5 @@ config = {
 
     "tagPlayers":["MidTransfer","resetMessage"],
     "playerScoreChanges":dungeonScoreRules,
-    "blockReplacements":item_replace_list.blockReplacements,
-    "blockReplaceLocations":["world",],
-    "itemReplacements":item_replace_list.KingsValley,
-    "itemReplaceLocations":["players", "world",],
-    "entityUpdates":entity_update_list.KingsValley,
-    "entityUpdateLocations":["world",],
-    "immovableFix":entity_update_list.KingsValleyImmovable,
-    "itemLog":"/home/rock/5_SCRATCH/tmpreset/items_r1plots.txt",
 }
 
