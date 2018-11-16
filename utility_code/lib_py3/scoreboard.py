@@ -362,7 +362,7 @@ class Scoreboard(object):
             'Objective':nbt.TagString(Objective),
             'Locked':nbt.TagByte(0),
             'Score':nbt.TagInt(Score),
-            'Name':nbt.TagName(Name),
+            'Name':nbt.TagString(Name),
         })
 
         if (
@@ -375,7 +375,7 @@ class Scoreboard(object):
         if len(matches) > 1:
             raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
         elif len(matches) == 1:
-            matches[0]['Score'].value = Score
+            matches[0].value['Score'].value = Score
         elif len(matches) == 0:
             self.all_scores.append(newScore)
 
@@ -389,7 +389,7 @@ class Scoreboard(object):
             'Objective':nbt.TagString(Objective),
             'Locked':nbt.TagByte(0),
             'Score':nbt.TagInt(Score),
-            'Name':nbt.TagName(Name),
+            'Name':nbt.TagString(Name),
         })
 
         if (
@@ -402,7 +402,7 @@ class Scoreboard(object):
         if len(matches) > 1:
             raise NotImplemented('{} has {} scores for objective {}. This must be resolved manually.'.format(Name,len(matches),Objective))
         elif len(matches) == 1:
-            matches[0]['Score'].value += Score
+            matches[0].value['Score'].value += Score
         elif len(matches) == 0:
             self.all_scores.append(newScore)
 
@@ -548,29 +548,42 @@ class Scoreboard(object):
         """
         if (
             CriteriaName is not None and
-            aScore.at_path('CriteriaName').value not in CriteriaName
+            anObjective.at_path('CriteriaName').value not in CriteriaName
         ):
             return False
         if (
             DisplayName is not None and
-            aScore.at_path('DisplayName').value not in DisplayName
+            anObjective.at_path('DisplayName').value not in DisplayName
         ):
             return False
         if (
             Name is not None and
-            aScore.at_path('Name').value not in Name
+            anObjective.at_path('Name').value not in Name
         ):
             return False
         if (
             RenderType is not None and
-            aScore.at_path('RenderType').value not in RenderType
+            anObjective.at_path('RenderType').value not in RenderType
         ):
             return False
         return True
 
     def searchObjectives(self,Conditions={},CriteriaName=None,DisplayName=None,Name=None,RenderType=None):
         """
+        Search through all objectives to find a match
+
         NYI
         """
-        raise NotImplemented
+        CriteriaName = Conditions.get('CriteriaName',CriteriaName)
+        DisplayName = Conditions.get('DisplayName',DisplayName)
+        Name = Conditions.get('CriteriaName',Name)
+        RenderType = Conditions.get('RenderType',RenderType)
+
+        results = []
+
+        for anObjective in self.all_objectives:
+            if self._objectiveMatches(anObjective,CriteriaName,DisplayName,Name,RenderType):
+                results.append(anObjective)
+
+        return results
 
