@@ -7,6 +7,7 @@ from lib_py3.common import copy_paths, copy_folder
 from lib_py3.world import World
 from lib_py3.move_region import MoveRegion
 from lib_py3.scoreboard import Scoreboard
+from lib_py3.player import Player
 
 def terrainResetInstance(config):
     shardName = config["server"]
@@ -111,10 +112,13 @@ def terrainResetInstance(config):
     # Save the scoreboards. This is always necessary regardless of pruning entities!
     worldScores.save()
 
-#~     if "tagPlayers" in config:
-#~         print("  Giving scoreboard tags to players...")
-#~         tagPlayers(localDstFolder,config["tagPlayers"])
-#~
+    if "tagPlayers" in config:
+        print("  Giving scoreboard tags to players...")
+        for uuid in dstWorld.players:
+            player = Player(os.path.join(localDstFolder, 'playerdata', str(uuid) + '.dat'))
+            player.modify_tags(config["tagPlayers"])
+            player.save()
+
 #~     if ("tpToSpawn" in config and config["tpToSpawn"] is True):
 #~         print("  Moving players to spawn...")
 #~         spawnX = dstWorld.root_tag['Data']['SpawnX'].value

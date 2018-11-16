@@ -104,7 +104,7 @@ class Player(object):
             raise IndexError('pos must have 3 or 5 entries; x,y,z or x,y,z,yaw,pitch')
         for i in range(3):
             self.player_tag.at_path( 'Pos[{}]'.format(i) ).value = pos[i]
-        if len([pos) == 5:
+        if len(pos) == 5:
             for i in range(2):
                 self.player_tag.at_path( 'Rotation[{}]'.format(i) ).value = pos[i+3]
 
