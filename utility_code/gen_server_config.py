@@ -242,6 +242,8 @@ config = {
         {"name":"Azacor Arena Tunnel 1", "type":"AdventureZone", "pos1":"1432 13 -390", "pos2":"1436 16 -380"},
         {"name":"Azacor Arena Tunnel 2", "type":"AdventureZone", "pos1":"1432 14 -240", "pos2":"1436 17 -230"},
         {"name":"Azacor Arena Tunnel 3", "type":"AdventureZone", "pos1":"1432 15 -90", "pos2":"1436 18 -80"},
+        {"name":"Outer Demons", "type":"AdventureZone", "pos1":"1601 42 79", "pos2":"1687 12 -10"},
+        {"name":"Chesterfield Grove Ruins", "type":"AdventureZone", "pos1":"1331 200 17", "pos2":"1347 218 35"},
 
         {"name":"Light Blue Tower Basement", "type":"AdventureZone", "pos1":"881 153 -334", "pos2":"824 109 -303"},
 
