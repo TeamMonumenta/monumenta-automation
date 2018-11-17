@@ -3,7 +3,7 @@ import os
 from lib_py3.scoreboard import Scoreboard
 from r1plot_lookup import lut
 
-dungeonScoreRules = []
+score_rules = []
 
 for plot in lut.plot_to_address.keys():
     address = lut.plot_to_address[plot]
@@ -22,22 +22,16 @@ for plot in lut.plot_to_address.keys():
         }
     }
 
-    dungeonScoreRules.append(newRule)
+    score_rules.append(newRule)
 
 tile_x = 0
-for addr_entry in lut.address_to_coord:
-    street_id = addr_entry[0]
-    street_num = addr_entry[1]
-
-    t0_x = addr_entry[2]
-    t0_y = addr_entry[3]
-    t0_z = addr_entry[4]
+for addr_entry in lut.address_to_coord.items():
+    street_id,street_num = addr_entry[0]
+    t0_x,t0_y,t0_z = addr_entry[1]
 
     for tile_z in range(-1,1+1):
-        address = ( ( ( tile_x & 0xff ) * 256 + ( tile_z & 0xff ) ) * 32 + street_id ) * 128 + street_num
-        x = t0_x + 768 * tile_x
-        y = t0_y
-        z = t0_x + 768 * tile_z
+        address = lut.pack_r1address(tile_x,tile_z,street_id,street_num)
+        x,y,z = lut.coordinates_from_r1address( address )
 
         newRule = {
             "condition":{
@@ -51,7 +45,7 @@ for addr_entry in lut.address_to_coord:
             ]}
         }
 
-        dungeonScoreRules.append(newRule)
+        score_rules.append(newRule)
 
 for shard in os.listdir('/home/rock/project_epic'):
     if (
@@ -64,4 +58,6 @@ for shard in os.listdir('/home/rock/project_epic'):
 
     print(shard)
     scoreboard = Scoreboard( os.path.join( '/home/rock/project_epic', shard, 'Project_Epic-' + shard ) )
+    scoreboard.batch_score_changes( score_rules )
+    scoreboard.save()
 

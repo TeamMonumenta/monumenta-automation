@@ -91,6 +91,7 @@ permissionGroups = {
         "+get errors",
         "+list shards",
         "+r1address to english",
+        "+r1plot get",
         "+select",
         "+start shard",
         "+stop shard",
@@ -117,6 +118,7 @@ permissionGroups = {
         "+get errors",
         "+list shards",
         "+r1address to english",
+        "+r1plot get",
         "+select",
         "+start shard",
         "+stop shard",
@@ -586,6 +588,27 @@ Syntax:
             self.display("Done."),
         ]
 allActions.append(R1AddressToEnglishAction)
+
+class R1PlotGetAction(ShellAction):
+    '''Get R1Plot address info in a human-readable format, including TP coordinates.
+Accepts existing scores or a player to look up.
+
+For syntax, run:
+~r1plot get'''
+    command = "r1plot get"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(commandPrefix + self.command)+1:]
+        cmdString = _top_level + "/utility_code/r1plot_get.py"
+        self._commands = []
+        cmdString += commandArgs
+        self._commands = [
+            self.run(cmdString, displayOutput=True),
+            self.display("Done."),
+        ]
+allActions.append(R1PlotGetAction)
 
 class RestartBotAction(ShellAction):
     '''Restart this bot. Used to update to the latest version.
