@@ -109,6 +109,24 @@ region_1 = {
     ),
 }
 
+# In case we ever need something like this again...
+#nov17_r1plots_rollback = {
+#    "server":"rollback",
+#
+#    # Dst is the destination world, which gets overwritten by the build world.
+#    # Then, data from the main world replaces the relevant parts of the dst world.
+#    # Please note that no special care need be taken with whitespace in filenames.
+#    "localMainFolder":"/home/rock/project_epic/r1plots/Project_Epic-r1plots.old/",
+#    "localDstFolder":"/home/rock/project_epic/r1plots/Project_Epic-r1plots/",
+#
+#    "coordinatesToCopy":(
+#        {"name":"shop plot A",               "pos1":(-2760,  76,  831), "pos2":(-2751,  80,  820)},
+#        {"name":"shop plot B",               "pos1":(-2764,  76,  784), "pos2":(-2773,  85,  790)},
+#        {"name":"shop plot C",               "pos1":( -811,  99,   31), "pos2":( -873,  99,   31)},
+#        {"name":"BlackCat_FH's player plot", "pos1":(-2641,  48,  210), "pos2":(-2617,  98,  228)},
+#    ),
+#}
+
 available_configs = {
     "betaplots": betaplots,
     "r1plots": r1plots,
@@ -125,6 +143,7 @@ available_configs = {
     "tutorial": None,
     "bungee": None,
     "purgatory": None,
+    #"rollback": nov17_r1plots_rollback,
 }
 
 if (len(sys.argv) < 2):
