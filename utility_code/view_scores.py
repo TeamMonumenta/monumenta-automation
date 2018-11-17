@@ -1,15 +1,4 @@
-#!/usr/bin/env python2.7
-# -*- coding: utf-8 -*-
-"""
-Note from the distant future of 1.13!
-
-We have an updated library for this, but because scoreboard.dat is
-*almost* exactly how it was in 1.12, this still works fine for the
-Discord bot. I'll worry about updating it later.
-
-- Tim 
-"""
-
+#!/usr/bin/env python3
 '''view scores [-d] Conditions [Order]
 
   -d shows duplicate scores only (ie, same apartment)
@@ -40,12 +29,12 @@ view scores -d {"Objective":"Apartment","Score":{"min":1}} Objective Score Name
 
 import sys
 import ast
-from lib_monumenta.scoreboard import scoreboard
+from lib_py3.scoreboard import Scoreboard
 
 sys.argv.pop(0)
 
 if len(sys.argv) == 0:
-    print __doc__
+    print( __doc__ )
     exit()
 
 duplicatesOnly = False
@@ -54,7 +43,7 @@ if sys.argv[0] == '-d':
     sys.argv.pop(0)
 
 if len(sys.argv) == 0:
-    print __doc__
+    print( __doc__ )
     exit()
 
 Conditions = ast.literal_eval(sys.argv[0])
@@ -76,8 +65,8 @@ for i in components:
         Order.append(i)
 # Order is finalized
 
-scores = scoreboard('/home/rock/project_epic/region_1/Project_Epic-region_1/')
-unsorted = scores.searchScores(Conditions=Conditions)
+scores = Scoreboard('/home/rock/project_epic/region_1/Project_Epic-region_1/')
+unsorted = scores.search_scores(Conditions=Conditions)
 
 scoreMap = {}
 maxCharCounts = []
@@ -93,8 +82,8 @@ if duplicatesOnly:
     dupes = {}
     for score in unsorted:
         key = (
-            score["Objective"].value,
-            score["Score"].value
+            score.at_path("Objective").value,
+            score.at_path("Score").value
         )
         if key not in dupes:
             dupes[key] = 1
@@ -105,8 +94,8 @@ if duplicatesOnly:
 
     for score in unsorted:
         key = (
-            score["Objective"].value,
-            score["Score"].value
+            score.at_path("Objective").value,
+            score.at_path("Score").value
         )
         if dupes[key] > 1:
             onlyDupes.append(score)
@@ -117,14 +106,14 @@ for score in unsorted:
     pointer = scoreMap
     for i in range(2):
         key = Order[i]
-        val = score[key].value
+        val = score.at_path(key).value
         maxCharCounts[i] = max(maxCharCounts[i],len(str(val)))
         if val not in pointer:
             pointer[val] = {}
         pointer = pointer[val]
-    key = score[Order[2]].value
+    key = score.at_path(Order[2]).value
     maxCharCounts[2] = max(maxCharCounts[2],len(str(key)))
-    val = score[Order[3]].value
+    val = score.at_path(Order[3]).value
     maxCharCounts[3] = max(maxCharCounts[3],len(str(val)))
     pointer[key] = val
 
@@ -156,5 +145,5 @@ for keyA in sorted(scoreMap.keys()):
 
             result += ''.join(score) + '\n'
 
-print result
+print( result )
 
