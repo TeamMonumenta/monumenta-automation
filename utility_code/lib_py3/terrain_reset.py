@@ -17,7 +17,8 @@ def terrain_reset_instance(config):
     ################################################################################
     # Assign variables
 
-    localMainFolder = config["localMainFolder"]
+    if "localMainFolder" in config:
+        localMainFolder = config["localMainFolder"]
     localDstFolder = config["localDstFolder"]
 
     ################################################################################
@@ -114,11 +115,13 @@ def terrain_reset_instance(config):
 
         for uuid in dstWorld.players:
             player = Player(os.path.join(localDstFolder, 'playerdata', str(uuid) + '.dat'))
+            player.full_heal()
 
             if "tagPlayers" in config:
                 player.modify_tags(config["tagPlayers"])
 
             if "tpToSpawn" in config and config["tpToSpawn"] == True:
                 player.spawn = dstWorld.spawn
+                player.pos = dstWorld.spawn
 
             player.save()
