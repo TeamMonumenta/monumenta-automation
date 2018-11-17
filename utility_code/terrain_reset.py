@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import sys
+
 from score_change_list import dungeon_score_rules
 from lib_py3.terrain_reset import terrain_reset_instance
 
@@ -11,7 +13,7 @@ def get_dungeon_config(name, scoreboard):
         "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/{0}/Project_Epic-{0}/".format(name),
         "copyBaseFrom":"build",
         "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
-        "playerScoreChanges":dungeonScoreRules,
+        "playerScoreChanges":dungeon_score_rules,
         "preserveInstance":{
             "dungeonScore":scoreboard,
             "targetRegion":{"x":-3, "z":-2},
@@ -29,7 +31,7 @@ betaplots = {
     "copyBaseFrom":"main",
 
     "tagPlayers":["MidTransfer","resetMessage"],
-    "playerScoreChanges":dungeonScoreRules,
+    "playerScoreChanges":dungeon_score_rules,
 }
 
 r1plots = {
@@ -41,7 +43,7 @@ r1plots = {
     "copyBaseFrom":"main",
 
     "tagPlayers":["MidTransfer","resetMessage"],
-    "playerScoreChanges":dungeonScoreRules,
+    "playerScoreChanges":dungeon_score_rules,
 }
 
 region_1 = {
@@ -55,7 +57,7 @@ region_1 = {
     "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/Project_Epic-region_1/",
 
     # Reset dungeon scores
-    "playerScoreChanges":dungeonScoreRules,
+    "playerScoreChanges":dungeon_score_rules,
 
     "tpToSpawn":True,
     "tagPlayers":["MidTransfer","resetMessage"],
@@ -107,19 +109,36 @@ region_1 = {
     ),
 }
 
-configs = [
-    betaplots,
-    r1plots,
-    region_1,
-    get_dungeon_config("white", "D1Access"),
-    get_dungeon_config("orange", "D2Access"),
-    get_dungeon_config("magenta", "D3Access"),
-    get_dungeon_config("lightblue", "D4Access"),
-    get_dungeon_config("yellow", "D5Access"),
-    get_dungeon_config("r1bonus", "DB1Access"),
-    get_dungeon_config("nightmare", "DCAccess"),
+available_configs = {
+    "betaplots": betaplots,
+    "r1plots": r1plots,
+    "region_1": region_1,
+    "white": get_dungeon_config("white", "D1Access"),
+    "orange": get_dungeon_config("orange", "D2Access"),
+    "magenta": get_dungeon_config("magenta", "D3Access"),
+    "lightblue": get_dungeon_config("lightblue", "D4Access"),
+    "yellow": get_dungeon_config("yellow", "D5Access"),
+    "r1bonus": get_dungeon_config("r1bonus", "DB1Access"),
+    "nightmare": get_dungeon_config("nightmare", "DCAccess"),
     # TODO: Roguelike
-]
+}
 
-for config in configs:
+if (len(sys.argv) < 2):
+    sys.exit("Usage: {} <server1> [server2] ...".format(sys.argv[0]))
+
+reset_name_list = []
+reset_config_list = []
+for arg in sys.argv[1:]:
+    if arg in available_configs:
+        reset_name_list.append(arg)
+        if available_configs[arg] is not None:
+            reset_config_list.append(available_configs[arg])
+    else:
+        print("ERROR: Unknown shard {} specified!".format(arg))
+        sys.exit("Usage: {} <server1> [server2] ...".format(sys.argv[0]))
+
+print(reset_config_list)
+print("Shards reset successfully: {}".format(reset_name_list))
+
+for config in available_configs:
     terrain_reset_instance(config)
