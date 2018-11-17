@@ -591,7 +591,7 @@ Accepts existing scores or a player to look up.
 
 For syntax, run:
 ~r1plot get'''
-    command = "r1plot get"
+    command = "r1plot get "
     hasPermissions = checkPermissions
 
     def __init__(self, botConfig, message):
