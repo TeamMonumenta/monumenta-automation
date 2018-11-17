@@ -595,8 +595,8 @@ else:
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
 
     config['region_1']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=7G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=7G'),
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=20G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=20G'),
         ('server.properties', 'server-ip=', 'server-ip='),
         ('plugins/Socket4MC/config.yml', 'host', 'host: "play.playmonumenta.com"'),
     ]
