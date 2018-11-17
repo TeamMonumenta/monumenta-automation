@@ -15,7 +15,7 @@ def from_player(cmd,global_score_cache):
 
     if global_score_cache is None:
         try:
-            scoreboard = Scoreboard('/home/rock/project_epic/region_1/Project_Epic-region_1')
+            scoreboard = Scoreboard('/home/rock/project_epic/r1plots/Project_Epic-r1plots')
             global_score_cache = scoreboard.get_cache(Objective=['R1Plot','R1Address','plotx','ploty','plotz'])
         except:
             print("\nCould not load Region 1's scoreboard file. Remember to `~select play2`.")
