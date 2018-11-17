@@ -429,7 +429,7 @@ Must be run before preparing the build server reset bundle'''
             self.run("mark2 start"),
 
             self.display("Generating dungeon instances (this may take a while)..."),
-            self.run("python3 " + _top_level + "/utility_code/dungeon_instance_gen.py"),
+            self.run(_top_level + "/utility_code/dungeon_instance_gen.py"),
             self.run("mv /home/rock/5_SCRATCH/tmpreset/dungeons-out /home/rock/5_SCRATCH/tmpreset/TEMPLATE"),
 
             self.display("Cleaning up instance generation temp files..."),
@@ -854,7 +854,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/PRE_RESET/server_config"),
 
             self.display("Running actual terrain reset (this will take a while!)..."),
-            self.run("python2 " + _top_level + "/utility_code/terrain_reset.py " + " ".join(allShards)),
+            self.run(_top_level + "/utility_code/terrain_reset.py " + " ".join(allShards)),
         ]
 
         for shard in ["r1plots", "betaplots", "region_1"]:
@@ -898,7 +898,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         self._commands += [
             self.display("Generating per-shard config..."),
             self.cd("/home/rock/5_SCRATCH/tmpreset/POST_RESET"),
-            self.run("python2 " + _top_level + "/utility_code/gen_server_config.py --play " + " ".join(allShards)),
+            self.run(_top_level + "/utility_code/gen_server_config.py --play " + " ".join(allShards)),
 
             # TODO: This should probably print a warning and proceed anyway if some are found
             self.display("Checking for broken symbolic links..."),
@@ -921,10 +921,10 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         if "region_1" in allShards:
             self._commands += [
                 self.display("Renaming advancements (fully tested this time, don't worry)."),
-                self.run("python3 " + _top_level + "/utility_code/advancement_rename_simple.py"),
+                self.run(_top_level + "/utility_code/advancement_rename_simple.py"),
 
                 self.display("Raffle results:"),
-                self.run("python2 " + _top_level + "/utility_code/raffle_results.py", displayOutput=True),
+                self.run(_top_level + "/utility_code/raffle_results.py", displayOutput=True),
             ]
 allActions.append(TerrainResetAction)
 

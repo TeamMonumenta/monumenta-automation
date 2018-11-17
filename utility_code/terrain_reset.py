@@ -12,7 +12,7 @@ def get_dungeon_config(name, scoreboard):
         "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/{0}/Project_Epic-{0}/".format(name),
         "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/{0}/Project_Epic-{0}/".format(name),
         "copyBaseFrom":"build",
-        "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
+        "copyMainPaths":["advancements", "playerdata", "stats", "data"],
         "playerScoreChanges":dungeon_score_rules,
         "preserveInstance":{
             "dungeonScore":scoreboard,
@@ -69,7 +69,7 @@ region_1 = {
 
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
-    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
+    "copyMainPaths":["advancements", "playerdata", "stats", "data"],
 
     "coordinatesToCopy":(
         # "name":"a unique name"
@@ -137,8 +137,7 @@ for arg in sys.argv[1:]:
         print("ERROR: Unknown shard {} specified!".format(arg))
         sys.exit("Usage: {} <server1> [server2] ...".format(sys.argv[0]))
 
-print(reset_config_list)
-print("Shards reset successfully: {}".format(reset_name_list))
-
-for config in available_configs:
+for config in reset_config_list:
     terrain_reset_instance(config)
+
+print("Shards reset successfully: {}".format(reset_name_list))
