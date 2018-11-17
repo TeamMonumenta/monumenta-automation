@@ -120,7 +120,11 @@ available_configs = {
     "yellow": get_dungeon_config("yellow", "D5Access"),
     "r1bonus": get_dungeon_config("r1bonus", "DB1Access"),
     "nightmare": get_dungeon_config("nightmare", "DCAccess"),
-    # TODO: Roguelike
+    "roguelike": None, # TODO
+    "build": None,
+    "tutorial": None,
+    "bungee": None,
+    "purgatory": None,
 }
 
 if (len(sys.argv) < 2):
