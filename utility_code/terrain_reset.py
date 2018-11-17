@@ -41,7 +41,7 @@ def terrainResetInstance(config):
 
     print("  Opening Destination World...")
     dstWorld = World(localDstFolder)
-
+    # TODO: Would be nice to make this a property of the world also?
     worldScores = Scoreboard(localDstFolder)
 
     if "playerScoreChanges" in config:
@@ -81,65 +81,49 @@ def terrainResetInstance(config):
             ):
                 # Failed to move the region file; this happens if the old file is missing.
                 # This does not indicate that the player's instance was removed intentionally.
-
-                # TODO: Tested this in 1.13, and because of the way error handling works in
-                # the MoveRegion command, this is never called, even though it detects the region is
-                # missing. Not a big deal, because this shouldn't happen in practice... but is a bug
-                #
                 dungeonScoreObjects = worldScores.search_scores(Objective=dungeonScore,Score=instanceID)
                 for scoreObject in dungeonScoreObjects:
                     # Consider setting this value to -1 to indicate an error
                     scoreObject.value["Score"].value = 0
                 continue
 
-#~     ################################################################################
-#~     # Perform world manipulations if required
-#~     if (("coordinatesToFill" in config) or ("coordinatesToCopy" in config)):
-#~
-#~         print("  Opening old play World...")
-#~         srcWorld = pymclevel.loadWorld(localMainFolder)
-#~
-#~         if "coordinatesToFill" in config:
-#~             print("  Filling selected regions with specified blocks...")
-#~             fillBoxes(dstWorld, config["coordinatesToFill"])
-#~
-#~         if "coordinatesToCopy" in config:
-#~
-#~             print("  Copying needed terrain from the main world...")
-#~             copyBoxes(srcWorld, dstWorld, config["coordinatesToCopy"])
-#~
-#~         print("  Saving....")
-#~         dstWorld.saveInPlace()
+    if "coordinatesToFill" in config:
+        print("  Filling selected regions with specified blocks...")
+        for section in config["coordinatesToFill"]:
+            print("    Filling '" + section["name"] + "' with " + str(section["block"]))
+            dstWorld.fill_blocks(section["pos1"], section["pos2"], {"block": section["block"]})
+
+    if "coordinatesToCopy" in config:
+        print("  Opening old play World...")
+        old_world = World(localMainFolder)
+
+        print("  Copying needed terrain from the main world...")
+        for section in config["coordinatesToCopy"]:
+            print("    Copying '" + section["name"] + "'")
+            dstWorld.restore_area(section["pos1"], section["pos2"], old_world);
 
     # Save the scoreboards. This is always necessary regardless of pruning entities!
     worldScores.save()
 
-    if "tagPlayers" in config:
-        print("  Giving scoreboard tags to players...")
+    # TODO: Would be nice to make the set of players a property of the world - not loaded unless you use them,
+    # and if you modify them, # saving the world would save the players too
+    if "tagPlayers" in config or ("tpToSpawn" in config and config["tpToSpawn"] == True):
+        if "tagPlayers" in config:
+            print("  Giving scoreboard tags to players...")
+
+        if "tpToSpawn" in config and config["tpToSpawn"] == True:
+            print("  Moving players to spawn (" + ",".join(str(e) for e in dstWorld.spawn) + ") ...")
+
         for uuid in dstWorld.players:
             player = Player(os.path.join(localDstFolder, 'playerdata', str(uuid) + '.dat'))
-            player.modify_tags(config["tagPlayers"])
-            player.save()
 
-#~     if ("tpToSpawn" in config and config["tpToSpawn"] is True):
-#~         print("  Moving players to spawn...")
-#~         spawnX = dstWorld.root_tag['Data']['SpawnX'].value
-#~         spawnY = dstWorld.root_tag['Data']['SpawnY'].value
-#~         spawnZ = dstWorld.root_tag['Data']['SpawnZ'].value
-#~         if dstWorld.root_tag['Data']['GameType'].value != 2:
-#~             """
-#~             Servers with Adventure as the default game mode
-#~             ignore standard spawn mechanics; this is what
-#~             happens outside of adventure mode.
-#~             """
-#~             spawnY = 256
-#~             block_air = 0
-#~             while (
-#~                 spawnY > 0 and
-#~                 dstWorld.blockAt(spawnX,spawnY-1,spawnZ) == block_air
-#~             ):
-#~                 spawnY -= 1
-#~         movePlayers(localDstFolder, (spawnX,spawnY,spawnZ,0.0,0.0))
+            if "tagPlayers" in config:
+                player.modify_tags(config["tagPlayers"])
+
+            if "tpToSpawn" in config and config["tpToSpawn"] == True:
+                player.spawn = dstWorld.spawn
+
+            player.save()
 
 config = {
     "server":"orange",
@@ -155,6 +139,14 @@ config = {
     },
     "tagPlayers":["MidTransfer","resetMessage"],
     "tpToSpawn":True,
+
+    "coordinatesToCopy":(
+        {"name":"TEST",     "pos1":(-1450,241,-1498), "pos2":(-1420,241,-1490)},
+    ),
+
+    "coordinatesToFill":(
+        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'} },
+    ),
 }
 
 terrainResetInstance(config)

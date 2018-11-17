@@ -136,7 +136,7 @@ class World(object):
         required_cy_sections = tuple(self._bounded_range(min_y,max_y,0,256,16))
 
         command_blocks = []
-        
+
         if log:
             log_file = open(log,'w')
 
@@ -339,6 +339,7 @@ class World(object):
 
         return range( min_out, max_out )
 
+    # TODO: This should be one less level of container - i.e. should just be {'snowy'...}
     def fill_blocks(self,pos1,pos2,block):
         """
         Fill the blocks from pos1 to pos2 (x,y,z).
