@@ -50,8 +50,8 @@ class ScoreCondition(object):
         self.Objective = Objective
         if 'Objective' in Conditions:
             self.Objective = Conditions['Objective']
-        if type(self.Name) is str:
-            self.Name = [self.Name]
+        if type(self.Objective) is str:
+            self.Objective = [self.Objective]
 
         self.Score = Score
         if 'Score' in Conditions:
@@ -295,7 +295,7 @@ class Scoreboard(object):
 
         return self._ScoreboardCache(matchingScores,parent=Cache,conditions=theConditions)
 
-    def reset_scores(self,Conditions=None,Name=None,Objective=None,Score=None,Locked=None):
+    def reset_scores(self,Conditions={},Name=None,Objective=None,Score=None,Locked=None):
         """
         Reset all scores matching the specified criteria, and return True.
         If an error occurs, no changes are made, and False is returned instead.
