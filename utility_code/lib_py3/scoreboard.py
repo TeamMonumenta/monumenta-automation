@@ -328,7 +328,7 @@ class Scoreboard(object):
             print("    - ! Scores not reset.")
             return False
 
-    def restore_scores(self,other,Conditions=None,Name=None,Objective=None,Score=None,Locked=None):
+    def restore_scores(self,other,Conditions={},Name=None,Objective=None,Score=None,Locked=None):
         """
         Restore scores matching Conditions in self to the scores matching Conditions in other.
         Removes scores not found in other.
