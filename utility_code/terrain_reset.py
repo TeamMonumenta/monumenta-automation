@@ -1,152 +1,125 @@
 #!/usr/bin/env python3
 
-import os
-
-from lib_py3.copy_region import copy_region
-from lib_py3.common import copy_paths, copy_folder
-from lib_py3.world import World
-from lib_py3.move_region import MoveRegion
-from lib_py3.scoreboard import Scoreboard
-from lib_py3.player import Player
-
 from score_change_list import dungeon_score_rules
+from lib_py3.terrain_reset import terrain_reset_instance
 
-def terrainResetInstance(config):
-    shardName = config["server"]
+def get_dungeon_config(name, scoreboard):
+    return {
+        "server":name,
+        "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/{0}/Project_Epic-{0}/".format(name),
+        "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/{0}/Project_Epic-{0}/".format(name),
+        "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/{0}/Project_Epic-{0}/".format(name),
+        "copyBaseFrom":"build",
+        "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
+        "playerScoreChanges":dungeonScoreRules,
+        "preserveInstance":{
+            "dungeonScore":scoreboard,
+            "targetRegion":{"x":-3, "z":-2},
+        },
+        "tagPlayers":["MidTransfer","resetMessage"],
+        "tpToSpawn":True,
+    }
 
-    print("Starting reset for server {0}...".format(shardName))
+betaplots = {
+    "server":"betaplots",
 
-    ################################################################################
-    # Assign variables
+    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/betaplots/Project_Epic-betaplots/",
+    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/Project_Epic-betaplots/",
 
-    localMainFolder = config["localMainFolder"]
-    localDstFolder = config["localDstFolder"]
+    "copyBaseFrom":"main",
 
-    ################################################################################
-    # Copy folders
-
-    # Copy build or main as base world, depending on config
-    if "copyBaseFrom" in config:
-        if config["copyBaseFrom"] == "build":
-            print("  Copying build world as base...")
-            copy_folder(config["localBuildFolder"], localDstFolder)
-        elif config["copyBaseFrom"] == "main":
-            print("  Copying main world as base...")
-            copy_folder(localMainFolder, localDstFolder)
-
-    # Copy various bits of player data from the main world
-    if "copyMainPaths" in config:
-        print("  Copying paths from main world...")
-        copy_paths(localMainFolder, localDstFolder, config["copyMainPaths"])
-
-    print("  Opening Destination World...")
-    dstWorld = World(localDstFolder)
-    # TODO: Would be nice to make this a property of the world also?
-    worldScores = Scoreboard(localDstFolder)
-
-    if "playerScoreChanges" in config:
-        print("  Adjusting player scores (dungeon scores)...")
-        worldScores.batch_score_changes(config["playerScoreChanges"])
-
-    if "preserveInstance" in config:
-        instanceConfig = config["preserveInstance"]
-        targetRegion = instanceConfig["targetRegion"]
-        dungeonScore = instanceConfig["dungeonScore"]
-        instancesPerWeek = 1000
-
-        dungeonScoreObjects = worldScores.search_scores(Objective=dungeonScore,Score={"min":1})
-        dungeonScores = set()
-        for scoreObject in dungeonScoreObjects:
-            dungeonScores.add(scoreObject.value["Score"].value)
-        dungeonScores = sorted(list(dungeonScores))
-        oldRegionDir = localMainFolder + 'region/'
-        newRegionDir = localDstFolder + 'region/'
-
-        print("  Instances preserved this week: ", dungeonScores)
-        for instanceID in dungeonScores:
-            # // is integer division
-            instanceWeek   = instanceID // instancesPerWeek
-            instanceInWeek = instanceID %  instancesPerWeek
-
-            newRx = targetRegion["x"] + instanceWeek
-            newRz = targetRegion["z"] + instanceInWeek - 1 # index starts at 1
-            oldRx = newRx - 1
-            oldRz = newRz
-
-            if not MoveRegion(
-                oldRegionDir,
-                newRegionDir,
-                oldRx,oldRz,
-                newRx,newRz,
-            ):
-                # Failed to move the region file; this happens if the old file is missing.
-                # This does not indicate that the player's instance was removed intentionally.
-                dungeonScoreObjects = worldScores.search_scores(Objective=dungeonScore,Score=instanceID)
-                for scoreObject in dungeonScoreObjects:
-                    # Consider setting this value to -1 to indicate an error
-                    scoreObject.value["Score"].value = 0
-                continue
-
-    if "coordinatesToFill" in config:
-        print("  Filling selected regions with specified blocks...")
-        for section in config["coordinatesToFill"]:
-            print("    Filling '" + section["name"] + "' with " + str(section["block"]))
-            dstWorld.fill_blocks(section["pos1"], section["pos2"], {"block": section["block"]})
-
-    if "coordinatesToCopy" in config:
-        print("  Opening old play World...")
-        old_world = World(localMainFolder)
-
-        print("  Copying needed terrain from the main world...")
-        for section in config["coordinatesToCopy"]:
-            print("    Copying '" + section["name"] + "'")
-            dstWorld.restore_area(section["pos1"], section["pos2"], old_world);
-
-    # Save the scoreboards. This is always necessary regardless of pruning entities!
-    worldScores.save()
-
-    # TODO: Would be nice to make the set of players a property of the world - not loaded unless you use them,
-    # and if you modify them, # saving the world would save the players too
-    if "tagPlayers" in config or ("tpToSpawn" in config and config["tpToSpawn"] == True):
-        if "tagPlayers" in config:
-            print("  Giving scoreboard tags to players...")
-
-        if "tpToSpawn" in config and config["tpToSpawn"] == True:
-            print("  Moving players to spawn (" + ",".join(str(e) for e in dstWorld.spawn) + ") ...")
-
-        for uuid in dstWorld.players:
-            player = Player(os.path.join(localDstFolder, 'playerdata', str(uuid) + '.dat'))
-
-            if "tagPlayers" in config:
-                player.modify_tags(config["tagPlayers"])
-
-            if "tpToSpawn" in config and config["tpToSpawn"] == True:
-                player.spawn = dstWorld.spawn
-
-            player.save()
-
-config = {
-    "server":"orange",
-    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/orange/Project_Epic-orange/",
-    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/orange/Project_Epic-orange/",
-    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/orange/Project_Epic-orange/",
-    "copyBaseFrom":"build",
-    "copyMainPaths":["advancements", "playerdata", "stats", "data"],
-    "playerScoreChanges":dungeon_score_rules,
-    "preserveInstance":{
-        "dungeonScore":"D2Access",
-        "targetRegion":{"x":-3, "z":-2},
-    },
     "tagPlayers":["MidTransfer","resetMessage"],
-    "tpToSpawn":True,
+    "playerScoreChanges":dungeonScoreRules,
+}
 
-    "coordinatesToCopy":(
-        {"name":"TEST",     "pos1":(-1450,241,-1498), "pos2":(-1420,241,-1490)},
-    ),
+r1plots = {
+    "server":"r1plots",
+
+    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/r1plots/Project_Epic-r1plots/",
+    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/Project_Epic-r1plots/",
+
+    "copyBaseFrom":"main",
+
+    "tagPlayers":["MidTransfer","resetMessage"],
+    "playerScoreChanges":dungeonScoreRules,
+}
+
+region_1 = {
+    "server":"region_1",
+
+    # Dst is the destination world, which gets overwritten by the build world.
+    # Then, data from the main world replaces the relevant parts of the dst world.
+    # Please note that no special care need be taken with whitespace in filenames.
+    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_1/Project_Epic-region_1/",
+    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_1/Project_Epic-region_1/",
+    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/Project_Epic-region_1/",
+
+    # Reset dungeon scores
+    "playerScoreChanges":dungeonScoreRules,
+
+    "tpToSpawn":True,
+    "tagPlayers":["MidTransfer","resetMessage"],
 
     "coordinatesToFill":(
-        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'} },
+        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
+            "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
+    ),
+
+    # Which folder to copy the base world from. Either "build", "main", or not set
+    "copyBaseFrom":"build",
+    "copyMainFolders":["advancements/", "playerdata/", "stats/", "data/"],
+
+    "coordinatesToCopy":(
+        # "name":"a unique name"
+        # "pos1":(x1,y1,z1)
+        # "pos2":(x2,y2,z2)
+        {"name":"Apartments_101-132",     "pos1":( -811,  99,   44), "pos2":(-873,  99,   44)},
+        {"name":"Apartments_201-232",     "pos1":( -811,  99,   36), "pos2":(-873,  99,   36)},
+        {"name":"Apartments_301-332",     "pos1":( -811,  99,   31), "pos2":(-873,  99,   31)},
+        {"name":"Apartments_401-432",     "pos1":( -811,  99,   23), "pos2":(-873,  99,   23)},
+        {"name":"Apartments_501-524",     "pos1":( -815,  99,   10), "pos2":(-861,  99,   10)},
+        {"name":"Apartments_601-624",     "pos1":( -815,  99,    5), "pos2":(-861,  99,    5)},
+        {"name":"Apartments_701-816",     "pos1":( -811,  99,   18), "pos2":(-873,  99,   18)},
+        {"name":"Apartments_units",       "pos1":( -817, 109,   87), "pos2":(-859, 164,   16)},
+        {"name":"Guild_Room",             "pos1":( -800, 109,  -75), "pos2":(-758, 104, -102)},
+        {"name":"Guild_1",                "pos1":( -586,   0,  137), "pos2":(-622, 255,  105)},
+        {"name":"Guild_2",                "pos1":( -570,   0,  112), "pos2":(-534, 255,  154)},
+        {"name":"Guild_3",                "pos1":( -581,   0,  150), "pos2":(-613, 255,  186)},
+        {"name":"Guild_4",                "pos1":( -649,   0,  275), "pos2":(-617, 255,  311)},
+        {"name":"Guild_5",                "pos1":( -683,   0,  275), "pos2":(-651, 255,  311)},
+        {"name":"Guild_6",                "pos1":( -685,   0,  275), "pos2":(-717, 255,  311)},
+        {"name":"Guild_7",                "pos1":( -816,   0,  235), "pos2":(-780, 255,  267)},
+        {"name":"Guild_8",                "pos1":( -832,   0,  257), "pos2":(-868, 255,  289)},
+        {"name":"Guild_9",                "pos1":( -816,   0,  269), "pos2":(-780, 255,  301)},
+        {"name":"Guild_10",               "pos1":( -937,   0,  272), "pos2":(-969, 255,  308)},
+        {"name":"Guild_11",               "pos1":( -969,   0,  256), "pos2":(-937, 255,  220)},
+        {"name":"Guild_12",               "pos1":( -958,   0,  104), "pos2":(-994, 255,  136)},
+        {"name":"Guild_14",               "pos1":( -958,   0,   70), "pos2":(-994, 255,  102)},
+        {"name":"Guild_15",               "pos1":( -581,   0,  -64), "pos2":(-613, 255, -100)},
+        {"name":"Guild_18",               "pos1":( -942,   0,   93), "pos2":(-906, 255,  125)},
+        {"name":"Guild_20",               "pos1":( -751,   0, -230), "pos2":(-787, 255, -198)},
+        {"name":"Guild_21",               "pos1":( -787,   0, -232), "pos2":(-751, 255, -264)},
+        {"name":"Guild_22",               "pos1":( -600,   0, -191), "pos2":(-564, 255, -159)},
+        {"name":"Guild_23",               "pos1":( -615,   0, -180), "pos2":(-651, 255, -212)},
+        {"name":"Guild_24",               "pos1":( -564,   0, -192), "pos2":(-600, 255, -224)},
+        {"name":"Guild_26",               "pos1":( -596,   0,  -46), "pos2":(-564, 255,  -10)},
+        {"name":"Guild_27",               "pos1":( -548,   0,  -64), "pos2":(-580, 255, -100)},
     ),
 }
 
-terrainResetInstance(config)
+configs = [
+    betaplots,
+    r1plots,
+    region_1,
+    get_dungeon_config("white", "D1Access"),
+    get_dungeon_config("orange", "D2Access"),
+    get_dungeon_config("magenta", "D3Access"),
+    get_dungeon_config("lightblue", "D4Access"),
+    get_dungeon_config("yellow", "D5Access"),
+    get_dungeon_config("r1bonus", "DB1Access"),
+    get_dungeon_config("nightmare", "DCAccess"),
+    # TODO: Roguelike
+]
+
+for config in configs:
+    terrain_reset_instance(config)
