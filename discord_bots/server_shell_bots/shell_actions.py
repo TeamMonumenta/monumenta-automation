@@ -428,16 +428,12 @@ Must be run before preparing the build server reset bundle'''
             self.cd("/home/rock/project_epic/dungeon"),
             self.run("mark2 start"),
 
-            self.display("Unpacking the dungeon template..."),
-            self.cd("/home/rock/5_SCRATCH/tmpreset"),
-            self.run("tar xzf /home/rock/assets/dungeon_template.tgz"),
-
             self.display("Generating dungeon instances (this may take a while)..."),
-            self.run("python2 " + _top_level + "/utility_code/dungeon_instance_gen.py"),
+            self.run("python3 " + _top_level + "/utility_code/dungeon_instance_gen.py"),
             self.run("mv /home/rock/5_SCRATCH/tmpreset/dungeons-out /home/rock/5_SCRATCH/tmpreset/TEMPLATE"),
 
             self.display("Cleaning up instance generation temp files..."),
-            self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon /home/rock/5_SCRATCH/tmpreset/Project_Epic-template"),
+            self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon"),
             self.display("Dungeon instance generation complete!"),
             self.mention(),
         ]
