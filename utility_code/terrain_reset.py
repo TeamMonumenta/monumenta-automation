@@ -63,8 +63,7 @@ region_1 = {
     "tagPlayers":["MidTransfer","resetMessage"],
 
     "coordinatesToFill":(
-        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441),
-            "replaceBlocks":True, "material":(0, 0), "materialName":"air"},
+        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
     ),
 
     # Which folder to copy the base world from. Either "build", "main", or not set
