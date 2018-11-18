@@ -1,4 +1,4 @@
-From 79f6873cd1fc2f3a4564ddf1c7f4b6f54f85fe59 Mon Sep 17 00:00:00 2001
+From 1eb59c96f4a3365c07d59c8083b7eaab7bc11276 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Tue, 31 Oct 2017 17:44:53 -0700
 Subject: [PATCH 05/12] Monumenta - Charged creepers no longer cause mob head

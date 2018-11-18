@@ -1,7 +1,7 @@
-From c322616a8be8e55dbe01c64fabef279bb781bf86 Mon Sep 17 00:00:00 2001
+From 5ae1fe0156581c64ac0c587aef7a23d6a99987a4 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Fri, 9 Nov 2018 01:17:27 -0500
-Subject: [PATCH 12/12] Monumenta - Disable phantom spawning
+Subject: [PATCH 11/12] Monumenta - Disable phantom spawning
 
 Signed-off-by: Byron Marohn <combustible@live.com>
 ---

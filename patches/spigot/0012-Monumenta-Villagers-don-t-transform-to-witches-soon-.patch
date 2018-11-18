@@ -1,18 +1,19 @@
-From ed0a50bf58021470a7dcf0c511153bf17c226686 Mon Sep 17 00:00:00 2001
+From aaf5c605fc048e6e93235b14b7373ad184b56313 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
-Date: Tue, 31 Oct 2017 17:46:54 -0700
-Subject: [PATCH 06/12] Monumenta - Villagers no longer convert to witches when
- struck by lightning
+Date: Sun, 18 Nov 2018 02:02:11 -0500
+Subject: [PATCH 12/12] Monumenta - Villagers don't transform to witches - soon
+ to be obsolete patch
 
+Signed-off-by: Byron Marohn <combustible@live.com>
 ---
- src/main/java/net/minecraft/server/EntityVillager.java | 15 +--------------
- 1 file changed, 1 insertion(+), 14 deletions(-)
+ .../java/net/minecraft/server/EntityVillager.java     | 19 -------------------
+ 1 file changed, 19 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityVillager.java b/src/main/java/net/minecraft/server/EntityVillager.java
-index 5e523490..51238724 100644
+index ab77d07b..21716593 100644
 --- a/src/main/java/net/minecraft/server/EntityVillager.java
 +++ b/src/main/java/net/minecraft/server/EntityVillager.java
-@@ -607,20 +607,7 @@ public class EntityVillager extends EntityAgeable implements NPC, IMerchant {
+@@ -609,25 +609,6 @@ public class EntityVillager extends EntityAgeable implements NPC, IMerchant {
      }
  
      public void onLightningStrike(EntityLightning entitylightning) {
@@ -27,10 +28,14 @@ index 5e523490..51238724 100644
 -                entitywitch.setCustomNameVisible(this.getCustomNameVisible());
 -            }
 -
--            this.world.addEntity(entitywitch);
+-            // CraftBukkit start
+-            if (CraftEventFactory.callEntityTransformEvent(this, entitywitch, EntityTransformEvent.TransformReason.LIGHTNING).isCancelled()) {
+-                return;
+-            }
+-            this.world.addEntity(entitywitch, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.LIGHTNING);
+-            // CraftBukkit end
 -            this.die();
 -        }
-+        return;
      }
  
      public InventorySubcontainer dD() {

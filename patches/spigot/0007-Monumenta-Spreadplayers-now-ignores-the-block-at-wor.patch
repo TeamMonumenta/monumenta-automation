@@ -1,7 +1,7 @@
-From 5da6d9a1663724b910774a8e78cac553fb312663 Mon Sep 17 00:00:00 2001
+From b2d930045c79ac5d23ee7aea56191031733165bd Mon Sep 17 00:00:00 2001
 From: Monumenta <monumenta.mgmt@gmail.com>
 Date: Fri, 12 Jan 2018 19:54:34 -0500
-Subject: [PATCH 08/12] Monumenta - Spreadplayers now ignores the block at
+Subject: [PATCH 07/12] Monumenta - Spreadplayers now ignores the block at
  world height
 
 Signed-off-by: Monumenta <monumenta.mgmt@gmail.com>

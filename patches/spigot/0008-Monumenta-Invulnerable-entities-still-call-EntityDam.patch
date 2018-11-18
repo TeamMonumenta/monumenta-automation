@@ -1,7 +1,7 @@
-From 6f16216385835fa0c4ebeddcfa231045b41cef3c Mon Sep 17 00:00:00 2001
+From 5fa2e845fc1b69eb1a869d6bee8c860a1c2816f7 Mon Sep 17 00:00:00 2001
 From: Monumenta <monumenta.mgmt@gmail.com>
 Date: Sun, 14 Jan 2018 20:41:40 -0500
-Subject: [PATCH 09/12] Monumenta - Invulnerable entities still call
+Subject: [PATCH 08/12] Monumenta - Invulnerable entities still call
  EntityDamageByEntityEvent
 
 ---
@@ -80,10 +80,10 @@ index 86488e97..2929cae0 100644
  
      public int getVariant() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 5ff75877..51d25b51 100644
+index 75bdad81..aa6aa9f9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -652,7 +652,7 @@ public class CraftEventFactory {
+@@ -662,7 +662,7 @@ public class CraftEventFactory {
          throw new IllegalStateException(String.format("Unhandled damage of %s from %s", entity, source.translationIndex));
      }
  
