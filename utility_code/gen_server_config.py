@@ -144,6 +144,10 @@ plan = [
         ('plugins/Plan', '../../server_config/data/plugins/{servername}/Plan'),
     ]
 
+gobrush = [
+        ('plugins/goBrush.jar', '../../server_config/plugins/goBrush.jar'),
+        ('plugins/goBrush', '../../server_config/plugins/goBrush'),
+    ]
 
 # Index of nodes:
 #   server_config
@@ -151,7 +155,7 @@ plan = [
 
 base_plugins = luckperms + monumenta + openinv + socket4mc + worldedit + coreprotect
 if (SERVER_TYPE == 'build'):
-    base_plugins += speedchanger + nbteditor + voxelsniper
+    base_plugins += speedchanger + nbteditor + voxelsniper + gobrush
 else:
     base_plugins += []
 
