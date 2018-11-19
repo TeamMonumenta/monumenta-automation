@@ -11,6 +11,9 @@ dungeon_score_rules = [
         "actions":{"set":[
             {"Objective":"D1Access","Score":0},
             {"Objective":"D1Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D1Access"},
+        "actions":{"set":[
+            {"Objective":"D1Access","Score":0}]}},
     {"condition":{"Objective":"D2Access","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"D2Access","Score":1000}]}},
@@ -18,6 +21,9 @@ dungeon_score_rules = [
         "actions":{"set":[
             {"Objective":"D2Access","Score":0},
             {"Objective":"D2Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D2Access"},
+        "actions":{"set":[
+            {"Objective":"D2Access","Score":0}]}},
     {"condition":{"Objective":"D3Access","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"D3Access","Score":1000}]}},
@@ -25,6 +31,9 @@ dungeon_score_rules = [
         "actions":{"set":[
             {"Objective":"D3Access","Score":0},
             {"Objective":"D3Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D3Access"},
+        "actions":{"set":[
+            {"Objective":"D3Access","Score":0}]}},
     {"condition":{"Objective":"D4Access","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"D4Access","Score":1000}]}},
@@ -32,6 +41,9 @@ dungeon_score_rules = [
         "actions":{"set":[
             {"Objective":"D4Access","Score":0},
             {"Objective":"D4Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D4Access"},
+        "actions":{"set":[
+            {"Objective":"D4Access","Score":0}]}},
     {"condition":{"Objective":"D5Access","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"D5Access","Score":1000}]}},
@@ -39,10 +51,16 @@ dungeon_score_rules = [
         "actions":{"set":[
             {"Objective":"D5Access","Score":0},
             {"Objective":"D5Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D5Access"},
+        "actions":{"set":[
+            {"Objective":"D5Access","Score":0}]}},
     {"condition":{"Objective":"DCAccess","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"DCAccess","Score":1000}]}},
     {"condition":{"Objective":"DCAccess","Score":{"min":2000}},
+        "actions":{"set":[
+            {"Objective":"DCAccess","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"DCAccess"},
         "actions":{"set":[
             {"Objective":"DCAccess","Score":0}]}},
     {"condition":{"Objective":"DB1Access","Score":{"min":1}},
@@ -51,7 +69,13 @@ dungeon_score_rules = [
     {"condition":{"Objective":"DB1Access","Score":{"min":2000}},
         "actions":{"set":[
             {"Objective":"DB1Access","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"DB1Access"},
+        "actions":{"set":[
+            {"Objective":"DB1Access","Score":0}]}},
     {"condition":{"Objective":"DRAccess","Score":{"min":1}},
+        "actions":{"set":[
+            {"Objective":"DRAccess","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"DRAccess"},
         "actions":{"set":[
             {"Objective":"DRAccess","Score":0}]}},
     {"condition":{"Objective":"VotesWeekly","Score":{"min":1}},
