@@ -193,7 +193,7 @@ config = {
         {"name":"Arena", "type":"AdventureZone", "pos1":"-966 90 -124", "pos2":"-926 256 -84"},
         {"name":"Capital", "type":"Capital", "pos1":"-1130 0 -284", "pos2":"-498 256 344"},
 
-        {"name":"Nyr", "type":"SafeZone", "pos1":"-181 0 -166", "pos2":"-79 256 14"},
+        {"name":"Nyr", "type":"SafeZone", "pos1":"-181 0 -166", "pos2":"-79 256 17"},
         {"name":"NyrAddon", "type":"SafeZone", "pos1":"-229 1 -126", "pos2":"-182 33 -79"},
         {"name":"NyrSewer", "type":"SafeZone", "pos1":"-170 28 -75", "pos2":"-217 0 -126"},
         {"name":"Farr", "type":"SafeZone", "pos1":"538 0 100", "pos2":"658 256 229"},
