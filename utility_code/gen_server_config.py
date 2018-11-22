@@ -268,7 +268,7 @@ config = {
         {"name":"Orange Quest Arena", "type":"AdventureZone", "pos1":"353 65 1538", "pos2":"425 127 1597"},
 
         {"name":"Quarantined Farr", "type":"SafeZone", "pos1":"781 261 725", "pos2":"908 169 590"},
-        {"name":"Valara", "type":"AdventureZone", "pos1":"915 167 702", "pos2":"1018 229 797"},
+        {"name":"Valara", "type":"AdventureZone", "pos1":"888 167 702", "pos2":"1018 229 797"},
         {"name":"Sewer Gate", "type":"AdventureZone", "pos1":"482 88 134", "pos2":"518 59 94"},
 
         {"name":"Ta'Eldim Gateway", "type":"AdventureZone", "pos1":"440 101 -256", "pos2":"485 68 -214"},
