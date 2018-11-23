@@ -43,6 +43,12 @@ def terrain_reset_instance(config):
     # TODO: Would be nice to make this a property of the world also?
     worldScores = Scoreboard(localDstFolder)
 
+    if "datapacks" in config:
+        print("  Changing enabled datapacks...")
+        dstWorld.enabled_data_packs = config["datapacks"]
+        print("    Enabled: " + ",".join(dstWorld.enabled_data_packs) )
+        print("    Disabled: " + ",".join(dstWorld.disabled_data_packs) )
+
     if "playerScoreChanges" in config:
         print("  Adjusting player scores (dungeon scores)...")
         worldScores.batch_score_changes(config["playerScoreChanges"])

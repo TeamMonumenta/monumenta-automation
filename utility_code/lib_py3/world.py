@@ -64,16 +64,54 @@ class World(object):
                 pass
 
     def find_data_packs(self):
-        self.enabled_data_packs = []
-        self.disabled_data_packs = []
+        self._enabled_data_packs = []
+        self._disabled_data_packs = []
 
         if self.level_dat.has_path('Data.DataPacks.Disabled'):
             for datapack in self.level_dat.at_path('Data.DataPacks.Disabled').value:
-                self.disabled_data_packs.append(datapack.value)
+                self._disabled_data_packs.append(datapack.value)
 
         if self.level_dat.has_path('Data.DataPacks.Enabled'):
             for datapack in self.level_dat.at_path('Data.DataPacks.Enabled').value:
-                self.enabled_data_packs.append(datapack.value)
+                self._enabled_data_packs.append(datapack.value)
+
+    @property
+    def enabled_data_packs(self):
+        return list(self._enabled_data_packs)
+
+    @property
+    def disabled_data_packs(self):
+        return list(self._disabled_data_packs)
+
+    @enabled_data_packs.setter
+    def enabled_data_packs(self,other):
+        # remove packs to enable from disabled packs
+        for pack in self._disabled_data_packs:
+            if pack in other:
+                self._disabled_data_packs.remove(pack)
+
+        # add no longer enabled packs to disabled packs
+        for pack in self._enabled_data_packs:
+            if pack not in other:
+                self._disabled_data_packs.append(pack)
+
+        # Set enabled packs to desired list
+        self._enabled_data_packs = other
+
+    @disabled_data_packs.setter
+    def disabled_data_packs(self,other):
+        # remove packs to disable from enabled packs
+        for pack in self._enabled_data_packs:
+            if pack in other:
+                self._enabled_data_packs.remove(pack)
+
+        # add no longer disabled packs to enabled packs
+        for pack in self._disabled_data_packs:
+            if pack not in other:
+                self._enabled_data_packs.append(pack)
+
+        # Set disabled packs to desired list
+        self._disabled_data_packs = other
 
     def save_data_packs(self):
         if not self.level_dat.has_path('Data.DataPacks'):
@@ -88,11 +126,11 @@ class World(object):
         enabled = []
         disabled = []
 
-        for datapack in self.enabled_data_packs:
+        for datapack in self._enabled_data_packs:
             enabled.append( nbt.TagString( datapack ) )
 
-        for datapack in self.disabled_data_packs:
-            if datapack not in self.enabled_data_packs:
+        for datapack in self._disabled_data_packs:
+            if datapack not in self._enabled_data_packs:
                 disabled.append( nbt.TagString( datapack ) )
 
         self.level_dat.at_path('Data.DataPacks.Disabled').value = disabled

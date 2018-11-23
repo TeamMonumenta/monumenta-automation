@@ -5,6 +5,10 @@ import sys
 from score_change_list import dungeon_score_rules
 from lib_py3.terrain_reset import terrain_reset_instance
 
+datapacks_default = ['vanilla','file/bukkit']
+datapacks_base = datapacks_default + ['file/base']
+datapacks_dungeon = datapacks_base + ['file/dungeon']
+
 def get_dungeon_config(name, scoreboard):
     return {
         "server":name,
@@ -13,6 +17,7 @@ def get_dungeon_config(name, scoreboard):
         "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/{0}/Project_Epic-{0}/".format(name),
         "copyBaseFrom":"build",
         "copyMainPaths":["advancements", "playerdata", "stats", "data"],
+        "datapacks":datapacks_dungeon + ['file/'+name],
         "playerScoreChanges":dungeon_score_rules,
         "preserveInstance":{
             "dungeonScore":scoreboard,
@@ -30,6 +35,7 @@ betaplots = {
 
     "copyBaseFrom":"main",
 
+    "datapacks":datapacks_base + ['file/betaplots']
     "tagPlayers":["MidTransfer","resetMessage"],
     "playerScoreChanges":dungeon_score_rules,
 }
@@ -42,6 +48,7 @@ r1plots = {
 
     "copyBaseFrom":"main",
 
+    "datapacks":datapacks_base + ['file/r1plots']
     "tagPlayers":["MidTransfer","resetMessage"],
     "playerScoreChanges":dungeon_score_rules,
 }
@@ -59,6 +66,7 @@ region_1 = {
     # Reset dungeon scores
     "playerScoreChanges":dungeon_score_rules,
 
+    "datapacks":datapacks_base + ['file/region_1']
     "tpToSpawn":True,
     "tagPlayers":["MidTransfer","resetMessage"],
 
