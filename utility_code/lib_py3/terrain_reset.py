@@ -47,8 +47,6 @@ def terrain_reset_instance(config):
         print("  Changing enabled datapacks...")
         dstWorld.enabled_data_packs = config["datapacks"]
         dstWorld.save_data_packs()
-        print("    Enabled: " + ",".join(dstWorld.enabled_data_packs) )
-        print("    Disabled: " + ",".join(dstWorld.disabled_data_packs) )
 
     if "playerScoreChanges" in config:
         print("  Adjusting player scores (dungeon scores)...")
@@ -133,3 +131,5 @@ def terrain_reset_instance(config):
                 player.pos = dstWorld.spawn
 
             player.save()
+
+    dstWorld.save()
