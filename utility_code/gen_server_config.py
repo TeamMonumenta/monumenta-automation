@@ -243,9 +243,8 @@ config = {
         {"name":"Azacor Witch Hut", "type":"AdventureZone", "pos1":"1443 166 164", "pos2":"1475 191 192"},
         {"name":"Azacor Ritual Room", "type":"AdventureZone", "pos1":"1256 140 304", "pos2":"1301 116 343"},
         {"name":"Azacor Lobby", "type":"SafeZone", "pos1":"1223 0 -156", "pos2":"1341 28 -80"},
-        {"name":"Azacor Arena Tunnel 1", "type":"AdventureZone", "pos1":"1432 13 -390", "pos2":"1436 16 -380"},
-        {"name":"Azacor Arena Tunnel 2", "type":"AdventureZone", "pos1":"1432 14 -240", "pos2":"1436 17 -230"},
-        {"name":"Azacor Arena Tunnel 3", "type":"AdventureZone", "pos1":"1432 15 -90", "pos2":"1436 18 -80"},
+        {"name":"Azacor Arena Tunnel 1", "type":"SafeZone", "pos1":"1420 0 -90", "pos2":"1445 20 -80"},
+        {"name":"Azacor Arena Tunnel 2", "type":"SafeZone", "pos1":"1420 0 -240", "pos2":"1445 20 -230"},
         {"name":"Outer Demons", "type":"AdventureZone", "pos1":"1601 42 79", "pos2":"1687 12 -10"},
         {"name":"Chesterfield Grove Ruins", "type":"AdventureZone", "pos1":"1331 200 17", "pos2":"1347 218 35"},
 
