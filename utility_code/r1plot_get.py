@@ -48,6 +48,7 @@ def from_player(cmd,global_score_cache):
     by_addr_coords = None
     valid_addr = score_addr != 0
     if valid_addr:
+        addr = score_addr
         addr_details = lut.unpack_r1address(addr)
         valid_addr = addr_details['valid']
         if valid_addr:
@@ -69,6 +70,7 @@ def from_player(cmd,global_score_cache):
     by_plot_coords = None
     valid_plot = score_plot in lut.plot_to_address.keys()
     if valid_plot:
+        plot = score_plot
         addr = lut.plot_to_address[plot]
 
         addr_details = lut.unpack_r1address(addr)
