@@ -56,12 +56,14 @@ class World(object):
     def find_players(self):
         self.players = []
 
-        for filename in os.listdir( os.path.join( self.path, 'playerdata' ) ):
-            try:
-                player = uuid.UUID( filename[:-4] )
-                self.players.append( player )
-            except:
-                pass
+        player_data_path = os.path.join( self.path, 'playerdata' )
+        if os.path.isdir(player_data_path):
+            for filename in os.listdir( player_data_path ):
+                try:
+                    player = uuid.UUID( filename[:-4] )
+                    self.players.append( player )
+                except:
+                    pass
 
     def find_data_packs(self):
         self._enabled_data_packs = []
