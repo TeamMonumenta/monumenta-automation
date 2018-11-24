@@ -597,10 +597,14 @@ class World(object):
 
                                 for new_chunk_section in new_chunk.body.at_path('Level.Sections').value:
                                     cy = new_chunk_section.at_path("Y").value
+                                    if len( self._bounded_range(min_y,max_y,cy,16) ) == 0:
+                                        continue
                                     new_chunk_sections[cy] = new_chunk_section
 
                                 for old_chunk_section in old_chunk.body.at_path('Level.Sections').value:
                                     cy = old_chunk_section.at_path("Y").value
+                                    if len( self._bounded_range(min_y,max_y,cy,16) ) == 0:
+                                        continue
                                     old_chunk_sections[cy] = old_chunk_section
 
                                 old_only_sections = set(old_chunk_sections.keys()).difference(set(new_chunk_sections.keys()))
