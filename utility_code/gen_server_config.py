@@ -468,8 +468,8 @@ config = {
 
     'white':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=14'),
-            ('spigot.yml', 'view-distance', '    view-distance: 14'),
+            ('server.properties', 'view-distance', 'view-distance=16'),
+            ('spigot.yml', 'view-distance', '    view-distance: 16'),
             ('server.properties', 'server-port', 'server-port=25580'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.10"'),
