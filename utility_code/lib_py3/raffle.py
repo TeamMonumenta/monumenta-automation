@@ -16,7 +16,7 @@ def normalized( a_list ):
         new_list.append( a_val / total )
     return new_list
 
-def vote_raffle( scoreboard, log_path ):
+def vote_raffle( scoreboard, log_path, num_winners ):
     logfp = open( log_path, "w" )
 
     raffle_cache = scoreboard.get_cache( Objective=[ "VotesWeekly", "VoteRaffle" ] )
@@ -44,10 +44,6 @@ def vote_raffle( scoreboard, log_path ):
     if total_votes == 0:
         logfp.close
         return
-
-    num_winners = 2
-    #num_winners = int( ceil( len(vote_names) / 10.0 ) )
-    #logfp.write( "Since there are {} voters this week, there will be {} winners.\n\n".format( len(vote_names), num_winners ) )
 
     for num_votes in sorted( vote_names_by_counts.keys(), reverse=True ):
         vote_s = "s"
