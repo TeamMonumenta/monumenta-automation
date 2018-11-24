@@ -131,9 +131,9 @@ def generateDungeonInstances(config, dungeon, outputFile, statusQueue):
             )
 
         # Set blocks
-        if "blocks" in config:
+        if "setBlocks" in config:
             world = World(dstFolder)
-            for block in config["blocks"]:
+            for block in config["setBlocks"]:
                 world.set_block(block["pos"], block)
 
         print("")
