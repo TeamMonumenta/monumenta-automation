@@ -76,7 +76,8 @@ def terrain_reset_instance(config):
             newRx = targetRegion["x"] + instanceWeek
             newRz = targetRegion["z"] + instanceInWeek - 1 # index starts at 1
             oldRx = newRx - 1
-            oldRz = newRz
+            # TODO: REMOVE THE +1 from this!
+            oldRz = newRz + 1
 
             if not MoveRegion(
                 oldRegionDir,

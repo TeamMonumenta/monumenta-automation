@@ -35,7 +35,7 @@ betaplots = {
 
     "copyBaseFrom":"main",
 
-    "datapacks":datapacks_base + ['file/betaplots']
+    "datapacks":datapacks_base + ['file/betaplots'],
     "tagPlayers":["MidTransfer","resetMessage"],
     "playerScoreChanges":dungeon_score_rules,
 }
@@ -48,7 +48,7 @@ r1plots = {
 
     "copyBaseFrom":"main",
 
-    "datapacks":datapacks_base + ['file/r1plots']
+    "datapacks":datapacks_base + ['file/r1plots'],
     "tagPlayers":["MidTransfer","resetMessage"],
     "playerScoreChanges":dungeon_score_rules,
 }
@@ -66,7 +66,7 @@ region_1 = {
     # Reset dungeon scores
     "playerScoreChanges":dungeon_score_rules,
 
-    "datapacks":datapacks_base + ['file/region_1']
+    "datapacks":datapacks_base + ['file/region_1'],
     "tpToSpawn":True,
     "tagPlayers":["MidTransfer","resetMessage"],
 
