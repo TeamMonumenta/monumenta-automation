@@ -61,6 +61,7 @@ def vote_raffle( scoreboard, log_path, num_winners ):
         winner_s = ""
     for winner in winners:
         scoreboard.add_score( winner, "VoteRaffle", 1, Cache=raffle_cache )
+    scoreboard.save()
     logfp.write( "This week's winner{}: ".format( winner_s ) + ", ".join( sorted( winners ) ) )
 
     logfp.close()
