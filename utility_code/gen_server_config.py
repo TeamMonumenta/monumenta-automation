@@ -378,7 +378,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": ["region_1"],'),
         ],
-        'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper
+        'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + dynmap,
     },
 
     'mobs':{
@@ -412,7 +412,7 @@ config = {
             ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 0,'),
         ],
-        'linked':server_config + base_plugins,
+        'linked':server_config + base_plugins + dynmap,
     },
 
     'betaplots':{
