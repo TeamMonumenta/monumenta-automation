@@ -331,7 +331,9 @@ config = {
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
     ],'''),
         ],
-        'linked':server_config + base_plugins + dynmap,
+        'linked':server_config + base_plugins + dynmap + [
+            ('plugins/ScriptedQuests/npcs/tutorial', '../../../../server_config/data/scriptedquests/npcs/tutorial'),
+        ],
     },
 
     'roguelike':{
