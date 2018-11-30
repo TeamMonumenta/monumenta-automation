@@ -585,8 +585,8 @@ if (SERVER_TYPE == 'build'):
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
 
     config['region_1']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
         ('server.properties', 'server-ip=', 'server-ip=127.0.0.1'),
         ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
     ]
