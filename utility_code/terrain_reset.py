@@ -84,7 +84,7 @@ region_1 = {
 
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
-    "copyMainPaths":["advancements", "playerdata", "stats", "data"],
+    "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
 
     "coordinatesToCopy":(
         # "name":"a unique name"
