@@ -591,12 +591,12 @@ Accepts existing scores or a player to look up.
 
 For syntax, run:
 ~r1plot get'''
-    command = "r1plot get "
+    command = "r1plot get"
     hasPermissions = checkPermissions
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:]
+        commandArgs = message.content[len(commandPrefix + self.command):]
         cmdString = _top_level + "/utility_code/r1plot_get.py"
         self._commands = []
         cmdString += commandArgs
