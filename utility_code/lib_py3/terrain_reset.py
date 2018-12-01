@@ -40,13 +40,16 @@ def terrain_reset_instance(config):
 
     print("  Opening Destination World...")
     dstWorld = World(localDstFolder)
-    # TODO: Would be nice to make this a property of the world also?
-    worldScores = Scoreboard(localDstFolder)
 
     if "datapacks" in config:
         print("  Changing enabled datapacks...")
         dstWorld.enabled_data_packs = config["datapacks"]
         dstWorld.save_data_packs()
+
+    worldScores = None
+    if ("playerScoreChanges" in config) or ("preserveInstance" in config):
+        # TODO: Would be nice to make this a property of the world also?
+        worldScores = Scoreboard(localDstFolder)
 
     if "playerScoreChanges" in config:
         print("  Adjusting player scores (dungeon scores)...")
@@ -107,8 +110,9 @@ def terrain_reset_instance(config):
             print("    Copying '" + section["name"] + "'")
             dstWorld.restore_area(section["pos1"], section["pos2"], old_world);
 
-    # Save the scoreboards. This is always necessary regardless of pruning entities!
-    worldScores.save()
+    # Save the scoreboards if they were used
+    if worldScores is not None:
+        worldScores.save()
 
     # TODO: Would be nice to make the set of players a property of the world - not loaded unless you use them,
     # and if you modify them, # saving the world would save the players too
