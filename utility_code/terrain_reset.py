@@ -53,6 +53,14 @@ r1plots = {
     "playerScoreChanges":dungeon_score_rules,
 }
 
+tutorial = {
+    "server":"tutorial",
+
+    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/tutorial/Project_Epic-tutorial/",
+
+    "datapacks":datapacks_dungeon + ['file/tutorial'],
+}
+
 region_1 = {
     "server":"region_1",
 
@@ -146,8 +154,8 @@ available_configs = {
     "r1bonus": get_dungeon_config("r1bonus", "DB1Access"),
     "nightmare": get_dungeon_config("nightmare", "DCAccess"),
     "roguelike": None, # TODO
+    "tutorial": tutorial,
     "build": None,
-    "tutorial": None,
     "bungee": None,
     "purgatory": None,
     #"rollback": nov17_r1plots_rollback,

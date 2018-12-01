@@ -849,10 +849,20 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         if "bungee" in allShards:
             self._commands += [
-                self.display("Copying bungeecord..."),
+                self.display("Moving bungeecord..."),
                 self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/bungee /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
-                # TODO: Update automatically
-                self.display("TODO: You must manually update the version number in bungee's config.yml!"),
+            ]
+
+        if "build" in allShards:
+            self._commands += [
+                self.display("Moving the build shard..."),
+                self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/build /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
+            ]
+
+        if "tutorial" in allShards:
+            self._commands += [
+                self.display("Moving the tutorial shard..."),
+                self.run("mv /home/rock/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
             ]
 
         self._commands += [
@@ -872,18 +882,6 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
                     self.run("mkdir -p {0}/POST_RESET/{1}/plugins/EpicWarps".format(resetdir, shard)),
                     self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, shard, "plugins/EpicWarps/warps.yml")),
                 ]
-
-        if "build" in allShards:
-            self._commands += [
-                self.display("Moving the build shard..."),
-                self.run("mv /home/rock/5_SCRATCH/tmpreset/PRE_RESET/build /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
-            ]
-
-        if "tutorial" in allShards:
-            self._commands += [
-                self.display("Copying the tutorial shard..."),
-                self.run("cp -a /home/rock/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
-            ]
 
         for shard in allShards:
             if shard in ["build","bungee"]:
