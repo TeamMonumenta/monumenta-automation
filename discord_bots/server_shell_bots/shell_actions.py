@@ -26,6 +26,13 @@ def escapeDangerous(dangerString):
 allActions = []
 allActionsDict = {}
 
+class NativeRestart():
+    state = True
+    def __init__(self):
+        pass
+
+native_restart = NativeRestart()
+
 class listening():
     def __init__(self):
         self._set = set()
@@ -469,6 +476,25 @@ Syntax:
             ]
 allActions.append(GetErrorsAction)
 
+class KillBotAction(ShellAction):
+    '''Kill this bot. Used for maintanence.
+Do not use while the bot is running actions.
+Syntax:
+`{cmdPrefix}kill bot` kill bot
+'''
+    command = "kill bot"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+
+        native_restart.state = False
+        self._commands = [
+            self.display("Bot going down."),
+            self.run("kill {pid} &".format(pid=botConfig["main_pid"])),
+        ]
+allActions.append(KillBotAction)
+
 class ListShardsAction(ShellAction):
     '''Lists currently running shards on this server'''
     command = "list shards"
@@ -621,6 +647,7 @@ Syntax:
 
         commandArgs = message.content[len(commandPrefix + self.command)+1:]
         shellCommand = _top_level + "/discord_bots/server_shell_bots/bin/restart_bot.sh"
+        native_restart.state = False
         self._commands = [
             self.run("{cmd} {pid} {arg} &".format(cmd=shellCommand,pid=botConfig["main_pid"],arg=commandArgs)),
         ]

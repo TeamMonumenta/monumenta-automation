@@ -1,15 +1,16 @@
 #!/usr/bin/env python3.6
-# -*- coding: utf-8 -*-
 
 import os
 import sys
 import logging
 import json
 
+import asyncio
+
 logging.basicConfig(level=logging.INFO)
 
 import discord
-from shell_actions import allActionsDict, findBestMatch, listening
+from shell_actions import allActionsDict, findBestMatch, listening, native_restart
 
 ################################################################################
 # Config / Environment
@@ -75,45 +76,76 @@ botChannelNames = {
 
 botChannels = list(botChannelNames.keys())
 
-client = discord.Client()
+while native_restart.state:
+    print("Starting the client...")
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        client = discord.Client()
 
-################################################################################
-# Discord event handlers
+        ################################################################################
+        # Discord event handlers
 
-@client.event
-async def on_ready():
-    print('Logged in as')
-    print(client.user.name)
-    print(client.user.id)
-    print('------')
-    for channelId in botChannels:
-        try:
-            channel = client.get_channel(channelId)
-            await client.send_message(channel, botName + " started and now listening.")
-        except:
-            print( "Cannot connect to channel: " + botChannelNames[channelId] )
+        @client.event
+        async def on_ready():
+            print('Logged in as')
+            print(client.user.name)
+            print(client.user.id)
+            print('------')
+            for channelId in botChannels:
+                try:
+                    channel = client.get_channel(channelId)
+                    await client.send_message(channel, botName + " started and now listening.")
+                except:
+                    print( "Cannot connect to channel: " + botChannelNames[channelId] )
 
-@client.event
-async def on_message(message):
-    if message.channel.id in botChannels:
-        actionClass = findBestMatch(botConfig,message)
-        if actionClass is None:
-            return
-        action = actionClass(botConfig,message)
-        if not action.hasPermissions(message.author):
-            await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
-        else:
-            await action.doActions(client, message.channel, message.author)
-        return
+        @client.event
+        async def on_message(message):
+            if message.channel.id in botChannels:
+                actionClass = findBestMatch(botConfig,message)
+                if actionClass is None:
+                    return
+                action = actionClass(botConfig,message)
+                if not action.hasPermissions(message.author):
+                    await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
+                else:
+                    await action.doActions(client, message.channel, message.author)
+                return
 
-################################################################################
-# Entry point
+        ################################################################################
+        # Ignore these, just noting them to avoid the errors we were getting
 
-try:
-    client.run(loginInfo)
-    print("No error detected from outside the client")
-except:
-    print("The following error was visible from outside the client, and may be used to restart it:")
-    raise
+        @client.event
+        async def on_message_delete():
+            pass
+
+        @client.event
+        async def on_message_edit():
+            pass
+
+        @client.event
+        async def on_reaction_add():
+            pass
+
+        @client.event
+        async def on_reaction_remove():
+            pass
+
+        @client.event
+        async def on_reaction_clear():
+            pass
+
+        ################################################################################
+        # Entry point
+
+        client.run(loginInfo)
+        print("No error detected from outside the client, restarting.")
+    except RuntimeError as e:
+        print("Runtime Error detected in loop. Exiting.")
+        print(repr(e))
+        native_restart.state = False
+    except BaseException as e:
+        print("The following error was visible from outside the client, and may be used to restart or fix it:")
+        print(repr(e))
 print("Terminating")
 
