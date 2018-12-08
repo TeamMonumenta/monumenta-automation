@@ -274,6 +274,7 @@ config = {
         {"name":"Ta'Eldim", "type":"SafeZone", "pos1":"376 255 -461", "pos2":"543 147 -297"},
 
         {"name":"post-monument Sage Draiikali", "type":"AdventureZone", "pos1":"1220 0 -126", "pos2":"1242 255 -103"},
+        {"name":"Shrines race", "type":"AdventureZone", "pos1":"-191 87 -72", "pos2":"-205 98 -59"},
         {"name":"Farr race", "type":"AdventureZone", "pos1":"1036 99 -119", "pos2":"1051 112 -105"}
     ],'''),
         ],
