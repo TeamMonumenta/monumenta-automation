@@ -50,17 +50,19 @@ server_config_to_copy = [
         ('plugins/Vault/config.yml',),
     ]
 
-
-server_config_min = [
+purgatory_min = [
         ('spigot.jar', '../server_config/spigot.jar'),
-        ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
-        ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
         ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
         ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
         ('plugins/VentureChat/config.yml', '../../../server_config/plugins/VentureChat/{}/config.yml'.format(SERVER_TYPE)),
+    ]
+
+server_config_min = purgatory_min + [
+        ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
+        ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
         ('plugins/BKCommonLib.jar', '../../server_config/plugins/BKCommonLib.jar'),
         ('plugins/LightCleaner.jar', '../../server_config/plugins/LightCleaner.jar'),
     ]
@@ -462,10 +464,10 @@ config = {
             ('server.properties', 'spawn-monsters', 'spawn-monsters=false'),
             ('server.properties', 'spawn-npcs', 'spawn-npcs=false'),
             ('server.properties', 'spawn-protection', 'spawn-protection=16'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=128M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=128M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=384M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=384M'),
         ],
-        'linked':server_config_min,
+        'linked':purgatory_min,
     },
 
     'white':{
