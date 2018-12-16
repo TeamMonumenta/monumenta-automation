@@ -84,6 +84,8 @@ monumenta_without_mobs_plugins = [
         ('plugins/ScriptedQuests/death/common', '../../../../server_config/data/scriptedquests/death/common'),
         ('plugins/ScriptedQuests/races/{servername}', '../../../../server_config/data/scriptedquests/races/{servername}'),
         ('plugins/ScriptedQuests/races/common', '../../../../server_config/data/scriptedquests/races/common'),
+        ('plugins/ScriptedQuests/traders/{servername}', '../../../../server_config/data/scriptedquests/traders/{servername}'),
+        ('plugins/ScriptedQuests/traders/common', '../../../../server_config/data/scriptedquests/traders/common'),
         ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
