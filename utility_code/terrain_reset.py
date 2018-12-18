@@ -16,7 +16,7 @@ def get_dungeon_config(name, scoreboard):
         "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/{0}/Project_Epic-{0}/".format(name),
         "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/{0}/Project_Epic-{0}/".format(name),
         "copyBaseFrom":"build",
-        "copyMainPaths":["advancements", "playerdata", "stats", "data"],
+        "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/'+name],
         "playerScoreChanges":dungeon_score_rules,
         "preserveInstance":{
