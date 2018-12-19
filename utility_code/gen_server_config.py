@@ -254,6 +254,8 @@ config = {
 
         {"name":"Light Blue Tower Basement", "type":"AdventureZone", "pos1":"881 153 -334", "pos2":"824 109 -303"},
 
+        {"name":"Snowman Event Arena", "type":"SafeZone", "pos1":"-134 0 -666", "pos2":"17 255 -550"},
+
         {"name":"Starrier Night - Gaius Tower", "type":"AdventureZone", "pos1":"-99 115 69", "pos2":"-120 70 93"},
         {"name":"Starrier Night - Lowtide Montana", "type":"SafeZone", "pos1":"739 121 433", "pos2":"717 97 409"},
         {"name":"Starrier Night - Fishing Huts Bunker", "type":"AdventureZone", "pos1":"-408 43 -15", "pos2":"-384 28 9"},
