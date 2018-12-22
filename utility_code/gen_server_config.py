@@ -222,7 +222,7 @@ config = {
         {"name":"Brown Co 57 Floating Island", "type":"SafeZone", "pos1":"887 0 -927", "pos2":"978 255 -899"},
         {"name":"Tutorial Dungeon Flashback", "type":"SafeZone", "pos1":"1126 5 148", "pos2":"1177 35 224"},
         {"name":"Roguelike Entrance Puzzle", "type":"SafeZone", "pos1":"825 0 173", "pos2":"889 97 217"},
-        {"name":"Mansion Vault", "type":"SafeZone", "pos1":"-14 84 -231", "pos2":"10 102 -202"},
+        {"name":"Mansion Vault", "type":"SafeZone", "pos1":"-14 84 -231", "pos2":"10 102 -201"},
         {"name":"Replica Hall", "type":"SafeZone", "pos1":"-2133 44 551", "pos2":"-2077 113 798"},
 
         {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
