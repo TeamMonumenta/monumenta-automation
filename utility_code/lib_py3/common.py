@@ -37,6 +37,8 @@ def copy_file(old, new):
     if not os.path.exists(old):
         print("*** '{}' does not exist, preserving original.".format(old))
         return False
+    if not os.path.exists(os.path.dirname(new)):
+        os.makedirs(os.path.dirname(new))
     if os.path.exists(new):
         os.remove(new)
     if os.path.islink(old):
@@ -51,6 +53,8 @@ def copy_folder(old, new):
     if not os.path.exists(old):
         print("*** '{}' does not exist, preserving original.".format(old))
         return
+    if not os.path.exists(os.path.dirname(new)):
+        os.makedirs(os.path.dirname(new))
     shutil.rmtree(new, ignore_errors=True)
     shutil.copytree(old, new, symlinks=True)
 
