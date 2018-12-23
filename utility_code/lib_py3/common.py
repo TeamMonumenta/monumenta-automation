@@ -5,6 +5,16 @@ import sys
 
 import shutil
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+def remove_formatting(formattedString):
+    nameNoFormat = formattedString
+    while '§' in nameNoFormat:
+        i = nameNoFormat.find('§')
+        nameNoFormat = nameNoFormat[:i]+nameNoFormat[i+2:]
+    return nameNoFormat
+
 class AlwaysEqual(object):
     def __init__(self):
         pass
