@@ -1,73 +1,95 @@
 #!/usr/bin/env python3
 
-import re
+import os
+import sys
 import json
+import re
+from collections import OrderedDict
 
-while True:
-    raw = input("Paste /give command here:")
+from lib_py3.json_file import jsonFile
+from lib_py3.common import eprint
+from lib_py3.common import remove_formatting
 
-    # Strip the /give <selector>
-    raw = re.sub('^[^ ]* [^ ]* ', '', raw.strip())
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
+from quarry.types import nbt
 
-    # Strip the count
-    raw = re.sub('}[^}]*$', '}', raw.strip())
+def make_single_loot_table(loot_table_path, entries):
+    pool = OrderedDict()
+    pool["rolls"] = 1
+    pool["entries"] = entries
+    table_dict = OrderedDict()
+    table_dict["pools"] = [pool]
 
-    item_type = re.sub('{.*$', '', raw)
-    nbt = re.sub('^[^{]*{', '{', raw)
+    loot_table_string = json.dumps(table_dict, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
 
-    escaped_nbt = json.dumps(nbt, ensure_ascii=False)
+    # Make directories if they don't exist
+    if not os.path.isdir(os.path.dirname(loot_table_path)):
+        os.makedirs(os.path.dirname(loot_table_path))
 
-    if "minecraft:" not in item_type:
-        print("item type does not contain 'minecraft:'")
-        continue
+    with open(loot_table_path, "w", encoding="utf-8") as f:
+        f.write(loot_table_string)
 
-    if "display:" not in nbt:
-        print("nbt does not contain 'display:'")
-        continue
+def make_loot_table(loot_table_base_path, container_nbt_list, loot_table_name=None):
+    entries = None
+    for container_nbt in container_nbt_list:
+        if "Items" not in container_nbt.value:
+            raise KeyError("NBT does not contain Items!")
 
-    display = nbt[nbt.index('display:'):]
-    display = re.sub('§[a-z0-9]', '', display)
-    display = re.sub("'", '', display)
-    display = ''.join([i if ord(i) < 128 else '' for i in display])
+        for item_nbt in container_nbt.value["Items"].value:
+            #item_nbt.tree()
+            if not entries or not loot_table_name:
+                entries = []
 
-    if "Name:" not in display:
-        print("display does not contain 'Name:'")
-        continue
+            entry_json = OrderedDict()
+            entry_json["type"] = "item"
+            entry_json["weight"] = 10
+            entry_json["name"] = item_nbt.value["id"].value
+            entry_json["functions"] = [{
+                "function": "set_nbt",
+                "tag": item_nbt.value["tag"].to_mojangson()
+            }]
 
-    namefrag = display[display.index('Name:'):]
-    # Name:"{\"text\":\"
-    name = re.sub(r'Name:"{\\"text\\":\\"', '', namefrag)
-    name = re.sub(r'\\.*$', '', name)
-    name = name.lower()
-    name = re.sub(" +", "_", name)
+            item_name = item_nbt.at_path("tag.display.Name").value
+            item_name = remove_formatting(item_name)
+            # If the item name is JSON, parse it down to just the name text
+            try:
+                name_json = json.loads(item_name)
+                if "text" in name_json:
+                    item_name = name_json["text"]
+            except:
+                raise ValueError("WARNING: Item '" + item_name + "isn't json!")
 
-    #print("item_type:", item_type)
-    #print("nbt:", nbt)
-    #print("escaped_nbt:", escaped_nbt)
-    #print("display:", display)
-    #print("namefrag:", namefrag)
-    #print("name:", name)
+            entries.append(entry_json)
 
-    outfile = open('./{}.json'.format(name), 'w')
-    outfile.write('''{
-    "pools": [
-        {
-            "rolls": 1,
-            "entries": [
-                {
-                    "type": "item",
-                    "weight": 1,
-                    "name": "''' + item_type + '''",
-                    "functions": [
-                        {
-                            "function": "set_nbt",
-                            "tag": ''' + escaped_nbt + '''
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
-''')
-    outfile.close()
+            if not loot_table_name:
+                filename = item_name.lower()
+                filename = re.sub(" +", "_", filename)
+                filename = "".join([i if re.match('[a-z0-9-_]', i) else '' for i in filename])
+                filename = filename + ".json"
+                make_single_loot_table(os.path.join(loot_table_base_path, filename), entries)
+
+    if loot_table_name:
+        make_single_loot_table(os.path.join(loot_table_base_path, loot_table_name), entries)
+
+with open('file.txt','r') as f:
+    container_nbt_list = []
+    while True:
+        raw = f.readline().strip()
+        if not raw:
+            break
+
+        # Strip everything before the item/block type
+        raw = re.sub('^[^{]*( [^ {]*{)', r'\1', raw.strip())
+
+        # Strip the count
+        raw = re.sub('}[^}]*$', '}', raw.strip())
+
+        item_type = re.sub('{.*$', '', raw)
+        nbt_str = re.sub('^[^{]*{', '{', raw)
+
+        item_nbt = nbt.TagCompound.from_mojangson(nbt_str)
+        container_nbt_list.append(item_nbt)
+
+    #make_loot_table("./out", container_nbt_list)
+    make_loot_table("./out", container_nbt_list, "test.json")
+
