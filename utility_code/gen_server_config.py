@@ -48,6 +48,7 @@ server_config_to_copy = [
         ('plugins/ProtocolLib/config.yml',),
         ('plugins/Socket4MC/config.yml',),
         ('plugins/Vault/config.yml',),
+        ('plugins/ChestSort/config.yml',),
     ]
 
 purgatory_min = [
@@ -76,6 +77,7 @@ server_config = server_config_min + [
 monumenta_without_mobs_plugins = [
         ('plugins/EpicWarps.jar', '../../server_config/plugins/EpicWarps.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
+        ('plugins/JeffChestSort.jar', '../../server_config/plugins/JeffChestSort.jar'),
         ('plugins/ScriptedQuests/npcs/{servername}', '../../../../server_config/data/scriptedquests/npcs/{servername}'),
         ('plugins/ScriptedQuests/npcs/common', '../../../../server_config/data/scriptedquests/npcs/common'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
