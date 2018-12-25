@@ -40,6 +40,9 @@ def make_loot_table(loot_table_base_path, container_nbt_list, loot_table_name=No
             if not entries or not loot_table_name:
                 entries = []
 
+            # Fix minecraft annoyingly escaping apostraphes in item name
+            item_nbt.at_path("tag.display.Name").value = re.sub(r"\\u0027", "'", item_nbt.at_path("tag.display.Name").value)
+
             entry_json = OrderedDict()
             entry_json["type"] = "item"
             entry_json["weight"] = 10
@@ -71,7 +74,32 @@ def make_loot_table(loot_table_base_path, container_nbt_list, loot_table_name=No
     if loot_table_name:
         make_single_loot_table(os.path.join(loot_table_base_path, loot_table_name), entries)
 
-with open('file.txt','r') as f:
+def usage():
+    sys.exit("Usage: " + sys.argv[0] + " [-v, --verbose] <text_file_with_setblock_chest.txt> <output_directory> [loot_table_file_name]")
+
+filename = None
+outputdir = None
+loot_table_name = None
+for arg in sys.argv[1:]:
+    if (arg == "--verbose"):
+        gverbose = True
+    elif (arg == "-v"):
+        gverbose = True
+    elif filename is None:
+        filename = arg
+    elif outputdir is None:
+        outputdir = arg
+    elif loot_table_name is None:
+        loot_table_name = arg
+        if not loot_table_name.endswith(".json"):
+            loot_table_name += ".json"
+    else:
+        usage()
+
+if filename is None or outputdir is None:
+    usage()
+
+with open(filename,'r') if filename != "-" else sys.stdin as f:
     container_nbt_list = []
     while True:
         raw = f.readline().strip()
@@ -90,6 +118,4 @@ with open('file.txt','r') as f:
         item_nbt = nbt.TagCompound.from_mojangson(nbt_str)
         container_nbt_list.append(item_nbt)
 
-    #make_loot_table("./out", container_nbt_list)
-    make_loot_table("./out", container_nbt_list, "test.json")
-
+    make_loot_table(outputdir, container_nbt_list, loot_table_name)
