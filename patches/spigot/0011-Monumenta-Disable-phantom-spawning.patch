@@ -1,7 +1,7 @@
-From 5ae1fe0156581c64ac0c587aef7a23d6a99987a4 Mon Sep 17 00:00:00 2001
+From 0b2c006398dd0bd688dcdda7d1bff5b92b482165 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Fri, 9 Nov 2018 01:17:27 -0500
-Subject: [PATCH 11/12] Monumenta - Disable phantom spawning
+Subject: [PATCH 11/13] Monumenta - Disable phantom spawning
 
 Signed-off-by: Byron Marohn <combustible@live.com>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: Byron Marohn <combustible@live.com>
  1 file changed, 1 insertion(+), 59 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/MobSpawnerPhantom.java b/src/main/java/net/minecraft/server/MobSpawnerPhantom.java
-index 0626b779..270a44c5 100644
+index 5c43d908..270a44c5 100644
 --- a/src/main/java/net/minecraft/server/MobSpawnerPhantom.java
 +++ b/src/main/java/net/minecraft/server/MobSpawnerPhantom.java
 @@ -10,64 +10,6 @@ public class MobSpawnerPhantom {
@@ -49,7 +49,7 @@ index 0626b779..270a44c5 100644
 -                                    if (random.nextInt(j) >= 72000) {
 -                                        BlockPosition blockposition1 = blockposition.up(20 + random.nextInt(15)).east(-10 + random.nextInt(21)).south(-10 + random.nextInt(21));
 -                                        IBlockData iblockdata = world.getType(blockposition1);
--                                        Fluid fluid = world.b(blockposition1);
+-                                        Fluid fluid = world.getFluid(blockposition1);
 -
 -                                        if (SpawnerCreature.a(iblockdata, fluid)) {
 -                                            GroupDataEntity groupdataentity = null;

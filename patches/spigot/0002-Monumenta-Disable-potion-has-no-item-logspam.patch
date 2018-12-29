@@ -1,14 +1,14 @@
-From aeac24a6710c77710da8982d28d1f9752b5c2a1c Mon Sep 17 00:00:00 2001
+From e25b65e4e164406877e5677665048a7477ece34f Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Wed, 27 Sep 2017 18:46:14 -0700
-Subject: [PATCH 02/12] Monumenta - Disable potion has no item logspam
+Subject: [PATCH 02/13] Monumenta - Disable potion has no item logspam
 
 ---
  src/main/java/net/minecraft/server/EntityPotion.java | 4 ----
  1 file changed, 4 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityPotion.java b/src/main/java/net/minecraft/server/EntityPotion.java
-index 36e03cb5..63724fc1 100644
+index eec8ed72..1021ccdf 100644
 --- a/src/main/java/net/minecraft/server/EntityPotion.java
 +++ b/src/main/java/net/minecraft/server/EntityPotion.java
 @@ -43,10 +43,6 @@ public class EntityPotion extends EntityProjectile {
@@ -16,7 +16,7 @@ index 36e03cb5..63724fc1 100644
  
          if (itemstack.getItem() != Items.SPLASH_POTION && itemstack.getItem() != Items.LINGERING_POTION) {
 -            if (this.world != null) {
--                EntityPotion.g.error("ThrownPotion entity {} has no item?!", Integer.valueOf(this.getId()));
+-                EntityPotion.g.error("ThrownPotion entity {} has no item?!", this.getId());
 -            }
 -
              return new ItemStack(Items.SPLASH_POTION);

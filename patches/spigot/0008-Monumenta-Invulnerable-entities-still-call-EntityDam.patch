@@ -1,7 +1,7 @@
-From 5fa2e845fc1b69eb1a869d6bee8c860a1c2816f7 Mon Sep 17 00:00:00 2001
+From c2c62402aa51120a5886bae8f84c3d2ce3c77d2b Mon Sep 17 00:00:00 2001
 From: Monumenta <monumenta.mgmt@gmail.com>
 Date: Sun, 14 Jan 2018 20:41:40 -0500
-Subject: [PATCH 08/12] Monumenta - Invulnerable entities still call
+Subject: [PATCH 08/13] Monumenta - Invulnerable entities still call
  EntityDamageByEntityEvent
 
 ---
@@ -11,7 +11,7 @@ Subject: [PATCH 08/12] Monumenta - Invulnerable entities still call
  3 files changed, 21 insertions(+), 12 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 6081ffca..766ebf42 100644
+index 892e1aca..76e41dcb 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -32,6 +32,12 @@ import org.bukkit.event.entity.EntityTeleportEvent;
@@ -58,10 +58,10 @@ index 6081ffca..766ebf42 100644
              float originalDamage = f;
              Function<Double, Double> hardHat = new Function<Double, Double>() {
 diff --git a/src/main/java/net/minecraft/server/EntityParrot.java b/src/main/java/net/minecraft/server/EntityParrot.java
-index 86488e97..2929cae0 100644
+index 6acad352..f59af9fd 100644
 --- a/src/main/java/net/minecraft/server/EntityParrot.java
 +++ b/src/main/java/net/minecraft/server/EntityParrot.java
-@@ -306,16 +306,7 @@ public class EntityParrot extends EntityPerchable implements EntityBird {
+@@ -300,16 +300,7 @@ public class EntityParrot extends EntityPerchable implements EntityBird {
      }
  
      public boolean damageEntity(DamageSource damagesource, float f) {
@@ -80,10 +80,10 @@ index 86488e97..2929cae0 100644
  
      public int getVariant() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 75bdad81..aa6aa9f9 100644
+index 4d3bfd69..9e87287b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -662,7 +662,7 @@ public class CraftEventFactory {
+@@ -746,7 +746,7 @@ public class CraftEventFactory {
          throw new IllegalStateException(String.format("Unhandled damage of %s from %s", entity, source.translationIndex));
      }
  

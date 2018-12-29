@@ -1,14 +1,14 @@
-From 207a3514bfe270aee5f900f223ccd31769365f4b Mon Sep 17 00:00:00 2001
+From 5fb98564d20b3d069dd8a9acd5be148ca849b1ca Mon Sep 17 00:00:00 2001
 From: BuildTools <unconfigured@null.spigotmc.org>
 Date: Fri, 18 Aug 2017 21:48:22 -0700
-Subject: [PATCH 01/12] Monumenta - Remove NBT filtering from chests
+Subject: [PATCH 01/13] Monumenta - Remove NBT filtering from chests
 
 ---
  src/main/java/net/minecraft/server/TileEntityChest.java | 7 -------
  1 file changed, 7 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/TileEntityChest.java b/src/main/java/net/minecraft/server/TileEntityChest.java
-index ad601a39..ef10cd7d 100644
+index 2b03896e..c9f5b16f 100644
 --- a/src/main/java/net/minecraft/server/TileEntityChest.java
 +++ b/src/main/java/net/minecraft/server/TileEntityChest.java
 @@ -284,11 +284,4 @@ public class TileEntityChest extends TileEntityLootable implements ITickable {

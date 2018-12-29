@@ -1,7 +1,7 @@
-From b2d930045c79ac5d23ee7aea56191031733165bd Mon Sep 17 00:00:00 2001
+From 8fe28a8bd778eb3a33476557f6b2f786065b0e1a Mon Sep 17 00:00:00 2001
 From: Monumenta <monumenta.mgmt@gmail.com>
 Date: Fri, 12 Jan 2018 19:54:34 -0500
-Subject: [PATCH 07/12] Monumenta - Spreadplayers now ignores the block at
+Subject: [PATCH 07/13] Monumenta - Spreadplayers now ignores the block at
  world height
 
 Signed-off-by: Monumenta <monumenta.mgmt@gmail.com>
@@ -10,10 +10,10 @@ Signed-off-by: Monumenta <monumenta.mgmt@gmail.com>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/CommandSpreadPlayers.java b/src/main/java/net/minecraft/server/CommandSpreadPlayers.java
-index 0a8d2b8e..1c03bc8a 100644
+index 5b6127e0..e73f65dc 100644
 --- a/src/main/java/net/minecraft/server/CommandSpreadPlayers.java
 +++ b/src/main/java/net/minecraft/server/CommandSpreadPlayers.java
-@@ -261,7 +261,7 @@ public class CommandSpreadPlayers {
+@@ -258,7 +258,7 @@ public class CommandSpreadPlayers {
          }
  
          public int a(IBlockAccess iblockaccess) {
@@ -22,7 +22,7 @@ index 0a8d2b8e..1c03bc8a 100644
  
              do {
                  if (blockposition.getY() <= 0) {
-@@ -275,7 +275,7 @@ public class CommandSpreadPlayers {
+@@ -272,7 +272,7 @@ public class CommandSpreadPlayers {
          }
  
          public boolean b(IBlockAccess iblockaccess) {

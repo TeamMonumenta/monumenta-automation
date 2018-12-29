@@ -1,14 +1,14 @@
-From 281417b74c1d803847702dd215383dcfb3a09f24 Mon Sep 17 00:00:00 2001
+From ab73891924e150242f630caa8104f228149783fe Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Tue, 31 Oct 2017 18:02:46 -0700
-Subject: [PATCH 06/12] Monumenta - Disable wither spawning
+Subject: [PATCH 06/13] Monumenta - Disable wither spawning
 
 ---
  .../net/minecraft/server/BlockWitherSkull.java     | 65 +---------------------
  1 file changed, 1 insertion(+), 64 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/BlockWitherSkull.java b/src/main/java/net/minecraft/server/BlockWitherSkull.java
-index 7904b126..6ec59182 100644
+index 93bf32dc..c024395b 100644
 --- a/src/main/java/net/minecraft/server/BlockWitherSkull.java
 +++ b/src/main/java/net/minecraft/server/BlockWitherSkull.java
 @@ -28,70 +28,7 @@ public class BlockWitherSkull extends BlockSkull {

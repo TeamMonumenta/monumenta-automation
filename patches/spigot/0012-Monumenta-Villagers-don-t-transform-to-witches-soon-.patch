@@ -1,7 +1,7 @@
-From aaf5c605fc048e6e93235b14b7373ad184b56313 Mon Sep 17 00:00:00 2001
+From 3bc1bef58933cc6f5cdff8c3dd48efb0db70b4a0 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Sun, 18 Nov 2018 02:02:11 -0500
-Subject: [PATCH 12/12] Monumenta - Villagers don't transform to witches - soon
+Subject: [PATCH 12/13] Monumenta - Villagers don't transform to witches - soon
  to be obsolete patch
 
 Signed-off-by: Byron Marohn <combustible@live.com>
@@ -10,10 +10,10 @@ Signed-off-by: Byron Marohn <combustible@live.com>
  1 file changed, 19 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityVillager.java b/src/main/java/net/minecraft/server/EntityVillager.java
-index ab77d07b..21716593 100644
+index f8e05b75..76d69d08 100644
 --- a/src/main/java/net/minecraft/server/EntityVillager.java
 +++ b/src/main/java/net/minecraft/server/EntityVillager.java
-@@ -609,25 +609,6 @@ public class EntityVillager extends EntityAgeable implements NPC, IMerchant {
+@@ -603,25 +603,6 @@ public class EntityVillager extends EntityAgeable implements NPC, IMerchant {
      }
  
      public void onLightningStrike(EntityLightning entitylightning) {
