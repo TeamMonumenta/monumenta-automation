@@ -21,6 +21,23 @@ class LootTableManager(object):
     def __init__(self):
         self.map = {}
 
+    @classmethod
+    def to_namespaced_path(cls, path):
+        split = path.split('/')
+        namespace = None
+        for i in range(1, len(split)):
+            if split[i] == "loot_tables":
+                namespace = split[i - 1]
+                key = '/'.join(split[i + 1:])
+                break
+
+        if not namespace:
+            raise ValueError("'loot_tables' not found in path '{}'".format(path))
+
+        if key.lower().endswith('.json'):
+            key = key[:-5]
+        return namespace + ":" + key
+
     def load_file(self, filename):
         """
         Loads a single file into the manager
@@ -92,6 +109,7 @@ class LootTableManager(object):
                 new_entry = {}
                 new_entry["file"] = filename
                 new_entry["nbt"] = item_tag_nbt
+                new_entry["namespaced_key"] = self.to_namespaced_path(filename)
                 if item_name in self.map:
                     if item_id in self.map[item_name]:
                         # DUPLICATE! This name / item id already exists
@@ -142,11 +160,31 @@ class LootTableManager(object):
             for item_id in self.map[item_name]:
                 if type(self.map[item_name][item_id]) is list:
                     # DUPLICATE!
-                    eprint("WARNING: Item '{}' type '{}' is duplicated in the loot tables!".format(item_name, item_id))
+
+                    # First check if every duplicate is identical
+                    different = False
+                    for loc in self.map[item_name][item_id]:
+                        if loc["nbt"].to_bytes() != self.map[item_name][item_id][0]["nbt"].to_bytes():
+                            # This is really bad - different loot table entries with different contents
+                            different = True
+
+                    if not different:
+                        eprint("WARNING: Item '{}' type '{}' is duplicated in the loot tables!".format(item_name, item_id))
+                    else:
+                        eprint("\033[1;31m", end="")
+                        eprint("ERROR: Item '{}' type '{}' is different and duplicated in the loot tables!".format(item_name, item_id))
+
                     count = 1;
                     for loc in self.map[item_name][item_id]:
-                        eprint(" {}: {}".format(count, loc["file"]))
+                        eprint(" {}: {} - {}".format(count, loc["namespaced_key"], loc["file"]))
+                        if different:
+                            eprint("    {}".format(loc["nbt"].to_mojangson()))
+
                         count += 1
+
+                    if different:
+                        eprint("\033[0;0m", end="")
+
                     # Take the first entry and use that for the replacements
                     entry = self.map[item_name][item_id][0]
                 else:
