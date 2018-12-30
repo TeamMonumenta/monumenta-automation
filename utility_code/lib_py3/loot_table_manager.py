@@ -102,7 +102,7 @@ class LootTableManager(object):
                     function_type = function["function"]
                     if function_type == "set_nbt":
                         if "tag" not in function:
-                            continue
+                            raise KeyError('set_nbt function is missing nbt field!')
                         item_tag_json = function["tag"]
                         item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
                         item_name = self.get_item_name_from_nbt(item_tag_nbt)
@@ -159,7 +159,39 @@ class LootTableManager(object):
                 if dirname == "loot_tables":
                     self.load_directory(os.path.join(root, dirname))
 
-    def autoformat_file(self, filename):
+    @classmethod
+    def autoformat_item(cls, item_id, item_nbt):
+        item_name = cls.get_item_name_from_nbt(item_nbt)
+
+        # Rename "ench" -> "Enchantments"
+        if "ench" in item_nbt.value:
+            item_nbt.value["Enchantments"] = item_nbt.value["ench"]
+            item_nbt.value.pop("ench")
+
+        if "Enchantments" in item_nbt.value:
+            ench_list = item_nbt.value["Enchantments"]
+            for enchant in ench_list.value:
+                if not "lvl" in enchant.value:
+                    raise KeyError("Item '{}' enchantment does not contain 'lvl'".format(item_name))
+                if not "id" in enchant.value:
+                    raise KeyError("Item '{}' enchantment does not contain 'id'".format(item_name))
+
+                # Make sure the enchantment is namespaced
+                if not ":" in enchant.value["id"].value:
+                    enchant.value["id"].value = "minecraft:" + enchant.value["id"].value
+
+                # Make sure the tags are in the correct order and of the correct type
+                enchant_id = enchant.value["id"].value
+                enchant_lvl = enchant.value["lvl"].value
+                enchant.value.pop("id")
+                enchant.value.pop("lvl")
+                enchant.value["lvl"] = nbt.TagShort(enchant_lvl)
+                enchant.value["id"] = nbt.TagString(enchant_id)
+
+        return item_nbt
+
+    @classmethod
+    def autoformat_file(cls, filename):
         """
         Autoformats a single json file
         """
@@ -188,36 +220,55 @@ class LootTableManager(object):
                 if "name" not in entry:
                     continue
                 item_id = entry["name"]
+
+                # Add the minecraft: namespace to items that don't have ti
                 if not ":" in item_id:
-                    # This file is missing the minecraft: namespace
                     entry["name"] = "minecraft:" + item_id
                     item_id = entry["name"]
 
+                # Convert type=item tables that give air to type=empty
                 if item_id == "minecraft:air":
-                    # This loot table really should be type empty, not item
                     entry["type"] = "empty"
                     entry.pop("name")
+                    continue
 
+                if "functions" not in entry:
+                    continue
+                if not type(entry["functions"]) is list:
+                    raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+                for function in entry["functions"]:
+                    if not type(function) is dict:
+                        raise TypeError('function is type {}, not type dict'.format(type(function)))
+                    if "function" not in function:
+                        continue
+                    function_type = function["function"]
+                    if function_type == "set_nbt":
+                        if "tag" not in function:
+                            raise KeyError('set_nbt function is missing nbt field!')
+                        item_nbt = nbt.TagCompound.from_mojangson(function["tag"])
+                        function["tag"] = cls.autoformat_item(item_id, item_nbt).to_mojangson()
 
         json_file.save(filename)
 
-    def autoformat_directory(self, directory):
+    @classmethod
+    def autoformat_directory(cls, directory):
         """
         Autoformats all json files in a directory
         """
         for root, dirs, files in os.walk(directory):
             for aFile in files:
                 if aFile.endswith(".json"):
-                    self.autoformat_file(os.path.join(root, aFile))
+                    cls.autoformat_file(os.path.join(root, aFile))
 
-    def autoformat_loot_tables_subdirectories(self, directory):
+    @classmethod
+    def autoformat_loot_tables_subdirectories(cls, directory):
         """
         Autoformats all json files in all subdirectories named "loot_tables"
         """
         for root, dirs, files in os.walk(directory):
             for dirname in dirs:
                 if dirname == "loot_tables":
-                    self.autoformat_directory(os.path.join(root, dirname))
+                    cls.autoformat_directory(os.path.join(root, dirname))
 
     def update_item_in_loot_table(self, filename, search_item_name, search_item_id, replace_item_nbt):
         """
@@ -265,7 +316,7 @@ class LootTableManager(object):
                     function_type = function["function"]
                     if function_type == "set_nbt":
                         if "tag" not in function:
-                            continue
+                            raise KeyError('set_nbt function is missing nbt field!')
                         item_tag_json = function["tag"]
                         item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
                         item_name = self.get_item_name_from_nbt(item_tag_nbt)
