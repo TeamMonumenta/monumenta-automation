@@ -38,7 +38,7 @@ class jsonFile(object):
                 raise
             f.close()
 
-    def save(self,path=None,indent=2,separators=(',', ': '),sort_keys=False):
+    def save(self,path=None,indent=4,separators=(',', ': '),sort_keys=False):
         """
         save a json file; defaults to original location
         """
@@ -50,11 +50,9 @@ class jsonFile(object):
             json.dump(
                 self.dict,
                 f,
-                False,
+                ensure_ascii=False,
                 indent=indent,
                 separators=separators,
-                encoding="utf-8",
-                default=None,
                 sort_keys=sort_keys
             )
             f.close()

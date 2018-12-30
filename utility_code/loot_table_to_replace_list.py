@@ -45,6 +45,7 @@ mgr = LootTableManager()
 
 for loot_path in loot_folders:
     mgr.load_loot_tables_subdirectories(loot_path)
+    #mgr.autoformat_loot_tables_subdirectories(loot_path)
 
 replacements = mgr.get_as_replacements()
 #print(replacements)

@@ -147,12 +147,31 @@ class LootTableManager(object):
 
     def load_loot_tables_subdirectories(self, directory):
         """
-        Loads all json files in a directory into the manager
+        Loads all json files in all subdirectories named "loot_tables"
         """
         for root, dirs, files in os.walk(directory):
             for dirname in dirs:
                 if dirname == "loot_tables":
                     self.load_directory(os.path.join(root, dirname))
+
+    def autoformat_directory(self, directory):
+        """
+        Autoformats all json files in a directory
+        """
+        for root, dirs, files in os.walk(directory):
+            for aFile in files:
+                if aFile.endswith(".json"):
+                    filename = os.path.join(root, aFile)
+                    jsonFile(filename).save(filename)
+
+    def autoformat_loot_tables_subdirectories(self, directory):
+        """
+        Autoformats all json files in all subdirectories named "loot_tables"
+        """
+        for root, dirs, files in os.walk(directory):
+            for dirname in dirs:
+                if dirname == "loot_tables":
+                    self.autoformat_directory(os.path.join(root, dirname))
 
     def get_as_replacements(self):
         replacements = []
