@@ -23,6 +23,9 @@ class LootTableManager(object):
 
     @classmethod
     def to_namespaced_path(cls, path):
+        """
+        Takes a filename and converts it to a loot table namespaced path (i.e. 'epic:loot/blah')
+        """
         split = path.split('/')
         namespace = None
         for i in range(1, len(split)):
@@ -216,6 +219,95 @@ class LootTableManager(object):
                 if dirname == "loot_tables":
                     self.autoformat_directory(os.path.join(root, dirname))
 
+    def update_item_in_loot_table(self, filename, search_item_name, search_item_id, replace_item_nbt):
+        """
+        Updates an item within a single loot table
+        """
+        json_file = jsonFile(filename)
+        loot_table = json_file.dict
+
+        # Keep track of whether a match was found - don't save the file if not
+        found = False
+
+        if not type(loot_table) is dict:
+            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if "pools" not in loot_table:
+            raise ValueError("loot table does not contain 'pools'")
+        if not type(loot_table["pools"]) is list:
+            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        for pool in loot_table["pools"]:
+            if not type(pool) is dict:
+                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if "entries" not in pool:
+                continue
+            if not type(pool["entries"]) is list:
+                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            for entry in pool["entries"]:
+                if not type(entry) is dict:
+                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if "type" not in entry:
+                    continue
+                if entry["type"] != "item":
+                    continue
+                if "name" not in entry:
+                    continue
+                item_id = entry["name"]
+                if "functions" not in entry:
+                    continue
+                if not type(entry["functions"]) is list:
+                    raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+                item_name = None
+                for function in entry["functions"]:
+                    if not type(function) is dict:
+                        raise TypeError('function is type {}, not type dict'.format(type(function)))
+                    if "function" not in function:
+                        continue
+                    function_type = function["function"]
+                    if function_type == "set_nbt":
+                        if "tag" not in function:
+                            continue
+                        item_tag_json = function["tag"]
+                        item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
+                        item_name = self.get_item_name_from_nbt(item_tag_nbt)
+
+                        if item_name == search_item_name and item_id == search_item_id:
+                            # Found a match! Update the tag
+                            function["tag"] = replace_item_nbt.to_mojangson()
+                            found = True
+
+        if found:
+            json_file.save(filename)
+
+
+    def update_item_in_loot_tables(self, item_id, item_nbt):
+        """
+        Updates an item within all loaded loot tables
+        """
+        item_name = self.get_item_name_from_nbt(item_nbt)
+        if not item_name:
+            raise ValueError("Item NBT does not have a name")
+
+        if not item_name in self.map:
+            raise ValueError("Item '{}' not in loot tables".format(item_name))
+
+        if not item_id in self.map[item_name]:
+            raise ValueError("Item '{}' id '{}' not in loot tables".format(item_name, item_id))
+
+        # Get a list of all the occurrences for iterating
+        match_list = []
+        if type(self.map[item_name][item_id]) is list:
+            match_list = self.map[item_name][item_id]
+        else:
+            match_list.append(self.map[item_name][item_id])
+
+        # Get a list of files where this needs updating
+        update_file_list = []
+        for match in match_list:
+            update_file_list.append(match["file"])
+
+        for filename in update_file_list:
+            self.update_item_in_loot_table(filename, item_name, item_id, item_nbt)
+
     def get_as_replacements(self):
         replacements = []
         for item_name in OrderedDict(sorted(self.map.items())):
@@ -236,7 +328,7 @@ class LootTableManager(object):
                         eprint("\033[1;31m", end="")
                         eprint("ERROR: Item '{}' type '{}' is different and duplicated in the loot tables!".format(item_name, item_id))
 
-                    count = 1;
+                    count = 1
                     for loc in self.map[item_name][item_id]:
                         eprint(" {}: {} - {}".format(count, loc["namespaced_key"], loc["file"]))
                         if different:
@@ -246,6 +338,7 @@ class LootTableManager(object):
 
                     if different:
                         eprint("\033[0;0m", end="")
+                    eprint()
 
                     # Take the first entry and use that for the replacements
                     entry = self.map[item_name][item_id][0]

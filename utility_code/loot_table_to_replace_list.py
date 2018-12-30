@@ -50,3 +50,6 @@ for loot_path in loot_folders:
 replacements = mgr.get_as_replacements()
 #print(replacements)
 
+#item_id = "minecraft:fishing_rod"
+#item_nbt = r'''{Enchantments:[{lvl:3s,id:"lure"},{lvl:2s,id:"unbreaking"}],display:{Lore:["§8King's Valley : Tier III"],Name:"{\"text\":\"§fAngler's Rod\"}"}}'''
+#mgr.update_item_in_loot_tables(item_id, nbt.TagCompound.from_mojangson(item_nbt))
