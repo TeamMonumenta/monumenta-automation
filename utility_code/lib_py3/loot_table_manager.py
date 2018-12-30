@@ -18,8 +18,9 @@ class LootTableManager(object):
     A tool to manipulate loot tables
     """
 
-    def __init__(self):
-        self.map = {}
+    ####################################################################################################
+    # Utility Functions
+    #
 
     @classmethod
     def to_namespaced_path(cls, path):
@@ -61,106 +62,19 @@ class LootTableManager(object):
 
         return item_name
 
-    def load_file(self, filename):
-        """
-        Loads a single file into the manager
-        """
-        loot_table = jsonFile(filename).dict
-        if not type(loot_table) is dict:
-            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
-        if "pools" not in loot_table:
-            raise ValueError("loot table does not contain 'pools'")
-        if not type(loot_table["pools"]) is list:
-            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
-        for pool in loot_table["pools"]:
-            if not type(pool) is dict:
-                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
-            if "entries" not in pool:
-                continue
-            if not type(pool["entries"]) is list:
-                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
-            for entry in pool["entries"]:
-                if not type(entry) is dict:
-                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
-                if "type" not in entry:
-                    continue
-                if entry["type"] != "item":
-                    continue
-                if "name" not in entry:
-                    continue
-                item_id = entry["name"]
-                if "functions" not in entry:
-                    continue
-                if not type(entry["functions"]) is list:
-                    raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
-                item_name = None
-                for function in entry["functions"]:
-                    if not type(function) is dict:
-                        raise TypeError('function is type {}, not type dict'.format(type(function)))
-                    if "function" not in function:
-                        continue
-                    function_type = function["function"]
-                    if function_type == "set_nbt":
-                        if "tag" not in function:
-                            raise KeyError('set_nbt function is missing nbt field!')
-                        item_tag_json = function["tag"]
-                        item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
-                        item_name = self.get_item_name_from_nbt(item_tag_nbt)
+    #
+    # Utility Functions
+    ####################################################################################################
 
-                if item_name is None:
-                    continue
-
-                # Item is named - add it to the map
-                new_entry = {}
-                new_entry["file"] = filename
-                new_entry["nbt"] = item_tag_nbt
-                new_entry["namespaced_key"] = self.to_namespaced_path(filename)
-                if item_name in self.map:
-                    if item_id in self.map[item_name]:
-                        # DUPLICATE! This name / item id already exists
-                        if type(self.map[item_name][item_id]) is list:
-                            # If already a list, add this to that list
-                            self.map[item_name][item_id].append(new_entry)
-                        else:
-                            # If not a list, make a list
-                            self.map[item_name][item_id] = [self.map[item_name][item_id], new_entry]
-
-                    else:
-                        # Not a duplicate - same name but different ID
-                        self.map[item_name] = {}
-                        self.map[item_name][item_id] = new_entry
-
-                else:
-                    # Item name does not exist - add it
-                    self.map[item_name] = {}
-                    self.map[item_name][item_id] = new_entry
-
-
-    def load_directory(self, directory):
-        """
-        Loads all json files in a directory into the manager
-        """
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".json"):
-                    filename = os.path.join(root, aFile)
-                    try:
-                        self.load_file(filename)
-                    except:
-                        eprint("Error parsing '" + filename + "'")
-                        eprint(str(traceback.format_exc()))
-
-    def load_loot_tables_subdirectories(self, directory):
-        """
-        Loads all json files in all subdirectories named "loot_tables"
-        """
-        for root, dirs, files in os.walk(directory):
-            for dirname in dirs:
-                if dirname == "loot_tables":
-                    self.load_directory(os.path.join(root, dirname))
+    ####################################################################################################
+    # Loot table autoformatting class methods
+    #
 
     @classmethod
     def autoformat_item(cls, item_id, item_nbt):
+        """
+        Autoformats / reorders / fixes types for a single item's NBT
+        """
         item_name = cls.get_item_name_from_nbt(item_nbt)
 
         # Rename "ench" -> "Enchantments"
@@ -269,6 +183,115 @@ class LootTableManager(object):
             for dirname in dirs:
                 if dirname == "loot_tables":
                     cls.autoformat_directory(os.path.join(root, dirname))
+
+    #
+    # Loot table autoformatting class methods
+    ####################################################################################################
+
+    ####################################################################################################
+    # Loot table loading and management
+    #
+
+    def __init__(self):
+        self.map = {}
+
+    def load_file(self, filename):
+        """
+        Loads a single file into the manager
+        """
+        loot_table = jsonFile(filename).dict
+        if not type(loot_table) is dict:
+            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if "pools" not in loot_table:
+            raise ValueError("loot table does not contain 'pools'")
+        if not type(loot_table["pools"]) is list:
+            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        for pool in loot_table["pools"]:
+            if not type(pool) is dict:
+                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if "entries" not in pool:
+                continue
+            if not type(pool["entries"]) is list:
+                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            for entry in pool["entries"]:
+                if not type(entry) is dict:
+                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if "type" not in entry:
+                    continue
+                if entry["type"] != "item":
+                    continue
+                if "name" not in entry:
+                    continue
+                item_id = entry["name"]
+                if "functions" not in entry:
+                    continue
+                if not type(entry["functions"]) is list:
+                    raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+                item_name = None
+                for function in entry["functions"]:
+                    if not type(function) is dict:
+                        raise TypeError('function is type {}, not type dict'.format(type(function)))
+                    if "function" not in function:
+                        continue
+                    function_type = function["function"]
+                    if function_type == "set_nbt":
+                        if "tag" not in function:
+                            raise KeyError('set_nbt function is missing nbt field!')
+                        item_tag_json = function["tag"]
+                        item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
+                        item_name = self.get_item_name_from_nbt(item_tag_nbt)
+
+                if item_name is None:
+                    continue
+
+                # Item is named - add it to the map
+                new_entry = {}
+                new_entry["file"] = filename
+                new_entry["nbt"] = item_tag_nbt
+                new_entry["namespaced_key"] = self.to_namespaced_path(filename)
+                if item_name in self.map:
+                    if item_id in self.map[item_name]:
+                        # DUPLICATE! This name / item id already exists
+                        if type(self.map[item_name][item_id]) is list:
+                            # If already a list, add this to that list
+                            self.map[item_name][item_id].append(new_entry)
+                        else:
+                            # If not a list, make a list
+                            self.map[item_name][item_id] = [self.map[item_name][item_id], new_entry]
+
+                    else:
+                        # Not a duplicate - same name but different ID
+                        self.map[item_name] = {}
+                        self.map[item_name][item_id] = new_entry
+
+                else:
+                    # Item name does not exist - add it
+                    self.map[item_name] = {}
+                    self.map[item_name][item_id] = new_entry
+
+
+    def load_directory(self, directory):
+        """
+        Loads all json files in a directory into the manager
+        """
+        for root, dirs, files in os.walk(directory):
+            for aFile in files:
+                if aFile.endswith(".json"):
+                    filename = os.path.join(root, aFile)
+                    try:
+                        self.load_file(filename)
+                    except:
+                        eprint("Error parsing '" + filename + "'")
+                        eprint(str(traceback.format_exc()))
+
+    def load_loot_tables_subdirectories(self, directory):
+        """
+        Loads all json files in all subdirectories named "loot_tables"
+        """
+        for root, dirs, files in os.walk(directory):
+            for dirname in dirs:
+                if dirname == "loot_tables":
+                    self.load_directory(os.path.join(root, dirname))
 
     def update_item_in_loot_table(self, filename, search_item_name, search_item_id, replace_item_nbt):
         """
