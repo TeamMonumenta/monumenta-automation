@@ -138,7 +138,7 @@ class LootTableManager(object):
                         item_id = entry["name"]
 
                     # Convert type=item tables that give air to type=empty
-                    if item_id == "minecraft:air":
+                    if item_id == "minecraft:air" or item_id == "minecraft:empty":
                         entry["type"] = "empty"
                         entry.pop("name")
                         continue
@@ -158,6 +158,15 @@ class LootTableManager(object):
                                 raise KeyError('set_nbt function is missing nbt field!')
                             item_nbt = nbt.TagCompound.from_mojangson(function["tag"])
                             function["tag"] = cls.autoformat_item(item_id, item_nbt).to_mojangson()
+
+                if entry["type"] == "loot_table":
+                    if "name" not in entry:
+                        raise KeyError("loot_table loot table entry does not contain 'name'")
+                    # Convert type=item tables that give air to type=empty
+                    if entry["name"] == "minecraft:empty":
+                        entry["type"] = "empty"
+                        entry.pop("name")
+                        continue
 
     @classmethod
     def autoformat_json_files_in_directory(cls, directory, indent=4):
@@ -243,9 +252,12 @@ class LootTableManager(object):
         Adds a reference to the table_map indicating where a reference to the table is
         """
         if location_type is None:
-            # Not a reference, just making a note that this path exists
-            if not table_path in self.table_map:
-                self.table_map[table_path] = {}
+            # Not a reference, just making a note that this path exists / is valid
+            if table_path in self.table_map:
+                self.table_map[table_path]["valid"] = True
+            else:
+                self.table_map[table_path] = {"valid":True}
+
             return
 
         if table_path in self.table_map:
@@ -260,7 +272,6 @@ class LootTableManager(object):
 
             else:
                 # Not a duplicate - same name but different ID
-                self.table_map[table_path] = {}
                 self.table_map[table_path][location_type] = filename
 
         else:
@@ -302,10 +313,6 @@ class LootTableManager(object):
                     if "name" not in entry:
                         raise KeyError("table loot table entry does not contain 'name'")
 
-                    # TODO this doesn't work correctly because of order loading
-                    # if not entry["name"] in self.table_map:
-                    #     eprint("WARNING: Reference to nonexistent loot table '{}' in loot table '{}'".format(entry["name"], filename))
-
                     self.add_loot_table_path_reference(entry["name"], "loot_table", filename)
 
 
@@ -331,6 +338,11 @@ class LootTableManager(object):
             for dirname in dirs:
                 if dirname == "loot_tables":
                     self.load_loot_tables_directory(os.path.join(root, dirname))
+
+        for item in self.table_map:
+            if "loot_table" in self.table_map[item]:
+                if not "valid" in self.table_map[item]:
+                    eprint("WARNING: Reference to nonexistent loot table '{}' in loot table '{}'".format(item, self.table_map[item]["loot_table"]))
 
     #
     # Loot table loading

@@ -21,6 +21,7 @@ mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/
 mgr.load_advancements_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_functions_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_scripted_quests_directory("/home/rock/project_epic/server_config/data/scriptedquests")
+
 #mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/datapacks", indent=4)
 #mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/scriptedquests", indent=2)
 
