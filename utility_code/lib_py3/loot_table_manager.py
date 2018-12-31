@@ -342,7 +342,7 @@ class LootTableManager(object):
 
     def check_for_invalid_loot_table_references(self):
         for item in self.table_map:
-            if not "valid" in self.table_map[item]:
+            if not "valid" in self.table_map[item] and item != "minecraft:empty":
                 eprint("\033[1;31m", end="")
                 if "loot_table" in self.table_map[item]:
                     eprint("ERROR: Reference to nonexistent loot table '{}' in loot table '{}'".format(item, self.table_map[item]["loot_table"]), end="")
@@ -369,16 +369,7 @@ class LootTableManager(object):
         elif type(element) is OrderedDict:
             for el in element:
                 if el == "command":
-                    if "giveloottable" in element[el]:
-                        path = element[el]
-                        if path[-1] != '"':
-                            raise ValueError('giveloottable command in {} does not end with a "'.format(filename))
-                        path = path[:-1]
-                        if not path.rfind('"'):
-                            raise ValueError('giveloottable command in {} missing first "'.format(filename))
-                        path = path[path.rfind('"') + 1:]
-                        self.add_loot_table_path_reference(path, "scripted_quests", filename)
-
+                    self.load_command(element[el], "scripted_quests", filename)
                 elif el == "give_loot":
                     self.add_loot_table_path_reference(element[el], "scripted_quests", filename)
                 else:
@@ -508,26 +499,26 @@ class LootTableManager(object):
     # Functions File Loading
     #
 
-    def load_functions_file(self, filename):
-        """
-        Loads a single function file into the manager looking for references to loot tables
-        """
-        with open(filename, 'r') as fp:
-            for line in fp.readlines():
-                if "giveloottable" in line:
-                    line = line.strip()
-                    if line[-1] != '"':
-                        raise ValueError('giveloottable command in {} does not end with a "'.format(filename))
-                    line = line[:-1]
-                    if not line.rfind('"'):
-                        raise ValueError('giveloottable command in {} missing first "'.format(filename))
-                    line = line[line.rfind('"') + 1:]
-                    self.add_loot_table_path_reference(line, "functions", filename)
+    def load_command(self, command, source_label, filename):
+        if "giveloottable" in command:
+            line = command.strip()
+            if line[-1] != '"':
+                raise ValueError('giveloottable command in {} does not end with a "'.format(filename))
+            line = line[:-1]
+            if not line.rfind('"'):
+                raise ValueError('giveloottable command in {} missing first "'.format(filename))
+            line = line[line.rfind('"') + 1:]
+            self.add_loot_table_path_reference(line, source_label, filename)
 
-                # TODO: summon
-                # TODO: setblock
-                # TODO: data merge block
-                # TODO: data merge entity
+        # This handles both mob DeathLootTable and chest/container LootTable
+        line = command
+        matchstr = 'LootTable:"'
+        while matchstr in line:
+            idx = line.find(matchstr)
+            line = line[idx + len(matchstr):]
+            idx = line.find('"')
+            self.add_loot_table_path_reference(line[:idx], source_label, filename)
+            line = line[idx:]
 
     def load_functions_directory(self, directory):
         """
@@ -538,7 +529,9 @@ class LootTableManager(object):
                 if aFile.endswith(".mcfunction"):
                     filename = os.path.join(root, aFile)
                     try:
-                        self.load_functions_file(filename)
+                        with open(filename, 'r') as fp:
+                            for line in fp.readlines():
+                                self.load_command(line, "functions", filename)
                     except:
                         eprint("Error parsing '" + filename + "'")
                         eprint(str(traceback.format_exc()))
@@ -557,7 +550,7 @@ class LootTableManager(object):
         """
         Replaces a loot table path in a command
         """
-        return line.replace(old_namespaced_path, new_namespaced_path)
+        return line.replace('"' + old_namespaced_path + '"', '"' + new_namespaced_path + '"')
 
     @classmethod
     def update_table_link_in_single_function(self, filename, old_namespaced_path, new_namespaced_path):
