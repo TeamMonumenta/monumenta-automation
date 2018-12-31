@@ -105,12 +105,10 @@ class LootTableManager(object):
         return item_nbt
 
     @classmethod
-    def autoformat_file(cls, filename):
+    def fixup_loot_table(cls, loot_table):
         """
         Autoformats a single json file
         """
-        json_file = jsonFile(filename)
-        loot_table = json_file.dict
         if not type(loot_table) is OrderedDict:
             raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
         if "pools" not in loot_table:
@@ -161,27 +159,21 @@ class LootTableManager(object):
                             item_nbt = nbt.TagCompound.from_mojangson(function["tag"])
                             function["tag"] = cls.autoformat_item(item_id, item_nbt).to_mojangson()
 
-        json_file.save(filename)
-
     @classmethod
-    def autoformat_directory(cls, directory):
+    def autoformat_json_files_in_directory(cls, directory, indent=4):
         """
         Autoformats all json files in a directory
         """
         for root, dirs, files in os.walk(directory):
             for aFile in files:
                 if aFile.endswith(".json"):
-                    cls.autoformat_file(os.path.join(root, aFile))
+                    filename = os.path.join(root, aFile)
+                    json_file = jsonFile(filename)
+                    if type(json_file.dict) is OrderedDict and "pools" in json_file.dict:
+                        # This is probably a loot table - no other json files have "pools" at the top level
+                        cls.fixup_loot_table(json_file.dict)
 
-    @classmethod
-    def autoformat_loot_tables_subdirectories(cls, directory):
-        """
-        Autoformats all json files in all subdirectories named "loot_tables"
-        """
-        for root, dirs, files in os.walk(directory):
-            for dirname in dirs:
-                if dirname == "loot_tables":
-                    cls.autoformat_directory(os.path.join(root, dirname))
+                    json_file.save(filename, indent=indent)
 
     #
     # Loot table autoformatting class methods
@@ -310,6 +302,10 @@ class LootTableManager(object):
                     if "name" not in entry:
                         raise KeyError("table loot table entry does not contain 'name'")
 
+                    # TODO this doesn't work correctly because of order loading
+                    # if not entry["name"] in self.table_map:
+                    #     eprint("WARNING: Reference to nonexistent loot table '{}' in loot table '{}'".format(entry["name"], filename))
+
                     self.add_loot_table_path_reference(entry["name"], "loot_table", filename)
 
 
@@ -407,7 +403,7 @@ class LootTableManager(object):
         elif type(element) is OrderedDict:
             for el in element:
                 if el == "command" or el == "give_loot":
-                    element[el], self.update_table_link_in_command(element[el], old_namespaced_path, new_namespaced_path)
+                    element[el] = self.update_table_link_in_command(element[el], old_namespaced_path, new_namespaced_path)
                 else:
                     self.update_table_link_in_quest_recursive(filename, element[el], old_namespaced_path, new_namespaced_path)
         else:
@@ -420,9 +416,9 @@ class LootTableManager(object):
         """
         json_file = jsonFile(filename)
 
-        update_table_link_in_quest_recursive(filename, json_file.dict, old_namespaced_path, new_namespaced_path)
+        self.update_table_link_in_quest_recursive(filename, json_file.dict, old_namespaced_path, new_namespaced_path)
 
-        json_file.save(filename)
+        json_file.save(filename, indent=2)
 
     #
     # Scripted Quests File Loading
@@ -547,7 +543,7 @@ class LootTableManager(object):
         """
         Replaces a loot table path in a command
         """
-        return line.replaceall(old_namespaced_path, new_namespaced_path)
+        return line.replace(old_namespaced_path, new_namespaced_path)
 
     @classmethod
     def update_table_link_in_single_function(self, filename, old_namespaced_path, new_namespaced_path):
@@ -717,7 +713,7 @@ class LootTableManager(object):
             return
 
         self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "loot_table", self.update_table_link_in_single_loot_table)
-        self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "advancements", self.update_table_link_in_advancements)
+        self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "advancements", self.update_table_link_in_single_advancement)
         self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "functions", self.update_table_link_in_single_function)
         self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "scripted_quests", self.update_table_link_in_single_quests_file)
 
