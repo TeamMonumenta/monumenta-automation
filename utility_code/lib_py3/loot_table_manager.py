@@ -341,6 +341,299 @@ class LootTableManager(object):
     ####################################################################################################
 
     ####################################################################################################
+    # Scripted Quests File Loading
+    #
+
+    def load_scripted_quests_recursive(self, filename, element):
+        if type(element) is list:
+            for el in element:
+                self.load_scripted_quests_recursive(filename, el)
+        elif type(element) is OrderedDict:
+            for el in element:
+                if el == "command":
+                    if "giveloottable" in element[el]:
+                        path = element[el]
+                        if path[-1] != '"':
+                            raise ValueError('giveloottable command in {} does not end with a "'.format(filename))
+                        path = path[:-1]
+                        if not path.rfind('"'):
+                            raise ValueError('giveloottable command in {} missing first "'.format(filename))
+                        path = path[path.rfind('"') + 1:]
+                        if not path in self.table_map:
+                            eprint("WARNING: Reference to nonexistent loot table '{}' in quests file '{}'".format(path, filename))
+                        self.add_loot_table_path_reference(path, "scripted_quests", filename)
+
+                elif el == "give_loot":
+                    if not element[el] in self.table_map:
+                        eprint("WARNING: Reference to nonexistent loot table '{}' in quests file '{}'".format(element[el], filename))
+                    self.add_loot_table_path_reference(element[el], "scripted_quests", filename)
+                else:
+                    self.load_scripted_quests_recursive(filename, element[el])
+        else:
+            # Nothing interesting to do for fundamental type objects
+            pass
+
+
+    def load_scripted_quests_file(self, filename):
+        """
+        Loads a single scripted quests file into the manager looking for references to loot tables
+        """
+        scripted_quests_file = jsonFile(filename)
+
+        self.load_scripted_quests_recursive(filename, scripted_quests_file.dict)
+
+
+    def load_scripted_quests_directory(self, directory):
+        """
+        Loads all json files in all subdirectories - specifically looking for references to loot tables
+        """
+        for root, dirs, files in os.walk(directory):
+            for aFile in files:
+                if aFile.endswith(".json"):
+                    filename = os.path.join(root, aFile)
+                    try:
+                        self.load_scripted_quests_file(filename)
+                    except:
+                        eprint("Error parsing '" + filename + "'")
+                        eprint(str(traceback.format_exc()))
+
+    def update_table_link_in_quest_recursive(self, filename, element, old_namespaced_path, new_namespaced_path):
+        """
+        Recursively processes quests json replacing loot table path if appropriate
+        """
+        if type(element) is list:
+            for el in element:
+                self.update_table_link_in_quest_recursive(filename, el, old_namespaced_path, new_namespaced_path)
+        elif type(element) is OrderedDict:
+            for el in element:
+                if el == "command":
+                    if "giveloottable" in element[el] and old_namespaced_path in element[el]:
+                        path = element[el]
+                        if path[-1] != '"':
+                            raise ValueError('giveloottable command in {} does not end with a "')
+                        path = path[:-1]
+                        if not path.rfind('"'):
+                            raise ValueError('giveloottable command in {} missing first "')
+
+                        element[el] = path[:path.rfind('"')] + new_namespaced_path + '"'
+                elif el == "give_loot" and old_namespaced_path in element[el]:
+                    element[el] = new_namespaced_path
+                else:
+                    self.update_table_link_in_quest_recursive(filename, element[el], old_namespaced_path, new_namespaced_path)
+        else:
+            # Nothing interesting to do for fundamental type objects
+            pass
+
+    def update_table_link_in_single_quests_file(self, filename, old_namespaced_path, new_namespaced_path):
+        """
+        Updates a reference to a table within a single quests file
+        """
+        json_file = jsonFile(filename)
+
+        update_table_link_in_quest_recursive(filename, json_file.dict, old_namespaced_path, new_namespaced_path)
+
+        json_file.save(filename)
+
+    def update_table_link_in_quests_files(self, old_namespaced_path, new_namespaced_path):
+        """
+        Updates all references to a table in all scripted quests files to point to a new table
+        """
+
+        if not "scripted_quests" in self.table_map[old_namespaced_path]:
+            # Not referenced in the loot tables
+            return
+
+        # Get a list of files where this needs updating
+        update_file_list = []
+        if type(self.table_map[old_namespaced_path]["scripted_quests"]) is list:
+            update_file_list = self.table_map[old_namespaced_path]["scripted_quests"]
+        else:
+            update_file_list.append(self.table_map[old_namespaced_path]["scripted_quests"])
+
+        for filename in update_file_list:
+            self.update_table_link_in_single_quests_file(filename, old_namespaced_path, new_namespaced_path)
+
+    #
+    # Scripted Quests File Loading
+    ####################################################################################################
+
+    ####################################################################################################
+    # Advancements File Loading
+    #
+
+    def load_advancements_file(self, filename):
+        """
+        Loads a single scripted quests file into the manager looking for references to loot tables
+        """
+        advancements = jsonFile(filename).dict
+
+        if not type(advancements) is OrderedDict:
+            raise TypeError('advancements is type {}, not type dict'.format(type(advancements)))
+        if "rewards" not in advancements:
+            return
+        if not type(advancements["rewards"]) is OrderedDict:
+            raise TypeError('advancements["rewards"] is type {}, not a dictionary'.format(type(advancements["rewards"])))
+
+        if "loot" not in advancements["rewards"]:
+            return
+        if not type(advancements["rewards"]["loot"]) is list:
+            raise TypeError('advancements["rewards"]["loot"] is type {}, not list'.format(type(advancements["rewards"]["loot"])))
+
+        for loot_table in advancements["rewards"]["loot"]:
+            if not loot_table in self.table_map:
+                eprint("WARNING: Reference to nonexistent loot table '{}' in advancements file '{}'".format(loot_table, filename))
+            self.add_loot_table_path_reference(loot_table, "advancements", filename)
+
+    def load_advancements_directory(self, directory):
+        """
+        Loads all json files in all subdirectories - specifically looking for references to loot tables
+        """
+        for root, dirs, files in os.walk(directory):
+            for aFile in files:
+                if aFile.endswith(".json"):
+                    filename = os.path.join(root, aFile)
+                    try:
+                        self.load_advancements_file(filename)
+                    except:
+                        eprint("Error parsing '" + filename + "'")
+                        eprint(str(traceback.format_exc()))
+
+    def load_advancements_subdirectories(self, directory):
+        """
+        Loads all json files in all subdirectories named "advancements"
+        """
+        for root, dirs, files in os.walk(directory):
+            for dirname in dirs:
+                if dirname == "advancements":
+                    self.load_advancements_directory(os.path.join(root, dirname))
+
+    def update_table_link_in_single_advancement(self, filename, old_namespaced_path, new_namespaced_path):
+        json_file = jsonFile(filename)
+        advancements = json_file.dict
+
+        for i in range(advancements["rewards"]["loot"]):
+            if advancements["rewards"]["loot"][i] == old_namespaced_path:
+                advancements["rewards"]["loot"][i] = new_namespaced_path
+
+        json_file.save(filename)
+
+    def update_table_link_in_advancements(self, old_namespaced_path, new_namespaced_path):
+        """
+        Updates all references to a table in all advancements to point to a new table
+        """
+
+        if not "advancements" in self.table_map[old_namespaced_path]:
+            # Not referenced in the advancements tables
+            return
+
+        # Get a list of files where this needs updating
+        update_file_list = []
+        if type(self.table_map[old_namespaced_path]["advancements"]) is list:
+            update_file_list = self.table_map[old_namespaced_path]["advancements"]
+        else:
+            update_file_list.append(self.table_map[old_namespaced_path]["advancements"])
+
+        for filename in update_file_list:
+            self.update_table_link_in_single_advancement(filename, old_namespaced_path, new_namespaced_path)
+
+    #
+    # Advancements File Loading
+    ####################################################################################################
+
+    ####################################################################################################
+    # Functions File Loading
+    #
+
+    def load_functions_file(self, filename):
+        """
+        Loads a single function file into the manager looking for references to loot tables
+        """
+        with open(filename, 'r') as fp:
+            for line in fp.readlines():
+                if "giveloottable" in line:
+                    line = line.strip()
+                    if line[-1] != '"':
+                        raise ValueError('giveloottable command in {} does not end with a "'.format(filename))
+                    line = line[:-1]
+                    if not line.rfind('"'):
+                        raise ValueError('giveloottable command in {} missing first "'.format(filename))
+                    line = line[line.rfind('"') + 1:]
+                    if not line in self.table_map:
+                        eprint("WARNING: Reference to nonexistent loot table '{}' in function file '{}'".format(line, filename))
+                    self.add_loot_table_path_reference(line, "functions", filename)
+
+                # TODO: summon
+                # TODO: setblock
+                # TODO: data merge block
+                # TODO: data merge entity
+
+    def load_functions_directory(self, directory):
+        """
+        Loads all mcfunction files in all subdirectories - specifically looking for references to loot tables
+        """
+        for root, dirs, files in os.walk(directory):
+            for aFile in files:
+                if aFile.endswith(".mcfunction"):
+                    filename = os.path.join(root, aFile)
+                    try:
+                        self.load_functions_file(filename)
+                    except:
+                        eprint("Error parsing '" + filename + "'")
+                        eprint(str(traceback.format_exc()))
+
+    def load_functions_subdirectories(self, directory):
+        """
+        Loads all mcfunction files in all subdirectories named "functions"
+        """
+        for root, dirs, files in os.walk(directory):
+            for dirname in dirs:
+                if dirname == "functions":
+                    self.load_functions_directory(os.path.join(root, dirname))
+
+    def update_table_link_in_single_function(self, filename, old_namespaced_path, new_namespaced_path):
+        output_lines = []
+        with open(filename, 'r') as fp:
+            for line in fp.readlines():
+                if "giveloottable" in line and old_namespaced_path in line:
+                    line = line.strip()
+                    line = line[:-1]
+                    line = path[:path.rfind('"')] + new_namespaced_path + '"'
+
+                # TODO: summon
+                # TODO: setblock
+                # TODO: data merge block
+                # TODO: data merge entity
+
+                # Write this line to the output list
+                output_lines.append(line)
+
+        with open(filename, 'w') as fp:
+            fp.writelines(output_lines)
+
+    def update_table_link_in_functions(self, old_namespaced_path, new_namespaced_path):
+        """
+        Updates all references to a table in all functions to point to a new table
+        """
+
+        if not "functions" in self.table_map[old_namespaced_path]:
+            # Not referenced in the functions tables
+            return
+
+        # Get a list of files where this needs updating
+        update_file_list = []
+        if type(self.table_map[old_namespaced_path]["functions"]) is list:
+            update_file_list = self.table_map[old_namespaced_path]["functions"]
+        else:
+            update_file_list.append(self.table_map[old_namespaced_path]["functions"])
+
+        for filename in update_file_list:
+            self.update_table_link_in_single_function(filename, old_namespaced_path, new_namespaced_path)
+
+    #
+    # Functions File Loading
+    ####################################################################################################
+
+    ####################################################################################################
     # Loot table manipulation
     #
 
@@ -426,6 +719,74 @@ class LootTableManager(object):
         for filename in update_file_list:
             self.update_item_in_single_loot_table(filename, item_name, item_id, item_nbt)
 
+    def update_table_link_in_single_loot_table(self, filename, old_namespaced_path, new_namespaced_path):
+        """
+        Updates a reference to a table within a single loot table
+        """
+        json_file = jsonFile(filename)
+        loot_table = json_file.dict
+
+        if not type(loot_table) is OrderedDict:
+            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if "pools" not in loot_table:
+            raise ValueError("loot table does not contain 'pools'")
+        if not type(loot_table["pools"]) is list:
+            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        for pool in loot_table["pools"]:
+            if not type(pool) is OrderedDict:
+                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if "entries" not in pool:
+                continue
+            if not type(pool["entries"]) is list:
+                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            for entry in pool["entries"]:
+                if not type(entry) is OrderedDict:
+                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if "type" not in entry:
+                    continue
+                if entry["type"] == "loot_table":
+                    if "name" not in entry:
+                        raise KeyError("table loot table entry does not contain 'name'")
+                    if entry["name"] == old_namespaced_path:
+                        entry["name"] = new_namespaced_path
+
+        json_file.save(filename)
+
+    def update_table_link_in_loot_tables(self, old_namespaced_path, new_namespaced_path):
+        """
+        Updates all references to a table in all loot tables to point to a new table
+        """
+
+        if not "loot_table" in self.table_map[old_namespaced_path]:
+            # Not referenced in the loot tables
+            return
+
+        # Get a list of files where this needs updating
+        update_file_list = []
+        if type(self.table_map[old_namespaced_path]["loot_table"]) is list:
+            update_file_list = self.table_map[old_namespaced_path]["loot_table"]
+        else:
+            update_file_list.append(self.table_map[old_namespaced_path]["loot_table"])
+
+        for filename in update_file_list:
+            self.update_table_link_in_single_loot_table(filename, old_namespaced_path, new_namespaced_path)
+
+    def update_table_link_everywhere(self, old_path, new_path):
+        """
+        Updates all references to a table everywhere loaded into this class
+        """
+
+        old_namespaced_path = self.to_namespaced_path(old_path)
+        new_namespaced_path = self.to_namespaced_path(new_path)
+
+        if not old_namespaced_path in self.table_map:
+            # Not referenced anywhere
+            return
+
+        self.update_table_link_in_loot_tables(old_namespaced_path, new_namespaced_path)
+        self.update_table_link_in_advancements(old_namespaced_path, new_namespaced_path)
+        self.update_table_link_in_functions(old_namespaced_path, new_namespaced_path)
+        self.update_table_link_in_quests_files(old_namespaced_path, new_namespaced_path)
 
     #
     # Loot table manipulation
