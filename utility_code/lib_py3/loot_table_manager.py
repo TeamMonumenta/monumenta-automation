@@ -406,18 +406,8 @@ class LootTableManager(object):
                 self.update_table_link_in_quest_recursive(filename, el, old_namespaced_path, new_namespaced_path)
         elif type(element) is OrderedDict:
             for el in element:
-                if el == "command":
-                    if "giveloottable" in element[el] and old_namespaced_path in element[el]:
-                        path = element[el]
-                        if path[-1] != '"':
-                            raise ValueError('giveloottable command in {} does not end with a "')
-                        path = path[:-1]
-                        if not path.rfind('"'):
-                            raise ValueError('giveloottable command in {} missing first "')
-
-                        element[el] = path[:path.rfind('"')] + new_namespaced_path + '"'
-                elif el == "give_loot" and old_namespaced_path in element[el]:
-                    element[el] = new_namespaced_path
+                if el == "command" or el == "give_loot":
+                    element[el], self.update_table_link_in_command(element[el], old_namespaced_path, new_namespaced_path)
                 else:
                     self.update_table_link_in_quest_recursive(filename, element[el], old_namespaced_path, new_namespaced_path)
         else:
@@ -433,25 +423,6 @@ class LootTableManager(object):
         update_table_link_in_quest_recursive(filename, json_file.dict, old_namespaced_path, new_namespaced_path)
 
         json_file.save(filename)
-
-    def update_table_link_in_quests_files(self, old_namespaced_path, new_namespaced_path):
-        """
-        Updates all references to a table in all scripted quests files to point to a new table
-        """
-
-        if not "scripted_quests" in self.table_map[old_namespaced_path]:
-            # Not referenced in the loot tables
-            return
-
-        # Get a list of files where this needs updating
-        update_file_list = []
-        if type(self.table_map[old_namespaced_path]["scripted_quests"]) is list:
-            update_file_list = self.table_map[old_namespaced_path]["scripted_quests"]
-        else:
-            update_file_list.append(self.table_map[old_namespaced_path]["scripted_quests"])
-
-        for filename in update_file_list:
-            self.update_table_link_in_single_quests_file(filename, old_namespaced_path, new_namespaced_path)
 
     #
     # Scripted Quests File Loading
@@ -517,25 +488,6 @@ class LootTableManager(object):
 
         json_file.save(filename)
 
-    def update_table_link_in_advancements(self, old_namespaced_path, new_namespaced_path):
-        """
-        Updates all references to a table in all advancements to point to a new table
-        """
-
-        if not "advancements" in self.table_map[old_namespaced_path]:
-            # Not referenced in the advancements tables
-            return
-
-        # Get a list of files where this needs updating
-        update_file_list = []
-        if type(self.table_map[old_namespaced_path]["advancements"]) is list:
-            update_file_list = self.table_map[old_namespaced_path]["advancements"]
-        else:
-            update_file_list.append(self.table_map[old_namespaced_path]["advancements"])
-
-        for filename in update_file_list:
-            self.update_table_link_in_single_advancement(filename, old_namespaced_path, new_namespaced_path)
-
     #
     # Advancements File Loading
     ####################################################################################################
@@ -590,44 +542,25 @@ class LootTableManager(object):
                 if dirname == "functions":
                     self.load_functions_directory(os.path.join(root, dirname))
 
+    @classmethod
+    def update_table_link_in_command(cls, line, old_namespaced_path, new_namespaced_path):
+        """
+        Replaces a loot table path in a command
+        """
+        return line.replaceall(old_namespaced_path, new_namespaced_path)
+
+    @classmethod
     def update_table_link_in_single_function(self, filename, old_namespaced_path, new_namespaced_path):
         output_lines = []
         with open(filename, 'r') as fp:
             for line in fp.readlines():
-                if "giveloottable" in line and old_namespaced_path in line:
-                    line = line.strip()
-                    line = line[:-1]
-                    line = path[:path.rfind('"')] + new_namespaced_path + '"'
-
-                # TODO: summon
-                # TODO: setblock
-                # TODO: data merge block
-                # TODO: data merge entity
+                line = self.update_table_link_in_command(line, old_namespaced_path, new_namespaced_path)
 
                 # Write this line to the output list
                 output_lines.append(line)
 
         with open(filename, 'w') as fp:
             fp.writelines(output_lines)
-
-    def update_table_link_in_functions(self, old_namespaced_path, new_namespaced_path):
-        """
-        Updates all references to a table in all functions to point to a new table
-        """
-
-        if not "functions" in self.table_map[old_namespaced_path]:
-            # Not referenced in the functions tables
-            return
-
-        # Get a list of files where this needs updating
-        update_file_list = []
-        if type(self.table_map[old_namespaced_path]["functions"]) is list:
-            update_file_list = self.table_map[old_namespaced_path]["functions"]
-        else:
-            update_file_list.append(self.table_map[old_namespaced_path]["functions"])
-
-        for filename in update_file_list:
-            self.update_table_link_in_single_function(filename, old_namespaced_path, new_namespaced_path)
 
     #
     # Functions File Loading
@@ -752,24 +685,24 @@ class LootTableManager(object):
 
         json_file.save(filename)
 
-    def update_table_link_in_loot_tables(self, old_namespaced_path, new_namespaced_path):
+    def update_table_link_in_all_of_type(self, old_namespaced_path, new_namespaced_path, label, update_function):
         """
-        Updates all references to a table in all loot tables to point to a new table
+        Updates all references to a table of the given label using the provided update_function
         """
 
-        if not "loot_table" in self.table_map[old_namespaced_path]:
+        if not label in self.table_map[old_namespaced_path]:
             # Not referenced in the loot tables
             return
 
         # Get a list of files where this needs updating
         update_file_list = []
-        if type(self.table_map[old_namespaced_path]["loot_table"]) is list:
-            update_file_list = self.table_map[old_namespaced_path]["loot_table"]
+        if type(self.table_map[old_namespaced_path][label]) is list:
+            update_file_list = self.table_map[old_namespaced_path][label]
         else:
-            update_file_list.append(self.table_map[old_namespaced_path]["loot_table"])
+            update_file_list.append(self.table_map[old_namespaced_path][label])
 
         for filename in update_file_list:
-            self.update_table_link_in_single_loot_table(filename, old_namespaced_path, new_namespaced_path)
+            update_function(filename, old_namespaced_path, new_namespaced_path)
 
     def update_table_link_everywhere(self, old_path, new_path):
         """
@@ -783,10 +716,10 @@ class LootTableManager(object):
             # Not referenced anywhere
             return
 
-        self.update_table_link_in_loot_tables(old_namespaced_path, new_namespaced_path)
-        self.update_table_link_in_advancements(old_namespaced_path, new_namespaced_path)
-        self.update_table_link_in_functions(old_namespaced_path, new_namespaced_path)
-        self.update_table_link_in_quests_files(old_namespaced_path, new_namespaced_path)
+        self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "loot_table", self.update_table_link_in_single_loot_table)
+        self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "advancements", self.update_table_link_in_advancements)
+        self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "functions", self.update_table_link_in_single_function)
+        self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "scripted_quests", self.update_table_link_in_single_quests_file)
 
     #
     # Loot table manipulation
