@@ -56,5 +56,6 @@ class jsonFile(object):
                 separators=separators,
                 sort_keys=sort_keys
             )
+            f.write("\n")
             f.close()
 
