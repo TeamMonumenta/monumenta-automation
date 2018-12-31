@@ -2,6 +2,7 @@
 
 import codecs
 import json
+from collections import OrderedDict
 
 from lib_py3.common import eprint
 
@@ -32,7 +33,7 @@ class jsonFile(object):
                 fContent = f.read()
                 if fContent[0] == chr(0xfeff):
                     fContent = fContent[1:]
-                self.dict = json.loads(fContent)
+                self.dict = json.loads(fContent, object_pairs_hook=OrderedDict)
             except:
                 eprint("Error loading '{}':".format(path))
                 raise
