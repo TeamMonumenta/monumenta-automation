@@ -26,7 +26,7 @@ mgr.check_for_invalid_loot_table_references()
 #mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/datapacks", indent=4)
 #mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/scriptedquests", indent=2)
 
-replacements = mgr.get_as_replacements()
+#replacements = mgr.get_as_replacements()
 #pprint.pprint(mgr.table_map)
 #pprint.pprint(replacements)
 
@@ -221,6 +221,24 @@ datapacks/base/data/epic/loot_tables/r2/world/sets/money_2.json -> datapacks/bas
 datapacks/base/data/epic/loot_tables/r2/world/sets/money_3.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/money_3.json
 datapacks/base/data/epic/loot_tables/r2/world/sets/money_4.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/money_4.json
 datapacks/base/data/epic/loot_tables/r2/world/sets/money_5.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/money_5.json
+
+minigames/loot_tables/arena/blaze.json -> epic/loot_tables/r1/arena_of_terth/blaze.json
+minigames/loot_tables/arena/firstboss.json -> epic/loot_tables/r1/arena_of_terth/firstboss.json
+minigames/loot_tables/arena/glowstone.json -> epic/loot_tables/r1/arena_of_terth/glowstone.json
+minigames/loot_tables/arena/miniboss.json -> epic/loot_tables/r1/arena_of_terth/miniboss.json
+minigames/loot_tables/arena/soul.json -> epic/loot_tables/r1/arena_of_terth/soul.json
+
+datapacks/base/data/epic/loot_tables/items/r1/adventure_crystal.json -> datapacks/base/data/epic/loot_tables/r1/items/currency/adventure_crystal.json
+datapacks/base/data/epic/loot_tables/items/r1/concentrated_experience.json -> datapacks/base/data/epic/loot_tables/r1/items/currency/concentrated_experience.json
+datapacks/base/data/epic/loot_tables/loot/dust.json -> datapacks/base/data/epic/loot_tables/r1/items/currency/pulsating_dust.json
+datapacks/base/data/epic/loot_tables/items/r1/mechanisms/pulsating_gold.json -> datapacks/base/data/epic/loot_tables/r1/items/currency/pulsating_gold.json
+datapacks/base/data/epic/loot_tables/items/r1/royal_crystal.json -> datapacks/base/data/epic/loot_tables/r1/items/currency/royal_crystal.json
+datapacks/base/data/epic/loot_tables/items/r1/roguelike/records/deepest_blues.json -> datapacks/base/data/epic/loot_tables/r1/items/roguelike/deepest_blues.json
+datapacks/base/data/epic/loot_tables/items/r1/roguelike/records/embalmers_mixtape.json -> datapacks/base/data/epic/loot_tables/r1/items/roguelike/embalmers_mixtape.json
+datapacks/base/data/epic/loot_tables/items/r1/roguelike/records/ethereal_expressions.json -> datapacks/base/data/epic/loot_tables/r1/items/roguelike/ethereal_expressions.json
+datapacks/base/data/epic/loot_tables/items/r1/roguelike/records/obsidian_hits.json -> datapacks/base/data/epic/loot_tables/r1/items/roguelike/obsidian_hits.json
+datapacks/base/data/epic/loot_tables/items/r1/roguelike/records/sandy_smooth_jazz.json -> datapacks/base/data/epic/loot_tables/r1/items/roguelike/sandy_smooth_jazz.json
+datapacks/base/data/epic/loot_tables/items/r1/roguelike/records/web_covered_classics.json -> datapacks/base/data/epic/loot_tables/r1/items/roguelike/web_covered_classics.json
 '''
 
 for item in renameraw.splitlines():
