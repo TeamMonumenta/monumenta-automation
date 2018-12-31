@@ -129,38 +129,37 @@ class LootTableManager(object):
                     raise TypeError('entry is type {}, not type dict'.format(type(entry)))
                 if "type" not in entry:
                     continue
-                if entry["type"] != "item":
-                    continue
-                if "name" not in entry:
-                    raise KeyError("item loot table entry does not contain 'name'")
-                item_id = entry["name"]
-
-                # Add the minecraft: namespace to items that don't have ti
-                if not ":" in item_id:
-                    entry["name"] = "minecraft:" + item_id
+                if entry["type"] == "item":
+                    if "name" not in entry:
+                        raise KeyError("item loot table entry does not contain 'name'")
                     item_id = entry["name"]
 
-                # Convert type=item tables that give air to type=empty
-                if item_id == "minecraft:air":
-                    entry["type"] = "empty"
-                    entry.pop("name")
-                    continue
+                    # Add the minecraft: namespace to items that don't have ti
+                    if not ":" in item_id:
+                        entry["name"] = "minecraft:" + item_id
+                        item_id = entry["name"]
 
-                if "functions" not in entry:
-                    continue
-                if not type(entry["functions"]) is list:
-                    raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
-                for function in entry["functions"]:
-                    if not type(function) is dict:
-                        raise TypeError('function is type {}, not type dict'.format(type(function)))
-                    if "function" not in function:
+                    # Convert type=item tables that give air to type=empty
+                    if item_id == "minecraft:air":
+                        entry["type"] = "empty"
+                        entry.pop("name")
                         continue
-                    function_type = function["function"]
-                    if function_type == "set_nbt":
-                        if "tag" not in function:
-                            raise KeyError('set_nbt function is missing nbt field!')
-                        item_nbt = nbt.TagCompound.from_mojangson(function["tag"])
-                        function["tag"] = cls.autoformat_item(item_id, item_nbt).to_mojangson()
+
+                    if "functions" not in entry:
+                        continue
+                    if not type(entry["functions"]) is list:
+                        raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+                    for function in entry["functions"]:
+                        if not type(function) is dict:
+                            raise TypeError('function is type {}, not type dict'.format(type(function)))
+                        if "function" not in function:
+                            continue
+                        function_type = function["function"]
+                        if function_type == "set_nbt":
+                            if "tag" not in function:
+                                raise KeyError('set_nbt function is missing nbt field!')
+                            item_nbt = nbt.TagCompound.from_mojangson(function["tag"])
+                            function["tag"] = cls.autoformat_item(item_id, item_nbt).to_mojangson()
 
         json_file.save(filename)
 
@@ -327,15 +326,12 @@ class LootTableManager(object):
                 if dirname == "loot_tables":
                     self.load_directory(os.path.join(root, dirname))
 
-    def update_item_in_loot_table(self, filename, search_item_name, search_item_id, replace_item_nbt):
+    def update_item_in_single_loot_table(self, filename, search_item_name, search_item_id, replace_item_nbt):
         """
         Updates an item within a single loot table
         """
         json_file = jsonFile(filename)
         loot_table = json_file.dict
-
-        # Keep track of whether a match was found - don't save the file if not
-        found = False
 
         if not type(loot_table) is dict:
             raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
@@ -355,37 +351,33 @@ class LootTableManager(object):
                     raise TypeError('entry is type {}, not type dict'.format(type(entry)))
                 if "type" not in entry:
                     continue
-                if entry["type"] != "item":
-                    continue
-                if "name" not in entry:
-                    raise KeyError("item loot table entry does not contain 'name'")
-                item_id = entry["name"]
-                if "functions" not in entry:
-                    continue
-                if not type(entry["functions"]) is list:
-                    raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
-                item_name = None
-                for function in entry["functions"]:
-                    if not type(function) is dict:
-                        raise TypeError('function is type {}, not type dict'.format(type(function)))
-                    if "function" not in function:
+                if entry["type"] == "item":
+                    if "name" not in entry:
+                        raise KeyError("item loot table entry does not contain 'name'")
+                    item_id = entry["name"]
+                    if "functions" not in entry:
                         continue
-                    function_type = function["function"]
-                    if function_type == "set_nbt":
-                        if "tag" not in function:
-                            raise KeyError('set_nbt function is missing nbt field!')
-                        item_tag_json = function["tag"]
-                        item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
-                        item_name = self.get_item_name_from_nbt(item_tag_nbt)
+                    if not type(entry["functions"]) is list:
+                        raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+                    item_name = None
+                    for function in entry["functions"]:
+                        if not type(function) is dict:
+                            raise TypeError('function is type {}, not type dict'.format(type(function)))
+                        if "function" not in function:
+                            continue
+                        function_type = function["function"]
+                        if function_type == "set_nbt":
+                            if "tag" not in function:
+                                raise KeyError('set_nbt function is missing nbt field!')
+                            item_tag_json = function["tag"]
+                            item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
+                            item_name = self.get_item_name_from_nbt(item_tag_nbt)
 
-                        if item_name == search_item_name and item_id == search_item_id:
-                            # Found a match! Update the tag
-                            function["tag"] = replace_item_nbt.to_mojangson()
-                            found = True
+                            if item_name == search_item_name and item_id == search_item_id:
+                                # Found a match! Update the tag
+                                function["tag"] = replace_item_nbt.to_mojangson()
 
-        if found:
-            json_file.save(filename)
-
+        json_file.save(filename)
 
     def update_item_in_loot_tables(self, item_id, item_nbt):
         """
@@ -414,7 +406,8 @@ class LootTableManager(object):
             update_file_list.append(match["file"])
 
         for filename in update_file_list:
-            self.update_item_in_loot_table(filename, item_name, item_id, item_nbt)
+            self.update_item_in_single_loot_table(filename, item_name, item_id, item_nbt)
+
 
     def get_as_replacements(self):
         replacements = []
