@@ -21,11 +21,12 @@ mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/
 mgr.load_advancements_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_functions_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_scripted_quests_directory("/home/rock/project_epic/server_config/data/scriptedquests")
+mgr.check_for_invalid_loot_table_references()
 
 #mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/datapacks", indent=4)
 #mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/scriptedquests", indent=2)
 
-#replacements = mgr.get_as_replacements()
+replacements = mgr.get_as_replacements()
 #pprint.pprint(mgr.table_map)
 #pprint.pprint(replacements)
 

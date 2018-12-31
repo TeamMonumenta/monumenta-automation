@@ -339,10 +339,20 @@ class LootTableManager(object):
                 if dirname == "loot_tables":
                     self.load_loot_tables_directory(os.path.join(root, dirname))
 
+
+    def check_for_invalid_loot_table_references(self):
         for item in self.table_map:
-            if "loot_table" in self.table_map[item]:
-                if not "valid" in self.table_map[item]:
-                    eprint("WARNING: Reference to nonexistent loot table '{}' in loot table '{}'".format(item, self.table_map[item]["loot_table"]))
+            if not "valid" in self.table_map[item]:
+                eprint("\033[1;31m", end="")
+                if "loot_table" in self.table_map[item]:
+                    eprint("ERROR: Reference to nonexistent loot table '{}' in loot table '{}'".format(item, self.table_map[item]["loot_table"]), end="")
+                if "scripted_quests" in self.table_map[item]:
+                    eprint("ERROR: Reference to nonexistent loot table '{}' in quest file '{}'".format(item, self.table_map[item]["scripted_quests"]), end="")
+                if "advancements" in self.table_map[item]:
+                    eprint("ERROR: Reference to nonexistent loot table '{}' in advancement file '{}'".format(item, self.table_map[item]["advancements"]), end="")
+                if "functions" in self.table_map[item]:
+                    eprint("ERROR: Reference to nonexistent loot table '{}' in function file '{}'".format(item, self.table_map[item]["functions"]), end="")
+                eprint("\033[0;0m")
 
     #
     # Loot table loading
@@ -367,13 +377,9 @@ class LootTableManager(object):
                         if not path.rfind('"'):
                             raise ValueError('giveloottable command in {} missing first "'.format(filename))
                         path = path[path.rfind('"') + 1:]
-                        if not path in self.table_map:
-                            eprint("WARNING: Reference to nonexistent loot table '{}' in quests file '{}'".format(path, filename))
                         self.add_loot_table_path_reference(path, "scripted_quests", filename)
 
                 elif el == "give_loot":
-                    if not element[el] in self.table_map:
-                        eprint("WARNING: Reference to nonexistent loot table '{}' in quests file '{}'".format(element[el], filename))
                     self.add_loot_table_path_reference(element[el], "scripted_quests", filename)
                 else:
                     self.load_scripted_quests_recursive(filename, element[el])
@@ -459,8 +465,6 @@ class LootTableManager(object):
             raise TypeError('advancements["rewards"]["loot"] is type {}, not list'.format(type(advancements["rewards"]["loot"])))
 
         for loot_table in advancements["rewards"]["loot"]:
-            if not loot_table in self.table_map:
-                eprint("WARNING: Reference to nonexistent loot table '{}' in advancements file '{}'".format(loot_table, filename))
             self.add_loot_table_path_reference(loot_table, "advancements", filename)
 
     def load_advancements_directory(self, directory):
@@ -518,8 +522,6 @@ class LootTableManager(object):
                     if not line.rfind('"'):
                         raise ValueError('giveloottable command in {} missing first "'.format(filename))
                     line = line[line.rfind('"') + 1:]
-                    if not line in self.table_map:
-                        eprint("WARNING: Reference to nonexistent loot table '{}' in function file '{}'".format(line, filename))
                     self.add_loot_table_path_reference(line, "functions", filename)
 
                 # TODO: summon
