@@ -246,33 +246,36 @@ class LootTableManager(object):
             self.item_map[item_name] = {}
             self.item_map[item_name][item_id] = new_entry
 
-    def load_loot_tables_table(self, filename, entry):
-        if "name" not in entry:
-            raise KeyError("table loot table entry does not contain 'name'")
-
-        table_path = entry["name"]
-
-        # Add a reference to the map indicating where this table name is used
+    def add_loot_table_path_reference(self, table_path, location_type, filename):
+        """
+        Adds a reference to the table_map indicating where a reference to the table is
+        """
+        if location_type is None:
+            # Not a reference, just making a note that this path exists
+            if not table_path in self.table_map:
+                self.table_map[table_path] = {}
+            return
 
         if table_path in self.table_map:
-            if "loot_table" in self.table_map[table_path]:
+            if location_type in self.table_map[table_path]:
                 # This table name already exists somewhere in the loot tables
-                if type(self.table_map[table_path]["loot_table"]) is list:
+                if type(self.table_map[table_path][location_type]) is list:
                     # If already a list, add this to that list
-                    self.table_map[table_path]["loot_table"].append(filename)
+                    self.table_map[table_path][location_type].append(filename)
                 else:
                     # If not a list, make a list
-                    self.table_map[table_path]["loot_table"] = [self.table_map[table_path]["loot_table"], filename]
+                    self.table_map[table_path][location_type] = [self.table_map[table_path][location_type], filename]
 
             else:
                 # Not a duplicate - same name but different ID
                 self.table_map[table_path] = {}
-                self.table_map[table_path]["loot_table"] = filename
+                self.table_map[table_path][location_type] = filename
 
         else:
             # Table name does not exist in loot tables - add it
             self.table_map[table_path] = {}
-            self.table_map[table_path]["loot_table"] = filename
+            self.table_map[table_path][location_type] = filename
+
 
     def load_loot_tables_file(self, filename):
         """
@@ -285,6 +288,10 @@ class LootTableManager(object):
             raise ValueError("loot table does not contain 'pools'")
         if not type(loot_table["pools"]) is list:
             raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+
+        # Add a reference to the loot table to later test that references to it are valid
+        self.add_loot_table_path_reference(self.to_namespaced_path(filename), None, filename)
+
         for pool in loot_table["pools"]:
             if not type(pool) is OrderedDict:
                 raise TypeError('pool is type {}, not type dict'.format(type(pool)))
@@ -300,7 +307,10 @@ class LootTableManager(object):
                 if entry["type"] == "item":
                     self.load_loot_tables_item(filename, entry)
                 if entry["type"] == "loot_table":
-                    self.load_loot_tables_table(filename, entry)
+                    if "name" not in entry:
+                        raise KeyError("table loot table entry does not contain 'name'")
+
+                    self.add_loot_table_path_reference(entry["name"], "loot_table", filename)
 
 
     def load_loot_tables_directory(self, directory):
