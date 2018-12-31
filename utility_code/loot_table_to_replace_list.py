@@ -153,6 +153,73 @@ datapacks/region_1/data/epic/loot_tables/r1/items/races/speedleafhelm.json -> da
 datapacks/region_1/data/epic/loot_tables/r1/items/races/swimmingshoes.json -> datapacks/base/data/epic/loot_tables/r1/races/swimmingshoes.json
 datapacks/region_2/data/epic/loot_tables/quests/r2/quest103a_reward.json -> datapacks/base/data/epic/loot_tables/r2/quests/103a_reward.json
 datapacks/region_2/data/epic/loot_tables/quests/r2/quest103a_sigil.json -> datapacks/base/data/epic/loot_tables/r2/quests/103a_sigil.json
+
+datapacks/base/data/epic/loot_tables/loot/slot_0.json -> datapacks/base/data/epic/loot_tables/r1/casino/slot_0.json
+datapacks/base/data/epic/loot_tables/loot/slot_1.json -> datapacks/base/data/epic/loot_tables/r1/casino/slot_1.json
+datapacks/base/data/epic/loot_tables/loot/slot_2.json -> datapacks/base/data/epic/loot_tables/r1/casino/slot_2.json
+datapacks/base/data/epic/loot_tables/loot/slot_3.json -> datapacks/base/data/epic/loot_tables/r1/casino/slot_3.json
+datapacks/base/data/epic/loot_tables/loot/slot_4.json -> datapacks/base/data/epic/loot_tables/r1/casino/slot_4.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_dcanyon.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/desert/canyon.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_ddesert.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/desert/desert.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_dfire.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/desert/fire.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_dmagic.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/desert/magic.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_dmesa.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/desert/mesa.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_vbeach.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/isles/beach.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_vreef.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/isles/reef.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_vruins.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/isles/ruins.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_vship.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/isles/ship.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_vtemple.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/isles/temple.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_tfrost.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/tundra/frost.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_tmagic.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/tundra/magic.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_tmountain.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/tundra/mountain.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_truins.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/tundra/ruins.json
+datapacks/base/data/monumenta/loot_tables/loot2/filler/filler_ttundra.json -> datapacks/base/data/epic/loot_tables/r2/world/filler/tundra/tundra.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_1_dgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_1.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_2_dgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_2.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_3_dgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_3.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_4_dgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_4.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_5_dgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_5.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_1_tgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_1.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_1_vgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_1.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_2_tgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_2.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_2_vgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_2.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_3_tgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_3.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_3_vgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_3.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_4_tgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_4.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_4_vgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_4.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_5_tgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_5.json
+datapacks/base/data/monumenta/loot_tables/loot2/level_5_vgeneric.json -> datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_5.json
+
+data/monumenta/loot_tables/loot2/money/crystalline_shard.json -> data/epic/loot_tables/r2/items/crystalline_shard.json
+data/monumenta/loot_tables/loot2/money/enchanted_crystalline_shard.json -> data/epic/loot_tables/r2/items/enchanted_crystalline_shard.json
+data/monumenta/loot_tables/loot2/money/r2money_1.json -> data/epic/loot_tables/r2/world/sets/money_1.json
+data/monumenta/loot_tables/loot2/money/r2money_2.json -> data/epic/loot_tables/r2/world/sets/money_2.json
+data/monumenta/loot_tables/loot2/money/r2money_3.json -> data/epic/loot_tables/r2/world/sets/money_3.json
+data/monumenta/loot_tables/loot2/money/r2money_4.json -> data/epic/loot_tables/r2/world/sets/money_4.json
+data/monumenta/loot_tables/loot2/money/r2money_5.json -> data/epic/loot_tables/r2/world/sets/money_5.json
+data/monumenta/loot_tables/loot2/gear/rare_1_r2.json -> data/epic/loot_tables/r2/world/sets/rares.json
+
+datapacks/base/data/epic/loot_tables/loot/level_1_generic.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/level_1.json
+datapacks/base/data/epic/loot_tables/loot/level_2_generic.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/level_2.json
+datapacks/base/data/epic/loot_tables/loot/level_3_generic.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/level_3.json
+datapacks/base/data/epic/loot_tables/loot/level_4_generic.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/level_4.json
+datapacks/base/data/epic/loot_tables/loot/level_5_generic.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/level_5.json
+datapacks/base/data/epic/loot_tables/r1/world/sets/money_0.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/money_0.json
+datapacks/base/data/epic/loot_tables/r1/world/sets/money_1.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/money_1.json
+datapacks/base/data/epic/loot_tables/r1/world/sets/money_2.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/money_2.json
+datapacks/base/data/epic/loot_tables/r1/world/sets/money_3.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/money_3.json
+datapacks/base/data/epic/loot_tables/r1/world/sets/money_4.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/money_4.json
+datapacks/base/data/epic/loot_tables/r1/world/sets/money_5.json -> datapacks/base/data/epic/loot_tables/r1/world/collections/money_5.json
+datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_1.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/level_1.json
+datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_2.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/level_2.json
+datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_3.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/level_3.json
+datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_4.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/level_4.json
+datapacks/base/data/epic/loot_tables/r2/world/generic_chests/level_5.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/level_5.json
+datapacks/base/data/epic/loot_tables/r2/world/sets/money_1.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/money_1.json
+datapacks/base/data/epic/loot_tables/r2/world/sets/money_2.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/money_2.json
+datapacks/base/data/epic/loot_tables/r2/world/sets/money_3.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/money_3.json
+datapacks/base/data/epic/loot_tables/r2/world/sets/money_4.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/money_4.json
+datapacks/base/data/epic/loot_tables/r2/world/sets/money_5.json -> datapacks/base/data/epic/loot_tables/r2/world/collections/money_5.json
 '''
 
 for item in renameraw.splitlines():
