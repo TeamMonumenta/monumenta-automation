@@ -113,8 +113,7 @@ def terrain_reset_instance(config):
     if worldScores is not None:
         worldScores.save()
 
-    # TODO: Would be nice to make the set of players a property of the world - not loaded unless you use them,
-    # and if you modify them, # saving the world would save the players too
+    # TODO: Would be nice to make saving the world would save the players too
     if "tagPlayers" in config or ("tpToSpawn" in config and config["tpToSpawn"] == True):
         if "tagPlayers" in config:
             print("  Giving scoreboard tags to players...")
@@ -122,8 +121,7 @@ def terrain_reset_instance(config):
         if "tpToSpawn" in config and config["tpToSpawn"] == True:
             print("  Moving players to spawn (" + ",".join(str(e) for e in dstWorld.spawn) + ") ...")
 
-        for uuid in dstWorld.players:
-            player = Player(os.path.join(localDstFolder, 'playerdata', str(uuid) + '.dat'))
+        for player in dstWorld.players:
             player.full_heal()
 
             if "tagPlayers" in config:

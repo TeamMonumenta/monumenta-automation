@@ -30,7 +30,7 @@ class Player(object):
         from level.dat. Must be saved from wherever the
         tag was loaded from to apply.
 
-        >>> singleplayer_player = Player.from_tag( world.player )
+        >>> singleplayer_player = Player.from_tag( world.single_player() )
         """
         cls.path = None
         cls.play_dat_file = None

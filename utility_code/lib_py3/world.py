@@ -10,6 +10,34 @@ from quarry.types.chunk import BlockArray
 from quarry.types.buffer import BufferUnderrun
 
 from lib_py3.block_map import block_map
+from lib_py3.player import Player
+#TODO from lib_py3.scoreboard import Scoreboard
+
+class PlayerIterator(object):
+    self._world = None
+    def __init__(self):
+        self._i = -1
+
+    @classmethod
+    def _iter_from_world(cls,world):
+        cls._world = world
+        cls._i = -1
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._world is None:
+            # No world provided, invalid initialization
+            raise StopIteration
+        if self._i == -1:
+            self._i += 1
+            return Player.from_tag( self._world.single_player() )
+        if self._i >= len(self._world.player_paths):
+            raise StopIteration
+        player_path = self._world.player_paths[self._i]
+        self._i += 1
+        return Player(player_path)
 
 class World(object):
     """
@@ -21,13 +49,13 @@ class World(object):
     """
     def __init__(self,path):
         """
-        Load a world folder, fetching the list of region files and players that it contains.
+        Load a world folder; loading players and region files will occur as needed, though this is half implemented
         """
         self.path = path
         self.level_dat_file = nbt.NBTFile.load( os.path.join( path,'level.dat' ) )
         self.level_dat = self.level_dat_file.root_tag.body
         self.find_region_files()
-        self.find_players()
+        self._player_paths = None
         self.find_data_packs()
 
     def save(self):
@@ -54,16 +82,44 @@ class World(object):
                 pass
 
     def find_players(self):
-        self.players = []
+        self._player_paths = []
 
         player_data_path = os.path.join( self.path, 'playerdata' )
         if os.path.isdir(player_data_path):
             for filename in os.listdir( player_data_path ):
                 try:
-                    player = uuid.UUID( filename[:-4] )
-                    self.players.append( player )
+                    player = None
+                    if filename[-4:] == '.dat':
+                        player = uuid.UUID( filename[:-4] )
+                    if player:
+                        self._player_paths.append( os.path.join( player_data_path, filename ) )
                 except:
                     pass
+
+    @property
+    def player_paths(self):
+        if self._player_paths is None:
+            self.find_players()
+        return self._player_paths
+
+    @property
+    def players(self):
+        '''
+        Returns an iterator of all players in the world,
+        including the singleplayer player.
+
+        The list of players is updated before looping,
+        in case any player files were externally edited.
+
+        Usage:
+        ```
+        for player in world.players:
+            player.pos = [0,65,0]
+            player.save()
+        ```
+        '''
+        self.find_players()
+        return PlayerIterator._iter_from_world(self)
 
     def find_data_packs(self):
         self._enabled_data_packs = []
@@ -141,7 +197,7 @@ class World(object):
         self.find_data_packs()
 
     @property
-    def player(self):
+    def single_player(self):
         return self.level_dat.at_path('Data.Player')
 
     @property
