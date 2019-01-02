@@ -121,16 +121,16 @@ def terrain_reset_instance(config):
         if "tpToSpawn" in config and config["tpToSpawn"] == True:
             print("  Moving players to spawn (" + ",".join(str(e) for e in dstWorld.spawn) + ") ...")
 
-        for player in dstWorld.players:
-            player.full_heal()
+        for a_player in dstWorld.players:
+            a_player.full_heal()
 
             if "tagPlayers" in config:
-                player.modify_tags(config["tagPlayers"])
+                a_player.modify_tags(config["tagPlayers"])
 
             if "tpToSpawn" in config and config["tpToSpawn"] == True:
-                player.spawn = dstWorld.spawn
-                player.pos = dstWorld.spawn
+                a_player.spawn = dstWorld.spawn
+                a_player.pos = dstWorld.spawn
 
-            player.save()
+            a_player.save()
 
     dstWorld.save()

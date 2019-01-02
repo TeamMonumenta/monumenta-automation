@@ -13,15 +13,19 @@ class Player(object):
 
     The path you provide is expected to be a player.dat file.
     """
-    def __init__(self,path):
+    def __init__(self,path=None):
         """
         Load a world folder, fetching the list of region files and players that it contains.
 
         >>> player = Player( os.path.join( world.path, 'playerdata/25c8b7fa-dd4a-4bbb-8cf9-d534cf66d6f9.dat' ) )
         """
         self.path = path
-        self.player_dat_file = nbt.NBTFile.load( self.path )
-        self.player_tag = self.player_dat_file.root_tag.body
+        if self.path is not None:
+            self.player_dat_file = nbt.NBTFile.load( self.path )
+            self.player_tag = self.player_dat_file.root_tag.body
+        else:
+            self.player_dat_file = None
+            self.player_tag = None
 
     @classmethod
     def from_tag(cls,player_tag):
@@ -32,10 +36,9 @@ class Player(object):
 
         >>> singleplayer_player = Player.from_tag( world.single_player() )
         """
-        cls.path = None
-        cls.play_dat_file = None
-        cls.player_tag = player_tag
-        return cls
+        result = cls()
+        result.player_tag = player_tag
+        return result
 
     def save(self):
         """
