@@ -14,14 +14,15 @@ from lib_py3.player import Player
 #TODO from lib_py3.scoreboard import Scoreboard
 
 class PlayerIterator(object):
-    self._world = None
+    _world = None
     def __init__(self):
         self._i = -1
 
     @classmethod
     def _iter_from_world(cls,world):
-        cls._world = world
-        cls._i = -1
+        result = cls()
+        result._world = world
+        return result
 
     def __iter__(self):
         return self
@@ -32,7 +33,7 @@ class PlayerIterator(object):
             raise StopIteration
         if self._i == -1:
             self._i += 1
-            return Player.from_tag( self._world.single_player() )
+            return self._world.single_player
         if self._i >= len(self._world.player_paths):
             raise StopIteration
         player_path = self._world.player_paths[self._i]
@@ -198,7 +199,7 @@ class World(object):
 
     @property
     def single_player(self):
-        return self.level_dat.at_path('Data.Player')
+        return Player.from_tag( self.level_dat.at_path('Data.Player') )
 
     @property
     def spawn(self):

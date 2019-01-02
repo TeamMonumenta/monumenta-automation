@@ -35,6 +35,7 @@ class Player(object):
         cls.path = None
         cls.play_dat_file = None
         cls.player_tag = player_tag
+        return cls
 
     def save(self):
         """
