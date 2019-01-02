@@ -24,6 +24,9 @@ class PlayerIterator(object):
         result._world = world
         return result
 
+    def __len__(self):
+        return len(self._world.player_paths) + 1
+
     def __iter__(self):
         return self
 
