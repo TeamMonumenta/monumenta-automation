@@ -152,6 +152,7 @@ plan = [
 
 gobrush = [
         ('plugins/goBrush.jar', '../../server_config/plugins/goBrush.jar'),
+        ('plugins/goPaint.jar', '../../server_config/plugins/goPaint.jar'),
         ('plugins/goBrush', '../../server_config/plugins/goBrush'),
     ]
 
