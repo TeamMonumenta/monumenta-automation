@@ -1,5 +1,7 @@
 import socket
 import threading
+import pprint
+import json
 
 class BotSocketServer(object):
     def __init__(self, host, port):
@@ -22,13 +24,22 @@ class BotSocketServer(object):
             try:
                 data = client.recv(size)
                 if data:
-                    # Set the response to echo back the recieved data
-                    response = data
-                    print("Got message: ", data)
-                    client.send(response)
+                    data = data.decode('utf-8')
+                    data_in = json.loads(data)
+
+                    # TODO DEBUG
+                    pprint.pprint(data_in)
+
+                    # TODO Handle different types of requests
+                    data_out = json.dumps({"result": 0, "message": "Request handled"})
+
+                    # Send the response back
+                    client.send(data_out.encode('utf-8'))
                 else:
-                    raise error('Client disconnected')
-            except:
+                    client.close()
+                    return False
+            except Exception as e:
+                print(e)
                 client.close()
                 return False
 
