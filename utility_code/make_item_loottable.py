@@ -35,7 +35,7 @@ def make_loot_table(loot_table_base_path, container_nbt_list, loot_table_name=No
         if "Items" not in container_nbt.value:
             raise KeyError("NBT does not contain Items!")
 
-        for item_nbt in container_nbt.value["Items"].value:
+        for item_nbt in container_nbt.at_path("Items").value:
             #item_nbt.tree()
             if not entries or not loot_table_name:
                 entries = []
@@ -46,10 +46,10 @@ def make_loot_table(loot_table_base_path, container_nbt_list, loot_table_name=No
             entry_json = OrderedDict()
             entry_json["type"] = "item"
             entry_json["weight"] = 10
-            entry_json["name"] = item_nbt.value["id"].value
+            entry_json["name"] = item_nbt.at_path("id").value
             entry_json["functions"] = [{
                 "function": "set_nbt",
-                "tag": item_nbt.value["tag"].to_mojangson()
+                "tag": item_nbt.at_path("tag").to_mojangson()
             }]
 
             item_name = item_nbt.at_path("tag.display.Name").value

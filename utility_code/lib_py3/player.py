@@ -217,11 +217,11 @@ class Player(object):
             if self.player_tag.has_path( paths[i] ):
                 self.player_tag.at_path( paths[i] ).value = pos[i]
             else:
-                self.player_tag.value[ paths[i] ] = nbt.TagInt( pos[i] )
+                self.player_tag.at_path( paths[i] ) = nbt.TagInt( pos[i] )
         if self.player_tag.has_path( 'SpawnForced' ):
             self.player_tag.at_path( 'SpawnForced' ).value = 1
         else:
-            self.player_tag.value[ 'SpawnForced' ] = nbt.TagByte( 1 )
+            self.player_tag.at_path( 'SpawnForced' ) = nbt.TagByte( 1 )
 
     @property
     def tags(self):
@@ -246,7 +246,7 @@ class Player(object):
         >>> self.tags = ["TagA","TagB"]
         """
         if not self.player_tag.has_path( 'Tags' ):
-            self.player_tag.value['Tags'] = nbt.TagList([])
+            self.player_tag.at_path('Tags') = nbt.TagList([])
 
         result = []
         for tag in tags:

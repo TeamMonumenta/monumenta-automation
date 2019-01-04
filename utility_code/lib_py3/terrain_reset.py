@@ -64,7 +64,7 @@ def terrain_reset_instance(config):
         dungeonScoreObjects = worldScores.search_scores(Objective=dungeonScore,Score={"min":1})
         dungeonScores = set()
         for scoreObject in dungeonScoreObjects:
-            dungeonScores.add(scoreObject.value["Score"].value)
+            dungeonScores.add(scoreObject.at_path("Score").value)
         dungeonScores = sorted(list(dungeonScores))
         oldRegionDir = localMainFolder + 'region/'
         newRegionDir = localDstFolder + 'region/'
@@ -91,7 +91,7 @@ def terrain_reset_instance(config):
                 dungeonScoreObjects = worldScores.search_scores(Objective=dungeonScore,Score=instanceID)
                 for scoreObject in dungeonScoreObjects:
                     # Consider setting this value to -1 to indicate an error
-                    scoreObject.value["Score"].value = 0
+                    scoreObject.at_path("Score").value = 0
                 continue
 
     if "coordinatesToFill" in config:

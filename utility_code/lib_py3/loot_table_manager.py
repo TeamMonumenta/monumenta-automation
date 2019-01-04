@@ -47,10 +47,10 @@ class LootTableManager(object):
         """
         Parses a color-removed name out of an item's NBT. Returns a string or None if no name exists
         """
-        if "display" not in item_nbt.value or "Name" not in item_nbt.value["display"].value:
+        if "display" not in item_nbt.value or "Name" not in item_nbt.at_path("display").value:
             return None
 
-        item_name = item_nbt.value["display"].value["Name"].value
+        item_name = item_nbt.at_path("display.Name").value
         item_name = remove_formatting(item_name)
         # If the item name is JSON, parse it down to just the name text
         try:
@@ -80,11 +80,11 @@ class LootTableManager(object):
 
         # Rename "ench" -> "Enchantments"
         if "ench" in item_nbt.value:
-            item_nbt.value["Enchantments"] = item_nbt.value["ench"]
+            item_nbt.at_path("Enchantments") = item_nbt.at_path("ench")
             item_nbt.value.pop("ench")
 
         if "Enchantments" in item_nbt.value:
-            ench_list = item_nbt.value["Enchantments"]
+            ench_list = item_nbt.at_path("Enchantments")
             for enchant in ench_list.value:
                 if not "lvl" in enchant.value:
                     raise KeyError("Item '{}' enchantment does not contain 'lvl'".format(item_name))
@@ -92,16 +92,16 @@ class LootTableManager(object):
                     raise KeyError("Item '{}' enchantment does not contain 'id'".format(item_name))
 
                 # Make sure the enchantment is namespaced
-                if not ":" in enchant.value["id"].value:
-                    enchant.value["id"].value = "minecraft:" + enchant.value["id"].value
+                if not ":" in enchant.at_path("id").value:
+                    enchant.at_path("id").value = "minecraft:" + enchant.at_path("id").value
 
                 # Make sure the tags are in the correct order and of the correct type
-                enchant_id = enchant.value["id"].value
-                enchant_lvl = enchant.value["lvl"].value
+                enchant_id = enchant.at_path("id").value
+                enchant_lvl = enchant.at_path("lvl").value
                 enchant.value.pop("id")
                 enchant.value.pop("lvl")
-                enchant.value["lvl"] = nbt.TagShort(enchant_lvl)
-                enchant.value["id"] = nbt.TagString(enchant_id)
+                enchant.at_path("lvl") = nbt.TagShort(enchant_lvl)
+                enchant.at_path("id") = nbt.TagString(enchant_id)
 
         return item_nbt
 
