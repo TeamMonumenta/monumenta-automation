@@ -58,7 +58,8 @@ class LootTableManager(object):
             if "text" in name_json:
                 item_name = name_json["text"]
         except:
-            eprint("WARNING: Item '" + item_name + "' isn't json!")
+            name_json = json.dumps({"text":item_name},separators=(',', ':'))
+            eprint("WARNING: Item '" + item_name + "' isn't json! Save Name.display as '" + name_json + "'?")
 
         return item_name
 
