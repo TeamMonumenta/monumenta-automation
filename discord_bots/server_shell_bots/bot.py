@@ -4,8 +4,10 @@ import os
 import sys
 import logging
 import json
+import threading
 
 import asyncio
+from bot_socket_server import BotSocketServer
 
 logging.basicConfig(level=logging.INFO)
 
@@ -81,6 +83,10 @@ while native_restart.state:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
+        # Start the bot socket server which also accepts commands
+        bot_srv = BotSocketServer("127.0.0.1", 8765)
+        threading.Thread(target = bot_srv.listen).start()
+
         client = discord.Client()
 
         ################################################################################
