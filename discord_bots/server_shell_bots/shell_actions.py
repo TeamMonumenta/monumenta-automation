@@ -142,18 +142,23 @@ permissionGroups = {
     ],
 }
 
-def checkPermissions(selfAct,author):
-    result = False
-    target = selfAct.command
-
+def checkPermissions(selfAct, author):
     userInfo = privUsers.get( author.id, {"rights":["@everyone"]} )
     # This is a copy, not a reference
     userRights = list(userInfo.get("rights",["@everyone"]))
-    alreadyChecked = set()
     for role in author.roles:
         permGroupName = groupByRole.get(role.id,None)
         if permGroupName is not None:
             userRights = [permGroupName] + userRights
+
+    return checkPermissionsExplicitly(selfAct.command, userRights)
+
+
+# Unlike checkPermissions, this does not get assigned to an object.
+# It checks exactly that the userRights provided can run the command.
+def checkPermissionsExplicitly(command, userRights):
+    result = False
+    alreadyChecked = set()
     while len(userRights) > 0:
         perm = userRights.pop(0)
         if perm[0] == "@":
@@ -164,7 +169,7 @@ def checkPermissions(selfAct,author):
             continue
         givenPerm = ( perm[0] == "+" )
         if (
-            perm[1:] == target or
+            perm[1:] == command or
             perm[1:] == "*"
         ):
             result = givenPerm
@@ -1014,16 +1019,16 @@ allActions.append(WhitelistAction)
 for action in allActions:
     allActionsDict[action.command] = action
 
-def findBestMatch(botConfig,message):
-    '''Find the best matching command for a target message, igoring permissions.'''
-    target = message.content
+def findBestMatchDiscord(botConfig, discord_message):
+    '''Find the best matching command for a target message, ignoring permissions.'''
+    target = discord_message.content
     bestMatch = ""
     actions = botConfig["actions"]
     for command in actions.keys():
         prefixedCommand = commandPrefix + command
         actionClass = actions[command]
         if not (
-            botConfig["listening"].isListening(message) or
+            botConfig["listening"].isListening(discord_message) or
             actionClass.alwaysListening
         ):
             continue
@@ -1036,3 +1041,17 @@ def findBestMatch(botConfig,message):
         return None
     return actions[bestMatch]
 
+def findBestMatchCommand(botConfig, command_message):
+    '''Find the best matching command for a command that is known to have been addressed to this bot directly, ignoring permissions'''
+    bestMatch = ""
+    actions = botConfig["actions"]
+    for command in actions.keys():
+        actionClass = actions[command]
+        if (
+            command_message[:len(command)] == command and
+            len(command) > len(bestMatch)
+        ):
+            bestMatch = command
+    if bestMatch == "":
+        return None
+    return actions[bestMatch]

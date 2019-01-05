@@ -12,7 +12,7 @@ from bot_socket_server import BotSocketServer
 logging.basicConfig(level=logging.INFO)
 
 import discord
-from shell_actions import allActionsDict, findBestMatch, listening, native_restart
+from shell_actions import allActionsDict, findBestMatchDiscord, listening, native_restart
 
 ################################################################################
 # Config / Environment
@@ -84,7 +84,7 @@ while native_restart.state:
     asyncio.set_event_loop(loop)
     try:
         # Start the bot socket server which also accepts commands
-        bot_srv = BotSocketServer("127.0.0.1", 8765)
+        bot_srv = BotSocketServer("127.0.0.1", 8765, botConfig)
         threading.Thread(target = bot_srv.listen).start()
 
         client = discord.Client()
@@ -108,7 +108,7 @@ while native_restart.state:
         @client.event
         async def on_message(message):
             if message.channel.id in botChannels:
-                actionClass = findBestMatch(botConfig,message)
+                actionClass = findBestMatchDiscord(botConfig,message)
                 if actionClass is None:
                     return
                 action = actionClass(botConfig,message)
