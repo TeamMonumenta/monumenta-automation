@@ -177,13 +177,13 @@ class World(object):
 
     def save_data_packs(self):
         if not self.level_dat.has_path('Data.DataPacks'):
-            self.level_dat.at_path('Data.DataPacks') = nbt.TagCompound({})
+            self.level_dat.at_path('Data').value['DataPacks'] = nbt.TagCompound({})
 
         if not self.level_dat.has_path('Data.DataPacks.Disabled'):
-            self.level_dat.at_path('Data.DataPacks.Disabled') = nbt.TagList({})
+            self.level_dat.at_path('Data.DataPacks').value['Disabled'] = nbt.TagList({})
 
         if not self.level_dat.has_path('Data.DataPacks.Enabled'):
-            self.level_dat.at_path('Data.DataPacks.Enabled') = nbt.TagList({})
+            self.level_dat.at_path('Data.DataPacks').value['Enabled'] = nbt.TagList({})
 
         enabled = []
         disabled = []
@@ -770,7 +770,7 @@ class World(object):
                                         else:
                                             new_chunk.body.at_path( 'Level.' + category ).value = NewEntities
                                     elif len(NewEntities) > 0:
-                                        new_chunk.body.at_path( 'Level' +  category ) = nbt.TagList( NewEntities )
+                                        new_chunk.body.at_path( 'Level' ).value[ category ] = nbt.TagList( NewEntities )
 
                                 new_region.save_chunk(new_chunk)
 

@@ -47,7 +47,7 @@ class LootTableManager(object):
         """
         Parses a color-removed name out of an item's NBT. Returns a string or None if no name exists
         """
-        if "display" not in item_nbt.value or "Name" not in item_nbt.at_path("display").value:
+        if not item_nbt.has_path("display.Name"):
             return None
 
         item_name = item_nbt.at_path("display.Name").value
@@ -80,7 +80,7 @@ class LootTableManager(object):
 
         # Rename "ench" -> "Enchantments"
         if "ench" in item_nbt.value:
-            item_nbt.at_path("Enchantments") = item_nbt.at_path("ench")
+            item_nbt.value["Enchantments"] = item_nbt.at_path("ench")
             item_nbt.value.pop("ench")
 
         if "Enchantments" in item_nbt.value:
@@ -100,8 +100,8 @@ class LootTableManager(object):
                 enchant_lvl = enchant.at_path("lvl").value
                 enchant.value.pop("id")
                 enchant.value.pop("lvl")
-                enchant.at_path("lvl") = nbt.TagShort(enchant_lvl)
-                enchant.at_path("id") = nbt.TagString(enchant_id)
+                enchant.value["lvl"] = nbt.TagShort(enchant_lvl)
+                enchant.value["id"] = nbt.TagString(enchant_id)
 
         return item_nbt
 
