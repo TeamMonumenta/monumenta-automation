@@ -43,11 +43,11 @@ class PlayerIterator(object):
         self._i += 1
         return Player(player_path)
 
-class TileEntityIterator(object):
+class BaseChunkEntityIterator(object):
     """
-    This is an iterator over tile entities in a world.
+    This is an iterator over basic (non-recursive) entities AND tile entities in the world
 
-    If readonly=False, it will save each chunk it visits that contain tile entities
+    If readonly=False, it will save each chunk it visits that contain entities
 
     If coordinates are specified, it will only load region files that contain those coordinates
     Otherwise it will iterate over everything world wide
@@ -90,7 +90,6 @@ class TileEntityIterator(object):
 
         self._region = None
         self._chunk = None
-        self._tile_entities = None
 
         # The _first_run flag is used so that when the first call to __next__ is made, instead
         # of trying to get the next chunk/region it loads the initial ones instead
@@ -182,55 +181,102 @@ class TileEntityIterator(object):
 
             if (
                 (self._chunk is None) or
-                (not self._chunk.body.has_path('Level.TileEntities')) or
-                (len(self._chunk.body.at_path('Level.TileEntities').value) == 0)
+                (((not self._chunk.body.has_path('Level.TileEntities')) or
+                  (len(self._chunk.body.at_path('Level.TileEntities').value) == 0)) and
+                ((not self._chunk.body.has_path('Level.Entities')) or
+                  (len(self._chunk.body.at_path('Level.Entities').value) == 0)))
             ):
-                # No tile entities in this chunk - no reason to keep a reference for saving
+                # No entities or tile entities in this chunk - no reason to keep a reference for saving
                 self._chunk = None
 
-                # Continue iterating over chunks to find the next one that does have tile entities
+                # Continue iterating over chunks to find the next one that does have entities
                 continue
 
-            # If we get here, this chunk has been loaded and contains tile entities
-            self._tile_entities = self._chunk.body.at_path('Level.TileEntities').value
+            # If we get here, this chunk has been loaded and contains some type of entity
 
-            # Start with the first entity
-            self._tile_entities_pos = 0
+            # Chunk contains tile entities
+            if self._chunk.body.has_path('Level.TileEntities'):
+                # Make note of the tile entities for iterating at the higher level
+                self._tile_entities = self._chunk.body.at_path('Level.TileEntities').value
+                self._tile_entities_pos = 0
+
+            # Chunk contains regular entities
+            if self._chunk.body.has_path('Level.Entities'):
+                # Make note of the entities for iterating at the higher level
+                self._entities = self._chunk.body.at_path('Level.Entities').value
+                self._entities_pos = 0
 
             # Successfully found next chunk - stop iterating
             break
 
     def __next__(self):
         """
-        Iteratively identifies the next valid tile entity and returns it
+        Iteratively identifies the next valid tile entity or regular entity and returns it.
 
-        This does the final check that tile entities loaded are in the bounding box
+        Return value is two things!
+            entity - the entity OR tile entity TagCompound
+            isTileEntity - True if tile entity, False if entity
+
+        This does the final check to make sure returned entities are in the bounding box
         """
         while True:
-            if self._first_run or self._tile_entities_pos >= len(self._tile_entities):
+            if (
+                self._first_run or
+                (self._tile_entities_pos >= len(self._tile_entities) and
+                 self._entities_pos >= len(self._entities))
+            ):
                 # Out of tile entities - move to the next chunk with some to process
                 self._next_chunk()
 
-            tile_entity = self._tile_entities[self._tile_entities_pos]
-            tile_x = tile_entity.at_path('x').value
-            tile_y = tile_entity.at_path('y').value
-            tile_z = tile_entity.at_path('z').value
+            # Still something to iterate - either tile entities or regular entities in this chunk
+
+            # Process tile entities first if haven't finished them yet
+            if self._tile_entities_pos < len(self._tile_entities):
+                tile_entity = self._tile_entities[self._tile_entities_pos]
+                tile_x = tile_entity.at_path('x').value
+                tile_y = tile_entity.at_path('y').value
+                tile_z = tile_entity.at_path('z').value
+
+                # Increment index so regardless of whether this is in range the next step
+                # will find the next tile entity
+                self._tile_entities_pos += 1
+
+                if not (
+                    self._min_x <= tile_x and tile_x < self._max_x + 1 and
+                    self._min_y <= tile_y and tile_y < self._max_y + 1 and
+                    self._min_z <= tile_z and tile_z < self._max_z + 1
+                ):
+                    # This tile entity isn't in the bounding box
+                    # Continue iterating until we find one that is
+                    continue
+
+                # Found a valid tile entity in range
+                return tile_entity, True
+
+            # Tile entities are done but somehow we are still here - so there must be entities to do
+            entity = self._entities[self._entities_pos]
+            pos = entity.at_path('Pos').value
+            x = pos[0].value
+            y = pos[1].value
+            z = pos[2].value
 
             # Increment index so regardless of whether this is in range the next step
-            # will find the next tile entity
-            self._tile_entities_pos += 1
+            # will find the next entity
+            self._entities_pos += 1
 
             if not (
-                self._min_x <= tile_x and tile_x <= self._max_x and
-                self._min_y <= tile_y and tile_y <= self._max_y and
-                self._min_z <= tile_z and tile_z <= self._max_z
+                self._min_x <= x and x < self._max_x + 1 and
+                self._min_y <= y and y < self._max_y + 1 and
+                self._min_z <= z and z < self._max_z + 1
             ):
-                # This tile entity isn't in the bounding box
+                # This entity isn't in the bounding box
                 # Continue iterating until we find one that is
                 continue
 
-            # Found a valid tile entity in range
-            return tile_entity
+            # Found a valid entity in range
+            return entity, False
+
+
 
 class World(object):
     """
@@ -314,19 +360,22 @@ class World(object):
         self.find_players()
         return PlayerIterator._iter_from_world(self)
 
-    def tile_entity_iterator(self, pos1=None, pos2=None, readonly=True):
+    def entity_iterator(self, pos1=None, pos2=None, readonly=True):
         '''
-        Returns an iterator of all tile entities in the world.
-        If readonly=True, all chunks containing tile entities will
-        be saved as iteration passes them - meaning you can change them.
+        Returns an iterator of all entities and tile entities in the world.
+        If readonly=True, all chunks containing entities will be saved as
+        iteration passes them - meaning you can change them.
 
         Usage:
-        ```
-        for tile_entity in world.tile_entity_iterator():
-            tile_entity.tree()
-        ```
+
+        for entity, is_tile_entity in world.tile_entity_iterator():
+            if is_tile_entity:
+                print("This is a tile entity!")
+            else:
+                print("This is a regular entity!")
+            entity.tree()
         '''
-        return TileEntityIterator(self, pos1, pos2, readonly)
+        return BaseChunkEntityIterator(self, pos1, pos2, readonly)
 
     def find_data_packs(self):
         self._enabled_data_packs = []

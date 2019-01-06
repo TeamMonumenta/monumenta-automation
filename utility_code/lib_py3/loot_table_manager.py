@@ -578,34 +578,26 @@ class LootTableManager(object):
     # World Loading
     #
 
-    @classmethod
-    def get_tile_entity_ref(cls, tile_entity):
-        data = {
-            "id":tile_entity.at_path("id").value,
-            "pos": (tile_entity.at_path("x").value, tile_entity.at_path("y").value, tile_entity.at_path("z").value),
-        }
-        return data
-
-    def load_entity(self, entity, ref_obj=None):
+    def load_entity(self, entity, ref_dict=None):
         """
         Loads a single entity into the manager looking for references to loot tables
-        If this was from a spawner, set ref_obj to the blockdata that will actually be the record entry
+        If this was from a spawner, set ref_dict to the blockdata that will actually be the record entry
         """
-        if ref_obj is None:
-            ref_obj = {}
+        if ref_dict is None:
+            ref_dict = {}
 
-        ref_obj["entity_id"] = entity.at_path("id").value
+        ref_dict["entity_id"] = entity.at_path("id").value
         if entity.has_path("CustomName"):
-            ref_obj["entity_name"] = entity.at_path("CustomName").value
+            ref_dict["entity_name"] = entity.at_path("CustomName").value
 
         if entity.has_path("DeathLootTable"):
-            self.add_loot_table_reference(entity.at_path("DeathLootTable").value, "world", ref_obj)
+            self.add_loot_table_reference(entity.at_path("DeathLootTable").value, "world", ref_dict)
 
         if entity.has_path("Passengers"):
             for passenger in entity.at_path("Passengers").value:
-                self.load_entity(passenger, ref_obj)
+                self.load_entity(passenger, ref_dict)
 
-    def load_tile_entity(self, tile_entity):
+    def load_tile_entity(self, tile_entity, ref_dict=None):
         """
         Loads a single tile entity into the manager looking for references to loot tables
 
@@ -617,22 +609,45 @@ class LootTableManager(object):
         """
         if not tile_entity.has_path("id"):
             eprint("WARNING: Tile entity has no id!")
+            if not ref_dict is None:
+                eprint(ref_dict)
             return
 
         tile_id = tile_entity.at_path("id").value
+
+        if ref_dict is None:
+            ref_dict = {
+                "id":tile_entity.at_path("id").value,
+                "pos": (tile_entity.at_path("x").value, tile_entity.at_path("y").value, tile_entity.at_path("z").value),
+            }
+
         if tile_entity.has_path("LootTable"):
-            self.add_loot_table_reference(tile_entity.at_path("LootTable").value, "world", self.get_tile_entity_ref(tile_entity))
+            self.add_loot_table_reference(tile_entity.at_path("LootTable").value, "world", ref_dict)
 
         if tile_entity.has_path("Command"):
-            self.load_command(tile_entity.at_path("Command").value, "world", self.get_tile_entity_ref(tile_entity))
+            self.load_command(tile_entity.at_path("Command").value, "world", ref_dict)
 
         if tile_entity.has_path("SpawnPotentials"):
             for spawn in tile_entity.at_path("SpawnPotentials").value:
                 if spawn.has_path("Entity"):
-                    self.load_entity(spawn.at_path("Entity"), self.get_tile_entity_ref(tile_entity))
+                    self.load_entity(spawn.at_path("Entity"), ref_dict)
 
         if tile_entity.has_path("SpawnData"):
-            self.load_entity(tile_entity.at_path("SpawnData"), self.get_tile_entity_ref(tile_entity))
+            self.load_entity(tile_entity.at_path("SpawnData"), ref_dict)
+
+        # Recursively load containers containing other tile entities
+        if tile_entity.has_path("Items"):
+            for item in tile_entity.at_path("Items").value:
+                if item.has_path("tag.BlockEntityTag"):
+                    ref_dict["item_id"] = item.at_path("id").value
+                    ref_dict["item_slot"] = item.at_path("Slot").value
+                    self.load_tile_entity(item.at_path("tag.BlockEntityTag"), ref_dict)
+
+                if item.has_path("tag.EntityTag"):
+                    ref_dict["item_id"] = item.at_path("id").value
+                    ref_dict["item_slot"] = item.at_path("Slot").value
+                    print("Loading entity", ref_dict)
+                    self.load_entity(item.at_path("tag.EntityTag"), ref_dict)
 
     def load_world(self, world):
         """
@@ -645,8 +660,12 @@ class LootTableManager(object):
             raise Exception("Only one world can be loaded into a loot table manager at a time")
 
         self._world = world
-        for tile_entity in world.tile_entity_iterator(readonly=True):
-            self.load_tile_entity(tile_entity)
+        for entity, is_tile_entity in world.entity_iterator(readonly=True):
+            if is_tile_entity:
+                self.load_tile_entity(entity)
+            else:
+                self.load_entity(entity)
+
 
     def update_table_link_in_world_entity(self, entity, old_namespaced_path, new_namespaced_path):
         """
@@ -669,22 +688,25 @@ class LootTableManager(object):
         pos = tile_entity_ref["pos"]
         # Ask the world to find this tile entity again
         # Somewhat clunky, but works
-        for tile_entity in self._world.tile_entity_iterator(pos1=pos, pos2=pos, readonly=False):
-            tile_id = tile_entity.at_path("id").value
-            if tile_entity.has_path("LootTable"):
-                if tile_entity.at_path("LootTable").value == old_namespaced_path:
-                    tile_entity.at_path("LootTable").value = new_namespaced_path
+        for entity, is_tile_entity in self._world.entity_iterator(pos1=pos, pos2=pos, readonly=False):
+            if is_tile_entity:
+                tile_id = entity.at_path("id").value
+                if entity.has_path("LootTable"):
+                    if entity.at_path("LootTable").value == old_namespaced_path:
+                        entity.at_path("LootTable").value = new_namespaced_path
 
-            if tile_entity.has_path("Command"):
-                tile_entity.at_path("Command").value = self.update_table_link_in_command(tile_entity.at_path("Command").value,
-                                                                                         old_namespaced_path, new_namespaced_path)
-            if tile_entity.has_path("SpawnPotentials"):
-                for spawn in tile_entity.at_path("SpawnPotentials").value:
-                    if spawn.has_path("Entity"):
-                        self.update_table_link_in_world_entity(spawn.at_path("Entity"), old_namespaced_path, new_namespaced_path)
+                if entity.has_path("Command"):
+                    entity.at_path("Command").value = self.update_table_link_in_command(entity.at_path("Command").value,
+                                                                                        old_namespaced_path, new_namespaced_path)
+                if entity.has_path("SpawnPotentials"):
+                    for spawn in entity.at_path("SpawnPotentials").value:
+                        if spawn.has_path("Entity"):
+                            self.update_table_link_in_world_entity(spawn.at_path("Entity"), old_namespaced_path, new_namespaced_path)
 
-            if tile_entity.has_path("SpawnData"):
-                self.update_table_link_in_world_entity(tile_entity.at_path("SpawnData"), old_namespaced_path, new_namespaced_path)
+                if entity.has_path("SpawnData"):
+                    self.update_table_link_in_world_entity(entity.at_path("SpawnData"), old_namespaced_path, new_namespaced_path)
+            else:
+                self.update_table_link_in_world_entity(entity, old_namespaced_path, new_namespaced_path)
 
 
     #
