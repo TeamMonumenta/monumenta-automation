@@ -462,7 +462,7 @@ class World(object):
         max_y = max(pos1[1],pos2[1])
         max_z = max(pos1[2],pos2[2])
 
-        required_cy_sections = tuple(self._bounded_range(min_y,max_y,0,256,16))
+        required_cy_sections = tuple(self.bounded_range(min_y,max_y,0,256,16))
 
         command_blocks = []
 
@@ -477,8 +477,8 @@ class World(object):
                     continue
 
                 with nbt.RegionFile(region_path) as region:
-                    for cz in self._bounded_range(min_z,max_z,rz,512,16):
-                        for cx in self._bounded_range(min_x,max_x,rx,512,16):
+                    for cz in self.bounded_range(min_z,max_z,rz,512,16):
+                        for cx in self.bounded_range(min_x,max_x,rx,512,16):
                             try:
                                 chunk = region.load_chunk(cx, cz)
 
@@ -650,7 +650,8 @@ class World(object):
             else:
                 raise Exception("Chunk section not found")
 
-    def _bounded_range(self,min_in,max_in,range_start,range_length,divide=1):
+    @classmethod
+    def bounded_range(cls, min_in, max_in, range_start, range_length, divide=1):
         """
         Clip the input so the start and end don't exceed some other range.
         range_start is multiplied by range_length before use
@@ -690,7 +691,7 @@ class World(object):
         max_y = max(pos1[1],pos2[1])
         max_z = max(pos1[2],pos2[2])
 
-        required_cy_sections = tuple(self._bounded_range(min_y,max_y,0,256,16))
+        required_cy_sections = tuple(self.bounded_range(min_y,max_y,0,256,16))
 
         for rz in range(min_z//512,max_z//512+1):
             for rx in range(min_x//512,max_x//512+1):
@@ -700,8 +701,8 @@ class World(object):
                     raise FileNotFoundError('No such region {},{} in world {}'.format(rx,rz,self.path))
 
                 with nbt.RegionFile(region_path) as region:
-                    for cz in self._bounded_range(min_z,max_z,rz,512,16):
-                        for cx in self._bounded_range(min_x,max_x,rx,512,16):
+                    for cz in self.bounded_range(min_z,max_z,rz,512,16):
+                        for cx in self.bounded_range(min_x,max_x,rx,512,16):
                             chunk = region.load_chunk(cx, cz)
                             chunk_sections = chunk.body.at_path('Level.Sections').value
                             required_sections_left = set(required_cy_sections)
@@ -714,9 +715,9 @@ class World(object):
                                 required_sections_left.remove(cy)
                                 blocks = BlockArray.from_nbt(section, block_map)
 
-                                for by in self._bounded_range(min_y,max_y,cy,16):
-                                    for bz in self._bounded_range(min_z,max_z,32*rz+cz,16):
-                                        for bx in self._bounded_range(min_x,max_x,32*rx+cx,16):
+                                for by in self.bounded_range(min_y,max_y,cy,16):
+                                    for bz in self.bounded_range(min_z,max_z,32*rz+cz,16):
+                                        for bx in self.bounded_range(min_x,max_x,32*rx+cx,16):
                                             blocks[256 * by + 16 * bz + bx] = block['block']
 
                             if len(required_sections_left) != 0:
@@ -769,7 +770,7 @@ class World(object):
         max_y = max(pos1[1],pos2[1])
         max_z = max(pos1[2],pos2[2])
 
-        required_cy_sections = tuple(self._bounded_range(min_y,max_y,0,256,16))
+        required_cy_sections = tuple(self.bounded_range(min_y,max_y,0,256,16))
 
         for rz in range(min_z//512,max_z//512+1):
             for rx in range(min_x//512,max_x//512+1):
@@ -779,8 +780,8 @@ class World(object):
                     raise FileNotFoundError('No such region {},{} in world {}'.format(rx,rz,self.path))
 
                 with nbt.RegionFile(region_path) as region:
-                    for cz in self._bounded_range(min_z,max_z,rz,512,16):
-                        for cx in self._bounded_range(min_x,max_x,rx,512,16):
+                    for cz in self.bounded_range(min_z,max_z,rz,512,16):
+                        for cx in self.bounded_range(min_x,max_x,rx,512,16):
                             chunk = region.load_chunk(cx, cz)
                             chunk_sections = chunk.body.at_path('Level.Sections').value
                             required_sections_left = set(required_cy_sections)
@@ -793,9 +794,9 @@ class World(object):
                                 required_sections_left.remove(cy)
                                 blocks = BlockArray.from_nbt(section, block_map)
 
-                                for by in self._bounded_range(min_y,max_y,cy,16):
-                                    for bz in self._bounded_range(min_z,max_z,32*rz+cz,16):
-                                        for bx in self._bounded_range(min_x,max_x,32*rx+cx,16):
+                                for by in self.bounded_range(min_y,max_y,cy,16):
+                                    for bz in self.bounded_range(min_z,max_z,32*rz+cz,16):
+                                        for bx in self.bounded_range(min_x,max_x,32*rx+cx,16):
                                             block = blocks[256 * by + 16 * bz + bx]
 
                                             for old_block in old_blocks:
@@ -858,7 +859,7 @@ class World(object):
         max_y = max(pos1[1],pos2[1])
         max_z = max(pos1[2],pos2[2])
 
-        required_cy_sections = tuple(self._bounded_range(min_y,max_y,0,256,16))
+        required_cy_sections = tuple(self.bounded_range(min_y,max_y,0,256,16))
 
         for rz in range(min_z//512,max_z//512+1):
             for rx in range(min_x//512,max_x//512+1):
@@ -872,8 +873,8 @@ class World(object):
 
                 with nbt.RegionFile(new_region_path) as new_region:
                     with nbt.RegionFile(old_region_path) as old_region:
-                        for cz in self._bounded_range(min_z,max_z,rz,512,16):
-                            for cx in self._bounded_range(min_x,max_x,rx,512,16):
+                        for cz in self.bounded_range(min_z,max_z,rz,512,16):
+                            for cx in self.bounded_range(min_x,max_x,rx,512,16):
                                 new_chunk = new_region.load_chunk(cx, cz)
                                 old_chunk = old_region.load_chunk(cx, cz)
                                 """
@@ -888,13 +889,13 @@ class World(object):
 
                                 for new_chunk_section in new_chunk.body.at_path('Level.Sections').value:
                                     cy = new_chunk_section.at_path("Y").value
-                                    if len( self._bounded_range(min_y,max_y,cy,16) ) == 0:
+                                    if len( self.bounded_range(min_y,max_y,cy,16) ) == 0:
                                         continue
                                     new_chunk_sections[cy] = new_chunk_section
 
                                 for old_chunk_section in old_chunk.body.at_path('Level.Sections').value:
                                     cy = old_chunk_section.at_path("Y").value
-                                    if len( self._bounded_range(min_y,max_y,cy,16) ) == 0:
+                                    if len( self.bounded_range(min_y,max_y,cy,16) ) == 0:
                                         continue
                                     old_chunk_sections[cy] = old_chunk_section
 
@@ -909,9 +910,9 @@ class World(object):
                                     old_section = old_chunk_sections[cy]
                                     old_blocks = BlockArray.from_nbt(old_section, block_map)
 
-                                    for by in set(range(16)).difference(set( self._bounded_range(min_y,max_y,cy,16) )):
-                                        for bz in set(range(16)).difference(set( self._bounded_range(min_z,max_z,32*rz+cz,16) )):
-                                            for bx in set(range(16)).difference(set( self._bounded_range(min_x,max_x,32*rx+cx,16) )):
+                                    for by in set(range(16)).difference(set( self.bounded_range(min_y,max_y,cy,16) )):
+                                        for bz in set(range(16)).difference(set( self.bounded_range(min_z,max_z,32*rz+cz,16) )):
+                                            for bx in set(range(16)).difference(set( self.bounded_range(min_x,max_x,32*rx+cx,16) )):
                                                 index = 256 * by + 16 * bz + bx
                                                 old_blocks[index] = {'name': 'minecraft:air'}
 
@@ -922,9 +923,9 @@ class World(object):
                                     new_section = new_chunk_sections[cy]
                                     new_blocks = BlockArray.from_nbt(new_section, block_map)
 
-                                    for by in self._bounded_range(min_y,max_y,cy,16):
-                                        for bz in self._bounded_range(min_z,max_z,32*rz+cz,16):
-                                            for bx in self._bounded_range(min_x,max_x,32*rx+cx,16):
+                                    for by in self.bounded_range(min_y,max_y,cy,16):
+                                        for bz in self.bounded_range(min_z,max_z,32*rz+cz,16):
+                                            for bx in self.bounded_range(min_x,max_x,32*rx+cx,16):
                                                 index = 256 * by + 16 * bz + bx
                                                 new_blocks[index] = {'name': 'minecraft:air'}
 
@@ -939,9 +940,9 @@ class World(object):
                                     new_section.at_path('BlockLight').value = old_section.at_path('BlockLight').value
                                     new_section.at_path('SkyLight').value = old_section.at_path('SkyLight').value
 
-                                    for by in self._bounded_range(min_y,max_y,cy,16):
-                                        for bz in self._bounded_range(min_z,max_z,32*rz+cz,16):
-                                            for bx in self._bounded_range(min_x,max_x,32*rx+cx,16):
+                                    for by in self.bounded_range(min_y,max_y,cy,16):
+                                        for bz in self.bounded_range(min_z,max_z,32*rz+cz,16):
+                                            for bx in self.bounded_range(min_x,max_x,32*rx+cx,16):
                                                 index = 256 * by + 16 * bz + bx
                                                 new_blocks[index] = old_blocks[index]
 
