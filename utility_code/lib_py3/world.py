@@ -330,13 +330,35 @@ class RecursiveEntityIterator(object):
 
         Return value is two things!
             entity - the entity OR tile entity TagCompound
-            isTileEntity - True if tile entity, False if entity
+            is_tile_entity - True if tile entity, False if entity
+            source_pos - an (x, y, z) tuple of the original entity's position
         """
 
         if len(self._work_stack) == 0:
             # No work left to do - get another entity
             entity, is_tile_entity = self._baseiterator.__next__()
             self._work_stack.append((entity, is_tile_entity))
+
+            # Keep track of where the original entity was. This is useful because nested
+            # items mostly don't have position tags
+            if is_tile_entity:
+                if entity.has_path('x') and entity.has_path('y') and entity.has_path('z'):
+                    x = entity.at_path('x').value
+                    y = entity.at_path('y').value
+                    z = entity.at_path('z').value
+                    self._source_pos = (x, y, z)
+                else:
+                    self._source_pos = None
+            else:
+                if entity.has_path('Pos'):
+                    pos = entity.at_path('Pos').value
+                    x = pos[0].value
+                    y = pos[1].value
+                    z = pos[2].value
+                    self._source_pos = (x, y, z)
+                else:
+                    self._source_pos = None
+
 
         # Process the next work element on the stack
         current_entity, is_tile_entity = self._work_stack.pop()
@@ -385,7 +407,7 @@ class RecursiveEntityIterator(object):
                     if item.has_path("sell"):
                         self._scan_item_for_work(item.at_path("sell"))
 
-        return current_entity, is_tile_entity
+        return current_entity, is_tile_entity, self._source_pos
 
 class World(object):
     """
