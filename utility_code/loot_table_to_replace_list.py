@@ -10,6 +10,7 @@ from lib_py3.json_file import jsonFile
 from lib_py3.common import eprint
 from lib_py3.common import remove_formatting
 from lib_py3.loot_table_manager import LootTableManager
+from lib_py3.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types import nbt
@@ -21,7 +22,18 @@ mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/
 mgr.load_advancements_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_functions_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_scripted_quests_directory("/home/rock/project_epic/server_config/data/scriptedquests")
-mgr.check_for_invalid_loot_table_references()
+mgr.load_world(World("/home/rock/MCEdit-And-Automation/utility_code/Project_Epic-mobs"))
+#mgr.load_world(World("/home/rock/project_epic/region_1/Project_Epic-region_1"))
+
+invalid_references = mgr.get_invalid_loot_table_references()
+if len(invalid_references.keys()) > 0:
+    print("\033[1;31m", end="")
+    print("ERROR! Invalid references found!")
+    pprint.pprint(invalid_references)
+    print("\033[0;0m")
+
+sys.exit(0)
+
 
 #mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/datapacks", indent=4)
 #mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/scriptedquests", indent=2)

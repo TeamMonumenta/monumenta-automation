@@ -248,7 +248,7 @@ class LootTableManager(object):
             self.item_map[item_name] = {}
             self.item_map[item_name][item_id] = new_entry
 
-    def add_loot_table_path_reference(self, table_path, location_type, filename):
+    def add_loot_table_reference(self, table_path, location_type, ref_obj):
         """
         Adds a reference to the table_map indicating where a reference to the table is
         """
@@ -266,19 +266,19 @@ class LootTableManager(object):
                 # This table name already exists somewhere in the loot tables
                 if type(self.table_map[table_path][location_type]) is list:
                     # If already a list, add this to that list
-                    self.table_map[table_path][location_type].append(filename)
+                    self.table_map[table_path][location_type].append(ref_obj)
                 else:
                     # If not a list, make a list
-                    self.table_map[table_path][location_type] = [self.table_map[table_path][location_type], filename]
+                    self.table_map[table_path][location_type] = [self.table_map[table_path][location_type], ref_obj]
 
             else:
                 # Not a duplicate - same name but different ID
-                self.table_map[table_path][location_type] = filename
+                self.table_map[table_path][location_type] = ref_obj
 
         else:
             # Table name does not exist in loot tables - add it
             self.table_map[table_path] = {}
-            self.table_map[table_path][location_type] = filename
+            self.table_map[table_path][location_type] = ref_obj
 
 
     def load_loot_tables_file(self, filename):
@@ -294,7 +294,7 @@ class LootTableManager(object):
             raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
 
         # Add a reference to the loot table to later test that references to it are valid
-        self.add_loot_table_path_reference(self.to_namespaced_path(filename), None, filename)
+        self.add_loot_table_reference(self.to_namespaced_path(filename), None, filename)
 
         for pool in loot_table["pools"]:
             if not type(pool) is OrderedDict:
@@ -314,7 +314,7 @@ class LootTableManager(object):
                     if "name" not in entry:
                         raise KeyError("table loot table entry does not contain 'name'")
 
-                    self.add_loot_table_path_reference(entry["name"], "loot_table", filename)
+                    self.add_loot_table_reference(entry["name"], "loot_table", filename)
 
 
     def load_loot_tables_directory(self, directory):
@@ -341,19 +341,22 @@ class LootTableManager(object):
                     self.load_loot_tables_directory(os.path.join(root, dirname))
 
 
-    def check_for_invalid_loot_table_references(self):
+    def get_invalid_loot_table_references(self):
+        invalid_references = {}
         for item in self.table_map:
             if not "valid" in self.table_map[item] and item != "minecraft:empty":
-                eprint("\033[1;31m", end="")
-                if "loot_table" in self.table_map[item]:
-                    eprint("ERROR: Reference to nonexistent loot table '{}' in loot table '{}'".format(item, self.table_map[item]["loot_table"]), end="")
-                if "scripted_quests" in self.table_map[item]:
-                    eprint("ERROR: Reference to nonexistent loot table '{}' in quest file '{}'".format(item, self.table_map[item]["scripted_quests"]), end="")
-                if "advancements" in self.table_map[item]:
-                    eprint("ERROR: Reference to nonexistent loot table '{}' in advancement file '{}'".format(item, self.table_map[item]["advancements"]), end="")
-                if "functions" in self.table_map[item]:
-                    eprint("ERROR: Reference to nonexistent loot table '{}' in function file '{}'".format(item, self.table_map[item]["functions"]), end="")
-                eprint("\033[0;0m")
+                is_valid = True
+                for key in self.table_map[item]:
+                    if key == "valid":
+                        continue
+
+                    if is_valid:
+                        is_valid = False
+                        invalid_references[item] = {}
+
+                    invalid_references[item][key] = self.table_map[item][key]
+
+        return invalid_references
 
     #
     # Loot table loading
@@ -372,7 +375,7 @@ class LootTableManager(object):
                 if el == "command":
                     self.load_command(element[el], "scripted_quests", filename)
                 elif el == "give_loot":
-                    self.add_loot_table_path_reference(element[el], "scripted_quests", filename)
+                    self.add_loot_table_reference(element[el], "scripted_quests", filename)
                 else:
                     self.load_scripted_quests_recursive(filename, element[el])
         else:
@@ -457,7 +460,7 @@ class LootTableManager(object):
             raise TypeError('advancements["rewards"]["loot"] is type {}, not list'.format(type(advancements["rewards"]["loot"])))
 
         for loot_table in advancements["rewards"]["loot"]:
-            self.add_loot_table_path_reference(loot_table, "advancements", filename)
+            self.add_loot_table_reference(loot_table, "advancements", filename)
 
     def load_advancements_directory(self, directory):
         """
@@ -500,16 +503,16 @@ class LootTableManager(object):
     # Functions File Loading
     #
 
-    def load_command(self, command, source_label, filename):
+    def load_command(self, command, source_label, ref_obj):
         if "giveloottable" in command:
             line = command.strip()
             if line[-1] != '"':
-                raise ValueError('giveloottable command in {} does not end with a "'.format(filename))
+                raise ValueError('giveloottable command in {} does not end with a "'.format(ref_obj))
             line = line[:-1]
             if not line.rfind('"'):
-                raise ValueError('giveloottable command in {} missing first "'.format(filename))
+                raise ValueError('giveloottable command in {} missing first "'.format(ref_obj))
             line = line[line.rfind('"') + 1:]
-            self.add_loot_table_path_reference(line, source_label, filename)
+            self.add_loot_table_reference(line, source_label, ref_obj)
 
         # This handles both mob DeathLootTable and chest/container LootTable
         line = command
@@ -518,7 +521,7 @@ class LootTableManager(object):
             idx = line.find(matchstr)
             line = line[idx + len(matchstr):]
             idx = line.find('"')
-            self.add_loot_table_path_reference(line[:idx], source_label, filename)
+            self.add_loot_table_reference(line[:idx], source_label, ref_obj)
             line = line[idx:]
 
     def load_functions_directory(self, directory):
@@ -568,6 +571,74 @@ class LootTableManager(object):
 
     #
     # Functions File Loading
+    ####################################################################################################
+
+    ####################################################################################################
+    # World Loading
+    #
+
+    @classmethod
+    def get_tile_entity_ref(cls, tile_entity):
+        data = {
+            "id":tile_entity.at_path("id").value,
+            "pos": "{} {} {}".format(tile_entity.at_path("x").value, tile_entity.at_path("y").value, tile_entity.at_path("z").value)
+        }
+        return data
+
+    def load_entity(self, entity, ref_obj=None):
+        """
+        Loads a single entity into the manager looking for references to loot tables
+        If this was from a spawner, set ref_obj to the blockdata that will actually be the record entry
+        """
+        if ref_obj is None:
+            ref_obj = {}
+
+        ref_obj["entity_id"] = entity.at_path("id").value
+        if entity.has_path("CustomName"):
+            ref_obj["entity_name"] = entity.at_path("CustomName").value
+
+        if entity.has_path("DeathLootTable"):
+            self.add_loot_table_reference(entity.at_path("DeathLootTable").value, "world", ref_obj)
+
+    def load_tile_entity(self, tile_entity):
+        """
+        Loads a single tile entity into the manager looking for references to loot tables
+
+
+        These locations are loaded so far:
+            Containers (via "LootTable")
+            Command blocks (via "Command")
+            Spawners (via "SpawnData" and "SpawnPotentials")
+        """
+        if not tile_entity.has_path("id"):
+            eprint("WARNING: Tile entity has no id!")
+            return
+
+        tile_id = tile_entity.at_path("id").value
+        if tile_entity.has_path("LootTable"):
+            self.add_loot_table_reference(tile_entity.at_path("LootTable").value, "world", self.get_tile_entity_ref(tile_entity))
+        if tile_entity.has_path("Command"):
+            self.load_command(tile_entity.at_path("Command").value, "world", self.get_tile_entity_ref(tile_entity))
+        if tile_entity.has_path("SpawnPotentials"):
+            for spawn in tile_entity.at_path("SpawnPotentials").value:
+                if spawn.has_path("Entity"):
+                    self.load_entity(spawn.at_path("Entity"), self.get_tile_entity_ref(tile_entity))
+        if tile_entity.has_path("SpawnData"):
+            self.load_entity(tile_entity.at_path("SpawnData"), self.get_tile_entity_ref(tile_entity))
+
+    def load_world(self, world):
+        """
+        Loads all loot table locations in a world
+
+        These locations are loaded so far:
+            tile entities
+        """
+        for tile_entity in world.tile_entity_iterator(readonly=True):
+            self.load_tile_entity(tile_entity)
+
+
+    #
+    # World Loading
     ####################################################################################################
 
     ####################################################################################################
