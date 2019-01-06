@@ -18,6 +18,11 @@ from quarry.types import nbt
 
 mgr = LootTableManager()
 
+# AUTOFORMAT
+#mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/datapacks", indent=4)
+#mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/scriptedquests", indent=2)
+#sys.exit(0)
+
 mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_advancements_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_functions_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
@@ -32,11 +37,9 @@ if len(invalid_references.keys()) > 0:
     pprint.pprint(invalid_references)
     print("\033[0;0m")
 
-sys.exit(0)
+#sys.exit(0)
 
 
-#mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/datapacks", indent=4)
-#mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/scriptedquests", indent=2)
 
 #replacements = mgr.get_as_replacements()
 #pprint.pprint(mgr.table_map)
@@ -253,9 +256,17 @@ datapacks/base/data/epic/loot_tables/items/r1/roguelike/records/sandy_smooth_jaz
 datapacks/base/data/epic/loot_tables/items/r1/roguelike/records/web_covered_classics.json -> datapacks/base/data/epic/loot_tables/r1/items/roguelike/web_covered_classics.json
 '''
 
+manual_renames = '''
+minecraft:entities/null -> minecraft:empty
+minecraft:0 -> minecraft:empty
+'''
+
 for item in renameraw.splitlines():
     if " -> " in item:
         split = item.split(" -> ")
+        mgr.update_table_link_everywhere(mgr.to_namespaced_path(split[0]), mgr.to_namespaced_path(split[1]))
+
+for item in manual_renames.splitlines():
+    if " -> " in item:
+        split = item.split(" -> ")
         mgr.update_table_link_everywhere(split[0], split[1])
-
-

@@ -192,6 +192,7 @@ class LootTableManager(object):
     def __init__(self):
         self.item_map = {}
         self.table_map = {}
+        self._world = None
 
     ####################################################################################################
     # Loot table loading
@@ -581,7 +582,7 @@ class LootTableManager(object):
     def get_tile_entity_ref(cls, tile_entity):
         data = {
             "id":tile_entity.at_path("id").value,
-            "pos": "{} {} {}".format(tile_entity.at_path("x").value, tile_entity.at_path("y").value, tile_entity.at_path("z").value)
+            "pos": (tile_entity.at_path("x").value, tile_entity.at_path("y").value, tile_entity.at_path("z").value),
         }
         return data
 
@@ -600,6 +601,10 @@ class LootTableManager(object):
         if entity.has_path("DeathLootTable"):
             self.add_loot_table_reference(entity.at_path("DeathLootTable").value, "world", ref_obj)
 
+        if entity.has_path("Passengers"):
+            for passenger in entity.at_path("Passengers").value:
+                self.load_entity(passenger, ref_obj)
+
     def load_tile_entity(self, tile_entity):
         """
         Loads a single tile entity into the manager looking for references to loot tables
@@ -617,12 +622,15 @@ class LootTableManager(object):
         tile_id = tile_entity.at_path("id").value
         if tile_entity.has_path("LootTable"):
             self.add_loot_table_reference(tile_entity.at_path("LootTable").value, "world", self.get_tile_entity_ref(tile_entity))
+
         if tile_entity.has_path("Command"):
             self.load_command(tile_entity.at_path("Command").value, "world", self.get_tile_entity_ref(tile_entity))
+
         if tile_entity.has_path("SpawnPotentials"):
             for spawn in tile_entity.at_path("SpawnPotentials").value:
                 if spawn.has_path("Entity"):
                     self.load_entity(spawn.at_path("Entity"), self.get_tile_entity_ref(tile_entity))
+
         if tile_entity.has_path("SpawnData"):
             self.load_entity(tile_entity.at_path("SpawnData"), self.get_tile_entity_ref(tile_entity))
 
@@ -633,8 +641,50 @@ class LootTableManager(object):
         These locations are loaded so far:
             tile entities
         """
+        if not self._world is None:
+            raise Exception("Only one world can be loaded into a loot table manager at a time")
+
+        self._world = world
         for tile_entity in world.tile_entity_iterator(readonly=True):
             self.load_tile_entity(tile_entity)
+
+    def update_table_link_in_world_entity(self, entity, old_namespaced_path, new_namespaced_path):
+        """
+        Updates a reference to a loot table on an entity and recursively on their passengers
+        """
+        if entity.has_path("DeathLootTable"):
+            if entity.at_path("DeathLootTable").value == old_namespaced_path:
+                entity.at_path("DeathLootTable").value = new_namespaced_path
+
+        if entity.has_path("Passengers"):
+            for passenger in entity.at_path("Passengers").value:
+                self.update_table_link_in_world_entity(passenger, old_namespaced_path, new_namespaced_path)
+
+
+    def update_table_link_in_world_entry(self, tile_entity_ref, old_namespaced_path, new_namespaced_path):
+        """
+        Updates a reference to a table in a tile entity in the world
+        """
+
+        pos = tile_entity_ref["pos"]
+        # Ask the world to find this tile entity again
+        # Somewhat clunky, but works
+        for tile_entity in self._world.tile_entity_iterator(pos1=pos, pos2=pos, readonly=False):
+            tile_id = tile_entity.at_path("id").value
+            if tile_entity.has_path("LootTable"):
+                if tile_entity.at_path("LootTable").value == old_namespaced_path:
+                    tile_entity.at_path("LootTable").value = new_namespaced_path
+
+            if tile_entity.has_path("Command"):
+                tile_entity.at_path("Command").value = self.update_table_link_in_command(tile_entity.at_path("Command").value,
+                                                                                         old_namespaced_path, new_namespaced_path)
+            if tile_entity.has_path("SpawnPotentials"):
+                for spawn in tile_entity.at_path("SpawnPotentials").value:
+                    if spawn.has_path("Entity"):
+                        self.update_table_link_in_world_entity(spawn.at_path("Entity"), old_namespaced_path, new_namespaced_path)
+
+            if tile_entity.has_path("SpawnData"):
+                self.update_table_link_in_world_entity(tile_entity.at_path("SpawnData"), old_namespaced_path, new_namespaced_path)
 
 
     #
@@ -779,13 +829,10 @@ class LootTableManager(object):
         for filename in update_file_list:
             update_function(filename, old_namespaced_path, new_namespaced_path)
 
-    def update_table_link_everywhere(self, old_path, new_path):
+    def update_table_link_everywhere(self, old_namespaced_path, new_namespaced_path):
         """
         Updates all references to a table everywhere loaded into this class
         """
-
-        old_namespaced_path = self.to_namespaced_path(old_path)
-        new_namespaced_path = self.to_namespaced_path(new_path)
 
         if not old_namespaced_path in self.table_map:
             # Not referenced anywhere
@@ -795,6 +842,7 @@ class LootTableManager(object):
         self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "advancements", self.update_table_link_in_single_advancement)
         self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "functions", self.update_table_link_in_single_function)
         self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "scripted_quests", self.update_table_link_in_single_quests_file)
+        self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "world", self.update_table_link_in_world_entry)
 
     #
     # Loot table manipulation
