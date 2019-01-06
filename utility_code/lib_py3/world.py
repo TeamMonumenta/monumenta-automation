@@ -52,10 +52,7 @@ class TileEntityIterator(object):
     If coordinates are specified, it will only load region files that contain those coordinates
     Otherwise it will iterate over everything world wide
 
-    Current limitations:
-        It always iterates over every chunk in every loaded region file.
-        This is slow and unnecessary - there are two places that need to use the
-        bounded range function to optimize this
+    Only iterates over chunks in regions that could plausibly contain the specified coordinates
     """
 
     def __init__(self, world, pos1=None, pos2=None, readonly=True):
@@ -145,6 +142,18 @@ class TileEntityIterator(object):
             # Load the next indicated region (_rx/_rz)
             region_path = os.path.join(self._world.path, "region", "r.{}.{}.mca".format(self._rx, self._rz))
 
+            # Before updating the _rx/_rz coords, use the current ones to calculate the bounding range
+            self._cx_range = World.bounded_range(self._min_x, self._max_x, self._rx, 512, 16)
+            self._cx_idx = 0
+            self._cz_range = World.bounded_range(self._min_z, self._max_z, self._rz, 512, 16)
+            self._cz_idx = 0
+            self._chunk = None
+            if len(self._cx_range) == 1 and len(self._cz_range) == 1:
+                self._lastchunk = True
+            else:
+                self._lastchunk = False
+
+
             # Set the location of the next region
             self._update_next_region_coords()
 
@@ -157,12 +166,6 @@ class TileEntityIterator(object):
 
             # If we get to here, region_path is the valid next region file to work with
             self._region = nbt.RegionFile(region_path)
-
-            # TODO: Replace this with bounded range so extra chunks aren't iterated that can't possibly be in range
-            self._cx = 0
-            self._cz = 0
-            self._chunk = None
-            self._lastchunk = False
 
             # Successfully found next region - stop iterating
             break
@@ -179,13 +182,12 @@ class TileEntityIterator(object):
             self._next_region()
             return
 
-        # TODO: Replace this with bounded range so extra chunks aren't iterated that can't possibly be in range
-        self._cx += 1
-        if self._cx >= 32:
-            self._cx = 0
-            self._cz += 1
+        self._cx_idx += 1
+        if self._cx_idx >= len(self._cx_range):
+            self._cx_idx = 0
+            self._cz_idx += 1
 
-        if (self._cx == 31) and (self._cz == 31):
+        if (self._cx_idx == len(self._cx_range) - 1) and (self._cz_idx >= len(self._cz_range) - 1):
             self._lastchunk = True
 
     def _next_chunk(self):
@@ -201,7 +203,7 @@ class TileEntityIterator(object):
                 self._chunk = None
 
             # Load the next indicated chunk (_cx/_cz)
-            self._chunk = self._region.load_chunk(self._cx, self._cz)
+            self._chunk = self._region.load_chunk(self._cx_range[self._cx_idx], self._cz_range[self._cz_idx])
 
             # Set the location of the next chunk
             self._update_next_chunk_coords()
