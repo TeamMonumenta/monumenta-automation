@@ -43,6 +43,221 @@ class PlayerIterator(object):
         self._i += 1
         return Player(player_path)
 
+class TileEntityIterator(object):
+    """
+    This is an iterator over tile entities in a world.
+
+    If readonly=False, it will save each chunk it visits that contain tile entities
+
+    If coordinates are specified, it will only load region files that contain those coordinates
+    Otherwise it will iterate over everything world wide
+
+    Current limitations:
+        It always iterates over every chunk in every loaded region file.
+        This is slow and unnecessary - there are two places that need to use the
+        bounded range function to optimize this
+    """
+
+    def __init__(self, world, pos1=None, pos2=None, readonly=True):
+        self._world = world
+        self._readonly = readonly
+
+        if ((pos1 is None) and (not pos2 is None)) or ((pos2 is None) and (not pos1 is None)):
+            raise Exception("Only one iteration corner was specified!")
+
+        if (not pos1 is None) and (not pos2 is None):
+            self._min_x = min(pos1[0],pos2[0])
+            self._min_y = min(pos1[1],pos2[1])
+            self._min_z = min(pos1[2],pos2[2])
+
+            self._max_x = max(pos1[0],pos2[0])
+            self._max_y = max(pos1[1],pos2[1])
+            self._max_z = max(pos1[2],pos2[2])
+        else:
+            # Compute region boundaries for the world
+            xregions = [r[0] for r in world.region_files]
+            zregions = [r[1] for r in world.region_files]
+            self._min_x = min(xregions) * 512
+            self._max_x = max(xregions) * 512
+            self._min_y = 0
+            self._max_y = 255
+            self._min_z = min(zregions) * 512
+            self._max_z = max(zregions) * 512
+
+    def __iter__(self):
+        """
+        Initialize the iterator for use.
+
+        Doing this here instead of in __init__ allows the iterator to potentially be re-used
+
+        Note on how variables are used:
+            _chunk, _region, and _tile_entities are the currently active objects being iterated over
+
+            All of the index variables (_rx, _cx, _tile_entities_pos, etc.) are the index of
+            the NEXT element in that set to grab. This is sorta weird (use the variables now,
+            but increment them right before you're done) but it dramatically simplified the
+            logic
+        """
+
+        self._region = None
+        self._rx = self._min_x//512
+        self._rz = self._min_z//512
+
+        # Set to True when the currently loaded region is the last possible region
+        self._lastregion = False
+
+        # Load the first region/chunk
+        self._next_region()
+        self._next_chunk()
+
+        return self
+
+    def _update_next_region_coords(self):
+        """
+        Updates _rx and _rz to point to the next region that should be loaded
+
+        If out of regions, end iteration
+        """
+
+        if self._lastregion:
+            # All done!
+            raise StopIteration
+
+        self._rx += 1
+        if self._rx > self._max_x//512:
+            self._rx = self._min_x//512
+            self._rz += 1
+
+        if (self._rx == self._max_x//512) and (self._rz >= self._max_z//512):
+            self._lastregion = True
+
+    def _next_region(self):
+        """
+        Iteratively loads the next region to process
+
+        When this returns, either _region is set and valid or StopIteration is raised
+        """
+        while True:
+            if not self._region is None and not self._readonly:
+                # Save the current region - maybe nothing to do here?
+                self._region = None
+
+            # Load the next indicated region (_rx/_rz)
+            region_path = os.path.join(self._world.path, "region", "r.{}.{}.mca".format(self._rx, self._rz))
+
+            # Set the location of the next region
+            self._update_next_region_coords()
+
+            if not os.path.isfile(region_path):
+                # This region file isn't present - no reason to keep a reference for saving
+                self._chunk = None
+
+                # Continue iterating over regions to find the next valid one
+                continue
+
+            # If we get to here, region_path is the valid next region file to work with
+            self._region = nbt.RegionFile(region_path)
+
+            # TODO: Replace this with bounded range so extra chunks aren't iterated that can't possibly be in range
+            self._cx = 0
+            self._cz = 0
+            self._chunk = None
+            self._lastchunk = False
+
+            # Successfully found next region - stop iterating
+            break
+
+    def _update_next_chunk_coords(self):
+        """
+        Updates _cx and _cz to point to the next chunk that should be loaded
+
+        If out of chunks, advance to the next region
+        """
+        if self._lastchunk:
+            # Last chunk in this region - load the next region
+            # This also resets the cx/cz stuff and loads the first chunk
+            self._next_region()
+            return
+
+        # TODO: Replace this with bounded range so extra chunks aren't iterated that can't possibly be in range
+        self._cx += 1
+        if self._cx >= 32:
+            self._cx = 0
+            self._cz += 1
+
+        if (self._cx == 31) and (self._cz == 31):
+            self._lastchunk = True
+
+    def _next_chunk(self):
+        """
+        Iteratively loads the next chunk to process
+
+        When this returns, either _chunk is set and valid or StopIteration is raised
+        """
+        while True:
+            if not self._chunk is None and not self._readonly:
+                # Save the current chunk
+                self._region.save_chunk(self._chunk)
+                self._chunk = None
+
+            # Load the next indicated chunk (_cx/_cz)
+            self._chunk = self._region.load_chunk(self._cx, self._cz)
+
+            # Set the location of the next chunk
+            self._update_next_chunk_coords()
+
+            if (
+                (self._chunk is None) or
+                (not self._chunk.body.has_path('Level.TileEntities')) or
+                (len(self._chunk.body.at_path('Level.TileEntities').value) == 0)
+            ):
+                # No tile entities in this chunk - no reason to keep a reference for saving
+                self._chunk = None
+
+                # Continue iterating over chunks to find the next one that does have tile entities
+                continue
+
+            # If we get here, this chunk has been loaded and contains tile entities
+            self._tile_entities = self._chunk.body.at_path('Level.TileEntities').value
+
+            # Start with the first entity
+            self._tile_entities_pos = 0
+
+            # Successfully found next chunk - stop iterating
+            break
+
+    def __next__(self):
+        """
+        Iteratively identifies the next valid tile entity and returns it
+
+        This does the final check that tile entities loaded are in the bounding box
+        """
+        while True:
+            if self._tile_entities_pos < len(self._tile_entities):
+                tile_entity = self._tile_entities[self._tile_entities_pos]
+                tile_x = tile_entity.at_path('x').value
+                tile_y = tile_entity.at_path('y').value
+                tile_z = tile_entity.at_path('z').value
+
+                # Increment index so regardless of whether this is in range the next step
+                # will find the next tile entity
+                self._tile_entities_pos += 1
+
+                if not (
+                    self._min_x <= tile_x and tile_x <= self._max_x and
+                    self._min_y <= tile_y and tile_y <= self._max_y and
+                    self._min_z <= tile_z and tile_z <= self._max_z
+                ):
+                    # This tile entity isn't in the bounding box
+                    # Continue iterating until we find one that is
+                    continue
+
+                # Found a valid tile entity in range
+                return tile_entity
+
+            # Move to the next chunk with tile entities and try again
+            self._next_chunk()
+
 class World(object):
     """
     An object for editing a world (1.13+).
@@ -124,6 +339,20 @@ class World(object):
         '''
         self.find_players()
         return PlayerIterator._iter_from_world(self)
+
+    def tile_entity_iterator(self, pos1=None, pos2=None, readonly=True):
+        '''
+        Returns an iterator of all tile entities in the world.
+        If readonly=True, all chunks containing tile entities will
+        be saved as iteration passes them - meaning you can change them.
+
+        Usage:
+        ```
+        for tile_entity in world.tile_entity_iterator():
+            tile_entity.tree()
+        ```
+        '''
+        return TileEntityIterator(self, pos1, pos2, readonly)
 
     def find_data_packs(self):
         self._enabled_data_packs = []
