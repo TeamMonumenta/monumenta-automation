@@ -28,6 +28,7 @@ mgr.load_advancements_subdirectories("/home/rock/project_epic/server_config/data
 mgr.load_functions_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_scripted_quests_directory("/home/rock/project_epic/server_config/data/scriptedquests")
 #mgr.load_world(World("/home/rock/MCEdit-And-Automation/utility_code/Project_Epic-mobs"))
+#mgr.load_world(World("/home/rock/project_epic/mobs/Project_Epic-mobs"))
 #mgr.load_world(World("/home/rock/project_epic/region_1/Project_Epic-region_1"))
 
 invalid_references = mgr.get_invalid_loot_table_references()
@@ -469,6 +470,9 @@ minecraft:0 -> minecraft:empty
 epic:loot/items/r1/patreon/holy_feather -> epic:r1/items/patreon/holy_feather
 epic:loot/items/r1/patreon/polar_bear_hide -> epic:r1/items/patreon/polar_bear_hide
 epic:loot/items/r1/patreon/water_gem -> epic:r1/items/patreon/water_gem
+minecraft:banditb -> minecraft:empty
+heyyy -> minecraft:empty
+empty -> minecraft:empty
 '''
 
 for item in renameraw.splitlines():
