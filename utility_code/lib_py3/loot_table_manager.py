@@ -416,8 +416,11 @@ class LootTableManager(object):
                 self.update_table_link_in_quest_recursive(filename, el, old_namespaced_path, new_namespaced_path)
         elif type(element) is OrderedDict:
             for el in element:
-                if el == "command" or el == "give_loot":
+                if el == "command":
                     element[el] = self.update_table_link_in_command(element[el], old_namespaced_path, new_namespaced_path)
+                elif el == "give_loot":
+                    if element[el] == old_namespaced_path:
+                        element[el] = new_namespaced_path
                 else:
                     self.update_table_link_in_quest_recursive(filename, element[el], old_namespaced_path, new_namespaced_path)
         else:
@@ -490,7 +493,7 @@ class LootTableManager(object):
         json_file = jsonFile(filename)
         advancements = json_file.dict
 
-        for i in range(advancements["rewards"]["loot"]):
+        for i in range(len(advancements["rewards"]["loot"])):
             if advancements["rewards"]["loot"][i] == old_namespaced_path:
                 advancements["rewards"]["loot"][i] = new_namespaced_path
 
@@ -551,11 +554,26 @@ class LootTableManager(object):
                     self.load_functions_directory(os.path.join(root, dirname))
 
     @classmethod
-    def update_table_link_in_command(cls, line, old_namespaced_path, new_namespaced_path):
+    def update_table_link_in_command(cls, command, old_namespaced_path, new_namespaced_path):
         """
         Replaces a loot table path in a command
         """
-        return line.replace('"' + old_namespaced_path + '"', '"' + new_namespaced_path + '"')
+        if "giveloottable" in command:
+            orig_command = command
+            command = command.strip()
+            if command[-1] != '"':
+                raise ValueError('giveloottable command in {} does not end with a "'.format(ref_obj))
+            command = command[:-1]
+            if not command.rfind('"'):
+                raise ValueError('giveloottable command in {} missing first "'.format(ref_obj))
+
+            if command[command.rfind('"') + 1:] == old_namespaced_path:
+                return command[:command.rfind('"')] + '"' + new_namespaced_path + '"'
+            else:
+                return orig_command
+
+        # This handles both mob DeathLootTable and chest/container LootTable
+        return command.replace('LootTable:"' + old_namespaced_path + '"', 'LootTable:"' + new_namespaced_path + '"')
 
     @classmethod
     def update_table_link_in_single_function(self, filename, old_namespaced_path, new_namespaced_path):
@@ -563,6 +581,8 @@ class LootTableManager(object):
         with open(filename, 'r') as fp:
             for line in fp.readlines():
                 line = self.update_table_link_in_command(line, old_namespaced_path, new_namespaced_path)
+                if line[-1] != '\n':
+                    line += '\n'
 
                 # Write this line to the output list
                 output_lines.append(line)
