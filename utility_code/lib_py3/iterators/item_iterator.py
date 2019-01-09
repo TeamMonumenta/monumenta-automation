@@ -2,40 +2,55 @@
 # Recursive iterator for items everywhere in the world
 #
 
+from lib_py3.iterators.recursive_entity_iterator import RecursiveEntityIterator
+from lib_py3.iterators.recursive_entity_iterator import scan_entity_for_items
+
 class ItemIterator(object):
-    _single_item_locations = (
-        "ArmorItem",
-        "Item",
-        "RecordItem",
-        "SaddleItem",
-        "Trident",
-    )
+    def __init__(self, world, pos1=None, pos2=None, readonly=True):
+        self._entity_iterator = RecursiveEntityIterator(world, pos1, pos2, readonly)
 
-    _list_item_locations = (
-        "ArmorItems",
-        "EnderItems",
-        "HandItems",
-        "Inventory",
-        "Items",
-        "Inventory",
-    )
+    def __iter__(self):
+        """
+        Initialize the iterator for use.
 
-    @classmethod
-    def scan_entity_for_items(cls, entity_nbt, item_found_func):
-        for location in cls._single_item_locations:
-            if entity_nbt.has_path(location):
-                item_found_func(entity_nbt.at_path(location))
+        Doing this here instead of in __init__ allows the iterator to potentially be re-used
+        """
 
-        for location in cls._list_item_locations:
-            if entity_nbt.has_path(location):
-                for item in entity_nbt.at_path(location).value:
-                    item_found_func(item)
+        # Initialize the base iterator
+        self._entity_iterator.__iter__()
 
-        if entity_nbt.has_path("Offers.Recipes"):
-            for item in entity_nbt.at_path("Offers.Recipes").value:
-                if item.has_path("buy"):
-                    item_found_func(item.at_path("buy"))
-                if item.has_path("buyB"):
-                    item_found_func(item.at_path("buyB"))
-                if item.has_path("sell"):
-                    item_found_func(item.at_path("sell"))
+        # Use a stack to keep track of what items still need to be processed
+        self._work_stack = []
+
+        return self
+
+    def _scan_item_for_work(self, item):
+        """
+        Adds a found item to the work queue
+        """
+        # Don't bother returning empty items
+        if len(item.value) != 0:
+            self._work_stack.append(item)
+
+    def __next__(self):
+        """
+        Iterates over items in the world
+
+        Iteration order is depth-first, returning the higher-level object first then using
+        a depth-first iterator into nested sub elements
+
+        Return value is:
+            item - the item TagCompound
+        """
+
+        while len(self._work_stack) == 0:
+            # No work left to do - search for another entity containing items
+            entity, _, self._source_pos = self._entity_iterator.__next__()
+
+            # Add more work to the stack for items contained in this entity, if any
+            scan_entity_for_items(entity, self._scan_item_for_work);
+
+        # Process the next work element on the stack
+        current_item = self._work_stack.pop()
+
+        return current_item, self._source_pos

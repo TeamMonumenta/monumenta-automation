@@ -3,7 +3,42 @@
 #
 
 from lib_py3.iterators.base_chunk_entity_iterator import BaseChunkEntityIterator
-from lib_py3.iterators.item_iterator import ItemIterator
+
+_single_item_locations = (
+    "ArmorItem",
+    "Item",
+    "RecordItem",
+    "SaddleItem",
+    "Trident",
+)
+
+_list_item_locations = (
+    "ArmorItems",
+    "EnderItems",
+    "HandItems",
+    "Inventory",
+    "Items",
+    "Inventory",
+)
+
+def scan_entity_for_items(entity_nbt, item_found_func):
+    for location in _single_item_locations:
+        if entity_nbt.has_path(location):
+            item_found_func(entity_nbt.at_path(location))
+
+    for location in _list_item_locations:
+        if entity_nbt.has_path(location):
+            for item in entity_nbt.at_path(location).value:
+                item_found_func(item)
+
+    if entity_nbt.has_path("Offers.Recipes"):
+        for item in entity_nbt.at_path("Offers.Recipes").value:
+            if item.has_path("buy"):
+                item_found_func(item.at_path("buy"))
+            if item.has_path("buyB"):
+                item_found_func(item.at_path("buyB"))
+            if item.has_path("sell"):
+                item_found_func(item.at_path("sell"))
 
 class RecursiveEntityIterator(object):
     """
@@ -56,7 +91,7 @@ class RecursiveEntityIterator(object):
         Iteration order is depth-first, returning the higher-level object first then using
         a depth-first iterator into nested sub elements
 
-        Return value is two things!
+        Return value is:
             entity - the entity OR tile entity TagCompound
             is_tile_entity - True if tile entity, False if entity
             source_pos - an (x, y, z) tuple of the original entity's position
@@ -109,6 +144,6 @@ class RecursiveEntityIterator(object):
                     self._work_stack.append((passenger, False))
 
         # Scan items in current entity, and if any are found scan them for nested entities
-        ItemIterator.scan_entity_for_items(current_entity, self._scan_item_for_work);
+        scan_entity_for_items(current_entity, self._scan_item_for_work);
 
         return current_entity, is_tile_entity, self._source_pos

@@ -11,6 +11,7 @@ from lib_py3.block_map import block_map
 from lib_py3.common import bounded_range
 from lib_py3.player import Player
 from lib_py3.iterators.recursive_entity_iterator import RecursiveEntityIterator
+from lib_py3.iterators.item_iterator import ItemIterator
 
 #TODO from lib_py3.scoreboard import Scoreboard
 
@@ -130,12 +131,12 @@ class World(object):
     def entity_iterator(self, pos1=None, pos2=None, readonly=True):
         '''
         Returns an iterator of all entities and tile entities in the world.
-        If readonly=True, all chunks containing entities will be saved as
-        iteration passes them - meaning you can change them.
+        If readonly=False, all chunks containing entities will be saved as
+        iteration passes them - meaning you can modify the entities returned
 
         Usage:
 
-        for entity, is_tile_entity in world.tile_entity_iterator():
+        for entity, is_tile_entity, pos in world.tile_entity_iterator():
             if is_tile_entity:
                 print("This is a tile entity!")
             else:
@@ -143,6 +144,19 @@ class World(object):
             entity.tree()
         '''
         return RecursiveEntityIterator(self, pos1, pos2, readonly)
+
+    def items(self, pos1=None, pos2=None, readonly=True):
+        '''
+        Returns an iterator of all items in the world.
+        If readonly=False, all chunks will be saved as
+        iteration passes them - meaning you can modify the items returned
+
+        Usage:
+
+        for item, pos in world.items():
+            item.tree()
+        '''
+        return ItemIterator(self, pos1, pos2, readonly)
 
     def find_data_packs(self):
         self._enabled_data_packs = []
