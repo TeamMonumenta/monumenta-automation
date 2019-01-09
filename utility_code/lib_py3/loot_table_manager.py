@@ -229,25 +229,24 @@ class LootTableManager(object):
         new_entry["nbt"] = item_tag_nbt
         new_entry["namespaced_key"] = self.to_namespaced_path(filename)
 
-        if item_name in self.item_map:
-            if item_id in self.item_map[item_name]:
+        if item_id in self.item_map:
+            if item_name in self.item_map[item_id]:
                 # DUPLICATE! This name / item id already exists
-                if type(self.item_map[item_name][item_id]) is list:
+                if type(self.item_map[item_id][item_name]) is list:
                     # If already a list, add this to that list
-                    self.item_map[item_name][item_id].append(new_entry)
+                    self.item_map[item_id][item_name].append(new_entry)
                 else:
                     # If not a list, make a list
-                    self.item_map[item_name][item_id] = [self.item_map[item_name][item_id], new_entry]
+                    self.item_map[item_id][item_name] = [self.item_map[item_id][item_name], new_entry]
 
             else:
                 # Not a duplicate - same name but different ID
-                self.item_map[item_name] = {}
-                self.item_map[item_name][item_id] = new_entry
+                self.item_map[item_id][item_name] = new_entry
 
         else:
             # Item name does not exist - add it
-            self.item_map[item_name] = {}
-            self.item_map[item_name][item_id] = new_entry
+            self.item_map[item_id] = {}
+            self.item_map[item_id][item_name] = new_entry
 
     def add_loot_table_reference(self, table_path, location_type, ref_obj):
         """
@@ -755,18 +754,18 @@ class LootTableManager(object):
         if not item_name:
             raise ValueError("Item NBT does not have a name")
 
-        if not item_name in self.item_map:
-            raise ValueError("Item '{}' not in loot tables".format(item_name))
+        if not item_id in self.item_map:
+            raise ValueError("Item id '{}' not in loot tables".format(item_id))
 
-        if not item_id in self.item_map[item_name]:
-            raise ValueError("Item '{}' id '{}' not in loot tables".format(item_name, item_id))
+        if not item_name in self.item_map[item_id]:
+            raise ValueError("Item id '{}' name '{}' not in loot tables".format(item_id, item_name))
 
         # Get a list of all the occurrences for iterating
         match_list = []
-        if type(self.item_map[item_name][item_id]) is list:
-            match_list = self.item_map[item_name][item_id]
+        if type(self.item_map[item_id][item_name]) is list:
+            match_list = self.item_map[item_id][item_name]
         else:
-            match_list.append(self.item_map[item_name][item_id])
+            match_list.append(self.item_map[item_id][item_name])
 
         # Get a list of files where this needs updating
         update_file_list = []
@@ -847,17 +846,18 @@ class LootTableManager(object):
     # Loot table manipulation
     ####################################################################################################
 
-    def get_as_replacements(self):
-        replacements = []
-        for item_name in OrderedDict(sorted(self.item_map.items())):
-            for item_id in self.item_map[item_name]:
-                if type(self.item_map[item_name][item_id]) is list:
+    def get_unique_item_map(self):
+        unique_item_map = {}
+
+        for item_id in self.item_map:
+            for item_name in OrderedDict(sorted(self.item_map[item_id].items())):
+                if type(self.item_map[item_id][item_name]) is list:
                     # DUPLICATE!
 
                     # First check if every duplicate is identical
                     different = False
-                    for loc in self.item_map[item_name][item_id]:
-                        if loc["nbt"].to_bytes() != self.item_map[item_name][item_id][0]["nbt"].to_bytes():
+                    for loc in self.item_map[item_id][item_name]:
+                        if loc["nbt"].to_bytes() != self.item_map[item_id][item_name][0]["nbt"].to_bytes():
                             # This is really bad - different loot table entries with different contents
                             different = True
 
@@ -868,7 +868,7 @@ class LootTableManager(object):
                         eprint("ERROR: Item '{}' type '{}' is different and duplicated in the loot tables!".format(item_name, item_id))
 
                     count = 1
-                    for loc in self.item_map[item_name][item_id]:
+                    for loc in self.item_map[item_id][item_name]:
                         eprint(" {}: {} - {}".format(count, loc["namespaced_key"], loc["file"]))
                         if different:
                             eprint("    {}".format(loc["nbt"].to_mojangson()))
@@ -879,25 +879,12 @@ class LootTableManager(object):
                         eprint("\033[0;0m", end="")
                     eprint()
 
-                    # Take the first entry and use that for the replacements
-                    entry = self.item_map[item_name][item_id][0]
+                    if not item_id in unique_item_map:
+                        unique_item_map[item_id] = {}
+                    unique_item_map[item_id][item_name] = self.item_map[item_id][item_name][0];
                 else:
-                    # Not a duplicate - use the entry
-                    entry = self.item_map[item_name][item_id]
+                    if not item_id in unique_item_map:
+                        unique_item_map[item_id] = {}
+                    unique_item_map[item_id][item_name] = self.item_map[item_id][item_name];
 
-                replacements.append([
-                    {
-                        'id': item_id,
-                        'name': item_name,
-                    },
-                    [
-                        'nbt',
-                        'replace',
-                        entry['nbt'].to_mojangson(),
-                    ]
-                ])
-
-        return replacements
-
-
-
+        return unique_item_map

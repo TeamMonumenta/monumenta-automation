@@ -27,6 +27,7 @@ mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/
 mgr.load_advancements_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_functions_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_scripted_quests_directory("/home/rock/project_epic/server_config/data/scriptedquests")
+
 #mgr.load_world(World("/home/rock/MCEdit-And-Automation/utility_code/Project_Epic-mobs"))
 #mgr.load_world(World("/home/rock/project_epic/mobs/Project_Epic-mobs"))
 #mgr.load_world(World("/home/rock/project_epic/region_1/Project_Epic-region_1"))
@@ -38,13 +39,14 @@ if len(invalid_references.keys()) > 0:
     pprint.pprint(invalid_references)
     print("\033[0;0m")
 
+unique_item_map = mgr.get_unique_item_map()
+#pprint.pprint(unique_item_map)
+
 sys.exit(0)
 
 
 
-#replacements = mgr.get_as_replacements()
 #pprint.pprint(mgr.table_map)
-#pprint.pprint(replacements)
 
 #item_id = "minecraft:fishing_rod"
 #item_nbt = r'''{Enchantments:[{lvl:3s,id:"lure"},{lvl:2s,id:"unbreaking"}],display:{Lore:["§8King's Valley : Tier III"],Name:"{\"text\":\"§fAngler's Rod\"}"}}'''
