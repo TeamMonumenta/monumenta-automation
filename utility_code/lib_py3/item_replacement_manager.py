@@ -5,6 +5,7 @@ import sys
 
 import traceback
 
+from lib_py3.common import eprint
 from lib_py3.common import remove_formatting
 from lib_py3.item_replacement_rules import global_rules
 
@@ -36,13 +37,24 @@ class ItemReplacementManager(object):
 
         # Run preprocess rules; if one returns True, abort replacements on this item!
         for rule in self.global_rules:
-            if rule.preprocess(item):
-                return
+            try:
+                if rule.preprocess(item):
+                    return
+            except:
+                eprint("Error preprocessing '" + rule.name + "':")
+                eprint("Item being preprocessed: " + item.to_mojangson(highlight=True))
+                eprint(str(traceback.format_exc()))
 
         # Replace the item tag
         item.at_path('tag') = new_item_tag
 
         # Run postprocess rules
         for rule in self.global_rules:
-            rule.postprocess(item)
+            try:
+                rule.postprocess(item)
+            except:
+                eprint("Error postprocessing '" + rule.name + "':")
+                eprint("Item being postprocessed: " + item.to_mojangson(highlight=True))
+                eprint("This may be a CRITICAL ERROR!")
+                eprint(str(traceback.format_exc()))
 
