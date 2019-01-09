@@ -374,40 +374,55 @@ class RecursiveEntityIterator(object):
             if current_entity.has_path("SpawnData"):
                 self._work_stack.append((current_entity.at_path("SpawnData"), False))
 
-            if current_entity.has_path("Items"):
-                for item in current_entity.at_path("Items").value:
-                    self._scan_item_for_work(item)
-
-            if current_entity.has_path("RecordItem"):
-                self._scan_item_for_work(current_entity.at_path("RecordItem"))
-
         else:
             # Regular entities!
             if current_entity.has_path("Passengers"):
                 for passenger in current_entity.at_path("Passengers").value:
                     self._work_stack.append((passenger, False))
 
-            if current_entity.has_path("Item"):
-                self._scan_item_for_work(current_entity.at_path("Item"))
-
-            if current_entity.has_path("HandItems"):
-                for item in current_entity.at_path("HandItems").value:
-                    self._scan_item_for_work(item)
-
-            if current_entity.has_path("ArmorItems"):
-                for item in current_entity.at_path("ArmorItems").value:
-                    self._scan_item_for_work(item)
-
-            if current_entity.has_path("Offers.Recipes"):
-                for item in current_entity.at_path("Offers.Recipes").value:
-                    if item.has_path("buy"):
-                        self._scan_item_for_work(item.at_path("buy"))
-                    if item.has_path("buyB"):
-                        self._scan_item_for_work(item.at_path("buyB"))
-                    if item.has_path("sell"):
-                        self._scan_item_for_work(item.at_path("sell"))
+        # Scan items in current entity, and if any are found scan them for nested entities
+        ItemIterator.scan_entity_for_items(current_entity, self._scan_item_for_work);
 
         return current_entity, is_tile_entity, self._source_pos
+
+class ItemIterator(object):
+    _single_item_locations = (
+        "ArmorItem",
+        "Item",
+        "RecordItem",
+        "SaddleItem",
+        "Trident",
+    )
+
+    _list_item_locations = (
+        "ArmorItems",
+        "EnderItems",
+        "HandItems",
+        "Inventory",
+        "Items",
+        "Inventory",
+    )
+
+    @classmethod
+    def scan_entity_for_items(cls, entity_nbt, item_found_func):
+        for location in cls._single_item_locations:
+            if entity_nbt.has_path(location):
+                item_found_func(entity_nbt.at_path(location))
+
+        for location in cls._list_item_locations:
+            if entity_nbt.has_path(location):
+                for item in entity_nbt.at_path(location).value:
+                    item_found_func(item)
+
+        if entity_nbt.has_path("Offers.Recipes"):
+            for item in entity_nbt.at_path("Offers.Recipes").value:
+                if item.has_path("buy"):
+                    item_found_func(item.at_path("buy"))
+                if item.has_path("buyB"):
+                    item_found_func(item.at_path("buyB"))
+                if item.has_path("sell"):
+                    item_found_func(item.at_path("sell"))
+
 
 class World(object):
     """
