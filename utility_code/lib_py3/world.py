@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import sys
 import uuid
@@ -10,7 +8,10 @@ from quarry.types.chunk import BlockArray
 from quarry.types.buffer import BufferUnderrun
 
 from lib_py3.block_map import block_map
+from lib_py3.common import bounded_range
 from lib_py3.player import Player
+from lib_py3.iterators.recursive_entity_iterator import RecursiveEntityIterator
+
 #TODO from lib_py3.scoreboard import Scoreboard
 
 class PlayerIterator(object):
@@ -42,386 +43,6 @@ class PlayerIterator(object):
         player_path = self._world.player_paths[self._i]
         self._i += 1
         return Player(player_path)
-
-class BaseChunkEntityIterator(object):
-    """
-    This is an iterator over basic (non-recursive) entities AND tile entities in the world
-
-    If readonly=False, it will save each chunk it visits that contain entities
-
-    If coordinates are specified, it will only load region files that contain those coordinates
-    Otherwise it will iterate over everything world wide
-
-    Only iterates over chunks in regions that could plausibly contain the specified coordinates
-    """
-
-    def __init__(self, world, pos1=None, pos2=None, readonly=True):
-        self._world = world
-        self._readonly = readonly
-
-        if ((pos1 is None) and (not pos2 is None)) or ((pos2 is None) and (not pos1 is None)):
-            raise Exception("Only one iteration corner was specified!")
-
-        if (not pos1 is None) and (not pos2 is None):
-            self._min_x = min(pos1[0],pos2[0])
-            self._min_y = min(pos1[1],pos2[1])
-            self._min_z = min(pos1[2],pos2[2])
-
-            self._max_x = max(pos1[0],pos2[0])
-            self._max_y = max(pos1[1],pos2[1])
-            self._max_z = max(pos1[2],pos2[2])
-        else:
-            # Compute region boundaries for the world
-            xregions = [r[0] for r in world.region_files]
-            zregions = [r[1] for r in world.region_files]
-            self._min_x = min(xregions) * 512
-            self._max_x = max(xregions) * 512
-            self._min_y = 0
-            self._max_y = 255
-            self._min_z = min(zregions) * 512
-            self._max_z = max(zregions) * 512
-
-    def __iter__(self):
-        """
-        Initialize the iterator for use.
-
-        Doing this here instead of in __init__ allows the iterator to potentially be re-used
-        """
-
-        self._region = None
-        self._chunk = None
-
-        # The _first_run flag is used so that when the first call to __next__ is made, instead
-        # of trying to get the next chunk/region it loads the initial ones instead
-        self._first_run = True
-
-        return self
-
-    def _next_region(self):
-        """
-        Iteratively loads the next region to process
-
-        When this returns, either _region is set and valid or StopIteration is raised
-        """
-        while True:
-            if not self._region is None and not self._readonly:
-                # Save the current region - maybe nothing to do here?
-                self._region = None
-
-            if self._first_run:
-                # This was the first call to __next__ - need to load the initial region files
-                # and not iterate them just yet
-                self._first_run = False
-                self._rx = self._min_x//512
-                self._rz = self._min_z//512
-            else:
-                # Get the next region
-                self._rx += 1
-                if self._rx > self._max_x//512:
-                    self._rx = self._min_x//512
-                    self._rz += 1
-
-                if self._rz > self._max_z//512:
-                    # All done!
-                    raise StopIteration
-
-            # Load the next indicated region (_rx/_rz)
-            region_path = os.path.join(self._world.path, "region", "r.{}.{}.mca".format(self._rx, self._rz))
-
-            if not os.path.isfile(region_path):
-                # This region file isn't present - no reason to keep a reference for saving
-                self._region = None
-
-                # Continue iterating over regions to find the next valid one
-                continue
-
-            # Calculate which chunks need to be searched - don't waste time on chunks out of range
-            self._cx_range = World.bounded_range(self._min_x, self._max_x, self._rx, 512, 16)
-            self._cx_idx = 0
-            self._cz_range = World.bounded_range(self._min_z, self._max_z, self._rz, 512, 16)
-            self._cz_idx = 0
-
-            # If we get to here, region_path is the valid next region file to work with
-            self._region = nbt.RegionFile(region_path)
-
-            # Successfully found next region - stop iterating
-            break
-
-    def _next_chunk(self):
-        """
-        Iteratively loads the next chunk to process
-
-        When this returns, either _chunk is set and valid or StopIteration is raised
-        """
-        while True:
-            if not self._chunk is None and not self._readonly:
-                # Save the previously edited chunk
-                self._region.save_chunk(self._chunk)
-                self._chunk = None
-
-            if self._first_run:
-                # This was the first call to __next__ - need to load the initial region files
-                # and not iterate the chunk index's just yet
-                self._next_region()
-            else:
-                # Get the next chunk
-                self._cx_idx += 1
-                if self._cx_idx >= len(self._cx_range):
-                    self._cx_idx = 0
-                    self._cz_idx += 1
-
-            # If the next chunk index is out of range, move to the next region
-            if self._cz_idx >= len(self._cz_range):
-                # When moving to the next region, can be sure that the ranges are set correctly
-                # and can use the index's to get a real chunk in range
-                self._next_region()
-
-            # Load the next indicated chunk (_cx/_cz)
-            self._chunk = self._region.load_chunk(self._cx_range[self._cx_idx], self._cz_range[self._cz_idx])
-
-            if (
-                (self._chunk is None) or
-                (((not self._chunk.body.has_path('Level.TileEntities')) or
-                  (len(self._chunk.body.at_path('Level.TileEntities').value) == 0)) and
-                ((not self._chunk.body.has_path('Level.Entities')) or
-                  (len(self._chunk.body.at_path('Level.Entities').value) == 0)))
-            ):
-                # No entities or tile entities in this chunk - no reason to keep a reference for saving
-                self._chunk = None
-
-                # Continue iterating over chunks to find the next one that does have entities
-                continue
-
-            # If we get here, this chunk has been loaded and contains some type of entity
-
-            # Chunk contains tile entities
-            if self._chunk.body.has_path('Level.TileEntities'):
-                # Make note of the tile entities for iterating at the higher level
-                self._tile_entities = self._chunk.body.at_path('Level.TileEntities').value
-                self._tile_entities_pos = 0
-
-            # Chunk contains regular entities
-            if self._chunk.body.has_path('Level.Entities'):
-                # Make note of the entities for iterating at the higher level
-                self._entities = self._chunk.body.at_path('Level.Entities').value
-                self._entities_pos = 0
-
-            # Successfully found next chunk - stop iterating
-            break
-
-    def __next__(self):
-        """
-        Iteratively identifies the next valid tile entity or regular entity and returns it.
-
-        Return value is two things!
-            entity - the entity OR tile entity TagCompound
-            isTileEntity - True if tile entity, False if entity
-
-        This does the final check to make sure returned entities are in the bounding box
-        """
-        while True:
-            if (
-                self._first_run or
-                (self._tile_entities_pos >= len(self._tile_entities) and
-                 self._entities_pos >= len(self._entities))
-            ):
-                # Out of tile entities - move to the next chunk with some to process
-                self._next_chunk()
-
-            # Still something to iterate - either tile entities or regular entities in this chunk
-
-            # Process tile entities first if haven't finished them yet
-            if self._tile_entities_pos < len(self._tile_entities):
-                tile_entity = self._tile_entities[self._tile_entities_pos]
-                tile_x = tile_entity.at_path('x').value
-                tile_y = tile_entity.at_path('y').value
-                tile_z = tile_entity.at_path('z').value
-
-                # Increment index so regardless of whether this is in range the next step
-                # will find the next tile entity
-                self._tile_entities_pos += 1
-
-                if not (
-                    self._min_x <= tile_x and tile_x < self._max_x + 1 and
-                    self._min_y <= tile_y and tile_y < self._max_y + 1 and
-                    self._min_z <= tile_z and tile_z < self._max_z + 1
-                ):
-                    # This tile entity isn't in the bounding box
-                    # Continue iterating until we find one that is
-                    continue
-
-                # Found a valid tile entity in range
-                return tile_entity, True
-
-            # Tile entities are done but somehow we are still here - so there must be entities to do
-            entity = self._entities[self._entities_pos]
-            pos = entity.at_path('Pos').value
-            x = pos[0].value
-            y = pos[1].value
-            z = pos[2].value
-
-            # Increment index so regardless of whether this is in range the next step
-            # will find the next entity
-            self._entities_pos += 1
-
-            if not (
-                self._min_x <= x and x < self._max_x + 1 and
-                self._min_y <= y and y < self._max_y + 1 and
-                self._min_z <= z and z < self._max_z + 1
-            ):
-                # This entity isn't in the bounding box
-                # Continue iterating until we find one that is
-                continue
-
-            # Found a valid entity in range
-            return entity, False
-
-
-class RecursiveEntityIterator(object):
-    """
-    This iterator uses BaseChunkEntityIterator to get entities and tile entities in the world
-    Then it recursively iterates over them to find additional entities / tile entities
-
-    Same arguments as BaseChunkEntityIterator:
-
-    If readonly=False, it will save each chunk it visits that contain entities
-
-    If coordinates are specified, it will only load region files that contain those coordinates
-    Otherwise it will iterate over everything world wide
-
-    Only iterates over chunks in regions that could plausibly contain the specified coordinates
-    """
-
-    def __init__(self, world, pos1=None, pos2=None, readonly=True):
-        self._baseiterator = BaseChunkEntityIterator(world, pos1, pos2, readonly)
-
-    def __iter__(self):
-        """
-        Initialize the iterator for use.
-
-        Doing this here instead of in __init__ allows the iterator to potentially be re-used
-        """
-
-        # Initialize the base iterator
-        self._baseiterator.__iter__()
-
-        # Use a stack to keep track of what items still need to be processed
-        self._work_stack = []
-
-        return self
-
-    def _scan_item_for_work(self, item):
-        """
-        Looks at an item and if it contains more tile or block entities,
-        add them to the _work_stack
-        """
-        if item.has_path("tag.BlockEntityTag"):
-            self._work_stack.append((item.at_path("tag.BlockEntityTag"), True))
-
-        if item.has_path("tag.EntityTag"):
-            self._work_stack.append((item.at_path("tag.EntityTag"), False))
-
-    def __next__(self):
-        """
-        Iterates over entities embedded in an entity.
-
-        Iteration order is depth-first, returning the higher-level object first then using
-        a depth-first iterator into nested sub elements
-
-        Return value is two things!
-            entity - the entity OR tile entity TagCompound
-            is_tile_entity - True if tile entity, False if entity
-            source_pos - an (x, y, z) tuple of the original entity's position
-        """
-
-        if len(self._work_stack) == 0:
-            # No work left to do - get another entity
-            entity, is_tile_entity = self._baseiterator.__next__()
-            self._work_stack.append((entity, is_tile_entity))
-
-            # Keep track of where the original entity was. This is useful because nested
-            # items mostly don't have position tags
-            if is_tile_entity:
-                if entity.has_path('x') and entity.has_path('y') and entity.has_path('z'):
-                    x = entity.at_path('x').value
-                    y = entity.at_path('y').value
-                    z = entity.at_path('z').value
-                    self._source_pos = (x, y, z)
-                else:
-                    self._source_pos = None
-            else:
-                if entity.has_path('Pos'):
-                    pos = entity.at_path('Pos').value
-                    x = pos[0].value
-                    y = pos[1].value
-                    z = pos[2].value
-                    self._source_pos = (x, y, z)
-                else:
-                    self._source_pos = None
-
-
-        # Process the next work element on the stack
-        current_entity, is_tile_entity = self._work_stack.pop()
-
-        # Add more work to the stack for next time
-        if is_tile_entity:
-            # Tile entities!
-            if current_entity.has_path("SpawnPotentials"):
-                for spawn in current_entity.at_path("SpawnPotentials").value:
-                    if spawn.has_path("Entity"):
-                        self._work_stack.append((spawn.at_path("Entity"), False))
-
-            if current_entity.has_path("SpawnData"):
-                self._work_stack.append((current_entity.at_path("SpawnData"), False))
-
-        else:
-            # Regular entities!
-            if current_entity.has_path("Passengers"):
-                for passenger in current_entity.at_path("Passengers").value:
-                    self._work_stack.append((passenger, False))
-
-        # Scan items in current entity, and if any are found scan them for nested entities
-        ItemIterator.scan_entity_for_items(current_entity, self._scan_item_for_work);
-
-        return current_entity, is_tile_entity, self._source_pos
-
-class ItemIterator(object):
-    _single_item_locations = (
-        "ArmorItem",
-        "Item",
-        "RecordItem",
-        "SaddleItem",
-        "Trident",
-    )
-
-    _list_item_locations = (
-        "ArmorItems",
-        "EnderItems",
-        "HandItems",
-        "Inventory",
-        "Items",
-        "Inventory",
-    )
-
-    @classmethod
-    def scan_entity_for_items(cls, entity_nbt, item_found_func):
-        for location in cls._single_item_locations:
-            if entity_nbt.has_path(location):
-                item_found_func(entity_nbt.at_path(location))
-
-        for location in cls._list_item_locations:
-            if entity_nbt.has_path(location):
-                for item in entity_nbt.at_path(location).value:
-                    item_found_func(item)
-
-        if entity_nbt.has_path("Offers.Recipes"):
-            for item in entity_nbt.at_path("Offers.Recipes").value:
-                if item.has_path("buy"):
-                    item_found_func(item.at_path("buy"))
-                if item.has_path("buyB"):
-                    item_found_func(item.at_path("buyB"))
-                if item.has_path("sell"):
-                    item_found_func(item.at_path("sell"))
 
 
 class World(object):
@@ -631,7 +252,7 @@ class World(object):
         max_y = max(pos1[1],pos2[1])
         max_z = max(pos1[2],pos2[2])
 
-        required_cy_sections = tuple(self.bounded_range(min_y,max_y,0,256,16))
+        required_cy_sections = tuple(bounded_range(min_y,max_y,0,256,16))
 
         command_blocks = []
 
@@ -646,8 +267,8 @@ class World(object):
                     continue
 
                 with nbt.RegionFile(region_path) as region:
-                    for cz in self.bounded_range(min_z,max_z,rz,512,16):
-                        for cx in self.bounded_range(min_x,max_x,rx,512,16):
+                    for cz in bounded_range(min_z,max_z,rz,512,16):
+                        for cx in bounded_range(min_x,max_x,rx,512,16):
                             try:
                                 chunk = region.load_chunk(cx, cz)
 
@@ -819,25 +440,6 @@ class World(object):
             else:
                 raise Exception("Chunk section not found")
 
-    @classmethod
-    def bounded_range(cls, min_in, max_in, range_start, range_length, divide=1):
-        """
-        Clip the input so the start and end don't exceed some other range.
-        range_start is multiplied by range_length before use
-        The output is relative to the start of the range.
-        divide allows the range to be scaled to ( range // divide )
-        """
-        range_length //= divide
-        range_start *= range_length
-
-        min_out = min_in//divide - range_start
-        max_out = max_in//divide - range_start + 1
-
-        min_out = max( 0, min( min_out, range_length ) )
-        max_out = max( 0, min( max_out, range_length ) )
-
-        return range( min_out, max_out )
-
     # TODO: This should be one less level of container - i.e. should just be {'snowy'...}
     def fill_blocks(self,pos1,pos2,block):
         """
@@ -860,7 +462,7 @@ class World(object):
         max_y = max(pos1[1],pos2[1])
         max_z = max(pos1[2],pos2[2])
 
-        required_cy_sections = tuple(self.bounded_range(min_y,max_y,0,256,16))
+        required_cy_sections = tuple(bounded_range(min_y,max_y,0,256,16))
 
         for rz in range(min_z//512,max_z//512+1):
             for rx in range(min_x//512,max_x//512+1):
@@ -870,8 +472,8 @@ class World(object):
                     raise FileNotFoundError('No such region {},{} in world {}'.format(rx,rz,self.path))
 
                 with nbt.RegionFile(region_path) as region:
-                    for cz in self.bounded_range(min_z,max_z,rz,512,16):
-                        for cx in self.bounded_range(min_x,max_x,rx,512,16):
+                    for cz in bounded_range(min_z,max_z,rz,512,16):
+                        for cx in bounded_range(min_x,max_x,rx,512,16):
                             chunk = region.load_chunk(cx, cz)
                             chunk_sections = chunk.body.at_path('Level.Sections').value
                             required_sections_left = set(required_cy_sections)
@@ -884,9 +486,9 @@ class World(object):
                                 required_sections_left.remove(cy)
                                 blocks = BlockArray.from_nbt(section, block_map)
 
-                                for by in self.bounded_range(min_y,max_y,cy,16):
-                                    for bz in self.bounded_range(min_z,max_z,32*rz+cz,16):
-                                        for bx in self.bounded_range(min_x,max_x,32*rx+cx,16):
+                                for by in bounded_range(min_y,max_y,cy,16):
+                                    for bz in bounded_range(min_z,max_z,32*rz+cz,16):
+                                        for bx in bounded_range(min_x,max_x,32*rx+cx,16):
                                             blocks[256 * by + 16 * bz + bx] = block['block']
 
                             if len(required_sections_left) != 0:
@@ -939,7 +541,7 @@ class World(object):
         max_y = max(pos1[1],pos2[1])
         max_z = max(pos1[2],pos2[2])
 
-        required_cy_sections = tuple(self.bounded_range(min_y,max_y,0,256,16))
+        required_cy_sections = tuple(bounded_range(min_y,max_y,0,256,16))
 
         for rz in range(min_z//512,max_z//512+1):
             for rx in range(min_x//512,max_x//512+1):
@@ -949,8 +551,8 @@ class World(object):
                     raise FileNotFoundError('No such region {},{} in world {}'.format(rx,rz,self.path))
 
                 with nbt.RegionFile(region_path) as region:
-                    for cz in self.bounded_range(min_z,max_z,rz,512,16):
-                        for cx in self.bounded_range(min_x,max_x,rx,512,16):
+                    for cz in bounded_range(min_z,max_z,rz,512,16):
+                        for cx in bounded_range(min_x,max_x,rx,512,16):
                             chunk = region.load_chunk(cx, cz)
                             chunk_sections = chunk.body.at_path('Level.Sections').value
                             required_sections_left = set(required_cy_sections)
@@ -963,9 +565,9 @@ class World(object):
                                 required_sections_left.remove(cy)
                                 blocks = BlockArray.from_nbt(section, block_map)
 
-                                for by in self.bounded_range(min_y,max_y,cy,16):
-                                    for bz in self.bounded_range(min_z,max_z,32*rz+cz,16):
-                                        for bx in self.bounded_range(min_x,max_x,32*rx+cx,16):
+                                for by in bounded_range(min_y,max_y,cy,16):
+                                    for bz in bounded_range(min_z,max_z,32*rz+cz,16):
+                                        for bx in bounded_range(min_x,max_x,32*rx+cx,16):
                                             block = blocks[256 * by + 16 * bz + bx]
 
                                             for old_block in old_blocks:
@@ -1028,7 +630,7 @@ class World(object):
         max_y = max(pos1[1],pos2[1])
         max_z = max(pos1[2],pos2[2])
 
-        required_cy_sections = tuple(self.bounded_range(min_y,max_y,0,256,16))
+        required_cy_sections = tuple(bounded_range(min_y,max_y,0,256,16))
 
         for rz in range(min_z//512,max_z//512+1):
             for rx in range(min_x//512,max_x//512+1):
@@ -1042,8 +644,8 @@ class World(object):
 
                 with nbt.RegionFile(new_region_path) as new_region:
                     with nbt.RegionFile(old_region_path) as old_region:
-                        for cz in self.bounded_range(min_z,max_z,rz,512,16):
-                            for cx in self.bounded_range(min_x,max_x,rx,512,16):
+                        for cz in bounded_range(min_z,max_z,rz,512,16):
+                            for cx in bounded_range(min_x,max_x,rx,512,16):
                                 new_chunk = new_region.load_chunk(cx, cz)
                                 old_chunk = old_region.load_chunk(cx, cz)
                                 """
@@ -1058,13 +660,13 @@ class World(object):
 
                                 for new_chunk_section in new_chunk.body.at_path('Level.Sections').value:
                                     cy = new_chunk_section.at_path("Y").value
-                                    if len( self.bounded_range(min_y,max_y,cy,16) ) == 0:
+                                    if len( bounded_range(min_y,max_y,cy,16) ) == 0:
                                         continue
                                     new_chunk_sections[cy] = new_chunk_section
 
                                 for old_chunk_section in old_chunk.body.at_path('Level.Sections').value:
                                     cy = old_chunk_section.at_path("Y").value
-                                    if len( self.bounded_range(min_y,max_y,cy,16) ) == 0:
+                                    if len( bounded_range(min_y,max_y,cy,16) ) == 0:
                                         continue
                                     old_chunk_sections[cy] = old_chunk_section
 
@@ -1079,9 +681,9 @@ class World(object):
                                     old_section = old_chunk_sections[cy]
                                     old_blocks = BlockArray.from_nbt(old_section, block_map)
 
-                                    for by in set(range(16)).difference(set( self.bounded_range(min_y,max_y,cy,16) )):
-                                        for bz in set(range(16)).difference(set( self.bounded_range(min_z,max_z,32*rz+cz,16) )):
-                                            for bx in set(range(16)).difference(set( self.bounded_range(min_x,max_x,32*rx+cx,16) )):
+                                    for by in set(range(16)).difference(set( bounded_range(min_y,max_y,cy,16) )):
+                                        for bz in set(range(16)).difference(set( bounded_range(min_z,max_z,32*rz+cz,16) )):
+                                            for bx in set(range(16)).difference(set( bounded_range(min_x,max_x,32*rx+cx,16) )):
                                                 index = 256 * by + 16 * bz + bx
                                                 old_blocks[index] = {'name': 'minecraft:air'}
 
@@ -1092,9 +694,9 @@ class World(object):
                                     new_section = new_chunk_sections[cy]
                                     new_blocks = BlockArray.from_nbt(new_section, block_map)
 
-                                    for by in self.bounded_range(min_y,max_y,cy,16):
-                                        for bz in self.bounded_range(min_z,max_z,32*rz+cz,16):
-                                            for bx in self.bounded_range(min_x,max_x,32*rx+cx,16):
+                                    for by in bounded_range(min_y,max_y,cy,16):
+                                        for bz in bounded_range(min_z,max_z,32*rz+cz,16):
+                                            for bx in bounded_range(min_x,max_x,32*rx+cx,16):
                                                 index = 256 * by + 16 * bz + bx
                                                 new_blocks[index] = {'name': 'minecraft:air'}
 
@@ -1109,9 +711,9 @@ class World(object):
                                     new_section.at_path('BlockLight').value = old_section.at_path('BlockLight').value
                                     new_section.at_path('SkyLight').value = old_section.at_path('SkyLight').value
 
-                                    for by in self.bounded_range(min_y,max_y,cy,16):
-                                        for bz in self.bounded_range(min_z,max_z,32*rz+cz,16):
-                                            for bx in self.bounded_range(min_x,max_x,32*rx+cx,16):
+                                    for by in bounded_range(min_y,max_y,cy,16):
+                                        for bz in bounded_range(min_z,max_z,32*rz+cz,16):
+                                            for bx in bounded_range(min_x,max_x,32*rx+cx,16):
                                                 index = 256 * by + 16 * bz + bx
                                                 new_blocks[index] = old_blocks[index]
 

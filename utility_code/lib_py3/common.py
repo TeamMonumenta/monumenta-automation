@@ -80,3 +80,21 @@ def copy_paths(old, new, paths):
             copy_path(old, new, path);
         except:
             print("*** " + path + " could not be copied, may not exist.")
+
+def bounded_range(min_in, max_in, range_start, range_length, divide=1):
+    """
+    Clip the input so the start and end don't exceed some other range.
+    range_start is multiplied by range_length before use
+    The output is relative to the start of the range.
+    divide allows the range to be scaled to ( range // divide )
+    """
+    range_length //= divide
+    range_start *= range_length
+
+    min_out = min_in//divide - range_start
+    max_out = max_in//divide - range_start + 1
+
+    min_out = max( 0, min( min_out, range_length ) )
+    max_out = max( 0, min( max_out, range_length ) )
+
+    return range( min_out, max_out )
