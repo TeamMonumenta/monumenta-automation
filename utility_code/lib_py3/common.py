@@ -2,6 +2,7 @@
 
 import os
 import sys
+import json
 
 import shutil
 
@@ -14,6 +15,27 @@ def remove_formatting(formattedString):
         i = nameNoFormat.find('§')
         nameNoFormat = nameNoFormat[:i]+nameNoFormat[i+2:]
     return nameNoFormat
+
+def get_item_name_from_nbt(item_nbt):
+    """
+    Parses a color-removed name out of an item's NBT. Returns a string or None if no name exists
+    """
+    if not item_nbt.has_path("display.Name"):
+        return None
+
+    item_name = item_nbt.at_path("display.Name").value
+    item_name = remove_formatting(item_name)
+    # If the item name is JSON, parse it down to just the name text
+    try:
+        name_json = json.loads(item_name)
+        if "text" in name_json:
+            item_name = name_json["text"]
+    except:
+        name_json = json.dumps({"text":item_name},separators=(',', ':'))
+        eprint("WARNING: Item '" + item_name + "' isn't json! Save Name.display as '" + name_json + "'?")
+
+    return item_name
+
 
 class AlwaysEqual(object):
     def __init__(self):

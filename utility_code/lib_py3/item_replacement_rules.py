@@ -15,7 +15,7 @@ class global_rule(object):
     Base pre/post processing rule for item replacements, used to preserve and edit data.
     """
     # Edit this for all new objects:
-    self.name = "Undefined global rule"
+    name = "Undefined global rule"
 
     def __init__(self):
         """
@@ -38,7 +38,7 @@ class global_rule(object):
         pass
 
 class abort_no_lore(global_rule):
-    self.name = "Abort if there's no lore text"
+    name = "Abort if there's no lore text"
 
     def preprocess(self,item):
         if not item.has_path('tag.display.Lore'):
@@ -48,19 +48,15 @@ class abort_no_lore(global_rule):
 global_rules.append(abort_no_lore())
 
 class preserve_armor_color(global_rule):
-    self.name = 'Preserve armor color'
-
-    def __init__(self):
-        self.color = None
+    name = 'Preserve armor color'
 
     def preprocess(self,item):
+        self.color = None
         if item.has_path('tag.display.color'):
             self.color = item.at_path('tag.display.color').value
-        else
-            self.color = None
 
     def postprocess(self,item):
-        if not self.lore:
+        if not self.color:
             return
 
         # Make sure tag exists first
@@ -77,16 +73,12 @@ class preserve_armor_color(global_rule):
 global_rules.append(preserve_armor_color())
 
 class preserve_damage(global_rule):
-    self.name = 'Preserve damage'
-
-    def __init__(self):
-        self.damage = None
+    name = 'Preserve damage'
 
     def preprocess(self,item):
+        self.damage = None
         if item.has_path('tag.Damage'):
             self.damage = item.at_path('tag.Damage').value
-        else
-            self.damage = None
 
     def postprocess(self,item):
         if not self.damage:
@@ -104,16 +96,25 @@ class preserve_damage(global_rule):
 global_rules.append(preserve_damage())
 
 class preserve_lore(global_rule):
-    self.name = 'Preserve lore'
-
-    def __init__(self):
-        self.lore = None
+    name = 'Preserve lore'
+    _lore_preserve_trigger_list = (
+        'Soulbound to',
+        'Infused by',
+        'Gilded by',
+        'Decorated by',
+        '§7Hope',
+        '§7Gilded',
+        '§7Festive',
+    )
 
     def preprocess(self,item):
+        self.lore = None
         if item.has_path('tag.display.Lore'):
-            self.lore = item.at_path('tag.display.Lore').value
-        else
-            self.lore = None
+            for lore in item.at_path('tag.display.Lore').value:
+                for lore_trigger in self._lore_preserve_trigger_list:
+                    if lore_trigger in lore.value:
+                        self.lore = item.at_path('tag.display.Lore').value
+                        return
 
     def postprocess(self,item):
         if not self.lore:
@@ -133,34 +134,29 @@ class preserve_lore(global_rule):
 global_rules.append(preserve_lore())
 
 class preserve_shield_banner(global_rule):
-    self.name = 'Preserve shield banner'
+    name = 'Preserve shield banner'
 
-    def __init__(self):
+    def preprocess(self,item):
         self.color = None
         self.pattern = None
 
-    def preprocess(self,item):
         # banner base color
         if item.has_path('tag.BlockEntityTag.Base'):
-            self.pattern = item.at_path('tag.BlockEntityTag.Base').value
-        else:
-            self.pattern = None
+            self.color = item.at_path('tag.BlockEntityTag.Base').value
 
         # banner patterns
         if item.has_path('tag.BlockEntityTag.Patterns'):
-            self.color = item.at_path('tag.BlockEntityTag.Patterns').value
-        else
-            self.color = None
+            self.pattern = item.at_path('tag.BlockEntityTag.Patterns').value
 
     def postprocess(self,item):
         # Remove banner if the player customized it as such
-        if self.color is None and item.has_path('tag.BlockEntityTag.Base'):
+        if item.has_path('tag.BlockEntityTag.Base'):
             item.at_path('tag.BlockEntityTag').value.pop('Base')
-        if self.pattern is None and item.has_path('tag.BlockEntityTag.Patterns'):
+        if item.has_path('tag.BlockEntityTag.Patterns'):
             item.at_path('tag.BlockEntityTag').value.pop('Patterns')
 
         # Add custom banner if the player applied one
-        if ( self.color not is None) and ( self.pattern is not None ):
+        if ( self.color is not None ) or ( self.pattern is not None ):
             if not item.has_path('tag'):
                 item.value['tag'] = nbt.TagCompound({})
             if not item.has_path('tag.BlockEntityTag'):
@@ -176,5 +172,7 @@ class preserve_shield_banner(global_rule):
                 item.at_path('tag.BlockEntityTag').value['Patterns'] = nbt.TagList([])
             item.at_path('tag.BlockEntityTag.Patterns').value = self.pattern
 
-global_rules.append(preserve_shield_banner())
+        if item.has_path('tag.BlockEntityTag') and len(item.at_path('tag.BlockEntityTag').value.keys()) == 0:
+            item.at_path('tag').value.pop('BlockEntityTag')
 
+global_rules.append(preserve_shield_banner())

@@ -6,8 +6,12 @@ import sys
 import traceback
 
 from lib_py3.common import eprint
-from lib_py3.common import remove_formatting
+from lib_py3.common import get_item_name_from_nbt
 from lib_py3.item_replacement_rules import global_rules
+from lib_py3.loot_table_manager import LootTableManager
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
+from quarry.types import nbt
 
 class ItemReplacementManager(object):
     """
@@ -30,7 +34,8 @@ class ItemReplacementManager(object):
 
         # Get the correct replacement info; abort if none exists
         item_id = item.at_path('id').value
-        item_name = remove_formatting(item.at_path('tag.display.Name').value)
+        item_name = get_item_name_from_nbt(item.at_path('tag'))
+
         new_item_tag = self.item_map.get(item_id,{}).get(item_name,None)
         if not new_item_tag:
             return
@@ -46,7 +51,7 @@ class ItemReplacementManager(object):
                 eprint(str(traceback.format_exc()))
 
         # Replace the item tag
-        item.at_path('tag') = new_item_tag
+        item.at_path('tag').value = nbt.TagCompound.from_bytes(new_item_tag['nbt'].to_bytes()).value
 
         # Run postprocess rules
         for rule in self.global_rules:
@@ -57,4 +62,5 @@ class ItemReplacementManager(object):
                 eprint("Item being postprocessed: " + item.to_mojangson(highlight=True))
                 eprint("This may be a CRITICAL ERROR!")
                 eprint(str(traceback.format_exc()))
+
 

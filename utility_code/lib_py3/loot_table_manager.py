@@ -8,7 +8,7 @@ from collections import OrderedDict
 
 from lib_py3.json_file import jsonFile
 from lib_py3.common import eprint
-from lib_py3.common import remove_formatting
+from lib_py3.common import get_item_name_from_nbt
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
@@ -42,27 +42,6 @@ class LootTableManager(object):
             key = key[:-5]
         return namespace + ":" + key
 
-    @classmethod
-    def get_item_name_from_nbt(cls, item_nbt):
-        """
-        Parses a color-removed name out of an item's NBT. Returns a string or None if no name exists
-        """
-        if not item_nbt.has_path("display.Name"):
-            return None
-
-        item_name = item_nbt.at_path("display.Name").value
-        item_name = remove_formatting(item_name)
-        # If the item name is JSON, parse it down to just the name text
-        try:
-            name_json = json.loads(item_name)
-            if "text" in name_json:
-                item_name = name_json["text"]
-        except:
-            name_json = json.dumps({"text":item_name},separators=(',', ':'))
-            eprint("WARNING: Item '" + item_name + "' isn't json! Save Name.display as '" + name_json + "'?")
-
-        return item_name
-
     #
     # Utility Functions
     ####################################################################################################
@@ -76,7 +55,7 @@ class LootTableManager(object):
         """
         Autoformats / reorders / fixes types for a single item's NBT
         """
-        item_name = cls.get_item_name_from_nbt(item_nbt)
+        item_name = get_item_name_from_nbt(item_nbt)
 
         # Rename "ench" -> "Enchantments"
         if "ench" in item_nbt.value:
@@ -218,7 +197,7 @@ class LootTableManager(object):
                     raise KeyError('set_nbt function is missing nbt field!')
                 item_tag_json = function["tag"]
                 item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
-                item_name = self.get_item_name_from_nbt(item_tag_nbt)
+                item_name = get_item_name_from_nbt(item_tag_nbt)
 
         if item_name is None:
             return
@@ -738,7 +717,7 @@ class LootTableManager(object):
                                 raise KeyError('set_nbt function is missing nbt field!')
                             item_tag_json = function["tag"]
                             item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
-                            item_name = self.get_item_name_from_nbt(item_tag_nbt)
+                            item_name = get_item_name_from_nbt(item_tag_nbt)
 
                             if item_name == search_item_name and item_id == search_item_id:
                                 # Found a match! Update the tag
@@ -750,7 +729,7 @@ class LootTableManager(object):
         """
         Updates an item within all loaded loot tables
         """
-        item_name = self.get_item_name_from_nbt(item_nbt)
+        item_name = get_item_name_from_nbt(item_nbt)
         if not item_name:
             raise ValueError("Item NBT does not have a name")
 
