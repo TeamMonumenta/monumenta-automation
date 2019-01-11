@@ -159,17 +159,21 @@ class BaseChunkEntityIterator(object):
 
             # If we get here, this chunk has been loaded and contains some type of entity
 
+            # Always zero the work to do first when loading a new chunk with something to do
+            self._tile_entities = []
+            self._tile_entities_pos = 0
+            self._entities = []
+            self._entities_pos = 0
+
             # Chunk contains tile entities
             if self._chunk.body.has_path('Level.TileEntities'):
                 # Make note of the tile entities for iterating at the higher level
                 self._tile_entities = self._chunk.body.at_path('Level.TileEntities').value
-                self._tile_entities_pos = 0
 
             # Chunk contains regular entities
             if self._chunk.body.has_path('Level.Entities'):
                 # Make note of the entities for iterating at the higher level
                 self._entities = self._chunk.body.at_path('Level.Entities').value
-                self._entities_pos = 0
 
             # Successfully found next chunk - stop iterating
             break
