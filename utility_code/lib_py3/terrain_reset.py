@@ -99,7 +99,7 @@ def terrain_reset_instance(config):
             # Looks good! Replace items if specified
             if "replace_items" in instanceConfig:
                 item_replace_manager = instanceConfig["replace_items"]
-                for item, pos in dstWorld.items(readonly=False, pos1=(newRx * 512, 0, newRz * 512), pos2=((newRx + 1) * 512 - 1, 255, (newRz + 1) * 512 - 1)):
+                for item, _ in dstWorld.items(readonly=False, pos1=(newRx * 512, 0, newRz * 512), pos2=((newRx + 1) * 512 - 1, 255, (newRz + 1) * 512 - 1)):
                     item_replace_manager.replace_item(item)
 
     if "coordinatesToFill" in config:
@@ -116,6 +116,9 @@ def terrain_reset_instance(config):
         for section in config["coordinatesToCopy"]:
             print("    Copying '" + section["name"] + "'")
             dstWorld.restore_area(section["pos1"], section["pos2"], old_world);
+            for item, _ in dstWorld.items(readonly=False, pos1=section["pos1"], pos2=section["pos2"]):
+                item_replace_manager.replace_item(item)
+
 
     # Save the scoreboards if they were used
     if worldScores is not None:
@@ -144,7 +147,7 @@ def terrain_reset_instance(config):
     # Looks good! Replace items worldwide if specified
     if "replace_items" in config:
         item_replace_manager = config["replace_items"]
-        for item, pos in dstWorld.items(readonly=False):
+        for item, _ in dstWorld.items(readonly=False):
             item_replace_manager.replace_item(item)
 
     dstWorld.save()
