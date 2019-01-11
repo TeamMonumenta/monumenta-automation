@@ -8,6 +8,7 @@ from lib_py3.world import World
 from lib_py3.move_region import MoveRegion
 from lib_py3.scoreboard import Scoreboard
 from lib_py3.player import Player
+from lib_py3.common import eprint
 
 def terrain_reset_instance(config):
     shardName = config["server"]
@@ -88,11 +89,18 @@ def terrain_reset_instance(config):
             ):
                 # Failed to move the region file; this happens if the old file is missing.
                 # This does not indicate that the player's instance was removed intentionally.
+                eprint("WARNING: Missing dungeon instance {}".format(instanceID))
                 dungeonScoreObjects = worldScores.search_scores(Objective=dungeonScore,Score=instanceID)
                 for scoreObject in dungeonScoreObjects:
                     # Consider setting this value to -1 to indicate an error
                     scoreObject.at_path("Score").value = 0
                 continue
+
+            # Looks good! Replace items if specified
+            if "replace_items" in instanceConfig:
+                item_replace_manager = instanceConfig["replace_items"]
+                for item, pos in dstWorld.items(readonly=False, pos1=(newRx * 512, 0, newRz * 512), pos2=((newRx + 1) * 512 - 1, 255, (newRz + 1) * 512 - 1)):
+                    item_replace_manager.replace_item(item)
 
     if "coordinatesToFill" in config:
         print("  Filling selected regions with specified blocks...")
@@ -132,5 +140,11 @@ def terrain_reset_instance(config):
                 a_player.pos = dstWorld.spawn
 
             a_player.save()
+
+    # Looks good! Replace items worldwide if specified
+    if "replace_items" in config:
+        item_replace_manager = config["replace_items"]
+        for item, pos in dstWorld.items(readonly=False):
+            item_replace_manager.replace_item(item)
 
     dstWorld.save()

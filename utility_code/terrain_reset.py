@@ -9,6 +9,10 @@ datapacks_default = ['file/vanilla','file/bukkit']
 datapacks_base = datapacks_default + ['file/base']
 datapacks_dungeon = datapacks_base + ['file/dungeon']
 
+loot_table_manager = LootTableManager()
+loot_table_manager.load_loot_tables_subdirectories("/home/rock/5_SCRATCH/tmpreset/TEMPLATE/server_config/data/datapacks")
+item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map())
+
 def get_dungeon_config(name, scoreboard):
     return {
         "server":name,
@@ -22,6 +26,9 @@ def get_dungeon_config(name, scoreboard):
         "preserveInstance":{
             "dungeonScore":scoreboard,
             "targetRegion":{"x":-3, "z":-2},
+
+            # Replace items in preserved instances
+            "replace_items": item_replace_manager,
         },
         "tagPlayers":["MidTransfer","resetMessage"],
         "tpToSpawn":True,
@@ -38,6 +45,9 @@ betaplots = {
     "datapacks":datapacks_base + ['file/betaplots'],
     "tagPlayers":["MidTransfer","resetMessage"],
     "playerScoreChanges":dungeon_score_rules,
+
+    # Replace items worldwide
+    "replace_items": item_replace_manager,
 }
 
 r1plots = {
@@ -51,6 +61,9 @@ r1plots = {
     "datapacks":datapacks_base + ['file/r1plots'],
     "tagPlayers":["MidTransfer","resetMessage"],
     "playerScoreChanges":dungeon_score_rules,
+
+    # Replace items worldwide
+    "replace_items": item_replace_manager,
 }
 
 tutorial = {
@@ -98,49 +111,49 @@ region_1 = {
         {"name":"Apartments_601-624",     "pos1":( -815,  99,    5), "pos2":(-861,  99,    5)},
         {"name":"Apartments_701-816",     "pos1":( -811,  99,   18), "pos2":(-873,  99,   18)},
         {"name":"Apartments_units",       "pos1":( -817, 109,   87), "pos2":(-859, 164,   16)},
-        {"name":"Guild_Room",             "pos1":( -800, 109,  -75), "pos2":(-758, 104, -102)},
-        {"name":"Guild_1",                "pos1":( -586,   0,  137), "pos2":(-622, 255,  105)},
-        {"name":"Guild_2",                "pos1":( -570,   0,  112), "pos2":(-534, 255,  154)},
-        {"name":"Guild_3",                "pos1":( -581,   0,  150), "pos2":(-613, 255,  186)},
-        {"name":"Guild_4",                "pos1":( -649,   0,  275), "pos2":(-617, 255,  311)},
-        {"name":"Guild_5",                "pos1":( -683,   0,  275), "pos2":(-651, 255,  311)},
-        {"name":"Guild_6",                "pos1":( -685,   0,  275), "pos2":(-717, 255,  311)},
-        {"name":"Guild_7",                "pos1":( -816,   0,  235), "pos2":(-780, 255,  267)},
-        {"name":"Guild_8",                "pos1":( -832,   0,  257), "pos2":(-868, 255,  289)},
-        {"name":"Guild_9",                "pos1":( -816,   0,  269), "pos2":(-780, 255,  301)},
-        {"name":"Guild_10",               "pos1":( -937,   0,  272), "pos2":(-969, 255,  308)},
-        {"name":"Guild_11",               "pos1":( -969,   0,  256), "pos2":(-937, 255,  220)},
-        {"name":"Guild_12",               "pos1":( -958,   0,  104), "pos2":(-994, 255,  136)},
-        {"name":"Guild_14",               "pos1":( -958,   0,   70), "pos2":(-994, 255,  102)},
-        {"name":"Guild_15",               "pos1":( -581,   0,  -64), "pos2":(-613, 255, -100)},
-        {"name":"Guild_18",               "pos1":( -942,   0,   93), "pos2":(-906, 255,  125)},
-        {"name":"Guild_20",               "pos1":( -751,   0, -230), "pos2":(-787, 255, -198)},
-        {"name":"Guild_21",               "pos1":( -787,   0, -232), "pos2":(-751, 255, -264)},
-        {"name":"Guild_22",               "pos1":( -600,   0, -191), "pos2":(-564, 255, -159)},
-        {"name":"Guild_23",               "pos1":( -615,   0, -180), "pos2":(-651, 255, -212)},
-        {"name":"Guild_24",               "pos1":( -564,   0, -192), "pos2":(-600, 255, -224)},
-        {"name":"Guild_26",               "pos1":( -596,   0,  -46), "pos2":(-564, 255,  -10)},
-        {"name":"Guild_27",               "pos1":( -548,   0,  -64), "pos2":(-580, 255, -100)},
-        {"name":"Guild_Archive_N1",       "pos1":(-1626,   0, 1408), "pos2":(-1594,255, 1444)},
-        {"name":"Guild_Archive_N2",       "pos1":(-1589,   0, 1408), "pos2":(-1557,255, 1444)},
-        {"name":"Guild_Archive_N3",       "pos1":(-1552,   0, 1408), "pos2":(-1520,255, 1444)},
-        {"name":"Guild_Archive_N4",       "pos1":(-1515,   0, 1408), "pos2":(-1483,255, 1444)},
-        {"name":"Guild_Archive_N5",       "pos1":(-1478,   0, 1408), "pos2":(-1446,255, 1444)},
-        {"name":"Guild_Archive_E1",       "pos1":(-1444,   0, 1446), "pos2":(-1408,255, 1478)},
-        {"name":"Guild_Archive_E2",       "pos1":(-1444,   0, 1483), "pos2":(-1408,255, 1515)},
-        {"name":"Guild_Archive_E3",       "pos1":(-1444,   0, 1520), "pos2":(-1408,255, 1552)},
-        {"name":"Guild_Archive_E4",       "pos1":(-1444,   0, 1557), "pos2":(-1408,255, 1589)},
-        {"name":"Guild_Archive_E5",       "pos1":(-1444,   0, 1594), "pos2":(-1408,255, 1626)},
-        {"name":"Guild_Archive_S1",       "pos1":(-1626,   0, 1628), "pos2":(-1594,255, 1664)},
-        {"name":"Guild_Archive_S2",       "pos1":(-1589,   0, 1628), "pos2":(-1557,255, 1664)},
-        {"name":"Guild_Archive_S3",       "pos1":(-1552,   0, 1628), "pos2":(-1520,255, 1664)},
-        {"name":"Guild_Archive_S4",       "pos1":(-1515,   0, 1628), "pos2":(-1483,255, 1664)},
-        {"name":"Guild_Archive_S5",       "pos1":(-1478,   0, 1628), "pos2":(-1446,255, 1664)},
-        {"name":"Guild_Archive_W1",       "pos1":(-1664,   0, 1446), "pos2":(-1628,255, 1478)},
-        {"name":"Guild_Archive_W2",       "pos1":(-1664,   0, 1483), "pos2":(-1628,255, 1515)},
-        {"name":"Guild_Archive_W3",       "pos1":(-1664,   0, 1520), "pos2":(-1628,255, 1552)},
-        {"name":"Guild_Archive_W4",       "pos1":(-1664,   0, 1557), "pos2":(-1628,255, 1589)},
-        {"name":"Guild_Archive_W5",       "pos1":(-1664,   0, 1594), "pos2":(-1628,255, 1626)},
+        {"name":"Guild_Room",             "pos1":( -800, 109,  -75), "pos2":(-758, 104, -102), "replace_items":item_replace_manager},
+        {"name":"Guild_1",                "pos1":( -586,   0,  137), "pos2":(-622, 255,  105), "replace_items":item_replace_manager},
+        {"name":"Guild_2",                "pos1":( -570,   0,  112), "pos2":(-534, 255,  154), "replace_items":item_replace_manager},
+        {"name":"Guild_3",                "pos1":( -581,   0,  150), "pos2":(-613, 255,  186), "replace_items":item_replace_manager},
+        {"name":"Guild_4",                "pos1":( -649,   0,  275), "pos2":(-617, 255,  311), "replace_items":item_replace_manager},
+        {"name":"Guild_5",                "pos1":( -683,   0,  275), "pos2":(-651, 255,  311), "replace_items":item_replace_manager},
+        {"name":"Guild_6",                "pos1":( -685,   0,  275), "pos2":(-717, 255,  311), "replace_items":item_replace_manager},
+        {"name":"Guild_7",                "pos1":( -816,   0,  235), "pos2":(-780, 255,  267), "replace_items":item_replace_manager},
+        {"name":"Guild_8",                "pos1":( -832,   0,  257), "pos2":(-868, 255,  289), "replace_items":item_replace_manager},
+        {"name":"Guild_9",                "pos1":( -816,   0,  269), "pos2":(-780, 255,  301), "replace_items":item_replace_manager},
+        {"name":"Guild_10",               "pos1":( -937,   0,  272), "pos2":(-969, 255,  308), "replace_items":item_replace_manager},
+        {"name":"Guild_11",               "pos1":( -969,   0,  256), "pos2":(-937, 255,  220), "replace_items":item_replace_manager},
+        {"name":"Guild_12",               "pos1":( -958,   0,  104), "pos2":(-994, 255,  136), "replace_items":item_replace_manager},
+        {"name":"Guild_14",               "pos1":( -958,   0,   70), "pos2":(-994, 255,  102), "replace_items":item_replace_manager},
+        {"name":"Guild_15",               "pos1":( -581,   0,  -64), "pos2":(-613, 255, -100), "replace_items":item_replace_manager},
+        {"name":"Guild_18",               "pos1":( -942,   0,   93), "pos2":(-906, 255,  125), "replace_items":item_replace_manager},
+        {"name":"Guild_20",               "pos1":( -751,   0, -230), "pos2":(-787, 255, -198), "replace_items":item_replace_manager},
+        {"name":"Guild_21",               "pos1":( -787,   0, -232), "pos2":(-751, 255, -264), "replace_items":item_replace_manager},
+        {"name":"Guild_22",               "pos1":( -600,   0, -191), "pos2":(-564, 255, -159), "replace_items":item_replace_manager},
+        {"name":"Guild_23",               "pos1":( -615,   0, -180), "pos2":(-651, 255, -212), "replace_items":item_replace_manager},
+        {"name":"Guild_24",               "pos1":( -564,   0, -192), "pos2":(-600, 255, -224), "replace_items":item_replace_manager},
+        {"name":"Guild_26",               "pos1":( -596,   0,  -46), "pos2":(-564, 255,  -10), "replace_items":item_replace_manager},
+        {"name":"Guild_27",               "pos1":( -548,   0,  -64), "pos2":(-580, 255, -100), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_N1",       "pos1":(-1626,   0, 1408), "pos2":(-1594,255, 1444), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_N2",       "pos1":(-1589,   0, 1408), "pos2":(-1557,255, 1444), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_N3",       "pos1":(-1552,   0, 1408), "pos2":(-1520,255, 1444), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_N4",       "pos1":(-1515,   0, 1408), "pos2":(-1483,255, 1444), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_N5",       "pos1":(-1478,   0, 1408), "pos2":(-1446,255, 1444), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_E1",       "pos1":(-1444,   0, 1446), "pos2":(-1408,255, 1478), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_E2",       "pos1":(-1444,   0, 1483), "pos2":(-1408,255, 1515), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_E3",       "pos1":(-1444,   0, 1520), "pos2":(-1408,255, 1552), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_E4",       "pos1":(-1444,   0, 1557), "pos2":(-1408,255, 1589), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_E5",       "pos1":(-1444,   0, 1594), "pos2":(-1408,255, 1626), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_S1",       "pos1":(-1626,   0, 1628), "pos2":(-1594,255, 1664), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_S2",       "pos1":(-1589,   0, 1628), "pos2":(-1557,255, 1664), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_S3",       "pos1":(-1552,   0, 1628), "pos2":(-1520,255, 1664), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_S4",       "pos1":(-1515,   0, 1628), "pos2":(-1483,255, 1664), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_S5",       "pos1":(-1478,   0, 1628), "pos2":(-1446,255, 1664), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_W1",       "pos1":(-1664,   0, 1446), "pos2":(-1628,255, 1478), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_W2",       "pos1":(-1664,   0, 1483), "pos2":(-1628,255, 1515), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_W3",       "pos1":(-1664,   0, 1520), "pos2":(-1628,255, 1552), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_W4",       "pos1":(-1664,   0, 1557), "pos2":(-1628,255, 1589), "replace_items":item_replace_manager},
+        {"name":"Guild_Archive_W5",       "pos1":(-1664,   0, 1594), "pos2":(-1628,255, 1626), "replace_items":item_replace_manager},
     ),
 }
 
