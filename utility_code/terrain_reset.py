@@ -4,6 +4,8 @@ import sys
 
 from score_change_list import dungeon_score_rules
 from lib_py3.terrain_reset import terrain_reset_instance
+from lib_py3.item_replacement_manager import ItemReplacementManager
+from lib_py3.loot_table_manager import LootTableManager
 
 datapacks_default = ['file/vanilla','file/bukkit']
 datapacks_base = datapacks_default + ['file/base']
