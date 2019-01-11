@@ -116,8 +116,10 @@ def terrain_reset_instance(config):
         for section in config["coordinatesToCopy"]:
             print("    Copying '" + section["name"] + "'")
             dstWorld.restore_area(section["pos1"], section["pos2"], old_world);
-            for item, _ in dstWorld.items(readonly=False, pos1=section["pos1"], pos2=section["pos2"]):
-                item_replace_manager.replace_item(item)
+            if "replace_items" in section:
+                item_replace_manager = section["replace_items"]
+                for item, _ in dstWorld.items(readonly=False, pos1=section["pos1"], pos2=section["pos2"]):
+                    item_replace_manager.replace_item(item)
 
 
     # Save the scoreboards if they were used
