@@ -9,10 +9,10 @@ from pprint import pprint
 
 from lib_py3.json_file import jsonFile
 from lib_py3.common import eprint
-from lib_py3.common import remove_formatting
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types import nbt
+from quarry.types.text_format import unformat_text
 
 def make_single_loot_table(loot_table_path, pools):
     table_dict = OrderedDict()
@@ -72,7 +72,7 @@ def make_loot_table(loot_table_base_path, container_nbt_list, loot_table_name=No
                 item_name = item_nbt.at_path("tag.display.Name").value
                 # Fix minecraft annoyingly escaping apostraphes in item name
                 item_name = re.sub(r"\\u0027", "'", item_name)
-                item_name = remove_formatting(item_name)
+                item_name = unformat_text(item_name)
                 # If the item name is JSON, parse it down to just the name text
                 try:
                     name_json = json.loads(item_name)

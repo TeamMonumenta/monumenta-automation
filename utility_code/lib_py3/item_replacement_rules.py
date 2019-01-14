@@ -5,8 +5,83 @@ import sys
 
 import traceback
 
+from lib_py3.common import eprint
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
+from quarry.types.text_format import TextFormats, unformat_text
+
+def enchantify(item, player, region, enchantment, ownerPrefix=None):
+    """
+    Applies a lore-text enchantment to item (full item nbt, including id and Count). Lore format is:
+    ```
+    ...
+    enchantment
+    ...
+    ownerPrefix player
+    ...
+    ```
+    region is the relevant region name, such as "King's Valley"
+    player is the player's name
+
+    The plugin version of this also requires:
+    sender, who/what is sending the command
+    duplicateItem, whether to make an unedited copy
+    """
+    if not item.has_path('tag.display.Lore'):
+        return
+    lore = item.at_path('tag.display.Lore').value
+
+    if len(lore) == 0:
+        return
+
+    newLore = []
+
+    enchantmentFound = False
+    nameAdded = (ownerPrefix is None)
+    regionFound = False
+    for loreEntry in lore:
+        loreEntry = loreEntry.value
+        if ( TextFormats.gray + enchantment ) in loreEntry:
+            if duplicateItem:
+                return
+            else:
+                enchantmentFound = True
+
+        if region in loreEntry:
+            regionFound = True
+
+        loreStripped = unformat_text(loreEntry)
+        undupable = [
+            "Ephemeral Corridors",
+            "King's Valley : Epic",
+            "King's Valley : Artifact",
+            "King's Valley : Enhanced Rare",
+            "King's Valley : Enhanced Uncommon",
+        ]
+        if any(cant_use in loreStripped for cant_use in undupable):
+            duplicateItem = False
+
+        if (not enchantmentFound and (region in loreEntry or
+                                      "Armor" in loreEntry or
+                                      "Magic Wand" in loreEntry or
+                                      len(loreStripped) == 0)):
+            newLore.append(nbt.TagString(TextFormats.gray + enchantment))
+            enchantmentFound = True
+
+        if (not nameAdded and len(loreStripped) == 0):
+            newLore.append(nbt.TagString(ownerPrefix + " " + player))
+            nameAdded = True
+
+        newLore.append(nbt.TagString(loreEntry))
+
+    if not nameAdded:
+        newLore.append(nbt.TagString(ownerPrefix + " " + player))
+
+    if not regionFound:
+        return
+
+    item.at_path('tag.display.Lore').value = newLore
 
 global_rules = []
 
@@ -95,29 +170,99 @@ class preserve_damage(global_rule):
 
 global_rules.append(preserve_damage())
 
-class preserve_lore(global_rule):
-    name = 'Preserve lore'
-    _lore_preserve_trigger_list = (
-        'Soulbound to',
-        'Infused by',
-        'Gilded by',
-        'Decorated by',
-        '§7Hope',
-        '§7Gilded',
-        '§7Festive',
-    )
+class preserve_hope(global_rule):
+    name = 'Preserve Hope'
+    region = "King's Valley"
+    enchantment = '§7Hope'
+    ownerPrefix = 'Infused by'
 
     def preprocess(self,item):
-        self.lore = None
+        self.player = None
+        enchant_found = False
         if item.has_path('tag.display.Lore'):
             for lore in item.at_path('tag.display.Lore').value:
-                for lore_trigger in self._lore_preserve_trigger_list:
-                    if lore_trigger in lore.value:
-                        self.lore = item.at_path('tag.display.Lore').value
+                if self.enchantment in lore.value:
+                    enchant_found = True
+                if self.ownerPrefix in lore.value and enchant_found:
+                    self.player = item.at_path('tag.display.Lore').value[len(self.ownerPrefix)+1:]
+                    return
+
+    def postprocess(self,item):
+        if not self.player:
+            return
+
+        enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
+
+global_rules.append(preserve_hope())
+
+class preserve_gilded(global_rule):
+    name = 'Preserve Gilded'
+    region = "King's Valley"
+    enchantment = '§7Gilded'
+    ownerPrefix = 'Gilded by'
+
+    def preprocess(self,item):
+        self.player = None
+        enchant_found = False
+        if item.has_path('tag.display.Lore'):
+            for lore in item.at_path('tag.display.Lore').value:
+                if self.enchantment in lore.value:
+                    enchant_found = True
+                if self.ownerPrefix in lore.value and enchant_found:
+                    self.player = item.at_path('tag.display.Lore').value[len(self.ownerPrefix)+1:]
+                    return
+
+    def postprocess(self,item):
+        if not self.player:
+            return
+
+        enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
+
+global_rules.append(preserve_gilded())
+
+class preserve_festive(global_rule):
+    name = 'Preserve Festive'
+    region = "King's Valley"
+    enchantment = '§7Festive'
+    ownerPrefix = 'Decorated by'
+
+    def preprocess(self,item):
+        self.player = None
+        enchant_found = False
+        if item.has_path('tag.display.Lore'):
+            for lore in item.at_path('tag.display.Lore').value:
+                if self.enchantment in lore.value:
+                    enchant_found = True
+                if self.ownerPrefix in lore.value and enchant_found:
+                    self.player = item.at_path('tag.display.Lore').value[len(self.ownerPrefix)+1:]
+                    return
+            if not enchant_found:
+                for lore in item.at_path('tag.display.Lore').value:
+                    if "Infused by" in lore.value and enchant_found:
+                        self.player = item.at_path('tag.display.Lore').value[len("Infused by")+1:]
                         return
 
     def postprocess(self,item):
-        if not self.lore:
+        if not self.player:
+            return
+
+        enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
+
+global_rules.append(preserve_festive())
+
+class preserve_soulbound(global_rule):
+    name = 'Preserve soulbound'
+
+    def preprocess(self,item):
+        self.player_line = None
+        if item.has_path('tag.display.Lore'):
+            for lore in item.at_path('tag.display.Lore').value:
+                if lore.value.startswith("* Soulbound to "):
+                    self.player_line = lore
+                    return
+
+    def postprocess(self,item):
+        if not self.player_line:
             return
 
         # Make sure tag exists first
@@ -128,10 +273,10 @@ class preserve_lore(global_rule):
         if not item.has_path('tag.display.Lore'):
             item.at_path('tag.display').value['Lore'] = nbt.TagList([])
 
-        # Apply lore
-        item.at_path('tag.display.Lore').value = self.lore
+        # Apply soulbound lore
+        item.at_path('tag.display.Lore').value.append(self.player_line)
 
-global_rules.append(preserve_lore())
+global_rules.append(preserve_soulbound())
 
 class preserve_shield_banner(global_rule):
     name = 'Preserve shield banner'

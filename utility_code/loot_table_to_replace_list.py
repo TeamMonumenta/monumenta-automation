@@ -8,7 +8,6 @@ import pprint
 
 from lib_py3.json_file import jsonFile
 from lib_py3.common import eprint
-from lib_py3.common import remove_formatting
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.world import World
 

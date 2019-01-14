@@ -6,15 +6,11 @@ import json
 
 import shutil
 
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
+from quarry.types.text_format import unformat_text
+
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
-
-def remove_formatting(formattedString):
-    nameNoFormat = formattedString
-    while '§' in nameNoFormat:
-        i = nameNoFormat.find('§')
-        nameNoFormat = nameNoFormat[:i]+nameNoFormat[i+2:]
-    return nameNoFormat
 
 def get_item_name_from_nbt(item_nbt):
     """
@@ -24,7 +20,7 @@ def get_item_name_from_nbt(item_nbt):
         return None
 
     item_name = item_nbt.at_path("display.Name").value
-    item_name = remove_formatting(item_name)
+    item_name = unformat_text(item_name)
     # If the item name is JSON, parse it down to just the name text
     try:
         name_json = json.loads(item_name)
