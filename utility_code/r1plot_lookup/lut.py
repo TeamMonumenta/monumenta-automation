@@ -502,6 +502,11 @@ address_to_coord = {
     ( 10,  7 ): ( -2736,  78,   764 ),
 }
 
+coord_to_address = {}
+for key in address_to_coord.keys():
+    val = address_to_coord[key]
+    coord_to_address[val] = key
+
 street_names={
     0:{
         0:"Axtan Avenue",
@@ -586,6 +591,9 @@ def pack_r1address(tile_x,tile_z,street_id,street_num):
     return result
 
 def coordinates_from_r1address(address):
+    """
+    Convert an r1address score to an (x,y,z) tuple
+    """
     address_details = unpack_r1address(address)
 
     tile_x = address_details['tile_x']
@@ -600,4 +608,25 @@ def coordinates_from_r1address(address):
                       t0y,
         tile_z * 768 + t0z,
     )
+
+def r1address_from_coordinates(coords):
+    """
+    Convert an (x,y,z) tuple to an r1address score
+    """
+    tile_x = coords[0] // 768 + 4
+    tile_z = coords[2] // 768
+
+    local_coords = []
+    for axis in range(3):
+        local_coords.append( coords[axis] % 768 )
+    local_coords[0] += -4 * 768 # offset for tile 0
+
+    local_address = coord_to_address.get(tuple(local_coords),None)
+
+    if local_address is None:
+        return None
+
+    street_id, street_num = local_address
+
+    return pack_r1address(tile_x,tile_z,street_id,street_num)
 
