@@ -51,7 +51,7 @@ class ItemReplacementManager(object):
                 eprint(str(traceback.format_exc()))
 
         # Replace the item tag
-        item.at_path('tag').value = nbt.TagCompound.from_bytes(new_item_tag['nbt'].to_bytes()).value
+        item.at_path('tag').value = new_item_tag['nbt'].deep_copy().value
 
         # Run postprocess rules
         for rule in self.global_rules:

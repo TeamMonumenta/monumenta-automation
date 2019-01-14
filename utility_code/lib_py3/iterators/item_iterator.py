@@ -24,13 +24,13 @@ class ItemIterator(object):
 
         return self
 
-    def _scan_item_for_work(self, item):
+    def _scan_item_for_work(self, item, arg):
         """
         Adds a found item to the work queue
         """
         # Don't bother returning empty items
         if len(item.value) != 0:
-            self._work_stack.append(item)
+            self._work_stack.append((item, arg[0], arg[1]))
 
     def __next__(self):
         """
@@ -45,12 +45,12 @@ class ItemIterator(object):
 
         while len(self._work_stack) == 0:
             # No work left to do - search for another entity containing items
-            entity, _, self._source_pos = self._entity_iterator.__next__()
+            entity, source_pos, entity_path = self._entity_iterator.__next__()
 
             # Add more work to the stack for items contained in this entity, if any
-            scan_entity_for_items(entity, self._scan_item_for_work);
+            scan_entity_for_items(entity, self._scan_item_for_work, (source_pos, entity_path));
 
         # Process the next work element on the stack
-        current_item = self._work_stack.pop()
+        current_item, source_pos, entity_path = self._work_stack.pop()
 
-        return current_item, self._source_pos
+        return current_item, source_pos, entity_path + [current_item,]

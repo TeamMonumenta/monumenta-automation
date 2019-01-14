@@ -136,11 +136,7 @@ class World(object):
 
         Usage:
 
-        for entity, is_tile_entity, pos in world.tile_entity_iterator():
-            if is_tile_entity:
-                print("This is a tile entity!")
-            else:
-                print("This is a regular entity!")
+        for entity, pos, entity_path in world.tile_entity_iterator():
             entity.tree()
         '''
         return RecursiveEntityIterator(self, pos1, pos2, readonly)

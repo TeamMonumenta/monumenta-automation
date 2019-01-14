@@ -587,7 +587,7 @@ class LootTableManager(object):
             return
 
         ref_dict = {
-            "entity_id":entity.at_path("id").value,
+            "id":entity.at_path("id").value,
             "pos": source_pos,
         }
 
@@ -597,30 +597,11 @@ class LootTableManager(object):
         if entity.has_path("DeathLootTable"):
             self.add_loot_table_reference(entity.at_path("DeathLootTable").value, "world", ref_dict)
 
-    def load_tile_entity(self, tile_entity, source_pos):
-        """
-        Loads a single tile entity into the manager looking for references to loot tables
+        if entity.has_path("LootTable"):
+            self.add_loot_table_reference(entity.at_path("LootTable").value, "world", ref_dict)
 
-
-        These locations are loaded so far:
-            Containers (via "LootTable")
-            Command blocks (via "Command")
-            Spawners (via "SpawnData" and "SpawnPotentials")
-        """
-        if not tile_entity.has_path("id"):
-            eprint("WARNING: Tile entity has no id!")
-            return
-
-        ref_dict = {
-            "id":tile_entity.at_path("id").value,
-            "pos": source_pos,
-        }
-
-        if tile_entity.has_path("LootTable"):
-            self.add_loot_table_reference(tile_entity.at_path("LootTable").value, "world", ref_dict)
-
-        if tile_entity.has_path("Command"):
-            self.load_command(tile_entity.at_path("Command").value, "world", ref_dict)
+        if entity.has_path("Command"):
+            self.load_command(entity.at_path("Command").value, "world", ref_dict)
 
     def load_world(self, world):
         """
@@ -633,11 +614,8 @@ class LootTableManager(object):
             raise Exception("Only one world can be loaded into a loot table manager at a time")
 
         self._world = world
-        for entity, is_tile_entity, source_pos in world.entity_iterator(readonly=True):
-            if is_tile_entity:
-                self.load_tile_entity(entity, source_pos)
-            else:
-                self.load_entity(entity, source_pos)
+        for entity, source_pos, _ in world.entity_iterator(readonly=True):
+            self.load_entity(entity, source_pos)
 
 
     def update_table_link_in_world_entry(self, tile_entity_ref, old_namespaced_path, new_namespaced_path):
@@ -648,20 +626,17 @@ class LootTableManager(object):
         pos = tile_entity_ref["pos"]
         # Ask the world to find this tile entity again
         # Somewhat clunky, but works
-        for entity, is_tile_entity, _ in self._world.entity_iterator(pos1=pos, pos2=pos, readonly=False):
-            if is_tile_entity:
-                tile_id = entity.at_path("id").value
-                if entity.has_path("LootTable"):
-                    if entity.at_path("LootTable").value == old_namespaced_path:
-                        entity.at_path("LootTable").value = new_namespaced_path
+        for entity, _, __ in self._world.entity_iterator(pos1=pos, pos2=pos, readonly=False):
+            if entity.has_path("LootTable"):
+                if entity.at_path("LootTable").value == old_namespaced_path:
+                    entity.at_path("LootTable").value = new_namespaced_path
 
-                if entity.has_path("Command"):
-                    entity.at_path("Command").value = self.update_table_link_in_command(entity.at_path("Command").value,
-                                                                                        old_namespaced_path, new_namespaced_path)
-            else:
-                if entity.has_path("DeathLootTable"):
-                    if entity.at_path("DeathLootTable").value == old_namespaced_path:
-                        entity.at_path("DeathLootTable").value = new_namespaced_path
+            if entity.has_path("Command"):
+                entity.at_path("Command").value = self.update_table_link_in_command(entity.at_path("Command").value,
+                                                                                    old_namespaced_path, new_namespaced_path)
+            if entity.has_path("DeathLootTable"):
+                if entity.at_path("DeathLootTable").value == old_namespaced_path:
+                    entity.at_path("DeathLootTable").value = new_namespaced_path
 
 
     #

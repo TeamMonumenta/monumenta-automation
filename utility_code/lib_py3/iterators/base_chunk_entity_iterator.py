@@ -178,9 +178,8 @@ class BaseChunkEntityIterator(object):
         """
         Iteratively identifies the next valid tile entity or regular entity and returns it.
 
-        Return value is two things!
+        Return value:
             entity - the entity OR tile entity TagCompound
-            isTileEntity - True if tile entity, False if entity
 
         This does the final check to make sure returned entities are in the bounding box
         """
@@ -216,7 +215,7 @@ class BaseChunkEntityIterator(object):
                     continue
 
                 # Found a valid tile entity in range
-                return tile_entity, True
+                return tile_entity
 
             # Tile entities are done but somehow we are still here - so there must be entities to do
             entity = self._entities[self._entities_pos]
@@ -239,5 +238,5 @@ class BaseChunkEntityIterator(object):
                 continue
 
             # Found a valid entity in range
-            return entity, False
+            return entity
 
