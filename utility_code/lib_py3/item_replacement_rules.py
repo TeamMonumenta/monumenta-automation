@@ -11,6 +11,33 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from quarry.types import nbt
 from quarry.types.text_format import TextFormats, unformat_text
 
+class global_rule(object):
+    """
+    Base pre/post processing rule for item replacements, used to preserve and edit data.
+    """
+    # Edit this for all new objects:
+    name = "Undefined global rule"
+
+    def __init__(self):
+        """
+        Local data storage
+        """
+        pass
+
+    def preprocess(self,item):
+        """
+        Read the unedited item.
+        Return True to abort replacement and changes.
+        Make no edits here.
+        """
+        pass
+
+    def postprocess(self,item):
+        """
+        Edit the item with last stored value
+        """
+        pass
+
 def enchantify(item, player, region, enchantment, ownerPrefix=None):
     """
     Applies a lore-text enchantment to item (full item nbt, including id and Count). Lore format is:
@@ -71,34 +98,34 @@ def enchantify(item, player, region, enchantment, ownerPrefix=None):
 
     item.at_path('tag.display.Lore').value = newLore
 
-global_rules = []
-
-class global_rule(object):
-    """
-    Base pre/post processing rule for item replacements, used to preserve and edit data.
-    """
-    # Edit this for all new objects:
-    name = "Undefined global rule"
-
-    def __init__(self):
-        """
-        Local data storage
-        """
-        pass
+class preserve_enchantment_base(global_rule):
+    name = 'Preserve Enchantment Base (SHOULD NOT BE USED DIRECTLY)'
+    region = "King's Valley"
+    enchantment = '§7Enchantment'
+    ownerPrefix = 'Whatever by'
 
     def preprocess(self,item):
-        """
-        Read the unedited item.
-        Return True to abort replacement and changes.
-        Make no edits here.
-        """
-        pass
+        self.enchant_found = False
+        self.player = None
+        if item.has_path('tag.display.Lore'):
+            for lore in item.at_path('tag.display.Lore').value:
+                if self.enchantment in lore.value:
+                    self.enchant_found = True
+                if self.ownerPrefix in lore.value and self.enchant_found:
+                    self.player = item.at_path('tag.display.Lore').value[len(self.ownerPrefix)+1:]
+                    return
 
     def postprocess(self,item):
-        """
-        Edit the item with last stored value
-        """
-        pass
+        if not self.enchant_found:
+            return
+
+        if self.player:
+            enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
+        else:
+            # Apply the enchantment without saying who added it (workaround for previous bug)
+            enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=None)
+
+global_rules = []
 
 class abort_no_lore(global_rule):
     name = "Abort if there's no lore text"
@@ -158,83 +185,34 @@ class preserve_damage(global_rule):
 
 global_rules.append(preserve_damage())
 
-class preserve_hope(global_rule):
+class preserve_hope(preserve_enchantment_base):
     name = 'Preserve Hope'
-    region = "King's Valley"
     enchantment = '§7Hope'
     ownerPrefix = 'Infused by'
-
-    def preprocess(self,item):
-        self.player = None
-        enchant_found = False
-        if item.has_path('tag.display.Lore'):
-            for lore in item.at_path('tag.display.Lore').value:
-                if self.enchantment in lore.value:
-                    enchant_found = True
-                if self.ownerPrefix in lore.value and enchant_found:
-                    self.player = item.at_path('tag.display.Lore').value[len(self.ownerPrefix)+1:]
-                    return
-
-    def postprocess(self,item):
-        if not self.player:
-            return
-
-        enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
 
 global_rules.append(preserve_hope())
 
 class preserve_gilded(global_rule):
     name = 'Preserve Gilded'
-    region = "King's Valley"
     enchantment = '§7Gilded'
     ownerPrefix = 'Gilded by'
-
-    def preprocess(self,item):
-        self.player = None
-        enchant_found = False
-        if item.has_path('tag.display.Lore'):
-            for lore in item.at_path('tag.display.Lore').value:
-                if self.enchantment in lore.value:
-                    enchant_found = True
-                if self.ownerPrefix in lore.value and enchant_found:
-                    self.player = item.at_path('tag.display.Lore').value[len(self.ownerPrefix)+1:]
-                    return
-
-    def postprocess(self,item):
-        if not self.player:
-            return
-
-        enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
 
 global_rules.append(preserve_gilded())
 
 class preserve_festive(global_rule):
     name = 'Preserve Festive'
-    region = "King's Valley"
     enchantment = '§7Festive'
     ownerPrefix = 'Decorated by'
 
+    wrongPrefix = "Infused by"
+
     def preprocess(self,item):
-        self.player = None
-        enchant_found = False
-        if item.has_path('tag.display.Lore'):
+        super().preprocess(item)
+        if self.enchant_found and not self.player:
             for lore in item.at_path('tag.display.Lore').value:
-                if self.enchantment in lore.value:
-                    enchant_found = True
-                if self.ownerPrefix in lore.value and enchant_found:
-                    self.player = item.at_path('tag.display.Lore').value[len(self.ownerPrefix)+1:]
+                if self.wrongPrefix in lore.value:
+                    self.player = item.at_path('tag.display.Lore').value[len(self.wrongPrefix)+1:]
                     return
-            if not enchant_found:
-                for lore in item.at_path('tag.display.Lore').value:
-                    if "Infused by" in lore.value and enchant_found:
-                        self.player = item.at_path('tag.display.Lore').value[len("Infused by")+1:]
-                        return
-
-    def postprocess(self,item):
-        if not self.player:
-            return
-
-        enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
 
 global_rules.append(preserve_festive())
 
