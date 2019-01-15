@@ -9,7 +9,7 @@ from lib_py3.common import eprint
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
-from quarry.types.text_format import TextFormats, unformat_text
+from quarry.types.text_format import unformat_text
 
 class global_rule(object):
     """
@@ -69,7 +69,7 @@ def enchantify(item, player, region, enchantment, ownerPrefix=None):
     regionFound = False
     for loreEntry in lore:
         loreEntry = loreEntry.value
-        if ( TextFormats.gray + enchantment ) in loreEntry:
+        if ( enchantment ) in loreEntry:
             enchantmentFound = True
 
         if region in loreEntry:
@@ -81,7 +81,7 @@ def enchantify(item, player, region, enchantment, ownerPrefix=None):
                                       "Armor" in loreEntry or
                                       "Magic Wand" in loreEntry or
                                       len(loreStripped) == 0)):
-            newLore.append(nbt.TagString(TextFormats.gray + enchantment))
+            newLore.append(nbt.TagString(enchantment))
             enchantmentFound = True
 
         if (not nameAdded and len(loreStripped) == 0):
@@ -192,14 +192,14 @@ class preserve_hope(preserve_enchantment_base):
 
 global_rules.append(preserve_hope())
 
-class preserve_gilded(global_rule):
+class preserve_gilded(preserve_enchantment_base):
     name = 'Preserve Gilded'
     enchantment = '§7Gilded'
     ownerPrefix = 'Gilded by'
 
 global_rules.append(preserve_gilded())
 
-class preserve_festive(global_rule):
+class preserve_festive(preserve_enchantment_base):
     name = 'Preserve Festive'
     enchantment = '§7Festive'
     ownerPrefix = 'Decorated by'
