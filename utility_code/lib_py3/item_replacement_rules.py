@@ -43,24 +43,12 @@ def enchantify(item, player, region, enchantment, ownerPrefix=None):
     for loreEntry in lore:
         loreEntry = loreEntry.value
         if ( TextFormats.gray + enchantment ) in loreEntry:
-            if duplicateItem:
-                return
-            else:
-                enchantmentFound = True
+            enchantmentFound = True
 
         if region in loreEntry:
             regionFound = True
 
         loreStripped = unformat_text(loreEntry)
-        undupable = [
-            "Ephemeral Corridors",
-            "King's Valley : Epic",
-            "King's Valley : Artifact",
-            "King's Valley : Enhanced Rare",
-            "King's Valley : Enhanced Uncommon",
-        ]
-        if any(cant_use in loreStripped for cant_use in undupable):
-            duplicateItem = False
 
         if (not enchantmentFound and (region in loreEntry or
                                       "Armor" in loreEntry or
