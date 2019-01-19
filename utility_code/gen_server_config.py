@@ -275,6 +275,11 @@ config = {
         {"name":"Orange Quest Alchemy", "type":"AdventureZone", "pos1":"428 28 1598", "pos2":"463 191 1821"},
         {"name":"Orange Quest Arena", "type":"AdventureZone", "pos1":"353 65 1538", "pos2":"425 127 1597"},
 
+        {"name":"Yellow", "type":"Lowtide Gate JP", "pos1":"557 45 513", "pos2":"666 133 575"},
+        {"name":"Yellow", "type":"West Ocean Tower JP", "pos1":"-1848 69 75", "pos2":"-1892 132 17"},
+        {"name":"Yellow", "type":"Yellow Quest Tree", "pos1":"385 102 554", "pos2":"461 184 474"},
+        {"name":"Yellow", "type":"Yellow Quest Fake Lobby", "pos1":"1189 0 69", "pos2":"1134 41 -3"},
+
         {"name":"Quarantined Farr", "type":"SafeZone", "pos1":"781 261 725", "pos2":"908 169 590"},
         {"name":"Valara", "type":"AdventureZone", "pos1":"888 167 702", "pos2":"1018 229 797"},
         {"name":"Sewer Gate", "type":"AdventureZone", "pos1":"482 88 134", "pos2":"518 59 94"},
