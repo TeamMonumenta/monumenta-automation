@@ -192,6 +192,7 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=9'),
             ('spigot.yml', 'view-distance', '    view-distance: 9'),
             ('server.properties', 'server-port', 'server-port=25566'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /setblock -1449 1 -1440 redstone_block'),
             ('plugins/Monumenta-Plugins/Properties.json', '"dailyResetEnabled":', '"dailyResetEnabled": true,'),
             ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
@@ -603,7 +604,6 @@ if (SERVER_TYPE == 'build'):
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
         ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
         ('server.properties', 'server-ip=', 'server-ip=127.0.0.1'),
-        ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
     ]
     config['roguelike']['config'] += [
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
@@ -615,10 +615,9 @@ else:
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
 
     config['region_1']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=20G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=20G'),
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=12G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=12G'),
         ('server.properties', 'server-ip=', 'server-ip='),
-        ('plugins/Socket4MC/config.yml', 'host', 'host: "play.playmonumenta.com"'),
     ]
     config['roguelike']['config'] += [
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
