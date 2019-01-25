@@ -43,7 +43,6 @@ server_config_to_copy = [
         ('plugins/FastAsyncWorldEdit/config.yml',),
         ('plugins/FastAsyncWorldEdit/config-legacy.yml',),
         ('plugins/Monumenta-Plugins/config.yml',),
-        ('plugins/Monumenta-Plugins/Properties.json',),
         ('plugins/OpenInv/config.yml',),
         ('plugins/ProtocolLib/config.yml',),
         ('plugins/Socket4MC/config.yml',),
@@ -91,6 +90,7 @@ monumenta_without_mobs_plugins = [
         ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
+        ('plugins/Monumenta-Plugins/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
     ]
 monumenta = monumenta_without_mobs_plugins + [
         ('plugins/Monumenta-Plugins.jar', '../../server_config/plugins/Monumenta-Plugins.jar'),
@@ -194,104 +194,6 @@ config = {
             ('server.properties', 'server-port', 'server-port=25566'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /setblock -1449 1 -1440 redstone_block'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"dailyResetEnabled":', '"dailyResetEnabled": true,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"questCompassEnabled":', '"questCompassEnabled": true,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Arena", "type":"AdventureZone", "pos1":"-966 90 -124", "pos2":"-926 256 -84"},
-        {"name":"Capital", "type":"Capital", "pos1":"-1130 0 -284", "pos2":"-498 256 344"},
-
-        {"name":"Nyr", "type":"SafeZone", "pos1":"-181 0 -166", "pos2":"-79 256 17"},
-        {"name":"NyrAddon", "type":"SafeZone", "pos1":"-229 1 -126", "pos2":"-182 33 -79"},
-        {"name":"NyrSewer", "type":"SafeZone", "pos1":"-170 28 -75", "pos2":"-217 0 -126"},
-        {"name":"Farr", "type":"SafeZone", "pos1":"538 0 100", "pos2":"658 256 229"},
-        {"name":"Highwatch", "type":"SafeZone", "pos1":"1130 0 -156", "pos2":"1217 256 -76"},
-        {"name":"Lowtide Chef Quest Basement", "type":"AdventureZone", "pos1":"729 56 452", "pos2":"752 43 487"},
-        {"name":"Lowtide Main", "type":"SafeZone", "pos1":"675 0 421", "pos2":"767 255 558"},
-        {"name":"Lowtide docks", "type":"SafeZone", "pos1":"664 0 474", "pos2":"675 255 483"},
-        {"name":"Lowtide boat", "type":"SafeZone", "pos1":"650 0 483", "pos2":"675 255 558"},
-
-        {"name":"White Wool Lobby", "type":"SafeZone", "pos1":"136 53 -186", "pos2":"176 83 -120"},
-        {"name":"Orange Wool Lobby", "type":"SafeZone", "pos1":"27 64 164", "pos2":"67 94 229"},
-        {"name":"Magenta Wool Lobby", "type":"SafeZone", "pos1":"453 12 5", "pos2":"493 42 70"},
-        {"name":"Light Blue Wool Lobby", "type":"SafeZone", "pos1":"770 76 -366", "pos2":"810 106 -301"},
-        {"name":"Yellow Wool Lobby", "type":"SafeZone", "pos1":"1141 39 3", "pos2":"1181 69 68"},
-        {"name":"Bonus Lobby", "type":"SafeZone", "pos1":"295 10 -163", "pos2":"335 40 -98"},
-        {"name":"Roguelike Lobby", "type":"SafeZone", "pos1":"766 7 156", "pos2":"814 45 235"},
-        {"name":"Kathryn's Trees", "type":"AdventureZone", "pos1":"869 108 213", "pos2":"895 135 183"},
-        {"name":"Malevolent Reverie Lobby", "type":"SafeZone", "pos1":"1130 55 155", "pos2":"1172 88 222"},
-
-        {"name":"Monument", "type":"SafeZone", "pos1":"1160 0 -320", "pos2":"1400 256 -115"},
-        {"name":"Mystic Grotto", "type":"SafeZone", "pos1":"317 61 309", "pos2":"383 106 392"},
-        {"name":"Brown Co 57 Floating Island", "type":"SafeZone", "pos1":"887 0 -927", "pos2":"978 255 -899"},
-        {"name":"Tutorial Dungeon Flashback", "type":"SafeZone", "pos1":"1126 5 148", "pos2":"1177 35 224"},
-        {"name":"Roguelike Entrance Puzzle", "type":"SafeZone", "pos1":"825 0 173", "pos2":"889 97 217"},
-        {"name":"Mansion Vault", "type":"SafeZone", "pos1":"-14 84 -231", "pos2":"10 102 -201"},
-        {"name":"Replica Hall", "type":"SafeZone", "pos1":"-2133 44 551", "pos2":"-2077 113 798"},
-
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
-        {"name":"Siege Of Highwatch", "type":"AdventureZone", "pos1":"1505 102 -178", "pos2":"1631 256 -16"},
-        {"name":"Ctaz", "type":"AdventureZone", "pos1":"227 10 294", "pos2":"252 256 320"},
-        {"name":"Hermy", "type":"AdventureZone", "pos1":"-331 86 334", "pos2":"-310 110 355"},
-        {"name":"West Water Tower", "type":"AdventureZone", "pos1":"-1377 0 -173", "pos2":"-1336 255 -132"},
-        {"name":"Storytime Island", "type":"AdventureZone", "pos1":"-1802 0 -291", "pos2":"-1779 255 -264"},
-
-        {"name":"Fountain of Miracles Patreon Trader", "type":"AdventureZone", "pos1":"501 67 437", "pos2":"512 57 422"},
-        {"name":"Cursed Forest Patreon Trader", "type":"AdventureZone", "pos1":"1163 100 87", "pos2":"1151 90 80"},
-        {"name":"Nivalis Cave", "type":"AdventureZone", "pos1":"998 119 -320", "pos2":"1008 135 -295"},
-        {"name":"Haunted House Quest", "type":"AdventureZone", "pos1":"1000 7 72", "pos2":"1042 38 108"},
-        {"name":"Lost In My Mind - Bunker", "type":"AdventureZone", "pos1":"572 93 243", "pos2":"582 111 262"},
-        {"name":"Crew To Remember", "type":"AdventureZone", "pos1":"-1443 130 21", "pos2":"-1530 82 -90"},
-        {"name":"Crew To Remember Smuggler Drop", "type":"AdventureZone", "pos1":"-60 60 -4", "pos2":"-48 46 8"},
-        {"name":"Crew To Remember Cabin", "type":"AdventureZone", "pos1":"642 52 475", "pos2":"660 40 491"},
-        {"name":"Xin Old", "type":"AdventureZone", "pos1":"798 172 -393", "pos2":"781 161 -376"},
-        {"name":"Xin New", "type":"AdventureZone", "pos1":"1092 99 -234", "pos2":"1076 116 -218"},
-
-        {"name":"Azacors Arena", "type":"AdventureZone", "pos1":"873 216 -465", "pos2":"769 169 -524"},
-        {"name":"Azacor Witch Hut", "type":"AdventureZone", "pos1":"1443 166 164", "pos2":"1475 191 192"},
-        {"name":"Azacor Ritual Room", "type":"AdventureZone", "pos1":"1256 140 304", "pos2":"1301 116 343"},
-        {"name":"Azacor Lobby", "type":"SafeZone", "pos1":"1223 0 -156", "pos2":"1341 28 -80"},
-        {"name":"Azacor Arena Tunnel 1", "type":"SafeZone", "pos1":"1420 0 -90", "pos2":"1445 20 -80"},
-        {"name":"Azacor Arena Tunnel 2", "type":"SafeZone", "pos1":"1420 0 -240", "pos2":"1445 20 -230"},
-        {"name":"Outer Demons", "type":"AdventureZone", "pos1":"1601 42 79", "pos2":"1687 12 -10"},
-        {"name":"Chesterfield Grove Ruins", "type":"AdventureZone", "pos1":"1331 200 17", "pos2":"1347 218 35"},
-
-        {"name":"Light Blue Tower Basement", "type":"AdventureZone", "pos1":"881 153 -334", "pos2":"824 109 -303"},
-
-        {"name":"Snowman Event Arena", "type":"SafeZone", "pos1":"-134 0 -666", "pos2":"17 255 -550"},
-
-        {"name":"Starrier Night - Gaius Tower", "type":"AdventureZone", "pos1":"-99 115 69", "pos2":"-120 70 93"},
-        {"name":"Starrier Night - Lowtide Montana", "type":"SafeZone", "pos1":"739 121 433", "pos2":"717 97 409"},
-        {"name":"Starrier Night - Fishing Huts Bunker", "type":"AdventureZone", "pos1":"-408 43 -15", "pos2":"-384 28 9"},
-        {"name":"Starrier Night - Fishing Hut Bunker Entrance", "type":"AdventureZone", "pos1":"-401 80 -8", "pos2":"-391 90 4"},
-
-        {"name":"Nelfine 2 - New Lab", "type":"AdventureZone", "pos1":"813 54 -243", "pos2":"767 8 -135"},
-        {"name":"Nelfine 2 - Destroyed Lab", "type":"AdventureZone", "pos1":"323 63 426", "pos2":"393 115 499"},
-        {"name":"Nelfine 2 - Arian Office Replica", "type":"AdventureZone", "pos1":"1248 156 -120", "pos2":"1266 132 -98"},
-        {"name":"Nelfine 2 - Old Farr", "type":"AdventureZone", "pos1":"892 256 415", "pos2":"771 172 541"},
-
-        {"name":"Orange Quest Entrance Locked", "type":"AdventureZone", "pos1":"315 125 -239", "pos2":"343 102 -202"},
-        {"name":"Orange Quest Entrance Outside", "type":"AdventureZone", "pos1":"350 81 -137", "pos2":"376 66 -104"},
-        {"name":"Orange Quest Crypt", "type":"SafeZone", "pos1":"297 28 1598", "pos2":"427 191 1821"},
-        {"name":"Orange Quest Alchemy", "type":"AdventureZone", "pos1":"428 28 1598", "pos2":"463 191 1821"},
-        {"name":"Orange Quest Arena", "type":"AdventureZone", "pos1":"353 65 1538", "pos2":"425 127 1597"},
-
-        {"name":"Lowtide Gate JP", "type":"SafeZone", "pos1":"557 45 513", "pos2":"666 133 575"},
-        {"name":"West Ocean Tower JP", "type":"AdventureZone", "pos1":"-1848 69 75", "pos2":"-1892 132 17"},
-        {"name":"Yellow Quest Tree", "type":"AdventureZone", "pos1":"385 102 554", "pos2":"461 184 474"},
-        {"name":"Yellow Quest Fake Lobby", "type":"AdventureZone", "pos1":"1189 0 69", "pos2":"1134 41 -3"},
-
-        {"name":"Quarantined Farr", "type":"SafeZone", "pos1":"781 261 725", "pos2":"908 169 590"},
-        {"name":"Valara", "type":"AdventureZone", "pos1":"888 167 702", "pos2":"1018 229 797"},
-        {"name":"Sewer Gate", "type":"AdventureZone", "pos1":"482 88 134", "pos2":"518 59 94"},
-
-        {"name":"Ta'Eldim Gateway", "type":"AdventureZone", "pos1":"440 101 -256", "pos2":"485 68 -214"},
-        {"name":"Ta'Eldim", "type":"SafeZone", "pos1":"376 255 -461", "pos2":"543 147 -297"},
-
-        {"name":"post-monument Sage Draiikali", "type":"AdventureZone", "pos1":"1220 0 -126", "pos2":"1242 255 -103"},
-        {"name":"Shrines race", "type":"AdventureZone", "pos1":"-191 87 -72", "pos2":"-205 98 -59"},
-        {"name":"Farr race", "type":"AdventureZone", "pos1":"1036 99 -119", "pos2":"1051 112 -105"}
-    ],'''),
         ],
         'linked':server_config + base_plugins + dynmap + [
             ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
@@ -307,9 +209,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.3"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
-    ],'''),
         ],
         'linked':server_config + base_plugins + dynmap,
     },
@@ -324,12 +223,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.7"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": [],'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
-        {"name":"New Player Lobby", "type":"SafeZone", "pos1":"-1456 0 -1216", "pos2":"-1425 255 -1185"}
-    ],'''),
         ],
         'linked':server_config + base_plugins,
     },
@@ -343,9 +236,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.6"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
-    ],'''),
         ],
         'linked':server_config + base_plugins + dynmap + [
             ('plugins/ScriptedQuests/npcs/tutorial', '../../../../server_config/data/scriptedquests/npcs/tutorial'),
@@ -358,12 +248,6 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 16'),
             ('server.properties', 'server-port', 'server-port=25569'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.4"'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"isSleepingEnabled":', '"isSleepingEnabled": false,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"unbreakableBlocks":', '"unbreakableBlocks": ["OBSERVER", "WOOD_PLATE", "STONE_PLATE", "IRON_PLATE", "GOLD_PLATE"],'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"},
-        {"name":"Lobby and reward room", "type":"SafeZone", "pos1":"-9999999 60 -9999999", "pos2":"9999999 255 9999999"}
-    ],'''),
         ],
         'linked':server_config + base_plugins,
     },
@@ -392,9 +276,6 @@ config = {
             ('server.properties', 'gamemode', 'gamemode=1'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1280M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1280M'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"transferDataEnabled":', '"transferDataEnabled": false,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"broadcastCommandEnabled":', '"broadcastCommandEnabled": false,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"allowedTransferTargets":', '"allowedTransferTargets": ["region_1"],'),
         ],
         'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect,
     },
@@ -408,9 +289,6 @@ config = {
             ('server.properties', 'difficulty', 'difficulty=2'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Diamond Platform", "type":"AdventureZone", "pos1":"-1002 69 -1483", "pos2":"-1032 57 -1456"}
-    ],'''),
         ],
         'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + [
             ('plugins/Monumenta-Plugins.jar', '/home/epic/mob_shard_plugins/Monumenta-Plugins.jar'),
@@ -427,8 +305,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.8"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 0,'),
         ],
         'linked':server_config + base_plugins + dynmap,
     },
@@ -442,8 +318,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.9"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"isTownWorld":', '"isTownWorld": true,'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"plotSurvivalMinHeight":', '"plotSurvivalMinHeight": 95,'),
         ],
         'linked':server_config + base_plugins,
     },
@@ -457,9 +331,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.26"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
-    ],'''),
         ],
         'linked':server_config + base_plugins,
     },
@@ -492,9 +363,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.10"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
-    ],'''),
         ],
         'linked':server_config + base_plugins,
     },
@@ -508,9 +376,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.11"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
-    ],'''),
         ],
         'linked':server_config + base_plugins,
     },
@@ -524,9 +389,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.12"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
-    ],'''),
         ],
         'linked':server_config + base_plugins,
     },
@@ -540,9 +402,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.13"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
-    ],'''),
         ],
         'linked':server_config + base_plugins,
     },
@@ -556,9 +415,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.14"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
-    ],'''),
         ],
         'linked':server_config + base_plugins,
     },
@@ -572,9 +428,6 @@ config = {
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.30"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
-            ('plugins/Monumenta-Plugins/Properties.json', '"locationBounds":', '''"locationBounds": [
-        {"name":"Commands", "type":"RestrictedZone", "pos1":"-1584 0 -1632", "pos2":"-1329 255 -1377"}
-    ],'''),
         ],
         'linked':server_config + base_plugins,
     },
