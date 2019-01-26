@@ -5,7 +5,7 @@ import sys
 from score_change_list import dungeon_score_rules
 from lib_py3.terrain_reset import terrain_reset_instance
 
-datapacks_default = ['vanilla','file/bukkit']
+datapacks_default = ['file/vanilla','file/bukkit']
 datapacks_base = datapacks_default + ['file/base']
 datapacks_dungeon = datapacks_base + ['file/dungeon']
 
