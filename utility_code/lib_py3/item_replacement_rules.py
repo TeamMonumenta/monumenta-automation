@@ -119,7 +119,11 @@ class preserve_enchantment_base(global_rule):
         if self.enchant_found is False:
             return
 
-    enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
+        if self.player:
+            enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
+        else:
+            # Apply the enchantment without saying who added it (workaround for previous bug)
+            enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=None)
 
 global_rules = []
 
