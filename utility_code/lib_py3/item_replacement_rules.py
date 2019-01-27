@@ -116,14 +116,10 @@ class preserve_enchantment_base(global_rule):
                     return
 
     def postprocess(self,item):
-        if not self.enchant_found:
+        if self.enchant_found is False:
             return
 
-        if self.player:
-            enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
-        else:
-            # Apply the enchantment without saying who added it (workaround for previous bug)
-            enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=None)
+    enchantify(item, self.player, self.region, self.enchantment, ownerPrefix=self.ownerPrefix)
 
 global_rules = []
 
@@ -146,7 +142,7 @@ class preserve_armor_color(global_rule):
             self.color = item.at_path('tag.display.color').value
 
     def postprocess(self,item):
-        if not self.color:
+        if self.color is None:
             return
 
         # Make sure tag exists first
@@ -171,7 +167,7 @@ class preserve_damage(global_rule):
             self.damage = item.at_path('tag.Damage').value
 
     def postprocess(self,item):
-        if not self.damage:
+        if self.damage is None:
             return
 
         # Make sure tag exists first
@@ -228,7 +224,7 @@ class preserve_soulbound(global_rule):
                     return
 
     def postprocess(self,item):
-        if not self.player_line:
+        if self.player_line is None:
             return
 
         # Make sure tag exists first
