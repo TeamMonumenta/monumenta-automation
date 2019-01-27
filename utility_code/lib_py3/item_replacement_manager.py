@@ -24,13 +24,14 @@ class ItemReplacementManager(object):
         # Item pre/post-processing
         self.global_rules = global_rules
 
-    def replace_item(self,item):
+    # Returns True if the item was updated, False otherwise
+    def replace_item(self, item, logfile=None, debug_path=""):
         """
         Replace an item per provided rules and master copy
         """
         # Abort replacement if the item has no ID (empty/invalid item) or no name (no valid replacement)
         if not ( item.has_path('id') and item.has_path('tag.display.Name') ):
-            return
+            return False
 
         # Get the correct replacement info; abort if none exists
         item_id = item.at_path('id').value
@@ -38,13 +39,19 @@ class ItemReplacementManager(object):
 
         new_item_tag = self.item_map.get(item_id,{}).get(item_name,None)
         if not new_item_tag:
-            return
+            return False
+
+        # Remember the original tag
+        orig_tag = item.at_path('tag').value
+
+        if logfile is not None:
+            orig_mojangson = item.to_mojangson()
 
         # Run preprocess rules; if one returns True, abort replacements on this item!
         for rule in self.global_rules:
             try:
                 if rule.preprocess(item):
-                    return
+                    return False
             except:
                 eprint("Error preprocessing '" + rule.name + "':")
                 eprint("Item being preprocessed: " + item.to_mojangson(highlight=True))
@@ -62,5 +69,17 @@ class ItemReplacementManager(object):
                 eprint("Item being postprocessed: " + item.to_mojangson(highlight=True))
                 eprint("This may be a CRITICAL ERROR!")
                 eprint(str(traceback.format_exc()))
+
+        if orig_tag != item.at_path('tag').value:
+            # Item changed
+            if logfile is not None:
+                logfile.write("PATH: {}\n".format(debug_path))
+                logfile.write("FROM: {}\n".format(orig_mojangson))
+                logfile.write("TO:   {}\n".format(item.to_mojangson()))
+                logfile.write("\n")
+            return True
+        else:
+            # Nothing actually changed
+            return False
 
 
