@@ -18,9 +18,9 @@ from quarry.types import nbt
 mgr = LootTableManager()
 
 # AUTOFORMAT
-#mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/datapacks", indent=4)
-#mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/scriptedquests", indent=2)
-#sys.exit(0)
+mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/datapacks", indent=4)
+mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/scriptedquests", indent=2)
+sys.exit(0)
 
 mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
 mgr.load_advancements_subdirectories("/home/rock/project_epic/server_config/data/datapacks")

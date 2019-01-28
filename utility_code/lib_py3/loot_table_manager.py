@@ -157,12 +157,16 @@ class LootTableManager(object):
             for aFile in files:
                 if aFile.endswith(".json"):
                     filename = os.path.join(root, aFile)
-                    json_file = jsonFile(filename)
-                    if type(json_file.dict) is OrderedDict and "pools" in json_file.dict:
-                        # This is probably a loot table - no other json files have "pools" at the top level
-                        cls.fixup_loot_table(json_file.dict)
 
-                    json_file.save(filename, indent=indent)
+                    try:
+                        json_file = jsonFile(filename)
+                        if type(json_file.dict) is OrderedDict and "pools" in json_file.dict:
+                            # This is probably a loot table - no other json files have "pools" at the top level
+                            cls.fixup_loot_table(json_file.dict)
+
+                        json_file.save(filename, indent=indent)
+                    except Exception as e:
+                        print("Failed to autoformat '{}' : {}".format(filename, e))
 
     #
     # Loot table autoformatting class methods
@@ -267,6 +271,9 @@ class LootTableManager(object):
         loot_table = jsonFile(filename).dict
         if not type(loot_table) is OrderedDict:
             raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if len(loot_table) == 0:
+            # Nothing to do
+            return
         if "pools" not in loot_table:
             raise ValueError("loot table does not contain 'pools'")
         if not type(loot_table["pools"]) is list:
