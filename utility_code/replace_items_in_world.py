@@ -60,12 +60,6 @@ elif logfile == "stderr":
 elif logfile is not None:
     log_handle = open(logfile, 'w')
 
-if log_handle is not None:
-    log_handle.write("\n\n")
-    log_handle.write("################################################################################\n")
-    log_handle.write("# REPLACEMENTS\n")
-    log_handle.write("################################################################################\n")
-
 num_replacements = 0
 replacements_log = {}
 for item, source_pos, entity_path in world.items(readonly=dry_run):

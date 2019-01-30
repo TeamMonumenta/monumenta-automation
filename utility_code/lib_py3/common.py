@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import re
 
 import shutil
 
@@ -31,6 +32,37 @@ def get_item_name_from_nbt(item_nbt):
         eprint("WARNING: Item '" + item_name + "' isn't json! Save Name.display as '" + name_json + "'?")
 
     return item_name
+
+def parse_name_possibly_json(name):
+    name = re.sub(r"\\u0027", "'", name)
+    try:
+        name_json = json.loads(name)
+        if "text" in name_json:
+            name = name_json["text"]
+    except:
+        pass
+
+    return name
+
+def get_named_hand_items(entity):
+    hand_items = []
+    hand_items_nbt = entity.at_path("HandItems")
+
+    if not entity.has_path("HandItems"):
+        return [None, None]
+
+    if len(hand_items_nbt.value) != 2:
+        raise("NOT IMPLEMENTED: Mob has hand items length != 2 : {}".format(line))
+
+    for hand_item in hand_items_nbt.value:
+        if hand_item.has_path("tag.display.Name"):
+            item_name = parse_name_possibly_json(hand_item.at_path("tag.display.Name").value)
+            # Sorta janky - put quotes around the item name here
+            hand_items.append("'{}'".format(item_name))
+        else:
+            hand_items.append(None)
+
+    return hand_items
 
 
 class AlwaysEqual(object):
