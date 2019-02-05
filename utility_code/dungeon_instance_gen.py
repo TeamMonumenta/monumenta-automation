@@ -61,6 +61,38 @@ config = {
             "name":"tutorial",
             "region":{"x":-2, "z":0},
             "numDungeons":200,
+        },{
+            "name":"sanctum",
+            "region":{"x":-3, "z":12},
+            "numDungeons":50,
+        },{
+            "name":"sanctum",
+            "region":{"x":-3, "z":12},
+            "numDungeons":50,
+        },{
+            "name":"lime",
+            "region":{"x":-3, "z":5},
+            "numDungeons":50,
+        },{
+            "name":"pink",
+            "region":{"x":-3, "z":7},
+            "numDungeons":50,
+        },{
+            "name":"gray",
+            "region":{"x":-3, "z":6},
+            "numDungeons":50,
+        },{
+            "name":"lightgray",
+            "region":{"x":-2, "z":11},
+            "numDungeons":50,
+        },{
+            "name":"cyan",
+            "region":{"x":-3, "z":9},
+            "numDungeons":50,
+        },{
+            "name":"lime",
+            "region":{"x":-3, "z":5},
+            "numDungeons":50,
         },
     ),
 

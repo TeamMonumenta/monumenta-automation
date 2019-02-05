@@ -508,6 +508,19 @@ config = {
         ],
         'linked':server_config + base_plugins,
     },
+
+    'sanctum':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'server-port', 'server-port=25601'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.31"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
+        ],
+        'linked':server_config + base_plugins,
+    },
 }
 
 
