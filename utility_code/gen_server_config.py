@@ -1,5 +1,4 @@
-#!/usr/bin/env python2.7
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -19,13 +18,13 @@ for arg in sys.argv[1:]:
         server_list += [arg,]
 
 if (len(server_list) < 1):
-    print "ERROR: No folders specified"
+    print("ERROR: No folders specified")
     sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> [dir2] ...")
 
 if SERVER_TYPE == 'build':
-    print "Using build server settings!"
+    print("Using build server settings!")
 else:
-    print "Using play server settings!"
+    print("Using play server settings!")
 
 server_config_to_copy = [
         ('bukkit.yml',),
@@ -193,7 +192,7 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 9'),
             ('server.properties', 'server-port', 'server-port=25566'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
-            ('mark2-scripts.txt', '     0    3    *    *    *    /setblock -1449 1 -1440 redstone_block'),
+            ('mark2-scripts.txt', '     0    3    *    *    *    /function monumenta:on_new_day/global'),
         ],
         'linked':server_config + base_plugins + dynmap + [
             ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
@@ -419,6 +418,84 @@ config = {
         'linked':server_config + base_plugins,
     },
 
+    'lime':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'server-port', 'server-port=25585'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.15"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
+        ],
+        'linked':server_config + base_plugins,
+    },
+
+    'pink':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'server-port', 'server-port=25586'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.16"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
+        ],
+        'linked':server_config + base_plugins,
+    },
+
+    'gray':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'server-port', 'server-port=25587'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.17"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
+        ],
+        'linked':server_config + base_plugins,
+    },
+
+    'lightgray':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'server-port', 'server-port=25588'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.18"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
+        ],
+        'linked':server_config + base_plugins,
+    },
+
+    'cyan':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'server-port', 'server-port=25589'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.19"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
+        ],
+        'linked':server_config + base_plugins,
+    },
+
+    'purple':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'server-port', 'server-port=25590'),
+            ('server.properties', 'spawn-animals', 'spawn-animals=false'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.20"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
+        ],
+        'linked':server_config + base_plugins,
+    },
+
     'r1bonus':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
@@ -488,7 +565,7 @@ else:
 
 def gen_server_config(servername):
     if not(servername in config):
-        print "ERROR: No config available for '" + servername + "'"
+        print("ERROR: No config available for '" + servername + "'")
         return
 
     dest = config[servername]
@@ -507,7 +584,7 @@ def gen_server_config(servername):
         old = template_dir + "/" + filename
         new = servername + "/" + filename
         if (os.path.islink(new)):
-            print "Warning - file '" + new + "' is link; not replacing it"
+            print("Warning - file '" + new + "' is link; not replacing it")
             continue
 
         try:
@@ -567,12 +644,12 @@ def gen_server_config(servername):
         if (os.path.islink(linkname)):
             os.unlink(linkname)
         if (os.path.isfile(linkname)):
-            print "Warning - file that should be link detected. Please remove this file:"
-            print "  rm -f " + linkname
+            print("Warning - file that should be link detected. Please remove this file:")
+            print("  rm -f " + linkname)
             continue
         if (os.path.isdir(linkname)):
-            print "Warning - directory that should be link detected. Please remove this directory:"
-            print "  rm -rf " + linkname
+            print("Warning - directory that should be link detected. Please remove this directory:")
+            print("  rm -rf " + linkname)
             continue
 
         try:
@@ -582,9 +659,8 @@ def gen_server_config(servername):
 
         os.symlink(targetname, linkname)
 
-    print "Success - " + servername
+    print("Success - " + servername)
 
 for servername in server_list:
     gen_server_config(servername)
-
 
