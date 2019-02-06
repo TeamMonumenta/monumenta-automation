@@ -173,6 +173,7 @@ available_configs = {
     "yellow": get_dungeon_config("yellow", "D5Access"),
     "r1bonus": get_dungeon_config("r1bonus", "DB1Access"),
     "nightmare": get_dungeon_config("nightmare", "DCAccess"),
+    "sanctum": get_dungeon_config("sanctum", "DS1Access"),
     "roguelike": None, # TODO
     "tutorial": tutorial,
     "build": None,
