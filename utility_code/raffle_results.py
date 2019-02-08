@@ -12,7 +12,7 @@ if (len(sys.argv) != 3):
 
 scoreboard = Scoreboard(sys.argv[1])
 raffle_results = tempfile.mktemp()
-meme_seed = '''Download the greatest GUI pack by Team Monumenta's own Noah at this link https://minecraft.curseforge.com/projects/wood-and-stone-gui'''
+meme_seed = '''https://www.youtube.com/watch?v=dQw4w9WgXcQ'''
 vote_raffle(meme_seed, scoreboard, raffle_results, int(sys.argv[2]))
 
 rafflefp = open( raffle_results, "r" )
