@@ -41,8 +41,10 @@ class ItemReplacementManager(object):
         if not new_item_tag:
             return False
 
-        # Remember the original tag
-        orig_tag_dict = item.at_path('tag').value
+        # Remember the original tag (without damage)
+        orig_tag_copy = item.at_path('tag').deep_copy()
+        if "Damage" in orig_tag_copy.value:
+            orig_tag_copy.value.pop("Damage")
 
         # Run preprocess rules; if one returns True, abort replacements on this item!
         for rule in self.global_rules:
@@ -53,9 +55,6 @@ class ItemReplacementManager(object):
                 eprint("Error preprocessing '" + rule.name + "':")
                 eprint("Item being preprocessed: " + item.to_mojangson(highlight=True))
                 eprint(str(traceback.format_exc()))
-
-        if log_dict is not None:
-            orig_tag_copy = item.at_path('tag').deep_copy()
 
         # Replace the item tag
         item.at_path('tag').value = new_item_tag['nbt'].deep_copy().value
@@ -70,21 +69,23 @@ class ItemReplacementManager(object):
                 eprint("This may be a CRITICAL ERROR!")
                 eprint(str(traceback.format_exc()))
 
-        if orig_tag_dict != item.at_path('tag').value:
+        # Get a copy of the newly updated item to compare with (without damage)
+        updated_tag_copy = item.at_path('tag').deep_copy()
+        if "Damage" in updated_tag_copy.value:
+            updated_tag_copy.value.pop("Damage")
+
+        if not orig_tag_copy.equals_exact(updated_tag_copy):
             # Item changed
             if log_dict is not None:
-                log_key = item_name + "_" + item_id
+                log_key = item_name + "  " + item_id
                 if log_key not in log_dict:
                     log_dict[log_key] = {}
 
-                    to_item_tag_copy = item.at_path('tag').deep_copy()
-                    if "Damage" in to_item_tag_copy.value:
-                        to_item_tag_copy.value.pop("Damage")
-                    log_dict[log_key]["TO"] = to_item_tag_copy.to_mojangson()
+                    log_dict[log_key]["NAME"] = item_name
+                    log_dict[log_key]["ID"] = item_id
+                    log_dict[log_key]["TO"] = updated_tag_copy.to_mojangson()
                     log_dict[log_key]["FROM"] = {}
 
-                if "Damage" in orig_tag_copy.value:
-                    orig_tag_copy.value.pop("Damage")
                 orig_tag_mojangson = orig_tag_copy.to_mojangson()
 
                 if orig_tag_mojangson not in log_dict[log_key]["FROM"]:
