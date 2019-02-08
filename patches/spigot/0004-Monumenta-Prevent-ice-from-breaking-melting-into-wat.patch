@@ -1,11 +1,11 @@
-From c5803f5c11be4d5a32f8d39282f510636fd438cc Mon Sep 17 00:00:00 2001
+From 13a9ec745302ab399d01cf13f4ce954b60b8dafc Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Thu, 26 Oct 2017 22:09:28 -0700
-Subject: [PATCH 04/13] Monumenta - Prevent ice from breaking/melting into
+Subject: [PATCH 04/14] Monumenta - Prevent ice from breaking/melting into
  water
 
 ---
- src/main/java/net/minecraft/server/BlockIce.java | 27 ++----------------------
+ .../java/net/minecraft/server/BlockIce.java   | 27 ++-----------------
  1 file changed, 2 insertions(+), 25 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/BlockIce.java b/src/main/java/net/minecraft/server/BlockIce.java
@@ -54,5 +54,5 @@ index 35e2fe91..40790947 100644
  
      public EnumPistonReaction getPushReaction(IBlockData iblockdata) {
 -- 
-2.14.1
+2.17.1
 

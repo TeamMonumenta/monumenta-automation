@@ -1,7 +1,7 @@
-From cbd1eeb9fb26dd0bd4d7e14c7771b1ffdd5488f8 Mon Sep 17 00:00:00 2001
+From 33b4ace193805f6503260c4f29578a931d062f60 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Thu, 13 Sep 2018 17:26:47 -0400
-Subject: [PATCH 09/13] Monumenta - Prevent concrete powder from solidifying
+Subject: [PATCH 09/14] Monumenta - Prevent concrete powder from solidifying
 
 Signed-off-by: Byron Marohn <combustible@live.com>
 ---
@@ -22,5 +22,5 @@ index b071ca11..f5319b15 100644
  
      public IBlockData updateState(IBlockData iblockdata, EnumDirection enumdirection, IBlockData iblockdata1, GeneratorAccess generatoraccess, BlockPosition blockposition, BlockPosition blockposition1) {
 -- 
-2.14.1
+2.17.1
 

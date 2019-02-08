@@ -1,13 +1,13 @@
-From c2c62402aa51120a5886bae8f84c3d2ce3c77d2b Mon Sep 17 00:00:00 2001
+From e24432c380724be762d3d3e13ae5edb0ee0071c6 Mon Sep 17 00:00:00 2001
 From: Monumenta <monumenta.mgmt@gmail.com>
 Date: Sun, 14 Jan 2018 20:41:40 -0500
-Subject: [PATCH 08/13] Monumenta - Invulnerable entities still call
+Subject: [PATCH 08/14] Monumenta - Invulnerable entities still call
  EntityDamageByEntityEvent
 
 ---
- src/main/java/net/minecraft/server/EntityLiving.java | 20 +++++++++++++++++++-
- src/main/java/net/minecraft/server/EntityParrot.java | 11 +----------
- .../bukkit/craftbukkit/event/CraftEventFactory.java  |  2 +-
+ .../net/minecraft/server/EntityLiving.java    | 20 ++++++++++++++++++-
+ .../net/minecraft/server/EntityParrot.java    | 11 +---------
+ .../craftbukkit/event/CraftEventFactory.java  |  2 +-
  3 files changed, 21 insertions(+), 12 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
@@ -80,10 +80,10 @@ index 6acad352..f59af9fd 100644
  
      public int getVariant() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 4d3bfd69..9e87287b 100644
+index b1df5985..ffe445c5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -746,7 +746,7 @@ public class CraftEventFactory {
+@@ -751,7 +751,7 @@ public class CraftEventFactory {
          throw new IllegalStateException(String.format("Unhandled damage of %s from %s", entity, source.translationIndex));
      }
  
@@ -93,5 +93,5 @@ index 4d3bfd69..9e87287b 100644
          if (damager != null) {
              event = new EntityDamageByEntityEvent(damager.getBukkitEntity(), damagee.getBukkitEntity(), cause, modifiers, modifierFunctions);
 -- 
-2.14.1
+2.17.1
 

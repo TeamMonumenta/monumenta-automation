@@ -1,7 +1,7 @@
-From 326d208ee275e565ac580772ba6a76afe8254866 Mon Sep 17 00:00:00 2001
+From b14f2a80e884860f6ef0ce5608807a3856ab286c Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Fri, 28 Dec 2018 22:21:40 -0500
-Subject: [PATCH 13/13] Monumenta - Drowned no longer convert naturally
+Subject: [PATCH 13/14] Monumenta - Drowned no longer convert naturally
 
 Signed-off-by: Byron Marohn <combustible@live.com>
 ---
@@ -9,10 +9,10 @@ Signed-off-by: Byron Marohn <combustible@live.com>
  1 file changed, 1 deletion(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityZombie.java b/src/main/java/net/minecraft/server/EntityZombie.java
-index 0d37b2be..432c82f3 100644
+index e3d52e7c..3c8769c9 100644
 --- a/src/main/java/net/minecraft/server/EntityZombie.java
 +++ b/src/main/java/net/minecraft/server/EntityZombie.java
-@@ -166,7 +166,6 @@ public class EntityZombie extends EntityMonster {
+@@ -165,7 +165,6 @@ public class EntityZombie extends EntityMonster {
                  if (this.a(TagsFluid.WATER)) {
                      ++this.bI;
                      if (this.bI >= 600) {
@@ -21,5 +21,5 @@ index 0d37b2be..432c82f3 100644
                  } else {
                      this.bI = -1;
 -- 
-2.14.1
+2.17.1
 

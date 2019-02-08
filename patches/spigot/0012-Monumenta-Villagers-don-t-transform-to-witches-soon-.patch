@@ -1,12 +1,12 @@
-From 3bc1bef58933cc6f5cdff8c3dd48efb0db70b4a0 Mon Sep 17 00:00:00 2001
+From d7a15a5d5197e662817ebb73ca63c45c707ce322 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Sun, 18 Nov 2018 02:02:11 -0500
-Subject: [PATCH 12/13] Monumenta - Villagers don't transform to witches - soon
+Subject: [PATCH 12/14] Monumenta - Villagers don't transform to witches - soon
  to be obsolete patch
 
 Signed-off-by: Byron Marohn <combustible@live.com>
 ---
- .../java/net/minecraft/server/EntityVillager.java     | 19 -------------------
+ .../net/minecraft/server/EntityVillager.java  | 19 -------------------
  1 file changed, 19 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityVillager.java b/src/main/java/net/minecraft/server/EntityVillager.java
@@ -40,5 +40,5 @@ index f8e05b75..76d69d08 100644
  
      public InventorySubcontainer dD() {
 -- 
-2.14.1
+2.17.1
 

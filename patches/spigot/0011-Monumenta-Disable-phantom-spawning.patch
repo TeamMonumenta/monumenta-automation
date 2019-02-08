@@ -1,11 +1,11 @@
-From 0b2c006398dd0bd688dcdda7d1bff5b92b482165 Mon Sep 17 00:00:00 2001
+From b09fc55a93b43d276da0d2fc1d81719c0028d429 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Fri, 9 Nov 2018 01:17:27 -0500
-Subject: [PATCH 11/13] Monumenta - Disable phantom spawning
+Subject: [PATCH 11/14] Monumenta - Disable phantom spawning
 
 Signed-off-by: Byron Marohn <combustible@live.com>
 ---
- .../net/minecraft/server/MobSpawnerPhantom.java    | 60 +---------------------
+ .../minecraft/server/MobSpawnerPhantom.java   | 60 +------------------
  1 file changed, 1 insertion(+), 59 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/MobSpawnerPhantom.java b/src/main/java/net/minecraft/server/MobSpawnerPhantom.java
@@ -79,5 +79,5 @@ index 5c43d908..270a44c5 100644
      }
  }
 -- 
-2.14.1
+2.17.1
 

@@ -1,7 +1,7 @@
-From beb466ae1f32007f6419779c08a45deba4a8709b Mon Sep 17 00:00:00 2001
+From 5cdc7cf0526bf5acde609937e34b3b1341682072 Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Thu, 5 Oct 2017 21:45:16 -0700
-Subject: [PATCH 03/13] Monumenta - Removed test for monsters when sleeping in
+Subject: [PATCH 03/14] Monumenta - Removed test for monsters when sleeping in
  beds
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 03/13] Monumenta - Removed test for monsters when sleeping in
  1 file changed, 7 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 4308269d..ee2190c5 100644
+index 5a90376f..3ea3b84b 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -1258,13 +1258,6 @@ public abstract class EntityHuman extends EntityLiving {
@@ -27,5 +27,5 @@ index 4308269d..ee2190c5 100644
          }
          return EntityHuman.EnumBedResult.OK;
 -- 
-2.14.1
+2.17.1
 

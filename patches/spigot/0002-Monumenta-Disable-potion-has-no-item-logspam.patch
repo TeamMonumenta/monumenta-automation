@@ -1,7 +1,7 @@
-From e25b65e4e164406877e5677665048a7477ece34f Mon Sep 17 00:00:00 2001
+From e144c4a60d3b2705f445460ba5e53f6e06da3b7b Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Wed, 27 Sep 2017 18:46:14 -0700
-Subject: [PATCH 02/13] Monumenta - Disable potion has no item logspam
+Subject: [PATCH 02/14] Monumenta - Disable potion has no item logspam
 
 ---
  src/main/java/net/minecraft/server/EntityPotion.java | 4 ----
@@ -23,5 +23,5 @@ index eec8ed72..1021ccdf 100644
          } else {
              return itemstack;
 -- 
-2.14.1
+2.17.1
 

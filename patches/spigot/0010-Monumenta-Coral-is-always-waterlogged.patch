@@ -1,7 +1,7 @@
-From eb9a440a32ba11e757c1ef088c5a5e27151e17cb Mon Sep 17 00:00:00 2001
+From c7d534c7e17eb80fa08da7bb9ba977aed42e572b Mon Sep 17 00:00:00 2001
 From: Byron Marohn <combustible@live.com>
 Date: Mon, 17 Sep 2018 22:03:48 -0400
-Subject: [PATCH 10/13] Monumenta - Coral is always waterlogged
+Subject: [PATCH 10/14] Monumenta - Coral is always waterlogged
 
 NOTE:
 This patch is annoying because Spigot hasn't made any modifications to
@@ -10,8 +10,8 @@ same as the change to BlockCoral.
 
 Signed-off-by: Byron Marohn <combustible@live.com>
 ---
- src/main/java/net/minecraft/server/BlockCoral.java |  14 +--
- .../java/net/minecraft/server/BlockCoralBase.java  | 107 +++++++++++++++++++++
+ .../java/net/minecraft/server/BlockCoral.java |  14 +--
+ .../net/minecraft/server/BlockCoralBase.java  | 107 ++++++++++++++++++
  2 files changed, 108 insertions(+), 13 deletions(-)
  create mode 100644 src/main/java/net/minecraft/server/BlockCoralBase.java
 
@@ -154,5 +154,5 @@ index 00000000..8c8021ca
 +    }
 +}
 -- 
-2.14.1
+2.17.1
 
