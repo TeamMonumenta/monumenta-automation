@@ -10,7 +10,7 @@ from lib_py3.scoreboard import Scoreboard
 from lib_py3.player import Player
 from lib_py3.common import eprint
 
-def terrain_reset_instance(config):
+def terrain_reset_instance(config, replacements_log=None):
     shardName = config["server"]
 
     print("Starting reset for server {0}...".format(shardName))
@@ -100,7 +100,7 @@ def terrain_reset_instance(config):
             if "replace_items" in instanceConfig:
                 item_replace_manager = instanceConfig["replace_items"]
                 for item, _ in dstWorld.items(readonly=False, pos1=(newRx * 512, 0, newRz * 512), pos2=((newRx + 1) * 512 - 1, 255, (newRz + 1) * 512 - 1)):
-                    item_replace_manager.replace_item(item)
+                    item_replace_manager.replace_item(item, log_dict=replacements_log)
 
     if "coordinatesToFill" in config:
         print("  Filling selected regions with specified blocks...")
@@ -119,7 +119,7 @@ def terrain_reset_instance(config):
             if "replace_items" in section:
                 item_replace_manager = section["replace_items"]
                 for item, _ in dstWorld.items(readonly=False, pos1=section["pos1"], pos2=section["pos2"]):
-                    item_replace_manager.replace_item(item)
+                    item_replace_manager.replace_item(item, log_dict=replacements_log)
 
 
     # Save the scoreboards if they were used
@@ -150,6 +150,6 @@ def terrain_reset_instance(config):
     if "replace_items" in config:
         item_replace_manager = config["replace_items"]
         for item, _ in dstWorld.items(readonly=False):
-            item_replace_manager.replace_item(item)
+            item_replace_manager.replace_item(item, log_dict=replacements_log)
 
     dstWorld.save()

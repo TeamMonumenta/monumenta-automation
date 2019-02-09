@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import datetime
 
 from score_change_list import dungeon_score_rules
 from lib_py3.terrain_reset import terrain_reset_instance
@@ -211,7 +212,45 @@ for arg in sys.argv[1:]:
         print("ERROR: Unknown shard {} specified!".format(arg))
         sys.exit("Usage: {} <server1> [server2] ...".format(sys.argv[0]))
 
+all_replacements_log = {}
 for config in reset_config_list:
-    terrain_reset_instance(config)
+    all_replacements_log[config["server"]] = {}
+    terrain_reset_instance(config, replacements_log=all_replacements_log[config["server"]])
 
 print("Shards reset successfully: {}".format(reset_name_list))
+
+logfile = "/home/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{}.log".format(datetime.date.today().strftime("%Y-%m-%d"))
+update_tables = False
+with open(logfile, 'w') as log_handle:
+    for shard_name in all_replacements_log:
+
+        # Log replacements separately by shard name
+        replacements_log = all_replacements_log[shard_name]
+        log_handle.write("\n\n".format(to_item))
+        log_handle.write("################################################################################\n")
+        log_handle.write("# SHARD: {}\n\n".format(shard_name))
+
+        for to_item in replacements_log:
+            log_handle.write("{}\n".format(to_item))
+            log_handle.write("    TO:\n")
+            log_handle.write("        {}\n".format(replacements_log[to_item]["TO"]))
+            log_handle.write("    FROM:\n")
+
+            if update_tables:
+                to_nbt = nbt.TagCompound.from_mojangson(replacements_log[to_item]["TO"])
+
+            for from_item in replacements_log[to_item]["FROM"]:
+                log_handle.write("        {}\n".format(from_item))
+
+                if update_tables:
+                    from_nbt = nbt.TagCompound.from_mojangson(from_item)
+                    if (from_nbt == to_nbt) and (not from_nbt.equals_exact(to_nbt)):
+                        # NBT is the "same" as the loot table entry but in a different order
+                        # Need to update the loot tables with the correctly ordered NBT
+                        loot_table_manager.update_item_in_loot_tables(replacements_log[to_item]["ID"], from_nbt)
+                        log_handle.write("        Updated loot tables with this item!\n")
+
+                for from_location in replacements_log[to_item]["FROM"][from_item]:
+                    log_handle.write("            {}\n".format(from_location))
+
+            log_handle.write("\n")
