@@ -511,8 +511,8 @@ config = {
 
     'sanctum':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'view-distance', 'view-distance=10'),
+            ('spigot.yml', 'view-distance', '    view-distance: 10'),
             ('server.properties', 'server-port', 'server-port=25601'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.31"'),
