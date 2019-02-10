@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import datetime
 
@@ -7,6 +8,10 @@ from score_change_list import dungeon_score_rules
 from lib_py3.terrain_reset import terrain_reset_instance
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
+from lib_py3.common import eprint
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
+from quarry.types import nbt
 
 datapacks_default = ['file/vanilla','file/bukkit']
 datapacks_base = datapacks_default + ['file/base']
@@ -239,12 +244,17 @@ with open(logfile, 'w') as log_handle:
             if update_tables:
                 to_nbt = nbt.TagCompound.from_mojangson(replacements_log[to_item]["TO"])
 
+            table_updates_from_this_item = 0
             for from_item in replacements_log[to_item]["FROM"]:
                 log_handle.write("        {}\n".format(from_item))
 
                 if update_tables:
                     from_nbt = nbt.TagCompound.from_mojangson(from_item)
                     if (from_nbt == to_nbt) and (not from_nbt.equals_exact(to_nbt)):
+                        table_updates_from_this_item += 1
+                        if table_updates_from_this_item > 1:
+                            eprint("WARNING: Item '{}' updated multiple times!".format(replacements_log[to_item]["NAME"]))
+
                         # NBT is the "same" as the loot table entry but in a different order
                         # Need to update the loot tables with the correctly ordered NBT
                         loot_table_manager.update_item_in_loot_tables(replacements_log[to_item]["ID"], from_nbt)
