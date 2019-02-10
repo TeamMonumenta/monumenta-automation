@@ -219,14 +219,14 @@ for config in reset_config_list:
 
 print("Shards reset successfully: {}".format(reset_name_list))
 
-logfile = "/home/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{}.log".format(datetime.date.today().strftime("%Y-%m-%d"))
+logfile = "/home/rock/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{}.log".format(datetime.date.today().strftime("%Y-%m-%d"))
 update_tables = False
 with open(logfile, 'w') as log_handle:
     for shard_name in all_replacements_log:
 
         # Log replacements separately by shard name
         replacements_log = all_replacements_log[shard_name]
-        log_handle.write("\n\n".format(to_item))
+        log_handle.write("\n\n")
         log_handle.write("################################################################################\n")
         log_handle.write("# SHARD: {}\n\n".format(shard_name))
 

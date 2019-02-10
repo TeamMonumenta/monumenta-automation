@@ -9,6 +9,7 @@ from lib_py3.move_region import MoveRegion
 from lib_py3.scoreboard import Scoreboard
 from lib_py3.player import Player
 from lib_py3.common import eprint
+from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
 
 def terrain_reset_instance(config, replacements_log=None):
     shardName = config["server"]
@@ -99,8 +100,8 @@ def terrain_reset_instance(config, replacements_log=None):
             # Looks good! Replace items if specified
             if "replace_items" in instanceConfig:
                 item_replace_manager = instanceConfig["replace_items"]
-                for item, _ in dstWorld.items(readonly=False, pos1=(newRx * 512, 0, newRz * 512), pos2=((newRx + 1) * 512 - 1, 255, (newRz + 1) * 512 - 1)):
-                    item_replace_manager.replace_item(item, log_dict=replacements_log)
+                for item, _, entity_path in dstWorld.items(readonly=False, pos1=(newRx * 512, 0, newRz * 512), pos2=((newRx + 1) * 512 - 1, 255, (newRz + 1) * 512 - 1)):
+                    item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
 
     if "coordinatesToFill" in config:
         print("  Filling selected regions with specified blocks...")
@@ -118,8 +119,8 @@ def terrain_reset_instance(config, replacements_log=None):
             dstWorld.restore_area(section["pos1"], section["pos2"], old_world);
             if "replace_items" in section:
                 item_replace_manager = section["replace_items"]
-                for item, _ in dstWorld.items(readonly=False, pos1=section["pos1"], pos2=section["pos2"]):
-                    item_replace_manager.replace_item(item, log_dict=replacements_log)
+                for item, _, entity_path in dstWorld.items(readonly=False, pos1=section["pos1"], pos2=section["pos2"]):
+                    item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
 
 
     # Save the scoreboards if they were used
@@ -149,7 +150,7 @@ def terrain_reset_instance(config, replacements_log=None):
     # Looks good! Replace items worldwide if specified
     if "replace_items" in config:
         item_replace_manager = config["replace_items"]
-        for item, _ in dstWorld.items(readonly=False):
-            item_replace_manager.replace_item(item, log_dict=replacements_log)
+        for item, _, entity_path in dstWorld.items(readonly=False):
+            item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
 
     dstWorld.save()

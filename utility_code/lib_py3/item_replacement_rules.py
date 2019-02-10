@@ -111,9 +111,8 @@ class preserve_enchantment_base(global_rule):
             for lore in item.at_path('tag.display.Lore').value:
                 if self.enchantment in lore.value:
                     self.enchant_found = True
-                if self.ownerPrefix in lore.value and self.enchant_found:
-                    self.player = item.at_path('tag.display.Lore').value[len(self.ownerPrefix)+1:]
-                    return
+                if self.ownerPrefix in lore.value:
+                    self.player = lore.value[len(self.ownerPrefix)+1:]
 
     def postprocess(self,item):
         if self.enchant_found is False:
@@ -211,7 +210,7 @@ class preserve_festive(preserve_enchantment_base):
         if self.enchant_found and not self.player:
             for lore in item.at_path('tag.display.Lore').value:
                 if self.wrongPrefix in lore.value:
-                    self.player = item.at_path('tag.display.Lore').value[len(self.wrongPrefix)+1:]
+                    self.player = lore.value[len(self.wrongPrefix)+1:]
                     return
 
 global_rules.append(preserve_festive())

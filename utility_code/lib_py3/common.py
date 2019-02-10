@@ -29,7 +29,8 @@ def get_item_name_from_nbt(item_nbt):
             item_name = name_json["text"]
     except:
         name_json = json.dumps({"text":item_name},separators=(',', ':'))
-        eprint("WARNING: Item '" + item_name + "' isn't json! Save Name.display as '" + name_json + "'?")
+        # This is useful but produces a ton of spam
+        # eprint("WARNING: Item '" + item_name + "' isn't json! Save Name.display as '" + name_json + "'?")
 
     return item_name
 

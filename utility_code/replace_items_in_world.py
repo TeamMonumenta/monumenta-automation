@@ -69,7 +69,7 @@ elif logfile is not None:
 
 num_replacements = 0
 replacements_log = {}
-for item, source_pos, entity_path in world.items(readonly=dry_run):
+for item, _, entity_path in world.items(readonly=dry_run):
     if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path)):
         num_replacements += 1
 
