@@ -30,7 +30,7 @@ class BotSocketServer(object):
                     data = data.decode('utf-8')
                     data_in = json.loads(data)
 
-                    if botConfig["extraDebug"]:
+                    if self.bot_config["extraDebug"]:
                         pprint.pprint(data_in)
 
                     ################################################################################

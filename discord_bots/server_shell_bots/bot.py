@@ -5,6 +5,7 @@ import sys
 import logging
 import json
 import threading
+import traceback
 
 import asyncio
 from bot_socket_server import BotSocketServer
@@ -13,6 +14,7 @@ logging.basicConfig(level=logging.INFO)
 
 import discord
 from shell_actions import allActionsDict, findBestMatchDiscord, listening, native_restart
+from shell_common import split_string
 
 ################################################################################
 # Config / Environment
@@ -108,15 +110,22 @@ while native_restart.state:
         @client.event
         async def on_message(message):
             if message.channel.id in botChannels:
-                actionClass = findBestMatchDiscord(botConfig,message)
+                actionClass = findBestMatchDiscord(botConfig, message)
                 if actionClass is None:
                     return
-                action = actionClass(botConfig,message)
-                if not action.hasPermissions(message.author):
-                    await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
-                else:
-                    await action.doActions(client, message.channel, message.author)
-                return
+                try:
+                    action = actionClass(botConfig, message)
+                    if not action.hasPermissions(message.author):
+                        await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
+                    else:
+                        await action.doActions(client, message.channel, message.author)
+                except Exception as e:
+                    await client.send_message(message.channel, message.author.mention)
+                    await client.send_message(message.channel, "**ERROR**: ```" + str(e) + "```")
+                    if botConfig["extraDebug"]:
+                        for chunk in split_string(traceback.format_exc()):
+                            await client.send_message(message.channel, "```" + chunk + "```")
+
 
         ################################################################################
         # Ignore these, just noting them to avoid the errors we were getting
