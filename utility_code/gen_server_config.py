@@ -36,6 +36,7 @@ server_config_to_copy = [
         ('permissions.yml',),
         ('server.properties',),
         ('spigot.yml',),
+        ('paper.yml',),
         ('start.sh',),
         ('wepif.yml',),
         ('plugins/CoreProtect/config.yml',),
@@ -50,16 +51,16 @@ server_config_to_copy = [
     ]
 
 purgatory_min = [
-        ('spigot.jar', '../server_config/spigot.jar'),
+        ('paperclip.jar', '../server_config/paperclip.jar'),
         ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
-        ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
         ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
         ('plugins/VentureChat/config.yml', '../../../server_config/plugins/VentureChat/{}/config.yml'.format(SERVER_TYPE)),
     ]
 
 server_config_min = purgatory_min + [
+        ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
         ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
         ('plugins/BKCommonLib.jar', '../../server_config/plugins/BKCommonLib.jar'),
@@ -69,7 +70,6 @@ server_config_min = purgatory_min + [
 server_config = server_config_min + [
         ('Project_Epic-{servername}/generated', '../../server_config/data/generated'),
         ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks'),
-        ('Project_Epic-{servername}_the_end/datapacks', '../../server_config/data/datapacks'),
     ]
 
 monumenta_without_mobs_plugins = [
@@ -289,7 +289,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
         ],
-        'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + [
+        'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + coreprotect + [
             ('plugins/Monumenta-Plugins.jar', '/home/epic/mob_shard_plugins/Monumenta-Plugins.jar'),
             ('plugins/Monumenta-Bossfights.jar', '/home/epic/mob_shard_plugins/Monumenta-Bossfights.jar'),
         ]
@@ -347,8 +347,9 @@ config = {
             ('server.properties', 'spawn-monsters', 'spawn-monsters=false'),
             ('server.properties', 'spawn-npcs', 'spawn-npcs=false'),
             ('server.properties', 'spawn-protection', 'spawn-protection=16'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=384M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=384M'),
+            ('paper.yml', 'keep-spawn-loaded', '    keep-spawn-loaded: true'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=256M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=256M'),
         ],
         'linked':purgatory_min,
     },
