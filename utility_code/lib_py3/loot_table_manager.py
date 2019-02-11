@@ -707,10 +707,16 @@ class LootTableManager(object):
 
         json_file.save(filename)
 
-    def update_item_in_loot_tables(self, item_id, item_nbt):
+    def update_item_in_loot_tables(self, item_id, item_nbt=None, item_nbt_str=None):
         """
         Updates an item within all loaded loot tables
         """
+        if item_nbt is None and item_nbt_str is None:
+            raise ValueError("Either item_nbt or item_nbt_str must be specified")
+
+        if item_nbt is None:
+            item_nbt = nbt.TagCompound.from_mojangson(item_nbt_str)
+
         item_name = get_item_name_from_nbt(item_nbt)
         if not item_name:
             raise ValueError("Item NBT does not have a name")
@@ -735,6 +741,8 @@ class LootTableManager(object):
 
         for filename in update_file_list:
             self.update_item_in_single_loot_table(filename, item_name, item_id, item_nbt)
+
+        return update_file_list
 
     def update_table_link_in_single_loot_table(self, filename, old_namespaced_path, new_namespaced_path):
         """

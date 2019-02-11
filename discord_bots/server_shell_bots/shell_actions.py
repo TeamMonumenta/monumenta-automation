@@ -7,11 +7,15 @@ Please keep this list in alphabetical order within each category
 """
 
 import os
+import sys
 _file_depth = 3
 _file = os.path.abspath(__file__)
 _top_level = os.path.abspath( os.path.join( _file, '../'*_file_depth ) )
 
 from shell_common import ShellAction, datestr
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
+from lib_py3.loot_table_manager import LootTableManager
 
 commandPrefix = '~'
 dangerousCharacters = ';<>*|`&$!#()[]{}:\'"'
@@ -412,6 +416,61 @@ Currently exposes all valid git syntax, including syntax that *will* softlock th
             self.run(commandArgs, displayOutput=True),
         ]
 allActions.append(GitAction)
+
+class UpdateItemAction(ShellAction):
+    '''
+Updates an item in all loot tables
+
+Usage:
+    update item minecraft:leather_leggings{Enchantments:[{lvl:3s,id:"minecraft:fire_protection"}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"{\"text\":\"§fBurnt Leggings\"}"},Damage:0}
+
+Easiest way to get this info is holding an item in your hand and using /nbti tocommand on a command block
+
+For convenience, leading 'give @p' is ignored, along with any data after the last } (usually the quantity of item from /nbti tocommand)
+    '''
+    command = "update item"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+
+        # Check for any arguments
+        commandArgs = message.content[len(commandPrefix):].strip()
+        if len(commandArgs) < len(self.command) + 5:
+            self._commands = [
+                self.display("Item argument required")
+            ]
+            return
+        if '{' not in commandArgs:
+            self._commands = [
+                self.display("Item must be of the form minecraft:id{nbt}")
+            ]
+            return
+
+        # Parse id / nbt arguments
+        commandArgs = message.content[len(commandPrefix) + len(self.command) + 1:]
+
+        partitioned = commandArgs.strip().partition("{")
+        item_id = partitioned[0].strip()
+        item_nbt_str = partitioned[1] + partitioned[2].strip()
+
+        if item_id.startswith("/"):
+            item_id = item_id[1:]
+        if item_id.startswith("give @p "):
+            item_id = item_id[len("give @p "):]
+
+        if item_nbt_str[-1] != '}':
+            item_nbt_str = item_nbt_str[:item_nbt_str.rfind("}") + 1]
+
+        mgr = LootTableManager()
+        mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
+        locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
+
+        self._commands = [
+            self.display("Updated item in loot tables:```" + "\n".join(locations) + "```"),
+        ]
+
+allActions.append(UpdateItemAction)
 
 class GenerateInstancesAction(ShellAction):
     '''Dangerous!
