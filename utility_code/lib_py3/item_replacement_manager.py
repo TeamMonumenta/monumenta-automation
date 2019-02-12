@@ -49,7 +49,7 @@ class ItemReplacementManager(object):
         # Run preprocess rules; if one returns True, abort replacements on this item!
         for rule in self.global_rules:
             try:
-                if rule.preprocess(item):
+                if rule.preprocess(new_item_tag['nbt'], item):
                     return False
             except:
                 eprint("Error preprocessing '" + rule.name + "':")
