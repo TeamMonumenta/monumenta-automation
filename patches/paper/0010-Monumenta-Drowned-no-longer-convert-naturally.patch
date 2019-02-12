@@ -1,0 +1,25 @@
+From 372f26983e9ad3bc8854396ff50c4cda56f2b8b9 Mon Sep 17 00:00:00 2001
+From: Byron Marohn <combustible@live.com>
+Date: Fri, 28 Dec 2018 22:21:40 -0500
+Subject: [PATCH 10/11] Monumenta - Drowned no longer convert naturally
+
+Signed-off-by: Byron Marohn <combustible@live.com>
+---
+ src/main/java/net/minecraft/server/EntityZombie.java | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/EntityZombie.java b/src/main/java/net/minecraft/server/EntityZombie.java
+index 24bc3e0f..443b5e07 100644
+--- a/src/main/java/net/minecraft/server/EntityZombie.java
++++ b/src/main/java/net/minecraft/server/EntityZombie.java
+@@ -174,7 +174,6 @@ public class EntityZombie extends EntityMonster {
+                 if (this.a(TagsFluid.WATER)) {
+                     ++this.bI;
+                     if (this.bI >= 600) {
+-                        this.startDrownedConversion(300);
+                     }
+                 } else {
+                     this.bI = -1;
+-- 
+2.17.1
+
