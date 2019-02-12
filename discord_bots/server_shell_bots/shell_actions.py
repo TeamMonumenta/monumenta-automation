@@ -108,6 +108,8 @@ permissionGroups = {
         "+stop shard",
         "+test",
         "+testpriv",
+        "+update item",
+        "+view scores",
     ],
     "@intern": [
         "+debug",
