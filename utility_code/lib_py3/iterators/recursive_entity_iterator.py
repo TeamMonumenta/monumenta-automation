@@ -28,7 +28,6 @@ _list_item_locations = (
     "HandItems",
     "Inventory",
     "Items",
-    "Inventory",
 )
 
 def get_name(name, ansii_colors=False):
