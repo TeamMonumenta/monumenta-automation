@@ -86,8 +86,9 @@ while native_restart.state:
     asyncio.set_event_loop(loop)
     try:
         # Start the bot socket server which also accepts commands
-        bot_srv = BotSocketServer("127.0.0.1", 8765, botConfig)
-        threading.Thread(target = bot_srv.listen).start()
+        # TODO: This breaks bot auto restarting
+        #bot_srv = BotSocketServer("127.0.0.1", 8765, botConfig)
+        #threading.Thread(target = bot_srv.listen).start()
 
         client = discord.Client()
 
