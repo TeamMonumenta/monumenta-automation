@@ -66,8 +66,8 @@ config = {
             "region":{"x":-3, "z":12},
             "numDungeons":50,
         },{
-            "name":"sanctum",
-            "region":{"x":-3, "z":12},
+            "name":"labs",
+            "region":{"x":-2, "z":1},
             "numDungeons":50,
         },{
             "name":"lime",
@@ -80,10 +80,6 @@ config = {
         },{
             "name":"gray",
             "region":{"x":-3, "z":6},
-            "numDungeons":50,
-        },{
-            "name":"lightgray",
-            "region":{"x":-2, "z":11},
             "numDungeons":50,
         },{
             "name":"cyan",
@@ -195,8 +191,12 @@ for dungeon in config["dungeons"]:
         "outputFile":outputFile,
     }
 
+# Decrease the priority for this work so it doesn't slow down other things
+os.nice(20)
+
 for p in processes.values():
     p["process"].start()
+
 
 while len(processes.keys()) > 0:
     statusUpdate = statusQueue.get()

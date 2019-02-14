@@ -195,6 +195,7 @@ available_configs = {
     "r1bonus": get_dungeon_config("r1bonus", "DB1Access"),
     "nightmare": get_dungeon_config("nightmare", "DCAccess"),
     "sanctum": get_dungeon_config("sanctum", "DS1Access"),
+    "labs": get_dungeon_config("labs", "D0Access"),
     "roguelike": None, # TODO
     "tutorial": tutorial,
     "build": None,
