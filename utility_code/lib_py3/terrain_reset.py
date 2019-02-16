@@ -72,7 +72,7 @@ def terrain_reset_instance(config, replacements_log=None):
                 for item, _, entity_path in dstWorld.items(readonly=False, pos1=section["pos1"], pos2=section["pos2"]):
                     item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
 
-    if not os.path.exists(localMainFolder):
+    if "localMainFolder" in config and not os.path.exists(config["localMainFolder"]):
         eprint("!!!!!! WARNING: Missing previous week main folder '{}'!".format(config["localBuildFolder"]))
         eprint("If you are not adding a shard, this is a critical problem!")
         return
