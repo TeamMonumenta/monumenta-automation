@@ -927,7 +927,11 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         allShards = botConfig["shards"].keys()
 
         self._commands = [
-            # TODO: Check that all shards are stopped
+            # TODO: These three commands need to be replaced with one that actually checks everything is down
+            self.run("mark2 list", displayOutput=True),
+            self.run("mark2 send -n region_1 test", 1),
+            self.sleep(5),
+
             self.display("Moving the project_epic directory to PRE_RESET"),
             self.run("cp -a /home/rock/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
             self.run("cp -a /home/rock/5_SCRATCH/tmpreset/TEMPLATE/purgatory /home/rock/5_SCRATCH/tmpreset/POST_RESET/"),
