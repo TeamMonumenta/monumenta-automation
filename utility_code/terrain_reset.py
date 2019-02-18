@@ -19,7 +19,7 @@ datapacks_dungeon = datapacks_base + ['file/dungeon']
 
 loot_table_manager = LootTableManager()
 loot_table_manager.load_loot_tables_subdirectories("/home/rock/5_SCRATCH/tmpreset/TEMPLATE/server_config/data/datapacks")
-item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map())
+item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map(show_errors=False))
 
 def get_dungeon_config(name, scoreboard):
     return {
