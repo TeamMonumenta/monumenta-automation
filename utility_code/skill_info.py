@@ -17,7 +17,7 @@ classList = [
     "Warlock",
 ]
 
-maxSkillPoints = 6
+maxSkillPoints = 7
 maxSkillLevel = 2
 
 classSkills = [
