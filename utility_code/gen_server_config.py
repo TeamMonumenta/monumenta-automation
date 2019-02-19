@@ -286,8 +286,8 @@ config = {
             ('server.properties', 'server-port', 'server-port=25598'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.28"'),
             ('server.properties', 'difficulty', 'difficulty=2'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=512M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=512M'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
         ],
         'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + coreprotect + [
             ('plugins/Monumenta-Plugins.jar', '/home/epic/mob_shard_plugins/Monumenta-Plugins.jar'),
