@@ -263,6 +263,18 @@ config = {
         'linked':server_config + base_plugins,
     },
 
+    'update_do_not_use':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'server-port', 'server-port=25603'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.5"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=5G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=5G'),
+        ],
+        'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
+    },
+
     'build':{
         'config':server_config_to_copy + [
             ('server.properties', 'white-list', 'white-list=true'),
@@ -525,8 +537,8 @@ config = {
 
     'labs':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'view-distance', 'view-distance=9'),
+            ('spigot.yml', 'view-distance', '    view-distance: 9'),
             ('server.properties', 'server-port', 'server-port=25602'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.32"'),
