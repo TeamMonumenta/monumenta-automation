@@ -69,6 +69,8 @@ def get_named_hand_items(entity):
 class AlwaysEqual(object):
     def __init__(self):
         pass
+    def __hash__(self):
+        return True
     def __eq__(self,other):
         return True
 always_equal = AlwaysEqual()
@@ -76,6 +78,8 @@ always_equal = AlwaysEqual()
 class NeverEqual(object):
     def __init__(self):
         pass
+    def __hash__(self):
+        return False
     def __eq__(self,other):
         return False
 never_equal = NeverEqual()

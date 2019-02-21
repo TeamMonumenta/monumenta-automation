@@ -178,6 +178,8 @@ class preserve_damage(global_rule):
 
     def postprocess(self, item):
         if self.damage is None:
+            if item.has_tag('tag.Damage'):
+                item.at_tag('tag').value.pop('Damage')
             return
 
         # Make sure tag exists first
