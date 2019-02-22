@@ -238,6 +238,7 @@ config = {
         ],
         'linked':server_config + base_plugins + dynmap + [
             ('plugins/ScriptedQuests/npcs/tutorial', '../../../../server_config/data/scriptedquests/npcs/tutorial'),
+            ('plugins/ScriptedQuests/npcs/labs', '../../../../server_config/data/scriptedquests/npcs/labs'),
         ],
     },
 
