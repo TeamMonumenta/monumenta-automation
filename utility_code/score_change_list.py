@@ -83,8 +83,7 @@ dungeon_score_rules = [
             {"Objective":"DS1Access","Score":1000}]}},
     {"condition":{"Objective":"DS1Access","Score":{"min":2000}},
         "actions":{"set":[
-            {"Objective":"DS1Access","Score":0},
-            {"Objective":"DS1Finished","Score":0}]}},
+            {"Objective":"DS1Access","Score":0}]}},
     {"condition":{"Name":"$last","Objective":"DS1Access"},
         "actions":{"set":[
             {"Objective":"DS1Access","Score":0}]}},
