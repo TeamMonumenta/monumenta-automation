@@ -4,6 +4,16 @@
 # appearing in the results, and runs actions for every name in the list.
 
 dungeon_score_rules = [
+    {"condition":{"Objective":"D0Access","Score":{"min":1}},
+        "actions":{"add":[
+            {"Objective":"D0Access","Score":1000}]}},
+    {"condition":{"Objective":"D0Access","Score":{"min":2000}},
+        "actions":{"set":[
+            {"Objective":"D0Access","Score":0},
+            {"Objective":"D0Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D0Access"},
+        "actions":{"set":[
+            {"Objective":"D0Access","Score":0}]}},
     {"condition":{"Objective":"D1Access","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"D1Access","Score":1000}]}},
