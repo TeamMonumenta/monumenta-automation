@@ -36,6 +36,9 @@ def MoveRegion(dir_src,dir_dst,rx_src,rz_src,rx_dst,rz_dst,item_replacements=Non
         for cx in range(32):
             try:
                 chunk = region.load_chunk(cx, cz)
+                if chunk is None:
+                	# Chunk does not exist, skip if missing
+                	continue
             except:
                 # May not exist; skip if missing
                 continue
