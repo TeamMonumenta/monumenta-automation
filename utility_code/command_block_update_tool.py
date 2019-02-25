@@ -84,19 +84,20 @@ if output_mode:
             block = world.get_block(source_pos)["block"]
             block_name = block['name']
 
+            #pprint(block)
+            #entity.tree()
+            #break;
+
             entry = {}
             entry['pos'] = source_pos
             entry['command'] = entity.at_path('Command').value
             entry['name'] = block_name
+            entry['auto'] = entity.at_path('auto').value
+            entry['powered'] = entity.at_path('powered').value
 
             out.append(entry)
-            #entity.tree()
     with open(output_path, 'w') as outfile:
         json.dump(out, outfile, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
-
-    #for x in out:
-        #if "minecraft:repeating_command_block" in x["name"]:
-            #print(str(x["pos"][0]) + " " + str(x["pos"][1]) + " " + str(x["pos"][2]) + "    " + x["command"])
 
     if interactive:
         print("Starting interactive mode")
