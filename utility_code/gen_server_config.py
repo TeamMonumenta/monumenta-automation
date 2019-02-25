@@ -569,6 +569,7 @@ if (SERVER_TYPE == 'build'):
     config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=0'))
     config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
+    config = add_config_if_not_set(config, ('plugins/Monumenta-Plugins/config.yml', 'production', 'production: false'))
 
     config['region_1']['config'] += [
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
@@ -583,6 +584,7 @@ else:
     config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=2'))
     config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
+    config = add_config_if_not_set(config, ('plugins/Monumenta-Plugins/config.yml', 'production', 'production: true'))
 
     config['region_1']['config'] += [
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=12G'),
