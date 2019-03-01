@@ -178,7 +178,7 @@ class preserve_damage(global_rule):
 
     def postprocess(self, item):
         if self.damage is None:
-            if item.has_tag('tag.Damage'):
+            if item.has_path('tag.Damage'):
                 item.at_tag('tag').value.pop('Damage')
             return
 
