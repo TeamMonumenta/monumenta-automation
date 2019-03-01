@@ -69,10 +69,13 @@ class subtitute_items(substitution_rule):
     def __init__(self):
         self.replacements = {
             "minecraft:example_item_id": {
-                '''{"text":"Example Name"}''': ("minecraft:new_id", '''{"text":"Example New Name"}'''),
+                r'''{"text":"Example Name"}''': ("minecraft:new_id", r'''{"text":"Example New Name"}'''),
             },
             "minecraft:example_banned_item": {
-                always_equal: ("minecraft:new_id", '''{"text":"Example New Name"}'''),
+                always_equal: ("minecraft:new_id", r'''{"text":"Example New Name"}'''),
+            },
+            "minecraft:trident": {
+                r'''{"text":"Dinglehopper"}''': ("minecraft:compass", r'''{"text":"§6§lQuest Compass"}'''),
             },
         }
 
