@@ -43,6 +43,7 @@ server_config_to_copy = [
         ('plugins/FastAsyncWorldEdit/config.yml',),
         ('plugins/FastAsyncWorldEdit/config-legacy.yml',),
         ('plugins/Monumenta-Plugins/config.yml',),
+        ('plugins/ScriptedQuests/config.yml',),
         ('plugins/OpenInv/config.yml',),
         ('plugins/ProtocolLib/config.yml',),
         ('plugins/Socket4MC/config.yml',),
@@ -569,7 +570,7 @@ if (SERVER_TYPE == 'build'):
     config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=0'))
     config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
-    config = add_config_if_not_set(config, ('plugins/Monumenta-Plugins/config.yml', 'production', 'production: false'))
+    config = add_config_if_not_set(config, ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: true'))
 
     config['region_1']['config'] += [
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
@@ -584,7 +585,7 @@ else:
     config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=2'))
     config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
-    config = add_config_if_not_set(config, ('plugins/Monumenta-Plugins/config.yml', 'production', 'production: true'))
+    config = add_config_if_not_set(config, ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: false'))
 
     config['region_1']['config'] += [
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=12G'),
