@@ -28,27 +28,27 @@ config = {
         {
             "name":"white",
             "region":{"x":-3, "z":-2},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"orange",
             "region":{"x":-3, "z":-1},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"magenta",
             "region":{"x":-3, "z":0},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"lightblue",
             "region":{"x":-3, "z":1},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"yellow",
             "region":{"x":-3, "z":2},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"r1bonus",
             "region":{"x":-3, "z":3},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"roguelike",
             "region":{"x":-2, "z":-1},
@@ -56,7 +56,7 @@ config = {
         },{
             "name":"nightmare",
             "region":{"x":-3, "z":4},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"tutorial",
             "region":{"x":-2, "z":0},
@@ -64,31 +64,31 @@ config = {
         },{
             "name":"sanctum",
             "region":{"x":-3, "z":12},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"labs",
             "region":{"x":-2, "z":1},
-            "numDungeons":50,
+            "numDungeons":75,
         },{
             "name":"lime",
             "region":{"x":-3, "z":5},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"pink",
             "region":{"x":-3, "z":7},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"gray",
             "region":{"x":-3, "z":6},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"cyan",
             "region":{"x":-3, "z":9},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"lime",
             "region":{"x":-3, "z":5},
-            "numDungeons":50,
+            "numDungeons":40,
         },
     ),
 
