@@ -588,8 +588,8 @@ else:
     config = add_config_if_not_set(config, ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: false'))
 
     config['region_1']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=12G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=12G'),
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=10G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=10G'),
         ('server.properties', 'server-ip=', 'server-ip='),
     ]
     config['roguelike']['config'] += [
