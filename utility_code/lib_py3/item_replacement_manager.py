@@ -8,6 +8,7 @@ import traceback
 from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
 from lib_py3.item_replacement_rules import global_rules
+from lib_py3.item_replacement_substitutions import substitution_rules
 from lib_py3.loot_table_manager import LootTableManager
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
@@ -21,6 +22,9 @@ class ItemReplacementManager(object):
         # Master copies
         self.item_map = item_map
 
+        # Item substitutions
+        self.substitution_rules = substitution_rules
+
         # Item pre/post-processing
         self.global_rules = global_rules
 
@@ -32,6 +36,10 @@ class ItemReplacementManager(object):
         # Abort replacement if the item has no ID (empty/invalid item) or no name (no valid replacement)
         if not ( item.has_path('id') and item.has_path('tag.display.Name') ):
             return False
+
+        # Substitute name/id values in case an item changed ID.
+        for rule in self.substitution_rules:
+            rule.process(item, self.item_map)
 
         # Get the correct replacement info; abort if none exists
         item_id = item.at_path('id').value

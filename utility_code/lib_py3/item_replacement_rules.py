@@ -133,6 +133,9 @@ class preserve_enchantment_base(global_rule):
 
 global_rules = []
 
+################################################################################
+# Global rules begin
+
 class abort_no_lore(global_rule):
     name = "Abort if there's no lore text"
 

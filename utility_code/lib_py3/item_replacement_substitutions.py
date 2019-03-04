@@ -40,10 +40,21 @@ substitution_rules = []
 class fix_broken_section_symbols(substitution_rule):
     name = "Fix broken section symbols"
 
+    def _fix(self,old_str):
+        return old_str.replace(chr(0xfffd), chr(0xa7))
+
     def process(self, item, item_map):
+        # Name
         name = item.at_path('tag.display.Name').value
-        new_name = name.replace(ord(0xfffd), ord(0xa7))
+        new_name = self._fix(name)
         item.at_path('tag.display.Name').value = new_name
+
+        # Lore lines
+        if item.has_path('tag.display.Lore'):
+            for lore_line in item.at_path('tag.display.Lore').value:
+                lore = lore_line.value
+                new_lore = self._fix(lore)
+                lore_line.value = new_lore
 
 substitution_rules.append(fix_broken_section_symbols())
 
@@ -52,11 +63,10 @@ class fix_double_json_names(substitution_rule):
 
     def process(self, item, item_map):
         try:
-            item_id = item.at_path('id').value
             name = item.at_path('tag.display.Name').value
             name_json = parse_name_possibly_json(name)
             name_json_json = parse_name_possibly_json(name_json)
-            if name_json != name_json_json and name_json_json in item_map[item_id].keys():
+            if name_json != name_json_json:
                 item.at_path('tag.display.Name').value = name_json
         except:
             pass
@@ -83,17 +93,19 @@ class subtitute_items(substitution_rule):
         item_id = item.at_path('id').value
         item_name = item.at_path('tag.display.Name').value
 
-        if any(replaceable_id == item_id for replaceable_id in self.replacements.keys()):
-            print(replaceable_id)
-            if any(replaceable_name == item_name for replaceable_name in self.replacements[replaceable_id].keys()):
-                print(replaceable_name)
-                new_id_name_pair = self.replacements[replaceable_id][replaceable_name]
+        # This way around so always_equal works
+        for replaceable_id in self.replacements.keys():
+            if replaceable_id == item_id:
+                # This way around so always_equal works
+                for replaceable_name in self.replacements[replaceable_id].keys():
+                    if replaceable_name == item_name:
+                        new_id_name_pair = self.replacements[replaceable_id][replaceable_name]
 
-                new_id = new_id_name_pair[0]
-                new_name = new_id_name_pair[1]
+                        new_id = new_id_name_pair[0]
+                        new_name = new_id_name_pair[1]
 
-                item.at_path('id').value = new_id
-                item.at_path('tag.display.Name').value = new_name
+                        item.at_path('id').value = new_id
+                        item.at_path('tag.display.Name').value = new_name
 
 substitution_rules.append(subtitute_items())
 
