@@ -17,6 +17,53 @@ from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_en
 from lib_py3.common import eprint, parse_name_possibly_json, get_named_hand_items
 from lib_py3.world import World
 
+def pop_if_present(spawner_entity, entity_path, log_handle, key):
+    if isinstance(spawner_entity, nbt.TagCompound) and key in spawner_entity.value:
+        if log_handle is not None:
+            log_handle.write("Popping '{}' from spawner entity at {}\n".format(key, get_debug_string_from_entity_path(entity_path)))
+        spawner_entity.value.pop(key)
+
+def remove_tags_from_spawner_entity(spawner_entity, entity_path, log_handle):
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Pos')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Leashed')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Air')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'OnGround')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Dimension')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Rotation')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'WorldUUIDMost')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'WorldUUIDLeast')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'HurtTime')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'HurtByTimestamp')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'FallFlying')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'PortalCooldown')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'FallDistance')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'DeathTime')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'HandDropChances')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'ArmorDropChances')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'CanPickUpLoot')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Bukkit.updateLevel')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Spigot.ticksLived')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Paper.AAAB')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Paper.Origin')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Paper.FromMobSpawner')
+
+    # Recurse over passengers
+    if (spawner_entity.has_path('Passengers')):
+        remove_tags_from_spawner_entity(spawner_entity.at_path('Passengers'), entity_path, log_handle)
+
+def remove_tags_from_entities_in_spawner(entity, entity_path, log_handle):
+    '''
+    Checks if this entity is a spawner - and if so, removes junk tags from its SpawnPotentials and SpawnData
+    Safe to give any entity - will do nothing if not a spawner
+    '''
+    # Remove position tags from mobs in spawners
+    if entity.has_path('SpawnPotentials'):
+        for nested_entity in entity.at_path('SpawnPotentials').value:
+            if nested_entity.has_path('Entity'):
+                remove_tags_from_spawner_entity(nested_entity.at_path('Entity'), entity_path, log_handle)
+    if entity.has_path("SpawnData"):
+        remove_tags_from_spawner_entity(entity.at_path("SpawnData"), entity_path, log_handle)
+
 mobs_to_replace = [
     # V1 replacements on xyz date
     {
@@ -344,19 +391,19 @@ elif logfile == "stderr":
 elif logfile is not None:
     log_handle = open(logfile, 'w')
 
+# Just in case the replacements themselves have junk tags...
+clean_mobs_to_replace = []
+for replacement in mobs_to_replace:
+    entity = nbt.TagCompound.from_mojangson(replacement['mojangson'])
+    remove_tags_from_spawner_entity(entity, None, log_handle)
+    replacement['mojangson'] = entity.to_mojangson()
+    clean_mobs_to_replace.append(replacement)
+mobs_to_replace = clean_mobs_to_replace
+
 replacements_log = {}
 for entity, source_pos, entity_path in world.entity_iterator(readonly=dry_run):
     ### Apply fixes common to all spawners
-
-    # Remove position tags from mobs in spawners
-    if entity.has_path('SpawnPotentials'):
-        for nested_entity in entity.at_path('SpawnPotentials').value:
-            if nested_entity.has_path('Entity.Pos'):
-                log_handle.write("Popping 'Pos' from SpawnPotentials entry at {}\n".format(get_debug_string_from_entity_path(entity_path)))
-                nested_entity.at_path("Entity").value.pop('Pos')
-    if entity.has_path("SpawnData.Pos"):
-        log_handle.write("Popping 'Pos' from SpawnData at {}\n".format(get_debug_string_from_entity_path(entity_path)))
-        entity.at_path("SpawnData").value.pop('Pos')
+    remove_tags_from_entities_in_spawner(entity, entity_path, log_handle)
 
     # Prime spawners
     if entity.has_path("Delay"):

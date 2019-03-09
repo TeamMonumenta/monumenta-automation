@@ -51,6 +51,9 @@ def get_name(name, ansii_colors=False):
 
 def get_debug_string_from_entity_path(entity_path, ansii_colors=False):
     debug_string = ""
+    if entity_path is None:
+        return "None"
+
     for location in entity_path:
         if len(debug_string) > 0:
             debug_string += " -> "
