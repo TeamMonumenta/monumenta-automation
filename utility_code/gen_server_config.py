@@ -49,6 +49,7 @@ server_config_to_copy = [
         ('plugins/Socket4MC/config.yml',),
         ('plugins/Vault/config.yml',),
         ('plugins/ChestSort/config.yml',),
+        ('plugins/dynmap/custom-lightings.txt',),
     ]
 
 purgatory_min = [
@@ -112,6 +113,7 @@ dynmap = [
         ('plugins/Dynmap.jar', '../../server_config/plugins/Dynmap.jar'),
         ('plugins/dynmap/configuration.txt', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/configuration.txt'),
         ('plugins/dynmap/worlds.txt', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/worlds.txt'),
+        ('plugins/dynmap/markers.yml', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/markers.yml'),
     ]
 
 luckperms_standalone = [
