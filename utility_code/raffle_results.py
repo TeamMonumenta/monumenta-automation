@@ -12,7 +12,7 @@ if (len(sys.argv) != 3):
 
 scoreboard = Scoreboard(sys.argv[1])
 raffle_results = tempfile.mktemp()
-meme_seed = '''help I keep forgetting to change the damn seed'''
+meme_seed = '''Kaul of the wild'''
 vote_raffle(meme_seed, scoreboard, raffle_results, int(sys.argv[2]))
 
 rafflefp = open( raffle_results, "r" )
