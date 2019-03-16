@@ -273,7 +273,19 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25603'),
-            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.5"'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.33"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=5G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=5G'),
+        ],
+        'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
+    },
+
+    'pvp_do_not_use':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'server-port', 'server-port=25604'),
+            ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.34"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=5G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=5G'),
         ],
