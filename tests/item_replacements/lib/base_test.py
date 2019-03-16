@@ -8,8 +8,8 @@ import os
 import sys
 import traceback
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../utility_code"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 
 from quarry.types import nbt
 
@@ -54,13 +54,16 @@ class ReplacementTest(object):
         self.result = self.item_under_test.deep_copy()
         self.replacement_manager.replace_item(self.result)
 
-        if self.result.to_bytes() == self.item_under_test.to_bytes():
+        if ( 
+            self.result.equals_exact(self.item_under_test) and not
+            self.expected_result_item.equals_exact(self.item_under_test)
+        ):
             raise ValueError("Item did not change")
 
         if self.result != self.expected_result_item:
             raise ValueError("Item does not match expected result")
 
-        if self.result.to_bytes() != self.expected_result_item.to_bytes():
+        if not self.result.equals_exact(self.expected_result_item):
             raise ValueError("Item matches expected result, but in the wrong order")
 
     def test(self):
@@ -74,7 +77,10 @@ class ReplacementTest(object):
             print("f: {}".format(self.test_name))
             if self.interact_on_fail:
                 print("self is item under test, other is expected result:")
-                self.result.diff(self.expected_result_item)
+                try:
+                    self.result.diff(self.expected_result_item)
+                except:
+                    print("Additionally, a diff could not be generated.")
                 self.interact()
         else:
             print("p: {}".format(self.test_name))
