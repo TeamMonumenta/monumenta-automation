@@ -54,12 +54,6 @@ class ReplacementTest(object):
         self.result = self.item_under_test.deep_copy()
         self.replacement_manager.replace_item(self.result)
 
-        if ( 
-            self.result.equals_exact(self.item_under_test) and not
-            self.expected_result_item.equals_exact(self.item_under_test)
-        ):
-            raise ValueError("Item did not change")
-
         if self.result != self.expected_result_item:
             raise ValueError("Item does not match expected result")
 
