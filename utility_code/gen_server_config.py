@@ -208,7 +208,6 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25568'),
-            ('server.properties', 'spawn-monsters', 'spawn-monsters=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.3"'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=6G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=6G'),
