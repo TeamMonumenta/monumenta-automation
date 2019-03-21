@@ -83,6 +83,7 @@ def terrain_reset_instance(config, outputFile, statusQueue):
         if "localMainFolder" in config and not os.path.exists(config["localMainFolder"]):
             eprint("!!!!!! WARNING: Missing previous week main folder '{}'!".format(config["localBuildFolder"]))
             eprint("If you are not adding a shard, this is a critical problem!")
+            statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log})
             return
 
         worldScores = None
