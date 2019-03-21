@@ -236,7 +236,7 @@ available_configs = {
     "nightmare": get_dungeon_config("nightmare", "DCAccess"),
     "sanctum": get_dungeon_config("sanctum", "DS1Access"),
     "labs": get_dungeon_config("labs", "D0Access"),
-    "roguelike": None, # TODO
+    "roguelike": get_dungeon_config("roguelike", "DRAccess"),
     "tutorial": tutorial,
     "build": None,
     "bungee": None,
