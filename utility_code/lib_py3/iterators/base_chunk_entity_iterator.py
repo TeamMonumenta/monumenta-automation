@@ -223,14 +223,21 @@ class BaseChunkEntityIterator(object):
 
             # Tile entities are done but somehow we are still here - so there must be entities to do
             entity = self._entities[self._entities_pos]
-            pos = entity.at_path('Pos').value
-            x = pos[0].value
-            y = pos[1].value
-            z = pos[2].value
 
             # Increment index so regardless of whether this is in range the next step
             # will find the next entity
             self._entities_pos += 1
+
+            if not entity.has_path('Pos'):
+                # ????
+                # This is a real problem - something has broken the entity to not have a position tag at all
+                # Pretty sure this entity will be effectively removed from the world. No reason to iterate it here
+                continue
+
+            pos = entity.at_path('Pos').value
+            x = pos[0].value
+            y = pos[1].value
+            z = pos[2].value
 
             if not (
                 self._min_x <= x and x < self._max_x + 1 and
