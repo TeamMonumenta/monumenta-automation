@@ -167,11 +167,11 @@ def generateDungeonInstances(config, dungeon, outputFile, statusQueue):
         print("")
         ##################################################################################
 
-        statusQueue.put({"server":dungeonName,"done":True})
+        statusQueue.put({"server":dungeonName, "done":True})
 
     except:
         e = traceback.format_exc()
-        statusQueue.put({"server":dungeonName,"done":True,"error":e})
+        statusQueue.put({"server":dungeonName, "done":True, "error":e})
 
 
 

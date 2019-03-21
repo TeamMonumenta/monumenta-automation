@@ -3,6 +3,10 @@
 import os
 import sys
 import datetime
+import codecs
+import multiprocessing as mp
+import tempfile
+import traceback
 
 from score_change_list import dungeon_score_rules
 from lib_py3.terrain_reset import terrain_reset_instance
@@ -20,6 +24,42 @@ datapacks_dungeon = datapacks_base + ['file/dungeon']
 loot_table_manager = LootTableManager()
 loot_table_manager.load_loot_tables_subdirectories("/home/rock/5_SCRATCH/tmpreset/TEMPLATE/server_config/data/datapacks")
 item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map(show_errors=False))
+
+# Log replacements separately by shard name
+def log_replacements(log_handle, shard_name, replacements_log):
+    log_handle.write("\n\n")
+    log_handle.write("################################################################################\n")
+    log_handle.write("# SHARD: {}\n\n".format(shard_name))
+
+    for to_item in replacements_log:
+        log_handle.write("{}\n".format(to_item))
+        log_handle.write("    TO:\n")
+        log_handle.write("        {}\n".format(replacements_log[to_item]["TO"]))
+        log_handle.write("    FROM:\n")
+
+        if update_tables:
+            to_nbt = nbt.TagCompound.from_mojangson(replacements_log[to_item]["TO"])
+
+        table_updates_from_this_item = 0
+        for from_item in replacements_log[to_item]["FROM"]:
+            log_handle.write("        {}\n".format(from_item))
+
+            if update_tables:
+                from_nbt = nbt.TagCompound.from_mojangson(from_item)
+                if (from_nbt == to_nbt) and (not from_nbt.equals_exact(to_nbt)):
+                    table_updates_from_this_item += 1
+                    if table_updates_from_this_item > 1:
+                        eprint("WARNING: Item '{}' updated multiple times!".format(replacements_log[to_item]["NAME"]))
+
+                    # NBT is the "same" as the loot table entry but in a different order
+                    # Need to update the loot tables with the correctly ordered NBT
+                    loot_table_manager.update_item_in_loot_tables(replacements_log[to_item]["ID"], from_nbt)
+                    log_handle.write("        Updated loot tables with this item!\n")
+
+            for from_location in replacements_log[to_item]["FROM"][from_item]:
+                log_handle.write("            {}\n".format(from_location))
+
+        log_handle.write("\n")
 
 def get_dungeon_config(name, scoreboard):
     return {
@@ -218,50 +258,55 @@ for arg in sys.argv[1:]:
         print("ERROR: Unknown shard {} specified!".format(arg))
         sys.exit("Usage: {} <server1> [server2] ...".format(sys.argv[0]))
 
-all_replacements_log = {}
+processes = {}
+statusQueue = mp.Queue()
 for config in reset_config_list:
-    all_replacements_log[config["server"]] = {}
-    terrain_reset_instance(config, replacements_log=all_replacements_log[config["server"]])
+    shard_name = config["server"]
+    outputFile = tempfile.mktemp()
+    processes[shard_name] = {
+        "process":mp.Process(target=terrain_reset_instance, args=(config, outputFile, statusQueue)),
+        "outputFile":outputFile,
+    }
 
-print("Shards reset successfully: {}".format(reset_name_list))
+# Decrease the priority for this work so it doesn't slow down other things
+os.nice(20)
+
+for p in processes.values():
+    p["process"].start()
 
 logfile = "/home/rock/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{}.log".format(datetime.date.today().strftime("%Y-%m-%d"))
 update_tables = False
 with open(logfile, 'w') as log_handle:
-    for shard_name in all_replacements_log:
+    while len(processes.keys()) > 0:
+        statusUpdate = statusQueue.get()
+        shard_name = statusUpdate["server"]
+        p = processes[shard_name]
 
-        # Log replacements separately by shard name
-        replacements_log = all_replacements_log[shard_name]
-        log_handle.write("\n\n")
-        log_handle.write("################################################################################\n")
-        log_handle.write("# SHARD: {}\n\n".format(shard_name))
+        if "done" in statusUpdate:
+            p["process"].join()
 
-        for to_item in replacements_log:
-            log_handle.write("{}\n".format(to_item))
-            log_handle.write("    TO:\n")
-            log_handle.write("        {}\n".format(replacements_log[to_item]["TO"]))
-            log_handle.write("    FROM:\n")
+            if "error" not in statusUpdate:
+                print(shard_name + " completed successfully")
 
-            if update_tables:
-                to_nbt = nbt.TagCompound.from_mojangson(replacements_log[to_item]["TO"])
+            try:
+                logFile = codecs.open(p["outputFile"],'rb',encoding='utf8')
+                print(logFile.read())
+                logFile.close()
+            except:
+                print("Log file could not be read!")
 
-            table_updates_from_this_item = 0
-            for from_item in replacements_log[to_item]["FROM"]:
-                log_handle.write("        {}\n".format(from_item))
+            if "replacements_log" in statusUpdate:
+                log_replacements(log_handle, shard_name, statusUpdate["replacements_log"])
 
-                if update_tables:
-                    from_nbt = nbt.TagCompound.from_mojangson(from_item)
-                    if (from_nbt == to_nbt) and (not from_nbt.equals_exact(to_nbt)):
-                        table_updates_from_this_item += 1
-                        if table_updates_from_this_item > 1:
-                            eprint("WARNING: Item '{}' updated multiple times!".format(replacements_log[to_item]["NAME"]))
+            processes.pop(shard_name)
 
-                        # NBT is the "same" as the loot table entry but in a different order
-                        # Need to update the loot tables with the correctly ordered NBT
-                        loot_table_manager.update_item_in_loot_tables(replacements_log[to_item]["ID"], from_nbt)
-                        log_handle.write("        Updated loot tables with this item!\n")
+        if "error" in statusUpdate:
+            print("\n!!! " + shard_name + " has crashed.\n")
 
-                for from_location in replacements_log[to_item]["FROM"][from_item]:
-                    log_handle.write("            {}\n".format(from_location))
+            # stop all other subprocesses
+            for p in processes.values():
+                p["process"].terminate()
 
-            log_handle.write("\n")
+            raise RuntimeError(str(statusUpdate["error"]))
+
+print("Shards reset successfully: {}".format(reset_name_list))
