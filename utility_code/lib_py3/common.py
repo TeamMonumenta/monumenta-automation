@@ -53,7 +53,20 @@ def get_named_hand_items(entity):
         return [None, None]
 
     if len(hand_items_nbt.value) != 2:
-        raise("NOT IMPLEMENTED: Mob has hand items length != 2 : {}".format(line))
+        if len(hand_items_nbt.value) == 1:
+            hand_items.append(None)
+            for hand_item in hand_items_nbt.value:
+                if hand_item.has_path("tag.display.Name"):
+                    item_name = parse_name_possibly_json(hand_item.at_path("tag.display.Name").value)
+                    # Sorta janky - put quotes around the item name here
+                    hand_items.append("'{}'".format(item_name))
+                else:
+                    hand_items.append(None)
+
+        else:
+            eprint("Entity has weird hand items length!")
+            entity.tree()
+            return [None, None]
 
     for hand_item in hand_items_nbt.value:
         if hand_item.has_path("tag.display.Name"):
