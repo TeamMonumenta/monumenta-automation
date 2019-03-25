@@ -205,6 +205,37 @@ region_1 = {
     ),
 }
 
+
+region_2 = {
+    "server":"region_2",
+
+    # Dst is the destination world, which gets overwritten by the build world.
+    # Then, data from the main world replaces the relevant parts of the dst world.
+    # Please note that no special care need be taken with whitespace in filenames.
+    "localMainFolder":"/home/rock/project_epic/Project_Epic-region_2_alpha_3.2/",
+    "localBuildFolder":"/home/rock/project_epic/Project_Epic-region_2/",
+    "localDstFolder":"/home/rock/project_epic/region_2/Project_Epic-region_2/",
+
+    # Reset dungeon scores
+    "playerScoreChanges":dungeon_score_rules,
+
+    "datapacks":datapacks_base + ['file/region_2'],
+    "tpToSpawn":True,
+    "tagPlayers":["MidTransfer","resetMessage"],
+
+    "coordinatesToFill":(
+        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
+    ),
+
+    # Which folder to copy the base world from. Either "build", "main", or not set
+    "copyBaseFrom":"build",
+    "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+
+    "coordinatesToCopy":(
+        {"name":"Home Platform", "pos1":(-1916, 0, -1504), "pos2":(-1755, 255, -1354), "replace_items":item_replace_manager},
+    ),
+}
+
 # In case we ever need something like this again...
 #nov17_r1plots_rollback = {
 #    "server":"rollback",
@@ -227,6 +258,7 @@ available_configs = {
     "betaplots": betaplots,
     "r1plots": r1plots,
     "region_1": region_1,
+    "region_2": region_2,
     "white": get_dungeon_config("white", "D1Access"),
     "orange": get_dungeon_config("orange", "D2Access"),
     "magenta": get_dungeon_config("magenta", "D3Access"),
