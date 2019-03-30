@@ -12,7 +12,7 @@ if (len(sys.argv) != 3):
 
 scoreboard = Scoreboard(sys.argv[1])
 raffle_results = tempfile.mktemp()
-meme_seed = '''Our weekly updates just got faster, now with 99% less error text!'''
+meme_seed = '''10111110100011111000110110010110100100111101111110111001100100001001000010010011110110001000110011011110'''
 vote_raffle(meme_seed, scoreboard, raffle_results, int(sys.argv[2]))
 
 rafflefp = open( raffle_results, "r" )
