@@ -565,6 +565,43 @@ mobs_to_replace = [
         },
         'mojangson': r'''{id:"minecraft:skeleton",HurtByTimestamp:0,Attributes:[{Base:40.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,FallFlying:0b,PortalCooldown:0,AbsorptionAmount:0.0f,FallDistance:0.0f,DeathTime:0s,WorldUUIDMost:-1041596277173696703L,HandDropChances:[-200.1f,-200.1f],PersistenceRequired:0b,Spigot.ticksLived:1795,Motion:[0.0d,-0.0784000015258789d,0.0d],Leashed:0b,Health:40.0f,Bukkit.updateLevel:2,LeftHanded:0b,Air:300s,OnGround:1b,Dimension:0,HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§fLiving Bow\"}"},Enchantments:[{lvl:2s,id:"minecraft:power"},{lvl:1s,id:"minecraft:mending"},{lvl:1s,id:"minecraft:punch"}],Damage:0}},{id:"minecraft:potion",Count:1b,tag:{Potion:"minecraft:slow_falling"}}],ArmorDropChances:[-200.1f,-200.1f,-200.1f,-200.1f],CustomName:"{\"text\":\"Tundra Spellslinger\"}",Fire:-1s,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:16777215,Name:"{\"text\":\"§aSoulleather Shoes\"}"},Enchantments:[{lvl:1s,id:"minecraft:mending"},{lvl:2s,id:"minecraft:protection"},{lvl:1s,id:"minecraft:vanishing_curse"}],Damage:0}},{id:"minecraft:chainmail_leggings",Count:1b,tag:{display:{Name:"{\"text\":\"SnowBanditPants\"}"},Damage:0}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:16777215,Name:"{\"text\":\"§aSoulleather Cloak\"}"},Enchantments:[{lvl:1s,id:"minecraft:mending"},{lvl:2s,id:"minecraft:protection"},{lvl:1s,id:"minecraft:vanishing_curse"}],Damage:0}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"e92c1950-2fa6-4a5b-a1f4-c4ca9eb04402",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZlYTMwM2E3MzQ5ZWY4YmI3N2M5NDNlYWIyM2JiNmRlYmMyNTNhOGZlNjk5YmMzYjE1ZmZkMzBlZjliMjYifX19"}]}},display:{Name:"{\"text\":\"Assassin\"}"}}}],CanPickUpLoot:0b,HurtTime:0s,WorldUUIDLeast:-7560693509725274339L,ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:70553,Id:1b,Amplifier:0b},{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:70553,Id:12b,Amplifier:0b}]}''',
     },
+
+    # RL Sunken Temple
+    {
+        'rules': {
+            'id': 'minecraft:zombie',
+            'CustomName': 'Guardian Brawler'
+        },
+        'mojangson': r'''{id:"minecraft:silverfish",Passengers:[{CustomName:"{\"text\":\"Guardian Brawler\"}",ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{Enchantments:[{lvl:2s,id:"minecraft:depth_strider"}],display:{color:9161413}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:9161413}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:9161413}}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"4005cac1-a16a-45aa-9e72-7fb514335717",Properties:{textures:[{Signature:"PRszFbJki+hf7k/LnfNAwqzVYyxvkdO0fzqEBMvnoYI/1AK0CPSEls9p8t5vCLYO3je2j0FtMj362hLZN+bhdg7X/f+m7+NJ8GqhXKY5jr3/+H3RbDEpfSBygNqKuABz3I0zyuXzb8OzJsReOWoWp+8AePKw0p4ct+AGhuM27+86u+2fSoXpYr3zJw/N0TmEcKmFFPaTLrVFI348ZkuPQIwsAm3JY81QCo6YyEI+O4oMlKaTav8lNccD8g1s8WHyc02Su+pfEmarqf9cg7365Mx3DFbRUW6VrNXCKboRn+Q/IjUvxxOqx9tx3qQRJsHxuFgq6T/HAboMLNxhQMd2KeOGBo/lOteok5TtUdQi89fYuLhz4SQV0WBNy2bfZ9amMuc9IyYBNxbTh3RSsFwcRt66IorlJVjzK3xi6nVprSBMECW0tTCFMyXcLwrc/bnZPz0P/jNuTG3EyNq+2L91tIfOkKtt55I/vdNqO2ukXsV6peJkRZ2m2DJ2d72IZzr34hbI5q3nDGGlC7118Cb+74Tee/eeZO7UcztZmgVDONRX0AF7sqtSozp8JGlKaUmwTTABrrIMLx2XDdwWsXYGkLoikG1NZea8TohblzTEZIrpnbyNVNxSuKzyAcyzNhwX74+3uLtWj8EB7yKDKU/PXjVpcG+ZvaRLKkNo23XO8g0=",Value:"eyJ0aW1lc3RhbXAiOjE0OTk0OTAwODM4NjIsInByb2ZpbGVJZCI6IjQwMDVjYWMxYTE2YTQ1YWE5ZTcyN2ZiNTE0MzM1NzE3IiwicHJvZmlsZU5hbWUiOiJNSEZfR3VhcmRpYW4iLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzkzMmMyNDUyNGM4MmFiM2IzZTU3YzIwNTJjNTMzZjEzZGQ4YzBiZWI4YmRkMDYzNjliYjI1NTRkYTg2YzEyMyJ9fX0="}]},Name:"MHF_Guardian"}}}],id:"minecraft:drowned",HandItems:[{id:"minecraft:stone_axe",Count:1b,tag:{display:{Name:"{\"text\":\"§fPrismarine Axe\"}"},AttributeModifiers:[{UUIDMost:-7576342528069448003L,UUIDLeast:-5159379555572510812L,Amount:7.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{id:"minecraft:banner",Patterns:[{Pattern:"gru",Color:15},{Pattern:"bt",Color:15}],Base:11}}}]}],Health:1.0f,Attributes:[{Base:1.0d,Name:"generic.maxHealth"}],Silent:1b,ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:100,Id:20b,Amplifier:4b},{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:100,Id:14b,Amplifier:0b}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
+            'CustomName': 'Elder Archer'
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"Elder Archer\"}",Health:20.0f,ArmorItems:[{id:"minecraft:leather_boots",tag:{display:{color:16774619}},Count:1b},{id:"minecraft:leather_leggings",tag:{display:{color:16774619},Enchantments:[{lvl:2s,id:"minecraft:thorns"}]},Count:1b},{id:"minecraft:leather_chestplate",tag:{display:{color:16774619}},Count:1b},{id:"minecraft:player_head",tag:{SkullOwner:{Id:"e56a8749-8a4a-40cc-9ded-3c90f8ae8c63",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWM3OTc0ODJhMTRiZmNiODc3MjU3Y2IyY2ZmMWI2ZTZhOGI4NDEzMzM2ZmZiNGMyOWE2MTM5Mjc4YjQzNmIifX19"}]}}},Count:1b}],Attributes:[{Base:20.0d,Name:"generic.maxHealth"}],Tags:["boss_float"],HandItems:[{id:"minecraft:bow",Count:1b,tag:{Enchantments:[{lvl:3,id:"minecraft:power"}],Damage:0}},{id:"minecraft:tipped_arrow",Count:1b,tag:{Potion:"minecraft:slow_falling"}}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:guardian',
+            'CustomName': 'Mindfaser'
+        },
+        'mojangson': r'''{id:"minecraft:guardian",Passengers:[{Potion:{id:"minecraft:lingering_potion",tag:{CustomPotionEffects:[{Duration:550,Id:13,Amplifier:0}]},Count:1},id:"minecraft:potion"}],CustomName:"{\"text\":\"Mindfaser\"}",Health:12.0f,Attributes:[{Base:12,Name:"generic.maxHealth"},{Base:10,Name:"generic.attackDamage"}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
+            'CustomName': 'Spirit of the drowned'
+        },
+        'mojangson': r'''{id:"minecraft:silverfish",Passengers:[{CustomName:"{\"text\":\"Spirit of the Drowned\"}",Health:6.0f,ArmorItems:[{id:"minecraft:chainmail_boots",Count:1b,tag:{Enchantments:[{lvl:3s,id:"minecraft:depth_strider"}],AttributeModifiers:[{UUIDMost:6015052308714310336L,UUIDLeast:-5136869337687873999L,Amount:0.2d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{},{id:"minecraft:chainmail_chestplate",Count:1b,tag:{Enchantments:[{lvl:1s,id:"minecraft:fire_protection"},{lvl:5s,id:"minecraft:respiration"}],Damage:0}},{}],Attributes:[{Base:6.0d,Name:"generic.maxHealth"}],id:"minecraft:drowned",ActiveEffects:[{ShowParticles:0b,Duration:222220,Id:14,Amplifier:0}],HandItems:[{id:"minecraft:stone_sword",Count:1b,tag:{Enchantments:[{lvl:3s,id:"minecraft:sharpness"}]}},{}]}],Health:1.0f,Attributes:[{Base:1.0d,Name:"generic.maxHealth"}],Silent:1b,ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:100,Id:20b,Amplifier:4b},{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:100,Id:14b,Amplifier:0b}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:creeper',
+            'CustomName': 'Tidal Terror'
+        },
+        'mojangson': r'''{id:"minecraft:creeper",Fuse:15s,CustomName:"{\"text\":\"Tidal Terror\"}",powered:0b,Health:16.0f,ArmorItems:[{id:"minecraft:leather_boots",tag:{Enchantments:[{lvl:1,id:"minecraft:depth_strider"}]},Count:1b},{},{},{}],Attributes:[{Base:16,Name:"generic.maxHealth"},{Base:0.28d,Name:"generic.movementSpeed"}],ExplosionRadius:3b,ActiveEffects:[{Duration:800,Id:13,Amplifier:0}]}''',
+    },
 ]
 
 def usage():
