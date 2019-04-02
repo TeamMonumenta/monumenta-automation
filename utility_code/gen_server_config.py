@@ -304,7 +304,7 @@ config = {
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1280M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1280M'),
         ],
-        'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect,
+        'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect + gobrush,
     },
 
     'mobs':{
