@@ -121,6 +121,7 @@ permissionGroups = {
         "+select",
         "+start shard",
         "+stop shard",
+        "+update item",
         "+test",
         "+testpriv",
     ],
