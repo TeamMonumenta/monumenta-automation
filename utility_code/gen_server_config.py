@@ -42,7 +42,7 @@ server_config_to_copy = [
         ('plugins/CoreProtect/config.yml',),
         ('plugins/FastAsyncWorldEdit/config.yml',),
         ('plugins/FastAsyncWorldEdit/config-legacy.yml',),
-        ('plugins/Monumenta-Plugins/config.yml',),
+        ('plugins/MonumentaMain/config.yml',),
         ('plugins/ScriptedQuests/config.yml',),
         ('plugins/OpenInv/config.yml',),
         ('plugins/ProtocolLib/config.yml',),
@@ -91,11 +91,12 @@ monumenta_without_mobs_plugins = [
         ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
-        ('plugins/Monumenta-Plugins/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
+        ('plugins/MonumentaMain/Properties.json', '../../../server_config/data/plugins/{servername}/MonumentaMain/Properties.json'),
     ]
 monumenta = monumenta_without_mobs_plugins + [
-        ('plugins/Monumenta-Plugins.jar', '../../server_config/plugins/Monumenta-Plugins.jar'),
-        ('plugins/Monumenta-Bossfights.jar', '../../server_config/plugins/Monumenta-Bossfights.jar'),
+        ('plugins/MonumentaMain.jar', '../../server_config/plugins/MonumentaMain.jar'),
+        ('plugins/MonumentaNMS.jar', '../../server_config/plugins/MonumentaNMS.jar'),
+        ('plugins/MonumentaBosses.jar', '../../server_config/plugins/MonumentaBosses.jar'),
     ]
 
 coreprotect = [
@@ -318,8 +319,9 @@ config = {
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
         ],
         'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + coreprotect + [
-            ('plugins/Monumenta-Plugins.jar', '/home/epic/mob_shard_plugins/Monumenta-Plugins.jar'),
-            ('plugins/Monumenta-Bossfights.jar', '/home/epic/mob_shard_plugins/Monumenta-Bossfights.jar'),
+            ('plugins/MonumentaMain.jar', '/home/epic/mob_shard_plugins/MonumentaMain.jar'),
+            ('plugins/MonumentaBosses.jar', '/home/epic/mob_shard_plugins/MonumentaBosses.jar'),
+            ('plugins/MonumentaNMS.jar', '/home/epic/mob_shard_plugins/MonumentaNMS.jar'),
         ]
     },
 
