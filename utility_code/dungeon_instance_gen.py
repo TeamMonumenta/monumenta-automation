@@ -52,7 +52,7 @@ config = {
         },{
             "name":"roguelike",
             "region":{"x":-2, "z":-1},
-            "numDungeons":1,
+            "numDungeons":200,
         },{
             "name":"nightmare",
             "region":{"x":-3, "z":4},
