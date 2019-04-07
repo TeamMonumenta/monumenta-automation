@@ -192,8 +192,8 @@ config = {
 
     'region_1':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=9'),
-            ('spigot.yml', 'view-distance', '    view-distance: 9'),
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25566'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.2"'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /function monumenta:on_new_day/global'),
@@ -210,8 +210,7 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25568'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.3"'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=6G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=6G'),
+            ('mark2-scripts.txt', '     0    3    *    *    *    /function monumenta:on_new_day/global'),
         ],
         'linked':server_config + base_plugins + dynmap,
     },
@@ -252,6 +251,8 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'server-port', 'server-port=25569'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.4"'),
+            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
+            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
         'linked':server_config + base_plugins,
     },
@@ -451,8 +452,8 @@ config = {
 
     'lime':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'view-distance', 'view-distance=9'),
+            ('spigot.yml', 'view-distance', '    view-distance: 9'),
             ('server.properties', 'server-port', 'server-port=25585'),
             ('server.properties', 'spawn-animals', 'spawn-animals=false'),
             ('plugins/Socket4MC/config.yml', 'host', 'host: "127.0.0.15"'),
@@ -591,11 +592,10 @@ if (SERVER_TYPE == 'build'):
     config['region_1']['config'] += [
         ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
         ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
-        ('server.properties', 'server-ip=', 'server-ip=127.0.0.1'),
     ]
-    config['roguelike']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
+    config['region_2']['config'] += [
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=4G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=4G'),
     ]
 else:
     config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=2'))
@@ -604,13 +604,12 @@ else:
     config = add_config_if_not_set(config, ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: false'))
 
     config['region_1']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=10G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=10G'),
-        ('server.properties', 'server-ip=', 'server-ip='),
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=8G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=8G'),
     ]
-    config['roguelike']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
+    config['region_2']['config'] += [
+        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=8G'),
+        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=8G'),
     ]
 
     # Player analytics plugin only for play server
