@@ -612,7 +612,7 @@ allActions.append(RepairBlockEntitiesAction)
 
 class PrepareResetBundleAction(ShellAction):
     '''Dangerous!
-Temporarily brings down the region_1 shard to prepare for terrain reset
+Temporarily brings down the region_1 and region_2 shards to prepare for terrain reset
 Packages up all of the pre-reset server components needed by the play server for reset
 Must be run before starting terrain reset on the play server'''
     command = "prepare reset bundle"
@@ -623,8 +623,10 @@ Must be run before starting terrain reset on the play server'''
         self._commands = [
             self.display("Stopping the region_1 shard..."),
             self.run("mark2 send -n region_1 ~stop", None),
-            self.sleep(5),
+            self.run("mark2 send -n region_2 ~stop", None),
+            self.sleep(6),
             self.run("mark2 send -n region_1 test", 1),
+            self.run("mark2 send -n region_2 test", 1),
 
             self.display("Copying region_1..."),
             self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
@@ -633,6 +635,15 @@ Must be run before starting terrain reset on the play server'''
 
             self.display("Restarting the region_1 shard..."),
             self.cd("/home/rock/project_epic/region_1"),
+            self.run("mark2 start"),
+
+            self.display("Copying region_2..."),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
+            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_2"),
+            self.run("cp -a /home/rock/project_epic/region_2/Project_Epic-region_2 /home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_2/"),
+
+            self.display("Restarting the region_2 shard..."),
+            self.cd("/home/rock/project_epic/region_2"),
             self.run("mark2 start"),
 
             self.display("Copying bungee..."),

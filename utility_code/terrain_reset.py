@@ -212,9 +212,9 @@ region_2 = {
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
-    "localMainFolder":"/home/rock/project_epic/Project_Epic-region_2_alpha_3.2/",
-    "localBuildFolder":"/home/rock/project_epic/Project_Epic-region_2/",
-    "localDstFolder":"/home/rock/project_epic/region_2/Project_Epic-region_2/",
+    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_2/Project_Epic-region_2/",
+    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_2/Project_Epic-region_2/",
+    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/region_2/Project_Epic-region_2/",
 
     # Reset dungeon scores
     "playerScoreChanges":dungeon_score_rules,
@@ -230,29 +230,7 @@ region_2 = {
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
-
-    "coordinatesToCopy":(
-        {"name":"Home Platform", "pos1":(-1916, 0, -1504), "pos2":(-1755, 255, -1354), "replace_items":item_replace_manager},
-    ),
 }
-
-# In case we ever need something like this again...
-#nov17_r1plots_rollback = {
-#    "server":"rollback",
-#
-#    # Dst is the destination world, which gets overwritten by the build world.
-#    # Then, data from the main world replaces the relevant parts of the dst world.
-#    # Please note that no special care need be taken with whitespace in filenames.
-#    "localMainFolder":"/home/rock/project_epic/r1plots/Project_Epic-r1plots.old/",
-#    "localDstFolder":"/home/rock/project_epic/r1plots/Project_Epic-r1plots/",
-#
-#    "coordinatesToCopy":(
-#        {"name":"shop plot A",               "pos1":(-2760,  76,  831), "pos2":(-2751,  80,  820)},
-#        {"name":"shop plot B",               "pos1":(-2764,  76,  784), "pos2":(-2773,  85,  790)},
-#        {"name":"shop plot C",               "pos1":( -811,  99,   31), "pos2":( -873,  99,   31)},
-#        {"name":"BlackCat_FH's player plot", "pos1":(-2641,  48,  210), "pos2":(-2617,  98,  228)},
-#    ),
-#}
 
 available_configs = {
     "betaplots": betaplots,
@@ -264,6 +242,11 @@ available_configs = {
     "magenta": get_dungeon_config("magenta", "D3Access"),
     "lightblue": get_dungeon_config("lightblue", "D4Access"),
     "yellow": get_dungeon_config("yellow", "D5Access"),
+    "lime": get_dungeon_config("lime", "D6Access"),
+    "pink": get_dungeon_config("pink", "D7Access"),
+    "gray": get_dungeon_config("gray", "D8Access"),
+    "lightgray": get_dungeon_config("lightgray", "D9Access"),
+    "cyan": get_dungeon_config("cyan", "D10Access"),
     "r1bonus": get_dungeon_config("r1bonus", "DB1Access"),
     "nightmare": get_dungeon_config("nightmare", "DCAccess"),
     "sanctum": get_dungeon_config("sanctum", "DS1Access"),
@@ -273,7 +256,6 @@ available_configs = {
     "build": None,
     "bungee": None,
     "purgatory": None,
-    #"rollback": nov17_r1plots_rollback,
 }
 
 if (len(sys.argv) < 2):
