@@ -23,7 +23,7 @@ botConfig = {}
 
 botConfig["main_pid"] = os.getpid()
 botConfig["listening"] = listening()
-botConfig["config_dir"] = os.path.expanduser("~/.monumeneta_bot/")
+botConfig["config_dir"] = os.path.expanduser("~/.monumenta_bot/")
 
 # Get bot's login info
 loginInfo = None
