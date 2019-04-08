@@ -122,6 +122,19 @@ tutorial = {
     "datapacks":datapacks_dungeon + ['file/tutorial'],
 }
 
+roguelike = {
+    "server":roguelike,
+    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/roguelike/Project_Epic-roguelike/",
+    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/roguelike/Project_Epic-roguelike/",
+    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/roguelike/Project_Epic-roguelike/",
+    "copyBaseFrom":"build",
+    "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+    "datapacks":datapacks_dungeon + ['file/roguelike'],
+    "playerScoreChanges":dungeon_score_rules,
+    "tagPlayers":["MidTransfer","resetMessage"],
+    "tpToSpawn":True,
+}
+
 region_1 = {
     "server":"region_1",
 
@@ -251,7 +264,7 @@ available_configs = {
     "nightmare": get_dungeon_config("nightmare", "DCAccess"),
     "sanctum": get_dungeon_config("sanctum", "DS1Access"),
     "labs": get_dungeon_config("labs", "D0Access"),
-    "roguelike": get_dungeon_config("roguelike", "DRAccess"),
+    "roguelike": roguelike,
     "tutorial": tutorial,
     "build": None,
     "bungee": None,
