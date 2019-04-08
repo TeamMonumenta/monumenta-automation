@@ -565,7 +565,29 @@ mobs_to_replace = [
         },
         'mojangson': r'''{id:"minecraft:skeleton",HurtByTimestamp:0,Attributes:[{Base:40.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,FallFlying:0b,PortalCooldown:0,AbsorptionAmount:0.0f,FallDistance:0.0f,DeathTime:0s,WorldUUIDMost:-1041596277173696703L,HandDropChances:[-200.1f,-200.1f],PersistenceRequired:0b,Spigot.ticksLived:1795,Motion:[0.0d,-0.0784000015258789d,0.0d],Leashed:0b,Health:40.0f,Bukkit.updateLevel:2,LeftHanded:0b,Air:300s,OnGround:1b,Dimension:0,HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§fLiving Bow\"}"},Enchantments:[{lvl:2s,id:"minecraft:power"},{lvl:1s,id:"minecraft:mending"},{lvl:1s,id:"minecraft:punch"}],Damage:0}},{id:"minecraft:potion",Count:1b,tag:{Potion:"minecraft:slow_falling"}}],ArmorDropChances:[-200.1f,-200.1f,-200.1f,-200.1f],CustomName:"{\"text\":\"Tundra Spellslinger\"}",Fire:-1s,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:16777215,Name:"{\"text\":\"§aSoulleather Shoes\"}"},Enchantments:[{lvl:1s,id:"minecraft:mending"},{lvl:2s,id:"minecraft:protection"},{lvl:1s,id:"minecraft:vanishing_curse"}],Damage:0}},{id:"minecraft:chainmail_leggings",Count:1b,tag:{display:{Name:"{\"text\":\"SnowBanditPants\"}"},Damage:0}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:16777215,Name:"{\"text\":\"§aSoulleather Cloak\"}"},Enchantments:[{lvl:1s,id:"minecraft:mending"},{lvl:2s,id:"minecraft:protection"},{lvl:1s,id:"minecraft:vanishing_curse"}],Damage:0}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"e92c1950-2fa6-4a5b-a1f4-c4ca9eb04402",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTZlYTMwM2E3MzQ5ZWY4YmI3N2M5NDNlYWIyM2JiNmRlYmMyNTNhOGZlNjk5YmMzYjE1ZmZkMzBlZjliMjYifX19"}]}},display:{Name:"{\"text\":\"Assassin\"}"}}}],CanPickUpLoot:0b,HurtTime:0s,WorldUUIDLeast:-7560693509725274339L,ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:70553,Id:1b,Amplifier:0b},{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:70553,Id:12b,Amplifier:0b}]}''',
     },
+    {
+        'rules': {
+            'id': 'minecraft:enderman',
+            'CustomName': '§6Unchained Experiment'
+        },
+        'mojangson': r'''{id:"minecraft:enderman",CustomName:"{\"text\":\"§6Unchained Experiment\"}",Health:40.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{Enchantments:[{lvl:10s,id:"minecraft:fire_protection"}],Damage:0,AttributeModifiers:[{UUIDMost:4603514513408019067L,UUIDLeast:-7946737575686475072L,Amount:3.0d,Slot:"feet",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:1960082888142045239L,UUIDLeast:-8379815847399625656L,Amount:-0.15d,Slot:"feet",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{},{},{}],Attributes:[{Base:40.0d,Name:"generic.maxHealth"}],Team:"mobs",ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:99999,Id:14b,Amplifier:0b},{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:99999,Id:24b,Amplifier:0b}],Tags:["Elite","boss_blockbreak","boss_targetplayer"]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
+            'CustomName': 'Viridian Archer'
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"Viridian Archer\"}",Health:28.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:1105920,Name:"{\"text\":\"§aViridian Mage Robes\"}"},Damage:0}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:1105920,Name:"{\"text\":\"§aViridian Mage Robes\"}"},Damage:0}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:1105920,Name:"{\"text\":\"§aViridian Mage Robes\"}"},Damage:0}},{id:"minecraft:leather_helmet",Count:1b,tag:{display:{color:1105920,Name:"{\"text\":\"§aViridian Mage Hat\"}"}}}],Attributes:[{Base:28.0d,Name:"generic.maxHealth"}],Team:"mobs",HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§3§lSwiftwood Shortbow\"}"},Enchantments:[{lvl:3s,id:"minecraft:power"}],Damage:0}},{id:"minecraft:tipped_arrow",Count:1b,tag:{CustomPotionEffects:[{Ambient:0b,ShowIcon:1b,ShowParticles:1b,Duration:60,Id:1b,Amplifier:4b},{Ambient:0b,ShowIcon:1b,ShowParticles:1b,Duration:60,Id:4b,Amplifier:3b},{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:60,Id:19b,Amplifier:0b}],Potion:"minecraft:empty"}}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:vindicator',
+            'CustomName': 'Lunatic Cultist'
+        },
+        'mojangson': r'''{id:"minecraft:vindicator",CustomName:"{\"text\":\"Gibbering Cultist\"}",Health:40.0f,Attributes:[{Base:40.0d,Name:"generic.maxHealth"}],HandDropChances:[0.0f,0.0f],HandItems:[{id:"minecraft:stone_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§4§lCorrupted Watcher\\u0027s Sword\"}"},Enchantments:[{lvl:5s,id:"minecraft:sharpness"}],Damage:0}},{id:"minecraft:book",Count:1b,tag:{HideFlags:2,display:{Name:"{\"text\":\"§5§lTome of Arcane Horrors\"}"}}}]}''',
+    },
 
+    ################################################################################
     # RL Sunken Temple
     {
         'rules': {
@@ -602,6 +624,111 @@ mobs_to_replace = [
         },
         'mojangson': r'''{id:"minecraft:creeper",Fuse:15s,CustomName:"{\"text\":\"Tidal Terror\"}",powered:0b,Health:16.0f,ArmorItems:[{id:"minecraft:leather_boots",tag:{Enchantments:[{lvl:1,id:"minecraft:depth_strider"}]},Count:1b},{},{},{}],Attributes:[{Base:16,Name:"generic.maxHealth"},{Base:0.28d,Name:"generic.movementSpeed"}],ExplosionRadius:3b,ActiveEffects:[{Duration:800,Id:13,Amplifier:0}]}''',
     },
+    # RL Sunken Temple
+    ################################################################################
+
+    ################################################################################
+    # Gray mobs
+    {
+        'rules': {
+            'id': 'minecraft:ghast',
+            'CustomName': 'Dessicated Ghast'
+        },
+        'mojangson': r'''{id:"minecraft:ghast",CustomName:"{\"text\":\"Dessicated Ghast\"}",Health:25.0f,Attributes:[{Base:25.0d,Name:"generic.maxHealth"}],ExplosionPower:2}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:witch',
+            'CustomName': '§6Insectomancer'
+        },
+        'mojangson': r'''{id:"minecraft:witch",CustomName:"{\"text\":\"§6Insectomancer\"}",Health:70.0f,Attributes:[{Base:70.0d,Name:"generic.maxHealth"}],Tags:["Elite","boss_gray_summ_bug"]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:evoker',
+            'CustomName': '§6Golem Conjurer'
+        },
+        'mojangson': r'''{id:"minecraft:evoker",HurtByTimestamp:0,Attributes:[{Base:70.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.5d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:12.0d,Modifiers:[{UUIDMost:-6061386258842106171L,UUIDLeast:-8973333721991499206L,Amount:-0.05375743401508224d,Operation:1,Name:"Random spawn bonus"}],Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,FallFlying:0b,PortalCooldown:0,AbsorptionAmount:0.0f,FallDistance:0.0f,DeathTime:0s,WorldUUIDMost:-1041596277173696703L,HandDropChances:[-200.1f,-200.1f],PersistenceRequired:0b,SpellTicks:0,Spigot.ticksLived:376,Tags:["Elite","boss_gray_summ_golem"],Motion:[0.0d,-0.0784000015258789d,0.0d],Leashed:0b,Health:70.0f,Bukkit.updateLevel:2,LeftHanded:0b,Air:300s,OnGround:1b,Dimension:0,Rotation:[124.45302f,-40.0f],HandItems:[{id:"minecraft:stick",Count:1b,tag:{display:{Name:"{\"text\":\"§6Corrupted Staff\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},{id:"minecraft:totem_of_undying",Count:1b,tag:{display:{Name:"{\"text\":\"§6§lIdol of Immortality\"}"}}}],ArmorDropChances:[-200.1f,-200.1f,-200.1f,-200.1f],CustomName:"{\"text\":\"§6Golem Conjurer\"}",Pos:[-955.5d,57.0d,-1569.5d],Fire:-1s,ArmorItems:[{},{},{},{}],CanPickUpLoot:0b,HurtTime:0s,WorldUUIDLeast:-7560693509725274339L,CustomNameVisible:0b}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:evoker',
+            'CustomName': '§6Demon Conjurer'
+        },
+        'mojangson': r'''{id:"minecraft:evoker",HurtByTimestamp:0,Attributes:[{Base:70.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.5d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:12.0d,Modifiers:[{UUIDMost:2007171504040069592L,UUIDLeast:-6845276924738347140L,Amount:-0.020605684567772134d,Operation:1,Name:"Random spawn bonus"}],Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,FallFlying:0b,PortalCooldown:0,AbsorptionAmount:0.0f,FallDistance:0.0f,DeathTime:0s,WorldUUIDMost:-1041596277173696703L,HandDropChances:[-200.1f,-200.1f],PersistenceRequired:0b,SpellTicks:0,Spigot.ticksLived:418,Tags:["Elite","boss_gray_summ_demon"],Motion:[0.0d,-0.0784000015258789d,0.0d],Leashed:0b,Health:70.0f,Bukkit.updateLevel:2,LeftHanded:1b,Air:300s,OnGround:1b,Dimension:0,Rotation:[125.80794f,-40.0f],HandItems:[{id:"minecraft:stone_shovel",Count:1b,tag:{display:{Name:"{\"text\":\"§aPyromancer\\u0027s Staff\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},{id:"minecraft:totem_of_undying",Count:1b,tag:{display:{Name:"{\"text\":\"§e§lTotem of the Veil\"}"}}}],ArmorDropChances:[-200.1f,-200.1f,-200.1f,-200.1f],CustomName:"{\"text\":\"§6Demon Conjurer\"}",Pos:[-955.5d,57.0d,-1567.5d],Fire:-1s,ArmorItems:[{},{},{},{}],CanPickUpLoot:0b,HurtTime:0s,WorldUUIDLeast:-7560693509725274339L,CustomNameVisible:0b}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:witch',
+            'CustomName': '§6Bibliomancer'
+        },
+        'mojangson': r'''{id:"minecraft:witch",CustomName:"{\"text\":\"§6Bibliomancer\"}",Health:70.0f,Attributes:[{Base:70.0d,Name:"generic.maxHealth"}],Tags:["Elite","boss_gray_summ_book"]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
+            'CustomName': 'Desiccated Terror'
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",HurtByTimestamp:0,Attributes:[{Base:45.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,FallFlying:0b,PortalCooldown:0,AbsorptionAmount:0.0f,FallDistance:0.0f,DeathTime:0s,WorldUUIDMost:-1041596277173696703L,HandDropChances:[-200.1f,-200.1f],PersistenceRequired:1b,Spigot.ticksLived:3604,Motion:[0.0d,-0.0784000015258789d,0.0d],Leashed:0b,Health:45.0f,Bukkit.updateLevel:2,LeftHanded:0b,Air:300s,OnGround:1b,Dimension:0,Rotation:[0.0f,0.0f],HandItems:[{id:"minecraft:iron_axe",Count:1b,tag:{display:{Name:"{\"text\":\"§fSkullcrusher\"}"},AttributeModifiers:[{UUIDMost:6532206609118478368L,UUIDLeast:-8955621743513098640L,Amount:0.8d,Slot:"mainhand",AttributeName:"generic.knockbackResistance",Operation:0,Name:"Modifier"},{UUIDMost:-1685987466123654650L,UUIDLeast:-5383834777761010495L,Amount:15.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-463252452232638665L,UUIDLeast:-4687319287056168669L,Amount:0.15d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{}],ArmorDropChances:[-200.1f,-200.1f,-200.1f,-200.1f],CustomName:"{\"text\":\"Desiccated Terror\"}",Pos:[-955.5d,57.0d,-1559.5d],Fire:-1s,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:1908001,Name:"{\"text\":\"§bGrayBoots\"}"},Damage:0}},{id:"minecraft:chainmail_leggings",Count:1b,tag:{display:{Name:"{\"text\":\"§9§lIronscale Leggings\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:1908001,Name:"{\"text\":\"§bGrayChest2\"}"},Damage:0}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"5554d596-e473-49d7-b6d4-6e7fad49a9f2",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmZkOWM2ZjFkYzQ5Njc3NTUyNTk1YjZlODJmMTI5Njc3OGZiMGJkZDNlMGJjN2MxNTQwODRlYTJlMzMxNDRmIn19fQ=="}]}},display:{Name:"{\"text\":\"§bGrayMummyHead2\"}"}}}],CanPickUpLoot:0b,HurtTime:0s,WorldUUIDLeast:-7560693509725274339L}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
+            'CustomName': 'Desiccated Brute'
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",HurtByTimestamp:4615,Attributes:[{Base:45.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,FallFlying:0b,PortalCooldown:0,AbsorptionAmount:0.0f,FallDistance:0.0f,DeathTime:0s,WorldUUIDMost:-1041596277173696703L,HandDropChances:[-200.1f,-200.1f],PersistenceRequired:1b,Spigot.ticksLived:16363,Motion:[0.0d,-0.0784000015258789d,0.0d],Leashed:0b,Health:45.0f,Bukkit.updateLevel:2,Silent:1b,LeftHanded:0b,Air:300s,OnGround:1b,Dimension:0,Rotation:[0.0f,2.2923818f],HandItems:[{id:"minecraft:stone_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§fObsidian Blade\"}"},AttributeModifiers:[{UUIDMost:-2483446473759634744L,UUIDLeast:-7254151480308536732L,Amount:10.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-1575746377282469550L,UUIDLeast:-7704976322174616712L,Amount:0.05d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{}],ArmorDropChances:[-200.1f,-200.1f,-200.1f,-200.1f],CustomName:"{\"text\":\"Desiccated Brute\"}",Pos:[-955.3024929396968d,57.0d,-1557.2220994220675d],Fire:-1s,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:1908001,Name:"{\"text\":\"§bGrayBoots\"}"},Damage:0}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:7567221,Name:"{\"text\":\"§bGrayPants\"}"},Damage:0}},{id:"minecraft:chainmail_chestplate",Count:1b,tag:{display:{Name:"{\"text\":\"§7§lWhispering Chains\"}"}}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"8f7c0c5b-720f-4944-8481-b0f7931f303f",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U5MWU5NTgyMmZlOThjYzVhNTY1OGU4MjRiMWI4Y2YxNGQ0ZGU5MmYwZTFhZjI0ODE1MzcyNDM1YzllYWI2In19fQ=="}]}},display:{Name:"{\"text\":\"§bGrayMummyHead\"}"}}}],CanPickUpLoot:0b,HurtTime:0s,WorldUUIDLeast:-7560693509725274339L}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:zombie_villager',
+            'CustomName': 'Desiccated Husk'
+        },
+        'mojangson': r'''{id:"minecraft:zombie_villager",Profession:3,CustomName:"{\"text\":\"Desiccated Husk\"}",Health:30.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:1908001,Name:"{\"text\":\"§bGrayBoots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:7567221,Name:"{\"text\":\"§bGrayPants\"}"},Damage:0}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:7567221,Name:"{\"text\":\"§bGrayChest\"}"}}},{id:"minecraft:leather_helmet",Count:1b,tag:{display:{color:9468004,Name:"{\"text\":\"§c§lSacrifice\\u0027s Scalp\"}"}}}],Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],HandItems:[{id:"minecraft:yellow_glazed_terracotta",Count:1b,tag:{AttributeModifiers:[{UUIDMost:6017016372753615690L,UUIDLeast:-7901936291116754037L,Amount:7.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-6310810371670782814L,UUIDLeast:-6820282009554906307L,Amount:0.12d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
+            'CustomName': 'Desiccated Bowman'
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"Desiccated Bowman\"}",Health:30.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:1908001,Name:"{\"text\":\"§bGrayBoots\"}"},Damage:0}},{id:"minecraft:chainmail_leggings",Count:1b,tag:{display:{Name:"{\"text\":\"§9§lIronscale Leggings\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:7567221,Name:"{\"text\":\"§bGrayChest\"}"},Damage:0}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"8f7c0c5b-720f-4944-8481-b0f7931f303f",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvM2U5MWU5NTgyMmZlOThjYzVhNTY1OGU4MjRiMWI4Y2YxNGQ0ZGU5MmYwZTFhZjI0ODE1MzcyNDM1YzllYWI2In19fQ=="}]}},display:{Name:"{\"text\":\"§bGrayMummyHead\"}"}}}],Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§6§lScarab\\u0027s Bane\"}"},Enchantments:[{lvl:1s,id:"minecraft:flame"},{lvl:3s,id:"minecraft:power"}],Damage:0}},{id:"minecraft:tipped_arrow",Count:1b,tag:{CustomPotionEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:120,Id:14b,Amplifier:0b}],Potion:"minecraft:empty"}}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:drowned',
+            'CustomName': 'Sopping Cadaver'
+        },
+        'mojangson': r'''{id:"minecraft:drowned",CustomName:"{\"text\":\"Sopping Cadaver\"}",Health:28.0f,ArmorItems:[{},{id:"minecraft:chainmail_leggings",Count:1b,tag:{display:{Name:"{\"text\":\"§9§lIronscale Leggings\"}"},Damage:0}},{id:"minecraft:chainmail_chestplate",Count:1b,tag:{display:{Name:"{\"text\":\"§7§lWhispering Chains\"}"}}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"17673802-79e3-4a1b-9350-d416924a583b",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDRiYjI2MjdiMmRmODg0MjRmM2Q2MDY3NDk3ZGQyMzAzOWM1ODI2OTI5NTllYTE2NDhiYzc2YzFhOGNlYTgwIn19fQ=="}]}},display:{Name:"{\"text\":\"§bWaterCorpseHead\"}"}}}],Attributes:[{Base:28.0d,Name:"generic.maxHealth"}],HandItems:[{id:"minecraft:trident",Count:1b,tag:{display:{Name:"{\"text\":\"§fPrismarine Pike\"}"},Damage:0}},{}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:creeper',
+            'CustomName': 'Unstable Revenant'
+        },
+        'mojangson': r'''{id:"minecraft:creeper",CustomName:"{\"text\":\"Unstable Revenant\"}",powered:1b,Health:28.0f,Attributes:[{Base:28.0d,Name:"generic.maxHealth"}],ExplosionRadius:3b,Tags:["boss_invisible","boss_volatile"]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:creeper',
+            'CustomName': 'Unstable Atrocity'
+        },
+        'mojangson': r'''{id:"minecraft:creeper",CustomName:"{\"text\":\"Unstable Atrocity\"}",Health:28.0f,Attributes:[{Base:28.0d,Name:"generic.maxHealth"}],ExplosionRadius:4b,Tags:["boss_volatile"]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:blaze',
+            'CustomName': 'Disembodied Soul'
+        },
+        'mojangson': r'''{id:"minecraft:blaze",CustomName:"{\"text\":\"Disembodied Soul\"}",Health:30.0f,Attributes:[{Base:30.0d,Name:"generic.maxHealth"}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:spider',
+            'CustomName': 'Venomous Tarantula'
+        },
+        'mojangson': r'''{id:"minecraft:spider",CustomName:"{\"text\":\"Venomous Tarantula\"}",Health:30.0f,Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],Tags:["boss_witherhit"],HandItems:[{id:"minecraft:string",Count:1b,tag:{AttributeModifiers:[{UUIDMost:8950014472550895615L,UUIDLeast:-8091237055434418498L,Amount:7.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
+    },
+    # Gray mobs
+    ################################################################################
 ]
 
 def usage():
