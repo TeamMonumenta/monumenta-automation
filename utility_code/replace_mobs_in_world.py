@@ -46,6 +46,7 @@ def remove_tags_from_spawner_entity(spawner_entity, entity_path, log_handle):
     pop_if_present(spawner_entity, entity_path, log_handle, 'Paper.AAAB')
     pop_if_present(spawner_entity, entity_path, log_handle, 'Paper.Origin')
     pop_if_present(spawner_entity, entity_path, log_handle, 'Paper.FromMobSpawner')
+    pop_if_present(spawner_entity, entity_path, log_handle, 'Team')
 
     # Recurse over passengers
     if (spawner_entity.has_path('Passengers')):
