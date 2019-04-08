@@ -123,7 +123,7 @@ tutorial = {
 }
 
 roguelike = {
-    "server":roguelike,
+    "server":"roguelike",
     "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/roguelike/Project_Epic-roguelike/",
     "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/roguelike/Project_Epic-roguelike/",
     "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/roguelike/Project_Epic-roguelike/",
