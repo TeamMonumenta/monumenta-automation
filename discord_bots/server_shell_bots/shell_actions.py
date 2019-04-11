@@ -76,6 +76,7 @@ class listening():
 privUsers = {
     "302298391969267712": {"name": "Combustible", "rights": [ "@root" ]},
     "228226807353180162": {"name": "NickNackGus", "rights": [ "@root" ]},
+    "225791510636003329": {"name": "Crondis",     "rights": [ "@root" ]},
 }
 
 groupByRole = {
