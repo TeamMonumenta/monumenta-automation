@@ -3,6 +3,7 @@
 import os
 import sys
 import codecs
+import traceback
 
 from lib_py3.copy_region import copy_region
 from lib_py3.common import copy_paths, copy_folder
