@@ -78,14 +78,20 @@ class subtitute_items(substitution_rule):
 
     def __init__(self):
         self.replacements = {
-            "minecraft:example_item_id": {
-                r'''{"text":"Example Name"}''': ("minecraft:new_id", r'''{"text":"Example New Name"}'''),
+            #"minecraft:example_item_id": {
+            #    r'''{"text":"Example Name"}''': ("minecraft:new_id", r'''{"text":"Example New Name"}'''),
+            #},
+            #"minecraft:example_banned_item": {
+            #    always_equal: ("minecraft:new_id", r'''{"text":"Example New Name"}'''),
+            #},
+            #"minecraft:trident": {
+            #    r'''{"text":"Dinglehopper"}''': ("minecraft:compass", r'''{"text":"§6§lQuest Compass"}'''),
+            #},
+            "minecraft:anvil": {
+                r'''{"text":"§aNarsen Anvil"}''': ("minecraft:damaged_anvil", r'''{"text":"§aNarsen Anvil"}'''),
             },
-            "minecraft:example_banned_item": {
-                always_equal: ("minecraft:new_id", r'''{"text":"Example New Name"}'''),
-            },
-            "minecraft:trident": {
-                r'''{"text":"Dinglehopper"}''': ("minecraft:compass", r'''{"text":"§6§lQuest Compass"}'''),
+            "minecraft:anvil": {
+                r'''{"text":"§aViridian Anvil"}''': ("minecraft:chipped_anvil", r'''{"text":"§aViridian Anvil"}'''),
             },
         }
 
