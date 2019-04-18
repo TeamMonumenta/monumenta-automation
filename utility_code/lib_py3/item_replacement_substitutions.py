@@ -88,10 +88,13 @@ class subtitute_items(substitution_rule):
             #    r'''{"text":"Dinglehopper"}''': ("minecraft:compass", r'''{"text":"§6§lQuest Compass"}'''),
             #},
             "minecraft:anvil": {
-                r'''{"text":"§aNarsen Anvil"}''': ("minecraft:damaged_anvil", r'''{"text":"§aNarsen Anvil"}'''),
+                always_equal: ("minecraft:anvil", r'''{"text":"§aRepair Anvil"}'''),
             },
-            "minecraft:anvil": {
-                r'''{"text":"§aViridian Anvil"}''': ("minecraft:chipped_anvil", r'''{"text":"§aViridian Anvil"}'''),
+            "minecraft:chipped_anvil": {
+                always_equal: ("minecraft:anvil", r'''{"text":"§aRepair Anvil"}'''),
+            },
+            "minecraft:damaged_anvil": {
+                always_equal: ("minecraft:anvil", r'''{"text":"§aRepair Anvil"}'''),
             },
         }
 
