@@ -458,8 +458,8 @@ config = {
 
     'lightgray':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'view-distance', 'view-distance=9'),
+            ('spigot.yml', 'view-distance', '    view-distance: 9'),
             ('server.properties', 'server-port', 'server-port=25588'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
