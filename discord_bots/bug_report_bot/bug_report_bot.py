@@ -38,11 +38,11 @@ if loginInfo is None:
 # List of channels this bot will consume messages in
 bot_input_channels = [
     # Sekrit-bot-feed
-    '568966739812155402',
+    '569283901202366524',
 ]
 
 # Sekrit-bot-feed
-bug_reports_channel_id = '568966739812155402'
+bug_reports_channel_id = '569283558741508107'
 
 user_privileges = {
     # Combustible
@@ -62,6 +62,8 @@ group_privileges = {
     "390269554657460226": 2,
     # Moderator (Public)
     "313067199579422722": 2,
+    # Team Monumenta (Public)
+    "313066719365300264": 2,
 }
 
 # TODO: Better automatic restarting
