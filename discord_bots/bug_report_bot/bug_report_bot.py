@@ -23,6 +23,7 @@ botConfig = {}
 
 botConfig["main_pid"] = os.getpid()
 botConfig["config_dir"] = os.path.expanduser("~/.bug_report_bot/")
+botConfig["database_path"] = os.path.join(botConfig["config_dir"], "database.json")
 
 # Get bot's login info
 loginInfo = None
@@ -32,6 +33,7 @@ with open(botConfig["config_dir"]+'login','r') as f:
         loginInfo = loginInfo[:-1]
 if loginInfo is None:
     sys.exit('No login info is provided')
+
 
 # List of channels this bot will consume messages in
 bot_input_channels = [
@@ -72,7 +74,7 @@ while restart:
     asyncio.set_event_loop(loop)
     try:
         client = discord.Client()
-        manager = BugReportManager(client, user_privileges, group_privileges, bug_reports_channel_id)
+        manager = BugReportManager(client, user_privileges, group_privileges, bug_reports_channel_id, botConfig["database_path"])
 
         ################################################################################
         # Discord event handlers
@@ -103,11 +105,11 @@ while restart:
             pass
 
         @client.event
-        async def on_message_edit():
+        async def on_message_edit(_, __):
             pass
 
         @client.event
-        async def on_reaction_add():
+        async def on_reaction_add(_, __):
             pass
 
         @client.event
