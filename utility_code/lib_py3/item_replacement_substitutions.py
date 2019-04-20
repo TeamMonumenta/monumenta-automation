@@ -87,6 +87,12 @@ class subtitute_items(substitution_rule):
             #"minecraft:trident": {
             #    r'''{"text":"Dinglehopper"}''': ("minecraft:compass", r'''{"text":"§6§lQuest Compass"}'''),
             #},
+            "minecraft:iron_helmet": {
+                r'''{"text":"§b§l§nFrost Giant\\u0027s Crown\"}''': ("minecraft:iron_helmet", r'''{"text":"§b§l§nFrost Giant\\u0027s Party Hat"}'''),
+            },
+            "minecraft:iron_helmet": {
+                r'''{"text":"§b§l§nFrost Giant's Crown\"}''': ("minecraft:iron_helmet", r'''{"text":"§b§l§nFrost Giant\\u0027s Party Hat"}'''),
+            },
             "minecraft:anvil": {
                 always_equal: ("minecraft:anvil", r'''{"text":"§aRepair Anvil"}'''),
             },
