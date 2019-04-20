@@ -66,7 +66,6 @@ def remove_tags_from_entities_in_spawner(entity, entity_path, log_handle):
         remove_tags_from_spawner_entity(entity.at_path("SpawnData"), entity_path, log_handle)
 
 mobs_to_replace = [
-    # V1 replacements on xyz date
     {
         'rules': {
             'id': 'minecraft:zombie_pigman',
@@ -86,14 +85,21 @@ mobs_to_replace = [
             'id': 'minecraft:blaze',
             'CustomName': 'Enraged Blaze'
         },
-        'mojangson': r'''{CustomName:"{\"text\":\"Radiant Blaze\"}",Health:30.0f,Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],id:"minecraft:blaze",Tags:["boss_fireball"]}''',
+        'mojangson': r'''{id:"minecraft:blaze",CustomName:"{\"text\":\"Radiant Blaze\"}",Health:30.0f,Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],Tags:["boss_fireball"]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:blaze',
+            'CustomName': 'Radiant Blaze'
+        },
+        'mojangson': r'''{id:"minecraft:blaze",CustomName:"{\"text\":\"Radiant Blaze\"}",Health:30.0f,Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],Tags:["boss_fireball"]}''',
     },
     {
         'rules': {
             'id': 'minecraft:skeleton',
             'CustomName': 'Pyro Miner'
         },
-        'mojangson': r'''{CustomName:"{\"text\":\"Pyro Miner\"}",Health:40.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Boots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Pants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Tunic\"}"}}},{id:"minecraft:leather_helmet",Count:1b,tag:{display:{color:3416859,Name:"{\"text\":\"§fBurnt Helm\"}"}}}],Attributes:[{Base:40.0d,Name:"generic.maxHealth"}],id:"minecraft:skeleton",Tags:["boss_blockbreak"],HandItems:[{id:"minecraft:iron_pickaxe",Count:1b,tag:{display:{Name:"{\"text\":\"§bBasanite Miner\\u0027s Pick\"}"},Damage:0,AttributeModifiers:[{UUIDMost:6439584543901370625L,UUIDLeast:-5460530576207987635L,Amount:9.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
+        'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"Pyro Miner\"}",Health:40.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Boots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Pants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Tunic\"}"}}},{id:"minecraft:leather_helmet",Count:1b,tag:{display:{color:3416859,Name:"{\"text\":\"§fBurnt Helm\"}"}}}],Attributes:[{Base:40.0d,Name:"generic.maxHealth"}],HandItems:[{id:"minecraft:iron_pickaxe",Count:1b,tag:{display:{Name:"{\"text\":\"§bBasanite Miner\\u0027s Pick\"}"},AttributeModifiers:[{UUIDMost:6733323469324830937L,UUIDLeast:-4973487198358270803L,Amount:8.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
     },
     {
         'rules': {
@@ -177,7 +183,14 @@ mobs_to_replace = [
             'id': 'minecraft:zombie_pigman',
             'HandItems': ["'§bBlazing Soul'", "'§bBlazing Soul'"],
         },
-        'mojangson': r'''{id:"minecraft:zombie_pigman",Anger:3297s,CustomName:"{\"text\":\"Fire Imp\"}",IsBaby:1b,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Boots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Pants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Tunic\"}"}}},{}],HandItems:[{id:"minecraft:blaze_powder",Count:1b,tag:{display:{Name:"{\"text\":\"§bBlazing Soul\"}"},Enchantments:[{lvl:1s,id:"minecraft:fire_aspect"}],AttributeModifiers:[{UUIDMost:-2899840319788137997L,UUIDLeast:-6474403868551417057L,Amount:5.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:6643163485254798509L,UUIDLeast:-9135644038788542450L,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{id:"minecraft:blaze_powder",Count:1b,tag:{display:{Name:"{\"text\":\"§bBlazing Soul\"}"},Enchantments:[{lvl:1s,id:"minecraft:fire_aspect"}],AttributeModifiers:[{UUIDMost:-2899840319788137997L,UUIDLeast:-6474403868551417057L,Amount:5.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:6643163485254798509L,UUIDLeast:-9135644038788542450L,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}}]}''',
+        'mojangson': r'''{id:"minecraft:zombie_pigman",Anger:3297s,CustomName:"{\"text\":\"Fire Imp\"}",IsBaby:1b,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Boots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Pants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Tunic\"}"}}},{}],HandItems:[{id:"minecraft:blaze_powder",Count:1b,tag:{display:{Name:"{\"text\":\"§bBlazing Soul\"}"},Enchantments:[{lvl:1s,id:"minecraft:fire_aspect"}],AttributeModifiers:[{UUIDMost:-9081965127634826303L,UUIDLeast:-6398719046544679328L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:6643163485254798509L,UUIDLeast:-9135644038788542450L,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{id:"minecraft:blaze_powder",Count:1b,tag:{display:{Name:"{\"text\":\"§bBlazing Soul\"}"},Enchantments:[{lvl:1s,id:"minecraft:fire_aspect"}],AttributeModifiers:[{UUIDMost:-9081965127634826303L,UUIDLeast:-6398719046544679328L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:6643163485254798509L,UUIDLeast:-9135644038788542450L,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:zombie_pigman',
+            'CustomName': 'Fire Imp'
+        },
+        'mojangson': r'''{id:"minecraft:zombie_pigman",Anger:3297s,CustomName:"{\"text\":\"Fire Imp\"}",IsBaby:1b,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Boots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Pants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Tunic\"}"}}},{}],HandItems:[{id:"minecraft:blaze_powder",Count:1b,tag:{display:{Name:"{\"text\":\"§bBlazing Soul\"}"},Enchantments:[{lvl:1s,id:"minecraft:fire_aspect"}],AttributeModifiers:[{UUIDMost:-9081965127634826303L,UUIDLeast:-6398719046544679328L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:6643163485254798509L,UUIDLeast:-9135644038788542450L,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{id:"minecraft:blaze_powder",Count:1b,tag:{display:{Name:"{\"text\":\"§bBlazing Soul\"}"},Enchantments:[{lvl:1s,id:"minecraft:fire_aspect"}],AttributeModifiers:[{UUIDMost:-9081965127634826303L,UUIDLeast:-6398719046544679328L,Amount:3.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:6643163485254798509L,UUIDLeast:-9135644038788542450L,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}}]}''',
     },
     {
         'rules': {
@@ -200,8 +213,6 @@ mobs_to_replace = [
         },
         'mojangson': r'''{id:"minecraft:zombie",CustomName:"{\"text\":\"Animated Crystal\"}",IsBaby:0b,Health:40.0f,ArmorItems:[{},{},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:12772533,Name:"{\"text\":\"§fCloth Shirt\"}"}}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"c46f476b-d3ef-45d5-975b-6bb2bcc7c9f6",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjI4ZGQzZDliODFjYzlmOTZhNGMxMWZlMTNiMDc5NDk0ZjI3ZmM1YjkzM2M0ZjA4MzNmNjU2NDQ3MmVlMTYwOSJ9fX0="}]}},display:{Name:"{\"text\":\"§fcrystal_melee_helmet\"}"}}}],Attributes:[{Base:40.0d,Name:"generic.maxHealth"}],ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:17280000,Id:14b,Amplifier:0b}],Tags:["boss_charger"],HandItems:[{id:"minecraft:iron_shovel",Count:1b,tag:{Enchantments:[{lvl:1s,id:"minecraft:knockback"},{lvl:1s,id:"minecraft:fire_aspect"}],display:{Name:"{\"text\":\"§fCrystal Spear\"}"},Damage:0,AttributeModifiers:[{UUIDMost:4790688300322801738L,UUIDLeast:-5487926069810695271L,Amount:10.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
     },
-
-    # V2 replacements, pink & miscellaneous standardization
     {
         'rules': {
             'id': 'minecraft:creeper',
@@ -354,7 +365,7 @@ mobs_to_replace = [
             'id': 'minecraft:zombie_pigman',
             'CustomName': '§6Charred Foreman'
         },
-        'mojangson': r'''{id:"minecraft:zombie_pigman",CustomName:"{\"text\":\"§6Charred Foreman\"}",Health:90.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Boots\"}"}}},{id:"minecraft:golden_leggings",Count:1b,tag:{display:{Name:"{\"text\":\"§bBasanitePants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Tunic\"}"}}},{}],Attributes:[{Base:90.0d,Name:"generic.maxHealth"}],Tags:["Elite","boss_flamenova","boss_fireball"],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§bBasanite Spellblade\"}"},AttributeModifiers:[{UUIDMost:-5443655948128206615L,UUIDLeast:-8115751551700471969L,Amount:10.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{id:"minecraft:magma_cream",Count:1b,tag:{display:{Name:"{\"text\":\"§bBasanite Magma\"}"}}}]}''',
+        'mojangson': r'''{id:"minecraft:zombie_pigman",CustomName:"{\"text\":\"§6Charred Foreman\"}",Health:90.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Boots\"}"}}},{id:"minecraft:golden_leggings",Count:1b,tag:{display:{Name:"{\"text\":\"§bBasanitePants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Tunic\"}"}}},{}],Attributes:[{Base:90.0d,Name:"generic.maxHealth"}],Tags:["Elite","boss_fireball"],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§bBasanite Spellblade\"}"},Damage:0,AttributeModifiers:[{UUIDMost:-5443655948128206615L,UUIDLeast:-8115751551700471969L,Amount:10.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{id:"minecraft:magma_cream",Count:1b,tag:{display:{Name:"{\"text\":\"§bBasanite Magma\"}"}}}]}''',
     },
     {
         'rules': {
@@ -362,13 +373,6 @@ mobs_to_replace = [
             'CustomName': 'Unstable Archer'
         },
         'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"Unstable Archer\"}",Health:30.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:16195840,Name:"{\"text\":\"§fInfernal Boots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:10506272,Name:"{\"text\":\"§aHardened Leather Pants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:10506272,Name:"{\"text\":\"§aHardened Leather Tunic\"}"}}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"9c705b74-b966-40a8-852b-9eb71288e37d",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWVkYjZmZDc0OWU5NWIyZGQwZDI0OTVhODU2MTdiNWFlZjNiNDc2NDE3Yzg1OWJmMzRjNDU0NzdhZTY4MSJ9fX0="}]}},display:{Name:"{\"text\":\"§finfested_villager_head\"}"}}}],Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§fCorrupted Steelsiege\"}"},Enchantments:[{lvl:4s,id:"minecraft:power"},{lvl:1s,id:"minecraft:flame"}]}},{}]}''',
-    },
-    {
-        'rules': {
-            'id': 'minecraft:zombie_pigman',
-            'CustomName': 'Fire Imp'
-        },
-        'mojangson': r'''{id:"minecraft:zombie_pigman",Anger:3297s,CustomName:"{\"text\":\"Fire Imp\"}",IsBaby:1b,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Boots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Pants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:5643800,Name:"{\"text\":\"§fInfernal Tunic\"}"}}},{}],HandItems:[{id:"minecraft:blaze_powder",Count:1b,tag:{display:{Name:"{\"text\":\"§bBlazing Soul\"}"},Enchantments:[{lvl:1s,id:"minecraft:fire_aspect"}],AttributeModifiers:[{UUIDMost:-2899840319788137997L,UUIDLeast:-6474403868551417057L,Amount:5.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:6643163485254798509L,UUIDLeast:-9135644038788542450L,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{id:"minecraft:blaze_powder",Count:1b,tag:{display:{Name:"{\"text\":\"§bBlazing Soul\"}"},Enchantments:[{lvl:1s,id:"minecraft:fire_aspect"}],AttributeModifiers:[{UUIDMost:-2899840319788137997L,UUIDLeast:-6474403868551417057L,Amount:5.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:6643163485254798509L,UUIDLeast:-9135644038788542450L,Amount:-0.08d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}}]}''',
     },
     {
         'rules': {
@@ -587,6 +591,34 @@ mobs_to_replace = [
         },
         'mojangson': r'''{id:"minecraft:vindicator",CustomName:"{\"text\":\"Gibbering Cultist\"}",Health:40.0f,Attributes:[{Base:40.0d,Name:"generic.maxHealth"}],HandDropChances:[0.0f,0.0f],HandItems:[{id:"minecraft:stone_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§4§lCorrupted Watcher\\u0027s Sword\"}"},Enchantments:[{lvl:5s,id:"minecraft:sharpness"}],Damage:0}},{id:"minecraft:book",Count:1b,tag:{HideFlags:2,display:{Name:"{\"text\":\"§5§lTome of Arcane Horrors\"}"}}}]}''',
     },
+    {
+        'rules': {
+            'id': 'minecraft:drowned',
+            'CustomName': 'Drowned Assassin'
+        },
+        'mojangson': r'''{id:"minecraft:drowned",CustomName:"{\"text\":\"Drowned Assassin\"}",Health:40.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:10531071,Name:"{\"text\":\"§fSky Mage Slippers\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:10531071,Name:"{\"text\":\"§fSky Mage Robe\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:1073407,Name:"{\"text\":\"§aNereid Tunic\"}"},Damage:0}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"3776820c-7098-42f8-864a-a8997c0f5b47",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDBmNzU4NWZlZjBkZWUwNDFmMzNhNjc5MTFkNzlmOTVhZDkwYzdkYjFmMmVjNTAxNTZmMzUzY2Y5NDFkYWY3MiJ9fX0="}]}},display:{Name:"{\"text\":\"§bDrowned Assasin\"}"}}}],Attributes:[{Base:40.0d,Name:"generic.maxHealth"}],Tags:["boss_tpbehind","boss_float"],HandItems:[{id:"minecraft:stone_hoe",Count:1b,tag:{display:{Name:"{\"text\":\"§bFrostbite Scythe\"}"},Enchantments:[{lvl:2s,id:"minecraft:knockback"}],Damage:0,AttributeModifiers:[{UUIDMost:-1998017309584896710L,UUIDLeast:-5688441712466155383L,Amount:8.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
+            'CustomName': 'Desert Mage'
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"Desert Mage\"}",Health:30.0f,ArmorItems:[{id:"minecraft:chainmail_boots",Count:1b,tag:{display:{Name:"{\"text\":\"§bAquamarineBoots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:14725264,Name:"{\"text\":\"§fWarlock Robe\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:1784895,Name:"{\"text\":\"§bArcaneChest\"}"}}},{}],Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§d§lSteelsiege\"}"},Enchantments:[{lvl:3s,id:"minecraft:power"}],Damage:0}},{}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:wither_skeleton',
+            'CustomName': 'Frost Moon Knight'
+        },
+        'mojangson': r'''{id:"minecraft:wither_skeleton",CustomName:"{\"text\":\"Frost Moon Knight\"}",Health:35.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:60395,Name:"{\"text\":\"F.B\"}"},Enchantments:[{lvl:3s,id:"minecraft:protection"}],Damage:0}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:60395,Name:"{\"text\":\"F.L\"}"},Enchantments:[{lvl:3s,id:"minecraft:protection"}],Damage:0}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:60395,Name:"{\"text\":\"F.C\"}"},Enchantments:[{lvl:3s,id:"minecraft:protection"}],AttributeModifiers:[{UUIDMost:3611718400605898261L,UUIDLeast:-6372483536905427458L,Amount:-0.1d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"0c3eedc4-a350-439c-8489-af2a768bdc41",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE2ZjdkYjY3YTcyM2Q1YzMwYmY5ZDQ3ZWQ2YzI4YmY3ZDQzNmQ4ODZlMGYzNTk1MTAzMzY4MTk5ZTNhMTliYiJ9fX0="}]}}}}],Attributes:[{Base:35.0d,Name:"generic.maxHealth"}],Tags:["boss_iceaspect"],HandItems:[{id:"minecraft:iron_sword",Count:1b,tag:{display:{Name:"{\"text\":\"aPermafrost Spellblade\"}"},Enchantments:[{lvl:2s,id:"minecraft:unbreaking"},{lvl:5s,id:"minecraft:sharpness"}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{id:"minecraft:banner",Patterns:[{Pattern:"gra",Color:15},{Pattern:"gru",Color:3},{Pattern:"mc",Color:8},{Pattern:"tts",Color:0},{Pattern:"bts",Color:0},{Pattern:"bo",Color:0}],Base:15},Damage:0}}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:zombie',
+            'CustomName': 'Decayed Monstrosity'
+        },
+        'mojangson': r'''{id:"minecraft:zombie",CustomName:"{\"text\":\"Decayed Monstrosity\"}",Health:40.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:16776960,Name:"{\"text\":\"§fAlchemist\\u0027s Boots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:16776960,Name:"{\"text\":\"§fAlchemist\\u0027s Robe\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:16776960,Name:"{\"text\":\"§fAlchemist\\u0027s Apron\"}"}}},{}],Attributes:[{Base:40.0d,Name:"generic.maxHealth"}],HandItems:[{id:"minecraft:rotten_flesh",Count:1b,tag:{display:{Name:"{\"text\":\"§bForgotten Flesh\"}"},AttributeModifiers:[{UUIDMost:1573681233954160957L,UUIDLeast:-7725953690619961493L,Amount:9.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{id:"minecraft:fermented_spider_eye",Count:1b,tag:{display:{Name:"{\"text\":\"§bRotten Eye\"}"}}}]}''',
+    },
 
     ################################################################################
     # RL Sunken Temple
@@ -740,8 +772,6 @@ mobs_to_replace = [
         },
         'mojangson': r'''{id:"minecraft:vindicator",CustomName:"{\"text\":\"Harmonic Adherent\"}",Health:35.0f,Attributes:[{Base:35.0d,Name:"generic.maxHealth"}],Team:"mobs",HandItems:[{id:"minecraft:stone_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§fObsidian Blade\"}"},Damage:0,AttributeModifiers:[{UUIDMost:-3465215994192836721L,UUIDLeast:-7525682249439399290L,Amount:7.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
     },
-    # Pink mobs
-    ################################################################################
     {
         'rules': {
             'id': 'minecraft:wither_skeleton',
@@ -749,6 +779,8 @@ mobs_to_replace = [
         },
         'mojangson': r'''{id:"minecraft:wither_skeleton",CustomName:"{\"text\":\"Autumn Spirit\"}",Health:45.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:8805175,Name:"{\"text\":\"§fLeafweave Sandals\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:8743475,Name:"{\"text\":\"§fLeafweave Trousers\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:8543535,Name:"{\"text\":\"§a§lVinebound Tunic\"}"}}},{id:"minecraft:spruce_leaves",Count:1b}],Attributes:[{Base:45.0d,Name:"generic.maxHealth"}],Team:"mobs",HandItems:[{id:"minecraft:golden_axe",Count:1b,tag:{display:{Name:"{\"text\":\"§c§lAutumn Wind\"}"},Enchantments:[{lvl:4s,id:"minecraft:knockback"}],Damage:0,AttributeModifiers:[{UUIDMost:6478663521670483287L,UUIDLeast:-6389870882906058091L,Amount:12.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
     },
+    # Pink mobs
+    ################################################################################
 ]
 
 def usage():
