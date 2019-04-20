@@ -352,15 +352,14 @@ For example:```
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
-        operation = part[1].strip().lower()
-
         if index not in self._bugs:
             await self.reply(message, 'Bug #{} not found!'.format(index))
             return
 
         bug = self._bugs[index]
 
-        if operation not in ['description', 'label', 'image', 'author', 'priority']:
+        operation = get_list_match(part[1].strip(), ['description', 'label', 'image', 'author', 'priority'])
+        if operation is None:
             await self.reply(message, "Item to edit must be 'description', 'label', 'image', 'author', or 'priority'")
             return
 
@@ -663,13 +662,18 @@ For example:```
 
         await(self.reply(message, "{} bugs from channel {} imported successfully".format(count, part[0])))
 
-# TODO: Longest prefix match!
 def get_list_match(item, lst):
     tmpitem = item.lower()
+
+    match = None
     for x in lst:
-        if x.lower() == tmpitem:
-            return x
-    return None
+        if x.lower().startswith(tmpitem):
+            if match is None:
+                match = x
+            else:
+                # Multiple matches - don't want to return the wrong one!
+                return None
+    return match
 
 # TODO: These are duplicated!
 
