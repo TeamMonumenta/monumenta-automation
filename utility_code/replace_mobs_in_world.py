@@ -614,6 +614,14 @@ mobs_to_replace = [
     },
     {
         'rules': {
+            'id': 'minecraft:wither_skeleton',
+            # Note this typo'd name!
+            'CustomName': '6Frost Moon Brute'
+        },
+        'mojangson': r'''{id:"minecraft:wither_skeleton",Motion:[0.0d,-0.0784000015258789d,0.0d],Health:90.0f,Attributes:[{Base:0.4d,Name:"generic.knockbackResistance"},{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Modifiers:[{UUIDMost:-7669800413367219703L,UUIDLeast:-9075820607437036675L,Amount:0.0018408350412733464d,Operation:1,Name:"Random spawn bonus"}],Name:"generic.followRange"},{Base:4.0d,Name:"generic.attackDamage"},{Base:90.0d,Name:"generic.maxHealth"}],Invulnerable:0b,LeftHanded:1b,AbsorptionAmount:0.0f,HandItems:[{id:"minecraft:iron_sword",Count:1b,tag:{display:{Name:"{\"text\":\"Double frost greatsword\"}"},Enchantments:[{lvl:15s,id:"minecraft:sharpness"},{lvl:1s,id:"minecraft:knockback"}],Damage:0}},{id:"minecraft:iron_sword",Count:1b,tag:{display:{Name:"{\"text\":\"Double frost greatsword\"}"},Enchantments:[{lvl:15s,id:"minecraft:sharpness"},{lvl:1s,id:"minecraft:knockback"}],Damage:0}}],CustomName:"{\"text\":\"§6Frost Moon Brute\"}",Fire:-1s,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:60395,Name:"{\"text\":\"F.B\"}"},Enchantments:[{lvl:3s,id:"minecraft:protection"}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:60395,Name:"{\"text\":\"F.L\"}"},Enchantments:[{lvl:3s,id:"minecraft:protection"}]}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:60395,Name:"{\"text\":\"F.C\"}"},Enchantments:[{lvl:3s,id:"minecraft:protection"}],AttributeModifiers:[{UUIDMost:3611718400605898261L,UUIDLeast:-6372483536905427458L,Amount:-0.1d,Slot:"chest",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"0c3eedc4-a350-439c-8489-af2a768bdc41",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE2ZjdkYjY3YTcyM2Q1YzMwYmY5ZDQ3ZWQ2YzI4YmY3ZDQzNmQ4ODZlMGYzNTk1MTAzMzY4MTk5ZTNhMTliYiJ9fX0="}]}}}}],PersistenceRequired:0b,Tags:["Elite","boss_frostcharge","boss_iceaspect","boss_charger","aura_slowness"]}''',
+    },
+    {
+        'rules': {
             'id': 'minecraft:zombie',
             'CustomName': 'Decayed Monstrosity'
         },
