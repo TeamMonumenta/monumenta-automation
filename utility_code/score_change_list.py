@@ -54,6 +54,7 @@ dungeon_score_rules = [
     {"condition":{"Name":"$last","Objective":"D4Access"},
         "actions":{"set":[
             {"Objective":"D4Access","Score":0}]}},
+
     {"condition":{"Objective":"D5Access","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"D5Access","Score":1000}]}},
@@ -64,6 +65,62 @@ dungeon_score_rules = [
     {"condition":{"Name":"$last","Objective":"D5Access"},
         "actions":{"set":[
             {"Objective":"D5Access","Score":0}]}},
+
+    {"condition":{"Objective":"D6Access","Score":{"min":1}},
+        "actions":{"add":[
+            {"Objective":"D6Access","Score":1000}]}},
+    {"condition":{"Objective":"D6Access","Score":{"min":2000}},
+        "actions":{"set":[
+            {"Objective":"D6Access","Score":0},
+            {"Objective":"D5Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D6Access"},
+        "actions":{"set":[
+            {"Objective":"D6Access","Score":0}]}},
+
+    {"condition":{"Objective":"D7Access","Score":{"min":1}},
+        "actions":{"add":[
+            {"Objective":"D7Access","Score":1000}]}},
+    {"condition":{"Objective":"D7Access","Score":{"min":2000}},
+        "actions":{"set":[
+            {"Objective":"D7Access","Score":0},
+            {"Objective":"D5Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D7Access"},
+        "actions":{"set":[
+            {"Objective":"D7Access","Score":0}]}},
+
+    {"condition":{"Objective":"D8Access","Score":{"min":1}},
+        "actions":{"add":[
+            {"Objective":"D8Access","Score":1000}]}},
+    {"condition":{"Objective":"D8Access","Score":{"min":2000}},
+        "actions":{"set":[
+            {"Objective":"D8Access","Score":0},
+            {"Objective":"D5Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D8Access"},
+        "actions":{"set":[
+            {"Objective":"D8Access","Score":0}]}},
+
+    {"condition":{"Objective":"D9Access","Score":{"min":1}},
+        "actions":{"add":[
+            {"Objective":"D9Access","Score":1000}]}},
+    {"condition":{"Objective":"D9Access","Score":{"min":2000}},
+        "actions":{"set":[
+            {"Objective":"D9Access","Score":0},
+            {"Objective":"D5Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D9Access"},
+        "actions":{"set":[
+            {"Objective":"D9Access","Score":0}]}},
+
+    {"condition":{"Objective":"D10Access","Score":{"min":1}},
+        "actions":{"add":[
+            {"Objective":"D10Access","Score":1000}]}},
+    {"condition":{"Objective":"D10Access","Score":{"min":2000}},
+        "actions":{"set":[
+            {"Objective":"D10Access","Score":0},
+            {"Objective":"D5Finished","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"D10Access"},
+        "actions":{"set":[
+            {"Objective":"D10Access","Score":0}]}},
+
     {"condition":{"Objective":"DCAccess","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"DCAccess","Score":1000}]}},
