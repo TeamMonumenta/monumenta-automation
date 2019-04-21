@@ -486,7 +486,8 @@ For example:```
                     match_bugs.append((index, bug))
 
         # Sort the returned bugs
-        print_bugs = sorted(match_bugs, key=lambda k: (int(k[0]), k[1]['priority']))
+        # TODO: This sort is garbage text based
+        print_bugs = sorted(match_bugs, key=lambda k: (k[1]['priority'], int(k[0])))
 
         # Limit to 10 replies at a time
         if len(print_bugs) > 10:
