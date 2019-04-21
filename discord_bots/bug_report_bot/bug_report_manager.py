@@ -3,6 +3,7 @@ import discord
 import os
 import json
 import sys
+import re
 from collections import OrderedDict
 from pprint import pprint
 
@@ -209,6 +210,8 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
             await self.cmd_import(message)
         elif message.content.startswith("~bug repost"):
             await self.cmd_repost(message)
+        elif message.content.startswith("~bug addlabel"):
+            await self.cmd_addlabel(message)
         elif message.content.startswith("~bug test"):
             await self.cmd_test(message)
         elif message.content.startswith("~bug"):
@@ -265,8 +268,11 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
 `~bug fix number [optional explanation]`
     Marks the specified bug as fixed. Default explanation is simply "Fixed"
 
-`~bug unfix number`
+`~bug unfix <number>`
     Unmarks the specified bug as fixed
+
+`~bug addlabel <newlabel>`
+    Adds a new label - a-z characters only
 '''.format(" ".join(self._labels))
 
         if self.has_privilege(3, message.author):
@@ -424,7 +430,28 @@ For example:```
 
         elif operation == 'priority':
             if len(part) < 3:
-                await self.reply(message, "You need to actually supply a new priority")
+                await self.reply(message, '''
+__Available Priorities:__
+**Critical**
+- Portions of the game are unplayable
+- At least a few people are expected to be affected.
+
+**High**
+- Significantly impacts the game
+- Affects many players but moderator help not required to work around OR affects very few players
+
+**Medium**
+- Would be really nice to have
+- Either it's not important enough to be high or it is sort of is but requires a ton of work to fix
+
+**Low**
+- Worth doing someday when there's time
+
+**Zero**
+- Even if this is a good idea, not worth the effort required to make happen.
+
+**N/A**
+- No priority assigned''')
                 return
 
             priority = get_list_match(part[2].strip().lower(), self._priorities)
@@ -500,6 +527,29 @@ For example:```
             msg = await self._client.send_message(message.channel, bug_text, embed=embed);
 
         await(self.reply(message, "{} bugs found matching labels={} priorities={}".format(count, ",".join(match_labels), ",".join(match_priorities))))
+
+    ################################################################################
+    # ~bug addlabel
+    async def cmd_addlabel(self, message):
+        if not self.has_privilege(2, message.author):
+            await self.reply(message, "You do not have permission to use this command")
+            return
+
+        content = message.content[len("~bug addlabel"):].strip().lower()
+        if (not content) or re.search("[^a-z]", content):
+            await self.reply(message, '''Usage: ~bug addlabel <label>
+Labels can only contain a-z characters''')
+            return
+
+        match = get_list_match(content, self._labels)
+        if match is not None:
+            await self.reply(message, 'Can not add label {} because it matches {}'.format(content, match))
+            return
+
+        self._labels.append(content)
+        self.save()
+
+        await(self.reply(message, "Label {} added successfully".format(content)))
 
     ################################################################################
     # ~bug reject
