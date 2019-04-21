@@ -191,11 +191,27 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
 
         await self._client.add_reaction(msg, "\U0001f44d")
 
+    async def print_search_results(self, message, match_bugs):
+        # Sort the returned bugs
+        # TODO: This sort is garbage text based
+        print_bugs = sorted(match_bugs, key=lambda k: (k[1]['priority'], int(k[0])))
+
+        # Limit to 10 replies at a time
+        if len(print_bugs) > 10:
+            await self.reply(message, '''Limiting to top 10 results to avoid chatspam''')
+            print_bugs = print_bugs[:10]
+
+        for index, bug in print_bugs:
+            bug_text, embed = await self.format_bug(index, bug)
+            msg = await self._client.send_message(message.channel, bug_text, embed=embed);
+
     async def handle_message(self, message):
         if message.content.startswith("~bug report"):
             await self.cmd_report(message)
         elif message.content.startswith("~bug search"):
             await self.cmd_search(message)
+        elif message.content.startswith("~bug dsearch"):
+            await self.cmd_dsearch(message)
         elif message.content.startswith("~bug reject"):
             await self.cmd_reject(message)
         elif message.content.startswith("~bug edit"):
@@ -247,12 +263,12 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
     Label must be one of: {}
 
 `~bug search labels,priorities`
-    Searches all bugs for ones that match the specified labels / priorities
-    Only bugs matching all supplied arguments will be shown
-    Both labels and priorities can be one or a list, separated by commas
-    Some examples:
+    Searches all bugs for ones that are tagged with all the specified labels / priorities
+    For example:
         ~bug search quest,class,high
-        ~bug search high
+
+`~bug dsearch <search terms>`
+    Searches all bug descriptions for ones that contain all the specified search terms
 
 **Commands the original bug reporter and team members can use:**
 `~bug reject <number> <reason why>`
@@ -477,7 +493,7 @@ __Available Priorities:__
     # ~bug search
     async def cmd_search(self, message):
         content = message.content[len("~bug search"):].strip()
-        part = content.replace(","," ").split(maxsplit=2)
+        part = content.replace(","," ").split()
         if (not content) or (len(part) < 1):
             await self.reply(message, '''Usage: ~bug search labels,priorities''')
             return
@@ -517,21 +533,36 @@ __Available Priorities:__
                     count += 1
                     match_bugs.append((index, bug))
 
-        # Sort the returned bugs
-        # TODO: This sort is garbage text based
-        print_bugs = sorted(match_bugs, key=lambda k: (k[1]['priority'], int(k[0])))
-
-        # Limit to 10 replies at a time
-        if len(print_bugs) > 10:
-            await self.reply(message, '''Limiting to top 10 results to avoid chatspam''')
-            print_bugs = print_bugs[:10]
-
-        # Update the bug
-        for index, bug in print_bugs:
-            bug_text, embed = await self.format_bug(index, bug)
-            msg = await self._client.send_message(message.channel, bug_text, embed=embed);
+        await self.print_search_results(message, match_bugs)
 
         await(self.reply(message, "{} bugs found matching labels={} priorities={}".format(count, ",".join(match_labels), ",".join(match_priorities))))
+
+    ################################################################################
+    # ~bug dsearch
+    async def cmd_dsearch(self, message):
+        content = message.content[len("~bug dsearch"):].strip()
+        part = content.replace(","," ").split()
+        if (not content) or (len(part) < 1):
+            await self.reply(message, '''Usage: ~bug dsearch <search terms>''')
+            return
+
+        match_bugs = []
+        count = 0
+        for index in self._bugs:
+            bug = self._bugs[index]
+            if "close_reason" not in bug:
+                matches = True
+                for term in part:
+                    if term.strip().lower() not in bug["description"].lower():
+                        matches = False
+
+                if matches:
+                    count += 1
+                    match_bugs.append((index, bug))
+
+        await self.print_search_results(message, match_bugs)
+
+        await(self.reply(message, "{} bugs found matching {}".format(count, ",".join(part))))
 
     ################################################################################
     # ~bug addlabel
