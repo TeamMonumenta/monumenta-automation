@@ -314,13 +314,16 @@ You can also attach an image to the message to include it in the bug report
             await self.reply(message, 'Bug report must contain both a label and a description')
             return
 
-        label = part[0].strip().lower()
+        labels = part[0].strip().lower().split(',')
         description = part[1].strip()
 
-        match = get_list_match(label.strip(), self._labels)
-        if match is None:
-            await self.reply(message, "Labels must be one of: [{}]".format(",".join(self._labels)))
-            return
+        good_labels = []
+        for label in labels:
+            match = get_list_match(label.strip(), self._labels)
+            if match is None:
+                await self.reply(message, "Labels must be one of: [{}]".format(",".join(self._labels)))
+                return
+            good_labels.append(match)
 
         if not description:
             await self.reply(message, 'Description can not be empty!')
@@ -335,7 +338,7 @@ You can also attach an image to the message to include it in the bug report
         #    print(embed)
         #    image = embed.url
 
-        (index, bug) = self.add_bug(description, labels=[match], author=message.author, image=image)
+        (index, bug) = self.add_bug(description, labels=good_labels, author=message.author, image=image)
 
         # Post this new bug report
         await self.send_bug(index, bug)
