@@ -469,6 +469,8 @@ __Available Priorities:__
         # Update the bug
         await self.send_bug(index, bug)
 
+        bug_text, embed = await self.format_bug(index, bug)
+        msg = await self._client.send_message(message.channel, bug_text, embed=embed);
         await(self.reply(message, "Bug report #{} updated successfully".format(index)))
 
     ################################################################################
