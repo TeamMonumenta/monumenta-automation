@@ -2,7 +2,9 @@ import asyncio
 import discord
 import os
 import json
+import sys
 from collections import OrderedDict
+from pprint import pprint
 
 
 # Data Schema
@@ -30,15 +32,22 @@ bugs = {
 '''
 
 class BugReportManager(object):
-    def __init__(self, client, user_privileges, group_privileges, bug_reports_channel_id, database_path):
+    def __init__(self, client, config):
         """
         """
         self._client = client
-        self._user_privileges = user_privileges
-        self._group_privileges = group_privileges
-        self._bug_reports_channel_id = bug_reports_channel_id
+
+        # Sanity check:
+        for key in ["bot_input_channels", "bug_reports_channel_id", "user_privileges", "group_privileges"]:
+            if key not in config:
+                sys.exit('Config missing key: {}'.format(key))
+
+        pprint(config)
+        self._user_privileges = config["user_privileges"]
+        self._group_privileges = config["group_privileges"]
+        self._bug_reports_channel_id = config["bug_reports_channel_id"]
         self._bug_reports_channel = None
-        self._database_path = database_path
+        self._database_path = config["database_path"]
         self.load()
 
     def save(self):

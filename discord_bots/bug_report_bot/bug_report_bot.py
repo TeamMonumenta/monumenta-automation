@@ -3,9 +3,8 @@
 import os
 import sys
 import logging
-import json
-import threading
 import traceback
+import yaml
 
 import asyncio
 
@@ -14,57 +13,20 @@ logging.basicConfig(level=logging.INFO)
 import discord
 
 from bug_report_manager import BugReportManager, split_string
-#from shell_common import split_string
 
 ################################################################################
 # Config / Environment
 
-botConfig = {}
+bot_config = {}
 
-botConfig["main_pid"] = os.getpid()
-botConfig["config_dir"] = os.path.expanduser("~/.bug_report_bot/")
-botConfig["database_path"] = os.path.join(botConfig["config_dir"], "database.json")
+config_dir = os.path.expanduser("~/.bug_report_bot/")
+config_path = os.path.join(config_dir, "config.yml")
 
 # Get bot's login info
-loginInfo = None
-with open(botConfig["config_dir"]+'login','r') as f:
-    loginInfo = f.readline()
-    if loginInfo[-1] == '\n':
-        loginInfo = loginInfo[:-1]
-if loginInfo is None:
-    sys.exit('No login info is provided')
-
-
-# List of channels this bot will consume messages in
-bot_input_channels = [
-    # Sekrit-bot-feed
-    '569283901202366524',
-]
-
-# Sekrit-bot-feed
-bug_reports_channel_id = '569283558741508107'
-
-user_privileges = {
-    # Combustible
-    "302298391969267712": 4,
-    # NickNackGus
-    "228226807353180162": 3,
-    # Crondis
-    "225791510636003329": 3,
-}
-
-group_privileges = {
-    # Team Epic (Leads)
-    "224393252156080128": 3,
-    # Team Epic (TE)
-    "341032989787947008": 2,
-    # Intern (TE)
-    "390269554657460226": 2,
-    # Moderator (Public)
-    "313067199579422722": 2,
-    # Team Monumenta (Public)
-    "313066719365300264": 2,
-}
+with open(config_path, 'r') as ymlfile:
+    bot_config = yaml.load(ymlfile)
+bot_config["database_path"] = os.path.join(config_dir, "database.json")
+bot_config["main_pid"] = os.getpid()
 
 # TODO: Better automatic restarting
 restart = True
@@ -76,7 +38,7 @@ while restart:
     asyncio.set_event_loop(loop)
     try:
         client = discord.Client()
-        manager = BugReportManager(client, user_privileges, group_privileges, bug_reports_channel_id, botConfig["database_path"])
+        manager = BugReportManager(client, bot_config)
 
         ################################################################################
         # Discord event handlers
@@ -89,7 +51,7 @@ while restart:
 
         @client.event
         async def on_message(message):
-            if message.channel.id in bot_input_channels:
+            if message.channel.id in bot_config["bot_input_channels"]:
                 try:
                     await manager.handle_message(message)
                 except Exception as e:
@@ -125,7 +87,10 @@ while restart:
         ################################################################################
         # Entry point
 
-        client.run(loginInfo)
+        if "login" not in bot_config is None:
+            sys.exit('No login info is provided')
+        client.run(bot_config["login"])
+
         print("No error detected from outside the client, restarting.")
     except RuntimeError as e:
         print("Runtime Error detected in loop. Exiting.")
