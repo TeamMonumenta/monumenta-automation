@@ -226,7 +226,7 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
         elif message.content.startswith("~bug unfix"):
             await self.cmd_unfix(message)
         elif message.content.startswith("~bug prune"):
-            await self.reply(message, "bug prune - Not implemented yet")
+            await self.cmd_prune(message)
         elif message.content.startswith("~bug import"):
             await self.cmd_import(message)
         elif message.content.startswith("~bug repost"):
@@ -762,6 +762,39 @@ Labels can only contain a-z characters''')
         bug_text, embed = await self.format_bug(index, bug)
         msg = await self._client.send_message(message.channel, bug_text, embed=embed);
         await(self.reply(message, "Bug report #{} unmarked as fixed".format(index)))
+
+    ################################################################################
+    # ~bug prune
+    async def cmd_prune(self, message):
+        if not self.has_privilege(3, message.author):
+            await self.reply(message, "You do not have permission to use this command")
+            return
+
+        if self._bug_reports_channel is None:
+            self._bug_reports_channel = self._client.get_channel(self._bug_reports_channel_id)
+            if self._bug_reports_channel is None:
+                raise Exception("Error getting bug reports channel!")
+
+        match_bugs = []
+        count = 0
+        for index in self._bugs:
+            bug = self._bugs[index]
+            # If the bug is both closed AND present in the bug channel
+            if ("close_reason" in bug) and ("message_id" in bug):
+                try:
+                    msg = await self._client.get_message(self._bug_reports_channel, bug["message_id"])
+                    if msg is not None:
+                        await self._client.delete_message(msg)
+
+                        # Since this message is no longer there...
+                        bug.pop("message_id")
+                        match_bugs.append((index, bug))
+                        count += 1
+                except:
+                    pass
+
+        await self.print_search_results(message, match_bugs, limit=99999)
+        await(self.reply(message, "{} bugs pruned successfully".format(count)))
 
     ################################################################################
     # ~bug repost
