@@ -65,7 +65,7 @@ while restart:
         # Ignore these, just noting them to avoid the errors we were getting
 
         @client.event
-        async def on_message_delete():
+        async def on_message_delete(_):
             pass
 
         @client.event
