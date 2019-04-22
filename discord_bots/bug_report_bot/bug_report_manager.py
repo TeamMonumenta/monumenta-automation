@@ -4,6 +4,7 @@ import os
 import json
 import sys
 import re
+import random
 from collections import OrderedDict
 from pprint import pprint
 
@@ -191,15 +192,15 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
 
         await self._client.add_reaction(msg, "\U0001f44d")
 
-    async def print_search_results(self, message, match_bugs):
+    async def print_search_results(self, message, match_bugs, limit=10):
         # Sort the returned bugs
         # TODO: This sort is garbage text based
         print_bugs = sorted(match_bugs, key=lambda k: (k[1]['priority'], int(k[0])))
 
-        # Limit to 10 replies at a time
-        if len(print_bugs) > 10:
-            await self.reply(message, '''Limiting to top 10 results to avoid chatspam''')
-            print_bugs = print_bugs[:10]
+        # Limit to specified number of replies at a time
+        if len(print_bugs) > limit:
+            await self.reply(message, 'Limiting to top {} results'.format(limit))
+            print_bugs = print_bugs[:limit]
 
         for index, bug in print_bugs:
             bug_text, embed = await self.format_bug(index, bug)
@@ -208,6 +209,10 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
     async def handle_message(self, message):
         if message.content.startswith("~bug report"):
             await self.cmd_report(message)
+        elif message.content.startswith("~bug get"):
+            await self.cmd_get(message)
+        elif message.content.startswith("~bug roulette"):
+            await self.cmd_roulette(message)
         elif message.content.startswith("~bug search"):
             await self.cmd_search(message)
         elif message.content.startswith("~bug dsearch"):
@@ -255,20 +260,24 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
     async def cmd_bug(self, message):
         usage = '''
 **Commands everyone can use:**
-`~bug`
-    This usage text
-
 `~bug report <label> <description>`
     Reports a bug with the given label
     Label must be one of: {}
 
-`~bug search labels,priorities`
+`~bug search labels,priorities,limit`
     Searches all bugs for ones that are tagged with all the specified labels / priorities
+    Only show the top #limit results to reduce chatspam
     For example:
         ~bug search quest,class,high
 
 `~bug dsearch <search terms>`
     Searches all bug descriptions for ones that contain all the specified search terms
+
+`~bug get <number>`
+    Gets the bug with the specified number
+
+`~bug roulette`
+    Gets a random bug
 
 **Commands the original bug reporter and team members can use:**
 `~bug reject <number> <reason why>`
@@ -490,30 +499,73 @@ __Available Priorities:__
         await(self.reply(message, "Bug report #{} updated successfully".format(index)))
 
     ################################################################################
+    # ~bug get
+    async def cmd_get(self, message):
+        content = message.content[len("~bug get"):].strip()
+        if not content:
+            await self.reply(message, "Usage: bug get <number>")
+            return
+
+        index_str = content.strip()
+        try:
+            index = int(index_str)
+        except:
+            await self.reply(message, "'{}' is not a number".format(index_str))
+            return
+
+        # Ugh, json keys need to be strings, not numbers
+        index = str(index)
+
+        if index not in self._bugs:
+            await self.reply(message, "Bug report {} does not exist".format(index_str))
+            return
+
+        match_bugs = [(index, self._bugs[index])]
+        await self.print_search_results(message, match_bugs)
+
+    ################################################################################
+    # ~bug roulette
+    async def cmd_roulette(self, message):
+        match_bugs = []
+        for index in self._bugs:
+            bug = self._bugs[index]
+            if "close_reason" not in bug:
+                match_bugs.append((index, bug))
+
+        await self.print_search_results(message, [random.choice(match_bugs)])
+
+    ################################################################################
     # ~bug search
     async def cmd_search(self, message):
         content = message.content[len("~bug search"):].strip()
         part = content.replace(","," ").split()
         if (not content) or (len(part) < 1):
-            await self.reply(message, '''Usage: ~bug search labels,priorities''')
+            await self.reply(message, '''Usage: ~bug search labels,priorities
+Default limit is 10 results - include more by adding a number to the search terms
+If using multiple labels, all specified labels must match
+If using multiple priorities, at least one must match''')
             return
 
         match_labels = []
         match_priorities = []
+        max_count = 10
         for item in part:
-            label_match = get_list_match(item.strip(), self._labels)
-            priority_match = get_list_match(item.strip(), self._priorities)
+            item = item.strip()
+            label_match = get_list_match(item, self._labels)
+            priority_match = get_list_match(item, self._priorities)
 
             if label_match is not None:
                 match_labels.append(label_match)
             elif priority_match is not None:
                 match_priorities.append(priority_match)
+            elif re.search("^[0-9][0-9]*$", item):
+                max_count = int(item)
             else:
                 await self.reply(message, '''No priority or label matching "{}"'''.format(item))
                 return
 
-        if len(match_priorities) > 1:
-            await self.reply(message, '''Bugs can only have one priority''')
+        if len(match_labels) == 0 and len(match_priorities) == 0:
+            await self.reply(message, 'Must specify something to search for')
             return
 
         match_bugs = []
@@ -525,15 +577,15 @@ __Available Priorities:__
                 for label in match_labels:
                     if label not in bug["labels"]:
                         matches = False
-                for priority in match_priorities:
-                    if priority != bug["priority"]:
-                        matches = False
+
+                if (len(match_priorities) > 0) and (bug["priority"] not in match_priorities):
+                    matches = False
 
                 if matches:
                     count += 1
                     match_bugs.append((index, bug))
 
-        await self.print_search_results(message, match_bugs)
+        await self.print_search_results(message, match_bugs, limit=max_count)
 
         await(self.reply(message, "{} bugs found matching labels={} priorities={}".format(count, ",".join(match_labels), ",".join(match_priorities))))
 
