@@ -264,41 +264,6 @@ mobs_to_replace = [
     },
     {
         'rules': {
-            'id': 'minecraft:vindicator',
-            'CustomName': 'Harmonic Adherent'
-        },
-        'mojangson': r'''{id:"minecraft:vindicator",CustomName:"{\"text\":\"Harmonic Adherent\"}",Health:35.0f,Attributes:[{Base:35.0d,Name:"generic.maxHealth"}],Team:"mobs",HandItems:[{id:"minecraft:stone_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§fObsidian Blade\"}"},AttributeModifiers:[{Amount:7.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
-    },
-    {
-        'rules': {
-            'id': 'minecraft:iron_golem',
-            'CustomName': '§6Dissonant Sentinel'
-        },
-        'mojangson': r'''{CustomName:"{\"text\":\"§6Dissonant Sentinel\"}",Health:120.0f,Attributes:[{Base:120.0d,Name:"generic.maxHealth"}],Team:"mobs",id:"minecraft:iron_golem",Tags:["boss_targetplayer","Elite","boss_blockbreak","boss_projimmune","boss_charger"]}''',
-    },
-    {
-        'rules': {
-            'id': 'minecraft:skeleton',
-            'HandItems': ["'§fViridian Hunter'", None],
-        },
-        'mojangson': r'''{id:"minecraft:skeleton",Attributes:[{Base:30.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,PersistenceRequired:0b,Team:"mobs",Health:30.0f,HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§fViridian Hunter\"}"},Enchantments:[{lvl:4s,id:"minecraft:power"}]}},{}]}''',
-    },
-    {
-        'rules': {
-            'id': 'minecraft:wither_skeleton',
-            'CustomName': 'Harmonic Keeper'
-        },
-        'mojangson': r'''{id:"minecraft:wither_skeleton",CustomName:"{\"text\":\"Harmonic Keeper\"}",Health:45.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:7567221}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:7567221}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:7567221}}},{id:"minecraft:chiseled_stone_bricks",Count:1b}],Attributes:[{Base:45.0d,Name:"generic.maxHealth"}],Team:"mobs",HandItems:[{id:"minecraft:iron_axe",Count:1b,tag:{HideFlags:1,display:{Name:"{\"text\":\"§2§lWrath of the Mountain\"}"}}},{}]}''',
-    },
-    {
-        'rules': {
-            'id': 'minecraft:iron_golem',
-            'CustomName': '§6Harmonic Sentinel'
-        },
-        'mojangson': r'''{CustomName:"{\"text\":\"§6Harmonic Sentinel\"}",Health:120.0f,Attributes:[{Base:120.0d,Name:"generic.maxHealth"}],Team:"mobs",id:"minecraft:iron_golem",Tags:["boss_targetplayer","Elite","boss_blockbreak","boss_blockbreak","boss_stomp","boss_projimmune"]}''',
-    },
-    {
-        'rules': {
             'id': 'minecraft:skeleton',
             'CustomName': '§6Master Scavenger'
         },
@@ -773,6 +738,34 @@ mobs_to_replace = [
 
     ################################################################################
     # Pink & Sealed Descent mobs
+    {
+        'rules': {
+            'id': 'minecraft:iron_golem',
+            'CustomName': '§6Dissonant Sentinel'
+        },
+        'mojangson': r'''{CustomName:"{\"text\":\"§6Dissonant Sentinel\"}",Health:120.0f,Attributes:[{Base:120.0d,Name:"generic.maxHealth"}],Team:"mobs",id:"minecraft:iron_golem",Tags:["boss_targetplayer","Elite","boss_blockbreak","boss_projimmune","boss_charger"]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
+            'HandItems': ["'§fViridian Hunter'", None],
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",Attributes:[{Base:30.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,PersistenceRequired:0b,Team:"mobs",Health:30.0f,HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§fViridian Hunter\"}"},Enchantments:[{lvl:4s,id:"minecraft:power"}]}},{}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:wither_skeleton',
+            'CustomName': 'Harmonic Keeper'
+        },
+        'mojangson': r'''{id:"minecraft:wither_skeleton",CustomName:"{\"text\":\"Harmonic Keeper\"}",Health:45.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:7567221}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:7567221}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:7567221}}},{id:"minecraft:chiseled_stone_bricks",Count:1b}],Attributes:[{Base:45.0d,Name:"generic.maxHealth"}],Team:"mobs",HandItems:[{id:"minecraft:iron_axe",Count:1b,tag:{HideFlags:1,display:{Name:"{\"text\":\"§2§lWrath of the Mountain\"}"}}},{}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:iron_golem',
+            'CustomName': '§6Harmonic Sentinel'
+        },
+        'mojangson': r'''{CustomName:"{\"text\":\"§6Harmonic Sentinel\"}",Health:120.0f,Attributes:[{Base:120.0d,Name:"generic.maxHealth"}],Team:"mobs",id:"minecraft:iron_golem",Tags:["boss_targetplayer","Elite","boss_blockbreak","boss_blockbreak","boss_stomp","boss_projimmune"]}''',
+    },
     {
         'rules': {
             'id': 'minecraft:vindicator',
