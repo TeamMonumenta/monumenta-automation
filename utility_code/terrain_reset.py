@@ -243,6 +243,11 @@ region_2 = {
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+
+    "coordinatesToCopy":(
+        # This temporary junk will make item replacements run on players in R2
+        {"name":"TODO FIXME",     "pos1":( -1441, 10, -1441), "pos2":(-1441, 10, -1441)},
+    ),
 }
 
 available_configs = {
