@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import os
-import sys
+import copy
 import json
+import os
 import re
-
 import shutil
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types.text_format import unformat_text
@@ -166,3 +166,21 @@ def bounded_range(min_in, max_in, range_start, range_length, divide=1):
     max_out = max( 0, min( max_out, range_length ) )
 
     return range( min_out, max_out )
+
+class DictWithDefault(dict):
+    def __init__(self, init={}, default=0):
+        if isinstance(init, type(self)):
+            self._default = init._default
+            super().__init__(init)
+        else:
+            self._default = default
+            super().__init__(init)
+
+    def __getitem__(self, key):
+        result = super().__getitem__(key)
+        self[key] = result
+        return result
+
+    def __missing__(self, key):
+        return copy.deepcopy(self._default)
+

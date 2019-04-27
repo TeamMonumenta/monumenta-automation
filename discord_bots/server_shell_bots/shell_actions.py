@@ -100,6 +100,7 @@ permissionGroups = {
         "+help",
         "+list bots",
         "+dump error commands",
+        "+dungeon loot",
         "+get errors",
         "+list shards",
         "+r1address to english",
@@ -117,6 +118,7 @@ permissionGroups = {
         "+help",
         "+list bots",
         "+dump error commands",
+        "+dungeon loot",
         "+get errors",
         "+list shards",
         "+select",
@@ -324,6 +326,7 @@ allActions.append(ListBotsAction)
 
 class SelectBotAction(ShellAction):
     '''Make specified bots start listening for commands; unlisted bots stop listening.
+
 Syntax:
 `{cmdPrefix}select [botName] [botName2] ...`
 Examples:
@@ -377,6 +380,19 @@ data/commands_to_update/*.txt'''
         ]
 allActions.append(DumpErrorCommandsAction)
 
+class DungeonLootAction(ShellAction):
+    '''List the loot tables and items in chests in the dungeons.'''
+    command = "dungeon loot"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        self._commands = [
+            self.run("python3 " + _top_level + "/utility_code/dungeon_loot_info.py", displayOutput=True),
+            self.display("Done."),
+        ]
+allActions.append(DungeonLootAction)
+
 class FetchResetBundleAction(ShellAction):
     '''Dangerous!
 Deletes in-progress terrain reset info on the play server
@@ -421,61 +437,6 @@ Currently exposes all valid git syntax, including syntax that *will* softlock th
         ]
 allActions.append(GitAction)
 
-class UpdateItemAction(ShellAction):
-    '''
-Updates an item in all loot tables
-
-Usage:
-    update item minecraft:leather_leggings{Enchantments:[{lvl:3s,id:"minecraft:fire_protection"}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"{\"text\":\"§fBurnt Leggings\"}"},Damage:0}
-
-Easiest way to get this info is holding an item in your hand and using /nbti tocommand on a command block
-
-For convenience, leading 'give @p' is ignored, along with any data after the last } (usually the quantity of item from /nbti tocommand)
-    '''
-    command = "update item"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-
-        # Check for any arguments
-        commandArgs = message.content[len(commandPrefix):].strip()
-        if len(commandArgs) < len(self.command) + 5:
-            self._commands = [
-                self.display("Item argument required")
-            ]
-            return
-        if '{' not in commandArgs:
-            self._commands = [
-                self.display("Item must be of the form minecraft:id{nbt}")
-            ]
-            return
-
-        # Parse id / nbt arguments
-        commandArgs = message.content[len(commandPrefix) + len(self.command) + 1:]
-
-        partitioned = commandArgs.strip().partition("{")
-        item_id = partitioned[0].strip()
-        item_nbt_str = partitioned[1] + partitioned[2].strip()
-
-        if item_id.startswith("/"):
-            item_id = item_id[1:]
-        if item_id.startswith("give @p "):
-            item_id = item_id[len("give @p "):]
-
-        if item_nbt_str[-1] != '}':
-            item_nbt_str = item_nbt_str[:item_nbt_str.rfind("}") + 1]
-
-        mgr = LootTableManager()
-        mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
-        locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
-
-        self._commands = [
-            self.display("Updated item in loot tables:```" + "\n".join(locations) + "```"),
-        ]
-
-allActions.append(UpdateItemAction)
-
 class GenerateInstancesAction(ShellAction):
     '''Dangerous!
 Deletes previous terrain reset data
@@ -516,6 +477,7 @@ allActions.append(GenerateInstancesAction)
 
 class GetErrorsAction(ShellAction):
     '''Get the last minute of error log data from a given shard.
+
 Syntax:
 {cmdPrefix}get errors region_1'''
     command = "get errors"
@@ -547,6 +509,7 @@ allActions.append(GetErrorsAction)
 class KillBotAction(ShellAction):
     '''Kill this bot. Used for maintanence.
 Do not use while the bot is running actions.
+
 Syntax:
 `{cmdPrefix}kill bot` kill bot
 '''
@@ -575,41 +538,36 @@ class ListShardsAction(ShellAction):
         ]
 allActions.append(ListShardsAction)
 
-class RepairBlockEntitiesAction(ShellAction):
-    '''Repair Block Entities in specified worlds.
+class RollLootAction(ShellAction):
+    '''Generates 1024 loot table chests, "opens" them, and finds the number of items per chest on average.
+
 Syntax:
-{cmdPrefix}repair block entities *
-{cmdPrefix}repair block entities region_1 region_2 orange'''
-    command = "repair block entities"
+`{cmdPrefix}roll loot minecraft:empty` Get item odds for this loot table.
+`{cmdPrefix}roll loot epic:r1/kits/city_guide/c0 epic:r1/kits/city_guide/c1 minecraft:empty` Get item odds for multiple loot tables.
+'''
+    command = "roll loot"
     hasPermissions = checkPermissions
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:]
+        self._commands = []
+        command_args = message.content[len(commandPrefix + self.command)+1:].split()
 
-        baseShellCommand = _top_level + "/utility_code/repair_block_entities.py"
-        shellCommand = baseShellCommand
-        allShards = botConfig["shards"]
-        if '*' in commandArgs:
-            for shard in allShards.keys():
-                if shard != "bungee":
-                    shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
-        else:
-            for shard in allShards.keys():
-                if shard in commandArgs:
-                    if shard != "bungee":
-                        shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
+        if len(command_args) == 0:
+            self._commands += [
+                self.display(self.__doc__.replace('{cmdPrefix}', commandPrefix)),
+            ]
 
-        if shellCommand == baseShellCommand:
-            self._commands = [
-                self.display("No specified shards on this server."),
+        for loot_table in command_args:
+            self._commands += [
+                self.display("**{}**".format(loot_table)),
+                self.run("python3 " + _top_level + "/utility_code/loot_table_test_mobs.sh " + loot_table, displayOutput=True),
             ]
-        else:
-            self._commands = [
-                self.run(shellCommand, displayOutput=True),
-                self.mention(),
-            ]
-allActions.append(RepairBlockEntitiesAction)
+
+        self._commands += [
+            self.display("Done."),
+        ]
+allActions.append(RollLootAction)
 
 class PrepareResetBundleAction(ShellAction):
     '''Dangerous!
@@ -667,8 +625,9 @@ allActions.append(PrepareResetBundleAction)
 
 class R1AddressToEnglishAction(ShellAction):
     '''Convert R1Address scores to a human-readable format
+
 Syntax:
-~r1address to english address1 [address2] ...'''
+`{cmdPrefix}r1address to english address1 [address2] ...`'''
     command = "r1address to english"
     hasPermissions = checkPermissions
 
@@ -711,9 +670,47 @@ For syntax, run:
         ]
 allActions.append(R1PlotGetAction)
 
+class RepairBlockEntitiesAction(ShellAction):
+    '''Repair Block Entities in specified worlds.
+
+Syntax:
+`{cmdPrefix}repair block entities *`
+`{cmdPrefix}repair block entities region_1 region_2 orange`'''
+    command = "repair block entities"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        commandArgs = message.content[len(commandPrefix + self.command)+1:]
+
+        baseShellCommand = _top_level + "/utility_code/repair_block_entities.py"
+        shellCommand = baseShellCommand
+        allShards = botConfig["shards"]
+        if '*' in commandArgs:
+            for shard in allShards.keys():
+                if shard != "bungee":
+                    shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
+        else:
+            for shard in allShards.keys():
+                if shard in commandArgs:
+                    if shard != "bungee":
+                        shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
+
+        if shellCommand == baseShellCommand:
+            self._commands = [
+                self.display("No specified shards on this server."),
+            ]
+        else:
+            self._commands = [
+                self.run(shellCommand, displayOutput=True),
+                self.mention(),
+            ]
+allActions.append(RepairBlockEntitiesAction)
+
 class RestartBotAction(ShellAction):
     '''Restart this bot. Used to update to the latest version.
 Do not use while the bot is running actions.
+
 Syntax:
 `{cmdPrefix}restart bot` restart bot with no arguements
 `{cmdPrefix}restart bot ...` restart bot with arguements <...>
@@ -763,8 +760,8 @@ Syntax:
         usage = [
             self.display('''Syntax:
 ```
-{cmdPrefix}stage list
-{cmdPrefix}stage restore <file>
+`{cmdPrefix}stage list`
+`{cmdPrefix}stage restore <file>`
 ```'''.replace('{cmdPrefix}',cmdPrefix)),
         ]
         botName = botConfig["name"]
@@ -793,8 +790,8 @@ allActions.append(StageAction)
 class StartShardAction(ShellAction):
     '''Start specified shards.
 Syntax:
-{cmdPrefix}start shard *
-{cmdPrefix}start shard region_1 region_2 orange'''
+`{cmdPrefix}start shard *`
+`{cmdPrefix}start shard region_1 region_2 orange`'''
     command = "start shard"
     hasPermissions = checkPermissions
 
@@ -897,8 +894,8 @@ allActions.append(StopIn10MinutesAction)
 class StopShardAction(ShellAction):
     '''Stop specified shards.
 Syntax:
-{cmdPrefix}stop shard *
-{cmdPrefix}stop shard region_1 region_2 orange'''
+`{cmdPrefix}stop shard *`
+`{cmdPrefix}stop shard region_1 region_2 orange`'''
     command = "stop shard"
     hasPermissions = checkPermissions
 
@@ -1026,6 +1023,61 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         ]
 
 allActions.append(TerrainResetAction)
+
+class UpdateItemAction(ShellAction):
+    '''
+Updates an item in all loot tables
+
+Usage:
+    update item minecraft:leather_leggings{Enchantments:[{lvl:3s,id:"minecraft:fire_protection"}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"{\"text\":\"§fBurnt Leggings\"}"},Damage:0}
+
+Easiest way to get this info is holding an item in your hand and using /nbti tocommand on a command block
+
+For convenience, leading 'give @p' is ignored, along with any data after the last } (usually the quantity of item from /nbti tocommand)
+    '''
+    command = "update item"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+
+        # Check for any arguments
+        commandArgs = message.content[len(commandPrefix):].strip()
+        if len(commandArgs) < len(self.command) + 5:
+            self._commands = [
+                self.display("Item argument required")
+            ]
+            return
+        if '{' not in commandArgs:
+            self._commands = [
+                self.display("Item must be of the form minecraft:id{nbt}")
+            ]
+            return
+
+        # Parse id / nbt arguments
+        commandArgs = message.content[len(commandPrefix) + len(self.command) + 1:]
+
+        partitioned = commandArgs.strip().partition("{")
+        item_id = partitioned[0].strip()
+        item_nbt_str = partitioned[1] + partitioned[2].strip()
+
+        if item_id.startswith("/"):
+            item_id = item_id[1:]
+        if item_id.startswith("give @p "):
+            item_id = item_id[len("give @p "):]
+
+        if item_nbt_str[-1] != '}':
+            item_nbt_str = item_nbt_str[:item_nbt_str.rfind("}") + 1]
+
+        mgr = LootTableManager()
+        mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
+        locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
+
+        self._commands = [
+            self.display("Updated item in loot tables:```" + "\n".join(locations) + "```"),
+        ]
+
+allActions.append(UpdateItemAction)
 
 class ViewScoresAction(ShellAction):
     '''View player scores on Region 1. Run without arguements for syntax.
