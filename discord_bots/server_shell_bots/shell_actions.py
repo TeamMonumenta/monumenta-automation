@@ -388,7 +388,7 @@ class DungeonLootAction(ShellAction):
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
-            self.run("python3 " + _top_level + "/utility_code/dungeon_loot_info.py", displayOutput=True),
+            self.run(_top_level + "/utility_code/dungeon_loot_info.py", displayOutput=True),
             self.display("Done."),
         ]
 allActions.append(DungeonLootAction)
@@ -561,7 +561,7 @@ Syntax:
         for loot_table in command_args:
             self._commands += [
                 self.display("**{}**".format(loot_table)),
-                self.run("python3 " + _top_level + "/utility_code/loot_table_test_mobs.sh " + loot_table, displayOutput=True),
+                self.run(_top_level + "/utility_code/loot_table_test_mobs.sh " + loot_table, displayOutput=True),
             ]
 
         self._commands += [
