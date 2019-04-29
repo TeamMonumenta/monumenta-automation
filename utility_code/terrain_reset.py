@@ -95,7 +95,7 @@ betaplots = {
     "playerScoreChanges":dungeon_score_rules,
 
     # Replace items worldwide
-    "replace_items": item_replace_manager,
+    "replace_items_globally": item_replace_manager,
 }
 
 r1plots = {
@@ -111,7 +111,7 @@ r1plots = {
     "playerScoreChanges":dungeon_score_rules,
 
     # Replace items worldwide
-    "replace_items": item_replace_manager,
+    "replace_items_globally": item_replace_manager,
 }
 
 tutorial = {
@@ -159,6 +159,9 @@ region_1 = {
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+
+    # Replace items on all players
+    "replace_items_on_players": item_replace_manager,
 
     "coordinatesToCopy":(
         # "name":"a unique name"
@@ -244,10 +247,8 @@ region_2 = {
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
 
-    "coordinatesToCopy":(
-        # This temporary junk will make item replacements run on players in R2
-        {"name":"TODO FIXME",     "pos1":( -1441, 10, -1441), "pos2":(-1441, 10, -1441)},
-    ),
+    # Replace items on all players
+    "replace_items_on_players": item_replace_manager,
 }
 
 available_configs = {

@@ -121,10 +121,11 @@ class RecursiveEntityIterator(object):
     Only iterates over chunks in regions that could plausibly contain the specified coordinates
     """
 
-    def __init__(self, world, pos1=None, pos2=None, readonly=True):
+    def __init__(self, world, pos1=None, pos2=None, players_only=False, readonly=True):
         self._player_iterator = world.players
         self._baseiterator = BaseChunkEntityIterator(world, pos1, pos2, readonly)
         self._readonly = readonly
+        self._players_only = players_only
 
     def __iter__(self):
         """
@@ -216,7 +217,7 @@ class RecursiveEntityIterator(object):
         # share the exact same tile entity/entity processing
         #
 
-        if len(self._work_stack) == 0:
+        if len(self._work_stack) == 0 and not self._players_only:
             # No work left to do - get another entity
             entity = self._baseiterator.__next__()
 
