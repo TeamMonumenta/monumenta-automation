@@ -156,6 +156,8 @@ class preserve_armor_color(global_rule):
 
     def postprocess(self, item):
         if self.color is None:
+            if item.has_path('tag.display.color'):
+                item.at_path('tag.display').value.pop('color')
             return
 
         # Make sure tag exists first
