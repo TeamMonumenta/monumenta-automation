@@ -175,7 +175,7 @@ def terrain_reset_instance(config, outputFile, statusQueue):
         # Replace items on all players if specified
         if "replace_items_on_players" in config:
             item_replace_manager = config["replace_items_on_players"]
-            for item, _, entity_path in dstWorld.items(players_only=True, readonly=False):
+            for item, _, entity_path in dstWorld.items(readonly=False, players_only=True):
                 item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
 
         dstWorld.save()
