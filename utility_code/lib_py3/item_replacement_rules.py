@@ -262,42 +262,23 @@ class preserve_shield_banner(global_rule):
     name = 'Preserve shield banner'
 
     def preprocess(self, template, item):
-        self.color = None
-        self.pattern = None
+        if item.at_path('id').value != 'minecraft:shield':
+            return
 
-        # banner base color
-        if item.has_path('tag.BlockEntityTag.Base'):
-            self.color = item.at_path('tag.BlockEntityTag.Base').value
-
-        # banner patterns
-        if item.has_path('tag.BlockEntityTag.Patterns'):
-            self.pattern = item.at_path('tag.BlockEntityTag.Patterns').value
+        self.block_entity_tag = None
+        if item.has_path('tag.BlockEntityTag'):
+            self.block_entity_tag = item.at_path('tag.BlockEntityTag')
 
     def postprocess(self, item):
-        # Remove banner if the player customized it as such
-        if item.has_path('tag.BlockEntityTag.Base'):
-            item.at_path('tag.BlockEntityTag').value.pop('Base')
-        if item.has_path('tag.BlockEntityTag.Patterns'):
-            item.at_path('tag.BlockEntityTag').value.pop('Patterns')
+        if item.at_path('id').value != 'minecraft:shield':
+            return
 
-        # Add custom banner if the player applied one
-        if ( self.color is not None ) or ( self.pattern is not None ):
+        if item.has_path('tag.BlockEntityTag'):
+            item.at_path('tag').value.pop('BlockEntityTag')
+
+        if self.block_entity_tag is not None:
             if not item.has_path('tag'):
                 item.value['tag'] = nbt.TagCompound({})
-            if not item.has_path('tag.BlockEntityTag'):
-                item.at_path('tag').value['BlockEntityTag'] = nbt.TagCompound({})
-
-        if self.color is not None:
-            if not item.has_path('tag.BlockEntityTag.Base'):
-                item.at_path('tag.BlockEntityTag').value['Base'] = nbt.TagInt(0)
-            item.at_path('tag.BlockEntityTag.Base').value = self.color
-
-        if self.pattern is not None:
-            if not item.has_path('tag.BlockEntityTag.Patterns'):
-                item.at_path('tag.BlockEntityTag').value['Patterns'] = nbt.TagList([])
-            item.at_path('tag.BlockEntityTag.Patterns').value = self.pattern
-
-        if item.has_path('tag.BlockEntityTag') and len(item.at_path('tag.BlockEntityTag').value.keys()) == 0:
-            item.at_path('tag').value.pop('BlockEntityTag')
+            item.at_path('tag').value['BlockEntityTag'] = self.block_entity_tag.deep_copy()
 
 global_rules.append(preserve_shield_banner())
