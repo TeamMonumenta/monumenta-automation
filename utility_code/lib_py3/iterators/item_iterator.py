@@ -6,8 +6,8 @@ from lib_py3.iterators.recursive_entity_iterator import RecursiveEntityIterator
 from lib_py3.iterators.recursive_entity_iterator import scan_entity_for_items
 
 class ItemIterator(object):
-    def __init__(self, world, pos1=None, pos2=None, readonly=True):
-        self._entity_iterator = RecursiveEntityIterator(world, pos1, pos2, readonly)
+    def __init__(self, world, pos1=None, pos2=None, readonly=True, players_only=False):
+        self._entity_iterator = RecursiveEntityIterator(world, pos1, pos2, readonly, players_only)
 
     def __iter__(self):
         """
