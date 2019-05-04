@@ -805,8 +805,9 @@ Labels can only contain a-z characters''')
 
         count = 0
         for index in self._bugs:
-            count += 1
-            await self.send_bug(index, self._bugs[index])
+            if "close_reason" not in self._bugs[index]:
+                count += 1
+                await self.send_bug(index, self._bugs[index])
 
         await(self.reply(message, "{} bugs reposted successfully".format(count)))
 
