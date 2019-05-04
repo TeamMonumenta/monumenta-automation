@@ -141,7 +141,7 @@ class World(object):
         '''
         return RecursiveEntityIterator(self, pos1, pos2, readonly, players_only)
 
-    def items(self, pos1=None, pos2=None, readonly=True):
+    def items(self, pos1=None, pos2=None, readonly=True, players_only=False):
         '''
         Returns an iterator of all items in the world.
         If readonly=False, all chunks will be saved as
@@ -152,7 +152,7 @@ class World(object):
         for item, pos in world.items():
             item.tree()
         '''
-        return ItemIterator(self, pos1, pos2, readonly)
+        return ItemIterator(self, pos1, pos2, readonly, players_only)
 
     def find_data_packs(self):
         self._enabled_data_packs = []
