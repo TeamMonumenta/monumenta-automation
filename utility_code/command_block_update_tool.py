@@ -9,11 +9,8 @@ import getopt
 import json
 from pprint import pprint
 
-from score_change_list import dungeon_score_rules
-from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.common import eprint, get_item_name_from_nbt
+from lib_py3.common import eprint
 from lib_py3.world import World
-from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
 
 def usage():
     sys.exit("Usage: {} <--world /path/to/world> <--output file.json | --input file.json> [--pos1 x,y,z --pos2 x,y,z] [--interactive]".format(sys.argv[0]))
