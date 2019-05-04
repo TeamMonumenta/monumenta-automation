@@ -128,7 +128,7 @@ class World(object):
         self.find_players()
         return PlayerIterator._iter_from_world(self)
 
-    def entity_iterator(self, pos1=None, pos2=None, readonly=True):
+    def entity_iterator(self, pos1=None, pos2=None, readonly=True, players_only=False):
         '''
         Returns an iterator of all entities and tile entities in the world.
         If readonly=False, all chunks containing entities will be saved as
@@ -139,7 +139,7 @@ class World(object):
         for entity, pos, entity_path in world.tile_entity_iterator():
             entity.tree()
         '''
-        return RecursiveEntityIterator(self, pos1, pos2, readonly)
+        return RecursiveEntityIterator(self, pos1, pos2, readonly, players_only)
 
     def items(self, pos1=None, pos2=None, readonly=True):
         '''
