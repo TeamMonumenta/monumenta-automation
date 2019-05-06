@@ -109,7 +109,6 @@ class BugReportManager(object):
         if bug_idx is not None:
             bug = self._bugs.get(bug_idx, None)
             if bug is not None:
-                # TODO: This check is wrong
                 if bug["author"] == author.id:
                     priv = max(priv, 1)
 
@@ -221,6 +220,8 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
             await self.cmd_reject(message)
         elif message.content.startswith("~bug edit"):
             await self.cmd_edit(message)
+        elif message.content.startswith("~bug append"):
+            await self.cmd_append(message)
         elif message.content.startswith("~bug fix"):
             await self.cmd_fix(message)
         elif message.content.startswith("~bug unfix"):
@@ -285,6 +286,9 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
 
 `~bug edit <number> <description | label | image> [argument]`
     Edits the specified field of the bug report
+
+`~bug append <number> text`
+    Appends text to an existing bug's description
 
 **Commands team members can use:**
 `~bug edit <number> [author | priority] [argument]`
@@ -497,6 +501,46 @@ __Available Priorities:__
         bug_text, embed = await self.format_bug(index, bug)
         msg = await self._client.send_message(message.channel, bug_text, embed=embed);
         await(self.reply(message, "Bug report #{} updated successfully".format(index)))
+
+    ################################################################################
+    # ~bug append
+    async def cmd_append(self, message):
+        content = message.content[len("~bug append"):].strip()
+        part = content.split(maxsplit=1)
+        if (not content) or (len(part) < 2):
+            await self.reply(message, '''Usage: ~bug append <number> [additional description text]''')
+            return
+
+        index_str = part[0].strip()
+        try:
+            index = int(index_str)
+        except:
+            await self.reply(message, "'{}' is not a number".format(index_str))
+            return
+
+        # Ugh, json keys need to be strings, not numbers
+        index = str(index)
+
+        if index not in self._bugs:
+            await self.reply(message, 'Bug #{} not found!'.format(index))
+            return
+
+        if not self.has_privilege(1, message.author, bug_idx=index):
+            await self.reply(message, "You do not have permission to append to bug #{}".format(index))
+            return
+
+        bug = self._bugs[index]
+
+        bug["description"] = "{}\n{}".format(bug["description"], part[1].strip())
+
+        self.save()
+
+        # Update the bug
+        await self.send_bug(index, bug)
+
+        bug_text, embed = await self.format_bug(index, bug)
+        msg = await self._client.send_message(message.channel, bug_text, embed=embed);
+        await(self.reply(message, "Bug report #{} edited".format(index)))
 
     ################################################################################
     # ~bug get
