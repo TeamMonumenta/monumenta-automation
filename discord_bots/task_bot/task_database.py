@@ -33,7 +33,7 @@ bugs = {
 ]
 '''
 
-class BugReportManager(object):
+class TaskDatabase(object):
     def __init__(self, client, config):
         """
         """

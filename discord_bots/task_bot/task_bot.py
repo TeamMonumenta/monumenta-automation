@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO)
 
 import discord
 
-from bug_report_manager import BugReportManager, split_string
+from task_database import TaskDatabase, split_string
 
 ################################################################################
 # Config / Environment
@@ -38,7 +38,7 @@ while restart:
     asyncio.set_event_loop(loop)
     try:
         client = discord.Client()
-        manager = BugReportManager(client, bot_config)
+        manager = TaskDatabase(client, bot_config)
 
         ################################################################################
         # Discord event handlers
