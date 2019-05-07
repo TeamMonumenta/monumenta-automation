@@ -34,26 +34,25 @@ entries = {
 '''
 
 class TaskDatabase(object):
-    def __init__(self, client, config):
+    def __init__(self, client, config, config_dir):
         """
         """
         self._client = client
 
-        # Sanity check:
-        for key in ["bot_input_channels", "channel_id", "user_privileges", "group_privileges"]:
-            if key not in config:
-                sys.exit('Config missing key: {}'.format(key))
-
-        self._user_privileges = config["user_privileges"]
-        self._group_privileges = config["group_privileges"]
-        self._channel_id = config["channel_id"]
-        self._prefix = config["prefix"]
-        self._descriptor_single = config["descriptor_single"]
-        self._descriptor_plural = config["descriptor_plural"]
-        self._descriptor_proper = config["descriptor_proper"]
-        self._channel = None
-        self._database_path = config["database_path"]
-        self.load()
+        try:
+            self._user_privileges = config["user_privileges"]
+            self._group_privileges = config["group_privileges"]
+            self._channel_id = config["channel_id"]
+            self._prefix = config["prefix"]
+            self._descriptor_single = config["descriptor_single"]
+            self._descriptor_plural = config["descriptor_plural"]
+            self._descriptor_proper = config["descriptor_proper"]
+            self._reactions  = config["reactions"]
+            self._channel = None
+            self._database_path = os.path.join(config_dir, config["database_path"])
+            self.load()
+        except KeyError as e:
+            sys.exit('Config missing key: {}'.format(e))
 
     def save(self):
         savedata = {
@@ -74,12 +73,12 @@ class TaskDatabase(object):
                 "misc",
             ]
             self._priorities = [
-                "N/A",
                 "Critical",
                 "High",
                 "Medium",
                 "Low",
                 "Zero",
+                "N/A",
             ]
             self.save()
         else:
@@ -192,7 +191,8 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             entry["message_id"] = msg.id
             self.save()
 
-        await self._client.add_reaction(msg, "\U0001f44d")
+        for reaction in self._reactions:
+            await self._client.add_reaction(msg, reaction)
 
     async def print_search_results(self, message, match_entries, limit=10):
         # Sort the returned entries
@@ -237,7 +237,8 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         if match is None:
             return
 
-        if len(part) < 2:
+        # Length check is janky to let multiple bots share a channel - minimum 4 characters for prefix
+        if len(part) < 2 or len(part[0].strip()) < 4:
             await self.usage(message)
             return
 

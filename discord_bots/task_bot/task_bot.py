@@ -20,14 +20,12 @@ from task_database import TaskDatabase, split_string
 
 bot_config = {}
 
-config_dir = os.path.expanduser("~/.bug_report_bot/")
+config_dir = os.path.expanduser("~/.task_bot/")
 config_path = os.path.join(config_dir, "config.yml")
 
 # Get bot's login info
 with open(config_path, 'r') as ymlfile:
     bot_config = yaml.load(ymlfile)
-bot_config["database_path"] = os.path.join(config_dir, "database.json")
-bot_config["main_pid"] = os.getpid()
 
 restart = True
 def signal_handler(sig, frame):
@@ -37,6 +35,7 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 while restart:
+    restart = False
     print("Bot Configuration:")
     pprint(bot_config)
     print("")
@@ -45,7 +44,11 @@ while restart:
     asyncio.set_event_loop(loop)
     try:
         client = discord.Client()
-        manager = TaskDatabase(client, bot_config)
+        facet_channels = []
+        for facet in bot_config["facets"]:
+            db = TaskDatabase(client, facet, config_dir)
+            for input_channel in facet["bot_input_channels"]:
+                facet_channels.append((input_channel, db))
 
         ################################################################################
         # Discord event handlers
@@ -58,14 +61,15 @@ while restart:
 
         @client.event
         async def on_message(message):
-            if message.channel.id in bot_config["bot_input_channels"]:
-                try:
-                    await manager.handle_message(message)
-                except Exception as e:
-                    await client.send_message(message.channel, message.author.mention)
-                    await client.send_message(message.channel, "**ERROR**: ```" + str(e) + "```")
-                    for chunk in split_string(traceback.format_exc()):
-                        await client.send_message(message.channel, "```" + chunk + "```")
+            for facet_channel, db in facet_channels:
+                if message.channel.id in facet_channel:
+                    try:
+                        await db.handle_message(message)
+                    except Exception as e:
+                        await client.send_message(message.channel, message.author.mention)
+                        await client.send_message(message.channel, "**ERROR**: ```" + str(e) + "```")
+                        for chunk in split_string(traceback.format_exc()):
+                            await client.send_message(message.channel, "```" + chunk + "```")
 
 
         ################################################################################
@@ -100,6 +104,7 @@ while restart:
 
         print("No error detected from outside the client, restarting.")
     except SystemExit as e:
+        print("Exiting: {}".format(e))
         sys.exit(0)
     except RuntimeError as e:
         print("Runtime Error detected in loop. Exiting.")
