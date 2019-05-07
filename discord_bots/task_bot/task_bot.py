@@ -6,8 +6,8 @@ import signal
 import logging
 import traceback
 import yaml
-
 import asyncio
+from pprint import pprint
 
 logging.basicConfig(level=logging.INFO)
 
@@ -29,14 +29,16 @@ with open(config_path, 'r') as ymlfile:
 bot_config["database_path"] = os.path.join(config_dir, "database.json")
 bot_config["main_pid"] = os.getpid()
 
+restart = True
 def signal_handler(sig, frame):
         print('Shutting down bot...')
+        restart = False
         sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
 
-while True:
+while restart:
     print("Bot Configuration:")
-    pprint(config)
+    pprint(bot_config)
     print("")
 
     loop = asyncio.new_event_loop()
@@ -97,6 +99,8 @@ while True:
         client.run(bot_config["login"])
 
         print("No error detected from outside the client, restarting.")
+    except SystemExit as e:
+        sys.exit(0)
     except RuntimeError as e:
         print("Runtime Error detected in loop. Exiting.")
         print(repr(e))

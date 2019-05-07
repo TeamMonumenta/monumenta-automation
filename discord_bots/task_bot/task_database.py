@@ -6,7 +6,6 @@ import sys
 import re
 import random
 from collections import OrderedDict
-from pprint import pprint
 
 
 # Data Schema
@@ -57,7 +56,7 @@ class TaskDatabase(object):
 
     def save(self):
         savedata = {
-            'bugs': self._entries,
+            'entries': self._entries,
             'next_index': self._next_index,
             'labels': self._labels,
             'priorities': self._priorities,
@@ -86,7 +85,7 @@ class TaskDatabase(object):
             with open(self._database_path, 'r') as f:
                 data = json.load(f)
 
-            self._entries = data['bugs']
+            self._entries = data['entries']
             self._next_index = data['next_index']
             # TODO: Scan through and add all labels
             self._labels = data['labels']
@@ -211,30 +210,34 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
     async def handle_message(self, message):
         commands = {
-            "add": (self.cmd_add),
-            "report": (self.cmd_add),
-            "get": (self.cmd_get),
-            "roulette": (self.cmd_roulette),
-            "search": (self.cmd_search),
-            "dsearch": (self.cmd_dsearch),
-            "reject": (self.cmd_reject),
-            "edit": (self.cmd_edit),
-            "append": (self.cmd_append),
-            "fix": (self.cmd_fix),
-            "unfix": (self.cmd_unfix),
-            "prune": (self.cmd_prune),
-            "import": (self.cmd_import),
-            "repost": (self.cmd_repost),
-            "addlabel": (self.cmd_addlabel),
-            "test": (self.cmd_test),
+            "add": (self.cmd_add, ),
+            "report": (self.cmd_add, ),
+            "get": (self.cmd_get, ),
+            "roulette": (self.cmd_roulette, ),
+            "search": (self.cmd_search, ),
+            "dsearch": (self.cmd_dsearch, ),
+            "reject": (self.cmd_reject, ),
+            "edit": (self.cmd_edit, ),
+            "append": (self.cmd_append, ),
+            "fix": (self.cmd_fix, ),
+            "unfix": (self.cmd_unfix, ),
+            "prune": (self.cmd_prune, ),
+            "import": (self.cmd_import, ),
+            "repost": (self.cmd_repost, ),
+            "addlabel": (self.cmd_addlabel, ),
+            "test": (self.cmd_test, ),
         }
 
-        part = content.split(maxsplit=2)
-        if (not content) or (len(part) < 1):
+        part = message.content.split(maxsplit=2)
+        if (not message.content) or (len(part) < 1):
             return
 
-        match = get_list_match(part[0].strip(), self._prefix)
-        if match is None or (len(part) < 2):
+        match = get_list_match(part[0].strip(), [self._prefix, ])
+        if match is None:
+            return
+
+        if len(part) < 2:
+            await self.usage(message)
             return
 
         match = get_list_match(part[1].strip(), commands.keys())
@@ -243,7 +246,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         args = ""
         if len(part) > 2:
-            args = part[3].strip()
+            args = part[2].strip()
 
         await commands[match][0](message, args)
 
@@ -294,7 +297,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} addlabel <newlabel>`
     Adds a new label - a-z characters only
-'''.format(prefix=self._prefix, single=self._descriptor_single, labels=" ".join(self._labels))
+'''.format(prefix=self._prefix, single=self._descriptor_single, plural=self._descriptor_plural, labels=" ".join(self._labels))
 
         if self.has_privilege(3, message.author):
             usage += '''
