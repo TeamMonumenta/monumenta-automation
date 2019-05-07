@@ -12,9 +12,9 @@ from pprint import pprint
 # Data Schema
 
 '''
-bugs = {
-    # Key is buf report number - fixed forever
-    42 : {
+entries = {
+    # Key is entry number - fixed forever. Key is a string representation of an integer... for reasons.
+    "42" : {
         "author": "302298391969267712", # Must be non-empty and a valid discord user
         "description": "Stuff", # Must be non-empty, escape input strings/etc.
         "labels": ["Misc"], # Must be non-empty
@@ -40,22 +40,24 @@ class TaskDatabase(object):
         self._client = client
 
         # Sanity check:
-        for key in ["bot_input_channels", "bug_reports_channel_id", "user_privileges", "group_privileges"]:
+        for key in ["bot_input_channels", "channel_id", "user_privileges", "group_privileges"]:
             if key not in config:
                 sys.exit('Config missing key: {}'.format(key))
 
-        pprint(config)
         self._user_privileges = config["user_privileges"]
         self._group_privileges = config["group_privileges"]
-        self._bug_reports_channel_id = config["bug_reports_channel_id"]
+        self._channel_id = config["channel_id"]
         self._prefix = config["prefix"]
-        self._bug_reports_channel = None
+        self._descriptor_single = config["descriptor_single"]
+        self._descriptor_plural = config["descriptor_plural"]
+        self._descriptor_proper = config["descriptor_proper"]
+        self._channel = None
         self._database_path = config["database_path"]
         self.load()
 
     def save(self):
         savedata = {
-            'bugs': self._bugs,
+            'bugs': self._entries,
             'next_index': self._next_index,
             'labels': self._labels,
             'priorities': self._priorities,
@@ -66,7 +68,7 @@ class TaskDatabase(object):
 
     def load(self):
         if not os.path.exists(self._database_path):
-            self._bugs = {}
+            self._entries = {}
             self._next_index = 1
             self._labels = [
                 "misc",
@@ -84,7 +86,7 @@ class TaskDatabase(object):
             with open(self._database_path, 'r') as f:
                 data = json.load(f)
 
-            self._bugs = data['bugs']
+            self._entries = data['bugs']
             self._next_index = data['next_index']
             # TODO: Scan through and add all labels
             self._labels = data['labels']
@@ -108,108 +110,109 @@ class TaskDatabase(object):
 
         # Get privilege based on entry ownership
         if index is not None:
-            bug = self._bugs.get(index, None)
-            if bug is not None:
-                if bug["author"] == author.id:
+            entry = self._entries.get(index, None)
+            if entry is not None:
+                if entry["author"] == author.id:
                     priv = max(priv, 1)
 
         return priv >= min_privilege
 
-    def add_bug(self, description, labels=["misc"], author=None, image=None, priority="N/A"):
-        bug = {
+    def add_entry(self, description, labels=["misc"], author=None, image=None, priority="N/A"):
+        entry = {
             "description": description,
             "labels": labels,
         }
 
         if author is None:
-            bug["author"] = 0
+            entry["author"] = 0
         else:
-            bug["author"] = author.id
+            entry["author"] = author.id
 
         if image is not None:
-            bug["image"] = image
+            entry["image"] = image
 
         if priority is not None:
-            bug["priority"] = priority
+            entry["priority"] = priority
 
         index = self._next_index
 
         self._next_index += 1
-        self._bugs[str(index)] = bug
+        self._entries[str(index)] = entry
 
         self.save()
 
-        return (index, bug)
+        return (index, entry)
 
-    async def format_bug(self, index, bug):
-        author_id = bug["author"]
+    async def format_entry(self, index, entry):
+        author_id = entry["author"]
         if author_id != 0 and author_id != "0":
             author_name = (await self._client.get_user_info(author_id)).display_name
         else:
             author_name = ""
 
-        bug_text = '''`
+        entry_text = '''`
 #{} [{} - {}] {}`
-{}'''.format(index, ','.join(bug["labels"]), bug["priority"], author_name, bug["description"])
+{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, entry["description"])
 
-        if "close_reason" in bug:
-            bug_text = '''~~{}~~
-Closed: {}'''.format(bug_text, bug["close_reason"])
+        if "close_reason" in entry:
+            entry_text = '''~~{}~~
+Closed: {}'''.format(entry_text, entry["close_reason"])
 
         embed = None
-        if "image" in bug:
+        if "image" in entry:
             embed = discord.Embed()
-            embed.set_image(url=bug["image"])
+            embed.set_image(url=entry["image"])
 
-        return bug_text, embed
+        return entry_text, embed
 
-    async def send_entry(self, index, bug):
+    async def send_entry(self, index, entry):
         # Fetch the channel if not already stored
-        if self._bug_reports_channel is None:
-            self._bug_reports_channel = self._client.get_channel(self._bug_reports_channel_id)
-            if self._bug_reports_channel is None:
+        if self._channel is None:
+            self._channel = self._client.get_channel(self._channel_id)
+            if self._channel is None:
                 raise Exception("Error getting channel!")
 
-        # Compute the new bug text
-        bug_text, embed = await self.format_bug(index, bug)
+        # Compute the new entry text
+        entry_text, embed = await self.format_entry(index, entry)
 
         msg = None
-        if "message_id" in bug:
+        if "message_id" in entry:
             try:
-                msg = await self._client.get_message(self._bug_reports_channel, bug["message_id"])
+                msg = await self._client.get_message(self._channel, entry["message_id"])
             except:
                 pass
 
         if msg is not None:
             # Edit the existing message
-            await self._client.edit_message(msg, bug_text, embed=embed)
+            await self._client.edit_message(msg, entry_text, embed=embed)
 
         else:
             # Send a new message
-            msg = await self._client.send_message(self._bug_reports_channel, bug_text, embed=embed);
-            bug["message_id"] = msg.id
+            msg = await self._client.send_message(self._channel, entry_text, embed=embed);
+            entry["message_id"] = msg.id
             self.save()
 
         await self._client.add_reaction(msg, "\U0001f44d")
 
-    async def print_search_results(self, message, match_bugs, limit=10):
-        # Sort the returned bugs
+    async def print_search_results(self, message, match_entries, limit=10):
+        # Sort the returned entries
         # TODO: This sort is garbage text based
-        print_bugs = sorted(match_bugs, key=lambda k: (k[1]['priority'], int(k[0])))
+        print_entries = sorted(match_entries, key=lambda k: (k[1]['priority'], int(k[0])))
 
         # Limit to specified number of replies at a time
-        if len(print_bugs) > limit:
+        if len(print_entries) > limit:
             await self.reply(message, 'Limiting to top {} results'.format(limit))
-            print_bugs = print_bugs[:limit]
+            print_entries = print_entries[:limit]
 
-        for index, bug in print_bugs:
-            bug_text, embed = await self.format_bug(index, bug)
-            msg = await self._client.send_message(message.channel, bug_text, embed=embed);
+        for index, entry in print_entries:
+            entry_text, embed = await self.format_entry(index, entry)
+            msg = await self._client.send_message(message.channel, entry_text, embed=embed);
 
 
     async def handle_message(self, message):
         commands = {
-            "report": (self.cmd_report),
+            "add": (self.cmd_add),
+            "report": (self.cmd_add),
             "get": (self.cmd_get),
             "roulette": (self.cmd_roulette),
             "search": (self.cmd_search),
@@ -236,7 +239,7 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
 
         match = get_list_match(part[1].strip(), commands.keys())
         if match is None:
-            await self.cmd_bug(message)
+            await self.usage(message)
 
         args = ""
         if len(part) > 2:
@@ -246,68 +249,69 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
 
     ################################################################################
     # Usage
-    async def cmd_bug(self, message):
+    async def usage(self, message):
         usage = '''
 **Commands everyone can use:**
-`{1} report <label> <description>`
-    Reports a bug with the given label
-    Label must be one of: {2}
+`{prefix} add <label> <description>`
+    Adds a new suggestion {single} with the given label
+    Label must be one of: {labels}
+    Alias: report
 
-`{1} search labels,priorities,limit`
-    Searches all bugs for ones that are tagged with all the specified labels / priorities
+`{prefix} search labels,priorities,limit`
+    Searches all {plural} for ones that are tagged with all the specified labels / priorities
     Only show the top #limit results to reduce chatspam
     For example:
-        {1} search quest,class,high
+        {prefix} search quest,class,high
 
-`{1} dsearch <search terms>`
-    Searches all bug descriptions for ones that contain all the specified search terms
+`{prefix} dsearch <search terms>`
+    Searches all {single} descriptions for ones that contain all the specified search terms
 
-`{1} get <number>`
-    Gets the bug with the specified number
+`{prefix} get <number>`
+    Gets the {single} with the specified number
 
-`{1} roulette`
-    Gets a random bug
+`{prefix} roulette`
+    Gets a random {single}
 
-**Commands the original bug reporter and team members can use:**
-`{1} reject <number> <reason why>`
-    Closes the specified bug with the given reason
+**Commands the original {single} author and team members can use:**
+`{prefix} reject <number> <reason why>`
+    Closes the specified {single} with the given reason
 
-`{1} edit <number> <description | label | image> [argument]`
+`{prefix} edit <number> <description | label | image> [argument]`
     Edits the specified field of the entry
 
-`{1} append <number> text`
-    Appends text to an existing bug's description
+`{prefix} append <number> text`
+    Appends text to an existing {single}'s description
 
 **Commands team members can use:**
-`{1} edit <number> [author | priority] [argument]`
+`{prefix} edit <number> [author | priority] [argument]`
     Edits the specified field of the entry
 
-`{1} fix number [optional explanation]`
-    Marks the specified bug as fixed. Default explanation is simply "Fixed"
+`{prefix} fix number [optional explanation]`
+    Marks the specified {single} as fixed. Default explanation is simply "Fixed"
 
-`{1} unfix <number>`
-    Unmarks the specified bug as fixed
+`{prefix} unfix <number>`
+    Unmarks the specified {single} as fixed
 
-`{1} addlabel <newlabel>`
+`{prefix} addlabel <newlabel>`
     Adds a new label - a-z characters only
-'''.format(self._prefix, " ".join(self._labels))
+'''.format(prefix=self._prefix, single=self._descriptor_single, labels=" ".join(self._labels))
 
         if self.has_privilege(3, message.author):
             usage += '''
 **Commands only leads can use:**
-`{1} prune`
-    Removes all fixed bug reports from the bug reports channel
-'''.format(self._prefix)
+`{prefix} prune`
+    Removes all fixed {plural} from the tracking channel
+'''.format(prefix=self._prefix, plural=self._descriptor_plural)
 
         if self.has_privilege(4, message.author):
             usage += '''
 **Commands only you can use:**
-`{1} import <#channel>`
-    Imports all messages in the specified channel as bugs
+`{prefix} import <#channel>`
+    Imports all messages in the specified channel as {plural}
 
-`{1} repost`
-    Reposts/edits all known bug reports
-'''.format(self._prefix)
+`{prefix} repost`
+    Reposts/edits all known {plural}
+'''.format(prefix=self._prefix, plural=self._descriptor_plural)
 
         await self.reply(message, usage)
 
@@ -329,22 +333,22 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
             await self.reply(message, "Privilege: None")
 
     ################################################################################
-    # report
-    async def cmd_report(self, message, args):
+    # add / report
+    async def cmd_add(self, message, args):
         if not args:
-            await self.reply(message, '''How to submit a bug report:```
-{1} report <label> <description>
+            await self.reply(message, '''How to submit a {single}:```
+{prefix} add <label> <description>
 ```
-Example bug report:```
-{1} report quest Bihahiahihaaravi doesn't yodel at me when hit with a fish
+Example:```
+{prefix} add quest Bihahiahihaaravi refuses to talk to me when I'm wearing a fedora
 ```
-You can also attach an image to the message to include it in the bug report
-'''.format(self._prefix))
+You can also attach an image to your message to include it in the {single}
+'''.format(prefix=self._prefix, single=self._descriptor_single))
             return
 
         part = args.split(maxsplit=1)
         if len(part) < 2:
-            await self.reply(message, 'Bug report must contain both a label and a description')
+            await self.reply(message, 'Must contain both a label and a description')
             return
 
         labels = part[0].strip().lower().split(',')
@@ -371,25 +375,25 @@ You can also attach an image to the message to include it in the bug report
         #    print(embed)
         #    image = embed.url
 
-        (index, bug) = self.add_bug(description, labels=good_labels, author=message.author, image=image)
+        (index, entry) = self.add_entry(description, labels=good_labels, author=message.author, image=image)
 
-        # Post this new bug report
-        await self.send_entry(index, bug)
+        # Post this new entry
+        await self.send_entry(index, entry)
 
-        await(self.reply(message, "Bug report #{} created successfully".format(index)))
+        await(self.reply(message, "#{} created successfully".format(index)))
 
     ################################################################################
     # edit
     async def cmd_edit(self, message, args):
         part = args.split(maxsplit=2)
         if (not args) or (len(part) < 2):
-            await self.reply(message, '''How to edit a bug report:```
-{1} edit # [description | label | image | author | priority] edited stuff
+            await self.reply(message, '''How to edit a {single}:```
+{prefix} edit # [description | label | image | author | priority] edited stuff
 ```
 For example:```
-{1} edit 5 description Much more detail here
+{prefix} edit 5 description Much more detail here
 ```
-'''.format(self._prefix))
+'''.format(prefix=self._prefix, single=self._descriptor_single))
             return
 
         index_str = part[0].strip()
@@ -402,11 +406,11 @@ For example:```
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
-        if index not in self._bugs:
-            await self.reply(message, 'Bug #{} not found!'.format(index))
+        if index not in self._entries:
+            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
             return
 
-        bug = self._bugs[index]
+        entry = self._entries[index]
 
         operation = get_list_match(part[1].strip(), ['description', 'label', 'image', 'author', 'priority'])
         if operation is None:
@@ -420,7 +424,7 @@ For example:```
             min_priv = 2
 
         if not self.has_privilege(min_priv, message.author, index=index):
-            await self.reply(message, "You do not have permission to edit {} for bug {}".format(operation, index))
+            await self.reply(message, "You do not have permission to edit {} for entry #{}".format(operation, index))
             return
 
         if operation == 'description':
@@ -428,7 +432,7 @@ For example:```
                 await self.reply(message, "You need to actually supply a new description")
                 return
 
-            bug["description"] = part[2].strip()
+            entry["description"] = part[2].strip()
 
         elif operation == 'label':
             if len(part) < 3:
@@ -444,7 +448,7 @@ For example:```
                     return
                 good_labels.append(match)
 
-            bug["labels"] = good_labels
+            entry["labels"] = good_labels
 
         elif operation == 'image':
             image = None
@@ -456,7 +460,7 @@ For example:```
                 await self.reply(message, "You need to attach an image")
                 return
 
-            bug["image"] = image
+            entry["image"] = image
 
         elif operation == 'author':
             #TODO
@@ -494,23 +498,23 @@ __Available Priorities:__
                 await self.reply(message, "Priority must be one of: [{}]".format(",".join(self._priorities)))
                 return
 
-            bug["priority"] = priority
+            entry["priority"] = priority
 
         self.save()
 
-        # Update the bug
-        await self.send_entry(index, bug)
+        # Update the entry
+        await self.send_entry(index, entry)
 
-        bug_text, embed = await self.format_bug(index, bug)
-        msg = await self._client.send_message(message.channel, bug_text, embed=embed);
-        await(self.reply(message, "Bug report #{} updated successfully".format(index)))
+        entry_text, embed = await self.format_entry(index, entry)
+        msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+        await(self.reply(message, "{proper} #{} updated successfully".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
     # append
     async def cmd_append(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 2):
-            await self.reply(message, '''Usage: {1} append <number> [additional description text]'''.format(self._prefix))
+            await self.reply(message, '''Usage: {prefix} append <number> [additional description text]'''.format(prefix=self._prefix))
             return
 
         index_str = part[0].strip()
@@ -523,32 +527,32 @@ __Available Priorities:__
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
-        if index not in self._bugs:
-            await self.reply(message, 'Bug #{} not found!'.format(index))
+        if index not in self._entries:
+            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
             return
 
         if not self.has_privilege(1, message.author, index=index):
-            await self.reply(message, "You do not have permission to append to bug #{}".format(index))
+            await self.reply(message, "You do not have permission to append to #{}".format(index))
             return
 
-        bug = self._bugs[index]
+        entry = self._entries[index]
 
-        bug["description"] = "{}\n{}".format(bug["description"], part[1].strip())
+        entry["description"] = "{}\n{}".format(entry["description"], part[1].strip())
 
         self.save()
 
-        # Update the bug
-        await self.send_entry(index, bug)
+        # Update the entry
+        await self.send_entry(index, entry)
 
-        bug_text, embed = await self.format_bug(index, bug)
-        msg = await self._client.send_message(message.channel, bug_text, embed=embed);
-        await(self.reply(message, "Bug report #{} edited".format(index)))
+        entry_text, embed = await self.format_entry(index, entry)
+        msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+        await(self.reply(message, "{proper} #{index} edited".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
     # get
     async def cmd_get(self, message, args):
         if not args:
-            await self.reply(message, "Usage: bug get <number>")
+            await self.reply(message, "Usage: {prefix} get <number>".format(prefix=self._prefix))
             return
 
         index_str = args.strip()
@@ -561,33 +565,33 @@ __Available Priorities:__
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
-        if index not in self._bugs:
-            await self.reply(message, "Bug report {} does not exist".format(index_str))
+        if index not in self._entries:
+            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
             return
 
-        match_bugs = [(index, self._bugs[index])]
-        await self.print_search_results(message, match_bugs)
+        match_entries = [(index, self._entries[index])]
+        await self.print_search_results(message, match_entries)
 
     ################################################################################
     # roulette
     async def cmd_roulette(self, message, args):
-        match_bugs = []
-        for index in self._bugs:
-            bug = self._bugs[index]
-            if "close_reason" not in bug:
-                match_bugs.append((index, bug))
+        match_entries = []
+        for index in self._entries:
+            entry = self._entries[index]
+            if "close_reason" not in entry:
+                match_entries.append((index, entry))
 
-        await self.print_search_results(message, [random.choice(match_bugs)])
+        await self.print_search_results(message, [random.choice(match_entries)])
 
     ################################################################################
     # search
     async def cmd_search(self, message, args):
         part = args.replace(","," ").split()
         if (not args) or (len(part) < 1):
-            await self.reply(message, '''Usage: {1} search labels,priorities
+            await self.reply(message, '''Usage: {prefix} search labels,priorities
 Default limit is 10 results - include more by adding a number to the search terms
 If using multiple labels, all specified labels must match
-If using multiple priorities, at least one must match'''.format(self._prefix))
+If using multiple priorities, at least one must match'''.format(prefix=self._prefix))
             return
 
         match_labels = []
@@ -612,52 +616,52 @@ If using multiple priorities, at least one must match'''.format(self._prefix))
             await self.reply(message, 'Must specify something to search for')
             return
 
-        match_bugs = []
+        match_entries = []
         count = 0
-        for index in self._bugs:
-            bug = self._bugs[index]
-            if "close_reason" not in bug:
+        for index in self._entries:
+            entry = self._entries[index]
+            if "close_reason" not in entry:
                 matches = True
                 for label in match_labels:
-                    if label not in bug["labels"]:
+                    if label not in entry["labels"]:
                         matches = False
 
-                if (len(match_priorities) > 0) and (bug["priority"] not in match_priorities):
+                if (len(match_priorities) > 0) and (entry["priority"] not in match_priorities):
                     matches = False
 
                 if matches:
                     count += 1
-                    match_bugs.append((index, bug))
+                    match_entries.append((index, entry))
 
-        await self.print_search_results(message, match_bugs, limit=max_count)
+        await self.print_search_results(message, match_entries, limit=max_count)
 
-        await(self.reply(message, "{} bugs found matching labels={} priorities={}".format(count, ",".join(match_labels), ",".join(match_priorities))))
+        await(self.reply(message, "{} {} found matching labels={} priorities={}".format(count, self._descriptor_plural, ",".join(match_labels), ",".join(match_priorities))))
 
     ################################################################################
     # dsearch
     async def cmd_dsearch(self, message, args):
         part = args.replace(","," ").split()
         if (not args) or (len(part) < 1):
-            await self.reply(message, '''Usage: {1} dsearch <search terms>'''.format(self.prefix))
+            await self.reply(message, '''Usage: {prefix} dsearch <search terms>'''.format(prefix=self.prefix))
             return
 
-        match_bugs = []
+        match_entries = []
         count = 0
-        for index in self._bugs:
-            bug = self._bugs[index]
-            if "close_reason" not in bug:
+        for index in self._entries:
+            entry = self._entries[index]
+            if "close_reason" not in entry:
                 matches = True
                 for term in part:
-                    if term.strip().lower() not in bug["description"].lower():
+                    if term.strip().lower() not in entry["description"].lower():
                         matches = False
 
                 if matches:
                     count += 1
-                    match_bugs.append((index, bug))
+                    match_entries.append((index, entry))
 
-        await self.print_search_results(message, match_bugs)
+        await self.print_search_results(message, match_entries)
 
-        await(self.reply(message, "{} bugs found matching {}".format(count, ",".join(part))))
+        await(self.reply(message, "{} {} found matching {}".format(count, self._descriptor_plural, ",".join(part))))
 
     ################################################################################
     # addlabel
@@ -669,8 +673,8 @@ If using multiple priorities, at least one must match'''.format(self._prefix))
         args = args.lower()
 
         if (not args) or re.search("[^a-z]", args):
-            await self.reply(message, '''Usage: {1} addlabel <label>
-Labels can only contain a-z characters'''.format(self._prefix))
+            await self.reply(message, '''Usage: {prefix} addlabel <label>
+Labels can only contain a-z characters'''.format(prefix=self._prefix))
             return
 
         match = get_list_match(args, self._labels)
@@ -688,7 +692,7 @@ Labels can only contain a-z characters'''.format(self._prefix))
     async def cmd_reject(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 2):
-            await self.reply(message, '''Usage: {1} reject <number> <required explanation>'''.format(self._prefix))
+            await self.reply(message, '''Usage: {prefix} reject <number> <required explanation>'''.format(prefix=self._prefix))
             return
 
         index_str = part[0].strip()
@@ -701,33 +705,33 @@ Labels can only contain a-z characters'''.format(self._prefix))
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
-        if index not in self._bugs:
-            await self.reply(message, 'Bug #{} not found!'.format(index))
+        if index not in self._entries:
+            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
             return
 
         if not self.has_privilege(1, message.author, index=index):
-            await self.reply(message, "You do not have permission to reject bug #{}".format(index))
+            await self.reply(message, "You do not have permission to reject #{}".format(index))
             return
 
-        bug = self._bugs[index]
+        entry = self._entries[index]
 
-        bug["close_reason"] = part[1].strip().lower()
+        entry["close_reason"] = part[1].strip().lower()
 
         self.save()
 
-        # Update the bug
-        await self.send_entry(index, bug)
+        # Update the entry
+        await self.send_entry(index, entry)
 
-        bug_text, embed = await self.format_bug(index, bug)
-        msg = await self._client.send_message(message.channel, bug_text, embed=embed);
-        await(self.reply(message, "Bug report #{} rejected".format(index)))
+        entry_text, embed = await self.format_entry(index, entry)
+        msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+        await(self.reply(message, "{proper} #{index} rejected".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
     # fix
     async def cmd_fix(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 1):
-            await self.reply(message, '''Usage: {1} fix <number> [optional explanation]'''.format(self._prefix))
+            await self.reply(message, '''Usage: {prefix} fix <number> [optional explanation]'''.format(prefix=self._prefix))
             return
 
         index_str = part[0].strip()
@@ -740,36 +744,36 @@ Labels can only contain a-z characters'''.format(self._prefix))
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
-        if index not in self._bugs:
-            await self.reply(message, 'Bug #{} not found!'.format(index))
+        if index not in self._entries:
+            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
             return
 
         if not self.has_privilege(1, message.author, index=index):
-            await self.reply(message, "You do not have permission to fix bug #{}".format(index))
+            await self.reply(message, "You do not have permission to fix #{}".format(index))
             return
 
-        bug = self._bugs[index]
+        entry = self._entries[index]
 
         if len(part) > 1:
-            bug["close_reason"] = part[1].strip().lower()
+            entry["close_reason"] = part[1].strip().lower()
         else:
-            bug["close_reason"] = "Fixed"
+            entry["close_reason"] = "Fixed"
 
         self.save()
 
-        # Update the bug
-        await self.send_entry(index, bug)
+        # Update the entry
+        await self.send_entry(index, entry)
 
-        bug_text, embed = await self.format_bug(index, bug)
-        msg = await self._client.send_message(message.channel, bug_text, embed=embed);
-        await(self.reply(message, "Bug report #{} marked as fixed".format(index)))
+        entry_text, embed = await self.format_entry(index, entry)
+        msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+        await(self.reply(message, "{proper} #{index} marked as fixed".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
     # unfix
     async def cmd_unfix(self, message, args):
         part = args.split(maxsplit=2)
         if (not args) or (len(part) != 1):
-            await self.reply(message, '''Usage: {1} unfix <number>'''.format(self._prefix))
+            await self.reply(message, '''Usage: {prefix} unfix <number>'''.format(prefix=self._prefix))
             return
 
         index_str = part[0].strip()
@@ -782,27 +786,27 @@ Labels can only contain a-z characters'''.format(self._prefix))
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
-        if index not in self._bugs:
-            await self.reply(message, 'Bug #{} not found!'.format(index))
+        if index not in self._entries:
+            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
             return
 
         if not self.has_privilege(1, message.author, index=index):
-            await self.reply(message, "You do not have permission to unfix bug #{}".format(index))
+            await self.reply(message, "You do not have permission to unfix #{}".format(index))
             return
 
-        bug = self._bugs[index]
+        entry = self._entries[index]
 
-        if "close_reason" in bug:
-            bug.pop("close_reason")
+        if "close_reason" in entry:
+            entry.pop("close_reason")
 
         self.save()
 
-        # Update the bug
-        await self.send_entry(index, bug)
+        # Update the entry
+        await self.send_entry(index, entry)
 
-        bug_text, embed = await self.format_bug(index, bug)
-        msg = await self._client.send_message(message.channel, bug_text, embed=embed);
-        await(self.reply(message, "Bug report #{} unmarked as fixed".format(index)))
+        entry_text, embed = await self.format_entry(index, entry)
+        msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+        await(self.reply(message, "{proper} #{index} unmarked as fixed".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
     # prune
@@ -811,31 +815,31 @@ Labels can only contain a-z characters'''.format(self._prefix))
             await self.reply(message, "You do not have permission to use this command")
             return
 
-        if self._bug_reports_channel is None:
-            self._bug_reports_channel = self._client.get_channel(self._bug_reports_channel_id)
-            if self._bug_reports_channel is None:
-                raise Exception("Error getting bug reports channel!")
+        if self._channel is None:
+            self._channel = self._client.get_channel(self._channel_id)
+            if self._channel is None:
+                raise Exception("Error getting bot channel!")
 
-        match_bugs = []
+        match_entries = []
         count = 0
-        for index in self._bugs:
-            bug = self._bugs[index]
-            # If the bug is both closed AND present in the bug channel
-            if ("close_reason" in bug) and ("message_id" in bug):
+        for index in self._entries:
+            entry = self._entries[index]
+            # If the entry is both closed AND present in the entry channel
+            if ("close_reason" in entry) and ("message_id" in entry):
                 try:
-                    msg = await self._client.get_message(self._bug_reports_channel, bug["message_id"])
+                    msg = await self._client.get_message(self._channel, entry["message_id"])
                     if msg is not None:
                         await self._client.delete_message(msg)
 
                         # Since this message is no longer there...
-                        bug.pop("message_id")
-                        match_bugs.append((index, bug))
+                        entry.pop("message_id")
+                        match_entries.append((index, entry))
                         count += 1
                 except:
                     pass
 
-        await self.print_search_results(message, match_bugs, limit=99999)
-        await(self.reply(message, "{} bugs pruned successfully".format(count)))
+        await self.print_search_results(message, match_entries, limit=99999)
+        await(self.reply(message, "{} entries pruned successfully".format(count)))
 
     ################################################################################
     # repost
@@ -845,12 +849,12 @@ Labels can only contain a-z characters'''.format(self._prefix))
             return
 
         count = 0
-        for index in self._bugs:
-            if "close_reason" not in self._bugs[index]:
+        for index in self._entries:
+            if "close_reason" not in self._entries[index]:
                 count += 1
-                await self.send_entry(index, self._bugs[index])
+                await self.send_entry(index, self._entries[index])
 
-        await(self.reply(message, "{} bugs reposted successfully".format(count)))
+        await(self.reply(message, "{} entries reposted successfully".format(count)))
 
     ################################################################################
     # import
@@ -883,12 +887,12 @@ Labels can only contain a-z characters'''.format(self._prefix))
                 if "url" in attach:
                     image = attach["url"]
 
-            (index, bug) = self.add_bug(msg.content, author=msg.author, image=image)
+            (index, entry) = self.add_entry(msg.content, author=msg.author, image=image)
 
-            # Post this new bug report
-            await self.send_entry(index, bug)
+            # Post this new entry
+            await self.send_entry(index, entry)
 
-        await(self.reply(message, "{} bugs from channel {} imported successfully".format(count, part[0])))
+        await(self.reply(message, "{} entries from channel {} imported successfully".format(count, part[0])))
 
 def get_list_match(item, lst):
     tmpitem = item.lower()

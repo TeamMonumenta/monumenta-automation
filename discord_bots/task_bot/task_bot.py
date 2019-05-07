@@ -1,7 +1,8 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 
 import os
 import sys
+import signal
 import logging
 import traceback
 import yaml
@@ -28,12 +29,16 @@ with open(config_path, 'r') as ymlfile:
 bot_config["database_path"] = os.path.join(config_dir, "database.json")
 bot_config["main_pid"] = os.getpid()
 
-# TODO: Better automatic restarting
-restart = True
-while restart:
-    restart = False
+def signal_handler(sig, frame):
+        print('Shutting down bot...')
+        sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
 
-    print("Starting the bug reaction bot...")
+while True:
+    print("Bot Configuration:")
+    pprint(config)
+    print("")
+
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
@@ -77,11 +82,11 @@ while restart:
             pass
 
         @client.event
-        async def on_reaction_remove():
+        async def on_reaction_remove(_, __):
             pass
 
         @client.event
-        async def on_reaction_clear():
+        async def on_reaction_clear(_, __):
             pass
 
         ################################################################################
