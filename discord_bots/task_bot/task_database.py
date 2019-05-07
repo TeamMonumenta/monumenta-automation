@@ -196,8 +196,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
     async def print_search_results(self, message, match_entries, limit=10):
         # Sort the returned entries
-        # TODO: This sort is garbage text based
-        print_entries = sorted(match_entries, key=lambda k: (k[1]['priority'], int(k[0])))
+        print_entries = sorted(match_entries, key=lambda k: (self._priorities.index(k[1]['priority']), int(k[0])))
 
         # Limit to specified number of replies at a time
         if len(print_entries) > limit:
@@ -259,7 +258,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         usage = '''
 **Commands everyone can use:**
 `{prefix} add <label> <description>`
-    Adds a new suggestion {single} with the given label
+    Adds a new {single} with the given label
     Label must be one of: {labels}
     Alias: report
 
@@ -887,24 +886,37 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         await(self.reply(message, "Import started, this will take some time..."))
 
-        count = 0
+        to_import = []
         async for msg in self._client.logs_from(import_channel, limit=1000, reverse=True):
             if not msg.content:
                 continue
-
-            count += 1
 
             image = None
             for attach in msg.attachments:
                 if "url" in attach:
                     image = attach["url"]
 
-            (index, entry) = self.add_entry(msg.content, author=msg.author, image=image)
+
+            created_text = "Created: " + msg.timestamp.strftime("%Y-%m-%d")
+
+            react_text = ""
+            if msg.reactions:
+                react_text = "Original Reactions:"
+                for react in msg.reactions:
+                    react_text += "    {} {}".format(react.emoji, react.count)
+
+            to_import.append((msg.timestamp, msg.content + "\n\n" + created_text + "\n" + react_text, msg.author, image))
+
+        # SORT
+        to_import.sort(key=lambda x: x[0])
+
+        for _, content, author, image in to_import:
+            (index, entry) = self.add_entry(content, author=author, image=image)
 
             # Post this new entry
             await self.send_entry(index, entry)
 
-        await(self.reply(message, "{} entries from channel {} imported successfully".format(count, part[0])))
+        await(self.reply(message, "{} entries from channel {} imported successfully".format(len(to_import), part[0])))
 
 def get_list_match(item, lst):
     tmpitem = item.lower()
