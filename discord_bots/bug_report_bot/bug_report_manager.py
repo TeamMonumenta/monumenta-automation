@@ -24,7 +24,7 @@ bugs = {
         # Optional:
         "image": None, # Might be None OR not present at all
 
-        # If this is present, the bug is closed
+        # If this is present, the item is closed
         "close_reason": "string"
 
         # Automatically added/managed
@@ -48,6 +48,7 @@ class BugReportManager(object):
         self._user_privileges = config["user_privileges"]
         self._group_privileges = config["group_privileges"]
         self._bug_reports_channel_id = config["bug_reports_channel_id"]
+        self._prefix = config["prefix"]
         self._bug_reports_channel = None
         self._database_path = config["database_path"]
         self.load()
@@ -95,7 +96,7 @@ class BugReportManager(object):
         """
         await self._client.send_message(message.channel, response)
 
-    def has_privilege(self, min_privilege, author, bug_idx=None):
+    def has_privilege(self, min_privilege, author, index=None):
         priv = 0; # Everyone has this level
 
         # Get privilege based on user list
@@ -105,9 +106,9 @@ class BugReportManager(object):
         for role in author.roles:
             priv = max(priv, self._group_privileges.get(role.id, 0))
 
-        # Get privilege based on bug report ownership
-        if bug_idx is not None:
-            bug = self._bugs.get(bug_idx, None)
+        # Get privilege based on entry ownership
+        if index is not None:
+            bug = self._bugs.get(index, None)
             if bug is not None:
                 if bug["author"] == author.id:
                     priv = max(priv, 1)
@@ -162,12 +163,12 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
 
         return bug_text, embed
 
-    async def send_bug(self, index, bug):
+    async def send_entry(self, index, bug):
         # Fetch the channel if not already stored
         if self._bug_reports_channel is None:
             self._bug_reports_channel = self._client.get_channel(self._bug_reports_channel_id)
             if self._bug_reports_channel is None:
-                raise Exception("Error getting bug reports channel!")
+                raise Exception("Error getting channel!")
 
         # Compute the new bug text
         bug_text, embed = await self.format_bug(index, bug)
@@ -205,44 +206,115 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
             bug_text, embed = await self.format_bug(index, bug)
             msg = await self._client.send_message(message.channel, bug_text, embed=embed);
 
+
     async def handle_message(self, message):
-        if message.content.startswith("~bug report"):
-            await self.cmd_report(message)
-        elif message.content.startswith("~bug get"):
-            await self.cmd_get(message)
-        elif message.content.startswith("~bug roulette"):
-            await self.cmd_roulette(message)
-        elif message.content.startswith("~bug search"):
-            await self.cmd_search(message)
-        elif message.content.startswith("~bug dsearch"):
-            await self.cmd_dsearch(message)
-        elif message.content.startswith("~bug reject"):
-            await self.cmd_reject(message)
-        elif message.content.startswith("~bug edit"):
-            await self.cmd_edit(message)
-        elif message.content.startswith("~bug append"):
-            await self.cmd_append(message)
-        elif message.content.startswith("~bug fix"):
-            await self.cmd_fix(message)
-        elif message.content.startswith("~bug unfix"):
-            await self.cmd_unfix(message)
-        elif message.content.startswith("~bug prune"):
-            await self.cmd_prune(message)
-        elif message.content.startswith("~bug import"):
-            await self.cmd_import(message)
-        elif message.content.startswith("~bug repost"):
-            await self.cmd_repost(message)
-        elif message.content.startswith("~bug addlabel"):
-            await self.cmd_addlabel(message)
-        elif message.content.startswith("~bug test"):
-            await self.cmd_test(message)
-        elif message.content.startswith("~bug"):
+        commands = {
+            "report": (self.cmd_report),
+            "get": (self.cmd_get),
+            "roulette": (self.cmd_roulette),
+            "search": (self.cmd_search),
+            "dsearch": (self.cmd_dsearch),
+            "reject": (self.cmd_reject),
+            "edit": (self.cmd_edit),
+            "append": (self.cmd_append),
+            "fix": (self.cmd_fix),
+            "unfix": (self.cmd_unfix),
+            "prune": (self.cmd_prune),
+            "import": (self.cmd_import),
+            "repost": (self.cmd_repost),
+            "addlabel": (self.cmd_addlabel),
+            "test": (self.cmd_test),
+        }
+
+        part = content.split(maxsplit=2)
+        if (not content) or (len(part) < 1):
+            return
+
+        match = get_list_match(part[0].strip(), self._prefix)
+        if match is None or (len(part) < 2):
+            return
+
+        match = get_list_match(part[1].strip(), commands.keys())
+        if match is None:
             await self.cmd_bug(message)
+
+        args = ""
+        if len(part) > 2:
+            args = part[3].strip()
+
+        await commands[match][0](message, args)
+
+    ################################################################################
+    # Usage
+    async def cmd_bug(self, message):
+        usage = '''
+**Commands everyone can use:**
+`{1} report <label> <description>`
+    Reports a bug with the given label
+    Label must be one of: {2}
+
+`{1} search labels,priorities,limit`
+    Searches all bugs for ones that are tagged with all the specified labels / priorities
+    Only show the top #limit results to reduce chatspam
+    For example:
+        {1} search quest,class,high
+
+`{1} dsearch <search terms>`
+    Searches all bug descriptions for ones that contain all the specified search terms
+
+`{1} get <number>`
+    Gets the bug with the specified number
+
+`{1} roulette`
+    Gets a random bug
+
+**Commands the original bug reporter and team members can use:**
+`{1} reject <number> <reason why>`
+    Closes the specified bug with the given reason
+
+`{1} edit <number> <description | label | image> [argument]`
+    Edits the specified field of the entry
+
+`{1} append <number> text`
+    Appends text to an existing bug's description
+
+**Commands team members can use:**
+`{1} edit <number> [author | priority] [argument]`
+    Edits the specified field of the entry
+
+`{1} fix number [optional explanation]`
+    Marks the specified bug as fixed. Default explanation is simply "Fixed"
+
+`{1} unfix <number>`
+    Unmarks the specified bug as fixed
+
+`{1} addlabel <newlabel>`
+    Adds a new label - a-z characters only
+'''.format(self._prefix, " ".join(self._labels))
+
+        if self.has_privilege(3, message.author):
+            usage += '''
+**Commands only leads can use:**
+`{1} prune`
+    Removes all fixed bug reports from the bug reports channel
+'''.format(self._prefix)
+
+        if self.has_privilege(4, message.author):
+            usage += '''
+**Commands only you can use:**
+`{1} import <#channel>`
+    Imports all messages in the specified channel as bugs
+
+`{1} repost`
+    Reposts/edits all known bug reports
+'''.format(self._prefix)
+
+        await self.reply(message, usage)
 
 
     ################################################################################
-    # ~bug test
-    async def cmd_test(self, message):
+    # test
+    async def cmd_test(self, message, args):
         if self.has_privilege(4, message.author):
             await self.reply(message, "Privilege: 4")
         elif self.has_privilege(3, message.author):
@@ -257,88 +329,20 @@ Closed: {}'''.format(bug_text, bug["close_reason"])
             await self.reply(message, "Privilege: None")
 
     ################################################################################
-    # ~bug
-    async def cmd_bug(self, message):
-        usage = '''
-**Commands everyone can use:**
-`~bug report <label> <description>`
-    Reports a bug with the given label
-    Label must be one of: {}
-
-`~bug search labels,priorities,limit`
-    Searches all bugs for ones that are tagged with all the specified labels / priorities
-    Only show the top #limit results to reduce chatspam
-    For example:
-        ~bug search quest,class,high
-
-`~bug dsearch <search terms>`
-    Searches all bug descriptions for ones that contain all the specified search terms
-
-`~bug get <number>`
-    Gets the bug with the specified number
-
-`~bug roulette`
-    Gets a random bug
-
-**Commands the original bug reporter and team members can use:**
-`~bug reject <number> <reason why>`
-    Closes the specified bug with the given reason
-
-`~bug edit <number> <description | label | image> [argument]`
-    Edits the specified field of the bug report
-
-`~bug append <number> text`
-    Appends text to an existing bug's description
-
-**Commands team members can use:**
-`~bug edit <number> [author | priority] [argument]`
-    Edits the specified field of the bug report
-
-`~bug fix number [optional explanation]`
-    Marks the specified bug as fixed. Default explanation is simply "Fixed"
-
-`~bug unfix <number>`
-    Unmarks the specified bug as fixed
-
-`~bug addlabel <newlabel>`
-    Adds a new label - a-z characters only
-'''.format(" ".join(self._labels))
-
-        if self.has_privilege(3, message.author):
-            usage += '''
-**Commands only leads can use:**
-`~bug prune`
-    Removes all fixed bug reports from the bug reports channel
-'''
-
-        if self.has_privilege(4, message.author):
-            usage += '''
-**Commands only you can use:**
-`~bug import <#channel>`
-    Imports all messages in the specified channel as bugs
-
-`~bug repost`
-    Reposts/edits all known bug reports
-'''
-
-        await self.reply(message, usage)
-
-    ################################################################################
-    # ~bug report
-    async def cmd_report(self, message):
-        content = message.content[len("~bug report"):].strip()
-        if not content:
+    # report
+    async def cmd_report(self, message, args):
+        if not args:
             await self.reply(message, '''How to submit a bug report:```
-~bug report <label> <description>
+{1} report <label> <description>
 ```
 Example bug report:```
-~bug report quest Bihahiahihaaravi doesn't yodel at me when hit with a fish
+{1} report quest Bihahiahihaaravi doesn't yodel at me when hit with a fish
 ```
 You can also attach an image to the message to include it in the bug report
-''')
+'''.format(self._prefix))
             return
 
-        part = content.split(maxsplit=1)
+        part = args.split(maxsplit=1)
         if len(part) < 2:
             await self.reply(message, 'Bug report must contain both a label and a description')
             return
@@ -370,23 +374,22 @@ You can also attach an image to the message to include it in the bug report
         (index, bug) = self.add_bug(description, labels=good_labels, author=message.author, image=image)
 
         # Post this new bug report
-        await self.send_bug(index, bug)
+        await self.send_entry(index, bug)
 
         await(self.reply(message, "Bug report #{} created successfully".format(index)))
 
     ################################################################################
-    # ~bug edit
-    async def cmd_edit(self, message):
-        content = message.content[len("~bug edit"):].strip()
-        part = content.split(maxsplit=2)
-        if (not content) or (len(part) < 2):
+    # edit
+    async def cmd_edit(self, message, args):
+        part = args.split(maxsplit=2)
+        if (not args) or (len(part) < 2):
             await self.reply(message, '''How to edit a bug report:```
-~bug edit # [description | label | image | author | priority] edited stuff
+{1} edit # [description | label | image | author | priority] edited stuff
 ```
 For example:```
-~bug edit 5 description Much more detail here
+{1} edit 5 description Much more detail here
 ```
-''')
+'''.format(self._prefix))
             return
 
         index_str = part[0].strip()
@@ -416,7 +419,7 @@ For example:```
         if operation in ['author', 'priority']:
             min_priv = 2
 
-        if not self.has_privilege(min_priv, message.author, bug_idx=index):
+        if not self.has_privilege(min_priv, message.author, index=index):
             await self.reply(message, "You do not have permission to edit {} for bug {}".format(operation, index))
             return
 
@@ -496,19 +499,18 @@ __Available Priorities:__
         self.save()
 
         # Update the bug
-        await self.send_bug(index, bug)
+        await self.send_entry(index, bug)
 
         bug_text, embed = await self.format_bug(index, bug)
         msg = await self._client.send_message(message.channel, bug_text, embed=embed);
         await(self.reply(message, "Bug report #{} updated successfully".format(index)))
 
     ################################################################################
-    # ~bug append
-    async def cmd_append(self, message):
-        content = message.content[len("~bug append"):].strip()
-        part = content.split(maxsplit=1)
-        if (not content) or (len(part) < 2):
-            await self.reply(message, '''Usage: ~bug append <number> [additional description text]''')
+    # append
+    async def cmd_append(self, message, args):
+        part = args.split(maxsplit=1)
+        if (not args) or (len(part) < 2):
+            await self.reply(message, '''Usage: {1} append <number> [additional description text]'''.format(self._prefix))
             return
 
         index_str = part[0].strip()
@@ -525,7 +527,7 @@ __Available Priorities:__
             await self.reply(message, 'Bug #{} not found!'.format(index))
             return
 
-        if not self.has_privilege(1, message.author, bug_idx=index):
+        if not self.has_privilege(1, message.author, index=index):
             await self.reply(message, "You do not have permission to append to bug #{}".format(index))
             return
 
@@ -536,21 +538,20 @@ __Available Priorities:__
         self.save()
 
         # Update the bug
-        await self.send_bug(index, bug)
+        await self.send_entry(index, bug)
 
         bug_text, embed = await self.format_bug(index, bug)
         msg = await self._client.send_message(message.channel, bug_text, embed=embed);
         await(self.reply(message, "Bug report #{} edited".format(index)))
 
     ################################################################################
-    # ~bug get
-    async def cmd_get(self, message):
-        content = message.content[len("~bug get"):].strip()
-        if not content:
+    # get
+    async def cmd_get(self, message, args):
+        if not args:
             await self.reply(message, "Usage: bug get <number>")
             return
 
-        index_str = content.strip()
+        index_str = args.strip()
         try:
             index = int(index_str)
         except:
@@ -568,8 +569,8 @@ __Available Priorities:__
         await self.print_search_results(message, match_bugs)
 
     ################################################################################
-    # ~bug roulette
-    async def cmd_roulette(self, message):
+    # roulette
+    async def cmd_roulette(self, message, args):
         match_bugs = []
         for index in self._bugs:
             bug = self._bugs[index]
@@ -579,15 +580,14 @@ __Available Priorities:__
         await self.print_search_results(message, [random.choice(match_bugs)])
 
     ################################################################################
-    # ~bug search
-    async def cmd_search(self, message):
-        content = message.content[len("~bug search"):].strip()
-        part = content.replace(","," ").split()
-        if (not content) or (len(part) < 1):
-            await self.reply(message, '''Usage: ~bug search labels,priorities
+    # search
+    async def cmd_search(self, message, args):
+        part = args.replace(","," ").split()
+        if (not args) or (len(part) < 1):
+            await self.reply(message, '''Usage: {1} search labels,priorities
 Default limit is 10 results - include more by adding a number to the search terms
 If using multiple labels, all specified labels must match
-If using multiple priorities, at least one must match''')
+If using multiple priorities, at least one must match'''.format(self._prefix))
             return
 
         match_labels = []
@@ -634,12 +634,11 @@ If using multiple priorities, at least one must match''')
         await(self.reply(message, "{} bugs found matching labels={} priorities={}".format(count, ",".join(match_labels), ",".join(match_priorities))))
 
     ################################################################################
-    # ~bug dsearch
-    async def cmd_dsearch(self, message):
-        content = message.content[len("~bug dsearch"):].strip()
-        part = content.replace(","," ").split()
-        if (not content) or (len(part) < 1):
-            await self.reply(message, '''Usage: ~bug dsearch <search terms>''')
+    # dsearch
+    async def cmd_dsearch(self, message, args):
+        part = args.replace(","," ").split()
+        if (not args) or (len(part) < 1):
+            await self.reply(message, '''Usage: {1} dsearch <search terms>'''.format(self.prefix))
             return
 
         match_bugs = []
@@ -661,35 +660,35 @@ If using multiple priorities, at least one must match''')
         await(self.reply(message, "{} bugs found matching {}".format(count, ",".join(part))))
 
     ################################################################################
-    # ~bug addlabel
-    async def cmd_addlabel(self, message):
+    # addlabel
+    async def cmd_addlabel(self, message, args):
         if not self.has_privilege(2, message.author):
             await self.reply(message, "You do not have permission to use this command")
             return
 
-        content = message.content[len("~bug addlabel"):].strip().lower()
-        if (not content) or re.search("[^a-z]", content):
-            await self.reply(message, '''Usage: ~bug addlabel <label>
-Labels can only contain a-z characters''')
+        args = args.lower()
+
+        if (not args) or re.search("[^a-z]", args):
+            await self.reply(message, '''Usage: {1} addlabel <label>
+Labels can only contain a-z characters'''.format(self._prefix))
             return
 
-        match = get_list_match(content, self._labels)
+        match = get_list_match(args, self._labels)
         if match is not None:
-            await self.reply(message, 'Can not add label {} because it matches {}'.format(content, match))
+            await self.reply(message, 'Can not add label {} because it matches {}'.format(args, match))
             return
 
-        self._labels.append(content)
+        self._labels.append(args)
         self.save()
 
-        await(self.reply(message, "Label {} added successfully".format(content)))
+        await(self.reply(message, "Label {} added successfully".format(args)))
 
     ################################################################################
-    # ~bug reject
-    async def cmd_reject(self, message):
-        content = message.content[len("~bug reject"):].strip()
-        part = content.split(maxsplit=1)
-        if (not content) or (len(part) < 2):
-            await self.reply(message, '''Usage: ~bug reject <number> <required explanation>''')
+    # reject
+    async def cmd_reject(self, message, args):
+        part = args.split(maxsplit=1)
+        if (not args) or (len(part) < 2):
+            await self.reply(message, '''Usage: {1} reject <number> <required explanation>'''.format(self._prefix))
             return
 
         index_str = part[0].strip()
@@ -706,7 +705,7 @@ Labels can only contain a-z characters''')
             await self.reply(message, 'Bug #{} not found!'.format(index))
             return
 
-        if not self.has_privilege(1, message.author, bug_idx=index):
+        if not self.has_privilege(1, message.author, index=index):
             await self.reply(message, "You do not have permission to reject bug #{}".format(index))
             return
 
@@ -717,19 +716,18 @@ Labels can only contain a-z characters''')
         self.save()
 
         # Update the bug
-        await self.send_bug(index, bug)
+        await self.send_entry(index, bug)
 
         bug_text, embed = await self.format_bug(index, bug)
         msg = await self._client.send_message(message.channel, bug_text, embed=embed);
         await(self.reply(message, "Bug report #{} rejected".format(index)))
 
     ################################################################################
-    # ~bug fix
-    async def cmd_fix(self, message):
-        content = message.content[len("~bug fix"):].strip()
-        part = content.split(maxsplit=1)
-        if (not content) or (len(part) < 1):
-            await self.reply(message, '''Usage: ~bug fix <number> [optional explanation]''')
+    # fix
+    async def cmd_fix(self, message, args):
+        part = args.split(maxsplit=1)
+        if (not args) or (len(part) < 1):
+            await self.reply(message, '''Usage: {1} fix <number> [optional explanation]'''.format(self._prefix))
             return
 
         index_str = part[0].strip()
@@ -746,7 +744,7 @@ Labels can only contain a-z characters''')
             await self.reply(message, 'Bug #{} not found!'.format(index))
             return
 
-        if not self.has_privilege(1, message.author, bug_idx=index):
+        if not self.has_privilege(1, message.author, index=index):
             await self.reply(message, "You do not have permission to fix bug #{}".format(index))
             return
 
@@ -760,19 +758,18 @@ Labels can only contain a-z characters''')
         self.save()
 
         # Update the bug
-        await self.send_bug(index, bug)
+        await self.send_entry(index, bug)
 
         bug_text, embed = await self.format_bug(index, bug)
         msg = await self._client.send_message(message.channel, bug_text, embed=embed);
         await(self.reply(message, "Bug report #{} marked as fixed".format(index)))
 
     ################################################################################
-    # ~bug unfix
-    async def cmd_unfix(self, message):
-        content = message.content[len("~bug unfix"):].strip()
-        part = content.split(maxsplit=2)
-        if (not content) or (len(part) != 1):
-            await self.reply(message, '''Usage: ~bug unfix <number>''')
+    # unfix
+    async def cmd_unfix(self, message, args):
+        part = args.split(maxsplit=2)
+        if (not args) or (len(part) != 1):
+            await self.reply(message, '''Usage: {1} unfix <number>'''.format(self._prefix))
             return
 
         index_str = part[0].strip()
@@ -789,7 +786,7 @@ Labels can only contain a-z characters''')
             await self.reply(message, 'Bug #{} not found!'.format(index))
             return
 
-        if not self.has_privilege(1, message.author, bug_idx=index):
+        if not self.has_privilege(1, message.author, index=index):
             await self.reply(message, "You do not have permission to unfix bug #{}".format(index))
             return
 
@@ -801,15 +798,15 @@ Labels can only contain a-z characters''')
         self.save()
 
         # Update the bug
-        await self.send_bug(index, bug)
+        await self.send_entry(index, bug)
 
         bug_text, embed = await self.format_bug(index, bug)
         msg = await self._client.send_message(message.channel, bug_text, embed=embed);
         await(self.reply(message, "Bug report #{} unmarked as fixed".format(index)))
 
     ################################################################################
-    # ~bug prune
-    async def cmd_prune(self, message):
+    # prune
+    async def cmd_prune(self, message, args):
         if not self.has_privilege(3, message.author):
             await self.reply(message, "You do not have permission to use this command")
             return
@@ -841,8 +838,8 @@ Labels can only contain a-z characters''')
         await(self.reply(message, "{} bugs pruned successfully".format(count)))
 
     ################################################################################
-    # ~bug repost
-    async def cmd_repost(self, message):
+    # repost
+    async def cmd_repost(self, message, args):
         if not self.has_privilege(4, message.author):
             await self.reply(message, "You do not have permission to use this command")
             return
@@ -851,21 +848,20 @@ Labels can only contain a-z characters''')
         for index in self._bugs:
             if "close_reason" not in self._bugs[index]:
                 count += 1
-                await self.send_bug(index, self._bugs[index])
+                await self.send_entry(index, self._bugs[index])
 
         await(self.reply(message, "{} bugs reposted successfully".format(count)))
 
     ################################################################################
-    # ~bug import
-    async def cmd_import(self, message):
+    # import
+    async def cmd_import(self, message, args):
         if not self.has_privilege(4, message.author):
             await self.reply(message, "You do not have permission to use this command")
             return
 
-        content = message.content[len("~bug import"):].strip()
-        part = content.split(maxsplit=2)
+        part = args.split(maxsplit=2)
         if len(part) != 1 or len(part[0].strip()) < 10:
-            await self.reply(message, "Usage: ~bug import #channel")
+            await self.reply(message, "Usage: import #channel".format(self._prefix))
             return
 
         channel_id = part[0].strip()
@@ -890,7 +886,7 @@ Labels can only contain a-z characters''')
             (index, bug) = self.add_bug(msg.content, author=msg.author, image=image)
 
             # Post this new bug report
-            await self.send_bug(index, bug)
+            await self.send_entry(index, bug)
 
         await(self.reply(message, "{} bugs from channel {} imported successfully".format(count, part[0])))
 
