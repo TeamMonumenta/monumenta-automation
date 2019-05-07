@@ -6,6 +6,7 @@ import sys
 import re
 import random
 from collections import OrderedDict
+from pprint import pprint
 
 
 # Data Schema
@@ -243,6 +244,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         match = get_list_match(part[1].strip(), commands.keys())
         if match is None:
             await self.usage(message)
+            return
 
         args = ""
         if len(part) > 2:
@@ -296,7 +298,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
     Unmarks the specified {single} as fixed
 
 `{prefix} addlabel <newlabel>`
-    Adds a new label - a-z characters only
+    Adds a new label
 '''.format(prefix=self._prefix, single=self._descriptor_single, plural=self._descriptor_plural, labels=" ".join(self._labels))
 
         if self.has_privilege(3, message.author):
@@ -510,7 +512,7 @@ __Available Priorities:__
 
         entry_text, embed = await self.format_entry(index, entry)
         msg = await self._client.send_message(message.channel, entry_text, embed=embed);
-        await(self.reply(message, "{proper} #{} updated successfully".format(proper=self._descriptor_proper, index=index)))
+        await(self.reply(message, "{proper} #{index} updated successfully".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
     # append
@@ -823,6 +825,8 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
             if self._channel is None:
                 raise Exception("Error getting bot channel!")
 
+        await(self.reply(message, "Prune started, this will take some time..."))
+
         match_entries = []
         count = 0
         for index in self._entries:
@@ -851,6 +855,8 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
             await self.reply(message, "You do not have permission to use this command")
             return
 
+        await(self.reply(message, "Repost started, this will take some time..."))
+
         count = 0
         for index in self._entries:
             if "close_reason" not in self._entries[index]:
@@ -878,6 +884,8 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
             await self.reply(message, "Can not find channel '{}'".format(channel_id))
             return
 
+        await(self.reply(message, "Import started, this will take some time..."))
+
         count = 0
         async for msg in self._client.logs_from(import_channel, limit=1000, reverse=True):
             if not msg.content:
@@ -903,7 +911,11 @@ def get_list_match(item, lst):
     match = None
     for x in lst:
         if x.lower().startswith(tmpitem):
-            if match is None:
+            if x.lower() == tmpitem:
+                # Exact match - return it
+                return x
+            elif match is None:
+                # Partial match - keep track of it
                 match = x
             else:
                 # Multiple matches - don't want to return the wrong one!
