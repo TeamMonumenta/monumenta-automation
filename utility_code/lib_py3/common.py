@@ -21,25 +21,32 @@ def get_item_name_from_nbt(item_nbt):
         return None
 
     item_name = item_nbt.at_path("display.Name").value
+    item_name = parse_name_possibly_json(item_name)
     item_name = unformat_text(item_name)
-    # If the item name is JSON, parse it down to just the name text
-    try:
-        name_json = json.loads(item_name)
-        if "text" in name_json:
-            item_name = name_json["text"]
-    except:
-        name_json = json.dumps({"text":item_name},separators=(',', ':'))
-        # This is useful but produces a ton of spam
-        # eprint("WARNING: Item '" + item_name + "' isn't json! Save Name.display as '" + name_json + "'?")
 
     return item_name
+
+def json_text_to_plain_text(json_text):
+    result = ""
+
+    if isinstance(json_text, str):
+        result = json_text
+
+    elif isinstance(json_text, dict):
+        if "text" in json_text:
+            result = json_text["text"]
+
+    elif isinstance(json_text, list):
+        for item in json_text:
+            result += json_text_to_plain_text(json_text)
+
+    return result
 
 def parse_name_possibly_json(name):
     name = re.sub(r"\\u0027", "'", name)
     try:
         name_json = json.loads(name)
-        if "text" in name_json:
-            name = name_json["text"]
+        name = json_text_to_plain_text(name_json)
     except:
         pass
 
