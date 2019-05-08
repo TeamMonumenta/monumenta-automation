@@ -13,7 +13,8 @@ logging.basicConfig(level=logging.INFO)
 
 import discord
 
-from task_database import TaskDatabase, split_string
+from task_database import TaskDatabase
+from common import split_string
 
 ################################################################################
 # Config / Environment

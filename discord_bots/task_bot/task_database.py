@@ -8,6 +8,8 @@ import random
 from collections import OrderedDict
 from pprint import pprint
 
+from interactive_search import InteractiveSearch
+from common import get_list_match, datestr
 
 # Data Schema
 
@@ -50,6 +52,7 @@ class TaskDatabase(object):
             self._reactions  = config["reactions"]
             self._channel = None
             self._database_path = os.path.join(config_dir, config["database_path"])
+            self._interactive_sessions = []
             self.load()
         except KeyError as e:
             sys.exit('Config missing key: {}'.format(e))
@@ -210,23 +213,35 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
     async def handle_message(self, message):
         commands = {
-            "add": (self.cmd_add, ),
-            "report": (self.cmd_add, ),
-            "get": (self.cmd_get, ),
-            "roulette": (self.cmd_roulette, ),
-            "search": (self.cmd_search, ),
-            "dsearch": (self.cmd_dsearch, ),
-            "reject": (self.cmd_reject, ),
-            "edit": (self.cmd_edit, ),
-            "append": (self.cmd_append, ),
-            "fix": (self.cmd_fix, ),
-            "unfix": (self.cmd_unfix, ),
-            "prune": (self.cmd_prune, ),
-            "import": (self.cmd_import, ),
-            "repost": (self.cmd_repost, ),
-            "addlabel": (self.cmd_addlabel, ),
-            "test": (self.cmd_test, ),
+            "add": self.cmd_add,
+            "report": self.cmd_add,
+            "get": self.cmd_get,
+            "roulette": self.cmd_roulette,
+            "search": self.cmd_search,
+            "dsearch": self.cmd_dsearch,
+            "isearch": self.cmd_isearch,
+            "reject": self.cmd_reject,
+            "edit": self.cmd_edit,
+            "append": self.cmd_append,
+            "fix": self.cmd_fix,
+            "unfix": self.cmd_unfix,
+            "prune": self.cmd_prune,
+            "import": self.cmd_import,
+            "repost": self.cmd_repost,
+            "addlabel": self.cmd_addlabel,
+            "test": self.cmd_test,
         }
+
+        # First try to handle this message with any ongoing iterative searches
+        # Make a copy of the list so it can be modified during iteration
+        for session in self._interactive_sessions[:]:
+            try:
+                if (await session.handle_message(message)):
+                    # This message was handled here - don't process it further
+                    return
+            except EOFError:
+                # This session is complete
+                self._interactive_sessions.remove(session)
 
         part = message.content.split(maxsplit=2)
         if (not message.content) or (len(part) < 1):
@@ -250,7 +265,10 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         if len(part) > 2:
             args = part[2].strip()
 
-        await commands[match][0](message, args)
+        try:
+            await commands[match](message, args)
+        except ValueError as e:
+            await self.reply(message, str(e))
 
     ################################################################################
     # Usage
@@ -297,6 +315,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 `{prefix} unfix <number>`
     Unmarks the specified {single} as fixed
 
+`{prefix} isearch <search terms>`
+    Interactive search session
+
 `{prefix} addlabel <newlabel>`
     Adds a new label
 '''.format(prefix=self._prefix, single=self._descriptor_single, plural=self._descriptor_plural, labels=" ".join(self._labels))
@@ -341,7 +362,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
     # add / report
     async def cmd_add(self, message, args):
         if not args:
-            await self.reply(message, '''How to submit a {single}:```
+            raise ValueError('''How to submit a {single}:```
 {prefix} add <label> <description>
 ```
 Example:```
@@ -349,12 +370,10 @@ Example:```
 ```
 You can also attach an image to your message to include it in the {single}
 '''.format(prefix=self._prefix, single=self._descriptor_single))
-            return
 
         part = args.split(maxsplit=1)
         if len(part) < 2:
-            await self.reply(message, 'Must contain both a label and a description')
-            return
+            raise ValueError('Must contain both a label and a description')
 
         labels = part[0].strip().lower().split(',')
         description = part[1].strip()
@@ -363,12 +382,11 @@ You can also attach an image to your message to include it in the {single}
         for label in labels:
             match = get_list_match(label.strip(), self._labels)
             if match is None:
-                await self.reply(message, "Labels must be one of: [{}]".format(",".join(self._labels)))
-                return
+                raise ValueError("Labels must be one of: [{}]".format(",".join(self._labels)))
             good_labels.append(match)
 
         if not description:
-            await self.reply(message, 'Description can not be empty!')
+            raise ValueError('Description can not be empty!')
 
         image = None
         for attach in message.attachments:
@@ -392,35 +410,31 @@ You can also attach an image to your message to include it in the {single}
     async def cmd_edit(self, message, args):
         part = args.split(maxsplit=2)
         if (not args) or (len(part) < 2):
-            await self.reply(message, '''How to edit a {single}:```
+            raise ValueError('''How to edit a {single}:```
 {prefix} edit # [description | label | image | author | priority] edited stuff
 ```
 For example:```
 {prefix} edit 5 description Much more detail here
 ```
 '''.format(prefix=self._prefix, single=self._descriptor_single))
-            return
 
         index_str = part[0].strip()
         try:
             index = int(index_str)
         except:
-            await self.reply(message, "'{}' is not a number".format(index_str))
-            return
+            raise ValueError("'{}' is not a number".format(index_str))
 
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
         if index not in self._entries:
-            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
-            return
+            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
 
         entry = self._entries[index]
 
         operation = get_list_match(part[1].strip(), ['description', 'label', 'image', 'author', 'priority'])
         if operation is None:
-            await self.reply(message, "Item to edit must be 'description', 'label', 'image', 'author', or 'priority'")
-            return
+            raise ValueError("Item to edit must be 'description', 'label', 'image', 'author', or 'priority'")
 
         min_priv = 4
         if operation in ['description', 'label', 'image']:
@@ -429,28 +443,24 @@ For example:```
             min_priv = 2
 
         if not self.has_privilege(min_priv, message.author, index=index):
-            await self.reply(message, "You do not have permission to edit {} for entry #{}".format(operation, index))
-            return
+            raise ValueError("You do not have permission to edit {} for entry #{}".format(operation, index))
 
         if operation == 'description':
             if len(part) < 3:
-                await self.reply(message, "You need to actually supply a new description")
-                return
+                raise ValueError("You need to actually supply a new description")
 
             entry["description"] = part[2].strip()
 
         elif operation == 'label':
             if len(part) < 3:
-                await self.reply(message, "You need to actually supply a new label")
-                return
+                raise ValueError("You need to actually supply a new label")
 
             labels = part[2].strip().lower().split(',')
             good_labels = []
             for label in labels:
                 match = get_list_match(label.strip(), self._labels)
                 if match is None:
-                    await self.reply(message, "Labels must be one of: [{}]".format(",".join(self._labels)))
-                    return
+                    raise ValueError("Labels must be one of: [{}]".format(",".join(self._labels)))
                 good_labels.append(match)
 
             entry["labels"] = good_labels
@@ -462,19 +472,17 @@ For example:```
                     image = attach["url"]
 
             if image is None:
-                await self.reply(message, "You need to attach an image")
-                return
+                raise ValueError("You need to attach an image")
 
             entry["image"] = image
 
         elif operation == 'author':
             #TODO
-            await self.reply(message, "NOT IMPLEMENTED YET")
-            return
+            raise ValueError("NOT IMPLEMENTED YET")
 
         elif operation == 'priority':
             if len(part) < 3:
-                await self.reply(message, '''
+                raise ValueError('''
 __Available Priorities:__
 **Critical**
 - Portions of the game are unplayable
@@ -496,12 +504,10 @@ __Available Priorities:__
 
 **N/A**
 - No priority assigned''')
-                return
 
             priority = get_list_match(part[2].strip().lower(), self._priorities)
             if priority is None:
-                await self.reply(message, "Priority must be one of: [{}]".format(",".join(self._priorities)))
-                return
+                raise ValueError("Priority must be one of: [{}]".format(",".join(self._priorities)))
 
             entry["priority"] = priority
 
@@ -519,26 +525,22 @@ __Available Priorities:__
     async def cmd_append(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 2):
-            await self.reply(message, '''Usage: {prefix} append <number> [additional description text]'''.format(prefix=self._prefix))
-            return
+            raise ValueError('''Usage: {prefix} append <number> [additional description text]'''.format(prefix=self._prefix))
 
         index_str = part[0].strip()
         try:
             index = int(index_str)
         except:
-            await self.reply(message, "'{}' is not a number".format(index_str))
-            return
+            raise ValueError("'{}' is not a number".format(index_str))
 
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
         if index not in self._entries:
-            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
-            return
+            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
 
         if not self.has_privilege(1, message.author, index=index):
-            await self.reply(message, "You do not have permission to append to #{}".format(index))
-            return
+            raise ValueError("You do not have permission to append to #{}".format(index))
 
         entry = self._entries[index]
 
@@ -557,22 +559,19 @@ __Available Priorities:__
     # get
     async def cmd_get(self, message, args):
         if not args:
-            await self.reply(message, "Usage: {prefix} get <number>".format(prefix=self._prefix))
-            return
+            raise ValueError("Usage: {prefix} get <number>".format(prefix=self._prefix))
 
         index_str = args.strip()
         try:
             index = int(index_str)
         except:
-            await self.reply(message, "'{}' is not a number".format(index_str))
-            return
+            raise ValueError("'{}' is not a number".format(index_str))
 
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
         if index not in self._entries:
-            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
-            return
+            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
 
         match_entries = [(index, self._entries[index])]
         await self.print_search_results(message, match_entries)
@@ -589,19 +588,17 @@ __Available Priorities:__
         await self.print_search_results(message, [random.choice(match_entries)])
 
     ################################################################################
-    # search
-    async def cmd_search(self, message, args):
+    # search core helper
+    async def search_helper(self, args, max_count):
         part = args.replace(","," ").split()
         if (not args) or (len(part) < 1):
-            await self.reply(message, '''Usage: {prefix} search labels,priorities
+            raise ValueError('''Usage: {prefix} search labels,priorities
 Default limit is 10 results - include more by adding a number to the search terms
 If using multiple labels, all specified labels must match
 If using multiple priorities, at least one must match'''.format(prefix=self._prefix))
-            return
 
         match_labels = []
         match_priorities = []
-        max_count = 10
         for item in part:
             item = item.strip()
             label_match = get_list_match(item, self._labels)
@@ -614,12 +611,10 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
             elif re.search("^[0-9][0-9]*$", item):
                 max_count = int(item)
             else:
-                await self.reply(message, '''No priority or label matching "{}"'''.format(item))
-                return
+                raise ValueError('''No priority or label matching "{}"'''.format(item))
 
         if len(match_labels) == 0 and len(match_priorities) == 0:
-            await self.reply(message, 'Must specify something to search for')
-            return
+            raise ValueError('Must specify something to search for')
 
         match_entries = []
         count = 0
@@ -638,17 +633,23 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
                     count += 1
                     match_entries.append((index, entry))
 
+        return (match_entries, match_labels, match_priorities, max_count)
+
+    ################################################################################
+    # search
+    async def cmd_search(self, message, args):
+        match_entries, match_labels, match_priorities, max_count = await self.search_helper(args, max_count=10)
+
         await self.print_search_results(message, match_entries, limit=max_count)
 
-        await(self.reply(message, "{} {} found matching labels={} priorities={}".format(count, self._descriptor_plural, ",".join(match_labels), ",".join(match_priorities))))
+        await(self.reply(message, "{} {} found matching labels={} priorities={}".format(len(match_entries), self._descriptor_plural, ",".join(match_labels), ",".join(match_priorities))))
 
     ################################################################################
     # dsearch
     async def cmd_dsearch(self, message, args):
         part = args.replace(","," ").split()
         if (not args) or (len(part) < 1):
-            await self.reply(message, '''Usage: {prefix} dsearch <search terms>'''.format(prefix=self.prefix))
-            return
+            raise ValueError('''Usage: {prefix} dsearch <search terms>'''.format(prefix=self.prefix))
 
         match_entries = []
         count = 0
@@ -669,23 +670,32 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
         await(self.reply(message, "{} {} found matching {}".format(count, self._descriptor_plural, ",".join(part))))
 
     ################################################################################
+    # isearch
+    async def cmd_isearch(self, message, args):
+        match_entries, _, __, ___ = await self.search_helper(args, max_count=100)
+
+        if len(match_entries) <= 0:
+            raise ValueError("No results to display")
+
+        inter = InteractiveSearch(self, message.author, match_entries)
+        self._interactive_sessions.append(inter)
+        await inter.send_first_message(message)
+
+    ################################################################################
     # addlabel
     async def cmd_addlabel(self, message, args):
         if not self.has_privilege(2, message.author):
-            await self.reply(message, "You do not have permission to use this command")
-            return
+            raise ValueError("You do not have permission to use this command")
 
         args = args.lower()
 
         if (not args) or re.search("[^a-z]", args):
-            await self.reply(message, '''Usage: {prefix} addlabel <label>
+            raise ValueError('''Usage: {prefix} addlabel <label>
 Labels can only contain a-z characters'''.format(prefix=self._prefix))
-            return
 
         match = get_list_match(args, self._labels)
         if match is not None:
-            await self.reply(message, 'Can not add label {} because it matches {}'.format(args, match))
-            return
+            raise ValueError('Can not add label {} because it matches {}'.format(args, match))
 
         self._labels.append(args)
         self.save()
@@ -697,26 +707,22 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
     async def cmd_reject(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 2):
-            await self.reply(message, '''Usage: {prefix} reject <number> <required explanation>'''.format(prefix=self._prefix))
-            return
+            raise ValueError('''Usage: {prefix} reject <number> <required explanation>'''.format(prefix=self._prefix))
 
         index_str = part[0].strip()
         try:
             index = int(index_str)
         except:
-            await self.reply(message, "'{}' is not a number".format(index_str))
-            return
+            raise ValueError("'{}' is not a number".format(index_str))
 
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
         if index not in self._entries:
-            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
-            return
+            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
 
         if not self.has_privilege(1, message.author, index=index):
-            await self.reply(message, "You do not have permission to reject #{}".format(index))
-            return
+            raise ValueError("You do not have permission to reject #{}".format(index))
 
         entry = self._entries[index]
 
@@ -736,26 +742,22 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
     async def cmd_fix(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 1):
-            await self.reply(message, '''Usage: {prefix} fix <number> [optional explanation]'''.format(prefix=self._prefix))
-            return
+            raise ValueError('''Usage: {prefix} fix <number> [optional explanation]'''.format(prefix=self._prefix))
 
         index_str = part[0].strip()
         try:
             index = int(index_str)
         except:
-            await self.reply(message, "'{}' is not a number".format(index_str))
-            return
+            raise ValueError("'{}' is not a number".format(index_str))
 
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
         if index not in self._entries:
-            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
-            return
+            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
 
         if not self.has_privilege(1, message.author, index=index):
-            await self.reply(message, "You do not have permission to fix #{}".format(index))
-            return
+            raise ValueError("You do not have permission to fix #{}".format(index))
 
         entry = self._entries[index]
 
@@ -778,26 +780,22 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
     async def cmd_unfix(self, message, args):
         part = args.split(maxsplit=2)
         if (not args) or (len(part) != 1):
-            await self.reply(message, '''Usage: {prefix} unfix <number>'''.format(prefix=self._prefix))
-            return
+            raise ValueError('''Usage: {prefix} unfix <number>'''.format(prefix=self._prefix))
 
         index_str = part[0].strip()
         try:
             index = int(index_str)
         except:
-            await self.reply(message, "'{}' is not a number".format(index_str))
-            return
+            raise ValueError("'{}' is not a number".format(index_str))
 
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
 
         if index not in self._entries:
-            await self.reply(message, '{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
-            return
+            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
 
         if not self.has_privilege(1, message.author, index=index):
-            await self.reply(message, "You do not have permission to unfix #{}".format(index))
-            return
+            raise ValueError("You do not have permission to unfix #{}".format(index))
 
         entry = self._entries[index]
 
@@ -817,8 +815,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
     # prune
     async def cmd_prune(self, message, args):
         if not self.has_privilege(3, message.author):
-            await self.reply(message, "You do not have permission to use this command")
-            return
+            raise ValueError("You do not have permission to use this command")
 
         if self._channel is None:
             self._channel = self._client.get_channel(self._channel_id)
@@ -852,8 +849,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
     # repost
     async def cmd_repost(self, message, args):
         if not self.has_privilege(4, message.author):
-            await self.reply(message, "You do not have permission to use this command")
-            return
+            raise ValueError("You do not have permission to use this command")
 
         await(self.reply(message, "Repost started, this will take some time..."))
 
@@ -869,20 +865,17 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
     # import
     async def cmd_import(self, message, args):
         if not self.has_privilege(4, message.author):
-            await self.reply(message, "You do not have permission to use this command")
-            return
+            raise ValueError("You do not have permission to use this command")
 
         part = args.split(maxsplit=2)
         if len(part) != 1 or len(part[0].strip()) < 10:
-            await self.reply(message, "Usage: import #channel".format(self._prefix))
-            return
+            raise ValueError("Usage: import #channel".format(self._prefix))
 
         channel_id = part[0].strip()
         channel_id = channel_id[2:-1]
         import_channel = self._client.get_channel(channel_id)
         if import_channel is None:
-            await self.reply(message, "Can not find channel '{}'".format(channel_id))
-            return
+            raise ValueError("Can not find channel '{}'".format(channel_id))
 
         await(self.reply(message, "Import started, this will take some time..."))
 
@@ -917,57 +910,3 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
             await self.send_entry(index, entry)
 
         await(self.reply(message, "{} entries from channel {} imported successfully".format(len(to_import), part[0])))
-
-def get_list_match(item, lst):
-    tmpitem = item.lower()
-
-    match = None
-    for x in lst:
-        if x.lower().startswith(tmpitem):
-            if x.lower() == tmpitem:
-                # Exact match - return it
-                return x
-            elif match is None:
-                # Partial match - keep track of it
-                match = x
-            else:
-                # Multiple matches - don't want to return the wrong one!
-                return None
-    return match
-
-# TODO: These are duplicated!
-
-import datetime
-def datestr():
-    return datetime.datetime.now().strftime("%Y_%m_%d")
-
-def split_string(text):
-    # Maximum number of characters in a single line
-    n = 1950
-
-    splits = text.splitlines()
-    result = []
-    cur = None
-    for i in splits:
-        while True:
-            if cur is None and len(i) <= n:
-                cur = i;
-                break # Done with i
-            elif cur is None and len(i) > n:
-                # Annoying case - one uber long line. Have to split into chunks
-                result = result + [i[:n]]
-                i = i[n:]
-                pass # Repeat this iteration
-            elif len(cur) + len(i) < n:
-                cur = cur + "\n" + i
-                break # Done with i
-            else:
-                result = result + [cur]
-                cur = None
-                pass # Repeat this iteration
-
-    if cur is not None:
-        result = result + [cur]
-        cur = None
-
-    return result
