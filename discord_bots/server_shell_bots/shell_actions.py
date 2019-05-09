@@ -51,7 +51,10 @@ def get_size(start_path = '.'):
     return total_size
 
 def get_available_storage(path = '.'):
-    return os.statvfs(path).f_bavail
+    size_data = os.statvfs(path)
+    block_size = size_data.f_frsize
+    blocks_available = size_data.f_bavail
+    return block_size * blocks_available
 
 class listening():
     def __init__(self):
