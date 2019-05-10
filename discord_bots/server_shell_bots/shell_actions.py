@@ -987,9 +987,15 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         for shard in ["r1plots", "betaplots", "region_1"]:
             if shard in allShards:
                 self._commands += [
-                    self.display("Preserving coreprotect, and warps data for {0}...".format(shard)),
+                    self.display("Preserving coreprotect for {0}...".format(shard)),
                     self.run("mkdir -p {0}/POST_RESET/{1}/plugins/CoreProtect".format(resetdir, shard)),
                     self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, shard, "plugins/CoreProtect/database.db")),
+                ]
+
+        for shard in ["r1plots", "betaplots", "region_1", "region_2"]:
+            if shard in allShards:
+                self._commands += [
+                    self.display("Preserving warps for {0}...".format(shard)),
                     self.run("mkdir -p {0}/POST_RESET/{1}/plugins/EpicWarps".format(resetdir, shard)),
                     self.run("mv {0}/PRE_RESET/{1}/{2} {0}/POST_RESET/{1}/{2}".format(resetdir, shard, "plugins/EpicWarps/warps.yml")),
                 ]
