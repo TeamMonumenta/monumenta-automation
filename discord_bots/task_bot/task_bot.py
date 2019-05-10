@@ -36,7 +36,6 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 while restart:
-    restart = False
     print("Bot Configuration:")
     pprint(bot_config)
     print("")
