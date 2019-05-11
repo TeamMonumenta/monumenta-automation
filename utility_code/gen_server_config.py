@@ -80,6 +80,8 @@ monumenta_without_mobs_plugins = [
         ('plugins/JeffChestSort.jar', '../../server_config/plugins/JeffChestSort.jar'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
         ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
+        ('plugins/ScriptedQuests/clickables/{servername}', '../../../../server_config/data/scriptedquests/clickables/{servername}'),
+        ('plugins/ScriptedQuests/clickables/common', '../../../../server_config/data/scriptedquests/clickables/common'),
         ('plugins/ScriptedQuests/death/{servername}', '../../../../server_config/data/scriptedquests/death/{servername}'),
         ('plugins/ScriptedQuests/death/common', '../../../../server_config/data/scriptedquests/death/common'),
         ('plugins/ScriptedQuests/login/{servername}', '../../../../server_config/data/scriptedquests/login/{servername}'),
@@ -94,6 +96,8 @@ monumenta_without_mobs_plugins = [
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
         ('plugins/MonumentaMain/Properties.json', '../../../server_config/data/plugins/{servername}/MonumentaMain/Properties.json'),
+        ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
+        ('plugins/PremiumVanish/config.yml', '../../../server_config/data/plugins/all/PremiumVanish/config.yml'),
     ]
 monumenta = monumenta_without_mobs_plugins + [
         ('plugins/MonumentaMain.jar', '../../server_config/plugins/MonumentaMain.jar'),
