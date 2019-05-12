@@ -726,7 +726,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         entry = self._entries[index]
 
-        entry["close_reason"] = part[1].strip().lower()
+        entry["close_reason"] = part[1].strip()
 
         self.save()
 
@@ -762,7 +762,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         entry = self._entries[index]
 
         if len(part) > 1:
-            entry["close_reason"] = part[1].strip().lower()
+            entry["close_reason"] = part[1].strip()
         else:
             entry["close_reason"] = "Fixed"
 
