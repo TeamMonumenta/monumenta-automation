@@ -9,7 +9,6 @@ from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
 from lib_py3.item_replacement_rules import global_rules
 from lib_py3.item_replacement_substitutions import substitution_rules
-from lib_py3.loot_table_manager import LootTableManager
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
