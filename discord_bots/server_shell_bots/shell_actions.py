@@ -41,6 +41,8 @@ class NativeRestart():
 native_restart = NativeRestart()
 
 def get_size(start_path = '.'):
+    if os.is_symlink(start_path):
+        return 0
     if os.path.isfile(start_path):
         return os.path.getsize(start_path)
     total_size = 0
