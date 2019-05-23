@@ -228,6 +228,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "prune": self.cmd_prune,
             "import": self.cmd_import,
             "repost": self.cmd_repost,
+            "stats": self.cmd_stats,
             "addlabel": self.cmd_addlabel,
             "test": self.cmd_test,
         }
@@ -294,6 +295,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} roulette`
     Gets a random {single}
+
+`{prefix} stats`
+    Gets current {single} statistics
 
 **Commands the original {single} author and team members can use:**
 `{prefix} reject <number> <reason why>`
@@ -586,6 +590,34 @@ __Available Priorities:__
                 match_entries.append((index, entry))
 
         await self.print_search_results(message, [random.choice(match_entries)])
+
+    ################################################################################
+    # stats
+    async def cmd_stats(self, message, args):
+        stats = {}
+        for priority in self._priorities:
+            stats[priority] = 0
+
+        total_open = 0
+        total_closed = 0
+        for index in self._entries:
+            entry = self._entries[index]
+            if "close_reason" in entry:
+                total_closed += 1
+            else:
+                stats[entry["priority"]] += 1
+                total_open += 1
+
+        stats_text = '''Current {single} stats:```'''.format(single=self._descriptor_single)
+        for item in stats:
+            stats_text += '''
+{} : {}'''.format(item.ljust(10), stats[item])
+        stats_text += '''
+----------------
+Total Open : {}
+Closed     : {}```'''.format(total_open, total_closed)
+
+        await self._client.send_message(message.channel, stats_text);
 
     ################################################################################
     # search core helper
