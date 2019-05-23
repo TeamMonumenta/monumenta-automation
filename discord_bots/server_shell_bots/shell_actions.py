@@ -40,16 +40,15 @@ class NativeRestart():
 
 native_restart = NativeRestart()
 
-def get_size(start_path = '.'):
-    if os.path.islink(start_path):
-        return 0
+def get_size(start_path='.'):
     if os.path.isfile(start_path):
-        return os.path.getsize(start_path)
+        return os.lstat(start_path).st_size
     total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
-        for filename in filenames:
-            file_path = os.path.join(dirpath, filename)
-            total_size += os.path.getsize(file_path)
+    if os.path.isdir(start_path):
+        for dirpath, dirnames, filenames in os.walk(start_path):
+            for filename in filenames:
+                file_path = os.path.join(dirpath, filename)
+                total_size += os.lstat(start_path).st_size
     return total_size
 
 def get_available_storage(path = '.'):
