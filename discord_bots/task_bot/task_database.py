@@ -146,15 +146,31 @@ class TaskDatabase(object):
         return (index, entry)
 
     async def format_entry(self, index, entry):
+        if self._channel is None:
+            self._channel = self._client.get_channel(self._channel_id)
+            if self._channel is None:
+                raise Exception("Error getting channel!")
+
         author_id = entry["author"]
         if author_id != 0 and author_id != "0":
             author_name = (await self._client.get_user_info(author_id)).display_name
         else:
             author_name = ""
 
+        react_text = ""
+        if "message_id" in entry:
+            try:
+                msg = await self._client.get_message(self._channel, entry["message_id"])
+                if msg.reactions:
+                    react_text = '\n'
+                    for react in msg.reactions:
+                        react_text += "{} {}    ".format(react.emoji, react.count)
+            except Exception as e:
+                pass
+
         entry_text = '''`
 #{} [{} - {}] {}`
-{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, entry["description"])
+{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, entry["description"], react_text)
 
         if "close_reason" in entry:
             entry_text = '''~~{}~~
