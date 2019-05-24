@@ -115,4 +115,4 @@ else:
         data = json.load(outfile)
 
     #TODO
-    eprint("ERROR WIP")
+    raise NotImplementedError("ERROR WIP")
