@@ -145,7 +145,7 @@ class TaskDatabase(object):
 
         return (index, entry)
 
-    async def format_entry(self, index, entry):
+    async def format_entry(self, index, entry, include_reactions=False):
         if self._channel is None:
             self._channel = self._client.get_channel(self._channel_id)
             if self._channel is None:
@@ -158,7 +158,7 @@ class TaskDatabase(object):
             author_name = ""
 
         react_text = ""
-        if "message_id" in entry:
+        if include_reactions and "message_id" in entry:
             try:
                 msg = await self._client.get_message(self._channel, entry["message_id"])
                 if msg.reactions:
@@ -191,7 +191,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
                 raise Exception("Error getting channel!")
 
         # Compute the new entry text
-        entry_text, embed = await self.format_entry(index, entry)
+        entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
 
         msg = None
         if "message_id" in entry:
@@ -223,7 +223,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             print_entries = print_entries[:limit]
 
         for index, entry in print_entries:
-            entry_text, embed = await self.format_entry(index, entry)
+            entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
             msg = await self._client.send_message(message.channel, entry_text, embed=embed);
 
 
@@ -536,7 +536,7 @@ __Available Priorities:__
         # Update the entry
         await self.send_entry(index, entry)
 
-        entry_text, embed = await self.format_entry(index, entry)
+        entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await self._client.send_message(message.channel, entry_text, embed=embed);
         await(self.reply(message, "{proper} #{index} updated successfully".format(proper=self._descriptor_proper, index=index)))
 
@@ -571,7 +571,7 @@ __Available Priorities:__
         # Update the entry
         await self.send_entry(index, entry)
 
-        entry_text, embed = await self.format_entry(index, entry)
+        entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await self._client.send_message(message.channel, entry_text, embed=embed);
         await(self.reply(message, "{proper} #{index} edited".format(proper=self._descriptor_proper, index=index)))
 
@@ -781,7 +781,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         # Update the entry
         await self.send_entry(index, entry)
 
-        entry_text, embed = await self.format_entry(index, entry)
+        entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await self._client.send_message(message.channel, entry_text, embed=embed);
         await(self.reply(message, "{proper} #{index} rejected".format(proper=self._descriptor_proper, index=index)))
 
@@ -819,7 +819,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         # Update the entry
         await self.send_entry(index, entry)
 
-        entry_text, embed = await self.format_entry(index, entry)
+        entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await self._client.send_message(message.channel, entry_text, embed=embed);
         await(self.reply(message, "{proper} #{index} marked as fixed".format(proper=self._descriptor_proper, index=index)))
 
@@ -855,7 +855,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         # Update the entry
         await self.send_entry(index, entry)
 
-        entry_text, embed = await self.format_entry(index, entry)
+        entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await self._client.send_message(message.channel, entry_text, embed=embed);
         await(self.reply(message, "{proper} #{index} unmarked as fixed".format(proper=self._descriptor_proper, index=index)))
 
