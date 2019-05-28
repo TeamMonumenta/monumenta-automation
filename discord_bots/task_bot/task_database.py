@@ -14,24 +14,48 @@ from common import get_list_match, datestr
 # Data Schema
 
 '''
-entries = {
-    # Key is entry number - fixed forever. Key is a string representation of an integer... for reasons.
-    "42" : {
-        "author": "302298391969267712", # Must be non-empty and a valid discord user
-        "description": "Stuff", # Must be non-empty, escape input strings/etc.
-        "labels": ["Misc"], # Must be non-empty
-        # Automatically set to "N/A" on creation
-        "priority": "High", # Case sensitive for matching, do case insensitive compare for input
+{
+    "entries" = {
+        # Key is entry number - fixed forever. Key is a string representation of an integer... for reasons.
+        "42" : {
+            "author": "302298391969267712", # Must be non-empty and a valid discord user
+            "description": "Stuff", # Must be non-empty, escape input strings/etc.
+            "labels": ["Misc"], # Must be non-empty
+            # Automatically set to "N/A" on creation
+            "priority": "High", # Case sensitive for matching, do case insensitive compare for input
 
-        # Optional:
-        "image": None, # Might be None OR not present at all
+            # Optional:
+            "image": None, # Might be None OR not present at all
 
-        # If this is present, the item is closed
-        "close_reason": "string"
+            # If this is present, the item is closed
+            "close_reason": "string"
 
-        # Automatically added/managed
-        "message_id": <discord message ID>
-    }
+            # Automatically added/managed
+            "message_id": <discord message ID>
+
+            # Pending notification
+            # True if there has been an update to this item that the poster needs to be pinged about
+            "pending_notification": True/False
+        },
+    },
+
+    "next_index": 985,
+    "labels": [
+        "...",
+        "misc"
+    ],
+    "priorities": [
+        "N/A",
+        "Critical",
+        "High",
+        "Medium",
+        "Low",
+        "Zero"
+    ],
+    "notifications_disabled": [
+        "302298391969267712",
+        ...
+    ]
 ]
 '''
 
@@ -63,6 +87,7 @@ class TaskDatabase(object):
             'next_index': self._next_index,
             'labels': self._labels,
             'priorities': self._priorities,
+            'notifications_disabled': list(self._notifications_disabled),
         }
 
         with open(self._database_path, 'w') as f:
@@ -83,6 +108,7 @@ class TaskDatabase(object):
                 "Zero",
                 "N/A",
             ]
+            self._notifications_disabled = set([])
             self.save()
         else:
             with open(self._database_path, 'r') as f:
@@ -93,6 +119,21 @@ class TaskDatabase(object):
             # TODO: Scan through and add all labels
             self._labels = data['labels']
             self._priorities = data['priorities']
+
+            if 'notifications_disabled' in data:
+                self._notifications_disabled = set(data['notifications_disabled'])
+            else:
+                self._notifications_disabled = set([])
+
+            changed = False;
+            for item_id in self._entries:
+                entry = self._entries[item_id]
+                if "pending_notification" not in entry:
+                    entry["pending_notification"] = True
+                    changed = True
+
+            if changed:
+                self.save()
 
     async def reply(self, message, response):
         """
@@ -135,6 +176,8 @@ class TaskDatabase(object):
 
         if priority is not None:
             entry["priority"] = priority
+
+        entry["pending_notification"] = False
 
         index = self._next_index
 
@@ -242,6 +285,8 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "fix": self.cmd_fix,
             "unfix": self.cmd_unfix,
             "prune": self.cmd_prune,
+            "notify": self.cmd_notify,
+            "send_notifications": self.cmd_send_notifications,
             "import": self.cmd_import,
             "repost": self.cmd_repost,
             "stats": self.cmd_stats,
@@ -309,6 +354,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 `{prefix} get <number>`
     Gets the {single} with the specified number
 
+`{prefix} notify [on|off]`
+    Toggles whether you get notified of updates to your {plural}
+
 `{prefix} roulette`
     Gets a random {single}
 
@@ -340,6 +388,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} addlabel <newlabel>`
     Adds a new label
+
+`{prefix} send_notifications`
+    Notifies {single} authors about updates to their entries
 '''.format(prefix=self._prefix, single=self._descriptor_single, plural=self._descriptor_plural, labels=" ".join(self._labels))
 
         if self.has_privilege(3, message.author):
@@ -531,6 +582,11 @@ __Available Priorities:__
 
             entry["priority"] = priority
 
+        if entry["author"] == message.author.id:
+            entry["pending_notification"] = False
+        else:
+            entry["pending_notification"] = True
+
         self.save()
 
         # Update the entry
@@ -565,6 +621,11 @@ __Available Priorities:__
         entry = self._entries[index]
 
         entry["description"] = "{}\n{}".format(entry["description"], part[1].strip())
+
+        if entry["author"] == message.author.id:
+            entry["pending_notification"] = False
+        else:
+            entry["pending_notification"] = True
 
         self.save()
 
@@ -776,6 +837,11 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         entry["close_reason"] = part[1].strip()
 
+        if entry["author"] == message.author.id:
+            entry["pending_notification"] = False
+        else:
+            entry["pending_notification"] = True
+
         self.save()
 
         # Update the entry
@@ -787,6 +853,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
     ################################################################################
     # fix
+    # TODO: Change this to re-use reject code, lots of duplication here
     async def cmd_fix(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 1):
@@ -813,6 +880,11 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
             entry["close_reason"] = part[1].strip()
         else:
             entry["close_reason"] = "Fixed"
+
+        if entry["author"] == message.author.id:
+            entry["pending_notification"] = False
+        else:
+            entry["pending_notification"] = True
 
         self.save()
 
@@ -849,6 +921,11 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         if "close_reason" in entry:
             entry.pop("close_reason")
+
+        if entry["author"] == message.author.id:
+            entry["pending_notification"] = False
+        else:
+            entry["pending_notification"] = True
 
         self.save()
 
@@ -890,8 +967,78 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
                 except:
                     pass
 
+        self.save()
+
         await self.print_search_results(message, match_entries, limit=99999)
         await(self.reply(message, "{} entries pruned successfully".format(count)))
+
+    ################################################################################
+    # notify
+    async def cmd_notify(self, message, args):
+        if not args:
+            if str(message.author.id) in self._notifications_disabled:
+                await(self.reply(message, '''You will __not__ be notified of changes to your {plural}.
+To change this, `{prefix} notify on`'''.format(plural=self._descriptor_plural, prefix=self._prefix)))
+            else:
+                await(self.reply(message, '''You **will** be notified of changes to your {plural}.
+Notifications are on by default.
+To change this, `{prefix} notify off`'''.format(plural=self._descriptor_plural, prefix=self._prefix)))
+            return
+
+        match = get_list_match(args.strip(), ["on", "off"])
+        if match is None:
+            raise ValueError("Argument to {prefix} notify must be 'on' or 'off'".format(prefix=self._prefix))
+
+        if match == "on":
+            self._notifications_disabled.remove(str(message.author.id))
+        else:
+            self._notifications_disabled.add(str(message.author.id))
+
+        self.save()
+
+        if str(message.author.id) in self._notifications_disabled:
+            await(self.reply(message, '''You will __not__ be notified of changes to your {plural}.
+To change this, {prefix} notify on'''.format(plural=self._descriptor_plural, prefix=self._prefix)))
+        else:
+            await(self.reply(message, '''You **will** be notified of changes to your {plural}.
+Notifications are on by default.
+To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, prefix=self._prefix)))
+
+
+    ################################################################################
+    # send_notifications
+    async def cmd_send_notifications(self, message, args):
+        if not self.has_privilege(2, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        await(self.reply(message, "Notification process started..."))
+
+        count = 0
+        opt_out = 0
+        for index in self._entries:
+            entry = self._entries[index]
+            if entry["pending_notification"]:
+                try:
+                    if entry["author"] != 0:
+                        count += 1
+                        if entry["author"] in self._notifications_disabled:
+                            opt_out += 1
+                        else:
+                            author_mention = (await self._client.get_user_info(entry["author"])).mention
+
+                            entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
+                            entry_text = '''{mention} Your {single} was updated:
+{entry}'''.format(mention=author_mention, single=self._descriptor_single, entry=entry_text)
+                            msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+                except:
+                    pass
+
+                entry["pending_notification"] = False
+
+                # Might as well save a bunch of times in case this gets interrupted
+                self.save()
+
+        await(self.reply(message, "{} notifications processed successfully, {} of which were suppressed by user opt-out".format(count, opt_out)))
 
     ################################################################################
     # repost
