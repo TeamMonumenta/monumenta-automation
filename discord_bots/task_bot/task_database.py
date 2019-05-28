@@ -990,7 +990,8 @@ To change this, `{prefix} notify off`'''.format(plural=self._descriptor_plural, 
             raise ValueError("Argument to {prefix} notify must be 'on' or 'off'".format(prefix=self._prefix))
 
         if match == "on":
-            self._notifications_disabled.remove(str(message.author.id))
+            if str(message.author.id) in self._notifications_disabled:
+                self._notifications_disabled.remove(str(message.author.id))
         else:
             self._notifications_disabled.add(str(message.author.id))
 
