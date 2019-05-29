@@ -47,6 +47,8 @@ class fix_broken_section_symbols(substitution_rule):
 
     def process(self, item_meta, item):
         # Name
+        if not item.has_path('tag.display.Name'):
+            return
         name = item.at_path('tag.display.Name').value
         new_name = self._fix(name)
         item.at_path('tag.display.Name').value = new_name
@@ -66,6 +68,8 @@ class fix_double_json_names(substitution_rule):
 
     def process(self, item_meta, item):
         try:
+            if not item.has_path('tag.display.Name'):
+                return
             name = item.at_path('tag.display.Name').value
             name_json = parse_name_possibly_json(name)
             name_json_json = parse_name_possibly_json(name_json)
@@ -105,6 +109,9 @@ class subtitute_items(substitution_rule):
             id_replacements[old_name] = (new_id, new_name)
 
     def process(self, item_meta, item):
+        if not item.has_path('tag.display.Name'):
+            return
+
         old_id = item_meta['id']
         old_name = item_meta['name']
 
