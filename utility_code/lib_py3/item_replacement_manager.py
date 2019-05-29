@@ -32,17 +32,31 @@ class ItemReplacementManager(object):
         """
         Replace an item per provided rules and master copy
         """
-        # Abort replacement if the item has no ID (empty/invalid item) or no name (no valid replacement)
-        if not ( item.has_path('id') and item.has_path('tag.display.Name') ):
+        # Abort replacement if the item has no ID (empty/invalid item)
+        if not item.has_path('id'):
             return False
+
+        # Parse the item ID and name for later use.
+        item_meta = {
+            'id': item.at_path('id').value,
+            'name': None,
+        }
+
+        if item.has_path('tag.display.Name'):
+            # If a name isn't found, it can still be replaced with a named item.
+            item_meta['name'] = get_item_name_from_nbt(item.at_path('tag'))
 
         # Substitute name/id values in case an item changed ID.
         for rule in self.substitution_rules:
-            rule.process(item, self.item_map)
+            rule.process(item_meta, item)
+
+        # Abort replacement if the item has no name (no valid replacement)
+        if not item_meta['name']:
+            return False
 
         # Get the correct replacement info; abort if none exists
-        item_id = item.at_path('id').value
-        item_name = get_item_name_from_nbt(item.at_path('tag'))
+        item_id = item_meta['id']
+        item_name = item_meta['name']
 
         new_item_tag = self.item_map.get(item_id,{}).get(item_name,None)
         if not new_item_tag:
