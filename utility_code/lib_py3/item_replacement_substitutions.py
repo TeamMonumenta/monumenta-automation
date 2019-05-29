@@ -93,7 +93,7 @@ class subtitute_items(substitution_rule):
 
             ["minecraft:prismarine_shard", "Crystalline Shard", "minecraft:prismarine_shard", "Crystalline Shard"],
             ["minecraft:prismarine_crystals", "Enchanted Crystalline Shard", "minecraft:prismarine_crystals", "Compressed Crystalline Shard"],
-            ["minecraft:quartz", "Compressed Crystalline Shard", "minecraft:quartz", "Legacy Compressed Crystalline Shard"],
+            ["minecraft:quartz", "Compressed Crystalline Shard", "minecraft:quartz", "Legacy Crystalline Shard"],
             ["minecraft:nether_star", "Purified Crystalline Shard", "minecraft:nether_star", "Hyper Crystalline Shard"],
 
             ["minecraft:golden_chestplate", "Lemurian Vestements", "minecraft:golden_chestplate", "Lemurian Vestments"],
