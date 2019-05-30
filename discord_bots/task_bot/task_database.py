@@ -337,8 +337,8 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
     async def usage(self, message):
         usage = '''
 **Commands everyone can use:**
-`{prefix} add <label> <description>`
-    Adds a new {single} with the given label
+`{prefix} add [label1,label2,...] <description>`
+    Adds a new {single} with the given (optional) label(s)
     Label must be one of: {labels}
     Alias: report
 
@@ -434,7 +434,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
     async def cmd_add(self, message, args):
         if not args:
             raise ValueError('''How to submit a {single}:```
-{prefix} add <label> <description>
+{prefix} add [label] <description>
 ```
 Example:```
 {prefix} add quest Bihahiahihaaravi refuses to talk to me when I'm wearing a fedora
@@ -442,22 +442,32 @@ Example:```
 You can also attach an image to your message to include it in the {single}
 '''.format(prefix=self._prefix, single=self._descriptor_single))
 
+        if len(args.split()) < 5:
+            raise ValueError('Description must contain at least 5 words')
+
         part = args.split(maxsplit=1)
-        if len(part) < 2:
-            raise ValueError('Must contain both a label and a description')
 
         labels = part[0].strip().lower().split(',')
         description = part[1].strip()
 
         good_labels = []
+        failed_labels = False
         for label in labels:
             match = get_list_match(label.strip(), self._labels)
             if match is None:
-                raise ValueError("Labels must be one of: [{}]".format(",".join(self._labels)))
-            good_labels.append(match)
+                failed_labels = True
+            else:
+                good_labels.append(match)
 
-        if not description:
-            raise ValueError('Description can not be empty!')
+        if len(good_labels) > 0 and failed_labels:
+            # One but not all of the specified labels matched
+            raise ValueError("Labels must be one of: [{}]".format(",".join(self._labels)))
+
+        if len(good_labels) <= 0:
+            # No labels were specified
+            # Assign the label 'misc' and use the entire input as the description
+            good_labels = ["misc"]
+            description = args.strip()
 
         image = None
         for attach in message.attachments:
