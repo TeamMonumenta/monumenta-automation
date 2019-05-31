@@ -1196,6 +1196,63 @@ For convenience, leading 'give @p' is ignored, along with any data after the las
 
 allActions.append(UpdateItemAction)
 
+class ReplaceItemsAndMobsAction(ShellAction):
+    '''Runs item and mob replacements on a given shard
+Syntax:
+`{cmdPrefix}run replacements shard region_1 region_2 orange`'''
+    command = "run replacements"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        print("TEST!")
+
+        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+
+        if estimated_space_left < min_free_gb * bytes_per_gb:
+            self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
+            return
+
+        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
+
+        baseShellCommand = _top_level + "/discord_bots/server_shell_bots/bin/start_shards.sh"
+        shellCommand = baseShellCommand
+        allShards = botConfig["shards"]
+        replace_shards = []
+
+        for arg in commandArgs:
+            if arg in allShards.keys():
+                replace_shards.append(arg)
+            else:
+                raise ValueError("Shard {} not available on this server".format(arg))
+
+        if not replace_shards:
+            self._commands = [
+                self.display("Nothing to do"),
+            ]
+            return
+
+        self._commands = [
+            self.display("Replacing both mobs AND items on [{}]. If this is not what you want, kill the bot with ~restart bot now!".format(" ".join(replace_shards))),
+        ]
+        for shard in replace_shards:
+            base_backup_name = "/home/rock/0_OLD_BACKUPS/Project_Epic-{}_pre_entity_loot_updates_{}".format(shard, datestr())
+            self._commands += [
+                self.display("Stopping shard {}".format(shard)),
+                self.cd(allShards[shard]["path"]),
+                self.run("mark2 send -n {} ~stop".format(shard), None),
+                self.sleep(10),
+                self.run("mark2 send -n {} test".format(shard), 1),
+                self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard)),
+                self.run("/home/rock/MCEdit-And-Automation/utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name), displayOutput=True),
+                self.run("/home/rock/MCEdit-And-Automation/utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name), displayOutput=True),
+                self.run("mark2 start"),
+                self.display("Starting shard {}".format(shard)),
+            ]
+        self._commands.append(self.mention())
+
+allActions.append(ReplaceItemsAndMobsAction)
+
 class ViewScoresAction(ShellAction):
     '''View player scores on Region 1. Run without arguements for syntax.
 Note: the values from this command could be 15 minutes behind the play server.
