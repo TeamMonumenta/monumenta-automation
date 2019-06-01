@@ -592,7 +592,7 @@ __Available Priorities:__
 
             entry["priority"] = priority
 
-        if entry["author"] == message.author.id:
+        if operation == "label" or entry["author"] == message.author.id:
             entry["pending_notification"] = False
         else:
             entry["pending_notification"] = True
