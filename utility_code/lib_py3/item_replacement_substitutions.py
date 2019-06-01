@@ -91,7 +91,7 @@ class subtitute_items(substitution_rule):
             #["minecraft:example_item_id", "Example Name", "minecraft:new_id", "Example New Name"],
             #["minecraft:example_banned_item", always_equal, "minecraft:new_id", "Example New Name"],
 
-            ["minecraft:prismarine_shard", "Crystalline Shard", "minecraft:prismarine_shard", "Crystalline Shard"],
+            #["minecraft:prismarine_shard", "Crystalline Shard", "minecraft:prismarine_shard", "Crystalline Shard"],
             ["minecraft:prismarine_crystals", "Enchanted Crystalline Shard", "minecraft:prismarine_crystals", "Compressed Crystalline Shard"],
             ["minecraft:quartz", "Compressed Crystalline Shard", "minecraft:quartz", "Legacy Crystalline Shard"],
             ["minecraft:nether_star", "Purified Crystalline Shard", "minecraft:nether_star", "Hyper Crystalline Shard"],
@@ -99,6 +99,8 @@ class subtitute_items(substitution_rule):
             ["minecraft:golden_chestplate", "Lemurian Vestements", "minecraft:golden_chestplate", "Lemurian Vestments"],
             ["minecraft:golden_chestplate", "Stalwart Curiass", "minecraft:golden_chestplate", "Stalwart Cuirass"],
             ["minecraft:golden_chestplate", "Patinated Curiass", "minecraft:golden_chestplate", "Patinated Cuirass"],
+
+            ["minecraft:stone_pickaxe", "Pyromancer's Staff", "minecraft:blaze_rod", "Pyromancer's Staff"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
