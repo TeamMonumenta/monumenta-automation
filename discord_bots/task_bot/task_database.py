@@ -592,9 +592,10 @@ __Available Priorities:__
 
             entry["priority"] = priority
 
-        if operation == "label" or entry["author"] == message.author.id:
+        if entry["author"] == message.author.id:
             entry["pending_notification"] = False
-        else:
+        elif operation != "label":
+            # If only the label changed, don't change the notification setting
             entry["pending_notification"] = True
 
         self.save()
