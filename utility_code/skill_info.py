@@ -91,7 +91,7 @@ for skills in classSkills:
     for skill in skills:
         Objectives.append(skill["Objective"])
 
-worldScores = Scoreboard("/home/rock/project_epic/region_1/Project_Epic-region_1")
+worldScores = Scoreboard("/home/rock/project_epic/region_1/Project_Epic-region_1/data/scoreboard.dat")
 
 nextStep("Building caches")
 

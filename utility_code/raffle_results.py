@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import sys
 import tempfile
 import numpy
@@ -10,7 +11,7 @@ from lib_py3.scoreboard import Scoreboard
 if (len(sys.argv) != 3):
     sys.exit("Usage: {} </path/to/world> <num_winners>".format(sys.argv[0]))
 
-scoreboard = Scoreboard(sys.argv[1])
+scoreboard = Scoreboard(os.path.join(sys.argv[1], "data", "scoreboard.dat"))
 raffle_results = tempfile.mktemp()
 meme_seed = '''Hooray for R2 currency names that make sense'''
 vote_raffle(meme_seed, scoreboard, raffle_results, int(sys.argv[2]))

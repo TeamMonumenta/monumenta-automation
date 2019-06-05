@@ -9,11 +9,10 @@ from quarry.types.buffer import BufferUnderrun
 
 from lib_py3.block_map import block_map
 from lib_py3.common import bounded_range
-from lib_py3.player import Player
-from lib_py3.iterators.recursive_entity_iterator import RecursiveEntityIterator
 from lib_py3.iterators.item_iterator import ItemIterator
-
-#TODO from lib_py3.scoreboard import Scoreboard
+from lib_py3.iterators.recursive_entity_iterator import RecursiveEntityIterator
+from lib_py3.player import Player
+from lib_py3.scoreboard import Scoreboard
 
 class PlayerIterator(object):
     _world = None
@@ -63,6 +62,7 @@ class World(object):
         self.level_dat = self.level_dat_file.root_tag.body
         self.find_region_files()
         self._player_paths = None
+        self._scoreboard = None
         self.find_data_packs()
 
     def save(self):
@@ -248,6 +248,12 @@ class World(object):
         paths = ['SpawnX','SpawnY','SpawnZ']
         for i in range(3):
             self.level_dat.at_path( 'Level.' + paths[i] ).value = pos[i]
+
+    @property
+    def scoreboard(self):
+        if not self._scoreboard:
+            self._scoreboard = Scoreboard(os.path.join(self.path, "data", "scoreboard.dat"))
+        return self._scoreboard
 
     def dump_command_blocks(self,pos1,pos2,log=None):
         """

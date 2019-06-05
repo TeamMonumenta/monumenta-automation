@@ -65,7 +65,7 @@ for i in components:
         Order.append(i)
 # Order is finalized
 
-scores = Scoreboard('/home/rock/project_epic/region_1/Project_Epic-region_1/')
+scores = Scoreboard('/home/rock/project_epic/region_1/Project_Epic-region_1/data/scoreboard.dat')
 unsorted = scores.search_scores(Conditions=Conditions)
 
 scoreMap = {}

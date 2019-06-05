@@ -57,7 +57,7 @@ for shard in os.listdir('/home/rock/project_epic'):
         continue
 
     print(shard)
-    scoreboard = Scoreboard( os.path.join( '/home/rock/project_epic', shard, 'Project_Epic-' + shard ) )
+    scoreboard = Scoreboard( os.path.join( '/home/rock/project_epic', shard, 'Project_Epic-' + shard, 'data/scoreboard.dat' ) )
     scoreboard.batch_score_changes( score_rules )
     scoreboard.save()
 
