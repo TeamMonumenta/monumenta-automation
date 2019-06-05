@@ -118,12 +118,12 @@ class Scoreboard(object):
     An object that represents a scoreboard.dat file, and allows
     its data to be read, searched, edited, and deleted.
     """
-    def __init__(self,worldFolder):
+    def __init__(self, scoreboard_file):
         """
         Create a new Scoreboard object from a scoreboard.dat file.
         Provided path must contain a data folder.
         """
-        self.load(worldFolder)
+        self.load(scoreboard_file)
 
     class _ScoreboardCache(object):
         """
@@ -202,11 +202,11 @@ class Scoreboard(object):
                 return True
             return self.parent.could_contain(theScore)
 
-    def load(self,worldFolder):
+    def load(self, scoreboard_file):
         """
         Load a scoreboard.dat file. Provided path must contain a data folder.
         """
-        self.file_path = os.path.join(worldFolder,"data/scoreboard.dat")
+        self.file_path = scoreboard_file # os.path.join(worldFolder, "data/scoreboard.dat")
         self.nbt_file = nbt.NBTFile.load(self.file_path)
         self.nbt = self.nbt_file.root_tag.body
         self.all_objectives = self.nbt.at_path('data.Objectives').value

@@ -15,7 +15,7 @@ def from_player(cmd,global_score_cache):
 
     if global_score_cache is None:
         try:
-            scoreboard = Scoreboard('/home/epic/project_epic/r1plots/Project_Epic-r1plots')
+            scoreboard = Scoreboard('/home/epic/project_epic/r1plots/Project_Epic-r1plots/data/scoreboard.dat')
             global_score_cache = scoreboard.get_cache(Objective=['R1Plot','R1Address','plotx','ploty','plotz'])
         except:
             print("\nCould not load Region 1's scoreboard file. Remember to `~select play2`.")
@@ -119,7 +119,7 @@ def from_plot(cmd,global_score_cache):
     except:
         print("\nPlot score expected after 'R1Plot'; could not interpret as an integer.")
         sys.exit()
-    
+
     addr = lut.plot_to_address.get(plot,None)
 
     if addr is None:

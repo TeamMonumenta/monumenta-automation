@@ -91,7 +91,7 @@ for skills in classSkills:
     for skill in skills:
         Objectives.append(skill["Objective"])
 
-worldScores = Scoreboard("/home/epic/project_epic/region_1/Project_Epic-region_1")
+worldScores = Scoreboard("/home/epic/project_epic/region_1/Project_Epic-region_1/data/scoreboard.dat")
 
 nextStep("Building caches")
 
@@ -158,7 +158,7 @@ for skillPoints in range(1,maxSkillPoints+1):
         print(className)
 
         skillList = classSkills[classNum]
-        
+
         classMembers = playersByClass[(classNum+1,skillPoints)]
         totalMembers = len(classMembers)
 

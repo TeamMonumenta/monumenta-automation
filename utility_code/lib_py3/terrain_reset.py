@@ -94,8 +94,7 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
 
         worldScores = None
         if ("playerScoreChanges" in config) or ("preserveInstance" in config):
-            # TODO: Would be nice to make this a property of the world also?
-            worldScores = Scoreboard(localDstFolder)
+            worldScores = dstWorld.scoreboard
 
         if "playerScoreChanges" in config:
             print("  Adjusting player scores (dungeon scores)...")
