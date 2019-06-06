@@ -141,6 +141,30 @@ class World(object):
         '''
         return RecursiveEntityIterator(self, pos1, pos2, readonly, players_only)
 
+    def entity_uuids(self):
+        """
+        Return a list of UUIDs found in this world.
+        Used for pruning scores of dead entities.
+        """
+        uuids = set()
+        for entity, source_pos, entity_path in self.entity_iterator():
+            if not (entity.has_path("UUIDMost") and entity.has_path("UUIDLeast")):
+                continue
+
+            upper = entity.at_path("UUIDMost").value
+            if upper < 0:
+                upper += 1<<64
+
+            lower = entity.at_path("UUIDLeast").value
+            if lower < 0:
+                lower += 1<<64
+
+            entity_uuid_int = upper << 64 | lower
+            entity_uuid = uuid.UUID(int=entity_uuid_int)
+            uuids.add(str(entity_uuid))
+
+        return uuids
+
     def items(self, pos1=None, pos2=None, readonly=True, players_only=False):
         '''
         Returns an iterator of all items in the world.
