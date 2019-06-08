@@ -417,10 +417,7 @@ class Scoreboard(object):
         preserved = []
         for score in self.all_scores.scores:
             owner = score.at_path("Name").value
-            if not (
-                len(owner) == 36 and
-                owner not in uuids_to_keep
-            ):
+            if len(owner) != 36 or owner in uuids_to_keep:
                 preserved.append(score)
         self.all_scores.scores = preserved
         self.all_scores.refresh()
