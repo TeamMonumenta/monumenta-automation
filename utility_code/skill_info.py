@@ -17,7 +17,7 @@ classList = [
     "Warlock",
 ]
 
-maxSkillPoints = 7
+maxSkillPoints = 9
 maxSkillLevel = 2
 
 classSkills = [
@@ -59,29 +59,29 @@ classSkills = [
     ],
     [ # Alchemist
         {"Shorthand":"GA", "Objective":"GruesomeAlchemy", "Name":"Gruesome Alchemy"},
-        {"Shorthand":"EE", "Objective":"EnfeeblingElixir","Name":"Enfeebling Elixer"},
-        {"Shorthand":"UA", "Objective":"BombArrow",       "Name":"Unstable Arrows"},
-        {"Shorthand":"BP", "Objective":"BasiliskPoison",  "Name":"Basilisk Poison"},
-        {"Shorthand":"PI", "Objective":"PowerInjection",  "Name":"Power Injection"},
         {"Shorthand":"BA", "Objective":"BrutalAlchemy",   "Name":"Brutal Alchemy"},
         {"Shorthand":"IT", "Objective":"IronTincture",    "Name":"Iron Tincture"},
+        {"Shorthand":"BP", "Objective":"BasiliskPoison",  "Name":"Basilisk Poison"},
+        {"Shorthand":"PI", "Objective":"PowerInjection",  "Name":"Power Injection"},
+        {"Shorthand":"UA", "Objective":"BombArrow",       "Name":"Unstable Arrows"},
+        {"Shorthand":"EE", "Objective":"EnfeeblingElixir","Name":"Enfeebling Elixer"},
     ],
     [ # Scout
-        {"Shorthand":"Agl","Objective":"Agility","Name":"Agility"},
-        {"Shorthand":"Swf","Objective":"Swiftness","Name":"Swiftness"},
-        #{"Shorthand":"Fb", "Objective":"Exploration","Name":"Flashbang"},
-        {"Shorthand":"BM", "Objective":"BowMastery","Name":"Bow Mastery"},
-        {"Shorthand":"EE", "Objective":"Tinkering","Name":"Eagle Eye"},
-        {"Shorthand":"Vly","Objective":"Volley","Name":"Volley"},
-        {"Shorthand":"SB", "Objective":"StandardBearer","Name":"Standard Bearer"},
+        {"Shorthand":"Agl","Objective":"Agility",     "Name":"Agility"},
+        {"Shorthand":"Swf","Objective":"Swiftness",   "Name":"Swiftness"},
+        {"Shorthand":"SC", "Objective":"SwiftCuts",   "Name":"Swift Cuts"},
+        {"Shorthand":"BM", "Objective":"BowMastery",  "Name":"Bow Mastery"},
+        {"Shorthand":"EE", "Objective":"Tinkering",   "Name":"Eagle Eye"},
+        {"Shorthand":"Vly","Objective":"Volley",      "Name":"Volley"},
+        {"Shorthand":"ShS","Objective":"Sharpshooter","Name":"Sharpshooter"},
     ],
     [ # Warlock
-        {"Shorthand":"AH", "Objective":"AmplifyingHex","Name":"Amplifying Hex"},
+        {"Shorthand":"AH", "Objective":"AmplifyingHex",  "Name":"Amplifying Hex"},
         {"Shorthand":"BA", "Objective":"BlasphemousAura","Name":"Blasphemous Aura"},
-        {"Shorthand":"CW", "Objective":"CursedWound","Name":"Cursed Wound"},
-        {"Shorthand":"GC", "Objective":"GraspingClaws","Name":"Grasping Claws"},
-        {"Shorthand":"SR", "Objective":"SoulRend","Name":"Soul Rend"},
-        #{"Shorthand":"VM", "Objective":"VersatileMagic","Name":"Versatile Magic"},
+        {"Shorthand":"CW", "Objective":"CursedWound",    "Name":"Cursed Wound"},
+        {"Shorthand":"GC", "Objective":"GraspingClaws",  "Name":"Grasping Claws"},
+        {"Shorthand":"SR", "Objective":"SoulRend",       "Name":"Soul Rend"},
+        {"Shorthand":"VM", "Objective":"Harvester",      "Name":"Harvester of the Damned"},
         {"Shorthand":"CF", "Objective":"ConsumingFlames","Name":"Consuming Flames"},
     ],
 ]
