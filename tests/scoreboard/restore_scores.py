@@ -45,10 +45,10 @@ class ScoreboardTest(BaseTest):
         self.len_damage_old = len(self.cache_damage_old)
 
         if self.len_control_old == 0:
-            raise ValueError('Simulation "new" control conditions not satisfied; test invalid.')
+            raise ValueError('Test invalid: Simulation "new" control conditions not satisfied.')
 
         if self.len_damage_old == 0:
-            raise ValueError('Simulation "new" damage conditions not satisfied; test invalid.')
+            raise ValueError('Test invalid: Simulation "new" damage conditions not satisfied.')
 
         self.old_scores = {}
         for score in self.cache_damage_old:
@@ -78,18 +78,18 @@ class ScoreboardTest(BaseTest):
         self.len_damage_new = len(self.cache_damage_new)
 
         if self.len_control_new == 0:
-            raise ValueError('Simulation "new" control conditions not satisfied. Test invalid.')
+            raise ValueError('Test invalid: Simulation "new" control conditions not satisfied.')
 
         if self.len_damage_new == 0:
-            raise ValueError('Simulation "new" damage conditions not satisfied. Test invalid.')
+            raise ValueError('Test invalid: Simulation "new" damage conditions not satisfied.')
 
 
         # Final checks before applying damage
         if self.control_score_change_new == self.control_score_change_old:
-            raise ValueError('"Changed" control score is identical in old/new scoreboards. Test invalid.')
+            raise ValueError('Test invalid: "Changed" control score is identical in old/new scoreboards.')
 
         if self.control_score_same_new != self.control_score_same_old:
-            raise ValueError('"Same" control score is different in old/new scoreboards. Test invalid.')
+            raise ValueError('Test invalid: "Same" control score is different in old/new scoreboards.')
 
 
         # Damage the new copy of the scoreboard
@@ -101,7 +101,7 @@ class ScoreboardTest(BaseTest):
 
         # Ensure damaged scores are different from old scores
         if self.new_scores == self.old_scores:
-            raise ValueError('No difference between old and new "damaged" scores. Test invalid.')
+            raise ValueError('Test invalid: No difference between old and new "damaged" scores.')
 
 
         # Apply fix
