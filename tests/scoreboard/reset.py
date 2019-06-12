@@ -28,7 +28,7 @@ class ScoreboardTest(BaseTest):
         self.len_expected_scores = self.len_old_scores - self.len_scores_to_delete
 
         if self.len_scores_to_delete == 0:
-            raise ValueError("No scores to delete; invalid test.")
+            raise ValueError("Test invalid: No scores to delete.")
 
         self.scoreboard.reset_scores(Conditions=self.deletion_conditions)
 

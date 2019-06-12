@@ -3,11 +3,13 @@
 # This searches for scores matching Condition, makes a list of Names
 # appearing in the results, and runs actions for every name in the list.
 
+instance_week_offset = 1000
+
 dungeon_score_rules = [
     {"condition":{"Objective":"D0Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D0Access","Score":1000}]}},
-    {"condition":{"Objective":"D0Access","Score":{"min":2000}},
+            {"Objective":"D0Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D0Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D0Access","Score":0},
             {"Objective":"D0Finished","Score":0}]}},
@@ -17,8 +19,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"D1Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D1Access","Score":1000}]}},
-    {"condition":{"Objective":"D1Access","Score":{"min":2000}},
+            {"Objective":"D1Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D1Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D1Access","Score":0},
             {"Objective":"D1Finished","Score":0}]}},
@@ -28,8 +30,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"D2Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D2Access","Score":1000}]}},
-    {"condition":{"Objective":"D2Access","Score":{"min":2000}},
+            {"Objective":"D2Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D2Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D2Access","Score":0},
             {"Objective":"D2Finished","Score":0}]}},
@@ -39,8 +41,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"D3Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D3Access","Score":1000}]}},
-    {"condition":{"Objective":"D3Access","Score":{"min":2000}},
+            {"Objective":"D3Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D3Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D3Access","Score":0},
             {"Objective":"D3Finished","Score":0}]}},
@@ -50,8 +52,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"D4Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D4Access","Score":1000}]}},
-    {"condition":{"Objective":"D4Access","Score":{"min":2000}},
+            {"Objective":"D4Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D4Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D4Access","Score":0},
             {"Objective":"D4Finished","Score":0}]}},
@@ -61,8 +63,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"D5Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D5Access","Score":1000}]}},
-    {"condition":{"Objective":"D5Access","Score":{"min":2000}},
+            {"Objective":"D5Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D5Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D5Access","Score":0},
             {"Objective":"D5Finished","Score":0}]}},
@@ -72,8 +74,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"D6Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D6Access","Score":1000}]}},
-    {"condition":{"Objective":"D6Access","Score":{"min":2000}},
+            {"Objective":"D6Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D6Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D6Access","Score":0},
             {"Objective":"D6Finished","Score":0}]}},
@@ -83,8 +85,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"D7Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D7Access","Score":1000}]}},
-    {"condition":{"Objective":"D7Access","Score":{"min":2000}},
+            {"Objective":"D7Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D7Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D7Access","Score":0},
             {"Objective":"D7Finished","Score":0}]}},
@@ -94,8 +96,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"D8Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D8Access","Score":1000}]}},
-    {"condition":{"Objective":"D8Access","Score":{"min":2000}},
+            {"Objective":"D8Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D8Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D8Access","Score":0},
             {"Objective":"D8Finished","Score":0}]}},
@@ -105,8 +107,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"D9Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D9Access","Score":1000}]}},
-    {"condition":{"Objective":"D9Access","Score":{"min":2000}},
+            {"Objective":"D9Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D9Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D9Access","Score":0},
             {"Objective":"D9Finished","Score":0}]}},
@@ -116,8 +118,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"D10Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"D10Access","Score":1000}]}},
-    {"condition":{"Objective":"D10Access","Score":{"min":2000}},
+            {"Objective":"D10Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D10Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D10Access","Score":0},
             {"Objective":"D10Finished","Score":0}]}},
@@ -127,8 +129,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"DCAccess","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"DCAccess","Score":1000}]}},
-    {"condition":{"Objective":"DCAccess","Score":{"min":2000}},
+            {"Objective":"DCAccess","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"DCAccess","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"DCAccess","Score":0}]}},
     {"condition":{"Name":"$last","Objective":"DCAccess"},
@@ -137,8 +139,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"DB1Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"DB1Access","Score":1000}]}},
-    {"condition":{"Objective":"DB1Access","Score":{"min":2000}},
+            {"Objective":"DB1Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"DB1Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"DB1Access","Score":0}]}},
     {"condition":{"Name":"$last","Objective":"DB1Access"},
@@ -154,8 +156,8 @@ dungeon_score_rules = [
 
     {"condition":{"Objective":"DS1Access","Score":{"min":1}},
         "actions":{"add":[
-            {"Objective":"DS1Access","Score":1000}]}},
-    {"condition":{"Objective":"DS1Access","Score":{"min":2000}},
+            {"Objective":"DS1Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"DS1Access","Score":{"min":2 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"DS1Access","Score":0}]}},
     {"condition":{"Objective":"DS1Finished","Score":{"min":1}},

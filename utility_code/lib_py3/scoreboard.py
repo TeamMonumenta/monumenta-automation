@@ -367,8 +367,8 @@ class Scoreboard(object):
         })
 
         if (
-            Cache is not None and
-            Cache.could_contain(new_score)
+            Cache is None
+            or not Cache.could_contain(new_score)
         ):
             Cache = self.all_scores
 
@@ -411,6 +411,12 @@ class Scoreboard(object):
         """
         This deletes entity scores that have UUID's not found
         in entities_to_keep, while leaving player scores alone.
+
+        ```python
+        uuids_to_keep = world.entity_uuids()
+        world.scoreboard.prune_missing_entities(uuids_to_keep)
+        world.scoreboard.save()
+        ```
         """
         # Player names cannot exceed 16 characters; UUID's are
         # always 36 characters (4 hyphens and 32 hexadecimal digits).

@@ -19,7 +19,6 @@ class ScoreboardTest(BaseTest):
         """
         self.world = World(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-region_1"))
         self.living_uuids = self.world.entity_uuids()
-        # cfdf47af-c826-45e4-9022-6a025d296998
         self.scoreboard = self.world.scoreboard
 
         # Player names cannot exceed 16 characters; UUID's are
@@ -37,10 +36,10 @@ class ScoreboardTest(BaseTest):
                     self.keepable_entity_scores += 1
 
         if self.can_prune == 0:
-            raise ValueError("No scores to prune; test invalid.")
+            raise ValueError("Test invalid: No scores to prune.")
 
         if self.keepable_entity_scores == 0:
-            raise ValueError("No entity scores would be kept; test invalid.")
+            raise ValueError("Test invalid: No entity scores would be kept.")
 
         self.scoreboard.prune_missing_entities(self.living_uuids)
 
