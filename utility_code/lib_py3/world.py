@@ -249,6 +249,82 @@ class World(object):
         for i in range(3):
             self.level_dat.at_path( 'Level.' + paths[i] ).value = pos[i]
 
+    def prune(self):
+        """
+        Prune this world of region files that are 100% empty, meaning:
+        - No entities
+        - No block entities
+        - No block light
+        - No blocks other than air
+        - It otherwise fails to load at all.
+        Everything else is left intact.
+        """
+        regions_scanned = 0
+        deleted = 0
+        print("Deleting completely empty region files:")
+        for region_coord in self.region_files:
+            print("Scanned {}/{} region files.".format(regions_scanned, len(self.region_files)))
+            regions_scanned += 1
+            confirmed_valid = False
+            rx, rz = region_coord
+
+            region_path = os.path.join( self.path, "region", "r.{}.{}.mca".format(rx, rz) )
+
+            if not os.path.isfile(region_path):
+                continue
+
+            with nbt.RegionFile(region_path) as region:
+                for cz in range(0, 32):
+                    if confirmed_valid:
+                        break
+
+                    for cx in range(0, 32):
+                        if confirmed_valid:
+                            break
+
+                        try:
+                            chunk = region.load_chunk(cx, cz)
+                            chunk_sections = chunk.body.at_path('Level.Sections').value
+                        except:
+                            continue
+
+                        # Check if there are entities (fast check)
+                        if len(chunk.body.at_path('Level.Entities').value) > 0:
+                            confirmed_valid = True
+                            break
+
+                        # Check if there are tile entities (fast check)
+                        if len(chunk.body.at_path('Level.TileEntities').value) > 0:
+                            confirmed_valid = True
+                            break
+
+                        for section in chunk_sections:
+                            # Check block light > 0
+                            for block_light in section.at_path('BlockLight').value:
+                                if block_light > 0:
+                                    confirmed_valid = True
+                                    break
+
+                            if confirmed_valid:
+                                break
+
+                            # Check for non-air block
+                            # This is an expensive check, keep it low priority
+                            blocks = BlockArray.from_nbt(section, block_map)
+                            for block in blocks:
+                                if block['name'] != "minecraft:air":
+                                    confirmed_valid = True
+                                    break
+
+            if not confirmed_valid:
+                deleted += 1
+                os.remove(region_path)
+                print("- Completely empty; deleted.")
+
+        print("Scanned {}/{} region files.".format(regions_scanned, len(self.region_files)))
+        self.find_region_files()
+        print("Deleted {} empty region files.".format(deleted))
+
     def dump_command_blocks(self,pos1,pos2,log=None):
         """
         Finds all command blocks between pos1 and pos2,
