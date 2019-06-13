@@ -2,28 +2,46 @@ import socket
 import threading
 import pprint
 import json
+import time
 
 from shell_actions import findBestMatchCommand, checkPermissionsExplicitly
 
 class BotSocketServer(object):
-    def __init__(self, host, port, bot_config):
+    def __init__(self, host, port, bot_config, native_restart):
         self.host = host
         self.port = port
         self.bot_config = bot_config
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.sock.bind((self.host, self.port))
+        while True:
+            try:
+                # Try to bind the port
+                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                self.sock.bind((self.host, self.port))
+
+                # Success!
+                break
+            except Exception as ex:
+                # Failed to bind - wait a short while
+                print(ex)
+                time.sleep(10)
+
+        self.native_restart = native_restart
+
 
     def listen(self):
         self.sock.listen(5)
-        while True:
-            client, address = self.sock.accept()
-            client.settimeout(60)
-            threading.Thread(target = self.listenToClient,args = (client,address)).start()
+        self.sock.settimeout(30)
+        while self.native_restart.state:
+            try:
+                client, address = self.sock.accept()
+                client.settimeout(30)
+                threading.Thread(target = self.listenToClient,args = (client,address)).start()
+            except socket.timeout:
+                pass
 
     def listenToClient(self, client, address):
         size = 65536
-        while True:
+        while self.native_restart.state:
             try:
                 data = client.recv(size)
                 if data:

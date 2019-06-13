@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.6
 
+import signal
 import os
 import sys
 import logging
@@ -80,15 +81,20 @@ botChannelNames = {
 
 botChannels = list(botChannelNames.keys())
 
+def signal_handler(sig, frame):
+        print('Shutting down bot...')
+        native_restart.state = False
+        sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
+
 while native_restart.state:
     print("Starting the client...")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
         # Start the bot socket server which also accepts commands
-        # TODO: This breaks bot auto restarting
-        #bot_srv = BotSocketServer("127.0.0.1", 8765, botConfig)
-        #threading.Thread(target = bot_srv.listen).start()
+        bot_srv = BotSocketServer("127.0.0.1", 8765, botConfig, native_restart)
+        threading.Thread(target = bot_srv.listen).start()
 
         client = discord.Client()
 
