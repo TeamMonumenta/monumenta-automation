@@ -80,6 +80,7 @@ botChannelNames = {
 }
 
 botChannels = list(botChannelNames.keys())
+botConfig["channels"] = botChannels
 
 def signal_handler(sig, frame):
         print('Shutting down bot...')
@@ -138,23 +139,23 @@ while native_restart.state:
         # Ignore these, just noting them to avoid the errors we were getting
 
         @client.event
-        async def on_message_delete():
+        async def on_message_delete(_):
             pass
 
         @client.event
-        async def on_message_edit():
+        async def on_message_edit(_, __):
             pass
 
         @client.event
-        async def on_reaction_add():
+        async def on_reaction_add(_, __):
             pass
 
         @client.event
-        async def on_reaction_remove():
+        async def on_reaction_remove(_, __):
             pass
 
         @client.event
-        async def on_reaction_clear():
+        async def on_reaction_clear(_, __):
             pass
 
         ################################################################################

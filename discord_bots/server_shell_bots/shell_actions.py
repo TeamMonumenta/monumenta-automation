@@ -133,6 +133,7 @@ permissionGroups = {
         "+testpriv",
         "+update item",
         "+view scores",
+        "+kaul",
     ],
     "@intern": [
         "+debug",
@@ -151,6 +152,7 @@ permissionGroups = {
         "+update item",
         "+test",
         "+testpriv",
+        "+kaul",
     ],
     "@moderator": [
         "+debug",
@@ -166,6 +168,7 @@ permissionGroups = {
         "+test",
         "+testpriv",
         "+view scores",
+        "+kaul",
     ],
     "@everyone": [
         "+debug",
@@ -390,6 +393,30 @@ allActions.append(SelectBotAction)
 
 ################################################################################
 # Useful actions start here
+
+class KaulAction(ShellAction):
+    '''Tells the kaul role that kaul is starting'''
+    command = "kaul"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+        self._config = botConfig
+
+    async def doActions(self, client, channel, author):
+        self._client = client
+        self._channel = channel
+        self._author = author
+
+        for channelId in self._config["channels"]:
+            try:
+                channel = client.get_channel(channelId)
+                await client.send_message(channel, "this is a test of an upcoming feature")
+            except Exception as ex:
+                await self.display(channelId + str(ex))
+                pass
+
+allActions.append(KaulAction)
 
 class DumpErrorCommandsAction(ShellAction):
     '''Display command blocks with potential errors to:
