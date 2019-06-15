@@ -42,7 +42,6 @@ server_config_to_copy = [
         ('plugins/CoreProtect/config.yml',),
         ('plugins/FastAsyncWorldEdit/config.yml',),
         ('plugins/FastAsyncWorldEdit/config-legacy.yml',),
-        ('plugins/MonumentaMain/config.yml',),
         ('plugins/ScriptedQuests/config.yml',),
         ('plugins/OpenInv/config.yml',),
         ('plugins/ProtocolLib/config.yml',),
