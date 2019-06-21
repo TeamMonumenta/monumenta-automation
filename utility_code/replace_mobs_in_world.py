@@ -66,6 +66,27 @@ def remove_tags_from_entities_in_spawner(entity, entity_path, log_handle):
         remove_tags_from_spawner_entity(entity.at_path("SpawnData"), entity_path, log_handle)
 
 mobs_to_replace = [
+    ################################################################################
+    # Region 1
+    {
+        'rules': {
+            'id': 'minecraft:zombie',
+            'CustomName': 'Corrupt Foreman'
+        },
+        'mojangson': r'''{id:"minecraft:zombie",CustomName:"{\"text\":\"§6Corrupt Foreman\"}",Health:30.0f,ArmorItems:[{id:"minecraft:leather_boots",tag:{display:{color:4210768}},Count:1b},{id:"minecraft:chainmail_leggings",tag:{},Count:1b},{id:"minecraft:leather_chestplate",tag:{display:{Lore:["$$$"],color:4210768}},Count:1b},{id:"minecraft:player_head",tag:{SkullOwner:{Id:"3eed254a-9f4a-4dd1-8f9c-91a93a448f5e",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDY1YmIxOTJhNjU2YmQ2ZGVjOGQ4YzhlNGRiM2I1NzNjZjcxNjliYjczOTM5MTZlZjlhYzE5ZGExNjNhZGE1In19fQ=="}]}},display:{Name:"{\"text\":\"Miner\"}"}},Count:1b}],Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],Tags:["Elite"],HandItems:[{id:"minecraft:stone_pickaxe",tag:{Enchantments:[{lvl:2s,id:"minecraft:sharpness"}]},Count:1b},{id:"minecraft:torch",Count:8b}],CustomNameVisible:0b}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:zombie',
+            'CustomName': '§6Corrupt Foreman'
+        },
+        'mojangson': r'''{id:"minecraft:zombie",CustomName:"{\"text\":\"§6Corrupt Foreman\"}",Health:30.0f,ArmorItems:[{id:"minecraft:leather_boots",tag:{display:{color:4210768}},Count:1b},{id:"minecraft:chainmail_leggings",tag:{},Count:1b},{id:"minecraft:leather_chestplate",tag:{display:{Lore:["$$$"],color:4210768}},Count:1b},{id:"minecraft:player_head",tag:{SkullOwner:{Id:"3eed254a-9f4a-4dd1-8f9c-91a93a448f5e",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDY1YmIxOTJhNjU2YmQ2ZGVjOGQ4YzhlNGRiM2I1NzNjZjcxNjliYjczOTM5MTZlZjlhYzE5ZGExNjNhZGE1In19fQ=="}]}},display:{Name:"{\"text\":\"Miner\"}"}},Count:1b}],Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],Tags:["Elite"],HandItems:[{id:"minecraft:stone_pickaxe",tag:{Enchantments:[{lvl:2s,id:"minecraft:sharpness"}]},Count:1b},{id:"minecraft:torch",Count:8b}],CustomNameVisible:0b}''',
+    },
+    # Region 1
+    ################################################################################
+
+    ################################################################################
+    # Region 2
     {
         'rules': {
             'id': 'minecraft:zombie_pigman',
@@ -655,6 +676,15 @@ mobs_to_replace = [
         },
         'mojangson': r'''{id:"minecraft:stray",ArmorDropChances:[0.0f,0.0f,0.0f,0.0f],CustomName:"{\"text\":\"Aquatic Archer\"}",Health:35.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:540715,Name:"{\"text\":\"fish_boots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:947022,Name:"{\"text\":\"fish_legs\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:1489534,Name:"{\"text\":\"fish_chest\"}"}}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"5d7caf2d-d04a-39d3-ac14-1e89f2676989",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmYxYmE4NjRhY2Q5MTdmMDJhZGRkNTlmNjdmYTFkZTk4MGE0ZjAzZTRmYWRmMTEwMTFmZGQ4ZjdmODU0NDE1In19fQ=="}]}}}}],Attributes:[{Base:35.0d,Name:"generic.maxHealth"},{Base:0.1d,Name:"generic.knockbackResistance"}],HandDropChances:[0.0f,0.85f],HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"fish_bow\"}"},Enchantments:[{lvl:2s,id:"minecraft:power"},{lvl:1s,id:"minecraft:punch"}]}},{}]}''',
     },
+    {
+        'rules': {
+            'id': 'minecraft:creeper',
+            'CustomName': "Explosive's Soul"
+        },
+        'mojangson': r'''{id:"minecraft:creeper",Fuse:40s,Health:28.0f,Attributes:[{Base:28.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,LeftHanded:0b,Paper.SpawnReason:"DEFAULT",ignited:0b,AbsorptionAmount:0.0f,HandItems:[{},{}],CustomName:"{\"color\":\"white\",\"text\":\"Explosive\\u0027s Soul\"}",Fire:-1s,ArmorItems:[{},{},{},{}],PersistenceRequired:0b,ExplosionRadius:4b,Tags:["boss_hidden","aura_slowness"]}''',
+    },
+    # Region 2
+    ################################################################################
 
     ################################################################################
     # RL Sunken Temple
