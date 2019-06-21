@@ -9,13 +9,9 @@ import sys
 import getopt
 from pprint import pprint
 
-from lib_py3.json_file import jsonFile
 from lib_py3.common import eprint
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.world import World
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
-from quarry.types import nbt
 
 
 def usage():
