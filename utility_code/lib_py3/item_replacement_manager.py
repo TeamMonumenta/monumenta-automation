@@ -47,8 +47,12 @@ class ItemReplacementManager(object):
             item_meta['name'] = get_item_name_from_nbt(item.at_path('tag'))
 
         # Substitute name/id values in case an item changed ID.
+        orig_id = item_meta['id']
         for rule in self.substitution_rules:
             rule.process(item_meta, item)
+        # If the id changed, update the base item
+        if orig_id != item_meta['id']:
+            item.at_path('id').value = item_meta['id']
 
         # Abort replacement if the item has no name (no valid replacement)
         if not item_meta['name']:
