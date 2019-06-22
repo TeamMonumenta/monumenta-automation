@@ -101,6 +101,7 @@ class subtitute_items(substitution_rule):
             ["minecraft:golden_chestplate", "Patinated Curiass", "minecraft:golden_chestplate", "Patinated Cuirass"],
 
             ["minecraft:stone_pickaxe", "Pyromancer's Staff", "minecraft:blaze_rod", "Pyromancer's Staff"],
+            ["minecraft:cooked_rabbit", " Cooked Zombie Meat", "minecraft:cooked_rabbit", "Cooked Zombie Meat"],
 
             ["minecraft:golden_helmet", "Legionnaire's Helmet", "minecraft:chainmail_helmet", "Legionnaire's Helmet"],
             ["minecraft:golden_chestplate", "Legionnaire's Chestplate", "minecraft:chainmail_chestplate", "Legionnaire's Chestplate"],
