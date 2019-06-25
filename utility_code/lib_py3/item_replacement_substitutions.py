@@ -123,6 +123,9 @@ class subtitute_items(substitution_rule):
             ["minecraft:chainmail_leggings", "Sunblessed Leggings", "minecraft:golden_leggings", "Sunblessed Leggings"],
             ["minecraft:golden_helmet", "Excavator's Hardlamp", "minecraft:iron_helmet", "Excavator's Hardlamp"],
             ["minecraft:iron_pickaxe", "The Earthshaker", "minecraft:golden_pickaxe", "The Earthshaker"],
+
+            # UGHHHH
+            ["minecraft:iron_helmet", "Frost Giant's Crown", "minecraft:iron_helmet", "Frost Giant's Party Hat"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
