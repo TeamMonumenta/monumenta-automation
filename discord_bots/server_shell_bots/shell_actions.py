@@ -427,7 +427,7 @@ data/commands_to_update/*.txt'''
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
-            self.run(_top_level + "/utility_code/dump_error_commands.py", displayOutput=True),
+            self.run(os.path.join(_top_level, "utility_code/dump_error_commands.py"), displayOutput=True),
         ]
 allActions.append(DumpErrorCommandsAction)
 
@@ -439,7 +439,7 @@ class DungeonLootAction(ShellAction):
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
-            self.run(_top_level + "/utility_code/dungeon_loot_info.py", displayOutput=True),
+            self.run(os.path.join(_top_level, "utility_code/dungeon_loot_info.py"), displayOutput=True),
             self.display("Done."),
         ]
 allActions.append(DungeonLootAction)
@@ -522,6 +522,8 @@ Must be run before preparing the build server reset bundle'''
             return
 
         self._commands = [
+            self.run(os.path.join(_top_level, "utility_code/dungeon_find_lootless.py"), 0)
+
             self.display("Cleaning up old terrain reset data..."),
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset", None),
             self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset"),
@@ -539,7 +541,7 @@ Must be run before preparing the build server reset bundle'''
             self.run("mark2 start"),
 
             self.display("Generating dungeon instances (this may take a while)..."),
-            self.run(_top_level + "/utility_code/dungeon_instance_gen.py"),
+            self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py")),
             self.run("mv /home/rock/5_SCRATCH/tmpreset/dungeons-out /home/rock/5_SCRATCH/tmpreset/TEMPLATE"),
 
             self.display("Cleaning up instance generation temp files..."),
@@ -572,7 +574,7 @@ Syntax:
             self._commands = [
                 self.cd(allShards[shard]["path"]),
                 self.cd("logs"),
-                self.run(_top_level + "/discord_bots/server_shell_bots/bin/get_errors.sh", displayOutput=True),
+                self.run(os.path.join(_top_level, "discord_bots/server_shell_bots/bin/get_errors.sh"), displayOutput=True),
             ]
         else:
             self._commands = [
@@ -599,6 +601,21 @@ Syntax:
             self.run("kill {pid} &".format(pid=botConfig["main_pid"])),
         ]
 allActions.append(KillBotAction)
+
+class ListLootlessAction(ShellAction):
+    '''Lists containers in dungeons that are missing loot tables.
+
+Note that some containers are intentionally skipped based on a config file. This skips non-chests by default, as well as intentionally lootless chests.'''
+    command = "list lootless"
+    hasPermissions = checkPermissions
+
+    def __init__(self, botConfig, message):
+        super().__init__(botConfig["extraDebug"])
+
+        self._commands = [
+            self.run(os.path.join(_top_level, "utility_code/dungeon_find_lootless.py"), 0)
+        ]
+allActions.append(ListLootlessAction)
 
 class ListShardsAction(ShellAction):
     '''Lists currently running shards on this server'''
@@ -642,7 +659,7 @@ Syntax:
         for loot_table in command_args:
             self._commands += [
                 self.display("**{}**".format(loot_table)),
-                self.run(_top_level + "/utility_code/loot_table_test_mobs.sh " + loot_table, displayOutput=True),
+                self.run(os.path.join(_top_level, "utility_code/loot_table_test_mobs.sh") + " " + loot_table, displayOutput=True),
             ]
 
         self._commands += [
@@ -723,7 +740,7 @@ Syntax:
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-        cmdString = _top_level + "/utility_code/r1address_to_english.py"
+        cmdString = os.path.join(_top_level, "utility_code/r1address_to_english.py")
         self._commands = []
         while len(commandArgs) > 0:
             newVal = commandArgs.pop(0)
@@ -750,7 +767,7 @@ For syntax, run:
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(commandPrefix + self.command):]
-        cmdString = _top_level + "/utility_code/r1plot_get.py"
+        cmdString = os.path.join(_top_level, "utility_code/r1plot_get.py")
         self._commands = []
         cmdString += commandArgs
         self._commands = [
@@ -779,7 +796,7 @@ Syntax:
 
         commandArgs = message.content[len(commandPrefix + self.command)+1:]
 
-        baseShellCommand = _top_level + "/utility_code/repair_block_entities.py"
+        baseShellCommand = os.path.join(_top_level, "utility_code/repair_block_entities.py")
         shellCommand = baseShellCommand
         allShards = botConfig["shards"]
         if '*' in commandArgs:
@@ -818,7 +835,7 @@ Syntax:
         super().__init__(botConfig["extraDebug"])
 
         commandArgs = message.content[len(commandPrefix + self.command)+1:]
-        shellCommand = _top_level + "/discord_bots/server_shell_bots/bin/restart_bot.sh"
+        shellCommand = os.path.join(_top_level, "discord_bots/server_shell_bots/bin/restart_bot.sh")
         native_restart.state = False
         self._commands = [
             self.run("{cmd} {pid} {arg} &".format(cmd=shellCommand,pid=botConfig["main_pid"],arg=commandArgs)),
@@ -835,7 +852,7 @@ This will be updated to use the Google Sheets API at some point so it won't need
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         self._commands = [
-            self.run(_top_level + "/utility_code/skill_info.py", displayOutput=True),
+            self.run(os.path.join(_top_level, "utility_code/skill_info.py"), displayOutput=True),
         ]
 allActions.append(SkillInfoAction)
 
@@ -903,7 +920,7 @@ Syntax:
 
         commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
 
-        baseShellCommand = _top_level + "/discord_bots/server_shell_bots/bin/start_shards.sh"
+        baseShellCommand = os.path.join(_top_level, "discord_bots/server_shell_bots/bin/start_shards.sh")
         shellCommand = baseShellCommand
         allShards = botConfig["shards"]
         if '*' in commandArgs:
@@ -1027,7 +1044,7 @@ Syntax:
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
 
-        baseShellCommand = _top_level + "/discord_bots/server_shell_bots/bin/stop_shards.sh"
+        baseShellCommand = os.path.join(_top_level, "discord_bots/server_shell_bots/bin/stop_shards.sh")
         shellCommand = baseShellCommand
         allShards = botConfig["shards"]
         if '*' in commandArgs:
@@ -1083,7 +1100,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         if "region_1" in allShards:
             self._commands += [
                 self.display("Raffle results:"),
-                self.run(_top_level + "/utility_code/raffle_results.py /home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_1/Project_Epic-region_1 2", displayOutput=True),
+                self.run(os.path.join(_top_level, "utility_code/raffle_results.py") + "/home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_1/Project_Epic-region_1 2", displayOutput=True),
             ]
 
         if "bungee" in allShards:
@@ -1109,7 +1126,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/PRE_RESET/server_config"),
 
             self.display("Running actual terrain reset (this will take a while!)..."),
-            self.run(_top_level + "/utility_code/terrain_reset.py " + " ".join(allShards)),
+            self.run(os.path.join(_top_level, "utility_code/terrain_reset.py") + " " + " ".join(allShards)),
         ]
 
         for shard in ["r1plots", "betaplots", "region_1"]:
@@ -1140,7 +1157,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         self._commands += [
             self.display("Generating per-shard config..."),
             self.cd("/home/rock/5_SCRATCH/tmpreset/POST_RESET"),
-            self.run(_top_level + "/utility_code/gen_server_config.py --play " + " ".join(allShards)),
+            self.run(os.path.join(_top_level, "utility_code/gen_server_config.py") + " --play " + " ".join(allShards)),
 
             # TODO: This should probably print a warning and proceed anyway if some are found
             self.display("Checking for broken symbolic links..."),
@@ -1242,7 +1259,7 @@ Syntax:
 
         commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
 
-        baseShellCommand = _top_level + "/discord_bots/server_shell_bots/bin/start_shards.sh"
+        baseShellCommand = os.path.join(_top_level, "discord_bots/server_shell_bots/bin/start_shards.sh")
         shellCommand = baseShellCommand
         allShards = botConfig["shards"]
         replace_shards = []
@@ -1290,7 +1307,7 @@ Do not use for debugging quests or other scores that are likely to change often.
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
         commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-        cmdString = _top_level + "/utility_code/view_scores.py"
+        cmdString = os.path.join(_top_level, "utility_code/view_scores.py")
         while len(commandArgs) > 0:
             cmdString = cmdString + " " + commandArgs.pop(0)
         self._commands = [
