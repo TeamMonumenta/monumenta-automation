@@ -102,6 +102,7 @@ class AutomationBotInstance(object):
 
             "update item": self.action_update_item,
             "run replacements": self.action_run_replacements,
+            "find loot problems": self.action_find_loot_problems,
 
             "generate instances": self.action_generate_instances,
             "prepare reset bundle": self.action_prepare_reset_bundle,
@@ -825,6 +826,16 @@ Syntax:
             await self.start(shard)
 
         await cnl.send(message.author.mention)
+
+    async def action_find_loot_problems(self, cmd, message):
+        '''Finds loot table problems
+- Lists containers in dungeons that are missing loot tables.
+- TODO: Add more!
+'''
+        cnl = message.channel
+        await cnl.send("Checking for loot table problems...")
+        await cnl.send("Checking for missing dungeon loot tables...")
+        await self.run(os.path.join(_top_level, "utility_code/dungeon_find_lootless.py"), 0, displayOutput=True)
 
     async def action_gen_demo_release(self, cmd, message):
         '''Generates a demo release zip with the specified version
