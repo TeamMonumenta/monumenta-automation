@@ -122,6 +122,8 @@ permissionGroups = {
         "+dump error commands",
         "+dungeon loot",
         "+get errors",
+        "+kaul",
+        "+list lootless",
         "+list shards",
         "+r1address to english",
         "+r1plot get",
@@ -133,7 +135,6 @@ permissionGroups = {
         "+testpriv",
         "+update item",
         "+view scores",
-        "+kaul",
     ],
     "@intern": [
         "+debug",
@@ -142,6 +143,8 @@ permissionGroups = {
         "+dump error commands",
         "+dungeon loot",
         "+get errors",
+        "+kaul",
+        "+list lootless",
         "+list shards",
         "+r1address to english",
         "+r1plot get",
@@ -152,13 +155,13 @@ permissionGroups = {
         "+update item",
         "+test",
         "+testpriv",
-        "+kaul",
     ],
     "@moderator": [
         "+debug",
         "+help",
         "+list bots",
         "+get errors",
+        "+kaul",
         "+list shards",
         "+r1address to english",
         "+r1plot get",
@@ -168,7 +171,6 @@ permissionGroups = {
         "+test",
         "+testpriv",
         "+view scores",
-        "+kaul",
     ],
     "@everyone": [
         "+debug",
@@ -522,7 +524,7 @@ Must be run before preparing the build server reset bundle'''
             return
 
         self._commands = [
-            self.run(os.path.join(_top_level, "utility_code/dungeon_find_lootless.py"), 0)
+            self.run(os.path.join(_top_level, "utility_code/dungeon_find_lootless.py"), 0),
 
             self.display("Cleaning up old terrain reset data..."),
             self.run("rm -rf /home/rock/5_SCRATCH/tmpreset", None),
@@ -613,7 +615,7 @@ Note that some containers are intentionally skipped based on a config file. This
         super().__init__(botConfig["extraDebug"])
 
         self._commands = [
-            self.run(os.path.join(_top_level, "utility_code/dungeon_find_lootless.py"), 0)
+            self.run(os.path.join(_top_level, "utility_code/dungeon_find_lootless.py"), 0, displayOutput=True)
         ]
 allActions.append(ListLootlessAction)
 

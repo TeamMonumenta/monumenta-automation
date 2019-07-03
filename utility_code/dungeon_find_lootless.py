@@ -8,6 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../")
 from lib_py3.world import World
 
 world = World('/home/rock/project_epic/dungeon/Project_Epic-dungeon')
+debug = False
 
 dungeons = (
     {
@@ -142,7 +143,6 @@ for dungeon in dungeons:
     rx = dungeon["region"]["x"]
     rz = dungeon["region"]["z"]
 
-    
     container_entity_ids = dungeon.get("container_entity_ids", ["minecraft:chest"])
     whitelisted_lore_lines = dungeon.get("whitelisted_lore_lines", [])
     container_whitelist = list(dungeon.get("container_whitelist", []))
@@ -163,28 +163,47 @@ for dungeon in dungeons:
 
     lootless_containers = []
 
+    ok_loottable = 0
+    ok_ids = set()
+    ok_pos = []
+    ok_lore = set()
+
     """
-    Find loot tables
+    Find missing loot tables
     """
     for entity, source_pos, entity_path in world.entity_iterator(pos1, pos2):
-        if (
-            not entity.has_path('id')
-            or entity.at_path('id').value not in container_entity_ids
-
-            or not entity.has_path('x')
-            or not entity.has_path('y')
-            or not entity.has_path('z')
-            or (
-                entity.at_path('x').value,
-                entity.at_path('y').value,
-                entity.at_path('z').value
-            ) not in container_whitelist
-        ):
-            # Not a container we care about
-            continue
-
         if entity.has_path('LootTable'):
             # This container is all set
+            ok_loottable += 1
+            continue
+
+        if not entity.has_path('id'):
+            # No container ID, this is nested.
+            continue
+
+        entity_id = entity.at_path('id').value
+        if entity_id not in container_entity_ids:
+            # Not a container ID we care about
+            ok_ids.add(entity_id)
+            continue
+
+        if (
+            not entity.has_path('x')
+            or not entity.has_path('y')
+            or not entity.has_path('z')
+        ):
+            # Has no position
+            continue
+
+        pos = (
+            entity.at_path('x').value,
+            entity.at_path('y').value,
+            entity.at_path('z').value
+        )
+
+        if pos in container_whitelist:
+            # Whitelisted position
+            ok_pos.append(pos)
             continue
 
         if entity.has_path('Items'):
@@ -198,8 +217,9 @@ for dungeon in dungeons:
                 lore_lines = item.at_path('tag.display.Lore').value
                 for lore_line in lore_lines:
                     for whitelisted_lore_line in whitelisted_lore_lines:
-                        if whitelisted_lore_line in lore_line:
+                        if whitelisted_lore_line in lore_line.value:
                             found_whitelisted_item = True
+                            ok_lore.add(lore_line.value)
                             break
 
                     if found_whitelisted_item:
@@ -214,8 +234,28 @@ for dungeon in dungeons:
         # Now we're sure this chest isn't allowed here.
         lootless_containers.append(entity)
 
+    print("{}:".format(name))
+
+    print("- Containers with loot tables: {}".format(ok_loottable))
+
+    if debug:
+        if ok_ids:
+            print("- Other ids found:")
+            for thing in sorted(ok_ids):
+                print("  - {}".format(thing))
+
+        if ok_pos:
+            print("- Whitelisted positions found:")
+            for thing in sorted(ok_pos):
+                print("  - {}".format(thing))
+
+        if ok_lore:
+            print("- Lore that matched whitelist:")
+            for thing in sorted(ok_lore):
+                print("  - {}".format(thing))
+
     if lootless_containers:
-        print("{} has {} lootless containers. Top line teleports your face into the block, bottom line is a whitelist entry if it's allowed:".format(name, len(lootless_containers)))
+        print("- Lootless containers: {}. Top line teleports your face into the block, bottom line is a whitelist entry if it's allowed:".format(len(lootless_containers)))
 
         for entity in lootless_containers:
             pos = (
@@ -236,7 +276,18 @@ for dungeon in dungeons:
                 pos[2]
             ))
 
-        print("="*80)
+        print("-"*80)
+
+    if not (
+        ok_loottable
+        or ok_ids
+        or ok_pos
+        or ok_lore
+        or lootless_containers
+    ):
+        print("- No containers detected at all...wait, what?")
+
+    print("="*80)
 
     missing_loot_tables += len(lootless_containers)
 
@@ -244,5 +295,5 @@ if missing_loot_tables == 0:
     print("No loot tables missing.")
 print("Done.")
 
-sys.exit(min(missing_loot_tables, 127))
+sys.exit(min(missing_loot_tables, (2**31)-1))
 
