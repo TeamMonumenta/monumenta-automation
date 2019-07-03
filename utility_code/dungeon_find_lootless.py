@@ -121,18 +121,23 @@ dungeons = (
     },{
         "name":"lime",
         "region":{"x":-3, "z":5},
+        "whitelisted_lore_lines":("Monument Block",),
     },{
         "name":"pink",
         "region":{"x":-3, "z":7},
+        "whitelisted_lore_lines":("Monument Block",),
     },{
         "name":"gray",
         "region":{"x":-3, "z":6},
+        "whitelisted_lore_lines":("Monument Block",),
     },{
         "name":"cyan",
         "region":{"x":-3, "z":9},
+        "whitelisted_lore_lines":("Monument Block",),
     },{
         "name":"lime",
         "region":{"x":-3, "z":5},
+        "whitelisted_lore_lines":("Monument Block",),
     },
 )
 
