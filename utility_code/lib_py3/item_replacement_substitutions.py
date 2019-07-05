@@ -125,7 +125,7 @@ class subtitute_items(substitution_rule):
             ["minecraft:iron_pickaxe", "The Earthshaker", "minecraft:golden_pickaxe", "The Earthshaker"],
 
             # UGHHHH
-            ["minecraft:iron_helmet", "Frost Giant's Crown", "minecraft:iron_helmet", "Frost Giant's Party Hat"],
+            ["minecraft:iron_helmet", "True Frost Giant's Crown", "minecraft:iron_helmet", "Frost Giant's Crown"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
