@@ -24,7 +24,7 @@ bot_config = {}
 config_dir = os.path.expanduser("~/.task_bot/")
 config_path = os.path.join(config_dir, "config.yml")
 
-# Get bot's login info
+# Read the bot's config file
 with open(config_path, 'r') as ymlfile:
     bot_config = yaml.load(ymlfile)
 
