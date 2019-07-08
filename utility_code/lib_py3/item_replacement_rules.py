@@ -39,8 +39,11 @@ class global_rule(object):
         pass
 
 def enchantify(item, player, region, enchantment, owner_prefix=None):
-    """
-    Applies a lore-text enchantment to item (full item nbt, including id and Count). Lore format is:
+    """Applies a lore-text enchantment to item (full item nbt, including id and Count).
+
+    Must be kept in sync with the plugin version!
+
+    Lore format is:
     ```
     ...
     enchantment
@@ -97,6 +100,32 @@ def enchantify(item, player, region, enchantment, owner_prefix=None):
         return
 
     item.at_path('tag.display.Lore').value = newLore
+
+def shatter_item(item):
+    """Applies shattered enchantment to an item
+
+    Must be kept in sync with plugin version!
+
+    Note that the logic to check if the item *should*
+    be shattered is skipped here, as this will only
+    be called if the item definitely should be
+    shattered.
+
+    item is an item stack, including id and Count.
+    """
+
+    if not item.has_path('tag'):
+        item.value['tag'] = nbt.TagCompound({})
+    if not item.has_path('tag.display'):
+        item.at_path('tag').value['display'] = nbt.TagCompound({})
+    if not item.has_path('tag.display.Lore'):
+        item.at_path('tag.display').value['Lore'] = nbt.TagList([])
+
+    lore = item.at_path('tag.display.Lore').value
+
+    lore.append(nbt.TagString("§4§l* SHATTERED *"))
+    lore.append(nbt.TagString("§4Maybe a Master Repairman"))
+    lore.append(nbt.TagString("§4could reforge it..."))
 
 class preserve_enchantment_base(global_rule):
     name = 'Preserve Enchantment Base (SHOULD NOT BE USED DIRECTLY)'
@@ -229,6 +258,27 @@ class preserve_festive(preserve_enchantment_base):
                     return
 
 global_rules.append(preserve_festive())
+
+class preserve_shattered(global_rule):
+    name = 'Preserve Shattered'
+    enchantment = "§4§l* SHATTERED *"
+
+    def preprocess(self, template, item):
+        self.shattered = False
+
+        if not item.has_path('tag.display.Lore'):
+            return
+
+        for lore in item.at_path('tag.display.Lore').value:
+            if lore.value == self.enchantment:
+                self.shattered = True
+                return
+
+    def postprocess(self, item):
+        if self.shattered:
+            shatter_item(item)
+
+global_rules.append(preserve_shattered())
 
 class preserve_soulbound(global_rule):
     name = 'Preserve soulbound'
