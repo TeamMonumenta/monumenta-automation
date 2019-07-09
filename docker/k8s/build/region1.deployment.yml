@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monumenta-region1-deployment
+  namespace: build-ns
+  labels:
+    app: monumenta-region1
+spec:
+  strategy:
+    type: Recreate
+  replicas: 0
+  selector:
+    matchLabels:
+      app: monumenta-region1
+  template:
+    metadata:
+      labels:
+        app: monumenta-region1
+    spec:
+      volumes:
+        - name: nfs-volume
+          nfs:
+            server: 192.168.1.90
+            path: /home/bmarohn/SCRATCH
+      containers:
+      - name: monumenta-region1
+        image: localhost:32000/monumenta:latest
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 25565
+        env:
+        - name: "JAVA_MEM"
+          value: "3G"
+        - name: "JAVA_JAR"
+          value: "paperclip.jar"
+        - name: "SERVER_DIR"
+          value: "/home/rock/project_epic/region_1"
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /home/rock

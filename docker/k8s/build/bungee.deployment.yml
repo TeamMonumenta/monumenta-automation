@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monumenta-bungee-deployment
+  namespace: build-ns
+  labels:
+    app: monumenta-bungee
+spec:
+  strategy:
+    type: Recreate
+  replicas: 0
+  selector:
+    matchLabels:
+      app: monumenta-bungee
+  template:
+    metadata:
+      labels:
+        app: monumenta-bungee
+    spec:
+      volumes:
+        - name: nfs-volume
+          nfs:
+            server: 192.168.1.90
+            path: /home/bmarohn/SCRATCH
+      containers:
+      - name: monumenta-bungee
+        image: localhost:32000/monumenta:latest
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 25565
+        env:
+        - name: "JAVA_MEM"
+          value: "512M"
+        - name: "JAVA_JAR"
+          value: "BungeeCord.jar"
+        - name: "SERVER_DIR"
+          value: "/home/rock/project_epic/bungee"
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /home/rock

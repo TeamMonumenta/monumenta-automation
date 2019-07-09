@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monumenta-dungeon-deployment
+  namespace: build-ns
+  labels:
+    app: monumenta-dungeon
+spec:
+  strategy:
+    type: Recreate
+  replicas: 0
+  selector:
+    matchLabels:
+      app: monumenta-dungeon
+  template:
+    metadata:
+      labels:
+        app: monumenta-dungeon
+    spec:
+      volumes:
+        - name: nfs-volume
+          nfs:
+            server: 192.168.1.90
+            path: /home/bmarohn/SCRATCH
+      containers:
+      - name: monumenta-dungeon
+        image: localhost:32000/monumenta:latest
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 25565
+        env:
+        - name: "JAVA_MEM"
+          value: "1536M"
+        - name: "JAVA_JAR"
+          value: "paperclip.jar"
+        - name: "SERVER_DIR"
+          value: "/home/rock/project_epic/dungeon"
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /home/rock
