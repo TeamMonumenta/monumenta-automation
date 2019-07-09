@@ -34,7 +34,7 @@ config["main_pid"] = os.getpid()
 config["listening"] = listening()
 
 assert "login" in config, "bot's config.yml file must contain 'login' token"
-assert "bot_name" in config, "bot's config.yml file must contain 'bot_name' value"
+assert "name" in config, "bot's config.yml file must contain 'name' value"
 assert "channels" in config, "bot's config.yml file must contain 'channels' map"
 assert "commands" in config, "bot's config.yml file must contain 'commands' list"
 assert "shards" in config, "bot's config.yml file must contain 'shards' map"
@@ -86,7 +86,7 @@ while native_restart.state:
             for channel_id in config["channel_ids"]:
                 try:
                     channel = client.get_channel(channel_id)
-                    await client.send_message(channel, config["bot_name"] + " started and now listening.")
+                    await client.send_message(channel, config["name"] + " started and now listening.")
                 except:
                     print( "Cannot connect to channel: " + config["channels"][channel_id] )
 

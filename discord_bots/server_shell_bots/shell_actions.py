@@ -16,6 +16,7 @@ from shell_common import ShellAction, datestr
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 from lib_py3.loot_table_manager import LootTableManager
+from lib_py3.k8s import KubernetesManager
 
 commandPrefix = '~'
 dangerousCharacters = ';<>*|`&$!#()[]{}:\'"'
@@ -454,7 +455,7 @@ Downloads the terrain reset bundle from the build server and unpacks it'''
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+        estimated_space_left = get_available_storage('/')
         # Multiplier roughly accounts for compression; 3x is more accurate, 4x is to be safe.
         estimated_space_left -= 4 * get_size("/home/rock/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz")
 
@@ -485,7 +486,7 @@ Currently exposes all valid git syntax, including syntax that *will* softlock th
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        estimated_space_left = get_available_storage("/home/rock/MCEdit-And-Automation")
+        estimated_space_left = get_available_storage('/')
 
         if estimated_space_left < min_free_gb * bytes_per_gb:
             self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
@@ -515,7 +516,7 @@ Must be run before preparing the build server reset bundle'''
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+        estimated_space_left = get_available_storage('/')
 
         if estimated_space_left < min_free_gb * bytes_per_gb:
             self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
@@ -570,7 +571,7 @@ Syntax:
         allShards = botConfig["shards"]
         if shard in allShards.keys():
             self._commands = [
-                self.cd(allShards[shard]["path"]),
+                self.cd(allShards[shard]),
                 self.cd("logs"),
                 self.run(_top_level + "/discord_bots/server_shell_bots/bin/get_errors.sh", displayOutput=True),
             ]
@@ -607,8 +608,12 @@ class ListShardsAction(ShellAction):
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
+        k8s = KubernetesManager()
+
+        k8s.list()
+
         self._commands = [
-            self.run("mark2 list", displayOutput=True),
+            self.display("debug"),
         ]
 allActions.append(ListShardsAction)
 
@@ -626,7 +631,7 @@ Syntax:
         super().__init__(botConfig["extraDebug"])
         self._commands = []
 
-        estimated_space_left = get_available_storage("/home/rock/project_epic/mobs")
+        estimated_space_left = get_available_storage('/')
 
         if estimated_space_left < min_free_gb * bytes_per_gb:
             self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
@@ -661,7 +666,7 @@ Must be run before starting terrain reset on the play server'''
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+        estimated_space_left = get_available_storage('/')
         estimated_space_left -= get_size("/home/rock/project_epic")
 
         if estimated_space_left < min_free_gb * bytes_per_gb:
@@ -771,7 +776,7 @@ Syntax:
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+        estimated_space_left = get_available_storage('/')
 
         if estimated_space_left < min_free_gb * bytes_per_gb:
             self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
@@ -785,12 +790,12 @@ Syntax:
         if '*' in commandArgs:
             for shard in allShards.keys():
                 if shard != "bungee":
-                    shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
+                    shellCommand += " " + allShards[shard] + "Project_Epic-" + shard + "/"
         else:
             for shard in allShards.keys():
                 if shard in commandArgs:
                     if shard != "bungee":
-                        shellCommand += " " + allShards[shard]["path"] + "Project_Epic-" + shard + "/"
+                        shellCommand += " " + allShards[shard] + "Project_Epic-" + shard + "/"
 
         if shellCommand == baseShellCommand:
             self._commands = [
@@ -895,7 +900,7 @@ Syntax:
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+        estimated_space_left = get_available_storage('/')
 
         if estimated_space_left < min_free_gb * bytes_per_gb:
             self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
@@ -903,24 +908,27 @@ Syntax:
 
         commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
 
-        baseShellCommand = _top_level + "/discord_bots/server_shell_bots/bin/start_shards.sh"
-        shellCommand = baseShellCommand
+        k8s = KubernetesManager()
+
         allShards = botConfig["shards"]
+        shardsChanged = []
         if '*' in commandArgs:
             for shard in allShards.keys():
-                shellCommand += " " + allShards[shard]["path"]
+                shardsChanged.append(shard)
+                k8s.start(shard)
         else:
             for shard in allShards.keys():
                 if shard in commandArgs:
-                    shellCommand += " " + allShards[shard]["path"]
+                    shardsChanged.append(shard)
+                    k8s.start(shard)
 
-        if shellCommand == baseShellCommand:
+        if not shardsChanged:
             self._commands = [
                 self.display("No specified shards on this server."),
             ]
         else:
             self._commands = [
-                self.run(shellCommand, displayOutput=True),
+                self.display("Started shards [{}]".format(",".join(shardsChanged))),
             ]
 allActions.append(StartShardAction)
 
@@ -934,7 +942,7 @@ DELETES TUTORIAL AND PURGATORY AND DUNGEON CORE PROTECT DATA'''
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+        estimated_space_left = get_available_storage('/')
 
         if estimated_space_left < min_free_gb * bytes_per_gb:
             self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
@@ -1025,26 +1033,36 @@ Syntax:
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
+
+        estimated_space_left = get_available_storage('/')
+
+        if estimated_space_left < min_free_gb * bytes_per_gb:
+            self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
+            return
+
         commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
 
-        baseShellCommand = _top_level + "/discord_bots/server_shell_bots/bin/stop_shards.sh"
-        shellCommand = baseShellCommand
+        k8s = KubernetesManager()
+
         allShards = botConfig["shards"]
+        shardsChanged = []
         if '*' in commandArgs:
             for shard in allShards.keys():
-                shellCommand += " " + shard
+                shardsChanged.append(shard)
+                k8s.stop(shard)
         else:
             for shard in allShards.keys():
                 if shard in commandArgs:
-                    shellCommand += " " + shard
+                    shardsChanged.append(shard)
+                    k8s.stop(shard)
 
-        if shellCommand == baseShellCommand:
+        if not shardsChanged:
             self._commands = [
                 self.display("No specified shards on this server."),
             ]
         else:
             self._commands = [
-                self.run(shellCommand),
+                self.display("Stopped shards [{}]".format(",".join(shardsChanged))),
             ]
 allActions.append(StopShardAction)
 
@@ -1057,7 +1075,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+        estimated_space_left = get_available_storage('/')
         # There will briefly be 3x project_epic folders, one of which is in 5_SCRATCH.
         estimated_space_left -= 2 * get_size("/home/rock/project_epic")
 
@@ -1179,7 +1197,7 @@ For convenience, leading 'give @p' is ignored, along with any data after the las
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+        estimated_space_left = get_available_storage('/')
 
         if estimated_space_left < min_free_gb * bytes_per_gb:
             self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
@@ -1234,7 +1252,7 @@ Syntax:
         super().__init__(botConfig["extraDebug"])
         print("TEST!")
 
-        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+        estimated_space_left = get_available_storage('/')
 
         if estimated_space_left < min_free_gb * bytes_per_gb:
             self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
@@ -1266,7 +1284,7 @@ Syntax:
             base_backup_name = "/home/rock/0_OLD_BACKUPS/Project_Epic-{}_pre_entity_loot_updates_{}".format(shard, datestr())
             self._commands += [
                 self.display("Stopping shard {}".format(shard)),
-                self.cd(allShards[shard]["path"]),
+                self.cd(allShards[shard]),
                 self.run("mark2 send -n {} ~stop".format(shard), None),
                 self.sleep(10),
                 self.run("mark2 send -n {} test".format(shard), 1),
@@ -1310,7 +1328,7 @@ class WhitelistAction(ShellAction):
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
 
-        estimated_space_left = get_available_storage("/home/rock/5_SCRATCH")
+        estimated_space_left = get_available_storage('/')
 
         if estimated_space_left < min_free_gb * bytes_per_gb:
             self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]

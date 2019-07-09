@@ -199,7 +199,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25566'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /function monumenta:on_new_day/global'),
         ],
         'linked':server_config + base_plugins + dynmap + [
@@ -212,7 +211,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25568'),
             ('mark2-scripts.txt', '     0    3    *    *    *    /function monumenta:on_new_day/global'),
         ],
         'linked':server_config + base_plugins + dynmap,
@@ -223,7 +221,6 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=9'),
             ('server.properties', 'white-list', 'white-list=false'),
             ('spigot.yml', 'view-distance', '    view-distance: 9'),
-            ('server.properties', 'server-port', 'server-port=25567'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
         ],
@@ -234,7 +231,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ('server.properties', 'server-port', 'server-port=25572'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -248,7 +244,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25569'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
         ],
@@ -259,7 +254,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25571'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
         ],
@@ -270,7 +264,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25603'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=5G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=5G'),
         ],
@@ -281,7 +274,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25604'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=5G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=5G'),
         ],
@@ -293,7 +285,6 @@ config = {
             ('server.properties', 'white-list', 'white-list=true'),
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25599'),
             ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
             ('server.properties', 'difficulty', 'difficulty=0'),
             ('server.properties', 'gamemode', 'gamemode=1'),
@@ -307,7 +298,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=6'),
             ('spigot.yml', 'view-distance', '    view-distance: 6'),
-            ('server.properties', 'server-port', 'server-port=25598'),
             ('server.properties', 'difficulty', 'difficulty=2'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
@@ -323,7 +313,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=7'),
             ('spigot.yml', 'view-distance', '    view-distance: 7'),
-            ('server.properties', 'server-port', 'server-port=25573'),
             ('server.properties', 'difficulty', 'difficulty=0'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
@@ -335,7 +324,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=7'),
             ('spigot.yml', 'view-distance', '    view-distance: 7'),
-            ('server.properties', 'server-port', 'server-port=25574'),
             ('server.properties', 'difficulty', 'difficulty=0'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
@@ -347,7 +335,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=10'),
             ('spigot.yml', 'view-distance', '    view-distance: 10'),
-            ('server.properties', 'server-port', 'server-port=25576'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
         ],
@@ -360,7 +347,6 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 4'),
             ('server.properties', 'force-gamemode', 'force-gamemode=true'),
             ('server.properties', 'gamemode', 'gamemode=2'),
-            ('server.properties', 'server-port', 'server-port=25570'),
             ('server.properties', 'enable-command-block', 'enable-command-block=false'),
             ('server.properties', 'white-list', 'white-list=false'),
             ('server.properties', 'spawn-monsters', 'spawn-monsters=false'),
@@ -377,7 +363,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=16'),
             ('spigot.yml', 'view-distance', '    view-distance: 16'),
-            ('server.properties', 'server-port', 'server-port=25580'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -388,7 +373,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ('server.properties', 'server-port', 'server-port=25581'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -399,7 +383,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ('server.properties', 'server-port', 'server-port=25582'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -410,7 +393,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ('server.properties', 'server-port', 'server-port=25583'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -421,7 +403,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25584'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -432,7 +413,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=9'),
             ('spigot.yml', 'view-distance', '    view-distance: 9'),
-            ('server.properties', 'server-port', 'server-port=25585'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -443,7 +423,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25586'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -454,7 +433,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25587'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -465,7 +443,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=9'),
             ('spigot.yml', 'view-distance', '    view-distance: 9'),
-            ('server.properties', 'server-port', 'server-port=25588'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -476,7 +453,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25589'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -487,7 +463,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25590'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -498,7 +473,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('server.properties', 'server-port', 'server-port=25600'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -509,7 +483,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=10'),
             ('spigot.yml', 'view-distance', '    view-distance: 10'),
-            ('server.properties', 'server-port', 'server-port=25601'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
@@ -520,7 +493,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=9'),
             ('spigot.yml', 'view-distance', '    view-distance: 9'),
-            ('server.properties', 'server-port', 'server-port=25602'),
             ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
             ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
