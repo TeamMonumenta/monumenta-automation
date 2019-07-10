@@ -91,41 +91,14 @@ class subtitute_items(substitution_rule):
             #["minecraft:example_item_id", "Example Name", "minecraft:new_id", "Example New Name"],
             #["minecraft:example_banned_item", always_equal, "minecraft:new_id", "Example New Name"],
 
-            #["minecraft:prismarine_shard", "Crystalline Shard", "minecraft:prismarine_shard", "Crystalline Shard"],
-            ["minecraft:prismarine_crystals", "Enchanted Crystalline Shard", "minecraft:prismarine_crystals", "Compressed Crystalline Shard"],
-            ["minecraft:quartz", "Compressed Crystalline Shard", "minecraft:quartz", "Legacy Crystalline Shard"],
-            ["minecraft:nether_star", "Purified Crystalline Shard", "minecraft:nether_star", "Hyper Crystalline Shard"],
-
-            ["minecraft:golden_chestplate", "Lemurian Vestements", "minecraft:golden_chestplate", "Lemurian Vestments"],
-            ["minecraft:golden_chestplate", "Stalwart Curiass", "minecraft:golden_chestplate", "Stalwart Cuirass"],
-            ["minecraft:golden_chestplate", "Patinated Curiass", "minecraft:golden_chestplate", "Patinated Cuirass"],
-
-            ["minecraft:stone_pickaxe", "Pyromancer's Staff", "minecraft:blaze_rod", "Pyromancer's Staff"],
-            ["minecraft:cooked_rabbit", " Cooked Zombie Meat", "minecraft:cooked_rabbit", "Cooked Zombie Meat"],
-
-            ["minecraft:golden_helmet", "Legionnaire's Helmet", "minecraft:chainmail_helmet", "Legionnaire's Helmet"],
-            ["minecraft:golden_chestplate", "Legionnaire's Chestplate", "minecraft:chainmail_chestplate", "Legionnaire's Chestplate"],
-            ["minecraft:golden_leggings", "Legionnaire's Leggings", "minecraft:chainmail_leggings", "Legionnaire's Leggings"],
-            ["minecraft:golden_boots", "Legionnaire's Boots", "minecraft:chainmail_boots", "Legionnaire's Boots"],
-            ["minecraft:leather_helmet", "Incindiary Hood", "minecraft:leather_helmet", "Incendiary Hood"],
-            ["minecraft:leather_chestplate", "Incindiary Cloak", "minecraft:leather_chestplate", "Incendiary Cloak"],
-            ["minecraft:leather_leggings", "Incindiary Pants", "minecraft:leather_leggings", "Incendiary Pants"],
-            ["minecraft:leather_boots", "Incindiary Boots", "minecraft:leather_boots", "Incendiary Boots"],
-            ["minecraft:golden_leggings", "Bladedancer's Sabatons", "minecraft:golden_leggings", "Bladedancer's Greaves"],
-            ["minecraft:golden_boots", "Bladedancer's Boots", "minecraft:golden_boots", "Bladedancer's Sabatons"],
-            ["minecraft:golden_chestplate", "Oracle's Vestements", "minecraft:golden_chestplate", "Oracle's Vestments"],
-            ["minecraft:leather_helmet", "Viridian Scale Hat", "minecraft:chainmail_helmet", "Viridian Scale Hat"],
-            ["minecraft:leather_chestplate", "Viridian Scale Tunic", "minecraft:chainmail_chestplate", "Viridian Scale Tunic"],
-            ["minecraft:leather_leggings", "Viridian Scale Robes", "minecraft:chainmail_leggings", "Viridian Scale Robes"],
-            ["minecraft:leather_boots", "Viridian Scale Slippers", "minecraft:chainmail_boots", "Viridian Scale Slippers"],
-            ["minecraft:iron_sword", "Rootstrike", "minecraft:stone_sword", "Rootstrike"],
-            ["minecraft:chainmail_boots", "Steel Sabatons", "minecraft:iron_boots", "Steel Sabatons"],
-            ["minecraft:chainmail_leggings", "Sunblessed Leggings", "minecraft:golden_leggings", "Sunblessed Leggings"],
-            ["minecraft:golden_helmet", "Excavator's Hardlamp", "minecraft:iron_helmet", "Excavator's Hardlamp"],
-            ["minecraft:iron_pickaxe", "The Earthshaker", "minecraft:golden_pickaxe", "The Earthshaker"],
-
-            # UGHHHH
-            ["minecraft:iron_helmet", "True Frost Giant's Crown", "minecraft:iron_helmet", "Frost Giant's Crown"],
+            ["minecraft:potion", "Antidote", "minecraft:splash_potion", "Antidote"],
+            ["minecraft:oak_sapling", "Chimarian Wand", "minecraft:jungle_sapling", "Chimarian Wand"],
+            ["minecraft:potion", "Ellixir of the Jaguar", "minecraft:potion", "Elixir of the Jaguar"],
+            ["minecraft:golden_chestplate", "Eternal Curiass", "minecraft:golden_chestplate", "Eternal Cuirass"],
+            ["minecraft:wooden_shovel", "Graceful Spade", "minecraft:stone_shovel", "Graceful Spade"],
+            ["minecraft:stone_shovel", "Pyromancer's Staff", "minecraft:blaze_rod", "Pyromancer's Staff"],
+            ["minecraft:leather_helmet", "Starborn Cap", "minecraft:leather_helmet", "Starborn Cap"],
+            ["minecraft:potion", "Waycrstal Extract", "minecraft:potion", "Waycrystal Extract"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
