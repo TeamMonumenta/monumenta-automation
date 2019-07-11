@@ -170,5 +170,12 @@ dungeon_score_rules = [
     {"condition":{"Objective":"Totem","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"Totem","Score":0}]}},
+
+    {"condition":{"Objective":"MarketBanned","Score":{"min":1,"max":7}},
+        "actions":{"set":[
+            {"Objective":"MarketBanned","Score":0}]}},
+    {"condition":{"Objective":"MarketBanned","Score":{"min":8}},
+        "actions":{"add":[
+            {"Objective":"MarketBanned","Score":-7}]}},
 ]
 
