@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from quarry.types import nbt
 from quarry.types.text_format import unformat_text
 
-class global_rule(object):
+class GlobalRule(object):
     """
     Base pre/post processing rule for item replacements, used to preserve and edit data.
     """
@@ -37,6 +37,27 @@ class global_rule(object):
         Edit the item with last stored value
         """
         pass
+
+    @classmethod
+    def recursive_public_subclasses(cls):
+        """Return a list of initialized subclasses, not listing subclasses starting with '_'.
+
+        Should multiple subclasses need to be derived from another subclass,
+        a base subclass whose name starts with '_' should be created so
+        its children are returned, but not the base subclass itself.
+        """
+        result = []
+
+        for subclass in cls.__subclasses__():
+            name = subclass.__name__
+
+            # Ignore subclasses that exist only as a parent to other subclasses
+            if not name.startswith("_"):
+                result.append(subclass())
+
+            result += subclass.recursive_public_subclasses()
+
+        return result
 
 def enchantify(item, player, region, enchantment, owner_prefix=None):
     """Applies a lore-text enchantment to item (full item nbt, including id and Count).
@@ -127,7 +148,7 @@ def shatter_item(item):
     lore.append(nbt.TagString("§4Maybe a Master Repairman"))
     lore.append(nbt.TagString("§4could reforge it..."))
 
-class preserve_enchantment_base(global_rule):
+class _PreserveEnchantmentBase(GlobalRule):
     name = 'Preserve Enchantment Base (SHOULD NOT BE USED DIRECTLY)'
     region = "King's Valley"
     enchantment = '§7Enchantment'
@@ -160,12 +181,10 @@ class preserve_enchantment_base(global_rule):
             # Apply the enchantment without saying who added it (workaround for previous bug)
             enchantify(item, self.player, self.region, self.enchantment, owner_prefix=None)
 
-global_rules = []
-
 ################################################################################
 # Global rules begin
 
-class abort_no_lore(global_rule):
+class AbortNoLore(GlobalRule):
     name = "Abort if there's no lore text"
 
     def preprocess(self, template, item):
@@ -173,9 +192,7 @@ class abort_no_lore(global_rule):
             'Abort!'
             return True
 
-global_rules.append(abort_no_lore())
-
-class preserve_armor_color(global_rule):
+class PreserveArmorColor(GlobalRule):
     name = 'Preserve armor color'
 
     def preprocess(self, template, item):
@@ -200,9 +217,7 @@ class preserve_armor_color(global_rule):
         # Apply color
         item.at_path('tag.display.color').value = self.color
 
-global_rules.append(preserve_armor_color())
-
-class preserve_damage(global_rule):
+class PreserveDamage(GlobalRule):
     name = 'Preserve damage'
 
     def preprocess(self, template, item):
@@ -225,23 +240,17 @@ class preserve_damage(global_rule):
         # Apply damage
         item.at_path('tag.Damage').value = self.damage
 
-global_rules.append(preserve_damage())
-
-class preserve_hope(preserve_enchantment_base):
+class PreserveHope(_PreserveEnchantmentBase):
     name = 'Preserve Hope'
     enchantment = '§7Hope'
     owner_prefix = 'Infused by'
 
-global_rules.append(preserve_hope())
-
-class preserve_gilded(preserve_enchantment_base):
+class PreserveGilded(_PreserveEnchantmentBase):
     name = 'Preserve Gilded'
     enchantment = '§7Gilded'
     owner_prefix = 'Gilded by'
 
-global_rules.append(preserve_gilded())
-
-class preserve_festive(preserve_enchantment_base):
+class PreserveFestive(_PreserveEnchantmentBase):
     name = 'Preserve Festive'
     enchantment = '§7Festive'
     owner_prefix = 'Decorated by'
@@ -257,9 +266,7 @@ class preserve_festive(preserve_enchantment_base):
                     self.player = lore.value[len(self.wrongPrefix)+1:]
                     return
 
-global_rules.append(preserve_festive())
-
-class preserve_shattered(global_rule):
+class PreserveShattered(GlobalRule):
     name = 'Preserve Shattered'
     enchantment = "§4§l* SHATTERED *"
 
@@ -278,9 +285,7 @@ class preserve_shattered(global_rule):
         if self.shattered:
             shatter_item(item)
 
-global_rules.append(preserve_shattered())
-
-class preserve_soulbound(global_rule):
+class PreserveSoulbound(GlobalRule):
     name = 'Preserve soulbound'
 
     def preprocess(self, template, item):
@@ -306,9 +311,7 @@ class preserve_soulbound(global_rule):
         # Apply soulbound lore
         item.at_path('tag.display.Lore').value.append(self.player_line)
 
-global_rules.append(preserve_soulbound())
-
-class preserve_shield_banner(global_rule):
+class PreserveShieldBanner(GlobalRule):
     name = 'Preserve shield banner'
 
     def preprocess(self, template, item):
@@ -331,4 +334,8 @@ class preserve_shield_banner(global_rule):
                 item.value['tag'] = nbt.TagCompound({})
             item.at_path('tag').value['BlockEntityTag'] = self.block_entity_tag.deep_copy()
 
-global_rules.append(preserve_shield_banner())
+################################################################################
+# Global rules end
+
+global_rules = GlobalRule.recursive_public_subclasses()
+

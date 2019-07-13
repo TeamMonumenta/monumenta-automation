@@ -16,7 +16,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from quarry.types import nbt
 from quarry.types.text_format import unformat_text
 
-class substitution_rule(object):
+class SubstitutionRule(object):
     """
     Base substitution rule for item replacements, used to preserve and edit data.
     """
@@ -37,9 +37,33 @@ class substitution_rule(object):
         """
         pass
 
+    @classmethod
+    def recursive_public_subclasses(cls):
+        """Return a list of initialized subclasses, not listing subclasses starting with '_'.
+
+        Should multiple subclasses need to be derived from another subclass,
+        a base subclass whose name starts with '_' should be created so
+        its children are returned, but not the base subclass itself.
+        """
+        result = []
+
+        for subclass in cls.__subclasses__():
+            name = subclass.__name__
+
+            # Ignore subclasses that exist only as a parent to other subclasses
+            if not name.startswith("_"):
+                result.append(subclass())
+
+            result += subclass.recursive_public_subclasses()
+
+        return result
+
 substitution_rules = []
 
-class fix_broken_section_symbols(substitution_rule):
+################################################################################
+# Substitution rules begin
+
+class FixBrokenSectionSymbols(SubstitutionRule):
     name = "Fix broken section symbols"
 
     def _fix(self,old_str):
@@ -61,9 +85,7 @@ class fix_broken_section_symbols(substitution_rule):
                 new_lore = self._fix(lore)
                 lore_line.value = new_lore
 
-substitution_rules.append(fix_broken_section_symbols())
-
-class fix_double_json_names(substitution_rule):
+class FixDoubleJsonNames(SubstitutionRule):
     name = "Fixed json in json names"
 
     def process(self, item_meta, item):
@@ -79,9 +101,7 @@ class fix_double_json_names(substitution_rule):
         except:
             pass
 
-substitution_rules.append(fix_double_json_names())
-
-class subtitute_items(substitution_rule):
+class SubtituteItems(SubstitutionRule):
     name = "Substitute the ID and name of items, ignoring other NBT"
 
     def __init__(self):
@@ -126,5 +146,8 @@ class subtitute_items(substitution_rule):
                         item_meta['id'] = new_id
                         item_meta['name'] = new_name
 
-substitution_rules.append(subtitute_items())
+################################################################################
+# Substitution rules end
+
+substitution_rules = SubstitutionRule.recursive_public_subclasses()
 
