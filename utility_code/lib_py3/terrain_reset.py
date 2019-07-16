@@ -14,13 +14,14 @@ from lib_py3.player import Player
 from lib_py3.common import eprint
 from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
 
-def terrain_reset_instance(config, outputFile, statusQueue):
+def terrain_reset_instance(config, outputFile=None, statusQueue=None):
     shard_name = config["server"]
     replacements_log = {}
 
     try:
         # Redirect output to specified file
-        sys.stdout = codecs.getwriter('utf8')(open(outputFile, "wb"))
+        if outputFile is not None:
+            sys.stdout = codecs.getwriter('utf8')(open(outputFile, "wb"))
 
         ##################################################################################
         print("Starting reset for server {0}...".format(shard_name))
@@ -84,7 +85,8 @@ def terrain_reset_instance(config, outputFile, statusQueue):
         if "localMainFolder" in config and not os.path.exists(config["localMainFolder"]):
             eprint("!!!!!! WARNING: Missing previous week main folder '{}'!".format(config["localBuildFolder"]))
             eprint("If you are not adding a shard, this is a critical problem!")
-            statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log})
+            if statusQueue is not None:
+                statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log})
             return
 
         worldScores = None
@@ -181,8 +183,10 @@ def terrain_reset_instance(config, outputFile, statusQueue):
         dstWorld.save()
         ##################################################################################
 
-        statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log})
+        if statusQueue is not None:
+            statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log})
 
     except:
         e = traceback.format_exc()
-        statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log, "error":e})
+        if statusQueue is not None:
+            statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log, "error":e})
