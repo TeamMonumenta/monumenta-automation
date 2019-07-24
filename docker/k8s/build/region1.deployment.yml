@@ -18,13 +18,17 @@ spec:
         app: monumenta-region1
     spec:
       volumes:
-        - name: nfs-volume
+        - name: nfs-maps
           nfs:
-            server: 192.168.1.90
-            path: /home/bmarohn/SCRATCH
+            server: 10.6.3.1
+            path: /nfs/build/maps
+        - name: nfs-project-epic
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/build/project_epic
       containers:
       - name: monumenta-region1
-        image: localhost:32000/monumenta:latest
+        image: monumenta-docker.injic.io/monumenta-java-shard
         tty: true
         stdin: true
         ports:
@@ -35,7 +39,13 @@ spec:
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/home/rock/project_epic/region_1"
+          value: "/project_epic/region_1"
+        - name: "JAVA_LARGE_PAGES"
+          value: ""
         volumeMounts:
-        - name: nfs-volume
-          mountPath: /home/rock
+        - name: nfs-project-epic
+          mountPath: /project_epic
+        - name: nfs-maps
+          mountPath: /home/rock/maps/dynmap/build
+      imagePullSecrets:
+      - name: regcred

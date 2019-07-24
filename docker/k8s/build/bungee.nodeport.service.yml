@@ -13,7 +13,7 @@ spec:
   # Main minecraft port
   - name: "25565"
     port: 25565
-    nodePort: 31000
+    nodePort: 25565
     targetPort: 25565
   # Plan
   - name: "8804"
