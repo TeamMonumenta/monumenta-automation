@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monumenta-basic-ssh-deployment
+  namespace: build-ns
+  labels:
+    app: monumenta-basic-ssh
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monumenta-basic-ssh
+  template:
+    metadata:
+      labels:
+        app: monumenta-basic-ssh
+    spec:
+      volumes:
+        - name: nfs-data
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/build/project_epic/server_config/data
+      containers:
+      - name: monumenta-basic-ssh
+        image: monumenta-docker.injic.io/monumenta-basic-ssh
+        tty: false
+        stdin: false
+        ports:
+        - containerPort: 22
+        volumeMounts:
+        - name: nfs-data
+          mountPath: /home/epic/data
+      imagePullSecrets:
+      - name: regcred
