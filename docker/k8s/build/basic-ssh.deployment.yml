@@ -22,6 +22,14 @@ spec:
           nfs:
             server: 10.6.3.1
             path: /nfs/build/project_epic/server_config/data
+        - name: nfs-mobs-logs
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/build/project_epic/mobs/logs
+        - name: nfs-mobs-plugins
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/build/project_epic/mobs/plugins
       containers:
       - name: monumenta-basic-ssh
         image: monumenta-docker.injic.io/monumenta-basic-ssh
@@ -32,5 +40,9 @@ spec:
         volumeMounts:
         - name: nfs-data
           mountPath: /home/epic/data
+        - name: nfs-mobs-logs
+          mountPath: /home/epic/mob_shard_logs
+        - name: nfs-mobs-plugins
+          mountPath: /home/epic/mob_shard_plugins
       imagePullSecrets:
       - name: regcred
