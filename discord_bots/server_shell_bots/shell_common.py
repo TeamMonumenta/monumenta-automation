@@ -77,6 +77,9 @@ class ShellAction(object):
             await self.display("Changing path to `" + path + "`")
         os.chdir(path)
 
+    async def exit(self):
+        sys.exit(1)
+
     async def run(self, cmd, ret=0, displayOutput=False):
         splitCmd = cmd.split(' ')
         if self._debug:

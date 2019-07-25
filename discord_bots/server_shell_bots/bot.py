@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import signal
 import os
 import sys
 import logging
@@ -9,13 +8,12 @@ import threading
 import traceback
 from pprint import pprint
 
-import asyncio
 from bot_socket_server import BotSocketServer
 
 logging.basicConfig(level=logging.INFO)
 
 import discord
-from shell_actions import allActionsDict, findBestMatchDiscord, listening, native_restart
+from shell_actions import allActionsDict, findBestMatchDiscord, listening
 from shell_common import split_string
 
 ################################################################################
@@ -57,93 +55,81 @@ config["channel_ids"] = list(config["channels"].keys())
 
 pprint(config)
 
-def signal_handler(sig, frame):
-        print('Shutting down bot...')
-        native_restart.state = False
-        sys.exit(0)
-signal.signal(signal.SIGINT, signal_handler)
+print("Starting the client...")
 
-while native_restart.state:
-    print("Starting the client...")
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    try:
-        # Start the bot socket server which also accepts commands
-        #bot_srv = BotSocketServer("127.0.0.1", 8765, config, native_restart)
-        #threading.Thread(target = bot_srv.listen).start()
+try:
+    # Start the bot socket server which also accepts commands
+    #bot_srv = BotSocketServer("127.0.0.1", 8765, config, native_restart)
+    #threading.Thread(target = bot_srv.listen).start()
 
-        client = discord.Client()
+    client = discord.Client()
 
-        ################################################################################
-        # Discord event handlers
+    ################################################################################
+    # Discord event handlers
 
-        @client.event
-        async def on_ready():
-            print('Logged in as')
-            print(client.user.name)
-            print(client.user.id)
-            print('------')
-            for channel_id in config["channel_ids"]:
-                try:
-                    channel = client.get_channel(channel_id)
-                    await client.send_message(channel, config["name"] + " started and now listening.")
-                except:
-                    print( "Cannot connect to channel: " + config["channels"][channel_id] )
+    @client.event
+    async def on_ready():
+        print('Logged in as')
+        print(client.user.name)
+        print(client.user.id)
+        print('------')
+        for channel_id in config["channel_ids"]:
+            try:
+                channel = client.get_channel(channel_id)
+                await client.send_message(channel, config["name"] + " started and now listening.")
+            except:
+                print( "Cannot connect to channel: " + config["channels"][channel_id] )
 
-        @client.event
-        async def on_message(message):
-            if message.channel.id in config["channel_ids"]:
-                actionClass = findBestMatchDiscord(config, message)
-                if actionClass is None:
-                    return
-                try:
-                    action = actionClass(config, message)
-                    if not action.hasPermissions(message.author):
-                        await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
-                    else:
-                        await action.doActions(client, message.channel, message.author)
-                except Exception as e:
-                    await client.send_message(message.channel, message.author.mention)
-                    await client.send_message(message.channel, "**ERROR**: ```" + str(e) + "```")
-                    if config["extraDebug"]:
-                        for chunk in split_string(traceback.format_exc()):
-                            await client.send_message(message.channel, "```" + chunk + "```")
+    @client.event
+    async def on_message(message):
+        if message.channel.id in config["channel_ids"]:
+            actionClass = findBestMatchDiscord(config, message)
+            if actionClass is None:
+                return
+            try:
+                action = actionClass(config, message)
+                if not action.hasPermissions(message.author):
+                    await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
+                else:
+                    await action.doActions(client, message.channel, message.author)
+            except Exception as e:
+                await client.send_message(message.channel, message.author.mention)
+                await client.send_message(message.channel, "**ERROR**: ```" + str(e) + "```")
+                if config["extraDebug"]:
+                    for chunk in split_string(traceback.format_exc()):
+                        await client.send_message(message.channel, "```" + chunk + "```")
 
 
-        ################################################################################
-        # Ignore these, just noting them to avoid the errors we were getting
+    ################################################################################
+    # Ignore these, just noting them to avoid the errors we were getting
 
-        @client.event
-        async def on_message_delete(_):
-            pass
+    @client.event
+    async def on_message_delete(_):
+        pass
 
-        @client.event
-        async def on_message_edit(_, __):
-            pass
+    @client.event
+    async def on_message_edit(_, __):
+        pass
 
-        @client.event
-        async def on_reaction_add(_, __):
-            pass
+    @client.event
+    async def on_reaction_add(_, __):
+        pass
 
-        @client.event
-        async def on_reaction_remove(_, __):
-            pass
+    @client.event
+    async def on_reaction_remove(_, __):
+        pass
 
-        @client.event
-        async def on_reaction_clear(_, __):
-            pass
+    @client.event
+    async def on_reaction_clear(_, __):
+        pass
 
-        ################################################################################
-        # Entry point
+    ################################################################################
+    # Entry point
 
-        client.run(config["login"])
-        print("No error detected from outside the client, restarting.")
-    except RuntimeError as e:
-        print("Runtime Error detected in loop. Exiting.")
-        print(repr(e))
-        native_restart.state = False
-    except BaseException as e:
-        print("The following error was visible from outside the client, and may be used to restart or fix it:")
-        print(repr(e))
+    client.run(config["login"])
+except Exception as e:
+    print("The following error was visible from outside the client, and may be used to restart or fix it:")
+    print(repr(e))
+
 print("Terminating")
 
