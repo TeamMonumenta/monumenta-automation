@@ -1,3 +1,30 @@
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: monumenta-mobs-clusterip
+  namespace: build-ns
+  labels:
+    app: monumenta-mobs
+spec:
+  type: ClusterIP
+  selector:
+    app: monumenta-mobs
+  ports:
+  # Main minecraft port
+  - name: "25565"
+    port: 25565
+    targetPort: 25565
+  # Plan
+  - name: "8804"
+    port: 8804
+    targetPort: 8804
+
+---
+
+# Deployment / the actual running application
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,18 +61,24 @@ spec:
         ports:
         - containerPort: 25565
         env:
-        - name: "JAVA_MEM"
-          value: "768M"
+        # Note - not setting JAVA_MEM will use resource limits!
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
           value: "/project_epic/mobs"
         - name: "JAVA_LARGE_PAGES"
-          value: ""
+          value: "yes"
         volumeMounts:
         - name: nfs-project-epic
           mountPath: /project_epic
         - name: nfs-maps
           mountPath: /home/rock/maps/dynmap/build
+        resources:
+          limits:
+            memory: 1Gi
+            hugepages-2Mi: 1Gi
+          requests:
+            memory: 1Gi
+            hugepages-2Mi: 1Gi
       imagePullSecrets:
       - name: regcred
