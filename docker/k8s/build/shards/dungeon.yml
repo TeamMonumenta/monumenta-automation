@@ -61,18 +61,23 @@ spec:
         ports:
         - containerPort: 25565
         env:
-        - name: "JAVA_MEM"
-          value: "1536M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
           value: "/project_epic/dungeon"
         - name: "JAVA_LARGE_PAGES"
-          value: ""
+          value: "yes"
         volumeMounts:
         - name: nfs-project-epic
           mountPath: /project_epic
         - name: nfs-maps
           mountPath: /home/rock/maps/dynmap/build
+        resources:
+          limits:
+            memory: 1.5Gi
+            hugepages-2Mi: 1.5Gi
+          requests:
+            memory: 1.5Gi
+            hugepages-2Mi: 1.5Gi
       imagePullSecrets:
       - name: regcred

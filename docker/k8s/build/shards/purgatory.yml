@@ -57,16 +57,21 @@ spec:
         ports:
         - containerPort: 25565
         env:
-        - name: "JAVA_MEM"
-          value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
           value: "/project_epic/purgatory"
         - name: "JAVA_LARGE_PAGES"
-          value: ""
+          value: "yes"
         volumeMounts:
         - name: nfs-volume
           mountPath: /project_epic
+        resources:
+          limits:
+            memory: 256Mi
+            hugepages-2Mi: 256Mi
+          requests:
+            memory: 256Mi
+            hugepages-2Mi: 256Mi
       imagePullSecrets:
       - name: regcred

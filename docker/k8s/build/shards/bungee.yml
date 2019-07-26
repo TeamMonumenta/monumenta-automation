@@ -83,16 +83,21 @@ spec:
         ports:
         - containerPort: 25565
         env:
-        - name: "JAVA_MEM"
-          value: "512M"
         - name: "JAVA_JAR"
           value: "BungeeCord.jar"
         - name: "SERVER_DIR"
           value: "/project_epic/bungee"
         - name: "JAVA_LARGE_PAGES"
-          value: ""
+          value: "yes"
         volumeMounts:
         - name: nfs-volume
           mountPath: /project_epic
+        resources:
+          limits:
+            memory: 512Mi
+            hugepages-2Mi: 512Mi
+          requests:
+            memory: 512Mi
+            hugepages-2Mi: 512Mi
       imagePullSecrets:
       - name: regcred
