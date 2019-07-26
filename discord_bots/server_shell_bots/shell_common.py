@@ -10,6 +10,7 @@ import asyncio
 #import traceback
 import subprocess
 import os
+import sys
 
 ################################################################################
 # Utility Functions
@@ -117,10 +118,10 @@ class ShellAction(object):
             await self.display("```" + chunk + "```")
 
     async def display(self, debuginfo):
-        await self._client.send_message(self._channel, debuginfo)
+        await self._channel.send(debuginfo)
 
     async def mention(self):
-        await self._client.send_message(self._channel, self._author.mention)
+        await self._channel.send(self._author.mention)
 
     async def doActions(self, client, channel, author):
         self._client = client
@@ -142,6 +143,6 @@ class ShellAction(object):
                 await item
         except Exception as e:
             await self.mention()
-            await self._client.send_message(self._channel, "**ERROR**: ```" + str(e) + "```")
+            await self._channel.send("**ERROR**: ```" + str(e) + "```")
 
         self._lock = False

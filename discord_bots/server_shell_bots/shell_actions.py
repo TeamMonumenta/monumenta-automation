@@ -8,6 +8,11 @@ Please keep this list in alphabetical order within each category
 
 import os
 import sys
+from pprint import pformat
+
+import logging
+logger = logging.getLogger(__name__)
+
 _file_depth = 3
 _file = os.path.abspath(__file__)
 _top_level = os.path.abspath( os.path.join( _file, '../'*_file_depth ) )
@@ -55,30 +60,32 @@ class listening():
     def __init__(self):
         self._set = set()
 
-    def isListening(self,key):
+    def isListening(self, key):
+        logger.debug("Listening _set: {}".format(pformat(self._set)))
+        logger.debug("Listening key: {}".format(pformat(key)))
         if type(key) is not tuple:
-            key = (key.channel.id,key.author.id)
+            key = (key.channel.id, key.author.id)
         return key not in self._set
 
-    def select(self,key):
+    def select(self, key):
         if type(key) is not tuple:
-            key = (key.channel.id,key.author.id)
+            key = (key.channel.id, key.author.id)
         self._set.remove(key)
 
-    def deselect(self,key):
+    def deselect(self, key):
         if type(key) is not tuple:
-            key = (key.channel.id,key.author.id)
+            key = (key.channel.id, key.author.id)
         self._set.add(key)
 
-    def set(self,key,value):
+    def set(self, key, value):
         if value:
             self.select(key)
         else:
             self.deselect(key)
 
-    def toggle(self,key):
+    def toggle(self, key):
         if type(key) is not tuple:
-            key = (key.channel.id,key.author.id)
+            key = (key.channel.id, key.author.id)
         if self.isListening(key):
             self.deselect(key)
         else:
@@ -88,9 +95,9 @@ class listening():
 # Common privilege code
 
 privUsers = {
-    "302298391969267712": {"name": "Combustible", "rights": [ "@root" ]},
-    "228226807353180162": {"name": "NickNackGus", "rights": [ "@root" ]},
-    "225791510636003329": {"name": "Crondis",     "rights": [ "@root" ]},
+    302298391969267712: {"name": "Combustible", "rights": [ "@root" ]},
+    228226807353180162: {"name": "NickNackGus", "rights": [ "@root" ]},
+    225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]},
 }
 
 groupByRole = {
@@ -174,7 +181,9 @@ permissionGroups = {
 }
 
 def checkPermissions(selfAct, author):
+    logger.debug("author.id = {}".format(author.id))
     userInfo = privUsers.get( author.id, {"rights":["@everyone"]} )
+    logger.debug("User info = {}".format(pformat(userInfo)))
     # This is a copy, not a reference
     userRights = list(userInfo.get("rights",["@everyone"]))
     for role in author.roles:
@@ -222,7 +231,7 @@ class DebugAction(ShellAction):
         self._channel = channel
         self._author = author
 
-        message = "Your user ID is: " + author.id + "\n\nYour roles are:"
+        message = "Your user ID is: " + str(author.id) + "\n\nYour roles are:"
         for role in author.roles:
             message += "\n`" + role.name + "`: " + role.id
 
