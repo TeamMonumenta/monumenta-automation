@@ -405,7 +405,7 @@ class KaulAction(ShellAction):
         for channelId in self._config["channels"]:
             try:
                 channel = client.get_channel(channelId)
-                await client.send_message(channel, "this is a test of an upcoming feature")
+                await channel.send("this is a test of an upcoming feature")
             except Exception as ex:
                 await self.display(channelId + str(ex))
                 pass
@@ -1220,7 +1220,6 @@ Syntax:
 
     def __init__(self, botConfig, message):
         super().__init__(botConfig["extraDebug"])
-        print("TEST!")
 
         estimated_space_left = get_available_storage('/')
 

@@ -6,7 +6,7 @@ import logging
 import yaml
 import threading
 import traceback
-from pprint import pprint
+from pprint import pformat
 
 from bot_socket_server import BotSocketServer
 
@@ -24,14 +24,14 @@ config = {}
 config_dir = os.path.expanduser("~/.monumenta_bot/")
 config_path = os.path.join(config_dir, "config.yml")
 
-# Read the bot's config file
+# Read the bot's config files
 with open(config_path, 'r') as ymlfile:
     config = yaml.load(ymlfile)
 
 config["main_pid"] = os.getpid()
 config["listening"] = listening()
 
-assert "login" in config, "bot's config.yml file must contain 'login' token"
+assert "login" in config, "bot's login.yml file must contain 'login' token"
 assert "name" in config, "bot's config.yml file must contain 'name' value"
 assert "channels" in config, "bot's config.yml file must contain 'channels' map"
 assert "commands" in config, "bot's config.yml file must contain 'commands' list"
@@ -43,7 +43,7 @@ for command in config["commands"]:
     if command in allActionsDict:
         actions[command] = allActionsDict[command]
     else:
-        print('Config error: No such command "{}"'.format(command))
+        logging.error('Config error: No such command "{}"'.format(command))
 config["actions"] = actions
 
 config["extraDebug"] = False
@@ -53,9 +53,9 @@ for arg in sys.argv[1:]:
 
 config["channel_ids"] = list(config["channels"].keys())
 
-pprint(config)
+logging.info(pformat(config))
 
-print("Starting the client...")
+logging.info("Starting the client...")
 
 try:
     # Start the bot socket server which also accepts commands
@@ -69,16 +69,16 @@ try:
 
     @client.event
     async def on_ready():
-        print('Logged in as')
-        print(client.user.name)
-        print(client.user.id)
-        print('------')
+        logging.info('Logged in as')
+        logging.info(client.user.name)
+        logging.info(client.user.id)
+        logging.info('------')
         for channel_id in config["channel_ids"]:
             try:
                 channel = client.get_channel(channel_id)
-                await client.send_message(channel, config["name"] + " started and now listening.")
+                await channel.send(config["name"] + " started and now listening.")
             except:
-                print( "Cannot connect to channel: " + config["channels"][channel_id] )
+                logging.error( "Cannot connect to channel: " + config["channels"][channel_id] )
 
     @client.event
     async def on_message(message):
@@ -89,15 +89,15 @@ try:
             try:
                 action = actionClass(config, message)
                 if not action.hasPermissions(message.author):
-                    await client.send_message(message.channel, "Sorry " + message.author.mention + ", you do not have permission to run this command")
+                    await message.channel.send("Sorry " + message.author.mention + ", you do not have permission to run this command")
                 else:
                     await action.doActions(client, message.channel, message.author)
             except Exception as e:
-                await client.send_message(message.channel, message.author.mention)
-                await client.send_message(message.channel, "**ERROR**: ```" + str(e) + "```")
+                await message.channel.send(message.author.mention)
+                await message.channel.send("**ERROR**: ```" + str(e) + "```")
                 if config["extraDebug"]:
                     for chunk in split_string(traceback.format_exc()):
-                        await client.send_message(message.channel, "```" + chunk + "```")
+                        await message.channel.send("```" + chunk + "```")
 
 
     ################################################################################
@@ -128,8 +128,8 @@ try:
 
     client.run(config["login"])
 except Exception as e:
-    print("The following error was visible from outside the client, and may be used to restart or fix it:")
-    print(repr(e))
+    logging.error("The following error was visible from outside the client, and may be used to restart or fix it:")
+    logging.error(repr(e))
 
-print("Terminating")
+logging.info("Terminating")
 
