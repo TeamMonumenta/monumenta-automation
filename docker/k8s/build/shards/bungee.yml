@@ -1,3 +1,56 @@
+# Service / internal network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: monumenta-bungee-clusterip
+  namespace: build-ns
+  labels:
+    app: monumenta-bungee
+spec:
+  type: ClusterIP
+  selector:
+    app: monumenta-bungee
+  ports:
+  - name: "9575"
+    port: 9575
+    targetPort: 9575
+
+---
+
+# Service / external network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: monumenta-bungee-nodeport
+  namespace: build-ns
+  labels:
+    app: monumenta-bungee
+spec:
+  type: NodePort
+  selector:
+    app: monumenta-bungee
+  ports:
+  # Main minecraft port
+  - name: "25565"
+    port: 25565
+    nodePort: 25565
+    targetPort: 25565
+  # Plan
+  - name: "8804"
+    port: 8804
+    nodePort: 31001
+    targetPort: 8804
+    # Once Votifier moves to bungee
+    #  - name: "3333"
+    #    port: 3333
+    #    targetPort: 3333
+
+---
+
+# Deployment / the actual running application
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
