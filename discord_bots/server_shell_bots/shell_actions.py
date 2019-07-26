@@ -18,10 +18,10 @@ _file = os.path.abspath(__file__)
 _top_level = os.path.abspath( os.path.join( _file, '../'*_file_depth ) )
 
 from shell_common import ShellAction, datestr
+from lib_k8s import KubernetesManager
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.k8s import KubernetesManager
 
 commandPrefix = '~'
 dangerousCharacters = ';<>*|`&$!#()[]{}:\'"'
@@ -530,16 +530,16 @@ Must be run before preparing the build server reset bundle'''
             self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset"),
 
             self.display("Stopping the dungeon shard..."),
-            self.run("mark2 send -n dungeon ~stop", None),
-            self.sleep(5),
-            self.run("mark2 send -n dungeon test", 1),
+            #self.run("mark2 send -n dungeon ~stop", None),
+            #self.sleep(5),
+            #self.run("mark2 send -n dungeon test", 1),
 
             self.display("Copying the dungeon master copies..."),
             self.run("cp -a /home/rock/project_epic/dungeon/Project_Epic-dungeon /home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon"),
 
             self.display("Restarting the dungeon shard..."),
             self.cd("/home/rock/project_epic/dungeon"),
-            self.run("mark2 start"),
+            #self.run("mark2 start"),
 
             self.display("Generating dungeon instances (this may take a while)..."),
             self.run(_top_level + "/utility_code/dungeon_instance_gen.py"),
@@ -592,10 +592,14 @@ class ListShardsAction(ShellAction):
         super().__init__(botConfig["extraDebug"])
         k8s = KubernetesManager()
 
-        k8s.list()
+        shards = k8s.list()
+        # Format of this is:
+        # {'bungee': {'available_replicas': 1, 'replicas': 1},
+        #  'dungeon': {'available_replicas': 1, 'replicas': 1}
+        #  'test': {'available_replicas': 0, 'replicas': 0}}
 
         self._commands = [
-            self.display("debug"),
+            self.display("Shard list: \n{}".format(pformat(shards))),
         ]
 allActions.append(ListShardsAction)
 
@@ -656,12 +660,12 @@ Must be run before starting terrain reset on the play server'''
             return
 
         self._commands = [
-            self.display("Stopping the region_1 shard..."),
-            self.run("mark2 send -n region_1 ~stop", None),
-            self.run("mark2 send -n region_2 ~stop", None),
-            self.sleep(6),
-            self.run("mark2 send -n region_1 test", 1),
-            self.run("mark2 send -n region_2 test", 1),
+            #self.display("Stopping the region_1 shard..."),
+            #self.run("mark2 send -n region_1 ~stop", None),
+            #self.run("mark2 send -n region_2 ~stop", None),
+            #self.sleep(6),
+            #self.run("mark2 send -n region_1 test", 1),
+            #self.run("mark2 send -n region_2 test", 1),
 
             self.display("Copying region_1..."),
             self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
@@ -670,7 +674,7 @@ Must be run before starting terrain reset on the play server'''
 
             self.display("Restarting the region_1 shard..."),
             self.cd("/home/rock/project_epic/region_1"),
-            self.run("mark2 start"),
+            #self.run("mark2 start"),
 
             self.display("Copying region_2..."),
             self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
@@ -679,7 +683,7 @@ Must be run before starting terrain reset on the play server'''
 
             self.display("Restarting the region_2 shard..."),
             self.cd("/home/rock/project_epic/region_2"),
-            self.run("mark2 start"),
+            #self.run("mark2 start"),
 
             self.display("Copying bungee..."),
             self.run("cp -a /home/rock/project_epic/bungee /home/rock/5_SCRATCH/tmpreset/TEMPLATE/"),

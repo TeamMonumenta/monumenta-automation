@@ -1,8 +1,8 @@
 FROM debian:stable
 
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends python3 python3-yaml python3-kubernetes python3-pip && \
-	pip3 install discord.py
+	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools && \
+	pip3 install discord.py kubernetes
 
 # Check for mandatory build arguments
 ARG USERNAME
