@@ -102,13 +102,13 @@ privUsers = {
 
 groupByRole = {
     # Team Epic (TE)
-    "341032989787947008": "@team epic",
+    341032989787947008: "@team epic",
     # Intern (TE)
-    "390269554657460226": "@intern",
+    390269554657460226: "@intern",
     # Bot Skill Info (TE)
-    "464598658449670145": "+skill info",
+    464598658449670145: "+skill info",
     # Moderator (Public)
-    "313067199579422722": "@moderator",
+    313067199579422722: "@moderator",
 }
 
 permissionGroups = {
