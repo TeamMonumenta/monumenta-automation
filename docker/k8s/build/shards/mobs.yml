@@ -75,10 +75,10 @@ spec:
           mountPath: /home/rock/maps/dynmap/build
         resources:
           limits:
-            memory: 1Gi
-            hugepages-2Mi: 1Gi
+            memory: 1.5Gi
+            hugepages-2Mi: 1.5Gi
           requests:
-            memory: 1Gi
-            hugepages-2Mi: 1Gi
+            memory: 1.5Gi
+            hugepages-2Mi: 1.5Gi
       imagePullSecrets:
       - name: regcred
