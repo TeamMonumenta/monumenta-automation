@@ -1,4 +1,4 @@
-# Building
+# Building images
 
 ```
 docker build . --file java-shard.Dockerfile -t monumenta-docker.injic.io/monumenta-java-shard --build-arg USERNAME=epic --build-arg UID=1000 --build-arg GID=1000
@@ -6,7 +6,15 @@ docker build . --file basic_ssh.Dockerfile -t monumenta-docker.injic.io/monument
 docker build .. --file automation-bot.Dockerfile -t monumenta-docker.injic.io/monumenta-automation-bot --build-arg USERNAME=rock --build-arg UID=1000 --build-arg GID=1000
 ```
 
-# Logging in
+Building the `monumenta-dev-environment` image requires getting Combustible/Byron's configscripts repo to build.
+```
+git clone git@github.com:Combustible/configscripts.git configscripts.formonumenta
+cd configscripts.formonumenta
+git checkout for_monumenta
+docker build . -t monumenta-docker.injic.io/monumenta-dev-environment --build-arg USERNAME=epic --build-arg GIT_NAME="Monumenta" --build-arg GIT_EMAIL=MonumentaMMO@gmail.com --build-arg UID=1000 --build-arg GID=1000 --build-arg DOCKER_GID=999
+```
+
+# Logging in to the docker registry
 
 ```
 docker login monumenta-docker.injic.io
@@ -18,9 +26,10 @@ docker login monumenta-docker.injic.io
 docker push monumenta-docker.injic.io/monumenta-java-shard
 docker push monumenta-docker.injic.io/monumenta-basic-ssh
 docker push monumenta-docker.injic.io/monumenta-automation-bot
+docker push monumenta-docker.injic.io/monumenta-dev-environment
 ```
 
-# Kubernetes config:
+# Kubernetes config for registry:
 
 ```
 kubectl create secret docker-registry regcred --docker-server=monumenta-docker.injic.io --docker-username=monumenta --docker-password=<password>
