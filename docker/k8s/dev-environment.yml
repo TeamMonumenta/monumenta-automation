@@ -19,6 +19,7 @@ rules:
   - apiGroups:
       - ""
       - apps
+      - autoscaling
       - batch
       - extensions
       - policy
@@ -32,14 +33,20 @@ rules:
       - deployments/scale
       - events
       - endpoints
+      - horizontalpodautoscalers
       - ingress
       - jobs
       - limitranges
       - namespaces
       - nodes
       - pods
+      - pods/exec
       - pods/log
+      - persistentvolumes
+      - persistentvolumeclaims
       - resourcequotas
+      - replicasets
+      - replicationcontrollers
       - serviceaccounts
       - services
       - statefulsets
