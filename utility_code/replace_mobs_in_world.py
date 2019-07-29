@@ -929,7 +929,7 @@ mobs_to_replace = [
     {
         'rules': {
             'id': 'minecraft:skeleton',
-            'CustomName': 'Frost Moon's Shadow'
+            'CustomName': "Frost Moon's Shadow"
         },
         'mojangson': r'''{id:"minecraft:skeleton",CustomName:"[{\"text\":\"Frost Moon\\u0027s Shadow\"}]",Health:40.0f,ArmorItems:[{},{},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:16777215,Name:"{\"text\":\"§3§lCobaltean Cape\"}"},AttributeModifiers:[{UUIDMost:6138072622905640482L,UUIDLeast:-5532826880256379464L,Amount:0.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:leather_helmet",Count:1b,tag:{display:{color:16777215,Name:"{\"text\":\"§3§lCap of Fear\"}"},AttributeModifiers:[{UUIDMost:8541959490611531199L,UUIDLeast:-5625989978383676761L,Amount:0.0d,Slot:"head",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}}],Attributes:[{Base:0.2d,Name:"generic.movementSpeed"},{Base:64.0d,Name:"generic.followRange"},{Base:65.0d,Name:"generic.maxHealth"}],Team:"mobs",Tags:["boss_weaponswitch"],HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§aFinal Crescent\"}"},Enchantments:[{lvl:12s,id:"minecraft:power"}]}},{id:"minecraft:stone_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§5§lMorphic Blade\"}"},Damage:0,AttributeModifiers:[{UUIDMost:-2474108079496869428L,UUIDLeast:-5764631373557254931L,Amount:8.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"},{UUIDMost:-1270886328551783129L,UUIDLeast:-7917919975936481678L,Amount:0.1d,Slot:"offhand",AttributeName:"generic.movementSpeed",Operation:0,Name:"Modifier"}]}}]}''',
     },

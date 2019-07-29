@@ -18,46 +18,41 @@ from lib_py3.common import eprint, parse_name_possibly_json, get_named_hand_item
 from lib_py3.world import World
 
 spawners_to_replace = [
-# BROKEN NAME NOT SET IN BOS
-#    {
-#        'rules': {
-#            'mob_id': 'minecraft:vindicator',
-#            'mob_CustomName': '''Alutana's Devoted'''
-#        },
-#        'mojangson': r'''{SpawnCount:4s}''',
-#    },
-# WORKS
-#    {
-#        'rules': {
-#            'mob_id': 'minecraft:spider',
-#            'mob_CustomName': 'Wolf Spider'
-#        },
-#        'mojangson': r'''{SpawnCount:4s}''',
-#    },
-# WORKS
-#    {
-#        'rules': {
-#            'mob_id': 'minecraft:skeleton',
-#            'mob_CustomName': 'Frost Moon Knight'
-#        },
-#        'mojangson': r'''{SpawnCount:4s}''',
-#    },
-# WORKS
-#    {
-#        'rules': {
-#            'mob_id': 'minecraft:skeleton',
-#            'mob_CustomName': '''Frost Moon's Shadow'''
-#        },
-#        'mojangson': r'''{SpawnCount:3s}''',
-#    },
-# BROKEN NAME NOT SET IN BOS
-#    {
-#        'rules': {
-#            'mob_id': 'minecraft:stray',
-#            'mob_CustomName': 'Follower of Alutana'
-#        },
-#        'mojangson': r'''{SpawnCount:6s}''',
-#    },
+    {
+        'rules': {
+            'mob_id': 'minecraft:vindicator',
+            'mob_CustomName': '''Alutana's Devoted'''
+        },
+        'mojangson': r'''{SpawnCount:4s}''',
+    },
+    {
+        'rules': {
+            'mob_id': 'minecraft:spider',
+            'mob_CustomName': 'Wolf Spider'
+        },
+        'mojangson': r'''{SpawnCount:4s}''',
+    },
+    {
+        'rules': {
+            'mob_id': 'minecraft:skeleton',
+            'mob_CustomName': 'Frost Moon Knight'
+        },
+        'mojangson': r'''{SpawnCount:4s}''',
+    },
+    {
+        'rules': {
+            'mob_id': 'minecraft:skeleton',
+            'mob_CustomName': '''Frost Moon's Shadow'''
+        },
+        'mojangson': r'''{SpawnCount:3s}''',
+    },
+    {
+        'rules': {
+            'mob_id': 'minecraft:stray',
+            'mob_CustomName': 'Follower of Alutana'
+        },
+        'mojangson': r'''{SpawnCount:6s}''',
+    },
 ]
 
 def usage():
@@ -136,7 +131,8 @@ for replacement in spawners_to_replace:
 
 spawners_to_replace = clean_replacements
 
-print("!!! Running in DRY RUN / READ ONLY mode")
+if dry_run:
+    print("!!! Running in DRY RUN / READ ONLY mode")
 
 replacements_log = {}
 for entity, source_pos, entity_path in world.entity_iterator(pos1=pos1, pos2=pos2, readonly=dry_run):
