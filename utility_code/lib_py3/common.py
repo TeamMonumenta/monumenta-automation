@@ -38,7 +38,7 @@ def json_text_to_plain_text(json_text):
 
     elif isinstance(json_text, list):
         for item in json_text:
-            result += json_text_to_plain_text(json_text)
+            result += json_text_to_plain_text(item)
 
     return result
 
