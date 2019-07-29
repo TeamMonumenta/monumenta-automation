@@ -18,20 +18,53 @@ from lib_py3.common import eprint, parse_name_possibly_json, get_named_hand_item
 from lib_py3.world import World
 
 spawners_to_replace = [
-    {
-        'rules': {
-            'mob_id': 'minecraft:wither',
-            'mob_CustomName': 'Bob'
-        },
-        'mojangson': r'''{SpawnCount:4}''',
-    },
+# BROKEN NAME NOT SET IN BOS
+#    {
+#        'rules': {
+#            'mob_id': 'minecraft:vindicator',
+#            'mob_CustomName': '''Alutana's Devoted'''
+#        },
+#        'mojangson': r'''{SpawnCount:4s}''',
+#    },
+# WORKS
+#    {
+#        'rules': {
+#            'mob_id': 'minecraft:spider',
+#            'mob_CustomName': 'Wolf Spider'
+#        },
+#        'mojangson': r'''{SpawnCount:4s}''',
+#    },
+# WORKS
+#    {
+#        'rules': {
+#            'mob_id': 'minecraft:skeleton',
+#            'mob_CustomName': 'Frost Moon Knight'
+#        },
+#        'mojangson': r'''{SpawnCount:4s}''',
+#    },
+# WORKS
+#    {
+#        'rules': {
+#            'mob_id': 'minecraft:skeleton',
+#            'mob_CustomName': '''Frost Moon's Shadow'''
+#        },
+#        'mojangson': r'''{SpawnCount:3s}''',
+#    },
+# BROKEN NAME NOT SET IN BOS
+#    {
+#        'rules': {
+#            'mob_id': 'minecraft:stray',
+#            'mob_CustomName': 'Follower of Alutana'
+#        },
+#        'mojangson': r'''{SpawnCount:6s}''',
+#    },
 ]
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world> [--logfile <stdout|stderr|path>] [--dry-run] [--interactive]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world> [--logfile <stdout|stderr|path>] [--pos1 x,y,z --pos2 x,y,z] [--dry-run] [--interactive]".format(sys.argv[0]))
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:l:di", ["world=", "logfile=", "dry-run", "interactive"])
+    opts, args = getopt.getopt(sys.argv[1:], "w:l:di", ["world=", "logfile=", "pos1=", "pos2=", "dry-run", "interactive"])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
@@ -40,12 +73,28 @@ world_path = None
 logfile = 'stdout'
 dry_run = False
 interactive = False
+pos1 = None
+pos2 = None
 
 for o, a in opts:
     if o in ("-w", "--world"):
         world_path = a
     elif o in ("-l", "--logfile"):
         logfile = a
+    elif o in ("--pos1"):
+        try:
+            split = a.split(",")
+            pos1 = (int(split[0]), int(split[1]), int(split[2]))
+        except:
+            eprint("Invalid --pos1 argument")
+            usage()
+    elif o in ("--pos2"):
+        try:
+            split = a.split(",")
+            pos2 = (int(split[0]), int(split[1]), int(split[2]))
+        except:
+            eprint("Invalid --pos2 argument")
+            usage()
     elif o in ("-d", "--dry-run"):
         dry_run = True
     elif o in ("-i", "--interactive"):
@@ -56,6 +105,9 @@ for o, a in opts:
 
 if world_path is None:
     eprint("--world must be specified!")
+    usage()
+elif ((pos1 is not None) and (pos2 is None)) or ((pos1 is None) and (pos2 is not None)):
+    eprint("--pos1 and --pos2 must be specified (or neither specified)!")
     usage()
 
 world = World(world_path)
@@ -84,9 +136,10 @@ for replacement in spawners_to_replace:
 
 spawners_to_replace = clean_replacements
 
+print("!!! Running in DRY RUN / READ ONLY mode")
 
 replacements_log = {}
-for entity, source_pos, entity_path in world.entity_iterator(readonly=dry_run):
+for entity, source_pos, entity_path in world.entity_iterator(pos1=pos1, pos2=pos2, readonly=dry_run):
     ### Update entities
     for replacement in spawners_to_replace:
         if not (
@@ -115,7 +168,7 @@ for entity, source_pos, entity_path in world.entity_iterator(readonly=dry_run):
             shell = code.InteractiveConsole(variables)
             shell.interact()
 
-        for mob in spawner_mobs:
+        for mob in spawner_mobs.value:
             if not mob.has_path('id'):
                 continue
 
@@ -161,11 +214,12 @@ for entity, source_pos, entity_path in world.entity_iterator(readonly=dry_run):
         log_handle.write("    MERGING:  {}\n".format(replacement['mojangson']))
         log_handle.write("    INTO:     {}\n".format(entity.to_mojangson()))
         log_handle.write("    AT:       {}\n".format(get_debug_string_from_entity_path(entity_path)))
-        log_handle.write("\n")
 
-        tag_to_merge = nbt.TagCompound.from_mojangson(replacement['mojangson']).value
+        tag_to_merge = nbt.TagCompound.from_mojangson(replacement['mojangson'])
         entity.update(tag_to_merge)
 
+        log_handle.write("    RESULT:   {}\n".format(entity.to_mojangson()))
+        log_handle.write("\n")
 
 
 if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
