@@ -19,7 +19,6 @@ rules:
   - apiGroups:
       - ""
       - apps
-      - autoscaling
       - batch
       - extensions
       - policy
@@ -30,9 +29,9 @@ rules:
       - cronjobs
       - daemonsets
       - deployments
+      - deployments/scale
       - events
       - endpoints
-      - horizontalpodautoscalers
       - ingress
       - jobs
       - limitranges
@@ -40,11 +39,7 @@ rules:
       - nodes
       - pods
       - pods/log
-      - persistentvolumes
-      - persistentvolumeclaims
       - resourcequotas
-      - replicasets
-      - replicationcontrollers
       - serviceaccounts
       - services
       - statefulsets
