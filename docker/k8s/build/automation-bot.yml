@@ -74,6 +74,14 @@ spec:
           nfs:
             server: 10.6.3.1
             path: /nfs/build/project_epic
+        - name: nfs-old-backups
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/0_OLD_BACKUPS
+        - name: nfs-archive
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/1_ARCHIVE
         - name: nfs-shared
           nfs:
             server: 10.6.3.1
@@ -89,6 +97,10 @@ spec:
         volumeMounts:
         - name: nfs-data
           mountPath: /home/rock/project_epic
+        - name: nfs-old-backups
+          mountPath: /home/epic/0_OLD_BACKUPS
+        - name: nfs-archive
+          mountPath: /home/epic/1_ARCHIVE
         - name: nfs-shared
           mountPath: /home/rock/4_SHARED
         - name: secret-config
