@@ -57,6 +57,10 @@ spec:
         ports:
         - containerPort: 25565
         env:
+        - name: "JAVA_MEM"
+          value: "256M"
+        - name: "JAVA_META_MEM"
+          value: "64M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
@@ -69,9 +73,12 @@ spec:
         resources:
           limits:
             memory: 256Mi
-            hugepages-2Mi: 256Mi
+            hugepages-2Mi: 384Mi
           requests:
-            memory: 256Mi
-            hugepages-2Mi: 256Mi
+            # Set this to 64Mi
+            # The shard should not need non-hugepage RAM by default
+            memory: 64Mi
+            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: 384Mi
       imagePullSecrets:
       - name: regcred

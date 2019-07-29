@@ -61,6 +61,12 @@ spec:
         ports:
         - containerPort: 25565
         env:
+        # Set this to however much RAM the shard needs
+        - name: "JAVA_MEM"
+          value: "7G"
+        # Set this to 256M regardless of JAVA_MEM
+        - name: "JAVA_META_MEM"
+          value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
@@ -74,10 +80,17 @@ spec:
           mountPath: /home/rock/maps/dynmap/build
         resources:
           limits:
-            memory: 7Gi
-            hugepages-2Mi: 7Gi
+            # Set this to 1Gi
+            # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
+            # It should not need much/any...
+            memory: 1Gi
+            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: 8Gi
           requests:
-            memory: 7Gi
-            hugepages-2Mi: 7Gi
+            # Set this to 64M
+            # The shard should not need non-hugepage RAM by default
+            memory: 64Mi
+            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: 8Gi
       imagePullSecrets:
       - name: regcred
