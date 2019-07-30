@@ -53,6 +53,10 @@ spec:
           nfs:
             server: 10.6.3.1
             path: /nfs/build/project_epic
+        - name: nfs-shared
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/4_SHARED
       containers:
       - name: monumenta-dungeon
         image: monumenta-docker.injic.io/monumenta-java-shard
@@ -78,6 +82,8 @@ spec:
           mountPath: /project_epic
         - name: nfs-maps
           mountPath: /home/rock/maps/dynmap/build
+        - name: nfs-shared
+          mountPath: /home/rock/4_SHARED
         resources:
           limits:
             # Set this to 1Gi
