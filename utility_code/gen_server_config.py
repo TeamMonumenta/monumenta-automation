@@ -31,8 +31,6 @@ server_config_to_copy = [
         ('commands.yml',),
         ('eula.txt',),
         ('help.yml',),
-        ('mark2.properties',),
-        ('mark2-scripts.txt',),
         ('permissions.yml',),
         ('server.properties',),
         ('spigot.yml',),
@@ -178,7 +176,6 @@ else:
 # {servername} - server name
 #('server.properties', 'motd', 'motd=Monumenta\: {servername} shard'),
 #('plugins/Socket4MC/config.yml', 'name', 'name: "{servername}"'),
-#('mark2.properties', 'plugin.backup.path', 'plugin.backup.path=../backups/{servername}/{servername}_{timestamp}.tar.gz'),
 #('server.properties', 'level-name', 'level-name=Project_Epic-{servername}'),
 
 template_dir = 'server_config/data/server_config_template'
@@ -190,8 +187,6 @@ config = {
     #         if one, just copy file unmodified
 
     # Change between play and beta:
-    #   Memory allocation
-    #   Hugepages in mark2.properties
     #   Difficulty
     #   Tab complete=9999 in spigot.yml
 
@@ -199,7 +194,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2-scripts.txt', '     0    3    *    *    *    /function monumenta:on_new_day/global'),
         ],
         'linked':server_config + base_plugins + dynmap + [
             ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
@@ -211,28 +205,14 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2-scripts.txt', '     0    3    *    *    *    /function monumenta:on_new_day/global'),
         ],
         'linked':server_config + base_plugins + dynmap,
-    },
-
-    'tutorial':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=9'),
-            ('server.properties', 'white-list', 'white-list=false'),
-            ('spigot.yml', 'view-distance', '    view-distance: 9'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
-        ],
-        'linked':server_config + base_plugins,
     },
 
     'dungeon':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
             ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
         ],
         'linked':server_config + base_plugins + dynmap + [
             ('plugins/ScriptedQuests/npcs/tutorial', '../../../../server_config/data/scriptedquests/npcs/tutorial'),
@@ -240,32 +220,10 @@ config = {
         ],
     },
 
-    'roguelike':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=2G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=2G'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'test':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1G'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
     'update_do_not_use':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=5G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=5G'),
         ],
         'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
     },
@@ -274,8 +232,6 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=5G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=5G'),
         ],
         'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
     },
@@ -288,8 +244,6 @@ config = {
             ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
             ('server.properties', 'difficulty', 'difficulty=0'),
             ('server.properties', 'gamemode', 'gamemode=1'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1280M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1280M'),
         ],
         'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect + gobrush,
     },
@@ -299,14 +253,8 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=6'),
             ('spigot.yml', 'view-distance', '    view-distance: 6'),
             ('server.properties', 'difficulty', 'difficulty=2'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=768M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=768M'),
         ],
-        'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + coreprotect + [
-            ('plugins/MonumentaMain.jar', '/home/epic/mob_shard_plugins/MonumentaMain.jar'),
-            ('plugins/MonumentaBosses.jar', '/home/epic/mob_shard_plugins/MonumentaBosses.jar'),
-            ('plugins/MonumentaNMS.jar', '/home/epic/mob_shard_plugins/MonumentaNMS.jar'),
-        ]
+        'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + coreprotect,
     },
 
     'r1plots':{
@@ -314,8 +262,6 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=7'),
             ('spigot.yml', 'view-distance', '    view-distance: 7'),
             ('server.properties', 'difficulty', 'difficulty=0'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
         ],
         'linked':server_config + base_plugins + dynmap,
     },
@@ -325,18 +271,6 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=7'),
             ('spigot.yml', 'view-distance', '    view-distance: 7'),
             ('server.properties', 'difficulty', 'difficulty=0'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'nightmare':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=10'),
-            ('spigot.yml', 'view-distance', '    view-distance: 10'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
         ],
         'linked':server_config + base_plugins,
     },
@@ -353,152 +287,44 @@ config = {
             ('server.properties', 'spawn-npcs', 'spawn-npcs=false'),
             ('server.properties', 'spawn-protection', 'spawn-protection=16'),
             ('paper.yml', 'keep-spawn-loaded', '    keep-spawn-loaded: true'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=256M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=256M'),
         ],
         'linked':purgatory_min,
     },
 
-    'white':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=16'),
-            ('spigot.yml', 'view-distance', '    view-distance: 16'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
 
-    'orange':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=12'),
-            ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'magenta':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=12'),
-            ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'lightblue':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=12'),
-            ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'yellow':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'lime':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=9'),
-            ('spigot.yml', 'view-distance', '    view-distance: 9'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'pink':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'gray':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'lightgray':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=9'),
-            ('spigot.yml', 'view-distance', '    view-distance: 9'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'cyan':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'purple':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'r1bonus':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'sanctum':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=10'),
-            ('spigot.yml', 'view-distance', '    view-distance: 10'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
-    'labs':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=9'),
-            ('spigot.yml', 'view-distance', '    view-distance: 9'),
-            ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=1536M'),
-            ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=1536M'),
-        ],
-        'linked':server_config + base_plugins,
-    },
 }
+
+simple_view_distance_config = {
+    'white': 16,
+    'orange': 12,
+    'magenta': 12,
+    'lightblue': 12,
+    'yellow': 8,
+    'lime': 9,
+    'pink': 8,
+    'gray': 8,
+    'lightgray': 9,
+    'cyan': 8,
+    'purple': 8,
+
+    'tutorial': 9,
+    'labs': 9,
+    'r1bonus': 8,
+    'roguelike': 8,
+    'sanctum': 10,
+    'nightmare': 10,
+    'test': 8,
+{
+
+for key in simple_view_distance_config:
+    distance = simple_view_distance_config[key]
+    config['key'] = {
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance={}', distance),
+            ('spigot.yml', 'view-distance', '    view-distance: {}', distance),
+        ],
+        'linked':server_config + base_plugins,
+    }
 
 
 # config should be the entire config map
@@ -520,29 +346,11 @@ if (SERVER_TYPE == 'build'):
     config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
     config = add_config_if_not_set(config, ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: true'))
-
-    config['region_1']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=3G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=3G'),
-    ]
-    config['region_2']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=4G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=4G'),
-    ]
 else:
     config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=2'))
     config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
     config = add_config_if_not_set(config, ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: false'))
-
-    config['region_1']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=8G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=8G'),
-    ]
-    config['region_2']['config'] += [
-        ('mark2.properties', 'java.cli.X.ms', 'java.cli.X.ms=8G'),
-        ('mark2.properties', 'java.cli.X.mx', 'java.cli.X.mx=8G'),
-    ]
 
     # Player analytics plugin only for play server
     for key in config:
