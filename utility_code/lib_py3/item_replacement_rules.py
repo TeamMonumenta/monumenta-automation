@@ -90,18 +90,15 @@ def enchantify(item, player, region, enchantment, owner_prefix=None):
 
     enchantmentFound = False
     nameAdded = (owner_prefix is None)
-    regionFound = False
     for loreEntry in lore:
         loreEntry = loreEntry.value
         if ( enchantment ) in loreEntry:
             enchantmentFound = True
 
-        if region in loreEntry:
-            regionFound = True
-
         loreStripped = unformat_text(loreEntry)
 
-        if (not enchantmentFound and (region in loreEntry or
+        if (not enchantmentFound and ("King's Valley :" in loreEntry or
+                                      "Celsian Isles :" in loreEntry or
                                       "Armor" in loreEntry or
                                       "Magic Wand" in loreEntry or
                                       len(loreStripped) == 0)):
@@ -116,9 +113,6 @@ def enchantify(item, player, region, enchantment, owner_prefix=None):
 
     if not nameAdded:
         newLore.append(nbt.TagString(owner_prefix + " " + player))
-
-    if not regionFound:
-        return
 
     item.at_path('tag.display.Lore').value = newLore
 
