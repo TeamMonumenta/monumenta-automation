@@ -85,7 +85,7 @@ spec:
         - name: nfs-shared
           nfs:
             server: 10.6.3.1
-            path: /4_SHARED
+            path: /nfs/4_SHARED
         - name: secret-config
           secret:
             secretName: automation-bot-build-config
@@ -98,9 +98,9 @@ spec:
         - name: nfs-data
           mountPath: /home/rock/project_epic
         - name: nfs-old-backups
-          mountPath: /home/epic/0_OLD_BACKUPS
+          mountPath: /home/rock/0_OLD_BACKUPS
         - name: nfs-archive
-          mountPath: /home/epic/1_ARCHIVE
+          mountPath: /home/rock/1_ARCHIVE
         - name: nfs-shared
           mountPath: /home/rock/4_SHARED
         - name: secret-config
