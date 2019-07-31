@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#lib_minecraft:armor",
+    "#lib_minecraft:tools"
+  ]
+}
