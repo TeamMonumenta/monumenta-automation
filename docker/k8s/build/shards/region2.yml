@@ -46,16 +46,16 @@ spec:
     spec:
       volumes:
         - name: nfs-maps
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/build/maps
         - name: nfs-project-epic
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/build/project_epic
         - name: nfs-shared
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/4_SHARED
       containers:
       - name: monumenta-region2

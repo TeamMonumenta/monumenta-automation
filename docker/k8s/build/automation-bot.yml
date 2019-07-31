@@ -71,20 +71,20 @@ spec:
       serviceAccountName: automation-bot-service-account
       volumes:
         - name: nfs-data
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/build/project_epic
         - name: nfs-old-backups
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/0_OLD_BACKUPS
         - name: nfs-archive
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/1_ARCHIVE
         - name: nfs-shared
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/4_SHARED
         - name: secret-config
           secret:

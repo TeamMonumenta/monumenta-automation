@@ -68,9 +68,9 @@ spec:
     spec:
       volumes:
         - name: nfs-volume
-          nfs:
-            server: 10.6.3.1
+          hostPath:
             path: /nfs/play/project_epic
+            type: Directory
       containers:
       - name: bungee
         image: monumenta-docker.injic.io/monumenta-java-shard

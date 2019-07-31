@@ -43,16 +43,16 @@ spec:
     spec:
       volumes:
         - name: nfs-data
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/build/project_epic/server_config/data
         - name: nfs-mobs-logs
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/build/project_epic/mobs/logs
         - name: nfs-mobs-plugins
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/build/project_epic/mobs/plugins
       containers:
       - name: monumenta-basic-ssh

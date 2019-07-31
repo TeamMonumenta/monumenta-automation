@@ -46,17 +46,17 @@ spec:
     spec:
       volumes:
         - name: nfs-maps
-          nfs:
-            server: 10.6.3.1
+          hostPath:
             path: /nfs/play/maps
+            type: Directory
         - name: nfs-project-epic
-          nfs:
-            server: 10.6.3.1
+          hostPath:
             path: /nfs/play/project_epic
+            type: Directory
         - name: nfs-shared
-          nfs:
-            server: 10.6.3.1
+          hostPath:
             path: /nfs/4_SHARED
+            type: Directory
       containers:
       - name: sanctum
         image: monumenta-docker.injic.io/monumenta-java-shard
