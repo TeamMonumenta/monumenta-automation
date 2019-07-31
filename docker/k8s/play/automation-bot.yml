@@ -1,0 +1,109 @@
+
+# This is a service account for the bot's pod to use to talk to the controller
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: automation-bot-service-account
+  namespace: play
+
+---
+
+# This is the permission object that will be attached to the above service account
+# This specifies what the pod is allowed to do
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: automation-bot-role
+  namespace: play
+rules:
+  - apiGroups:
+      - ""
+      - "apps"
+    resources:
+      - deployments
+      # TODO: Don't need this?
+      - pods
+    verbs:
+      - list
+      - patch
+      # TODO: Don't need this?
+      - update
+
+---
+
+# This binds the role to the service account, giving it perms
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: automation-bot-role-binding
+  namespace: play
+roleRef:
+  kind: Role
+  name: automation-bot-role
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+ - kind: ServiceAccount
+   name: automation-bot-service-account
+   namespace: play
+
+---
+
+# This is the actual bot's deployment, specifying what it should run
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monumenta-automation-bot-deployment
+  namespace: play
+  labels:
+    app: monumenta-automation-bot
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monumenta-automation-bot
+  template:
+    metadata:
+      labels:
+        app: monumenta-automation-bot
+    spec:
+      serviceAccountName: automation-bot-service-account
+      volumes:
+        - name: nfs-data
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/play/project_epic
+        - name: nfs-old-backups
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/0_OLD_BACKUPS
+        - name: nfs-archive
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/1_ARCHIVE
+        - name: nfs-shared
+          nfs:
+            server: 10.6.3.1
+            path: /nfs/4_SHARED
+        - name: secret-config
+          secret:
+            secretName: automation-bot-play-config
+      containers:
+      - name: monumenta-automation-bot
+        image: monumenta-docker.injic.io/monumenta-automation-bot
+        tty: false
+        stdin: false
+        volumeMounts:
+        - name: nfs-data
+          mountPath: /home/rock/project_epic
+        - name: nfs-old-backups
+          mountPath: /home/rock/0_OLD_BACKUPS
+        - name: nfs-archive
+          mountPath: /home/rock/1_ARCHIVE
+        - name: nfs-shared
+          mountPath: /home/rock/4_SHARED
+        - name: secret-config
+          mountPath: /home/rock/.monumenta_bot
+      imagePullSecrets:
+      - name: regcred

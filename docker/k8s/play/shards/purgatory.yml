@@ -52,6 +52,7 @@ spec:
         stdin: true
         ports:
         - containerPort: 25565
+        - containerPort: 8804
         env:
         - name: "JAVA_MEM"
           value: "256M"

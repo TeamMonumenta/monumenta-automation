@@ -314,11 +314,11 @@ simple_view_distance_config = {
     'sanctum': 10,
     'nightmare': 10,
     'test': 8,
-{
+}
 
 for key in simple_view_distance_config:
     distance = simple_view_distance_config[key]
-    config['key'] = {
+    config[key] = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance={}', distance),
             ('spigot.yml', 'view-distance', '    view-distance: {}', distance),

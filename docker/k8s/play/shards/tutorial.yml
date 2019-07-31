@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: monumenta-region2-clusterip
-  namespace: build-ns
+  name: tutorial
+  namespace: play
   labels:
-    app: monumenta-region2
+    app: tutorial
 spec:
   type: ClusterIP
   selector:
-    app: monumenta-region2
+    app: tutorial
   ports:
   # Main minecraft port
   - name: "25565"
@@ -28,60 +28,61 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: monumenta-region2-deployment
-  namespace: build-ns
+  name: tutorial
+  namespace: play
   labels:
-    app: monumenta-region2
+    app: tutorial
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: monumenta-region2
+      app: tutorial
   template:
     metadata:
       labels:
-        app: monumenta-region2
+        app: tutorial
     spec:
       volumes:
         - name: nfs-maps
           nfs:
             server: 10.6.3.1
-            path: /nfs/build/maps
+            path: /nfs/play/maps
         - name: nfs-project-epic
           nfs:
             server: 10.6.3.1
-            path: /nfs/build/project_epic
+            path: /nfs/play/project_epic
         - name: nfs-shared
           nfs:
             server: 10.6.3.1
             path: /nfs/4_SHARED
       containers:
-      - name: monumenta-region2
+      - name: tutorial
         image: monumenta-docker.injic.io/monumenta-java-shard
         tty: true
         stdin: true
         ports:
         - containerPort: 25565
+        - containerPort: 8804
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
-          value: "7G"
+          value: "1536M"
         # Set this to 256M regardless of JAVA_MEM
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/region_2"
+          value: "/project_epic/tutorial"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         volumeMounts:
         - name: nfs-project-epic
           mountPath: /project_epic
         - name: nfs-maps
-          mountPath: /home/rock/maps/dynmap/build
+          mountPath: /home/rock/maps/dynmap/play
         - name: nfs-shared
           mountPath: /home/rock/4_SHARED
         resources:
@@ -91,12 +92,12 @@ spec:
             # It should not need much/any...
             memory: 1Gi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 8Gi
+            hugepages-2Mi: 1888Mi
           requests:
-            # Set this to 64M
+            # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 8Gi
+            hugepages-2Mi: 1888Mi
       imagePullSecrets:
       - name: regcred

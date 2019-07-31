@@ -35,7 +35,7 @@ metadata:
 spec:
   strategy:
     type: Recreate
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: monumenta-region1
