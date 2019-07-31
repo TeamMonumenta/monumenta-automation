@@ -34,14 +34,14 @@ spec:
   ports:
   # Main minecraft port
   - name: "25565"
-    port: 25565
-    nodePort: 25565
+    port: 9001
+    nodePort: 9001
     targetPort: 25565
-  # Plan
-  - name: "8804"
-    port: 8804
-    nodePort: 31001
-    targetPort: 8804
+    #  # Plan
+    #  - name: "8804"
+    #    port: 8804
+    #    nodePort: 31001
+    #    targetPort: 8804
     # Once Votifier moves to bungee
     #  - name: "3333"
     #    port: 3333
