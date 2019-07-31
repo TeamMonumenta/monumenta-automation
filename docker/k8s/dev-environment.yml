@@ -42,6 +42,7 @@ rules:
       - pods
       - pods/exec
       - pods/log
+      - pods/attach
       - persistentvolumes
       - persistentvolumeclaims
       - resourcequotas
