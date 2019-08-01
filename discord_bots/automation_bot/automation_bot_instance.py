@@ -70,6 +70,7 @@ class AutomationBotInstance(object):
             self._commands = config["commands"]
             self._permissions = config["permissions"]
             self._listening = Listening()
+            self._k8s = KubernetesManager()
         except KeyError as e:
             sys.exit('Config missing key: {}'.format(e))
 
@@ -83,6 +84,7 @@ class AutomationBotInstance(object):
             "testpriv": self.action_test_priv,
             "testunpriv": self.action_test_unpriv,
             "select": self.action_select_bot,
+            "list shards": self.action_list_shards,
         }
 
         part = message.content.split(maxsplit=2)
@@ -202,3 +204,16 @@ Examples:
 
         self.checkPermissions(cmd, message.author)
         await message.channel.send("BUG: You definitely shouldn't have this much power"),
+
+    async def action_list_shards(self, cmd, message):
+        '''Lists currently running shards on this server'''
+
+        self.checkPermissions(cmd, message.author)
+
+        shards = self._k8s.list()
+        # Format of this is:
+        # {'bungee': {'available_replicas': 1, 'replicas': 1},
+        #  'dungeon': {'available_replicas': 1, 'replicas': 1}
+        #  'test': {'available_replicas': 0, 'replicas': 0}}
+
+        await message.channel.send("Shard list: \n{}".format(pformat(shards))),

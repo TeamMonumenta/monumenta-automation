@@ -343,26 +343,6 @@ Syntax:
             ]
 allActions.append(GetErrorsAction)
 
-class ListShardsAction(ShellAction):
-    '''Lists currently running shards on this server'''
-    command = "list shards"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        k8s = KubernetesManager()
-
-        shards = k8s.list()
-        # Format of this is:
-        # {'bungee': {'available_replicas': 1, 'replicas': 1},
-        #  'dungeon': {'available_replicas': 1, 'replicas': 1}
-        #  'test': {'available_replicas': 0, 'replicas': 0}}
-
-        self._commands = [
-            self.display("Shard list: \n{}".format(pformat(shards))),
-        ]
-allActions.append(ListShardsAction)
-
 class RollLootAction(ShellAction):
     '''Generates 1024 loot table chests, "opens" them, and finds the number of items per chest on average.
 
@@ -509,50 +489,6 @@ For syntax, run:
             self.display("Done."),
         ]
 allActions.append(R1PlotGetAction)
-
-class RepairBlockEntitiesAction(ShellAction):
-    '''Repair Block Entities in specified worlds.
-
-Syntax:
-`{cmdPrefix}repair block entities *`
-`{cmdPrefix}repair block entities region_1 region_2 orange`'''
-    command = "repair block entities"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-
-        estimated_space_left = get_available_storage('/')
-
-        if estimated_space_left < min_free_gb * bytes_per_gb:
-            self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
-            return
-
-        commandArgs = message.content[len(commandPrefix + self.command)+1:]
-
-        baseShellCommand = _top_level + "/utility_code/repair_block_entities.py"
-        shellCommand = baseShellCommand
-        allShards = botConfig["shards"]
-        if '*' in commandArgs:
-            for shard in allShards.keys():
-                if shard != "bungee":
-                    shellCommand += " " + allShards[shard] + "Project_Epic-" + shard + "/"
-        else:
-            for shard in allShards.keys():
-                if shard in commandArgs:
-                    if shard != "bungee":
-                        shellCommand += " " + allShards[shard] + "Project_Epic-" + shard + "/"
-
-        if shellCommand == baseShellCommand:
-            self._commands = [
-                self.display("No specified shards on this server."),
-            ]
-        else:
-            self._commands = [
-                self.run(shellCommand, displayOutput=True),
-                self.mention(),
-            ]
-allActions.append(RepairBlockEntitiesAction)
 
 class RestartBotAction(ShellAction):
     '''Restart this bot. Used to update to the latest version.
@@ -1058,98 +994,3 @@ Do not use for debugging quests or other scores that are likely to change often.
             self.display("Done."),
         ]
 allActions.append(ViewScoresAction)
-
-class WhitelistAction(ShellAction):
-    '''Control server whitelists
-`{cmdPrefix}whitelist enable *` - enable all shard whitelists, allows players to enter
-`{cmdPrefix}whitelist disable *` - disables all shard whitelists, allows only opped players to enter
-`{cmdPrefix}whitelist enable nightmare` - enable whitelist on only nightmare shard'''
-    command = "whitelist"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-
-        estimated_space_left = get_available_storage('/')
-
-        if estimated_space_left < min_free_gb * bytes_per_gb:
-            self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
-            return
-
-        commandArgs = message.content[len(commandPrefix + self.command)+1:]
-
-        enableString = "enable"
-        disableString = "disable"
-
-        if commandArgs[:len(enableString)] == enableString:
-            header = "Enabling"
-            baseShellCommand = "whitelist on"
-            targetShards = commandArgs[len(enableString)+1:]
-
-        elif commandArgs[:len(disableString)] == disableString:
-            header = "Disabling"
-            baseShellCommand = "whitelist off"
-            targetShards = commandArgs[len(disableString)+1:]
-
-        shellCommand = baseShellCommand
-        allShards = botConfig["shards"].keys()
-        self._commands = []
-
-        if '*' in targetShards:
-            for shard in allShards:
-                self._commands.append(self.display(header + " whitelist for " + shard))
-                self._commands.append(self.run("mark2 send -n " + shard + " " + baseShellCommand))
-        else:
-            for shard in allShards:
-                if shard in targetShards:
-                    self._commands.append(self.display(header + " whitelist for " + shard))
-                    self._commands.append(self.run("mark2 send -n " + shard + " " + baseShellCommand))
-
-        if len(self._commands) <= 0:
-            self._commands = [
-                self.display("No specified shards on this server."),
-            ]
-allActions.append(WhitelistAction)
-
-################################################################################
-# No actions past here!
-
-for action in allActions:
-    allActionsDict[action.command] = action
-
-def findBestMatchDiscord(botConfig, discord_message):
-    '''Find the best matching command for a target message, ignoring permissions.'''
-    target = discord_message.content
-    bestMatch = ""
-    actions = botConfig["actions"]
-    for command in actions.keys():
-        prefixedCommand = commandPrefix + command
-        actionClass = actions[command]
-        if not (
-            botConfig["listening"].isListening(discord_message) or
-            actionClass.alwaysListening
-        ):
-            continue
-        if (
-            target[:len(prefixedCommand)] == prefixedCommand and
-            len(command) > len(bestMatch)
-        ):
-            bestMatch = command
-    if bestMatch == "":
-        return None
-    return actions[bestMatch]
-
-def findBestMatchCommand(botConfig, command_message):
-    '''Find the best matching command for a command that is known to have been addressed to this bot directly, ignoring permissions'''
-    bestMatch = ""
-    actions = botConfig["actions"]
-    for command in actions.keys():
-        actionClass = actions[command]
-        if (
-            command_message[:len(command)] == command and
-            len(command) > len(bestMatch)
-        ):
-            bestMatch = command
-    if bestMatch == "":
-        return None
-    return actions[bestMatch]
