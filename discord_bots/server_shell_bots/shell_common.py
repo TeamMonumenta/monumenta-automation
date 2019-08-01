@@ -5,49 +5,6 @@
 # Shell-scripting routines which can be combined to make discord command scripts
 #
 
-import datetime
-import asyncio
-#import traceback
-import subprocess
-import os
-import sys
-
-################################################################################
-# Utility Functions
-
-def datestr():
-    return datetime.datetime.now().strftime("%Y_%m_%d")
-
-def split_string(text):
-    # Maximum number of characters in a single line
-    n = 1950
-
-    splits = text.splitlines()
-    result = []
-    cur = None
-    for i in splits:
-        while True:
-            if cur is None and len(i) <= n:
-                cur = i;
-                break # Done with i
-            elif cur is None and len(i) > n:
-                # Annoying case - one uber long line. Have to split into chunks
-                result = result + [i[:n]]
-                i = i[n:]
-                pass # Repeat this iteration
-            elif len(cur) + len(i) < n:
-                cur = cur + "\n" + i
-                break # Done with i
-            else:
-                result = result + [cur]
-                cur = None
-                pass # Repeat this iteration
-
-    if cur is not None:
-        result = result + [cur]
-        cur = None
-
-    return result
 
 class ShellAction(object):
     ################################################################################
@@ -104,9 +61,6 @@ class ShellAction(object):
         if stderr:
             await self.display("stderr from command '{}':".format(cmd))
             await self.displayVerbatim(stderr)
-            # TODO: Remove likely
-            #if ret != None and ret == 0:
-                #raise ValueError("Got unexpected stderr while processing '{}'".format(cmd))
 
         if ret != None and rc != ret:
             raise ValueError("Expected result {}, got result {} while processing '{}'".format(ret, rc, cmd))

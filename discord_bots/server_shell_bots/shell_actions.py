@@ -24,14 +24,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from lib_py3.loot_table_manager import LootTableManager
 
 commandPrefix = '~'
-dangerousCharacters = ';<>*|`&$!#()[]{}:\'"'
-def escapeDangerous(dangerString):
-    if not any(c in dangerString for c in dangerousCharacters):
-        return dangerString
-    safeString = dangerString
-    for c in dangerousCharacters:
-        safeString.replace(c,'\\'+c)
-    return safeString
 
 min_free_gb = 30
 bytes_per_gb = 1<<30
@@ -56,164 +48,8 @@ def get_available_storage(path = '.'):
     blocks_available = size_data.f_bavail
     return block_size * blocks_available
 
-class listening():
-    def __init__(self):
-        self._set = set()
-
-    def isListening(self, key):
-        logger.debug("Listening _set: {}".format(pformat(self._set)))
-        logger.debug("Listening key: {}".format(pformat(key)))
-        if type(key) is not tuple:
-            key = (key.channel.id, key.author.id)
-        return key not in self._set
-
-    def select(self, key):
-        if type(key) is not tuple:
-            key = (key.channel.id, key.author.id)
-        self._set.remove(key)
-
-    def deselect(self, key):
-        if type(key) is not tuple:
-            key = (key.channel.id, key.author.id)
-        self._set.add(key)
-
-    def set(self, key, value):
-        if value:
-            self.select(key)
-        else:
-            self.deselect(key)
-
-    def toggle(self, key):
-        if type(key) is not tuple:
-            key = (key.channel.id, key.author.id)
-        if self.isListening(key):
-            self.deselect(key)
-        else:
-            self.select(key)
-
 ################################################################################
 # Common privilege code
-
-privUsers = {
-    302298391969267712: {"name": "Combustible", "rights": [ "@root" ]},
-    228226807353180162: {"name": "NickNackGus", "rights": [ "@root" ]},
-    225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]},
-}
-
-groupByRole = {
-    # Team Epic (TE)
-    341032989787947008: "@team epic",
-    # Intern (TE)
-    390269554657460226: "@intern",
-    # Bot Skill Info (TE)
-    464598658449670145: "+skill info",
-    # Moderator (Public)
-    313067199579422722: "@moderator",
-}
-
-permissionGroups = {
-    "@root": [
-        "+*",
-        "-testunpriv",
-    ],
-    "@team epic": [
-        "+debug",
-        "+help",
-        "+list bots",
-        "+dump error commands",
-        "+dungeon loot",
-        "+get errors",
-        "+list shards",
-        "+r1address to english",
-        "+r1plot get",
-        "+roll loot",
-        "+select",
-        "+start shard",
-        "+stop shard",
-        "+test",
-        "+testpriv",
-        "+update item",
-        "+view scores",
-        "+kaul",
-    ],
-    "@intern": [
-        "+debug",
-        "+help",
-        "+list bots",
-        "+dump error commands",
-        "+dungeon loot",
-        "+get errors",
-        "+list shards",
-        "+r1address to english",
-        "+r1plot get",
-        "+roll loot",
-        "+select",
-        "+start shard",
-        "+stop shard",
-        "+update item",
-        "+test",
-        "+testpriv",
-        "+kaul",
-    ],
-    "@moderator": [
-        "+debug",
-        "+help",
-        "+list bots",
-        "+get errors",
-        "+list shards",
-        "+r1address to english",
-        "+r1plot get",
-        "+select",
-        "+start shard",
-        "+stop shard",
-        "+test",
-        "+testpriv",
-        "+view scores",
-        "+kaul",
-    ],
-    "@everyone": [
-        "+debug",
-        "+help",
-    ],
-    "@restricted": [
-        "-*",
-    ],
-}
-
-def checkPermissions(selfAct, author):
-    logger.debug("author.id = {}".format(author.id))
-    userInfo = privUsers.get( author.id, {"rights":["@everyone"]} )
-    logger.debug("User info = {}".format(pformat(userInfo)))
-    # This is a copy, not a reference
-    userRights = list(userInfo.get("rights",["@everyone"]))
-    for role in author.roles:
-        permGroupName = groupByRole.get(role.id,None)
-        if permGroupName is not None:
-            userRights = [permGroupName] + userRights
-
-    return checkPermissionsExplicitly(selfAct.command, userRights)
-
-
-# Unlike checkPermissions, this does not get assigned to an object.
-# It checks exactly that the userRights provided can run the command.
-def checkPermissionsExplicitly(command, userRights):
-    result = False
-    alreadyChecked = set()
-    while len(userRights) > 0:
-        perm = userRights.pop(0)
-        if perm[0] == "@":
-            # Permission group
-            if perm not in alreadyChecked:
-                alreadyChecked.add(perm)
-                userRights = permissionGroups[perm] + userRights
-            continue
-        givenPerm = ( perm[0] == "+" )
-        if (
-            perm[1:] == command or
-            perm[1:] == "*"
-        ):
-            result = givenPerm
-    return result
 
 ################################################################################
 # Simple test functions
@@ -266,42 +102,6 @@ class DebugAction(ShellAction):
         await self.display(message),
 allActions.append(DebugAction)
 
-class TestAction(ShellAction):
-    '''Simple test action that does nothing'''
-    command = "test"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        self._commands = [
-            self.display("Testing successful!"),
-        ]
-allActions.append(TestAction)
-
-class TestPrivilegedAction(ShellAction):
-    '''Test if user has permission to use restricted commands'''
-    command = "testpriv"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        self._commands = [
-            self.display("You've got the power"),
-        ]
-allActions.append(TestPrivilegedAction)
-
-class TestUnprivilegedAction(ShellAction):
-    '''Test that a restricted command fails for all users'''
-    command = "testunpriv"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        self._commands = [
-            self.display("BUG: You definitely shouldn't have this much power"),
-        ]
-allActions.append(TestUnprivilegedAction)
-
 ################################################################################
 # Always listening actions
 
@@ -353,46 +153,6 @@ class ListBotsAction(ShellAction):
             self.display('`' + botConfig["name"] + '`'),
         ]
 allActions.append(ListBotsAction)
-
-class SelectBotAction(ShellAction):
-    '''Make specified bots start listening for commands; unlisted bots stop listening.
-
-Syntax:
-`{cmdPrefix}select [botName] [botName2] ...`
-Examples:
-`{cmdPrefix}select` - deselect all bots
-`{cmdPrefix}select build` - select only the build bot
-`{cmdPrefix}select play play2` - select both the play bots
-`{cmdPrefix}select *` - select all bots'''
-    command = "select"
-    hasPermissions = checkPermissions
-    alwaysListening = True
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-        self._commands = []
-        if (
-            (
-                '*' in commandArgs or
-                botConfig["name"] in commandArgs
-            ) ^
-            botConfig["listening"].isListening(message)
-        ):
-            botConfig["listening"].toggle(message)
-            if botConfig["listening"].isListening(message):
-                self._commands = [
-                    self.display(botConfig["name"] + " is now listening for commands."),
-                ]
-            else:
-                self._commands = [
-                    self.display(botConfig["name"] + " is no longer listening for commands."),
-                ]
-        elif botConfig["listening"].isListening(message):
-            self._commands = [
-                self.display(botConfig["name"] + " is still listening for commands."),
-            ]
-allActions.append(SelectBotAction)
 
 ################################################################################
 # Useful actions start here
