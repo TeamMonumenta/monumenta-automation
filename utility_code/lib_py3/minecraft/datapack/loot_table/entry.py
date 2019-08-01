@@ -9,9 +9,9 @@ this_folder = os.path.dirname(os.path.realpath(__file__))
 
 sys.path.append(this_folder)
 from condition import BaseConditionList
-from function import load_function, PlaceholderNumberOrRandom
+from function import BaseFunctionList, PlaceholderNumberOrRandom
 
-sys.path.append(os.path.join(this_folder, "../../../../../../quarry"))
+sys.path.append(os.path.join(this_folder, "../../../../../quarry"))
 from quarry.types import nbt
 
 class BaseEntry(object):
@@ -145,7 +145,6 @@ class empty(BaseEntry):
     def __init__(self, entry):
         """Load the entry from a dict."""
         super().__init__(entry)
-        NotImplemented
 
     def _generate(self, generation_state):
         """Generate the entry after confirming the conditions are met."""
@@ -196,7 +195,8 @@ class item(BaseEntry):
         type(self._dict["name"]) == str: A namedpsaced item ID. Namespace defaults to minecraft.
         """
         super().__init__(entry)
-        NotImplemented
+        self.item_id = self._dict["name"]
+        self.functions = BaseFunctionList(self._dict.get("functions", []))
 
     def _generate(self, generation_state):
         """Generate the entry after confirming the conditions are met."""

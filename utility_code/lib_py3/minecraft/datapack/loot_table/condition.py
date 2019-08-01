@@ -9,11 +9,11 @@ import sys
 this_folder = os.path.dirname(os.path.realpath(__file__))
 
 # temp lib_py3 folder
-sys.path.append(os.path.join(this_folder, "../../../../"))
+sys.path.append(os.path.join(this_folder, "../../../"))
 from lib_py3.minecraft.datapack.util import TestNumberOrRange
 
 # quarry folder
-sys.path.append(os.path.join(this_folder, "../../../../../../quarry"))
+sys.path.append(os.path.join(this_folder, "../../../../../quarry"))
 from quarry.types import nbt
 
 class BaseCondition(object):
@@ -31,9 +31,6 @@ class BaseCondition(object):
             self._dict = copy.deepcopy(condition._dict)
 
         elif isinstance(condition, dict):
-            self._dict = copy.deepcopy(condition)
-
-        elif isinstance(condition, list):
             self._dict = copy.deepcopy(condition)
 
         else:
@@ -88,11 +85,18 @@ class BaseConditionList(BaseCondition):
 
         type(condition["terms"]) == list: A list of conditions to join using 'and'.
         """
-        super().__init__(condition)
+        if isinstance(condition, type(self)):
+            self._list = copy.deepcopy(condition._list)
+
+        elif isinstance(condition, list):
+            self._list = copy.deepcopy(condition)
+
+        else:
+            raise TypeError("Expected condition list to be type list.")
 
         # self._dict is really the list of dicts
         self.conditions = []
-        for child_dict in self._dict:
+        for child_dict in self._list:
             child = load_condition(child_dict)
             self.conditions.append(child)
 
@@ -105,10 +109,13 @@ class BaseConditionList(BaseCondition):
 
     def description(self):
         """A description of what this condition requires"""
-        result = "Confirm all of these are true:\n"
-        for condition in self.conditions:
-            result += "- " + condition.description() + "\n"
-        return result
+        if len(self.conditions):
+            result = "Confirm all of these are true:\n"
+            for condition in self.conditions:
+                result += "- " + condition.description() + "\n"
+            return result
+        else:
+            return ""
 
 
 class alternative(BaseConditionList):

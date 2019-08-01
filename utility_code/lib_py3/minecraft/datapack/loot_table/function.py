@@ -12,11 +12,11 @@ sys.path.append(this_folder)
 from condition import BaseConditionList
 
 # temp lib_py3 folder
-sys.path.append(os.path.join(this_folder, "../../../../"))
+sys.path.append(os.path.join(this_folder, "../../../"))
 from lib_py3.minecraft.datapack.util import TestNumberOrRange
 
 # quarry folder
-sys.path.append(os.path.join(this_folder, "../../../../../../quarry"))
+sys.path.append(os.path.join(this_folder, "../../../../../quarry"))
 from quarry.types import nbt
 
 class BaseFunction(object):
@@ -86,6 +86,44 @@ class BaseFunction(object):
                 result[name] = subclass
 
         return result
+
+
+class BaseFunctionList(BaseFunction):
+    """A list of functions to run in order."""
+    def __init__(self, function):
+        """Load the function list from a ~~dict~~ list of dicts."""
+        if isinstance(function, type(self)):
+            self._list = copy.deepcopy(function._list)
+
+        elif isinstance(function, list):
+            self._list = copy.deepcopy(function)
+
+        else:
+            raise TypeError("Expected function list to be type list.")
+
+        self.conditions = BaseConditionList(self._dict.get("conditions", []))
+
+        self.functions = []
+        for subfunction in self._list:
+            self.functions.append(load_function(subfunction))
+
+    def _run(self, item_stack, generation_state):
+        """Run the function after confirming its conditions are met."""
+        for function in self.functions:
+            function.run(item_stack, generation_state)
+
+    def description(self):
+        """A description of what this function does"""
+        if len(self.functions):
+            result = "Run the following functions:"
+            for function in self.functions:
+                result += "- " + function.description()
+            return result
+        else:
+            return ""
+
+    def __repr__(self):
+        return "{name}({function})".format(name=self.__class__.__name__, function=self._dict)
 
 
 class apply_bonus(BaseFunction):
