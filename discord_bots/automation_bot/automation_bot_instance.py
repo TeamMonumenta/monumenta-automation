@@ -21,7 +21,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from lib_py3.loot_table_manager import LootTableManager
 
 from lib_k8s import KubernetesManager
-from automation_bot_lib import get_list_match, get_available_storage, display_verbatim, datestr
+from automation_bot_lib import get_list_match, get_available_storage, datestr
 
 class Listening():
     def __init__(self):
@@ -63,8 +63,9 @@ class PermissionsError(Exception):
    pass
 
 class AutomationBotInstance(object):
-    def __init__(self, client, config):
+    def __init__(self, client, channel, config):
         self._client = client
+        self._channel = channel
 
         try:
             self._name = config["name"]
@@ -155,34 +156,38 @@ class AutomationBotInstance(object):
         if not result:
             raise PermissionsError()
 
-    async def cd(self, channel, path):
+    async def display_verbatim(text):
+        for chunk in split_string(text):
+            await self._channel.send("```" + chunk + "```")
+
+    async def cd(self, path):
         if self._debug:
-            await channel.send("Changing path to `" + path + "`")
+            await self._channel.send("Changing path to `" + path + "`")
         os.chdir(path)
 
-    async def run(self, channel, cmd, ret=0, displayOutput=False):
+    async def run(self, cmd, ret=0, displayOutput=False):
         splitCmd = cmd.split(' ')
         if self._debug:
-            await channel.send("Executing: ```" + str(splitCmd) + "```")
+            await self._channel.send("Executing: ```" + str(splitCmd) + "```")
         process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = await process.communicate()
         rc = process.returncode
 
         if self._debug:
-            await channel.send("Result: {}".format(rc))
+            await self._channel.send("Result: {}".format(rc))
 
         stdout = stdout.decode('utf-8')
         if stdout:
             if self._debug:
-                await channel.send("stdout from command '{}':".format(cmd))
+                await self._channel.send("stdout from command '{}':".format(cmd))
 
             if self._debug or displayOutput:
-                await display_verbatim(channel, stdout)
+                await self.display_verbatim(stdout)
 
         stderr = stderr.decode('utf-8')
         if stderr:
-            await channel.send("stderr from command '{}':".format(cmd))
-            await display_verbatim(channel, stderr)
+            await self._channel.send("stderr from command '{}':".format(cmd))
+            await self.display_verbatim(stderr)
 
         if ret != None and rc != ret:
             raise ValueError("Expected result {}, got result {} while processing '{}'".format(ret, rc, cmd))
@@ -263,8 +268,8 @@ Must be run before preparing the build server reset bundle'''
         #    return
 
         await cnl.send("Cleaning up old terrain reset data...")
-        await self.run(cnl, "rm -rf /home/epic/5_SCRATCH/tmpreset", None)
-        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset")
+        await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
 
         await cnl.send("Stopping the dungeon shard...")
         self._k8s.stop("dungeon")
@@ -272,19 +277,19 @@ Must be run before preparing the build server reset bundle'''
         # TODO: Make sure dungeon stopped
 
         await cnl.send("Copying the dungeon master copies...")
-        await self.run(cnl, "cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
+        await self.run("cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
 
         await cnl.send("Restarting the dungeon shard...")
-        await self.cd(cnl, "/home/epic/project_epic/dungeon")
+        await self.cd("/home/epic/project_epic/dungeon")
         self._k8s.start("dungeon")
         # TODO: Make sure dungeon started
 
         await cnl.send("Generating dungeon instances (this may take a while)...")
-        await self.run(cnl, _top_level + "/utility_code/dungeon_instance_gen.py")
-        await self.run(cnl, "mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE")
+        await self.run(_top_level + "/utility_code/dungeon_instance_gen.py")
+        await self.run("mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE")
 
         await cnl.send("Cleaning up instance generation temp files...")
-        await self.run(cnl, "rm -rf /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
+        await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
         await cnl.send("Dungeon instance generation complete!")
         await cnl.send(message.author.mention)
 
@@ -306,33 +311,33 @@ Must be run before starting terrain reset on the play server'''
         # TODO: Make sure shards stopped
 
         await cnl.send("Copying region_1...")
-        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset/POST_RESET")
-        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1")
-        await self.run(cnl, "cp -a /home/epic/project_epic/region_1/Project_Epic-region_1 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/")
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/POST_RESET")
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1")
+        await self.run("cp -a /home/epic/project_epic/region_1/Project_Epic-region_1 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/")
 
         await cnl.send("Restarting the region_1 shard...")
         self._k8s.start("region_1")
 
         await cnl.send("Copying region_2...")
-        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset/POST_RESET")
-        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2")
-        await self.run(cnl, "cp -a /home/epic/project_epic/region_2/Project_Epic-region_2 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/")
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/POST_RESET")
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2")
+        await self.run("cp -a /home/epic/project_epic/region_2/Project_Epic-region_2 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/")
 
         await cnl.send("Restarting the region_2 shard...")
         self._k8s.start("region_2")
 
         await cnl.send("Copying bungee...")
-        await self.run(cnl, "cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
+        await self.run("cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
         await cnl.send("Copying purgatory...")
-        await self.run(cnl, "cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
+        await self.run("cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
         await cnl.send("Copying server_config...")
-        await self.run(cnl, "cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
+        await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
         await cnl.send("Packaging up reset bundle...")
-        await self.cd(cnl, "/home/epic/5_SCRATCH/tmpreset")
-        await self.run(cnl, "tar czf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE")
+        await self.cd("/home/epic/5_SCRATCH/tmpreset")
+        await self.run("tar czf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE")
 
         await cnl.send("Reset bundle ready!")
         await cnl.send(message.author.mention)

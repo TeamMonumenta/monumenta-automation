@@ -67,7 +67,3 @@ def get_available_storage(path = '.'):
     block_size = size_data.f_frsize
     blocks_available = size_data.f_bavail
     return block_size * blocks_available
-
-async def display_verbatim(channel, text):
-    for chunk in split_string(text):
-        await channel.send("```" + chunk + "```")

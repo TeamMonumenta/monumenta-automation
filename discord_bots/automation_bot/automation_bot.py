@@ -34,7 +34,7 @@ try:
     # Create instances of the shell bot, one per channel
     channels = {}
     for channel_id in config["channels"]:
-        instance = AutomationBotInstance(client, config)
+        instance = AutomationBotInstance(client, channel, config)
         channels[channel_id] = instance
 
     ################################################################################
