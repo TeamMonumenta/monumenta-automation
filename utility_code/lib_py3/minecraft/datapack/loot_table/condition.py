@@ -2,15 +2,14 @@
 
 import copy
 import os
-import json
 import random
 import sys
 
 this_folder = os.path.dirname(os.path.realpath(__file__))
 
-# temp lib_py3 folder
-sys.path.append(os.path.join(this_folder, "../../../"))
-from lib_py3.minecraft.datapack.util import TestNumberOrRange
+# datapack folder
+sys.path.append(os.path.join(this_folder, "../"))
+from util import TestNumberOrRange
 
 # quarry folder
 sys.path.append(os.path.join(this_folder, "../../../../../quarry"))

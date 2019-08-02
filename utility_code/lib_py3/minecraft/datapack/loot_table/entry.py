@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import copy
-import math
 import os
 import random
 import sys
@@ -14,9 +13,6 @@ from function import BaseFunctionList, PlaceholderNumberOrRandom
 
 sys.path.append(os.path.join(this_folder, "../.."))
 from item import Item, ItemStack
-
-sys.path.append(os.path.join(this_folder, "../../../../../quarry"))
-from quarry.types import nbt
 
 class BaseEntry(object):
     """A loot table entry.
@@ -93,7 +89,7 @@ class BaseEntry(object):
 class BaseEntryList(BaseEntry):
     """A list of loot table entries.
 
-    Provides no logic for how they generate.
+    Generates all in sequence. (TODO)
     """
     def __init__(self, entry):
         """Load the entry from a ~~dict~~ list of dicts."""
@@ -105,6 +101,20 @@ class BaseEntryList(BaseEntry):
 
         else:
             raise TypeError("Expected entry list to be type list.")
+
+    def _generate(self, generation_state):
+        """Generate the entries; does not check conditions."""
+        NotImplemented
+        # TODO lots
+
+    def description(self):
+        """A description of what these entries do."""
+        result = []
+
+        for entry in self._list:
+            result += entry.description()
+
+        return result
 
     def __len__(self):
         return len(self._list)
