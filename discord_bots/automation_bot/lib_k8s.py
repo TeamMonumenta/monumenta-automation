@@ -13,7 +13,10 @@ class KubernetesManager(object):
         self._namespace = "build-ns"
 
         # This only works within a pod - connects to the running k8s instance
-        config.load_incluster_config()
+        #config.load_incluster_config()
+
+        # TODO:
+        config.load_kube_config()
 
     def _set_replicas(self, deployment_name, replicas):
         if replicas != 0 and replicas != 1:

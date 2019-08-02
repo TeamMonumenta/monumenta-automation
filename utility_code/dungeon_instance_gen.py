@@ -12,8 +12,8 @@ from lib_py3.common import copy_paths
 from lib_py3.world import World
 
 config = {
-    "dungeonRefFolder":"/home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon/",
-    "outFolder":"/home/rock/5_SCRATCH/tmpreset/dungeons-out/",
+    "dungeonRefFolder":"/home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon/",
+    "outFolder":"/home/epic/5_SCRATCH/tmpreset/dungeons-out/",
 
     # Dungeons are placed one per MC region file (32x32 chunks)
     # Each dungeon starts in the most-negative corner of the region
@@ -86,8 +86,8 @@ config = {
             "region":{"x":-3, "z":9},
             "numDungeons":40,
         },{
-            "name":"lime",
-            "region":{"x":-3, "z":5},
+            "name":"lightgray",
+            "region":{"x":-3, "z":8},
             "numDungeons":40,
         },
     ),

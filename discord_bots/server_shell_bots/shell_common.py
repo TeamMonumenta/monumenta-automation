@@ -38,35 +38,6 @@ class ShellAction(object):
     async def exit(self):
         sys.exit(1)
 
-    async def run(self, cmd, ret=0, displayOutput=False):
-        splitCmd = cmd.split(' ')
-        if self._debug:
-            await self.display("Executing: ```" + str(splitCmd) + "```")
-        process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = await process.communicate()
-        rc = process.returncode
-
-        if self._debug:
-            await self.display("Result: {}".format(rc))
-
-        stdout = stdout.decode('utf-8')
-        if stdout:
-            if self._debug:
-                await self.display("stdout from command '{}':".format(cmd))
-
-            if self._debug or displayOutput:
-                await self.displayVerbatim(stdout)
-
-        stderr = stderr.decode('utf-8')
-        if stderr:
-            await self.display("stderr from command '{}':".format(cmd))
-            await self.displayVerbatim(stderr)
-
-        if ret != None and rc != ret:
-            raise ValueError("Expected result {}, got result {} while processing '{}'".format(ret, rc, cmd))
-
-        return stdout
-
     async def displayVerbatim(self, text):
         for chunk in split_string(text):
             await self.display("```" + chunk + "```")

@@ -3,6 +3,8 @@
 
 import os
 import sys
+import asyncio
+import subprocess
 from pprint import pformat
 
 import logging
@@ -13,12 +15,13 @@ _file_depth = 3
 _file = os.path.abspath(__file__)
 _top_level = os.path.abspath( os.path.join( _file, '../'*_file_depth ) )
 
-from lib_k8s import KubernetesManager
+BYTES_PER_GB = 1<<30
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 from lib_py3.loot_table_manager import LootTableManager
 
-from automation_bot_lib import get_list_match
+from lib_k8s import KubernetesManager
+from automation_bot_lib import get_list_match, get_available_storage, display_verbatim
 
 class Listening():
     def __init__(self):
@@ -69,6 +72,8 @@ class AutomationBotInstance(object):
             self._prefix = config["prefix"]
             self._commands = config["commands"]
             self._permissions = config["permissions"]
+            # TODO: Hook this up to something
+            self._debug = True
             self._listening = Listening()
             self._k8s = KubernetesManager()
         except KeyError as e:
@@ -85,6 +90,7 @@ class AutomationBotInstance(object):
             "testunpriv": self.action_test_unpriv,
             "select": self.action_select_bot,
             "list shards": self.action_list_shards,
+            "generate instances": self.action_generate_instances,
         }
 
         part = message.content.split(maxsplit=2)
@@ -103,11 +109,10 @@ class AutomationBotInstance(object):
             return
 
         try:
+            self.checkPermissions(match, message.author)
             await commands[match](match, message)
         except PermissionsError as e:
             await message.channel.send("Sorry " + message.author.mention + ", you do not have permission to run this command")
-        except ValueError as e:
-            await message.channel.send(message, str(e))
 
 
     ################################################################################
@@ -149,6 +154,40 @@ class AutomationBotInstance(object):
         if not result:
             raise PermissionsError()
 
+    async def cd(self, channel, path):
+        if self._debug:
+            await channel.send("Changing path to `" + path + "`")
+        os.chdir(path)
+
+    async def run(self, channel, cmd, ret=0, displayOutput=False):
+        splitCmd = cmd.split(' ')
+        if self._debug:
+            await channel.send("Executing: ```" + str(splitCmd) + "```")
+        process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = await process.communicate()
+        rc = process.returncode
+
+        if self._debug:
+            await channel.send("Result: {}".format(rc))
+
+        stdout = stdout.decode('utf-8')
+        if stdout:
+            if self._debug:
+                await channel.send("stdout from command '{}':".format(cmd))
+
+            if self._debug or displayOutput:
+                await display_verbatim(channel, stdout)
+
+        stderr = stderr.decode('utf-8')
+        if stderr:
+            await channel.send("stderr from command '{}':".format(cmd))
+            await display_verbatim(channel, stderr)
+
+        if ret != None and rc != ret:
+            raise ValueError("Expected result {}, got result {} while processing '{}'".format(ret, rc, cmd))
+
+        return stdout
+
     # Permissions
     ################################################################################
 
@@ -162,11 +201,9 @@ Examples:
 `{cmdPrefix}select build` - select only the build bot
 `{cmdPrefix}select play play2` - select both the play bots
 `{cmdPrefix}select *` - select all bots'''
-        self.checkPermissions(cmd, message.author)
 
         commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
 
-        self._commands = []
         if (
             (
                 '*' in commandArgs or
@@ -176,17 +213,11 @@ Examples:
         ):
             self._listening.toggle(message)
             if self._listening.isListening(message):
-                self._commands = [
-                    await message.channel.send(self._name + " is now listening for commands."),
-                ]
+                await message.channel.send(self._name + " is now listening for commands."),
             else:
-                self._commands = [
-                    await message.channel.send(self._name + " is no longer listening for commands."),
-                ]
+                await message.channel.send(self._name + " is no longer listening for commands."),
         elif self._listening.isListening(message):
-            self._commands = [
-                await message.channel.send(self._name + " is still listening for commands."),
-            ]
+            await message.channel.send(self._name + " is still listening for commands."),
 
     async def action_test(self, cmd, message):
         '''Simple test action that does nothing'''
@@ -196,19 +227,15 @@ Examples:
     async def action_test_priv(self, cmd, message):
         '''Test if user has permission to use restricted commands'''
 
-        self.checkPermissions(cmd, message.author)
         await message.channel.send("You've got the power"),
 
     async def action_test_unpriv(self, cmd, message):
         '''Test that a restricted command fails for all users'''
 
-        self.checkPermissions(cmd, message.author)
         await message.channel.send("BUG: You definitely shouldn't have this much power"),
 
     async def action_list_shards(self, cmd, message):
         '''Lists currently running shards on this server'''
-
-        self.checkPermissions(cmd, message.author)
 
         shards = self._k8s.list()
         # Format of this is:
@@ -217,3 +244,46 @@ Examples:
         #  'test': {'available_replicas': 0, 'replicas': 0}}
 
         await message.channel.send("Shard list: \n{}".format(pformat(shards))),
+
+    async def action_generate_instances(self, cmd, message):
+        '''Dangerous!
+    Deletes previous terrain reset data
+    Temporarily brings down the dungeon shard to generate dungeon instances.
+    Must be run before preparing the build server reset bundle'''
+
+        # For brevity
+        cnl = message.channel
+
+        estimated_space_left = get_available_storage('/home/epic/4_SHARED')
+        await cnl.send("Space left: {}".format(estimated_space_left // BYTES_PER_GB))
+
+        # TODO
+        #if estimated_space_left < min_free_gb * BYTES_PER_GB:
+        #    self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // BYTES_PER_GB)),]
+        #    return
+
+        await cnl.send("Cleaning up old terrain reset data..."),
+        await self.run(cnl, "rm -rf /home/epic/5_SCRATCH/tmpreset", None),
+        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset"),
+
+        await cnl.send("Stopping the dungeon shard..."),
+        self._k8s.stop("dungeon")
+        await asyncio.sleep(10),
+        # TODO: Make sure dungeon stopped
+
+        await cnl.send("Copying the dungeon master copies..."),
+        await self.run(cnl, "cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon"),
+
+        await cnl.send("Restarting the dungeon shard..."),
+        await self.cd(cnl, "/home/epic/project_epic/dungeon"),
+        self._k8s.start("dungeon")
+        # TODO: Make sure dungeon started
+
+        await cnl.send("Generating dungeon instances (this may take a while)..."),
+        await self.run(cnl, _top_level + "/utility_code/dungeon_instance_gen.py"),
+        await self.run(cnl, "mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE"),
+
+        await cnl.send("Cleaning up instance generation temp files..."),
+        await self.run(cnl, "rm -rf /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon"),
+        await cnl.send("Dungeon instance generation complete!"),
+        await self.mention(),
