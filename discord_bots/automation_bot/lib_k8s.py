@@ -32,10 +32,10 @@ class KubernetesManager(object):
                 raise e
 
     def start(self, name):
-        self._set_replicas("monumenta-{}-deployment".format(name), 1)
+        self._set_replicas("monumenta-{}-deployment".format(name.replace('_', '')), 1)
 
     def stop(self, name):
-        self._set_replicas("monumenta-{}-deployment".format(name), 0)
+        self._set_replicas("monumenta-{}-deployment".format(name.replace('_', '')), 0)
 
     def restart(self, name):
         # TODO

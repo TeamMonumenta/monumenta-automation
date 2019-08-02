@@ -21,7 +21,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from lib_py3.loot_table_manager import LootTableManager
 
 from lib_k8s import KubernetesManager
-from automation_bot_lib import get_list_match, get_available_storage, display_verbatim
+from automation_bot_lib import get_list_match, get_available_storage, display_verbatim, datestr
 
 class Listening():
     def __init__(self):
@@ -91,6 +91,7 @@ class AutomationBotInstance(object):
             "select": self.action_select_bot,
             "list shards": self.action_list_shards,
             "generate instances": self.action_generate_instances,
+            "prepare reset bundle": self.action_prepare_reset_bundle,
         }
 
         part = message.content.split(maxsplit=2)
@@ -213,77 +214,125 @@ Examples:
         ):
             self._listening.toggle(message)
             if self._listening.isListening(message):
-                await message.channel.send(self._name + " is now listening for commands."),
+                await message.channel.send(self._name + " is now listening for commands.")
             else:
-                await message.channel.send(self._name + " is no longer listening for commands."),
+                await message.channel.send(self._name + " is no longer listening for commands.")
         elif self._listening.isListening(message):
-            await message.channel.send(self._name + " is still listening for commands."),
+            await message.channel.send(self._name + " is still listening for commands.")
 
     async def action_test(self, cmd, message):
         '''Simple test action that does nothing'''
 
-        await message.channel.send("Testing successful!"),
+        await message.channel.send("Testing successful!")
 
     async def action_test_priv(self, cmd, message):
         '''Test if user has permission to use restricted commands'''
 
-        await message.channel.send("You've got the power"),
+        await message.channel.send("You've got the power")
 
     async def action_test_unpriv(self, cmd, message):
         '''Test that a restricted command fails for all users'''
 
-        await message.channel.send("BUG: You definitely shouldn't have this much power"),
+        await message.channel.send("BUG: You definitely shouldn't have this much power")
 
     async def action_list_shards(self, cmd, message):
         '''Lists currently running shards on this server'''
 
         shards = self._k8s.list()
         # Format of this is:
-        # {'bungee': {'available_replicas': 1, 'replicas': 1},
+        # {'bungee': {'available_replicas': 1, 'replicas': 1}
         #  'dungeon': {'available_replicas': 1, 'replicas': 1}
         #  'test': {'available_replicas': 0, 'replicas': 0}}
 
-        await message.channel.send("Shard list: \n{}".format(pformat(shards))),
+        await message.channel.send("Shard list: \n{}".format(pformat(shards)))
 
     async def action_generate_instances(self, cmd, message):
         '''Dangerous!
-    Deletes previous terrain reset data
-    Temporarily brings down the dungeon shard to generate dungeon instances.
-    Must be run before preparing the build server reset bundle'''
+Deletes previous terrain reset data
+Temporarily brings down the dungeon shard to generate dungeon instances.
+Must be run before preparing the build server reset bundle'''
 
         # For brevity
         cnl = message.channel
 
-        estimated_space_left = get_available_storage('/home/epic/4_SHARED')
-        await cnl.send("Space left: {}".format(estimated_space_left // BYTES_PER_GB))
-
-        # TODO
+        # TODO Space check
+        # estimated_space_left = get_available_storage('/home/epic/4_SHARED')
+        # await cnl.send("Space left: {}".format(estimated_space_left // BYTES_PER_GB))
         #if estimated_space_left < min_free_gb * BYTES_PER_GB:
         #    self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // BYTES_PER_GB)),]
         #    return
 
-        await cnl.send("Cleaning up old terrain reset data..."),
-        await self.run(cnl, "rm -rf /home/epic/5_SCRATCH/tmpreset", None),
-        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset"),
+        await cnl.send("Cleaning up old terrain reset data...")
+        await self.run(cnl, "rm -rf /home/epic/5_SCRATCH/tmpreset", None)
+        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset")
 
-        await cnl.send("Stopping the dungeon shard..."),
+        await cnl.send("Stopping the dungeon shard...")
         self._k8s.stop("dungeon")
-        await asyncio.sleep(10),
+        await asyncio.sleep(10)
         # TODO: Make sure dungeon stopped
 
-        await cnl.send("Copying the dungeon master copies..."),
-        await self.run(cnl, "cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon"),
+        await cnl.send("Copying the dungeon master copies...")
+        await self.run(cnl, "cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
 
-        await cnl.send("Restarting the dungeon shard..."),
-        await self.cd(cnl, "/home/epic/project_epic/dungeon"),
+        await cnl.send("Restarting the dungeon shard...")
+        await self.cd(cnl, "/home/epic/project_epic/dungeon")
         self._k8s.start("dungeon")
         # TODO: Make sure dungeon started
 
-        await cnl.send("Generating dungeon instances (this may take a while)..."),
-        await self.run(cnl, _top_level + "/utility_code/dungeon_instance_gen.py"),
-        await self.run(cnl, "mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE"),
+        await cnl.send("Generating dungeon instances (this may take a while)...")
+        await self.run(cnl, _top_level + "/utility_code/dungeon_instance_gen.py")
+        await self.run(cnl, "mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE")
 
-        await cnl.send("Cleaning up instance generation temp files..."),
-        await self.run(cnl, "rm -rf /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon"),
-        await cnl.send("Dungeon instance generation complete!"),
-        await self.mention(),
+        await cnl.send("Cleaning up instance generation temp files...")
+        await self.run(cnl, "rm -rf /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
+        await cnl.send("Dungeon instance generation complete!")
+        await cnl.send(message.author.mention)
+
+    async def action_prepare_reset_bundle(self, cmd, message):
+        '''Dangerous!
+Temporarily brings down the region_1 and region_2 shards to prepare for terrain reset
+Packages up all of the pre-reset server components needed by the play server for reset
+Must be run before starting terrain reset on the play server'''
+
+        # For brevity
+        cnl = message.channel
+
+        # TODO Space check
+
+        await cnl.send("Stopping region_1 and region_2...")
+        self._k8s.stop("region_1")
+        self._k8s.stop("region_2")
+        await asyncio.sleep(10)
+        # TODO: Make sure shards stopped
+
+        await cnl.send("Copying region_1...")
+        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset/POST_RESET")
+        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1")
+        await self.run(cnl, "cp -a /home/epic/project_epic/region_1/Project_Epic-region_1 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/")
+
+        await cnl.send("Restarting the region_1 shard...")
+        self._k8s.start("region_1")
+
+        await cnl.send("Copying region_2...")
+        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset/POST_RESET")
+        await self.run(cnl, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2")
+        await self.run(cnl, "cp -a /home/epic/project_epic/region_2/Project_Epic-region_2 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/")
+
+        await cnl.send("Restarting the region_2 shard...")
+        self._k8s.start("region_2")
+
+        await cnl.send("Copying bungee...")
+        await self.run(cnl, "cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
+
+        await cnl.send("Copying purgatory...")
+        await self.run(cnl, "cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
+
+        await cnl.send("Copying server_config...")
+        await self.run(cnl, "cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
+
+        await cnl.send("Packaging up reset bundle...")
+        await self.cd(cnl, "/home/epic/5_SCRATCH/tmpreset")
+        await self.run(cnl, "tar czf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE")
+
+        await cnl.send("Reset bundle ready!")
+        await cnl.send(message.author.mention)
