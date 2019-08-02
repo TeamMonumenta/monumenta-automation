@@ -110,7 +110,7 @@ worldedit = [
         ('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit.jar'),
         ('plugins/DummyFawe.jar', '../../server_config/plugins/DummyFawe.jar'),
         ('plugins/FastAsyncWorldEdit/commands', '../../../server_config/plugins/FastAsyncWorldEdit/commands'),
-        ('plugins/FastAsyncWorldEdit/schematics', '/home/rock/4_SHARED/schematics'),
+        ('plugins/FastAsyncWorldEdit/schematics', '/home/epic/4_SHARED/schematics'),
     ]
 
 dynmap = [
