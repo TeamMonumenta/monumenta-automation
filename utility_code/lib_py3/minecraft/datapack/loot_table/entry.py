@@ -3,6 +3,7 @@
 import copy
 import math
 import os
+import random
 import sys
 
 this_folder = os.path.dirname(os.path.realpath(__file__))
@@ -10,6 +11,9 @@ this_folder = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(this_folder)
 from condition import BaseConditionList
 from function import BaseFunctionList, PlaceholderNumberOrRandom
+
+sys.path.append(os.path.join(this_folder, "../.."))
+from item import Item, ItemStack
 
 sys.path.append(os.path.join(this_folder, "../../../../../quarry"))
 from quarry.types import nbt
@@ -32,7 +36,7 @@ class BaseEntry(object):
             self._dict = copy.deepcopy(entry)
 
         else:
-            raise TypeError("Expected function to be type dict.")
+            raise TypeError("Expected entry to be type dict.")
 
         self.weight = self._dict.get('weight', 1)
         self.quality = self._dict.get('quality', 0)
@@ -86,6 +90,29 @@ class BaseEntry(object):
         return result
 
 
+class BaseEntryList(BaseEntry):
+    """A list of loot table entries.
+
+    Provides no logic for how they generate.
+    """
+    def __init__(self, entry):
+        """Load the entry from a ~~dict~~ list of dicts."""
+        if isinstance(entry, type(self)):
+            self._list = copy.deepcopy(entry._list)
+
+        elif isinstance(entry, list):
+            self._list = copy.deepcopy(entry)
+
+        else:
+            raise TypeError("Expected entry list to be type list.")
+
+    def __len__(self):
+        return len(self._list)
+
+    def __repr__(self):
+        return "{name}({entry})".format(name=self.__class__.__name__, entry=self._dict)
+
+
 class alternatives(BaseEntry):
     """An alternatives loot table entry.
 
@@ -94,13 +121,15 @@ class alternatives(BaseEntry):
     def __init__(self, entry):
         """Load the entry from a dict.
 
-        
+        type(entry["children"]) == list: List of entries
         """
         super().__init__(entry)
-        NotImplemented
+        self.alternatives = BaseEntryList(entry["children"])
 
     def _generate(self, generation_state):
         """Generate the entry after confirming the conditions are met."""
+        # TODO Create list that can generate with the current conditions,
+        # check if that list is empty, and try to generate until one works.
         NotImplemented
 
     def description(self):
@@ -152,7 +181,7 @@ class empty(BaseEntry):
 
     def description(self):
         """A description of what this entry does"""
-        return "Generate no items."
+        return ["Generate no items."]
 
     def __repr__(self):
         return "{name}({entry})".format(name=self.__class__.__name__, entry=self._dict)
@@ -167,9 +196,10 @@ class group(BaseEntry):
     def __init__(self, entry):
         """Load the entry from a dict.
 
-        
+        type(entry["children"]) == list: List of entries
         """
         super().__init__(entry)
+        self.group = BaseEntryList(entry["children"])
         NotImplemented
 
     def _generate(self, generation_state):
@@ -193,6 +223,7 @@ class item(BaseEntry):
         """Load the entry from a dict.
 
         type(self._dict["name"]) == str: A namedpsaced item ID. Namespace defaults to minecraft.
+        type(self._dict["functions"]) == list: A list of loot table functions.
         """
         super().__init__(entry)
         self.item_id = self._dict["name"]
@@ -200,7 +231,10 @@ class item(BaseEntry):
 
     def _generate(self, generation_state):
         """Generate the entry after confirming the conditions are met."""
-        NotImplemented
+        item = ItemStack()
+        item.id = self.item_id
+        self.functions(item, generation_state)
+        NotImplemented # Put the item in the container
 
     def description(self):
         """A description of what this entry does"""
@@ -247,9 +281,10 @@ class sequence(BaseEntry):
     def __init__(self, entry):
         """Load the entry from a dict.
 
-        
+        type(entry["children"]) == list: List of entries
         """
         super().__init__(entry)
+        self.sequence = BaseEntryList(entry["children"])
         NotImplemented
 
     def _generate(self, generation_state):
@@ -274,6 +309,8 @@ class tag(BaseEntry):
         """Load the entry from a dict.
 
         type(self._dict["name"]) == str: A namedpsaced item tag ID. Namespace defaults to minecraft.
+        self._dict["expand"] is True: (TODO Split/Share) the weight and quality of this entry among each item in the tag.
+        self._dict["expand"] is False: Generate one of each item in the tag.
         """
         super().__init__(entry)
         NotImplemented

@@ -114,13 +114,10 @@ class BaseFunctionList(BaseFunction):
 
     def description(self):
         """A description of what this function does"""
-        if len(self.functions):
-            result = "Run the following functions:"
-            for function in self.functions:
-                result += "- " + function.description()
-            return result
-        else:
-            return ""
+        result = ["Run the following functions:", []]
+        for function in self.functions:
+            result[1] += function.description()
+        return result
 
     def __repr__(self):
         return "{name}({function})".format(name=self.__class__.__name__, function=self._dict)
@@ -342,7 +339,7 @@ class limit_count(BaseFunction):
 
     def description(self):
         """A description of what this function does"""
-        return "Limit item count to no more than ".format(self._limit.description())
+        return ["Limit item count to no more than ".format(self._limit.description())]
 
 
 class looting_enchant(BaseFunction):
@@ -449,7 +446,7 @@ class set_count(BaseFunction):
 
     def description(self):
         """A description of what this function does"""
-        return "Set item count to {}".format(self._count.description())
+        return ["Set item count to {}".format(self._count.description())]
 
 
 class set_damage(BaseFunction):
@@ -476,7 +473,7 @@ class set_damage(BaseFunction):
 
     def description(self):
         """A description of what this function does"""
-        return "Set item damage to {} out of 1.0 durability remaining".format(self._damage.description())
+        return ["Set item damage to {} out of 1.0 durability remaining".format(self._damage.description())]
 
 
 class set_lore(BaseFunction):
@@ -544,7 +541,7 @@ class set_nbt(BaseFunction):
 
     def description(self):
         """A description of what this function does"""
-        return "Set item NBT to {}".format(self._dict["tag"])
+        return ["Set item NBT to {}".format(self._dict["tag"])]
 
 
 functions = BaseFunction.recursive_public_subclasses()

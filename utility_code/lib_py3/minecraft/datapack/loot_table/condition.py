@@ -109,13 +109,10 @@ class BaseConditionList(BaseCondition):
 
     def description(self):
         """A description of what this condition requires"""
-        if len(self.conditions):
-            result = "Confirm all of these are true:\n"
-            for condition in self.conditions:
-                result += "- " + condition.description() + "\n"
-            return result
-        else:
-            return ""
+        result = ["Confirm all of these are true:", []]
+        for condition in self.conditions:
+            result[1] += condition.description()
+        return result
 
 
 class alternative(BaseConditionList):
@@ -140,9 +137,9 @@ class alternative(BaseConditionList):
 
     def description(self):
         """A description of what this condition requires"""
-        result = "Confirm any of these are true:\n"
+        result = ["Confirm any of these are true:", []]
         for condition in self.conditions:
-            result += "- " + condition.description() + "\n"
+            result[1] += condition.description()
         return result
 
 
