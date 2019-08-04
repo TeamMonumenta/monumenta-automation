@@ -95,19 +95,22 @@ class AutomationBotInstance(object):
             "prepare reset bundle": self.action_prepare_reset_bundle,
         }
 
-        part = message.content.split(maxsplit=2)
-        if (not message.content) or (len(part) < 1):
+        msg = message.content
+
+        if msg.strip()[0] != self._prefix:
             return
 
-        if part[0].strip()[0] != self._prefix:
-            return
-
-        match = get_list_match(part[0][1:].strip(), commands.keys())
+        match = None
+        for command in commands:
+            if msg[1:].startswith(command):
+                match = command
+        logger.info(msg[1:])
+        logger.info(match)
         if match is None:
             # TODO HELP GOES HERE
             return
 
-        if not (self._listening.isListening(message) or match in always_listening_commands):
+        if (match not in always_listening_commands) and not self._listening.isListening(message):
             return
 
         try:

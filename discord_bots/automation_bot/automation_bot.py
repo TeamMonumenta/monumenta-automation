@@ -33,9 +33,6 @@ try:
 
     # Create instances of the shell bot, one per channel
     channels = {}
-    for channel_id in config["channels"]:
-        instance = AutomationBotInstance(client, channel, config)
-        channels[channel_id] = instance
 
     ################################################################################
     # Discord event handlers
@@ -46,12 +43,15 @@ try:
         logging.info(client.user.name)
         logging.info(client.user.id)
         logging.info('------')
-        for channel_id in channels:
+
+        for channel_id in config["channels"]:
             try:
                 channel = client.get_channel(channel_id)
+                instance = AutomationBotInstance(client, channel, config)
+                channels[channel_id] = instance
                 await channel.send(config["name"] + " started and now listening.")
             except:
-                logging.error( "Cannot connect to channel: " + config["channels"][channel_id] )
+                logging.error( "Cannot connect to channel: " + config["channels"] )
 
     @client.event
     async def on_message(message):
@@ -70,7 +70,7 @@ try:
     client.run(config["login"])
 except Exception as e:
     logging.error("The following error was visible from outside the client, and may be used to restart or fix it:")
-    logging.error(repr(e))
+    logging.error(traceback.format_exc())
 
 logging.info("Terminating")
 
