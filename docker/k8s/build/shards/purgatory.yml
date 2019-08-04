@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: monumenta-purgatory-clusterip
-  namespace: build-ns
+  name: purgatory
+  namespace: build
   labels:
-    app: monumenta-purgatory
+    app: purgatory
 spec:
   type: ClusterIP
   selector:
-    app: monumenta-purgatory
+    app: purgatory
   ports:
   # Main minecraft port
   - name: "25565"
@@ -24,21 +24,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: monumenta-purgatory-deployment
-  namespace: build-ns
+  name: purgatory
+  namespace: build
   labels:
-    app: monumenta-purgatory
+    app: purgatory
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: monumenta-purgatory
+      app: purgatory
   template:
     metadata:
       labels:
-        app: monumenta-purgatory
+        app: purgatory
     spec:
       volumes:
         - name: nfs-volume
@@ -46,7 +46,7 @@ spec:
             type: Directory
             path: /nfs/build/project_epic
       containers:
-      - name: monumenta-purgatory
+      - name: purgatory
         image: monumenta-docker.injic.io/monumenta-java-shard
         tty: true
         stdin: true

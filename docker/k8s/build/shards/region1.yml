@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: monumenta-region1-clusterip
-  namespace: build-ns
+  name: region1
+  namespace: build
   labels:
-    app: monumenta-region1
+    app: region1
 spec:
   type: ClusterIP
   selector:
-    app: monumenta-region1
+    app: region1
   ports:
   # Main minecraft port
   - name: "25565"
@@ -28,21 +28,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: monumenta-region1-deployment
-  namespace: build-ns
+  name: region1
+  namespace: build
   labels:
-    app: monumenta-region1
+    app: region1
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: monumenta-region1
+      app: region1
   template:
     metadata:
       labels:
-        app: monumenta-region1
+        app: region1
     spec:
       volumes:
         - name: nfs-maps
@@ -58,7 +58,7 @@ spec:
             type: Directory
             path: /nfs/4_SHARED
       containers:
-      - name: monumenta-region1
+      - name: region1
         image: monumenta-docker.injic.io/monumenta-java-shard
         tty: true
         stdin: true

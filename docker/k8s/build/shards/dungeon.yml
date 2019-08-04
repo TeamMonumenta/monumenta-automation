@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: monumenta-dungeon-clusterip
-  namespace: build-ns
+  name: dungeon
+  namespace: build
   labels:
-    app: monumenta-dungeon
+    app: dungeon
 spec:
   type: ClusterIP
   selector:
-    app: monumenta-dungeon
+    app: dungeon
   ports:
   # Main minecraft port
   - name: "25565"
@@ -28,21 +28,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: monumenta-dungeon-deployment
-  namespace: build-ns
+  name: dungeon
+  namespace: build
   labels:
-    app: monumenta-dungeon
+    app: dungeon
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: monumenta-dungeon
+      app: dungeon
   template:
     metadata:
       labels:
-        app: monumenta-dungeon
+        app: dungeon
     spec:
       volumes:
         - name: nfs-maps
@@ -58,7 +58,7 @@ spec:
             type: Directory
             path: /nfs/4_SHARED
       containers:
-      - name: monumenta-dungeon
+      - name: dungeon
         image: monumenta-docker.injic.io/monumenta-java-shard
         tty: true
         stdin: true
