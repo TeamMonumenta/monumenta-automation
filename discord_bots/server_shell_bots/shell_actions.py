@@ -103,58 +103,6 @@ class DebugAction(ShellAction):
 allActions.append(DebugAction)
 
 ################################################################################
-# Always listening actions
-
-class HelpAction(ShellAction):
-    '''Lists commands available with this bot'''
-    command = "help"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-        # any -v style arguments should go here
-        targetCommand = " ".join(commandArgs)
-        if len(commandArgs) == 0:
-            helptext = '''__Available Actions__'''
-            for actionClass in botConfig["actions"].values():
-                if actionClass.hasPermissions(actionClass,message.author):
-                    helptext += "\n**" + commandPrefix + actionClass.command + "**"
-                else:
-                    helptext += "\n~~" + commandPrefix + actionClass.command + "~~"
-            helptext += "\nRun `~help <command>` for more info."
-        else:
-            helptext = '''__Help on:__'''
-            for actionClass in botConfig["actions"].values():
-                if not (
-                    actionClass.command == targetCommand or
-                    commandPrefix + actionClass.command == targetCommand
-                ):
-                    continue
-                if actionClass.hasPermissions(actionClass,message.author):
-                    helptext += "\n**" + commandPrefix + actionClass.command + "**"
-                else:
-                    helptext += "\n~~" + commandPrefix + actionClass.command + "~~"
-                helptext += "```" + actionClass.__doc__.replace('{cmdPrefix}',commandPrefix) + "```"
-        self._commands = [
-            self.display(helptext),
-        ]
-allActions.append(HelpAction)
-
-class ListBotsAction(ShellAction):
-    '''Lists currently running bots'''
-    command = "list bots"
-    hasPermissions = checkPermissions
-    alwaysListening = True
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        self._commands = [
-            self.display('`' + botConfig["name"] + '`'),
-        ]
-allActions.append(ListBotsAction)
-
-################################################################################
 # Useful actions start here
 
 class KaulAction(ShellAction):

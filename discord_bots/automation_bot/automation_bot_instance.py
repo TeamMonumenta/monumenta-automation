@@ -63,34 +63,28 @@ class PermissionsError(Exception):
    pass
 
 class AutomationBotInstance(object):
+
+    ################################################################################
+    # Entry points
+
     def __init__(self, client, channel, config):
         self._client = client
         self._channel = channel
 
-        try:
-            self._name = config["name"]
-            self._shards = config["shards"]
-            self._prefix = config["prefix"]
-            self._project_epic_dir = config["project_epic_dir"]
-            self._commands = config["commands"]
-            self._permissions = config["permissions"]
-            # TODO: Hook this up to something
-            self._debug = True
-            self._listening = Listening()
-            self._k8s = KubernetesManager(config["k8s_namespace"])
-        except KeyError as e:
-            sys.exit('Config missing key: {}'.format(e))
-
-    async def handle_message(self, message):
-        always_listening_commands = [
+        self._always_listening_commands = [
+            "list bots",
             "select",
         ]
 
-        commands = {
+        # All actions - these are reduced down by the actions configured for this bot
+        self._commands = {
+            "help": self.action_help,
+            "list bots": self.action_list_bots,
+            "select": self.action_select_bot,
+
             "test": self.action_test,
             "testpriv": self.action_test_priv,
             "testunpriv": self.action_test_unpriv,
-            "select": self.action_select_bot,
 
             "list shards": self.action_list_shards,
             "start shard": self.action_start_shard,
@@ -102,33 +96,58 @@ class AutomationBotInstance(object):
             "prepare reset bundle": self.action_prepare_reset_bundle,
         }
 
+        try:
+            self._name = config["name"]
+            self._shards = config["shards"]
+            self._prefix = config["prefix"]
+            self._project_epic_dir = config["project_epic_dir"]
+
+            # Remove any commands that aren't available in the config
+            for command in self._commands:
+                if command not in config["commands"]:
+                    self._commands.pop(command)
+
+            for command in config["commands"]:
+                if command not in self._commands:
+                    logger.warn("Command '{}' specified in config but does not exist".format(command))
+
+            self._permissions = config["permissions"]
+            # TODO: Hook this up to something
+            self._debug = True
+            self._listening = Listening()
+            self._k8s = KubernetesManager(config["k8s_namespace"])
+        except KeyError as e:
+            sys.exit('Config missing key: {}'.format(e))
+
+    async def handle_message(self, message):
+
         msg = message.content
 
         if msg.strip()[0] != self._prefix:
             return
 
         match = None
-        for command in commands:
+        for command in self._commands:
             if msg[1:].startswith(command):
                 match = command
         if match is None:
-            # TODO HELP GOES HERE
             return
 
-        if (match not in always_listening_commands) and not self._listening.isListening(message):
+        if (match not in self._always_listening_commands) and not self._listening.isListening(message):
             return
 
-        try:
-            self.checkPermissions(match, message.author)
-            await commands[match](match, message)
-        except PermissionsError as e:
+        if self.check_permissions(match, message.author):
+            await self._commands[match](match, message)
+        else:
             await message.channel.send("Sorry " + message.author.mention + ", you do not have permission to run this command")
 
+    # Entry points
+    ################################################################################
 
     ################################################################################
-    # Permissions
+    # Infrastructure
 
-    def checkPermissions(self, command, author):
+    def check_permissions(self, command, author):
         logger.debug("author.id = {}".format(author.id))
         user_info = self._permissions["users"].get( author.id, {"rights":["@everyone"]} )
         logger.debug("User info = {}".format(pformat(user_info)))
@@ -139,11 +158,11 @@ class AutomationBotInstance(object):
             if permGroupName is not None:
                 user_rights = [permGroupName] + user_rights
 
-        self.checkPermissionsExplicitly(command, user_rights)
+        return self.check_permissions_explicitly(command, user_rights)
 
-    # Unlike checkPermissions, this does not get assigned to an object.
+    # Unlike check_permissions, this does not get assigned to an object.
     # It checks exactly that the user_rights provided can run the command.
-    def checkPermissionsExplicitly(self, command, user_rights):
+    def check_permissions_explicitly(self, command, user_rights):
         result = False
         already_checked = set()
         while len(user_rights) > 0:
@@ -161,8 +180,7 @@ class AutomationBotInstance(object):
             ):
                 result = givenPerm
 
-        if not result:
-            raise PermissionsError()
+        return result
 
     async def display_verbatim(text):
         for chunk in split_string(text):
@@ -202,8 +220,50 @@ class AutomationBotInstance(object):
 
         return stdout
 
-    # Permissions
+    # Infrastructure
     ################################################################################
+
+    ################################################################################
+    # Always listening actions
+
+    async def action_help(self, cmd, message):
+        '''Lists commands available with this bot'''
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+        # any -v style arguments should go here
+        target_command = " ".join(commandArgs)
+        if len(commandArgs) == 0:
+            helptext = '''__Available Actions__'''
+            for command in self._commands:
+                if self.check_permissions(command, message.author):
+                    helptext += "\n**" + self._prefix + command + "**"
+                else:
+                    helptext += "\n~~" + self._prefix + command + "~~"
+            helptext += "\nRun `~help <command>` for more info."
+        else:
+            helptext = None
+            for command in self._commands:
+                if not (
+                    command == target_command or
+                    self._prefix + command == target_command
+                ):
+                    continue
+
+                helptext = '''__Help on:__'''
+                if self.check_permissions(command, message.author):
+                    helptext += "\n**" + self._prefix + command + "**"
+                else:
+                    helptext += "\n~~" + self._prefix + command + "~~"
+                helptext += "```" + self._commands[command].__doc__.replace('{cmdPrefix}',self._prefix) + "```"
+
+            if helptext is None:
+                helptext = '''Command '{}' does not exist!'''.format(target_command)
+
+        await message.channel.send(helptext),
+
+    async def action_list_bots(self, cmd, message):
+        '''Lists currently running bots'''
+        await message.channel.send('`' + self._name + '`'),
 
     async def action_select_bot(self, cmd, message):
         '''Make specified bots start listening for commands; unlisted bots stop listening.
@@ -232,6 +292,9 @@ Examples:
                 await message.channel.send(self._name + " is no longer listening for commands.")
         elif self._listening.isListening(message):
             await message.channel.send(self._name + " is still listening for commands.")
+
+    # Always listening actions
+    ################################################################################
 
     async def action_test(self, cmd, message):
         '''Simple test action that does nothing'''
@@ -263,7 +326,7 @@ Examples:
         '''Start specified shards.
 Syntax:
 `{cmdPrefix}start shard *`
-`{cmdPrefix}start shard region_1 region_2 orange`'''
+`{cmdPrefix}start shard region_1 region_2 orange'''
 
         commandArgs = message.content[len(self._prefix + cmd)+1:].split()
 
@@ -287,7 +350,7 @@ Syntax:
         '''Stop specified shards.
 Syntax:
 `{cmdPrefix}stop shard *`
-`{cmdPrefix}stop shard region_1 region_2 orange`'''
+`{cmdPrefix}stop shard region_1 region_2 orange'''
 
         commandArgs = message.content[len(self._prefix + cmd)+1:].split()
 
