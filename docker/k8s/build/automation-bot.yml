@@ -91,19 +91,19 @@ spec:
             secretName: automation-bot-build-config
       containers:
       - name: automation-bot
-        image: monumenta-docker.injic.io/automation-bot
+        image: monumenta-docker.injic.io/monumenta-automation-bot
         tty: false
         stdin: false
         volumeMounts:
         - name: nfs-data
-          mountPath: /home/rock/project_epic
+          mountPath: /home/epic/project_epic
         - name: nfs-old-backups
-          mountPath: /home/rock/0_OLD_BACKUPS
+          mountPath: /home/epic/0_OLD_BACKUPS
         - name: nfs-archive
-          mountPath: /home/rock/1_ARCHIVE
+          mountPath: /home/epic/1_ARCHIVE
         - name: nfs-shared
-          mountPath: /home/rock/4_SHARED
+          mountPath: /home/epic/4_SHARED
         - name: secret-config
-          mountPath: /home/rock/.monumenta_bot
+          mountPath: /home/epic/.monumenta_bot
       imagePullSecrets:
       - name: regcred
