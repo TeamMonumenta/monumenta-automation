@@ -33,7 +33,10 @@ docker push monumenta-docker.injic.io/monumenta-dev-environment
 
 ```
 kubectl create secret docker-registry regcred -n build --docker-server=monumenta-docker.injic.io --docker-username=monumenta --docker-password=<password>
+```
 
-cd secrets
-kubectl create secret generic automation-bot-build-config -n build --from-file=config.yml
+# Changing the automation bot's config
+```
+cd secrets/build
+kubectl create secret generic automation-bot-config -n build --from-file=config.yml
 ```

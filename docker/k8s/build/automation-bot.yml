@@ -88,7 +88,7 @@ spec:
             path: /nfs/4_SHARED
         - name: secret-config
           secret:
-            secretName: automation-bot-build-config
+            secretName: automation-bot-config
       containers:
       - name: automation-bot
         image: monumenta-docker.injic.io/monumenta-automation-bot

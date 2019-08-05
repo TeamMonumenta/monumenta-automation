@@ -52,58 +52,58 @@ subjects:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: monumenta-automation-bot-deployment
+  name: automation-bot
   namespace: play
   labels:
-    app: monumenta-automation-bot
+    app: automation-bot
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: monumenta-automation-bot
+      app: automation-bot
   template:
     metadata:
       labels:
-        app: monumenta-automation-bot
+        app: automation-bot
     spec:
       serviceAccountName: automation-bot-service-account
       volumes:
         - name: nfs-data
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/play/project_epic
         - name: nfs-old-backups
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/0_OLD_BACKUPS
         - name: nfs-archive
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/1_ARCHIVE
         - name: nfs-shared
-          nfs:
-            server: 10.6.3.1
+          hostPath:
+            type: Directory
             path: /nfs/4_SHARED
         - name: secret-config
           secret:
-            secretName: automation-bot-play-config
+            secretName: automation-bot-config
       containers:
-      - name: monumenta-automation-bot
+      - name: automation-bot
         image: monumenta-docker.injic.io/monumenta-automation-bot
         tty: false
         stdin: false
         volumeMounts:
         - name: nfs-data
-          mountPath: /home/rock/project_epic
+          mountPath: /home/epic/project_epic
         - name: nfs-old-backups
-          mountPath: /home/rock/0_OLD_BACKUPS
+          mountPath: /home/epic/0_OLD_BACKUPS
         - name: nfs-archive
-          mountPath: /home/rock/1_ARCHIVE
+          mountPath: /home/epic/1_ARCHIVE
         - name: nfs-shared
-          mountPath: /home/rock/4_SHARED
+          mountPath: /home/epic/4_SHARED
         - name: secret-config
-          mountPath: /home/rock/.monumenta_bot
+          mountPath: /home/epic/.monumenta_bot
       imagePullSecrets:
       - name: regcred

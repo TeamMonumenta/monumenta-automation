@@ -103,7 +103,7 @@ class AutomationBotInstance(object):
             self._project_epic_dir = config["project_epic_dir"]
 
             # Remove any commands that aren't available in the config
-            for command in self._commands:
+            for command in dict(self._commands):
                 if command not in config["commands"]:
                     self._commands.pop(command)
 
