@@ -267,51 +267,6 @@ Currently exposes all valid git syntax, including syntax that *will* softlock th
         ]
 allActions.append(GitAction)
 
-class GenerateInstancesAction(ShellAction):
-    '''Dangerous!
-Deletes previous terrain reset data
-Temporarily brings down the dungeon shard to generate dungeon instances.
-Must be run before preparing the build server reset bundle'''
-    command = "generate instances"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-
-        estimated_space_left = get_available_storage('/')
-
-        if estimated_space_left < min_free_gb * bytes_per_gb:
-            self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
-            return
-
-        self._commands = [
-            self.display("Cleaning up old terrain reset data..."),
-            self.run("rm -rf /home/rock/5_SCRATCH/tmpreset", None),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset"),
-
-            self.display("Stopping the dungeon shard..."),
-            #self.run("mark2 send -n dungeon ~stop", None),
-            #self.sleep(5),
-            #self.run("mark2 send -n dungeon test", 1),
-
-            self.display("Copying the dungeon master copies..."),
-            self.run("cp -a /home/rock/project_epic/dungeon/Project_Epic-dungeon /home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon"),
-
-            self.display("Restarting the dungeon shard..."),
-            self.cd("/home/rock/project_epic/dungeon"),
-            #self.run("mark2 start"),
-
-            self.display("Generating dungeon instances (this may take a while)..."),
-            self.run(_top_level + "/utility_code/dungeon_instance_gen.py"),
-            self.run("mv /home/rock/5_SCRATCH/tmpreset/dungeons-out /home/rock/5_SCRATCH/tmpreset/TEMPLATE"),
-
-            self.display("Cleaning up instance generation temp files..."),
-            self.run("rm -rf /home/rock/5_SCRATCH/tmpreset/Project_Epic-dungeon"),
-            self.display("Dungeon instance generation complete!"),
-            self.mention(),
-        ]
-allActions.append(GenerateInstancesAction)
-
 class GetErrorsAction(ShellAction):
     '''Get the last minute of error log data from a given shard.
 
@@ -381,68 +336,6 @@ Syntax:
         ]
 allActions.append(RollLootAction)
 
-class PrepareResetBundleAction(ShellAction):
-    '''Dangerous!
-Temporarily brings down the region_1 and region_2 shards to prepare for terrain reset
-Packages up all of the pre-reset server components needed by the play server for reset
-Must be run before starting terrain reset on the play server'''
-    command = "prepare reset bundle"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-
-        estimated_space_left = get_available_storage('/')
-        estimated_space_left -= get_size("/home/rock/project_epic")
-
-        if estimated_space_left < min_free_gb * bytes_per_gb:
-            self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
-            return
-
-        self._commands = [
-            #self.display("Stopping the region_1 shard..."),
-            #self.run("mark2 send -n region_1 ~stop", None),
-            #self.run("mark2 send -n region_2 ~stop", None),
-            #self.sleep(6),
-            #self.run("mark2 send -n region_1 test", 1),
-            #self.run("mark2 send -n region_2 test", 1),
-
-            self.display("Copying region_1..."),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_1"),
-            self.run("cp -a /home/rock/project_epic/region_1/Project_Epic-region_1 /home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_1/"),
-
-            self.display("Restarting the region_1 shard..."),
-            self.cd("/home/rock/project_epic/region_1"),
-            #self.run("mark2 start"),
-
-            self.display("Copying region_2..."),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/POST_RESET"),
-            self.run("mkdir -p /home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_2"),
-            self.run("cp -a /home/rock/project_epic/region_2/Project_Epic-region_2 /home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_2/"),
-
-            self.display("Restarting the region_2 shard..."),
-            self.cd("/home/rock/project_epic/region_2"),
-            #self.run("mark2 start"),
-
-            self.display("Copying bungee..."),
-            self.run("cp -a /home/rock/project_epic/bungee /home/rock/5_SCRATCH/tmpreset/TEMPLATE/"),
-
-            self.display("Copying purgatory..."),
-            self.run("cp -a /home/rock/project_epic/purgatory /home/rock/5_SCRATCH/tmpreset/TEMPLATE/"),
-
-            self.display("Copying server_config..."),
-            self.run("cp -a /home/rock/project_epic/server_config /home/rock/5_SCRATCH/tmpreset/TEMPLATE/"),
-
-            self.display("Packaging up reset bundle..."),
-            self.cd("/home/rock/5_SCRATCH/tmpreset"),
-            self.run("tar czf /home/rock/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE"),
-
-            self.display("Reset bundle ready!"),
-            self.mention(),
-        ]
-allActions.append(PrepareResetBundleAction)
-
 class R1AddressToEnglishAction(ShellAction):
     '''Convert R1Address scores to a human-readable format
 
@@ -489,25 +382,6 @@ For syntax, run:
             self.display("Done."),
         ]
 allActions.append(R1PlotGetAction)
-
-class RestartBotAction(ShellAction):
-    '''Restart this bot. Used to update to the latest version.
-Do not use while the bot is running actions.
-
-Syntax:
-`{cmdPrefix}restart bot` restart bot with no arguements
-`{cmdPrefix}restart bot ...` restart bot with arguements <...>
-'''
-    command = "restart bot"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-
-        self._commands = [
-            self.exit(),
-        ]
-allActions.append(RestartBotAction)
 
 class SkillInfoAction(ShellAction):
     '''Print out skill info; used to update the public Google spreadsheet.
@@ -567,49 +441,6 @@ Syntax:
         else:
             self._commands = usage
 allActions.append(StageAction)
-
-class StartShardAction(ShellAction):
-    '''Start specified shards.
-Syntax:
-`{cmdPrefix}start shard *`
-`{cmdPrefix}start shard region_1 region_2 orange`'''
-    command = "start shard"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-
-        estimated_space_left = get_available_storage('/')
-
-        if estimated_space_left < min_free_gb * bytes_per_gb:
-            self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
-            return
-
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-
-        k8s = KubernetesManager()
-
-        allShards = botConfig["shards"]
-        shardsChanged = []
-        if '*' in commandArgs:
-            for shard in allShards.keys():
-                shardsChanged.append(shard)
-                k8s.start(shard)
-        else:
-            for shard in allShards.keys():
-                if shard in commandArgs:
-                    shardsChanged.append(shard)
-                    k8s.start(shard)
-
-        if not shardsChanged:
-            self._commands = [
-                self.display("No specified shards on this server."),
-            ]
-        else:
-            self._commands = [
-                self.display("Started shards [{}]".format(",".join(shardsChanged))),
-            ]
-allActions.append(StartShardAction)
 
 class StopAndBackupAction(ShellAction):
     '''Dangerous!
@@ -701,49 +532,6 @@ Starts a bungee shutdown timer for 10 minutes. Returns immediately.'''
             self.mention(),
         ]
 allActions.append(StopIn10MinutesAction)
-
-class StopShardAction(ShellAction):
-    '''Stop specified shards.
-Syntax:
-`{cmdPrefix}stop shard *`
-`{cmdPrefix}stop shard region_1 region_2 orange`'''
-    command = "stop shard"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-
-        estimated_space_left = get_available_storage('/')
-
-        if estimated_space_left < min_free_gb * bytes_per_gb:
-            self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
-            return
-
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-
-        k8s = KubernetesManager()
-
-        allShards = botConfig["shards"]
-        shardsChanged = []
-        if '*' in commandArgs:
-            for shard in allShards.keys():
-                shardsChanged.append(shard)
-                k8s.stop(shard)
-        else:
-            for shard in allShards.keys():
-                if shard in commandArgs:
-                    shardsChanged.append(shard)
-                    k8s.stop(shard)
-
-        if not shardsChanged:
-            self._commands = [
-                self.display("No specified shards on this server."),
-            ]
-        else:
-            self._commands = [
-                self.display("Stopped shards [{}]".format(",".join(shardsChanged))),
-            ]
-allActions.append(StopShardAction)
 
 class TerrainResetAction(ShellAction):
     '''Dangerous!
@@ -858,67 +646,6 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         ]
 
 allActions.append(TerrainResetAction)
-
-class UpdateItemAction(ShellAction):
-    '''
-Updates an item in all loot tables
-
-Usage:
-    update item minecraft:leather_leggings{Enchantments:[{lvl:3s,id:"minecraft:fire_protection"}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"{\"text\":\"§fBurnt Leggings\"}"},Damage:0}
-
-Easiest way to get this info is holding an item in your hand and using /nbti tocommand on a command block
-
-For convenience, leading 'give @p' is ignored, along with any data after the last } (usually the quantity of item from /nbti tocommand)
-    '''
-    command = "update item"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-
-        estimated_space_left = get_available_storage('/')
-
-        if estimated_space_left < min_free_gb * bytes_per_gb:
-            self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
-            return
-
-        # Check for any arguments
-        commandArgs = message.content[len(commandPrefix):].strip()
-        if len(commandArgs) < len(self.command) + 5:
-            self._commands = [
-                self.display("Item argument required")
-            ]
-            return
-        if '{' not in commandArgs:
-            self._commands = [
-                self.display("Item must be of the form minecraft:id{nbt}")
-            ]
-            return
-
-        # Parse id / nbt arguments
-        commandArgs = message.content[len(commandPrefix) + len(self.command) + 1:]
-
-        partitioned = commandArgs.strip().partition("{")
-        item_id = partitioned[0].strip()
-        item_nbt_str = partitioned[1] + partitioned[2].strip()
-
-        if item_id.startswith("/"):
-            item_id = item_id[1:]
-        if item_id.startswith("give @p "):
-            item_id = item_id[len("give @p "):]
-
-        if item_nbt_str[-1] != '}':
-            item_nbt_str = item_nbt_str[:item_nbt_str.rfind("}") + 1]
-
-        mgr = LootTableManager()
-        mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
-        locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
-
-        self._commands = [
-            self.display("Updated item in loot tables:```" + "\n".join(locations) + "```"),
-        ]
-
-allActions.append(UpdateItemAction)
 
 class ReplaceItemsAndMobsAction(ShellAction):
     '''Runs item and mob replacements on a given shard

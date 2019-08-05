@@ -71,12 +71,13 @@ class AutomationBotInstance(object):
             self._name = config["name"]
             self._shards = config["shards"]
             self._prefix = config["prefix"]
+            self._project_epic_dir = config["project_epic_dir"]
             self._commands = config["commands"]
             self._permissions = config["permissions"]
             # TODO: Hook this up to something
             self._debug = True
             self._listening = Listening()
-            self._k8s = KubernetesManager()
+            self._k8s = KubernetesManager(config["k8s_namespace"])
         except KeyError as e:
             sys.exit('Config missing key: {}'.format(e))
 
@@ -90,7 +91,13 @@ class AutomationBotInstance(object):
             "testpriv": self.action_test_priv,
             "testunpriv": self.action_test_unpriv,
             "select": self.action_select_bot,
+
             "list shards": self.action_list_shards,
+            "start shard": self.action_start_shard,
+            "stop shard": self.action_stop_shard,
+
+            "update item": self.action_update_item,
+
             "generate instances": self.action_generate_instances,
             "prepare reset bundle": self.action_prepare_reset_bundle,
         }
@@ -104,8 +111,6 @@ class AutomationBotInstance(object):
         for command in commands:
             if msg[1:].startswith(command):
                 match = command
-        logger.info(msg[1:])
-        logger.info(match)
         if match is None:
             # TODO HELP GOES HERE
             return
@@ -254,6 +259,54 @@ Examples:
 
         await message.channel.send("Shard list: \n{}".format(pformat(shards)))
 
+    async def action_start_shard(self, cmd, message):
+        '''Start specified shards.
+Syntax:
+`{cmdPrefix}start shard *`
+`{cmdPrefix}start shard region_1 region_2 orange`'''
+
+        commandArgs = message.content[len(self._prefix + cmd)+1:].split()
+
+        shardsChanged = []
+        if '*' in commandArgs:
+            for shard in self._shards.keys():
+                shardsChanged.append(shard)
+                self._k8s.start(shard)
+        else:
+            for shard in self._shards.keys():
+                if shard in commandArgs:
+                    shardsChanged.append(shard)
+                    self._k8s.start(shard)
+
+        if not shardsChanged:
+            await message.channel.send("No specified shards on this server."),
+        else:
+            await message.channel.send("Started shards [{}]".format(",".join(shardsChanged))),
+
+    async def action_stop_shard(self, cmd, message):
+        '''Stop specified shards.
+Syntax:
+`{cmdPrefix}stop shard *`
+`{cmdPrefix}stop shard region_1 region_2 orange`'''
+
+        commandArgs = message.content[len(self._prefix + cmd)+1:].split()
+
+        shardsChanged = []
+        if '*' in commandArgs:
+            for shard in self._shards.keys():
+                shardsChanged.append(shard)
+                self._k8s.stop(shard)
+        else:
+            for shard in self._shards.keys():
+                if shard in commandArgs:
+                    shardsChanged.append(shard)
+                    self._k8s.stop(shard)
+
+        if not shardsChanged:
+            await message.channel.send("No specified shards on this server."),
+        else:
+            await message.channel.send("Stopped shards [{}]".format(",".join(shardsChanged))),
+
     async def action_generate_instances(self, cmd, message):
         '''Dangerous!
 Deletes previous terrain reset data
@@ -344,3 +397,45 @@ Must be run before starting terrain reset on the play server'''
 
         await cnl.send("Reset bundle ready!")
         await cnl.send(message.author.mention)
+
+    async def action_update_item(self, cmd, message):
+        '''
+Updates an item in all loot tables
+
+Usage:
+    update item minecraft:leather_leggings{Enchantments:[{lvl:3s,id:"minecraft:fire_protection"}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"{\"text\":\"§fBurnt Leggings\"}"},Damage:0}
+
+Easiest way to get this info is holding an item in your hand and using /nbti tocommand on a command block
+
+For convenience, leading 'give @p' is ignored, along with any data after the last } (usually the quantity of item from /nbti tocommand)
+    '''
+
+        # Check for any arguments
+        commandArgs = message.content[len(self._prefix):].strip()
+        if len(commandArgs) < len(cmd) + 5:
+            await message.channel.send("Item argument required")
+            return
+        if '{' not in commandArgs:
+            await message.channel.send("Item must be of the form minecraft:id{nbt}")
+            return
+
+        # Parse id / nbt arguments
+        commandArgs = message.content[len(self._prefix) + len(cmd) + 1:]
+
+        partitioned = commandArgs.strip().partition("{")
+        item_id = partitioned[0].strip()
+        item_nbt_str = partitioned[1] + partitioned[2].strip()
+
+        if item_id.startswith("/"):
+            item_id = item_id[1:]
+        if item_id.startswith("give @p "):
+            item_id = item_id[len("give @p "):]
+
+        if item_nbt_str[-1] != '}':
+            item_nbt_str = item_nbt_str[:item_nbt_str.rfind("}") + 1]
+
+        mgr = LootTableManager()
+        mgr.load_loot_tables_subdirectories(os.path.join(self._project_epic_dir, "server_config/data/datapacks"))
+        locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
+
+        await message.channel.send("Updated item in loot tables:```" + "\n".join(locations) + "```"),

@@ -8,21 +8,24 @@ from pprint import pformat
 from kubernetes import client, config
 
 class KubernetesManager(object):
-    def __init__(self):
-        # TODO - specify via config
-        self._namespace = "build-ns"
+    def __init__(self, namespace):
+        self._namespace = namespace
 
-        # This only works within a pod - connects to the running k8s instance
-        #config.load_incluster_config()
-
-        # TODO:
-        config.load_kube_config()
+        try:
+            # This only works within a pod - connects to the running k8s instance
+            config.load_incluster_config()
+        except config.config_exception.ConfigException as e:
+            try:
+                # If loading incluster_config failed, try to load regular config file from user's ~/.kube
+                config.load_kube_config()
+            except config.config_exception.ConfigException as e:
+                raise Exception("Failed to load k8s config - is the environment set up?")
 
     def _set_replicas(self, deployment_name, replicas):
         if replicas != 0 and replicas != 1:
             raise Exception("Replicas for {} must be either 0 or 1, not {}".format(name, replicas))
         try:
-            client.AppsV1Api().patch_namespaced_deployment(deployment_name, "build-ns", {'spec': {'replicas': replicas}})
+            client.AppsV1Api().patch_namespaced_deployment(deployment_name, self._namespace, {'spec': {'replicas': replicas}})
         except client.rest.ApiException as e:
             if e.status == 404:
                 # Deployment does not exist
@@ -32,10 +35,10 @@ class KubernetesManager(object):
                 raise e
 
     def start(self, name):
-        self._set_replicas("monumenta-{}-deployment".format(name.replace('_', '')), 1)
+        self._set_replicas(name.replace('_', ''), 1)
 
     def stop(self, name):
-        self._set_replicas("monumenta-{}-deployment".format(name.replace('_', '')), 0)
+        self._set_replicas(name.replace('_', ''), 0)
 
     def restart(self, name):
         # TODO
@@ -48,7 +51,6 @@ class KubernetesManager(object):
         query = client.AppsV1Api().list_namespaced_deployment(self._namespace)
         for deployment in query.items:
             name = deployment.metadata.name
-            name = name.replace("monumenta-", "").replace("-deployment", "")
 
             data = {}
             data["replicas"] = deployment.spec.replicas
@@ -65,7 +67,7 @@ class KubernetesManager(object):
         #for pod in query.items:
         #    pod_name = pod.metadata.name
         #    for deployment_name in result:
-        #        if "monumenta-{}-deployment".format(deployment_name) in pod_name:
+        #        if deployment_name in pod_name:
         #            result[deployment_name]["pod_name"] = pod_name
         #            break
 
