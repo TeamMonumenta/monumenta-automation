@@ -107,7 +107,7 @@ spec:
         - name: nfs-maps
           mountPath: /home/rock/maps/dynmap/play
         - name: nfs-shared
-          mountPath: /home/rock/4_SHARED
+          mountPath: /home/epic/4_SHARED
         resources:
           limits:
             # Set this to 1Gi
