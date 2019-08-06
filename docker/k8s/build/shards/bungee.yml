@@ -95,11 +95,9 @@ spec:
         resources:
           limits:
             memory: 1Gi
-            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
             hugepages-2Mi: 704Mi
           requests:
             memory: 64Mi
-            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
             hugepages-2Mi: 704Mi
       imagePullSecrets:
       - name: regcred
