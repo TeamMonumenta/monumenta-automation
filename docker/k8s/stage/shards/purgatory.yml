@@ -1,0 +1,73 @@
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: purgatory
+  namespace: stage
+  labels:
+    app: purgatory
+spec:
+  type: ClusterIP
+  selector:
+    app: purgatory
+  ports:
+  # Main minecraft port
+  - name: "25565"
+    port: 25565
+    targetPort: 25565
+
+---
+
+# Deployment / the actual running application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: purgatory
+  namespace: stage
+  labels:
+    app: purgatory
+spec:
+  strategy:
+    type: Recreate
+  replicas: 0
+  selector:
+    matchLabels:
+      app: purgatory
+  template:
+    metadata:
+      labels:
+        app: purgatory
+    spec:
+      volumes:
+        - name: nfs-volume
+          hostPath:
+            type: Directory
+            path: /nfs/stage/project_epic
+      containers:
+      - name: purgatory
+        image: monumenta-docker.injic.io/monumenta-java-shard
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 25565
+        env:
+        - name: "JAVA_MEM"
+          value: "256M"
+        - name: "JAVA_META_MEM"
+          value: "128M"
+        - name: "JAVA_JAR"
+          value: "paperclip.jar"
+        - name: "SERVER_DIR"
+          value: "/project_epic/purgatory"
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /project_epic
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            memory: 256Mi
+      imagePullSecrets:
+      - name: regcred

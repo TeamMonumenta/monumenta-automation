@@ -1,0 +1,105 @@
+# Service / internal network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: bungee
+  namespace: stage
+  labels:
+    app: bungee
+spec:
+  type: ClusterIP
+  selector:
+    app: bungee
+  ports:
+  # Socket4MC
+  - name: "9575"
+    port: 9575
+    targetPort: 9575
+  # Plan
+  - name: "8804"
+    port: 8804
+    targetPort: 8804
+
+---
+
+# Service / external network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: bungee-nodeport
+  namespace: stage
+  labels:
+    app: bungee
+spec:
+  type: NodePort
+  selector:
+    app: bungee
+  ports:
+  # Main minecraft port
+  - name: "25565"
+    port: 25565
+    nodePort: 25565
+    targetPort: 25565
+
+---
+
+# Deployment / the actual running application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bungee
+  namespace: stage
+  labels:
+    app: bungee
+spec:
+  strategy:
+    type: Recreate
+  replicas: 0
+  selector:
+    matchLabels:
+      app: bungee
+  template:
+    metadata:
+      labels:
+        app: bungee
+    spec:
+      volumes:
+        - name: nfs-volume
+          hostPath:
+            path: /nfs/stage/project_epic
+            type: Directory
+      containers:
+      - name: bungee
+        image: monumenta-docker.injic.io/monumenta-java-shard
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 25565
+        - containerPort: 9575
+        - containerPort: 8804
+        env:
+        - name: "JAVA_MEM"
+          value: "512M"
+        - name: "JAVA_META_MEM"
+          value: "128M"
+        - name: "JAVA_JAR"
+          value: "BungeeCord.jar"
+        - name: "SERVER_DIR"
+          value: "/project_epic/bungee"
+        - name: "JAVA_LARGE_PAGES"
+          value: "yes"
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /project_epic
+        resources:
+          limits:
+            memory: 1Gi
+            hugepages-2Mi: 704Mi
+          requests:
+            memory: 64Mi
+            hugepages-2Mi: 704Mi
+      imagePullSecrets:
+      - name: regcred
