@@ -345,51 +345,6 @@ This will be updated to use the Google Sheets API at some point so it won't need
         ]
 allActions.append(SkillInfoAction)
 
-class StageAction(ShellAction):
-    '''List and restore pre-terrain reset backups. Intended for use with
-the stage servers. NOT YET WORKING.
-
-Syntax:
-```
-{cmdPrefix}stage list
-{cmdPrefix}stage restore <file>
-```'''
-    command = "stage"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-        usage = [
-            self.display('''Syntax:
-```
-`{cmdPrefix}stage list`
-`{cmdPrefix}stage restore <file>`
-```'''.replace('{cmdPrefix}',cmdPrefix)),
-        ]
-        botName = botConfig["name"]
-        playName = botName.replace("stage","play")
-        if len(commandArgs) == 0:
-            self._commands = usage
-        elif commandArgs[0] == 'list':
-            self._commands = [
-                self.cd("/home/rock/4_SHARED/"),
-                self.run("ls project_epic_pre_reset_{server}_* | sed 's/project_epic_pre_reset_{server}_//' | sed 's/.tgz//'".replace('{server}',playName), displayOutput=True),
-            ]
-        elif commandArgs[0] == 'restore':
-            if len(commandArgs) < 2:
-                self._commands = usage
-            else:
-                self._commands = [
-                    self.cd("/home/rock/"),
-                    self.run("rm -rf /home/rock/project_epic"),
-                    self.run("tar xzf 4_SHARED/project_epic_pre_reset_{server}_{file}.tgz".replace('{server}',playName).replace('{file}',commandArgs[1])),
-                    self.display("Restored {file}".replace('{file}',commandArgs[1])),
-                ]
-        else:
-            self._commands = usage
-allActions.append(StageAction)
-
 class StopAndBackupAction(ShellAction):
     '''Dangerous!
 Brings down all play server shards and backs them up in preparation for terrain reset.

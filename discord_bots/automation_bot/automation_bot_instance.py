@@ -94,6 +94,8 @@ class AutomationBotInstance(object):
 
             "generate instances": self.action_generate_instances,
             "prepare reset bundle": self.action_prepare_reset_bundle,
+
+            "stage": self.action_stage,
         }
 
         try:
@@ -182,7 +184,7 @@ class AutomationBotInstance(object):
 
         return result
 
-    async def display_verbatim(text):
+    async def display_verbatim(self, text):
         for chunk in split_string(text):
             await self._channel.send("```" + chunk + "```")
 
@@ -459,6 +461,32 @@ Must be run before starting terrain reset on the play server'''
         await self.run("tar czf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz POST_RESET TEMPLATE")
 
         await cnl.send("Reset bundle ready!")
+        await cnl.send(message.author.mention)
+
+    async def action_stage(self, cmd, message):
+        ''' Stops all stage server shards
+Copies the current play server over to the stage server.
+Archives the previous stage server project_epic contents under project_epic/0_PREVIOUS '''
+
+        # For brevity
+        cnl = message.channel
+
+        # TODO Space check
+
+        await cnl.send("Stopping all stage server shards...")
+
+        shards = self._k8s.list()
+
+        for shard in shards:
+            if shard in self._shards.keys():
+                self._k8s.stop(shard)
+
+        await asyncio.sleep(10)
+        # TODO: Make sure shards stopped
+
+        await self.action_list_shards("~list shards", message)
+
+        await cnl.send("STAGE WIP")
         await cnl.send(message.author.mention)
 
     async def action_update_item(self, cmd, message):
