@@ -40,8 +40,8 @@ spec:
   # Main minecraft port
   - name: "25565"
     port: 25565
-    nodePort: 25565
-    targetPort: 25565
+    nodePort: 9002
+    targetPort: 9002
 
 ---
 
