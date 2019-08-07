@@ -21,7 +21,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from lib_py3.loot_table_manager import LootTableManager
 
 from lib_k8s import KubernetesManager
-from automation_bot_lib import get_list_match, get_available_storage, datestr
+from automation_bot_lib import get_list_match, get_available_storage, datestr, split_string
 
 class Listening():
     def __init__(self):
@@ -468,6 +468,10 @@ Must be run before starting terrain reset on the play server'''
 Copies the current play server over to the stage server.
 Archives the previous stage server project_epic contents under project_epic/0_PREVIOUS '''
 
+        # Just in case...
+        if "stage" not in self._name:
+            raise Exception("WARNING: bot name does not contain 'stage', aborting to avoid mangling real data")
+
         # For brevity
         cnl = message.channel
 
@@ -486,7 +490,20 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
 
         await self.action_list_shards("~list shards", message)
 
-        await cnl.send("STAGE WIP")
+        await self.cd("/home/epic/project_epic")
+        await self.run("rm -rf 0_PREVIOUS")
+        await self.run("mkdir 0_PREVIOUS")
+
+        files = os.listdir(".")
+        for f in files:
+            if "0_PREVIOUS" not in f:
+                await self.run("mv {} 0_PREVIOUS/".format(f))
+
+        files = os.listdir("/home/epic/play/project_epic/")
+        for f in files:
+            await self.run("cp -a /home/epic/play/project_epic/{} /home/epic/project_epic/".format(f))
+
+        await cnl.send("Stage server loaded with current play server data")
         await cnl.send(message.author.mention)
 
     async def action_update_item(self, cmd, message):

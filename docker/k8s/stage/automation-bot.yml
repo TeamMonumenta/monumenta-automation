@@ -70,10 +70,10 @@ spec:
     spec:
       serviceAccountName: automation-bot-service-account
       volumes:
-        - name: nfs-build-data
+        - name: nfs-play-data
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic
+            path: /nfs/play/project_epic
         - name: nfs-data
           hostPath:
             type: Directory
@@ -91,8 +91,8 @@ spec:
         tty: false
         stdin: false
         volumeMounts:
-        - name: nfs-build-data
-          mountPath: /home/epic/build/project_epic
+        - name: nfs-play-data
+          mountPath: /home/epic/play/project_epic
         - name: nfs-data
           mountPath: /home/epic/project_epic
         - name: nfs-shared
