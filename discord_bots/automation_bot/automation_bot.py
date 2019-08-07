@@ -28,6 +28,9 @@ with open(config_path, 'r') as ymlfile:
 
 logging.info("Config: \n{}".format(pformat(config)))
 
+old_umask = os.umask(0o027)
+logging.info("New umask=0o027, old umask={}".format(oct(old_umask)))
+
 try:
     client = discord.Client()
 
