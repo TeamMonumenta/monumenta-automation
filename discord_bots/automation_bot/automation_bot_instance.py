@@ -91,6 +91,7 @@ class AutomationBotInstance(object):
             "stop shard": self.action_stop_shard,
 
             "update item": self.action_update_item,
+            "run replacements": self.action_run_replacements,
 
             "generate instances": self.action_generate_instances,
             "prepare reset bundle": self.action_prepare_reset_bundle,
@@ -278,6 +279,9 @@ Examples:
 `{cmdPrefix}select play play2` - select both the play bots
 `{cmdPrefix}select *` - select all bots'''
 
+        # For brevity
+        cnl = message.channel
+
         commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
 
         if (
@@ -289,11 +293,11 @@ Examples:
         ):
             self._listening.toggle(message)
             if self._listening.isListening(message):
-                await message.channel.send(self._name + " is now listening for commands.")
+                await cnl.send(self._name + " is now listening for commands.")
             else:
-                await message.channel.send(self._name + " is no longer listening for commands.")
+                await cnl.send(self._name + " is no longer listening for commands.")
         elif self._listening.isListening(message):
-            await message.channel.send(self._name + " is still listening for commands.")
+            await cnl.send(self._name + " is still listening for commands.")
 
     # Always listening actions
     ################################################################################
@@ -330,6 +334,9 @@ Syntax:
 `{cmdPrefix}start shard *`
 `{cmdPrefix}start shard region_1 region_2 orange'''
 
+        # For brevity
+        cnl = message.channel
+
         commandArgs = message.content[len(self._prefix + cmd)+1:].split()
 
         shardsChanged = []
@@ -344,15 +351,18 @@ Syntax:
                     self._k8s.start(shard)
 
         if not shardsChanged:
-            await message.channel.send("No specified shards on this server."),
+            await cnl.send("No specified shards on this server."),
         else:
-            await message.channel.send("Started shards [{}]".format(",".join(shardsChanged))),
+            await cnl.send("Started shards [{}]".format(",".join(shardsChanged))),
 
     async def action_stop_shard(self, cmd, message):
         '''Stop specified shards.
 Syntax:
 `{cmdPrefix}stop shard *`
 `{cmdPrefix}stop shard region_1 region_2 orange'''
+
+        # For brevity
+        cnl = message.channel
 
         commandArgs = message.content[len(self._prefix + cmd)+1:].split()
 
@@ -368,9 +378,9 @@ Syntax:
                     self._k8s.stop(shard)
 
         if not shardsChanged:
-            await message.channel.send("No specified shards on this server."),
+            await cnl.send("No specified shards on this server."),
         else:
-            await message.channel.send("Stopped shards [{}]".format(",".join(shardsChanged))),
+            await cnl.send("Stopped shards [{}]".format(",".join(shardsChanged))),
 
     async def action_generate_instances(self, cmd, message):
         '''Dangerous!
@@ -518,13 +528,16 @@ Easiest way to get this info is holding an item in your hand and using /nbti toc
 For convenience, leading 'give @p' is ignored, along with any data after the last } (usually the quantity of item from /nbti tocommand)
     '''
 
+        # For brevity
+        cnl = message.channel
+
         # Check for any arguments
         commandArgs = message.content[len(self._prefix):].strip()
         if len(commandArgs) < len(cmd) + 5:
-            await message.channel.send("Item argument required")
+            await cnl.send("Item argument required")
             return
         if '{' not in commandArgs:
-            await message.channel.send("Item must be of the form minecraft:id{nbt}")
+            await cnl.send("Item must be of the form minecraft:id{nbt}")
             return
 
         # Parse id / nbt arguments
@@ -546,4 +559,43 @@ For convenience, leading 'give @p' is ignored, along with any data after the las
         mgr.load_loot_tables_subdirectories(os.path.join(self._project_epic_dir, "server_config/data/datapacks"))
         locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
 
-        await message.channel.send("Updated item in loot tables:```" + "\n".join(locations) + "```"),
+        await cnl.send("Updated item in loot tables:```" + "\n".join(locations) + "```"),
+
+    async def action_run_replacements(self, cmd, message):
+        '''Runs item and mob replacements on a given shard
+Syntax:
+`{cmdPrefix}run replacements shard region_1 region_2 orange`'''
+
+        # For brevity
+        cnl = message.channel
+
+        # TODO Space check
+
+        commandArgs = message.content[len(self._prefix + cmd)+1:].split()
+
+        replace_shards = []
+        for shard in self._shards.keys():
+            if shard in commandArgs:
+                replace_shards.append(shard)
+
+        if not replace_shards:
+            await cnl.send("Nothing to do"),
+            return
+
+        await cnl.send("Replacing both mobs AND items on [{}]".format(" ".join(replace_shards))),
+
+        for shard in replace_shards:
+            base_backup_name = "/home/epic/0_OLD_BACKUPS/Project_Epic-{}_pre_entity_loot_updates_{}".format(shard, datestr())
+
+            await cnl.send("Stopping shard {}".format(shard)),
+            self._k8s.stop(shard)
+            # TODO - wait for shard to stop
+            await asyncio.sleep(10)
+            await self.cd(self._shards[shard]),
+            await self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard)),
+            await self.run("/home/epic/MCEdit-And-Automation/utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name), displayOutput=True),
+            await self.run("/home/epic/MCEdit-And-Automation/utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name), displayOutput=True),
+            await cnl.send("Starting shard {}".format(shard)),
+            self._k8s.start(shard)
+            # TODO - wait for shard to start
+        await cnl.send(message.author.mention)
