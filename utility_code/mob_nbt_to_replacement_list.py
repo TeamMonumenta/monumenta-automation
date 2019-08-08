@@ -37,7 +37,7 @@ with open(sys.argv[1], 'r') as in_file:
                 out_file.write("    {\n")
                 out_file.write("        'rules': {\n")
                 out_file.write("            'id': '{}',\n".format(mob_id))
-                out_file.write("            'CustomName': '{}'\n".format(mob_name))
+                out_file.write("            'CustomName': r'''{}'''\n".format(mob_name))
                 out_file.write("        },\n")
                 out_file.write("        'mojangson': r'''{}''',\n".format(line.strip()))
                 out_file.write("    },\n")
