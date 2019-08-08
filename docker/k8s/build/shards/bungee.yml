@@ -89,6 +89,18 @@ spec:
           value: "/project_epic/bungee"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        readinessProbe:
+          tcpSocket:
+            port: 25565
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 25565
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
           mountPath: /project_epic
