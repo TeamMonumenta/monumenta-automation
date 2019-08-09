@@ -7,7 +7,7 @@ for shard in [
     'region_1',
     'dungeon',
 ]:
-    shards[shard] = World('/home/rock/project_epic/'+shard+'/Project_Epic-'+shard+'/')
+    shards[shard] = World('/home/epic/project_epic/'+shard+'/Project_Epic-'+shard+'/')
 
 areas = [
     {
@@ -80,7 +80,7 @@ for area in areas:
             y = 0
     dx,dy,dz = area['size']
 
-    total = world.dump_command_blocks( (x,y,z), (x+dx,y+dy,z+dz), '/home/rock/project_epic/server_config/data/commands_to_update/'+name+'.txt' )
+    total = world.dump_command_blocks( (x,y,z), (x+dx,y+dy,z+dz), '/home/epic/project_epic/server_config/data/commands_to_update/'+name+'.txt' )
 
     print( 'Scanned ' + name + ', found {} total command blocks (working or otherwise).'.format(total) )
 

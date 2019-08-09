@@ -12,7 +12,7 @@ from lib_py3.world import World
 from lib_py3.common import DictWithDefault
 from lib_py3.common import get_item_name_from_nbt
 
-world = World('/home/rock/project_epic/dungeon/Project_Epic-dungeon')
+world = World('/home/epic/project_epic/dungeon/Project_Epic-dungeon')
 
 dungeons = (
     {

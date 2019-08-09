@@ -47,17 +47,17 @@ for addr_entry in lut.address_to_coord.items():
 
         score_rules.append(newRule)
 
-for shard in os.listdir('/home/rock/project_epic'):
+for shard in os.listdir('/home/epic/project_epic'):
     if (
         shard == 'server_config' or
-        not os.path.isdir( os.path.join( '/home/rock/project_epic', shard ) ) or
-        not os.path.isfile( os.path.join( '/home/rock/project_epic', shard, 'Project_Epic-' + shard, 'level.dat' ) ) or
-        not os.path.isfile( os.path.join( '/home/rock/project_epic', shard, 'Project_Epic-' + shard, 'data', 'scoreboard.dat' ) )
+        not os.path.isdir( os.path.join( '/home/epic/project_epic', shard ) ) or
+        not os.path.isfile( os.path.join( '/home/epic/project_epic', shard, 'Project_Epic-' + shard, 'level.dat' ) ) or
+        not os.path.isfile( os.path.join( '/home/epic/project_epic', shard, 'Project_Epic-' + shard, 'data', 'scoreboard.dat' ) )
     ):
         continue
 
     print(shard)
-    scoreboard = Scoreboard( os.path.join( '/home/rock/project_epic', shard, 'Project_Epic-' + shard ) )
+    scoreboard = Scoreboard( os.path.join( '/home/epic/project_epic', shard, 'Project_Epic-' + shard ) )
     scoreboard.batch_score_changes( score_rules )
     scoreboard.save()
 

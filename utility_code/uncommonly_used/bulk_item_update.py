@@ -34,7 +34,7 @@ if input_path is None:
 
 mgr = LootTableManager()
 
-mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
+mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
 
 failed = []
 succeeded = []
@@ -61,8 +61,8 @@ with open(input_path) as f:
                 item_nbt_str = item_nbt_str[:item_nbt_str.rfind("}") + 1]
 
             mgr = LootTableManager()
-            #mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
-            mgr.load_loot_tables_subdirectories("/home/rock/MCEdit-And-Automation/utility_code/uncommonly_used/datapacks")
+            #mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
+            mgr.load_loot_tables_subdirectories("/home/epic/MCEdit-And-Automation/utility_code/uncommonly_used/datapacks")
             locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
 
             succeeded.append(commandArgs)

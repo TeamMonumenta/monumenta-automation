@@ -8,14 +8,14 @@ from lib_py3.terrain_reset import terrain_reset_instance
 def get_dungeon_config(name, scoreboard):
     return {
         "server":name,
-        "localDstFolder":"/home/rock/project_epic/{0}/Project_Epic-{0}/".format(name),
+        "localDstFolder":"/home/epic/project_epic/{0}/Project_Epic-{0}/".format(name),
         "tagPlayers":["MidTransfer","resetMessage"],
         "tpToSpawn":True,
     }
 
 region_1 = {
     "server":"region_1",
-    "localDstFolder":"/home/rock/project_epic/region_1/Project_Epic-region_1/",
+    "localDstFolder":"/home/epic/project_epic/region_1/Project_Epic-region_1/",
     "tpToSpawn":True,
     "tagPlayers":["MidTransfer","resetMessage"],
 }

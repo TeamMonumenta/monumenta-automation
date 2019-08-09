@@ -19,10 +19,10 @@ def iterprint(entity, pos, entity_path):
         entity.tree()
         raise(e)
 
-#world = World("/home/rock/project_epic/mobs/Project_Epic-mobs")
+#world = World("/home/epic/project_epic/mobs/Project_Epic-mobs")
 world = World("Project_Epic-mobs")
 lootmgr = LootTableManager()
-lootmgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
+lootmgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
 #lootmgr.load_world(world)
 mgr = ItemReplacementManager(lootmgr.get_unique_item_map())
 

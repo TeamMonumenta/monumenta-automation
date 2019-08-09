@@ -38,10 +38,10 @@ for o, a in opts:
 
 mgr = LootTableManager()
 
-mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
-mgr.load_advancements_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
-mgr.load_functions_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
-mgr.load_scripted_quests_directory("/home/rock/project_epic/server_config/data/scriptedquests")
+mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
+mgr.load_advancements_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
+mgr.load_functions_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
+mgr.load_scripted_quests_directory("/home/epic/project_epic/server_config/data/scriptedquests")
 
 if len(world_paths) != 0:
     for world_entry in world_paths:

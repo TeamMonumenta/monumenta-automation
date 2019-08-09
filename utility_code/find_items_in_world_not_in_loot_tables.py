@@ -43,7 +43,7 @@ if world_path is None:
     usage()
 
 loot_table_manager = LootTableManager()
-loot_table_manager.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
+loot_table_manager.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
 item_map = loot_table_manager.get_unique_item_map(show_errors=False)
 world = World(world_path)
 

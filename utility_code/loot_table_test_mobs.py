@@ -12,7 +12,7 @@ from lib_py3.world import World
 from lib_py3.common import DictWithDefault
 from lib_py3.common import get_item_name_from_nbt
 
-world = World('/home/rock/project_epic/mobs/Project_Epic-mobs')
+world = World('/home/epic/project_epic/mobs/Project_Epic-mobs')
 # pos1 must be less than pos2 on every axis
 pos1 = (-1024, 16, -1584)
 pos2 = (-1009, 30, -1569)

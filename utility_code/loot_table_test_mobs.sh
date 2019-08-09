@@ -16,7 +16,7 @@ if [ "$#" -ne 1 ]; then
 	exit 1
 fi
 
-cd /home/rock/MCEdit-And-Automation/utility_code
+cd /home/epic/MCEdit-And-Automation/utility_code
 
 mark2 send -n mobs 'forceload add -1024 -1584 -1009 -1569'
 sleep 0.1

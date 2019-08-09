@@ -18,18 +18,18 @@ from quarry.types import nbt
 mgr = LootTableManager()
 
 # AUTOFORMAT
-mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/datapacks", indent=4)
-mgr.autoformat_json_files_in_directory("/home/rock/project_epic/server_config/data/scriptedquests", indent=2)
+mgr.autoformat_json_files_in_directory("/home/epic/project_epic/server_config/data/datapacks", indent=4)
+mgr.autoformat_json_files_in_directory("/home/epic/project_epic/server_config/data/scriptedquests", indent=2)
 sys.exit(0)
 
-mgr.load_loot_tables_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
-mgr.load_advancements_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
-mgr.load_functions_subdirectories("/home/rock/project_epic/server_config/data/datapacks")
-mgr.load_scripted_quests_directory("/home/rock/project_epic/server_config/data/scriptedquests")
+mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
+mgr.load_advancements_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
+mgr.load_functions_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
+mgr.load_scripted_quests_directory("/home/epic/project_epic/server_config/data/scriptedquests")
 
-#mgr.load_world(World("/home/rock/MCEdit-And-Automation/utility_code/Project_Epic-mobs"))
-#mgr.load_world(World("/home/rock/project_epic/mobs/Project_Epic-mobs"))
-#mgr.load_world(World("/home/rock/project_epic/region_1/Project_Epic-region_1"))
+#mgr.load_world(World("/home/epic/MCEdit-And-Automation/utility_code/Project_Epic-mobs"))
+#mgr.load_world(World("/home/epic/project_epic/mobs/Project_Epic-mobs"))
+#mgr.load_world(World("/home/epic/project_epic/region_1/Project_Epic-region_1"))
 
 invalid_references = mgr.get_invalid_loot_table_references()
 if len(invalid_references.keys()) > 0:

@@ -11,7 +11,7 @@ rx,rz=x//512,z//512
 cx,cz=(x%512)//16,(z%512)//16
 
 try:
-    region = nbt.RegionFile('/home/rock/project_epic/{0}/Project_Epic-{0}/region/r.{1}.{2}.mca'.format(shard,rx,rz))
+    region = nbt.RegionFile('/home/epic/project_epic/{0}/Project_Epic-{0}/region/r.{1}.{2}.mca'.format(shard,rx,rz))
     chunk = region.load_chunk(cx,cz)
 
     for tile_entity in chunk.body.at_path('Level.TileEntities').value:
