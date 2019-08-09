@@ -87,8 +87,9 @@ class AutomationBotInstance(object):
             "testunpriv": self.action_test_unpriv,
 
             "list shards": self.action_list_shards,
-            "start shard": self.action_start_shard,
-            "stop shard": self.action_stop_shard,
+            "start": self.action_start,
+            "stop": self.action_stop,
+            "restart": self.action_restart,
 
             "update item": self.action_update_item,
             "run replacements": self.action_run_replacements,
@@ -323,7 +324,7 @@ Examples:
     async def action_list_shards(self, cmd, message):
         '''Lists currently running shards on this server'''
 
-        shards = self._k8s.list()
+        shards = await self._k8s.list()
         # Format of this is:
         # {'bungee': {'available_replicas': 1, 'replicas': 1}
         #  'dungeon': {'available_replicas': 1, 'replicas': 1}
@@ -331,59 +332,53 @@ Examples:
 
         await message.channel.send("Shard list: \n{}".format(pformat(shards)))
 
-    async def action_start_shard(self, cmd, message):
+
+    async def _start_stop_restart_common(self, cmd, message, action_str_init, action_str_fini, k8s_fn):
+        # For brevity
+        cnl = message.channel
+
+        arg_str = message.content[len(self._prefix + cmd)+1:].strip()
+        if arg_str.startswith("shard "):
+            arg_str = arg_str[len("shard "):].strip()
+        commandArgs = arg_str.split()
+
+        shards_changed = []
+        if '*' in commandArgs:
+            for shard in self._shards.keys():
+                shards_changed.append(shard)
+        else:
+            for shard in self._shards.keys():
+                if shard in commandArgs:
+                    shards_changed.append(shard)
+
+        if not shards_changed:
+            await cnl.send("No specified shards on this server.")
+        else:
+            await cnl.send("{} shards [{}]...".format(action_str_init, ",".join(shards_changed)))
+            await k8s_fn(shards_changed)
+            await cnl.send("{} shards [{}]".format(action_str_fini, ",".join(shards_changed)))
+            await cnl.send(message.author.mention)
+
+    async def action_start(self, cmd, message):
         '''Start specified shards.
 Syntax:
 `{cmdPrefix}start shard *`
 `{cmdPrefix}start shard region_1 region_2 orange'''
+        await self._start_stop_restart_common(cmd, message, "Starting", "Started", self._k8s.start)
 
-        # For brevity
-        cnl = message.channel
-
-        commandArgs = message.content[len(self._prefix + cmd)+1:].split()
-
-        shardsChanged = []
-        if '*' in commandArgs:
-            for shard in self._shards.keys():
-                shardsChanged.append(shard)
-                self._k8s.start(shard)
-        else:
-            for shard in self._shards.keys():
-                if shard in commandArgs:
-                    shardsChanged.append(shard)
-                    self._k8s.start(shard)
-
-        if not shardsChanged:
-            await cnl.send("No specified shards on this server.")
-        else:
-            await cnl.send("Started shards [{}]".format(",".join(shardsChanged)))
-
-    async def action_stop_shard(self, cmd, message):
+    async def action_stop(self, cmd, message):
         '''Stop specified shards.
 Syntax:
 `{cmdPrefix}stop shard *`
 `{cmdPrefix}stop shard region_1 region_2 orange'''
+        await self._start_stop_restart_common(cmd, message, "Stopping", "Stopped", self._k8s.stop)
 
-        # For brevity
-        cnl = message.channel
-
-        commandArgs = message.content[len(self._prefix + cmd)+1:].split()
-
-        shardsChanged = []
-        if '*' in commandArgs:
-            for shard in self._shards.keys():
-                shardsChanged.append(shard)
-                self._k8s.stop(shard)
-        else:
-            for shard in self._shards.keys():
-                if shard in commandArgs:
-                    shardsChanged.append(shard)
-                    self._k8s.stop(shard)
-
-        if not shardsChanged:
-            await cnl.send("No specified shards on this server.")
-        else:
-            await cnl.send("Stopped shards [{}]".format(",".join(shardsChanged)))
+    async def action_restart(self, cmd, message):
+        '''Restart specified shards.
+Syntax:
+`{cmdPrefix}restart shard *`
+`{cmdPrefix}restart shard region_1 region_2 orange'''
+        await self._start_stop_restart_common(cmd, message, "Restarting", "Restarted", self._k8s.restart)
 
     async def action_generate_instances(self, cmd, message):
         '''Dangerous!
@@ -406,17 +401,14 @@ Must be run before preparing the build server reset bundle'''
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
 
         await cnl.send("Stopping the dungeon shard...")
-        self._k8s.stop("dungeon")
-        await asyncio.sleep(10)
-        # TODO: Make sure dungeon stopped
+        await self._k8s.stop("dungeon")
 
         await cnl.send("Copying the dungeon master copies...")
         await self.run("cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
 
         await cnl.send("Restarting the dungeon shard...")
         await self.cd("/home/epic/project_epic/dungeon")
-        self._k8s.start("dungeon")
-        # TODO: Make sure dungeon started
+        await self._k8s.start("dungeon")
 
         await cnl.send("Generating dungeon instances (this may take a while)...")
         await self.run(_top_level + "/utility_code/dungeon_instance_gen.py")
@@ -439,24 +431,22 @@ Must be run before starting terrain reset on the play server'''
         # TODO Space check
 
         await cnl.send("Stopping region_1 and region_2...")
-        self._k8s.stop("region_1")
-        self._k8s.stop("region_2")
-        await asyncio.sleep(10)
-        # TODO: Make sure shards stopped
+        await self._k8s.stop("region_1")
+        await self._k8s.stop("region_2")
 
         await cnl.send("Copying region_1...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1")
         await self.run("cp -a /home/epic/project_epic/region_1/Project_Epic-region_1 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/")
 
         await cnl.send("Restarting the region_1 shard...")
-        self._k8s.start("region_1")
+        await self._k8s.start("region_1")
 
         await cnl.send("Copying region_2...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2")
         await self.run("cp -a /home/epic/project_epic/region_2/Project_Epic-region_2 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/")
 
         await cnl.send("Restarting the region_2 shard...")
-        self._k8s.start("region_2")
+        await self._k8s.start("region_2")
 
         await cnl.send("Copying bungee...")
         await self.run("cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
@@ -508,11 +498,10 @@ DELETES DUNGEON CORE PROTECT DATA'''
 
         shards = self._k8s.list()
 
+        # TODO: All at once, instead of one at a time
         for shard in shards:
             if shard in [s.replace("_", "") for s in self._shards.keys()]:
-                self._k8s.stop(shard)
-
-        await asyncio.sleep(10)
+                await self._k8s.stop(shard)
 
         # Fail if any shards are still running
         await cnl.send("Checking that all shards are stopped...")
@@ -660,12 +649,10 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
 
         shards = self._k8s.list()
 
+        # TODO: All at once, instead of one at a time
         for shard in shards:
             if shard in [s.replace("_", "") for s in self._shards.keys()]:
-                self._k8s.stop(shard)
-
-        await asyncio.sleep(10)
-        # TODO: Make sure shards stopped
+                await self._k8s.stop(shard)
 
         await self.action_list_shards("~list shards", message)
 
@@ -757,14 +744,14 @@ Syntax:
             base_backup_name = "/home/epic/0_OLD_BACKUPS/Project_Epic-{}_pre_entity_loot_updates_{}".format(shard, datestr())
 
             await cnl.send("Stopping shard {}".format(shard))
-            self._k8s.stop(shard)
-            # TODO - wait for shard to stop
-            await asyncio.sleep(10)
+            await self._k8s.stop(shard)
+
+            await cnl.send("Running replacements on shard {}".format(shard))
             await self.cd(self._shards[shard])
             await self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard))
             await self.run("/home/epic/MCEdit-And-Automation/utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name), displayOutput=True)
             await self.run("/home/epic/MCEdit-And-Automation/utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name), displayOutput=True)
             await cnl.send("Starting shard {}".format(shard))
-            self._k8s.start(shard)
-            # TODO - wait for shard to start
+            await self._k8s.start(shard)
+
         await cnl.send(message.author.mention)

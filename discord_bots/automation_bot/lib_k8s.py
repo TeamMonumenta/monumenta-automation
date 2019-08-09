@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+import asyncio
+from pprint import pformat
+
 import logging
 logger = logging.getLogger(__name__)
-
-from pprint import pformat
 
 from kubernetes import client, config
 
@@ -21,30 +22,47 @@ class KubernetesManager(object):
             except config.config_exception.ConfigException as e:
                 raise Exception("Failed to load k8s config - is the environment set up?")
 
-    def _set_replicas(self, deployment_name, replicas):
-        if replicas != 0 and replicas != 1:
-            raise Exception("Replicas for {} must be either 0 or 1, not {}".format(name, replicas))
-        try:
-            client.AppsV1Api().patch_namespaced_deployment(deployment_name, self._namespace, {'spec': {'replicas': replicas}})
-        except client.rest.ApiException as e:
-            if e.status == 404:
-                # Deployment does not exist
-                raise Exception("{} not found".format(deployment_name))
-            else:
-                # Other error
-                raise e
+    async def _set_replicas(self, deployment_map, wait, timeout_seconds):
+        # deployment_map = { deployment_name (string) : replicas (int) }
+        # ex: { "bungee" : 1 }
 
-    def start(self, name):
-        self._set_replicas(name.replace('_', ''), 1)
+        for deployment_name in deployment_map:
+            replicas = deployment_map[deployment_name]
+            if replicas != 0 and replicas != 1:
+                raise Exception("Replicas for {} must be either 0 or 1, not {}".format(name, replicas))
+            try:
+                client.AppsV1Api().patch_namespaced_deployment(deployment_name, self._namespace, {'spec': {'replicas': replicas}})
+            except client.rest.ApiException as e:
+                if e.status == 404:
+                    # Deployment does not exist
+                    raise Exception("{} not found".format(deployment_name))
+                else:
+                    # Other error
+                    raise e
 
-    def stop(self, name):
-        self._set_replicas(name.replace('_', ''), 0)
+        # TODO Better wait! - on stop needs to wait for terminated pod, on start needs to wait for readiness
+        await asyncio.sleep(15)
 
-    def restart(self, name):
-        # TODO
-        pass
+    async def _start_stop_common(self, names, replicas, wait, timeout_seconds):
+        deployment_map = {}
+        if type(names) is list:
+            for name in names:
+                deployment_map[name] = replicas
+        else:
+            deployment_map[names] = replicas
+        await self._set_replicas(deployment_map, wait, timeout_seconds)
 
-    def list(self):
+    async def start(self, names, wait=True, timeout_seconds=60):
+        await self._start_stop_common(names, 1, wait, timeout_seconds)
+
+    async def stop(self, names, wait=True, timeout_seconds=60):
+        await self._start_stop_common(names, 0, wait, timeout_seconds)
+
+    async def restart(self, names, wait=True, timeout_seconds=60):
+        await self.stop(names, wait, timeout_seconds)
+        await self.start(names, wait, timeout_seconds)
+
+    async def list(self):
         result = {}
 
         # TODO: Filter by label so only actual shards are returned?
