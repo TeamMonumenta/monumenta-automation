@@ -22,7 +22,7 @@ datapacks_base = datapacks_default + ['file/base']
 datapacks_dungeon = datapacks_base + ['file/dungeon']
 
 loot_table_manager = LootTableManager()
-loot_table_manager.load_loot_tables_subdirectories("/home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config/data/datapacks")
+loot_table_manager.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
 item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map(show_errors=False))
 
 # Log replacements separately by shard name
