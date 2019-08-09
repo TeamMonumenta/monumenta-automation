@@ -611,13 +611,13 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         for shard in ["r1plots", "betaplots", "region_1"]:
             await cnl.send("Preserving coreprotect for {0}...".format(shard))
-            await self.run("mkdir -p /home/epic/project_epic/{1}/plugins/CoreProtect".format(shard))
-            await self.run("mv /home/epic/project_epic/0_PREVIOUS/{1}/{2} /home/epic/project_epic/{1}/{2}".format(shard, "plugins/CoreProtect/database.db"))
+            await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/CoreProtect".format(shard))
+            await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/CoreProtect/database.db"))
 
         for shard in ["r1plots", "betaplots", "region_1", "region_2"]:
             await cnl.send("Preserving warps for {0}...".format(shard))
-            await self.run("mkdir -p /home/epic/project_epic/{1}/plugins/EpicWarps".format(shard))
-            await self.run("mv /home/epic/project_epic/0_PREVIOUS/{1}/{2} /home/epic/project_epic/{1}/{2}".format(shard, "plugins/EpicWarps/warps.yml"))
+            await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/EpicWarps".format(shard))
+            await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/EpicWarps/warps.yml"))
 
         for shard in allShards:
             if shard in ["build","bungee"]:
