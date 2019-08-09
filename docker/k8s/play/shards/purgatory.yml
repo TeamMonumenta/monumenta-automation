@@ -61,6 +61,18 @@ spec:
           value: "paperclip.jar"
         - name: "SERVER_DIR"
           value: "/project_epic/purgatory"
+        readinessProbe:
+          tcpSocket:
+            port: 25565
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 25565
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
           mountPath: /project_epic
