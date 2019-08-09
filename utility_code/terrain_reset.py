@@ -22,7 +22,7 @@ datapacks_base = datapacks_default + ['file/base']
 datapacks_dungeon = datapacks_base + ['file/dungeon']
 
 loot_table_manager = LootTableManager()
-loot_table_manager.load_loot_tables_subdirectories("/home/rock/5_SCRATCH/tmpreset/TEMPLATE/server_config/data/datapacks")
+loot_table_manager.load_loot_tables_subdirectories("/home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config/data/datapacks")
 item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map(show_errors=False))
 
 # Log replacements separately by shard name
@@ -64,9 +64,9 @@ def log_replacements(log_handle, shard_name, replacements_log):
 def get_dungeon_config(name, scoreboard):
     return {
         "server":name,
-        "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/{0}/Project_Epic-{0}/".format(name),
-        "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/{0}/Project_Epic-{0}/".format(name),
-        "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/{0}/Project_Epic-{0}/".format(name),
+        "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/{0}/Project_Epic-{0}/".format(name),
+        "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/{0}/Project_Epic-{0}/".format(name),
+        "localDstFolder":"/home/epic/project_epic/{0}/Project_Epic-{0}/".format(name),
         "copyBaseFrom":"build",
         "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/'+name],
@@ -85,8 +85,8 @@ def get_dungeon_config(name, scoreboard):
 betaplots = {
     "server":"betaplots",
 
-    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/betaplots/Project_Epic-betaplots/",
-    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/betaplots/Project_Epic-betaplots/",
+    "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/betaplots/Project_Epic-betaplots/",
+    "localDstFolder":"/home/epic/project_epic/betaplots/Project_Epic-betaplots/",
 
     "copyBaseFrom":"main",
 
@@ -101,8 +101,8 @@ betaplots = {
 r1plots = {
     "server":"r1plots",
 
-    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/r1plots/Project_Epic-r1plots/",
-    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/r1plots/Project_Epic-r1plots/",
+    "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/r1plots/Project_Epic-r1plots/",
+    "localDstFolder":"/home/epic/project_epic/r1plots/Project_Epic-r1plots/",
 
     "copyBaseFrom":"main",
 
@@ -117,16 +117,16 @@ r1plots = {
 tutorial = {
     "server":"tutorial",
 
-    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/tutorial/Project_Epic-tutorial/",
+    "localDstFolder":"/home/epic/project_epic/tutorial/Project_Epic-tutorial/",
 
     "datapacks":datapacks_dungeon + ['file/tutorial'],
 }
 
 roguelike = {
     "server":"roguelike",
-    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/roguelike/Project_Epic-roguelike/",
-    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/roguelike/Project_Epic-roguelike/",
-    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/roguelike/Project_Epic-roguelike/",
+    "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/roguelike/Project_Epic-roguelike/",
+    "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/roguelike/Project_Epic-roguelike/",
+    "localDstFolder":"/home/epic/project_epic/roguelike/Project_Epic-roguelike/",
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
     "datapacks":datapacks_dungeon + ['file/roguelike'],
@@ -141,9 +141,9 @@ region_1 = {
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
-    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_1/Project_Epic-region_1/",
-    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_1/Project_Epic-region_1/",
-    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/region_1/Project_Epic-region_1/",
+    "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/region_1/Project_Epic-region_1/",
+    "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/Project_Epic-region_1/",
+    "localDstFolder":"/home/epic/project_epic/region_1/Project_Epic-region_1/",
 
     # Reset dungeon scores
     "playerScoreChanges":dungeon_score_rules,
@@ -175,7 +175,7 @@ region_1 = {
         {"name":"Apartments_601-624",     "pos1":( -815,  99,    5), "pos2":(-861,  99,    5)},
         {"name":"Apartments_701-816",     "pos1":( -811,  99,   18), "pos2":(-873,  99,   18)},
         {"name":"Apartments_units",       "pos1":( -817, 109,   87), "pos2":(-859, 164,   16)},
-        {"name":"Guild_Room",             "pos1":( -800, 109,  -75), "pos2":(-758, 104, -102), "replace_items":item_replace_manager},
+        {"name":"Guild_Room",             "pos1":( -800, 109,  -75), "pos2":(-758, 104, -102)},
         {"name":"Guild_1",                "pos1":( -586,   0,  137), "pos2":(-622, 255,  105), "replace_items":item_replace_manager},
         {"name":"Guild_2",                "pos1":( -570,   0,  112), "pos2":(-534, 255,  154), "replace_items":item_replace_manager},
         {"name":"Guild_3",                "pos1":( -581,   0,  150), "pos2":(-613, 255,  186), "replace_items":item_replace_manager},
@@ -228,9 +228,9 @@ region_2 = {
     # Dst is the destination world, which gets overwritten by the build world.
     # Then, data from the main world replaces the relevant parts of the dst world.
     # Please note that no special care need be taken with whitespace in filenames.
-    "localMainFolder":"/home/rock/5_SCRATCH/tmpreset/PRE_RESET/region_2/Project_Epic-region_2/",
-    "localBuildFolder":"/home/rock/5_SCRATCH/tmpreset/TEMPLATE/region_2/Project_Epic-region_2/",
-    "localDstFolder":"/home/rock/5_SCRATCH/tmpreset/POST_RESET/region_2/Project_Epic-region_2/",
+    "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/region_2/Project_Epic-region_2/",
+    "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/Project_Epic-region_2/",
+    "localDstFolder":"/home/epic/project_epic/region_2/Project_Epic-region_2/",
 
     # Reset dungeon scores
     "playerScoreChanges":dungeon_score_rules,
@@ -307,7 +307,7 @@ os.nice(20)
 for p in processes.values():
     p["process"].start()
 
-logfile = "/home/rock/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{}.log".format(datetime.date.today().strftime("%Y-%m-%d"))
+logfile = "/home/epic/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{}.log".format(datetime.date.today().strftime("%Y-%m-%d"))
 update_tables = False
 with open(logfile, 'w') as log_handle:
     while len(processes.keys()) > 0:
