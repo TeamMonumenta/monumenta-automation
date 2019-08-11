@@ -320,12 +320,11 @@ for key in simple_view_distance_config:
     distance = simple_view_distance_config[key]
     config[key] = {
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance={}', distance),
-            ('spigot.yml', 'view-distance', '    view-distance: {}', distance),
+            ('server.properties', 'view-distance', 'view-distance={}'.format(distance)),
+            ('spigot.yml', 'view-distance', '    view-distance: {}'.format(distance)),
         ],
         'linked':server_config + base_plugins,
     }
-
 
 # config should be the entire config map
 # data should be a tuple like ('server.properties', 'difficulty', 'difficulty=0')
