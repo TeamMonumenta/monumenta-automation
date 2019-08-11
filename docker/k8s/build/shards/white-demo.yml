@@ -30,6 +30,7 @@ metadata:
     app: white-demo
 spec:
   type: NodePort
+  #externalTrafficPolicy: Local
   selector:
     app: white-demo
   ports:
@@ -62,6 +63,15 @@ spec:
       labels:
         app: white-demo
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - ns547336.ip-66-70-181.net
       volumes:
         - name: nfs-project-epic
           hostPath:

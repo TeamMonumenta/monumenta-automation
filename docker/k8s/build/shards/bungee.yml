@@ -34,6 +34,7 @@ metadata:
     app: bungee
 spec:
   type: NodePort
+  #externalTrafficPolicy: Local
   selector:
     app: bungee
   ports:
@@ -66,6 +67,15 @@ spec:
       labels:
         app: bungee
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - ns547336.ip-66-70-181.net
       volumes:
         - name: nfs-volume
           hostPath:
