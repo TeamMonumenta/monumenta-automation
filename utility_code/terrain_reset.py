@@ -158,7 +158,7 @@ region_1 = {
 
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
-    "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+    "copyMainPaths":["advancements", "playerdata", "stats", "data"],
 
     # Replace items on all players
     "replace_items_on_players": item_replace_manager,
