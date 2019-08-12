@@ -89,6 +89,10 @@ config = {
             "name":"lightgray",
             "region":{"x":-3, "z":8},
             "numDungeons":40,
+        },{
+            "name":"fred",
+            "region":{"x":-2, "z":9},
+            "numDungeons":20,
         },
     ),
 
