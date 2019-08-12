@@ -314,6 +314,7 @@ simple_view_distance_config = {
     'sanctum': 10,
     'nightmare': 10,
     'test': 8,
+    'fred': 8,
 }
 
 for key in simple_view_distance_config:
