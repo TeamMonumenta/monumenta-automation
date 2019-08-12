@@ -5,6 +5,9 @@ import os
 import sys
 import asyncio
 import subprocess
+import json
+import re
+from collections import OrderedDict
 from pprint import pformat
 
 import logging
@@ -18,10 +21,14 @@ _top_level = os.path.abspath( os.path.join( _file, '../'*_file_depth ) )
 BYTES_PER_GB = 1<<30
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from lib_py3.loot_table_manager import LootTableManager
+from lib_py3.common import parse_name_possibly_json
 
 from lib_k8s import KubernetesManager
 from automation_bot_lib import get_list_match, get_available_storage, datestr, split_string
+from quarry.types.text_format import unformat_text
+from quarry.types import nbt
 
 class Listening():
     def __init__(self):
@@ -713,9 +720,47 @@ For convenience, leading 'give @p' is ignored, along with any data after the las
 
         mgr = LootTableManager()
         mgr.load_loot_tables_subdirectories(os.path.join(self._project_epic_dir, "server_config/data/datapacks"))
-        locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
+        try:
+            locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
+            await cnl.send("Updated item in loot tables:```" + "\n".join(locations) + "```")
+        except Exception as e:
+            await message.channel.send(message.author.mention)
+            await message.channel.send("**ERROR**: ```" + str(e) + "```")
 
-        await cnl.send("Updated item in loot tables:```" + "\n".join(locations) + "```")
+            item_nbt = nbt.TagCompound.from_mojangson(item_nbt_str)
+            if not item_nbt.has_path("display.Name"):
+                ValueError("ERROR: Item has no display name")
+
+            item_name = unformat_text(parse_name_possibly_json(item_nbt.at_path("display.Name").value))
+            filename = item_name.lower()
+            filename = re.sub(" +", "_", filename)
+            filename = "".join([i if re.match('[a-z0-9-_]', i) else '' for i in filename])
+            filename = filename + ".json"
+
+            entry_json = OrderedDict()
+            entry_json["type"] = "item"
+            entry_json["weight"] = 10
+            entry_json["name"] = item_id
+            entry_json["functions"] = []
+
+            func = OrderedDict()
+            func["function"] = "set_nbt"
+            func["tag"] = item_nbt_str
+            entry_json["functions"].append(func)
+
+            pool = OrderedDict()
+            pool["rolls"] = 1
+            pool["entries"] = [entry_json, ]
+
+            table_dict = OrderedDict()
+            table_dict["pools"] = [pool,]
+
+            loot_table_string = json.dumps(table_dict, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
+
+            await cnl.send("Here is a basic loot table for this item:\n\n" +
+                           "You must put this somewhere **sensible** in the loot tables \n\n" +
+                           "Use this filename:```{}```\nContents:```{}```".format(filename, loot_table_string))
+            await cnl.send(message.author.mention)
 
     async def action_run_replacements(self, cmd, message):
         '''Runs item and mob replacements on a given shard
