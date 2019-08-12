@@ -167,9 +167,6 @@ dungeon_score_rules = [
     {"condition":{"Objective":"VotesWeekly","Score":{"min":1}},
         "actions":{"set":[
             {"Objective":"VotesWeekly","Score":0}]}},
-    {"condition":{"Objective":"Totem","Score":{"min":1}},
-        "actions":{"set":[
-            {"Objective":"Totem","Score":0}]}},
 
     {"condition":{"Objective":"MarketBanned","Score":{"min":1,"max":7}},
         "actions":{"set":[
