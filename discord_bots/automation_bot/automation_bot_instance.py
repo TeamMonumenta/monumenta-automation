@@ -352,11 +352,11 @@ Examples:
         shards_changed = []
         if '*' in commandArgs:
             for shard in self._shards.keys():
-                shards_changed.append(shard)
+                shards_changed.append(shard.replace("_", ""))
         else:
             for shard in self._shards.keys():
                 if shard in commandArgs:
-                    shards_changed.append(shard)
+                    shards_changed.append(shard.replace("_", ""))
 
         if not shards_changed:
             await cnl.send("No specified shards on this server.")
