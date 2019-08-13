@@ -19,8 +19,11 @@ from automation_bot_instance import AutomationBotInstance
 
 config = {}
 
-config_dir = os.path.expanduser("~/.monumenta_bot/")
-config_path = os.path.join(config_dir, "config.yml")
+if "BOT_CONFIG" in os.environ and os.path.isfile(os.environ["BOT_CONFIG"]):
+    config_path = os.environ["BOT_CONFIG"]
+else:
+    config_dir = os.path.expanduser("~/.monumenta_bot/")
+    config_path = os.path.join(config_dir, "config.yml")
 
 # Read the bot's config files
 with open(config_path, 'r') as ymlfile:
