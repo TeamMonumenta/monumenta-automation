@@ -794,8 +794,8 @@ Syntax:
             await cnl.send("Running replacements on shard {}".format(shard))
             await self.cd(self._shards[shard])
             await self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard))
-            await self.run("/home/epic/MCEdit-And-Automation/utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name), displayOutput=True)
-            await self.run("/home/epic/MCEdit-And-Automation/utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name), displayOutput=True)
+            await self.run(_top_level + "/utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name), displayOutput=True)
+            await self.run(_top_level + "/utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name), displayOutput=True)
             await cnl.send("Starting shard {}".format(shard))
             await self._k8s.start(shard)
 
