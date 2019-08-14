@@ -40,8 +40,9 @@ class KubernetesManager(object):
                     # Other error
                     raise e
 
-        # TODO Better wait! - on stop needs to wait for terminated pod, on start needs to wait for readiness
-        await asyncio.sleep(15)
+        if wait:
+            # TODO Better wait! - on stop needs to wait for terminated pod, on start needs to wait for readiness
+            await asyncio.sleep(15)
 
     async def _start_stop_common(self, names, replicas, wait, timeout_seconds):
         deployment_map = {}

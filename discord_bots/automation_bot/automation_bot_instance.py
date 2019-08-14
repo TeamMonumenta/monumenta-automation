@@ -108,6 +108,7 @@ class AutomationBotInstance(object):
             "terrain reset": self.action_terrain_reset,
 
             "stage": self.action_stage,
+            "generate demo release": self.action_gen_demo_release,
         }
 
         try:
@@ -206,7 +207,12 @@ class AutomationBotInstance(object):
         os.chdir(path)
 
     async def run(self, cmd, ret=0, displayOutput=False):
-        splitCmd = cmd.split(' ')
+        if not type(cmd) is list:
+            # For simple stuff, splitting on spaces is enough
+            splitCmd = cmd.split(' ')
+        else:
+            # For complicated stuff, the caller must split appropriately
+            splitCmd = cmd
         if self._debug:
             await self._channel.send("Executing: ```" + str(splitCmd) + "```")
         process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -233,6 +239,33 @@ class AutomationBotInstance(object):
             raise ValueError("Expected result {}, got result {} while processing '{}'".format(ret, rc, cmd))
 
         return stdout
+
+    async def stop(self, shards):
+        if not type(shards) is list:
+            shards=[shards,]
+        if self._debug:
+            await self._channel.send("Stopping shards [{}]...".format(",".join(shards)))
+        await self._k8s.stop(shards)
+        if self._debug:
+            await self._channel.send("Stopped shards [{}]".format(",".join(shards)))
+
+    async def start(self, shards):
+        if not type(shards) is list:
+            shards=[shards,]
+        if self._debug:
+            await self._channel.send("Starting shards [{}]...".format(",".join(shards)))
+        await self._k8s.start(shards)
+        if self._debug:
+            await self._channel.send("Started shards [{}]".format(",".join(shards)))
+
+    async def restart(self, shards):
+        if not type(shards) is list:
+            shards=[shards,]
+        if self._debug:
+            await self._channel.send("Restarting shards [{}]...".format(",".join(shards)))
+        await self._k8s.restart(shards)
+        if self._debug:
+            await self._channel.send("Restarted shards [{}]".format(",".join(shards)))
 
     # Infrastructure
     ################################################################################
@@ -340,7 +373,7 @@ Examples:
         await message.channel.send("Shard list: \n{}".format(pformat(shards)))
 
 
-    async def _start_stop_restart_common(self, cmd, message, action_str_init, action_str_fini, k8s_fn):
+    async def _start_stop_restart_common(self, cmd, message, action):
         # For brevity
         cnl = message.channel
 
@@ -361,9 +394,7 @@ Examples:
         if not shards_changed:
             await cnl.send("No specified shards on this server.")
         else:
-            await cnl.send("{} shards [{}]...".format(action_str_init, ",".join(shards_changed)))
-            await k8s_fn(shards_changed)
-            await cnl.send("{} shards [{}]".format(action_str_fini, ",".join(shards_changed)))
+            await action(shards_changed)
             await cnl.send(message.author.mention)
 
     async def action_start(self, cmd, message):
@@ -371,21 +402,21 @@ Examples:
 Syntax:
 `{cmdPrefix}start shard *`
 `{cmdPrefix}start shard region_1 region_2 orange'''
-        await self._start_stop_restart_common(cmd, message, "Starting", "Started", self._k8s.start)
+        await self._start_stop_restart_common(cmd, message, self.start)
 
     async def action_stop(self, cmd, message):
         '''Stop specified shards.
 Syntax:
 `{cmdPrefix}stop shard *`
 `{cmdPrefix}stop shard region_1 region_2 orange'''
-        await self._start_stop_restart_common(cmd, message, "Stopping", "Stopped", self._k8s.stop)
+        await self._start_stop_restart_common(cmd, message, self.stop)
 
     async def action_restart(self, cmd, message):
         '''Restart specified shards.
 Syntax:
 `{cmdPrefix}restart shard *`
 `{cmdPrefix}restart shard region_1 region_2 orange'''
-        await self._start_stop_restart_common(cmd, message, "Restarting", "Restarted", self._k8s.restart)
+        await self._start_stop_restart_common(cmd, message, self.restart)
 
     async def action_generate_instances(self, cmd, message):
         '''Dangerous!
@@ -408,14 +439,14 @@ Must be run before preparing the build server reset bundle'''
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
 
         await cnl.send("Stopping the dungeon shard...")
-        await self._k8s.stop("dungeon")
+        await self.stop("dungeon")
 
         await cnl.send("Copying the dungeon master copies...")
         await self.run("cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
 
         await cnl.send("Restarting the dungeon shard...")
         await self.cd("/home/epic/project_epic/dungeon")
-        await self._k8s.start("dungeon")
+        await self.start("dungeon")
 
         await cnl.send("Generating dungeon instances (this may take a while)...")
         await self.run(_top_level + "/utility_code/dungeon_instance_gen.py")
@@ -438,22 +469,21 @@ Must be run before starting terrain reset on the play server'''
         # TODO Space check
 
         await cnl.send("Stopping region_1 and region_2...")
-        await self._k8s.stop("region_1")
-        await self._k8s.stop("region_2")
+        await self.stop(["region_1", "region_2"])
 
         await cnl.send("Copying region_1...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1")
         await self.run("cp -a /home/epic/project_epic/region_1/Project_Epic-region_1 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/")
 
         await cnl.send("Restarting the region_1 shard...")
-        await self._k8s.start("region_1")
+        await self.start("region_1")
 
         await cnl.send("Copying region_2...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2")
         await self.run("cp -a /home/epic/project_epic/region_2/Project_Epic-region_2 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/")
 
         await cnl.send("Restarting the region_2 shard...")
-        await self._k8s.start("region_2")
+        await self.start("region_2")
 
         await cnl.send("Copying bungee...")
         await self.run("cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
@@ -508,7 +538,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         # TODO: All at once, instead of one at a time
         for shard in shards:
             if shard in [s.replace("_", "") for s in self._shards.keys()]:
-                await self._k8s.stop(shard)
+                await self.stop(shard)
 
         # Fail if any shards are still running
         await cnl.send("Checking that all shards are stopped...")
@@ -541,7 +571,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         await cnl.send("Performing backup...")
         await self.cd("/home/epic")
         await self.run("mkdir -p /home/epic/1_ARCHIVE")
-        await self.run("tar --exclude='project_epic/0_PREVIOUS' -czf /home/epic/1_ARCHIVE/project_epic_pre_reset_" + datestr() + ".tgz project_epic")
+        await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_pre_reset_" + datestr() + ".tgz project_epic")
 
         await cnl.send("Backups complete! Ready for reset.")
         await cnl.send(message.author.mention)
@@ -633,7 +663,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         await cnl.send("Backing up post-reset artifacts...")
         await self.cd("/home/epic")
-        await self.run("tar --exclude='./0_PREVIOUS' -czf /home/epic/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic")
+        await self.run("tar --exclude=./0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic")
 
         await cnl.send("Done.")
         await cnl.send(message.author.mention)
@@ -659,7 +689,7 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         # TODO: All at once, instead of one at a time
         for shard in shards:
             if shard in [s.replace("_", "") for s in self._shards.keys()]:
-                await self._k8s.stop(shard)
+                await self.stop(shard)
 
         await self.action_list_shards("~list shards", message)
 
@@ -788,15 +818,65 @@ Syntax:
         for shard in replace_shards:
             base_backup_name = "/home/epic/0_OLD_BACKUPS/Project_Epic-{}_pre_entity_loot_updates_{}".format(shard, datestr())
 
-            await cnl.send("Stopping shard {}".format(shard))
-            await self._k8s.stop(shard)
-
             await cnl.send("Running replacements on shard {}".format(shard))
+            await self.stop(shard)
             await self.cd(self._shards[shard])
             await self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard))
             await self.run(_top_level + "/utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name), displayOutput=True)
             await self.run(_top_level + "/utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name), displayOutput=True)
-            await cnl.send("Starting shard {}".format(shard))
-            await self._k8s.start(shard)
+            await self.start(shard)
 
+        await cnl.send(message.author.mention)
+
+    async def action_gen_demo_release(self, cmd, message):
+        '''Generates a demo release zip with the specified version
+Syntax:
+`{cmdPrefix}generate demo release <version>`'''
+
+        cnl = message.channel
+
+        commandArgs = message.content[len(self._prefix + cmd)+1:]
+        version = "".join([i if re.match('[0-9\.]', i) else '' for i in commandArgs])
+
+        if not version:
+            await cnl.send("Version must be specified and can contain only numbers and periods")
+            await cnl.send(message.author.mention)
+            return
+
+        # Test if this version already exists
+        try:
+            await self.run(["test", "!", "-f", "/home/epic/4_SHARED/monumenta_demo/Monumenta Demo - The Halls of Wind and Blood V{}.zip".format(version)])
+        except:
+            await cnl.send("Demo release V{} already exists!".format(version))
+            return
+
+        await cnl.send("Generating demo release version V{}...".format(version))
+
+        await self.stop("white-demo")
+
+        # Clean up the working directory for testing/etc
+        await self.cd("/home/epic/project_epic/Monumenta Demo - The Halls of Wind and Blood")
+        await self.run("rm -rf banned-ips.json banned-players.json command_registration.json whitelist.json usercache.json version_history.json cache logs plugins/ChestSort/playerdata Monumenta-White-Demo/advancements Monumenta-White-Demo/playerdata Monumenta-White-Demo/stats Monumenta-White-Demo/DIM-1 Monumenta-White-Demo/DIM1 Monumenta-White-Demo/data")
+
+        # Make a copy of the demo
+        await self.run("rm -rf /home/epic/5_SCRATCH/tmpdemo")
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpdemo")
+        await self.cd("/home/epic/5_SCRATCH/tmpdemo")
+        await self.run(["cp", "-a", "/home/epic/project_epic/Monumenta Demo - The Halls of Wind and Blood", "."])
+
+        # Turn off the whitelist, set it to normal mode, and delete the ops file
+        await self.cd("Monumenta Demo - The Halls of Wind and Blood")
+        await self.run("perl -p -i -e s|^enforce-whitelist.*$|enforce-whitelist=false|g server.properties")
+        await self.run("perl -p -i -e s|^white-list.*$|white-list=false|g server.properties")
+        await self.run("perl -p -i -e s|^difficulty.*$|difficulty=2|g server.properties")
+        await self.run("rm -f ops.json")
+
+        # Package up the release
+        await self.cd("/home/epic/5_SCRATCH/tmpdemo")
+        await self.run(["zip", "-rq", "/home/epic/4_SHARED/monumenta_demo/Monumenta Demo - The Halls of Wind and Blood V{}.zip".format(version), "Monumenta Demo - The Halls of Wind and Blood"])
+        await self.run(["rm", "-rf", "Monumenta Demo - The Halls of Wind and Blood"])
+
+        await self.start("white-demo")
+
+        await cnl.send("Demo release version V{} generated successfully".format(version))
         await cnl.send(message.author.mention)
