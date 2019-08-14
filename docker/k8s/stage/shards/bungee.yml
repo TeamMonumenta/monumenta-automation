@@ -66,6 +66,15 @@ spec:
       labels:
         app: bungee
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - ns547336.ip-66-70-181.net
       volumes:
         - name: nfs-volume
           hostPath:
@@ -91,6 +100,18 @@ spec:
           value: "/project_epic/bungee"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        readinessProbe:
+          tcpSocket:
+            port: 25565
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 25565
+          initialDelaySeconds: 120
+          timeoutSeconds: 5
+          periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
           mountPath: /project_epic

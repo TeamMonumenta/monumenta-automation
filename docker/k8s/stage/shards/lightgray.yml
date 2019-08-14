@@ -65,6 +65,7 @@ spec:
         ports:
         - containerPort: 25565
         - containerPort: 8804
+        - containerPort: 8000
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
@@ -78,6 +79,20 @@ spec:
           value: "/project_epic/lightgray"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 8000
+          initialDelaySeconds: 120
+          timeoutSeconds: 5
+          periodSeconds: 10
         volumeMounts:
         - name: nfs-project-epic
           mountPath: /project_epic
