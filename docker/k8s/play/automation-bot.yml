@@ -68,6 +68,15 @@ spec:
       labels:
         app: automation-bot
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - ns547336.ip-66-70-181.net
       serviceAccountName: automation-bot-service-account
       volumes:
         - name: nfs-data
