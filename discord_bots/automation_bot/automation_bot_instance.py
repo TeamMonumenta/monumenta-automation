@@ -503,7 +503,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
 
         await cnl.send("Stopping all shards...")
 
-        shards = self._k8s.list()
+        shards = await self._k8s.list()
 
         # TODO: All at once, instead of one at a time
         for shard in shards:
@@ -513,8 +513,8 @@ DELETES DUNGEON CORE PROTECT DATA'''
         # Fail if any shards are still running
         await cnl.send("Checking that all shards are stopped...")
         if self._debug:
-            await cnl.send(pformat(self._k8s.list()))
-        for shard in self._k8s.list():
+            await cnl.send(pformat(shards))
+        for shard in shards:
             if shard in [s.replace("_", "") for s in self._shards.keys()]:
                 if shards[shard]['replicas'] != 0:
                     await cnl.send("ERROR: shard '{}' is still running!".format(shard))
@@ -562,7 +562,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         # Fail if any shards are still running
         await cnl.send("Checking that all shards are stopped...")
-        shards = self._k8s.list()
+        shards = await self._k8s.list()
         for shard in shards:
             if shard in [s.replace("_", "") for s in self._shards.keys()]:
                 if shards[shard]['replicas'] != 0:
@@ -654,7 +654,7 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
 
         await cnl.send("Stopping all stage server shards...")
 
-        shards = self._k8s.list()
+        shards = await self._k8s.list()
 
         # TODO: All at once, instead of one at a time
         for shard in shards:
