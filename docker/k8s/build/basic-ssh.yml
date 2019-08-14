@@ -58,6 +58,10 @@ spec:
           hostPath:
             type: Directory
             path: "/nfs/build/project_epic/Monumenta\ Demo\ -\ The\ Halls\ of\ Wind\ and\ Blood"
+        - name: nfs-white-demo-release
+          hostPath:
+            type: Directory
+            path: "/nfs/4_SHARED/monumenta_demo"
       containers:
       - name: basic-ssh
         image: monumenta-docker.injic.io/monumenta-basic-ssh
@@ -74,5 +78,7 @@ spec:
           mountPath: /home/epic/mob_shard_plugins
         - name: nfs-white-demo
           mountPath: /home/epic/white-demo
+        - name: nfs-white-demo-release
+          mountPath: /home/epic/white-demo-release
       imagePullSecrets:
       - name: regcred
