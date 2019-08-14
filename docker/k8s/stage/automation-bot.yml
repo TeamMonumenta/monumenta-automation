@@ -87,7 +87,7 @@ spec:
             secretName: automation-bot-config
       containers:
       - name: automation-bot
-        image: monumenta-docker.injic.io/monumenta-automation-bot
+        image: monumenta-docker.injic.io/monumenta-automation-bot-stage
         tty: false
         stdin: false
         volumeMounts:
