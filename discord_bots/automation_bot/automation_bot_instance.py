@@ -385,11 +385,11 @@ Examples:
         shards_changed = []
         if '*' in commandArgs:
             for shard in self._shards.keys():
-                shards_changed.append(shard.replace("_", ""))
+                shards_changed.append(shard)
         else:
             for shard in self._shards.keys():
                 if shard in commandArgs:
-                    shards_changed.append(shard.replace("_", ""))
+                    shards_changed.append(shard)
 
         if not shards_changed:
             await cnl.send("No specified shards on this server.")
@@ -537,7 +537,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
 
         # TODO: All at once, instead of one at a time
         for shard in shards:
-            if shard in [s.replace("_", "") for s in self._shards.keys()]:
+            if shard in self._shards.keys():
                 await self.stop(shard)
 
         # Fail if any shards are still running
@@ -545,7 +545,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         if self._debug:
             await cnl.send(pformat(shards))
         for shard in shards:
-            if shard in [s.replace("_", "") for s in self._shards.keys()]:
+            if shard in self._shards.keys():
                 if shards[shard]['replicas'] != 0:
                     await cnl.send("ERROR: shard '{}' is still running!".format(shard))
                     await cnl.send(message.author.mention)
@@ -594,7 +594,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await cnl.send("Checking that all shards are stopped...")
         shards = await self._k8s.list()
         for shard in shards:
-            if shard in [s.replace("_", "") for s in self._shards.keys()]:
+            if shard in self._shards.keys():
                 if shards[shard]['replicas'] != 0:
                     await cnl.send("ERROR: shard '{}' is still running!".format(shard))
                     await cnl.send(message.author.mention)
@@ -688,7 +688,7 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
 
         # TODO: All at once, instead of one at a time
         for shard in shards:
-            if shard in [s.replace("_", "") for s in self._shards.keys()]:
+            if shard in self._shards.keys():
                 await self.stop(shard)
 
         await self.action_list_shards("~list shards", message)

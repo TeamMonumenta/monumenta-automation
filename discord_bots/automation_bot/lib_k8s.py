@@ -48,7 +48,7 @@ class KubernetesManager(object):
         deployment_map = {}
         if type(names) is list:
             for name in names:
-                deployment_map[name] = replicas
+                deployment_map[name.replace("_", "")] = replicas
         else:
             deployment_map[names] = replicas
         await self._set_replicas(deployment_map, wait, timeout_seconds)
