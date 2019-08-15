@@ -20,38 +20,10 @@ from lib_py3.world import World
 spawners_to_replace = [
     {
         'rules': {
-            'mob_id': 'minecraft:vindicator',
-            'mob_CustomName': '''Alutana's Devoted'''
-        },
-        'mojangson': r'''{SpawnCount:4s}''',
-    },
-    {
-        'rules': {
-            'mob_id': 'minecraft:spider',
-            'mob_CustomName': 'Wolf Spider'
-        },
-        'mojangson': r'''{SpawnCount:4s}''',
-    },
-    {
-        'rules': {
             'mob_id': 'minecraft:skeleton',
-            'mob_CustomName': 'Frost Moon Knight'
+            'mob_HandItems': None,
         },
-        'mojangson': r'''{SpawnCount:4s}''',
-    },
-    {
-        'rules': {
-            'mob_id': 'minecraft:skeleton',
-            'mob_CustomName': '''Frost Moon's Shadow'''
-        },
-        'mojangson': r'''{SpawnCount:3s}''',
-    },
-    {
-        'rules': {
-            'mob_id': 'minecraft:stray',
-            'mob_CustomName': 'Follower of Alutana'
-        },
-        'mojangson': r'''{SpawnCount:6s}''',
+        'mojangson': r'''{MaxNearbyEntities:5s,RequiredPlayerRange:12s,SpawnCount:2s,SpawnData:{CustomName:"{\"text\":\"Shadow Spirit\"}",Health:26.0f,ArmorItems:[{},{},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:14282751,Name:"{\"text\":\"§9§lBluescale Torso\"}"}}},{}],Attributes:[{Base:26.0d,Name:"generic.maxHealth"},{Base:6.0d,Name:"generic.attackDamage"}],id:"minecraft:skeleton",HandItems:[{},{id:"minecraft:bone",Count:1b,tag:{display:{Name:"{\"text\":\"§6§lWand of C\\u0027Zanil\"}"}}}]},MaxSpawnDelay:150s,Delay:-1s,SpawnRange:4s,MinSpawnDelay:100s,SpawnPotentials:[{Entity:{CustomName:"{\"text\":\"Shadow Spirit\"}",Health:26.0f,ArmorItems:[{},{},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:14282751,Name:"{\"text\":\"§9§lBluescale Torso\"}"}}},{}],Attributes:[{Base:26.0d,Name:"generic.maxHealth"},{Base:6.0d,Name:"generic.attackDamage"}],id:"minecraft:skeleton",HandItems:[{},{id:"minecraft:bone",Count:1b,tag:{display:{Name:"{\"text\":\"§6§lWand of C\\u0027Zanil\"}"}}}]},Weight:1}]}''',
     },
 ]
 
@@ -119,8 +91,10 @@ clean_replacements = []
 for replacement in spawners_to_replace:
     if (
         replacement['rules'].get('mob_CustomName', None) is None
-        and replacement['rules'].get('mob_HandItems', []).get(0, None) is None
-        and replacement['rules'].get('mob_HandItems', []).get(1, None) is None
+        and ('mob_HandItems' not in replacement['rules']
+             or (replacement['rules']['mob_HandItems'] is not None and
+                 replacement['rules']['mob_HandItems'][0] is None and
+                 replacement['rules']['mob_HandItems'][1] is None))
     ):
         # Can only potentially replace if mob_CustomName or mob_HandItems rule is specified and valid
         print("!!! Can only potentially replace if mob_CustomName or mob_HandItems rule is specified and valid:")
@@ -191,16 +165,23 @@ for entity, source_pos, entity_path in world.entity_iterator(pos1=pos1, pos2=pos
                 matches = False
                 continue
 
-            if replacement['rules'].get('mob_HandItems', None) is not None:
-                if not mob.has_path('HandItems'):
-                    # This mob doesn't match; matches = False in case this was the last mob
+            if 'mob_HandItems' in replacement['rules']:
+                if replacement['rules']['mob_HandItems'] is not None and not mob.has_path('HandItems'):
+                    # There is a non-none rule but the mob has no hand items - not a match
                     matches = False
                     continue
 
-                hand_items = get_named_hand_items(entity)
-                if hand_items != replacement['rules']['HandItems']:
+                if replacement['rules']['mob_HandItems'] is None and mob.has_path('HandItems'):
+                    # Replacement specifies mob with no hand items but this mob has some - not a match
                     matches = False
                     continue
+
+                if replacement['rules']['mob_HandItems'] is not None and mob.has_path('HandItems'):
+                    hand_items = get_named_hand_items(entity)
+                    if hand_items != replacement['rules']['mob_HandItems']:
+                        # Replacement and mob both have hand items - but they don't match
+                        matches = False
+                        continue
 
         if not matches:
             continue
