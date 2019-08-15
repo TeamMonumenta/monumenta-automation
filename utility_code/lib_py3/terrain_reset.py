@@ -5,6 +5,8 @@ import sys
 import codecs
 import traceback
 
+import datetime
+
 from lib_py3.copy_region import copy_region
 from lib_py3.common import copy_paths, copy_folder
 from lib_py3.world import World
@@ -25,6 +27,7 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
 
         ##################################################################################
         print("Starting reset for server {0}...".format(shard_name))
+        time_start = datetime.datetime.utcnow()
 
         ################################################################################
         # Assign variables
@@ -181,6 +184,8 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
                 item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
 
         dstWorld.save()
+        time_end = datetime.datetime.utcnow()
+        print("Total time: {}".format(str(time_end - time_start)))
         ##################################################################################
 
         if statusQueue is not None:
@@ -188,5 +193,6 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
 
     except:
         e = traceback.format_exc()
+        print("Total time: {} :(".format(str(time_end - time_start)))
         if statusQueue is not None:
             statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log, "error":e})
