@@ -5,8 +5,6 @@ import sys
 
 import traceback
 
-from lib_py3.common import eprint
-
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 from quarry.types.text_format import unformat_text
@@ -321,6 +319,10 @@ class PreserveShieldBanner(GlobalRule):
         self.block_entity_tag = None
         if item.has_path('tag.BlockEntityTag'):
             self.block_entity_tag = item.at_path('tag.BlockEntityTag')
+
+            # Some legacy items have this invalid tag.BlockEntityTag.id field
+            if self.block_entity_tag.has_path('id'):
+                self.block_entity_tag.pop('id')
 
     def postprocess(self, item):
         if item.at_path('id').value != 'minecraft:shield':
