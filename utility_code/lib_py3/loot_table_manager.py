@@ -832,7 +832,9 @@ class LootTableManager(object):
 
                     if show_errors:
                         if not different:
-                            eprint("WARNING: Item '{}' type '{}' is duplicated in the loot tables!".format(item_name, item_id))
+                            # This is noisy and no one cares
+                            #eprint("WARNING: Item '{}' type '{}' is duplicated in the loot tables!".format(item_name, item_id))
+                            pass
                         else:
                             eprint("\033[1;31m", end="")
                             eprint("ERROR: Item '{}' type '{}' is different and duplicated in the loot tables!".format(item_name, item_id))
