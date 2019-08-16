@@ -119,6 +119,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:stone_shovel", "Pyromancer's Staff", "minecraft:blaze_rod", "Pyromancer's Staff"],
             ["minecraft:leather_helmet", "Starborn Cap", "minecraft:leather_helmet", "Starborn Cap"],
             ["minecraft:potion", "Waycrstal Extract", "minecraft:potion", "Waycrystal Extract"],
+            ["minecraft:nether_wart_block", "Nightmare Key", "minecraft:nether_wart_block", "Reverie Key"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
