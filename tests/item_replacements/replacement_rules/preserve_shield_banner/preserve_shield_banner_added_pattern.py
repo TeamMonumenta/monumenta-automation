@@ -11,7 +11,7 @@ test_item = ReplacementTest(
     test_name="Rules: Preserve Shield Banner: Added Pattern",
     template_item=r'''{id:"minecraft:shield",tag:{display:{Lore:["§8King's Valley : Tier II"],Name:"{\"text\":\"§fTest Shield\"}"}}}''',
     item_under_test=r'''{id:"minecraft:shield",tag:{display:{Lore:["§8King's Valley : Tier II"],Name:"{\"text\":\"§fTest Shield\"}"},BlockEntityTag:{id:"minecraft:banner",Patterns:[{Pattern:"bri",Color:13}],Base:9}}}''',
-    expected_result_item=r'''{id:"minecraft:shield",tag:{display:{Lore:["§8King's Valley : Tier II"],Name:"{\"text\":\"§fTest Shield\"}"},BlockEntityTag:{id:"minecraft:banner",Patterns:[{Pattern:"bri",Color:13}],Base:9}}}'''
+    expected_result_item=r'''{id:"minecraft:shield",tag:{display:{Lore:["§8King's Valley : Tier II"],Name:"{\"text\":\"§fTest Shield\"}"},BlockEntityTag:{Patterns:[{Pattern:"bri",Color:13}],Base:9}}}'''
 )
 test_item.test()
 
