@@ -257,15 +257,6 @@ config = {
         'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + coreprotect,
     },
 
-    'r1plots':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=7'),
-            ('spigot.yml', 'view-distance', '    view-distance: 7'),
-            ('server.properties', 'difficulty', 'difficulty=0'),
-        ],
-        'linked':server_config + base_plugins + dynmap,
-    },
-
     'betaplots':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=7'),
@@ -295,6 +286,8 @@ config = {
 }
 
 simple_view_distance_config = {
+    'r1plots': 7,
+
     'white': 16,
     'orange': 12,
     'magenta': 12,
