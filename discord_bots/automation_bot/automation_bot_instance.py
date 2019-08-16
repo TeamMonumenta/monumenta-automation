@@ -12,6 +12,7 @@ from pprint import pformat
 
 import logging
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 # TODO: Move this to config file
 _file_depth = 3
@@ -128,7 +129,7 @@ class AutomationBotInstance(object):
 
             self._permissions = config["permissions"]
             # TODO: Hook this up to something
-            self._debug = True
+            self._debug = False
             self._listening = Listening()
             self._k8s = KubernetesManager(config["k8s_namespace"])
         except KeyError as e:
@@ -201,9 +202,13 @@ class AutomationBotInstance(object):
         for chunk in split_string(text):
             await self._channel.send("```" + chunk + "```")
 
-    async def cd(self, path):
+    async def debug(self, text):
+        logger.debug(text)
         if self._debug:
-            await self._channel.send("Changing path to `" + path + "`")
+            await self._channel.send(text)
+
+    async def cd(self, path):
+        await self.debug("Changing path to `" + path + "`")
         os.chdir(path)
 
     async def run(self, cmd, ret=0, displayOutput=False):
@@ -213,19 +218,17 @@ class AutomationBotInstance(object):
         else:
             # For complicated stuff, the caller must split appropriately
             splitCmd = cmd
-        if self._debug:
-            await self._channel.send("Executing: ```" + str(splitCmd) + "```")
+        await self.debug("Executing: ```" + str(splitCmd) + "```")
         process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = await process.communicate()
         rc = process.returncode
 
-        if self._debug:
-            await self._channel.send("Result: {}".format(rc))
+        await self.debug("Result: {}".format(rc))
 
         stdout = stdout.decode('utf-8')
         if stdout:
-            if self._debug:
-                await self._channel.send("stdout from command '{}':".format(cmd))
+            await self.debug("stdout from command '{}':".format(cmd))
+            logger.debug(stdout)
 
             if self._debug or displayOutput:
                 await self.display_verbatim(stdout)
@@ -243,29 +246,23 @@ class AutomationBotInstance(object):
     async def stop(self, shards):
         if not type(shards) is list:
             shards=[shards,]
-        if self._debug:
-            await self._channel.send("Stopping shards [{}]...".format(",".join(shards)))
+        await self.debug("Stopping shards [{}]...".format(",".join(shards)))
         await self._k8s.stop(shards)
-        if self._debug:
-            await self._channel.send("Stopped shards [{}]".format(",".join(shards)))
+        await self.debug("Stopped shards [{}]".format(",".join(shards)))
 
     async def start(self, shards):
         if not type(shards) is list:
             shards=[shards,]
-        if self._debug:
-            await self._channel.send("Starting shards [{}]...".format(",".join(shards)))
+        await self.debug("Starting shards [{}]...".format(",".join(shards)))
         await self._k8s.start(shards)
-        if self._debug:
-            await self._channel.send("Started shards [{}]".format(",".join(shards)))
+        await self.debug("Started shards [{}]".format(",".join(shards)))
 
     async def restart(self, shards):
         if not type(shards) is list:
             shards=[shards,]
-        if self._debug:
-            await self._channel.send("Restarting shards [{}]...".format(",".join(shards)))
+        await self.debug("Restarting shards [{}]...".format(",".join(shards)))
         await self._k8s.restart(shards)
-        if self._debug:
-            await self._channel.send("Restarted shards [{}]".format(",".join(shards)))
+        await self.debug("Restarted shards [{}]".format(",".join(shards)))
 
     # Infrastructure
     ################################################################################
@@ -540,8 +537,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
 
         # Fail if any shards are still running
         await cnl.send("Checking that all shards are stopped...")
-        if self._debug:
-            await cnl.send(pformat(shards))
+        await cnl.send(pformat(shards))
         for shard in shards:
             if shard in self._shards.keys():
                 if shards[shard]['replicas'] != 0:
