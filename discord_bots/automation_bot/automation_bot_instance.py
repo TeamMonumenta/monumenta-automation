@@ -453,7 +453,7 @@ Must be run before preparing the build server reset bundle'''
         await self.start("dungeon")
 
         await cnl.send("Generating dungeon instances (this may take a while)...")
-        await self.run(_top_level + "/utility_code/dungeon_instance_gen.py")
+        await self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py"))
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE")
 
         await cnl.send("Cleaning up instance generation temp files...")
@@ -631,10 +631,10 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
 
         await cnl.send("Raffle results:")
-        await self.run(_top_level + "/utility_code/raffle_results.py /home/epic/project_epic/0_PREVIOUS/region_1/Project_Epic-region_1 2", displayOutput=True)
+        await self.run(os.path.join(_top_level, "utility_code/raffle_results.py /home/epic/project_epic/0_PREVIOUS/region_1/Project_Epic-region_1 2"), displayOutput=True)
 
         await cnl.send("Running actual terrain reset (this will take a while!)...")
-        await self.run(_top_level + "/utility_code/terrain_reset.py " + " ".join(allShards))
+        await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))
 
         for shard in ["r1plots", "betaplots", "region_1"]:
             await cnl.send("Preserving coreprotect for {0}...".format(shard))
@@ -656,7 +656,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         await cnl.send("Generating per-shard config...")
         await self.cd("/home/epic/project_epic")
-        await self.run(_top_level + "/utility_code/gen_server_config.py --play " + " ".join(allShards))
+        await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(allShards)))
 
         await cnl.send("Checking for broken symbolic links...")
         await self.run("find /home/epic/project_epic -xtype l", displayOutput=True)
@@ -820,8 +820,8 @@ Syntax:
             await self.stop(shard)
             await self.cd(self._shards[shard])
             await self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard))
-            await self.run(_top_level + "/utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name), displayOutput=True)
-            await self.run(_top_level + "/utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name), displayOutput=True)
+            await self.run(os.path.join(_top_level, "utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name)), displayOutput=True)
+            await self.run(os.path.join(_top_level, "utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name)), displayOutput=True)
             await self.start(shard)
 
         await cnl.send(message.author.mention)
