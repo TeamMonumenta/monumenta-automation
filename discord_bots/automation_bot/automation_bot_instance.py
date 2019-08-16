@@ -535,10 +535,8 @@ DELETES DUNGEON CORE PROTECT DATA'''
 
         shards = await self._k8s.list()
 
-        # TODO: All at once, instead of one at a time
-        for shard in shards:
-            if shard in self._shards.keys():
-                await self.stop(shard)
+        # Stop all shards
+        await self.stop([shard for shard in shards if shard in self._shards.keys()])
 
         # Fail if any shards are still running
         await cnl.send("Checking that all shards are stopped...")
@@ -686,10 +684,8 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
 
         shards = await self._k8s.list()
 
-        # TODO: All at once, instead of one at a time
-        for shard in shards:
-            if shard in self._shards.keys():
-                await self.stop(shard)
+        # Stop all shards
+        await self.stop([shard for shard in shards if shard in self._shards.keys()])
 
         await self.action_list_shards("~list shards", message)
 
