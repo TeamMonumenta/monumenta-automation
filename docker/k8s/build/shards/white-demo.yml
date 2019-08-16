@@ -30,7 +30,6 @@ metadata:
     app: white-demo
 spec:
   type: NodePort
-  #externalTrafficPolicy: Local
   selector:
     app: white-demo
   ports:
@@ -69,7 +68,7 @@ spec:
             nodeSelectorTerms:
             - matchExpressions:
               - key: kubernetes.io/hostname
-                operator: In
+                operator: NotIn
                 values:
                 - ns547336.ip-66-70-181.net
       volumes:

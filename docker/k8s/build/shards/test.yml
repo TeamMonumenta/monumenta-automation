@@ -44,6 +44,15 @@ spec:
       labels:
         app: test
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: NotIn
+                values:
+                - ns547336.ip-66-70-181.net
       volumes:
         - name: nfs-maps
           hostPath:
