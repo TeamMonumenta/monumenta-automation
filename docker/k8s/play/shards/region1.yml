@@ -120,7 +120,7 @@ spec:
         - name: nfs-project-epic
           mountPath: /project_epic
         - name: nfs-maps
-          mountPath: /home/rock/maps/dynmap/play
+          mountPath: /home/epic/maps/dynmap/play
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         resources:
