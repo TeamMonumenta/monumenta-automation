@@ -322,7 +322,7 @@ class PreserveShieldBanner(GlobalRule):
 
             # Some legacy items have this invalid tag.BlockEntityTag.id field
             if self.block_entity_tag.has_path('id'):
-                self.block_entity_tag.pop('id')
+                self.block_entity_tag.value.pop('id')
 
     def postprocess(self, item):
         if item.at_path('id').value != 'minecraft:shield':
