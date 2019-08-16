@@ -90,6 +90,7 @@ class AutomationBotInstance(object):
             "list bots": self.action_list_bots,
             "select": self.action_select_bot,
 
+            "verbose": self.action_verbose,
             "test": self.action_test,
             "testpriv": self.action_test_priv,
             "testunpriv": self.action_test_unpriv,
@@ -128,7 +129,6 @@ class AutomationBotInstance(object):
                     logger.warn("Command '{}' specified in config but does not exist".format(command))
 
             self._permissions = config["permissions"]
-            # TODO: Hook this up to something
             self._debug = False
             self._listening = Listening()
             self._k8s = KubernetesManager(config["k8s_namespace"])
@@ -342,6 +342,13 @@ Examples:
 
     # Always listening actions
     ################################################################################
+
+    async def action_verbose(self, cmd, message):
+        '''Toggle verbosity of discord messages'''
+
+        self._debug = not self._debug
+
+        await message.channel.send("Verbose messages setting: {}".format(self._debug))
 
     async def action_test(self, cmd, message):
         '''Simple test action that does nothing'''
@@ -651,13 +658,12 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.cd("/home/epic/project_epic")
         await self.run(_top_level + "/utility_code/gen_server_config.py --play " + " ".join(allShards))
 
-        # TODO: This should probably print a warning and proceed anyway if some are found
         await cnl.send("Checking for broken symbolic links...")
         await self.run("find /home/epic/project_epic -xtype l", displayOutput=True)
 
         await cnl.send("Backing up post-reset artifacts...")
         await self.cd("/home/epic")
-        await self.run("tar --exclude=./0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic")
+        await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic")
 
         await cnl.send("Done.")
         await cnl.send(message.author.mention)
