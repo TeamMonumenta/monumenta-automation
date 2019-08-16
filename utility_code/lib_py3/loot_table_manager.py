@@ -831,25 +831,21 @@ class LootTableManager(object):
                             different = True
 
                     if show_errors:
-                        if not different:
-                            # This is noisy and no one cares
-                            #eprint("WARNING: Item '{}' type '{}' is duplicated in the loot tables!".format(item_name, item_id))
-                            pass
-                        else:
+                        if different:
                             eprint("\033[1;31m", end="")
                             eprint("ERROR: Item '{}' type '{}' is different and duplicated in the loot tables!".format(item_name, item_id))
 
-                        count = 1
-                        for loc in self.item_map[item_id][item_name]:
-                            eprint(" {}: {} - {}".format(count, loc["namespaced_key"], loc["file"]))
+                            count = 1
+                            for loc in self.item_map[item_id][item_name]:
+                                eprint(" {}: {} - {}".format(count, loc["namespaced_key"], loc["file"]))
+                                if different:
+                                    eprint("    {}".format(loc["nbt"].to_mojangson()))
+
+                                count += 1
+
                             if different:
-                                eprint("    {}".format(loc["nbt"].to_mojangson()))
-
-                            count += 1
-
-                        if different:
-                            eprint("\033[0;0m", end="")
-                        eprint()
+                                eprint("\033[0;0m", end="")
+                            eprint()
 
                     if not item_id in unique_item_map:
                         unique_item_map[item_id] = {}
