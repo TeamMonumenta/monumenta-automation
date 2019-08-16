@@ -54,7 +54,7 @@ config = {
             "region":{"x":-2, "z":-1},
             "numDungeons":200,
         },{
-            "name":"nightmare",
+            "name":"reverie",
             "region":{"x":-3, "z":4},
             "numDungeons":40,
         },{

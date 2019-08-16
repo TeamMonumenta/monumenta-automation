@@ -46,7 +46,7 @@ areas = [
         "size":(464, 101, 464),
         "region":{"x":-2, "z":-1},
     },{
-        "name":"nightmare",
+        "name":"reverie",
         "shard":"dungeon",
         "size":(382, 255, 476),
         "region":{"x":-3, "z":4},

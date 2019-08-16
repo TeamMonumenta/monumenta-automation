@@ -312,7 +312,7 @@ simple_view_distance_config = {
     'r1bonus': 8,
     'roguelike': 8,
     'sanctum': 10,
-    'nightmare': 10,
+    'reverie': 10,
     'test': 8,
     'fred': 8,
 }

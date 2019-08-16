@@ -267,7 +267,7 @@ available_configs = {
     "lightgray": get_dungeon_config("lightgray", "D9Access"),
     "cyan": get_dungeon_config("cyan", "D10Access"),
     "r1bonus": get_dungeon_config("r1bonus", "DB1Access"),
-    "nightmare": get_dungeon_config("nightmare", "DCAccess"),
+    "reverie": get_dungeon_config("reverie", "DCAccess"),
     "sanctum": get_dungeon_config("sanctum", "DS1Access"),
     "labs": get_dungeon_config("labs", "D0Access"),
     "roguelike": roguelike,

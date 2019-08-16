@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nightmare
-  namespace: play
+  name: reverie
+  namespace: stage
   labels:
-    app: nightmare
+    app: reverie
 spec:
   type: ClusterIP
   selector:
-    app: nightmare
+    app: reverie
   ports:
   # Main minecraft port
   - name: "25565"
@@ -28,37 +28,37 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nightmare
-  namespace: play
+  name: reverie
+  namespace: stage
   labels:
-    app: nightmare
+    app: reverie
 spec:
   strategy:
     type: Recreate
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
-      app: nightmare
+      app: reverie
   template:
     metadata:
       labels:
-        app: nightmare
+        app: reverie
     spec:
       volumes:
         - name: nfs-maps
           hostPath:
-            path: /nfs/play/maps
+            path: /nfs/stage/maps
             type: Directory
         - name: nfs-project-epic
           hostPath:
-            path: /nfs/play/project_epic
+            path: /nfs/stage/project_epic
             type: Directory
         - name: nfs-shared
           hostPath:
             path: /nfs/4_SHARED
             type: Directory
       containers:
-      - name: nightmare
+      - name: reverie
         image: monumenta-docker.injic.io/monumenta-java-shard
         tty: true
         stdin: true
@@ -69,14 +69,14 @@ spec:
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
-          value: "1536M"
+          value: "1024M"
         # Set this to 256M regardless of JAVA_MEM
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/nightmare"
+          value: "/project_epic/reverie"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -107,12 +107,12 @@ spec:
             # It should not need much/any...
             memory: 1Gi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 1888Mi
+            hugepages-2Mi: 1344Mi
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 1888Mi
+            hugepages-2Mi: 1344Mi
       imagePullSecrets:
       - name: regcred

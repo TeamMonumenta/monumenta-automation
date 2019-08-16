@@ -37,7 +37,7 @@ dungeons = (
         "name":"roguelike",
         "region":{"x":-2, "z":-1},
     },{
-        "name":"nightmare",
+        "name":"reverie",
         "region":{"x":-3, "z":4},
     },{
         "name":"tutorial",
