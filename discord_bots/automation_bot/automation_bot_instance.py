@@ -100,6 +100,8 @@ class AutomationBotInstance(object):
             "stop": self.action_stop,
             "restart": self.action_restart,
 
+            "view scores": self.action_view_scores,
+
             "update item": self.action_update_item,
             "run replacements": self.action_run_replacements,
             "find loot problems": self.action_find_loot_problems,
@@ -422,6 +424,24 @@ Syntax:
 `{cmdPrefix}restart shard *`
 `{cmdPrefix}restart shard region_1 region_2 orange'''
         await self._start_stop_restart_common(cmd, message, self.restart)
+
+
+    async def action_view_scores(self, cmd, message):
+        '''View player scores on Region 1. Run without arguements for syntax.
+Note: the values from this command could be 15 minutes behind the play server.
+Do not use for debugging quests or other scores that are likely to change often.'''
+
+        cnl = message.channel
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+
+        cmd_str = os.path.join(_top_level, "utility_code/view_scores.py")
+        while len(commandArgs) > 0:
+            cmd_str = cmd_str + " " + commandArgs.pop(0)
+
+        await self.run(cmd_str, displayOutput=True),
+        await cnl.send("Done"),
+
 
     async def action_generate_instances(self, cmd, message):
         '''Dangerous!

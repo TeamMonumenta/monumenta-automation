@@ -338,22 +338,3 @@ Starts a bungee shutdown timer for 10 minutes. Returns immediately.'''
             self.mention(),
         ]
 allActions.append(StopIn10MinutesAction)
-
-class ViewScoresAction(ShellAction):
-    '''View player scores on Region 1. Run without arguements for syntax.
-Note: the values from this command could be 15 minutes behind the play server.
-Do not use for debugging quests or other scores that are likely to change often.'''
-    command = "view scores"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command)+1:].split()
-        cmdString = _top_level + "/utility_code/view_scores.py"
-        while len(commandArgs) > 0:
-            cmdString = cmdString + " " + commandArgs.pop(0)
-        self._commands = [
-            self.run(cmdString, displayOutput=True),
-            self.display("Done."),
-        ]
-allActions.append(ViewScoresAction)
