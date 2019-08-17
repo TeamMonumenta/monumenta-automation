@@ -214,6 +214,9 @@ class AutomationBotInstance(object):
         await self.debug("Changing path to `" + path + "`")
         os.chdir(path)
 
+    async def display(self, msg):
+        await self._channel.send(msg)
+
     async def run(self, cmd, ret=0, displayOutput=False):
         if not type(cmd) is list:
             # For simple stuff, splitting on spaces is enough
@@ -323,9 +326,6 @@ Examples:
 `{cmdPrefix}select play play2` - select both the play bots
 `{cmdPrefix}select *` - select all bots'''
 
-        # For brevity
-        cnl = message.channel
-
         commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
 
         if (
@@ -337,11 +337,11 @@ Examples:
         ):
             self._listening.toggle(message)
             if self._listening.isListening(message):
-                await cnl.send(self._name + " is now listening for commands.")
+                await self.display(self._name + " is now listening for commands.")
             else:
-                await cnl.send(self._name + " is no longer listening for commands.")
+                await self.display(self._name + " is no longer listening for commands.")
         elif self._listening.isListening(message):
-            await cnl.send(self._name + " is still listening for commands.")
+            await self.display(self._name + " is still listening for commands.")
 
     # Always listening actions
     ################################################################################
@@ -381,9 +381,6 @@ Examples:
 
 
     async def _start_stop_restart_common(self, cmd, message, action):
-        # For brevity
-        cnl = message.channel
-
         arg_str = message.content[len(self._prefix + cmd)+1:].strip()
         if arg_str.startswith("shard "):
             arg_str = arg_str[len("shard "):].strip()
@@ -399,10 +396,10 @@ Examples:
                     shards_changed.append(shard)
 
         if not shards_changed:
-            await cnl.send("No specified shards on this server.")
+            await self.display("No specified shards on this server.")
         else:
             await action(shards_changed)
-            await cnl.send(message.author.mention)
+            await self.display(message.author.mention)
 
     async def action_start(self, cmd, message):
         '''Start specified shards.
@@ -431,8 +428,6 @@ Syntax:
 Note: the values from this command could be 15 minutes behind the play server.
 Do not use for debugging quests or other scores that are likely to change often.'''
 
-        cnl = message.channel
-
         commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
 
         cmd_str = os.path.join(_top_level, "utility_code/view_scores.py")
@@ -440,7 +435,7 @@ Do not use for debugging quests or other scores that are likely to change often.
             cmd_str = cmd_str + " " + commandArgs.pop(0)
 
         await self.run(cmd_str, displayOutput=True),
-        await cnl.send("Done"),
+        await self.display("Done"),
 
 
     async def action_generate_instances(self, cmd, message):
@@ -449,38 +444,35 @@ Deletes previous terrain reset data
 Temporarily brings down the dungeon shard to generate dungeon instances.
 Must be run before preparing the build server reset bundle'''
 
-        # For brevity
-        cnl = message.channel
-
         # TODO Space check
         # estimated_space_left = get_available_storage('/home/epic/4_SHARED')
-        # await cnl.send("Space left: {}".format(estimated_space_left // BYTES_PER_GB))
+        # await self.display("Space left: {}".format(estimated_space_left // BYTES_PER_GB))
         #if estimated_space_left < min_free_gb * BYTES_PER_GB:
         #    self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // BYTES_PER_GB)),]
         #    return
 
-        await cnl.send("Cleaning up old terrain reset data...")
+        await self.display("Cleaning up old terrain reset data...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
 
-        await cnl.send("Stopping the dungeon shard...")
+        await self.display("Stopping the dungeon shard...")
         await self.stop("dungeon")
 
-        await cnl.send("Copying the dungeon master copies...")
+        await self.display("Copying the dungeon master copies...")
         await self.run("cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
 
-        await cnl.send("Restarting the dungeon shard...")
+        await self.display("Restarting the dungeon shard...")
         await self.cd("/home/epic/project_epic/dungeon")
         await self.start("dungeon")
 
-        await cnl.send("Generating dungeon instances (this may take a while)...")
+        await self.display("Generating dungeon instances (this may take a while)...")
         await self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py"))
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE")
 
-        await cnl.send("Cleaning up instance generation temp files...")
+        await self.display("Cleaning up instance generation temp files...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
-        await cnl.send("Dungeon instance generation complete!")
-        await cnl.send(message.author.mention)
+        await self.display("Dungeon instance generation complete!")
+        await self.display(message.author.mention)
 
     async def action_prepare_reset_bundle(self, cmd, message):
         '''Dangerous!
@@ -488,75 +480,66 @@ Temporarily brings down the region_1 and region_2 shards to prepare for terrain 
 Packages up all of the pre-reset server components needed by the play server for reset
 Must be run before starting terrain reset on the play server'''
 
-        # For brevity
-        cnl = message.channel
-
         # TODO Space check
 
-        await cnl.send("Stopping region_1 and region_2...")
+        await self.display("Stopping region_1 and region_2...")
         await self.stop(["region_1", "region_2"])
 
-        await cnl.send("Copying region_1...")
+        await self.display("Copying region_1...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1")
         await self.run("cp -a /home/epic/project_epic/region_1/Project_Epic-region_1 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/")
 
-        await cnl.send("Restarting the region_1 shard...")
+        await self.display("Restarting the region_1 shard...")
         await self.start("region_1")
 
-        await cnl.send("Copying region_2...")
+        await self.display("Copying region_2...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2")
         await self.run("cp -a /home/epic/project_epic/region_2/Project_Epic-region_2 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/")
 
-        await cnl.send("Restarting the region_2 shard...")
+        await self.display("Restarting the region_2 shard...")
         await self.start("region_2")
 
-        await cnl.send("Copying bungee...")
+        await self.display("Copying bungee...")
         await self.run("cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
-        await cnl.send("Copying purgatory...")
+        await self.display("Copying purgatory...")
         await self.run("cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
-        await cnl.send("Copying server_config...")
+        await self.display("Copying server_config...")
         await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
-        await cnl.send("Packaging up reset bundle...")
+        await self.display("Packaging up reset bundle...")
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
         await self.run("tar czf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz TEMPLATE")
 
-        await cnl.send("Reset bundle ready!")
-        await cnl.send(message.author.mention)
+        await self.display("Reset bundle ready!")
+        await self.display(message.author.mention)
 
     async def action_fetch_reset_bundle(self, cmd, message):
         '''Dangerous!
 Deletes in-progress terrain reset info on the play server
 Downloads the terrain reset bundle from the build server and unpacks it'''
 
-        # For brevity
-        cnl = message.channel
-
         # TODO Space check
 
-        await cnl.send("Unpacking reset bundle...")
+        await self.display("Unpacking reset bundle...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
         await self.run("tar xzf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz")
-        await cnl.send("Build server template data retrieved and ready for reset.")
-        await cnl.send(message.author.mention)
+        await self.display("Build server template data retrieved and ready for reset.")
+        await self.display(message.author.mention)
 
     async def action_stop_and_backup(self, cmd, message):
         '''Dangerous!
 Brings down all play server shards and backs them up in preparation for terrain reset.
 DELETES DUNGEON CORE PROTECT DATA'''
 
-        # For brevity
-        cnl = message.channel
-
         # TODO Space check
 
         allShards = self._shards.keys()
 
-        await cnl.send("Stopping all shards...")
+        await self.display("Stopping all shards...")
 
         shards = await self._k8s.list()
 
@@ -564,16 +547,16 @@ DELETES DUNGEON CORE PROTECT DATA'''
         await self.stop([shard for shard in shards if shard in self._shards.keys()])
 
         # Fail if any shards are still running
-        await cnl.send("Checking that all shards are stopped...")
-        await cnl.send(pformat(shards))
+        await self.display("Checking that all shards are stopped...")
+        await self.display(pformat(shards))
         for shard in shards:
             if shard in self._shards.keys():
                 if shards[shard]['replicas'] != 0:
-                    await cnl.send("ERROR: shard '{}' is still running!".format(shard))
-                    await cnl.send(message.author.mention)
+                    await self.display("ERROR: shard '{}' is still running!".format(shard))
+                    await self.display(message.author.mention)
                     return
 
-        await cnl.send("Deleting cache and select FAWE and CoreProtect data...")
+        await self.display("Deleting cache and select FAWE and CoreProtect data...")
         for shard in allShards:
             await self.run("rm -rf /home/epic/project_epic/{}/cache".format(shard))
 
@@ -585,25 +568,22 @@ DELETES DUNGEON CORE PROTECT DATA'''
             if shard not in ["build", "region_1", "r1plots", "betaplots"]:
                 await self.run("rm -rf /home/epic/project_epic/{}/plugins/CoreProtect".format(shard))
 
-        await cnl.send("Saving ops and banned players")
+        await self.display("Saving ops and banned players")
         await self.run("cp -a /home/epic/project_epic/region_1/banned-ips.json /home/epic/4_SHARED/op-ban-sync/region_1/")
         await self.run("cp -a /home/epic/project_epic/region_1/banned-players.json /home/epic/4_SHARED/op-ban-sync/region_1/")
         await self.run("cp -a /home/epic/project_epic/region_1/ops.json /home/epic/4_SHARED/op-ban-sync/region_1/")
 
-        await cnl.send("Performing backup...")
+        await self.display("Performing backup...")
         await self.cd("/home/epic")
         await self.run("mkdir -p /home/epic/1_ARCHIVE")
         await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_pre_reset_" + datestr() + ".tgz project_epic")
 
-        await cnl.send("Backups complete! Ready for reset.")
-        await cnl.send(message.author.mention)
+        await self.display("Backups complete! Ready for reset.")
+        await self.display(message.author.mention)
 
     async def action_terrain_reset(self, cmd, message):
         '''Dangerous!
 Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
-
-        # For brevity
-        cnl = message.channel
 
         allShards = self._shards.keys()
 
@@ -613,36 +593,36 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.run("mkdir -p /home/epic/0_OLD_BACKUPS")
 
         # Fail if any shards are still running
-        await cnl.send("Checking that all shards are stopped...")
+        await self.display("Checking that all shards are stopped...")
         shards = await self._k8s.list()
         for shard in shards:
             if shard in self._shards.keys():
                 if shards[shard]['replicas'] != 0:
-                    await cnl.send("ERROR: shard '{}' is still running!".format(shard))
-                    await cnl.send(message.author.mention)
+                    await self.display("ERROR: shard '{}' is still running!".format(shard))
+                    await self.display(message.author.mention)
                     return
 
         # Sanity check to make sure this script is going to process everything that it needs to
         files = os.listdir("/home/epic/project_epic")
         for f in files:
             if f not in ["server_config", "0_PREVIOUS"] and f not in allShards:
-                await cnl.send("ERROR: project_epic directory contains file '{}' which will not be processed!".format(f))
-                await cnl.send(message.author.mention)
+                await self.display("ERROR: project_epic directory contains file '{}' which will not be processed!".format(f))
+                await self.display(message.author.mention)
                 return
 
         # Delete previous reset data and move current data to 0_PREVIOUS
-        await cnl.send("Deleting previous reset data...")
+        await self.display("Deleting previous reset data...")
         await self.cd("/home/epic/project_epic")
         await self.run("rm -rf 0_PREVIOUS")
         await self.run("mkdir 0_PREVIOUS")
 
         # Move everything to 0_PREVIOUS except bungee and build
-        await cnl.send("Moving everything except bungee and build to 0_PREVIOUS...")
+        await self.display("Moving everything except bungee and build to 0_PREVIOUS...")
         for f in files:
             if f not in ["0_PREVIOUS", "bungee", "build"]:
                 await self.run("mv {} 0_PREVIOUS/".format(f))
 
-        await cnl.send("Getting new server config...")
+        await self.display("Getting new server config...")
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/epic/project_epic/")
 
         await self.run("rm -rf /home/epic/project_epic/purgatory/")
@@ -651,19 +631,19 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.run("rm -rf /home/epic/project_epic/tutorial/")
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
 
-        await cnl.send("Raffle results:")
+        await self.display("Raffle results:")
         await self.run(os.path.join(_top_level, "utility_code/raffle_results.py /home/epic/project_epic/0_PREVIOUS/region_1/Project_Epic-region_1 2"), displayOutput=True)
 
-        await cnl.send("Running actual terrain reset (this will take a while!)...")
+        await self.display("Running actual terrain reset (this will take a while!)...")
         await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))
 
         for shard in ["r1plots", "betaplots", "region_1"]:
-            await cnl.send("Preserving coreprotect for {0}...".format(shard))
+            await self.display("Preserving coreprotect for {0}...".format(shard))
             await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/CoreProtect".format(shard))
             await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/CoreProtect/database.db"))
 
         for shard in ["r1plots", "betaplots", "region_1", "region_2"]:
-            await cnl.send("Preserving warps for {0}...".format(shard))
+            await self.display("Preserving warps for {0}...".format(shard))
             await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/EpicWarps".format(shard))
             await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/EpicWarps/warps.yml"))
 
@@ -675,19 +655,19 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-players.json /home/epic/project_epic/{}/".format(shard))
             await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/ops.json /home/epic/project_epic/{}/".format(shard))
 
-        await cnl.send("Generating per-shard config...")
+        await self.display("Generating per-shard config...")
         await self.cd("/home/epic/project_epic")
         await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(allShards)))
 
-        await cnl.send("Checking for broken symbolic links...")
+        await self.display("Checking for broken symbolic links...")
         await self.run("find /home/epic/project_epic -xtype l", displayOutput=True)
 
-        await cnl.send("Backing up post-reset artifacts...")
+        await self.display("Backing up post-reset artifacts...")
         await self.cd("/home/epic")
         await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic")
 
-        await cnl.send("Done.")
-        await cnl.send(message.author.mention)
+        await self.display("Done.")
+        await self.display(message.author.mention)
 
     async def action_stage(self, cmd, message):
         ''' Stops all stage server shards
@@ -698,12 +678,9 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         if "stage" not in self._name:
             raise Exception("WARNING: bot name does not contain 'stage', aborting to avoid mangling real data")
 
-        # For brevity
-        cnl = message.channel
-
         # TODO Space check
 
-        await cnl.send("Stopping all stage server shards...")
+        await self.display("Stopping all stage server shards...")
 
         shards = await self._k8s.list()
 
@@ -725,8 +702,8 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         for f in files:
             await self.run("cp -a /home/epic/play/project_epic/{} /home/epic/project_epic/".format(f))
 
-        await cnl.send("Stage server loaded with current play server data")
-        await cnl.send(message.author.mention)
+        await self.display("Stage server loaded with current play server data")
+        await self.display(message.author.mention)
 
     async def action_update_item(self, cmd, message):
         '''
@@ -740,16 +717,13 @@ Easiest way to get this info is holding an item in your hand and using /nbti toc
 For convenience, leading 'give @p' is ignored, along with any data after the last } (usually the quantity of item from /nbti tocommand)
     '''
 
-        # For brevity
-        cnl = message.channel
-
         # Check for any arguments
         commandArgs = message.content[len(self._prefix):].strip()
         if len(commandArgs) < len(cmd) + 5:
-            await cnl.send("Item argument required")
+            await self.display("Item argument required")
             return
         if '{' not in commandArgs:
-            await cnl.send("Item must be of the form minecraft:id{nbt}")
+            await self.display("Item must be of the form minecraft:id{nbt}")
             return
 
         # Parse id / nbt arguments
@@ -771,7 +745,7 @@ For convenience, leading 'give @p' is ignored, along with any data after the las
         mgr.load_loot_tables_subdirectories(os.path.join(self._project_epic_dir, "server_config/data/datapacks"))
         try:
             locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
-            await cnl.send("Updated item in loot tables:```" + "\n".join(locations) + "```")
+            await self.display("Updated item in loot tables:```" + "\n".join(locations) + "```")
         except Exception as e:
             await message.channel.send(message.author.mention)
             await message.channel.send("**ERROR**: ```" + str(e) + "```")
@@ -806,18 +780,15 @@ For convenience, leading 'give @p' is ignored, along with any data after the las
 
             loot_table_string = json.dumps(table_dict, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
 
-            await cnl.send("Here is a basic loot table for this item:\n\n" +
+            await self.display("Here is a basic loot table for this item:\n\n" +
                            "You must put this somewhere **sensible** in the loot tables \n\n" +
                            "Use this filename:```{}```\nContents:```{}```".format(filename, loot_table_string))
-            await cnl.send(message.author.mention)
+            await self.display(message.author.mention)
 
     async def action_run_replacements(self, cmd, message):
         '''Runs item and mob replacements on a given shard
 Syntax:
 `{cmdPrefix}run replacements shard region_1 region_2 orange`'''
-
-        # For brevity
-        cnl = message.channel
 
         # TODO Space check
 
@@ -829,15 +800,15 @@ Syntax:
                 replace_shards.append(shard)
 
         if not replace_shards:
-            await cnl.send("Nothing to do")
+            await self.display("Nothing to do")
             return
 
-        await cnl.send("Replacing both mobs AND items on [{}]".format(" ".join(replace_shards)))
+        await self.display("Replacing both mobs AND items on [{}]".format(" ".join(replace_shards)))
 
         for shard in replace_shards:
             base_backup_name = "/home/epic/0_OLD_BACKUPS/Project_Epic-{}_pre_entity_loot_updates_{}".format(shard, datestr())
 
-            await cnl.send("Running replacements on shard {}".format(shard))
+            await self.display("Running replacements on shard {}".format(shard))
             await self.stop(shard)
             await self.cd(self._shards[shard])
             await self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard))
@@ -845,16 +816,15 @@ Syntax:
             await self.run(os.path.join(_top_level, "utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name)), displayOutput=True)
             await self.start(shard)
 
-        await cnl.send(message.author.mention)
+        await self.display(message.author.mention)
 
     async def action_find_loot_problems(self, cmd, message):
         '''Finds loot table problems
 - Lists containers in dungeons that are missing loot tables.
 - TODO: Add more!
 '''
-        cnl = message.channel
-        await cnl.send("Checking for loot table problems...")
-        await cnl.send("Checking for missing dungeon loot tables...")
+        await self.display("Checking for loot table problems...")
+        await self.display("Checking for missing dungeon loot tables...")
         await self.run(os.path.join(_top_level, "utility_code/dungeon_find_lootless.py"), 0, displayOutput=True)
 
     async def action_gen_demo_release(self, cmd, message):
@@ -862,24 +832,22 @@ Syntax:
 Syntax:
 `{cmdPrefix}generate demo release <version>`'''
 
-        cnl = message.channel
-
         commandArgs = message.content[len(self._prefix + cmd)+1:]
         version = "".join([i if re.match('[0-9\.]', i) else '' for i in commandArgs])
 
         if not version:
-            await cnl.send("Version must be specified and can contain only numbers and periods")
-            await cnl.send(message.author.mention)
+            await self.display("Version must be specified and can contain only numbers and periods")
+            await self.display(message.author.mention)
             return
 
         # Test if this version already exists
         try:
             await self.run(["test", "!", "-f", "/home/epic/4_SHARED/monumenta_demo/Monumenta Demo - The Halls of Wind and Blood V{}.zip".format(version)])
         except:
-            await cnl.send("Demo release V{} already exists!".format(version))
+            await self.display("Demo release V{} already exists!".format(version))
             return
 
-        await cnl.send("Generating demo release version V{}...".format(version))
+        await self.display("Generating demo release version V{}...".format(version))
 
         await self.stop("white-demo")
 
@@ -907,5 +875,5 @@ Syntax:
 
         await self.start("white-demo")
 
-        await cnl.send("Demo release version V{} generated successfully".format(version))
-        await cnl.send(message.author.mention)
+        await self.display("Demo release version V{} generated successfully".format(version))
+        await self.display(message.author.mention)
