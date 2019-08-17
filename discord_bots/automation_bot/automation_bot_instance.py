@@ -700,7 +700,8 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
 
         files = os.listdir("/home/epic/play/project_epic/")
         for f in files:
-            await self.run("cp -a /home/epic/play/project_epic/{} /home/epic/project_epic/".format(f))
+            if '0_PREVIOUS' not in f:
+                await self.run("cp -a /home/epic/play/project_epic/{} /home/epic/project_epic/".format(f))
 
         await self.display("Stage server loaded with current play server data")
         await self.display(message.author.mention)
