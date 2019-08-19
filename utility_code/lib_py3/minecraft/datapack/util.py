@@ -39,7 +39,7 @@ class OrderedSet(list):
         return "OrderedSet({})".format(list.__repr__(self))
 
 
-class PlaceholderNumberOrRandom(object):
+class GetNumberOrRandom(object):
     """Return a fixed or random number based on "other".
 
     other should be an integer, float, or dict.
@@ -110,7 +110,7 @@ class PlaceholderNumberOrRandom(object):
             return "a random number in {}..{}".format(int(self._min), int(self._max))
 
     def __repr__(self):
-        return "PlaceholderNumberOrRandom({}, {})".format(self._other, self.is_rand)
+        return "GetNumberOrRandom({}, {})".format(self._other, self.is_rand)
 
 
 class TestNumberOrRange(object):

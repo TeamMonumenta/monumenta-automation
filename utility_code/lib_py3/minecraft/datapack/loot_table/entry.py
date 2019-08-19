@@ -9,7 +9,7 @@ this_folder = os.path.dirname(os.path.realpath(__file__))
 
 sys.path.append(this_folder)
 from condition import BaseConditionList
-from function import BaseFunctionList, PlaceholderNumberOrRandom
+from function import BaseFunctionList
 
 sys.path.append(os.path.join(this_folder, "../.."))
 from item import Item, ItemStack
@@ -54,6 +54,11 @@ class BaseEntry(object):
 
     def __repr__(self):
         return "{name}({entry})".format(name=self.__class__.__name__, entry=self._dict)
+
+    def get_weight(self, generate_state):
+        """Get this entry's weight for the generation state."""
+        # TODO Improperly implemented - does not account for luck or looting.
+        return self.weight
 
     @classmethod
     def recursive_public_subclasses(cls):
@@ -118,6 +123,9 @@ class BaseEntryList(BaseEntry):
 
     def __len__(self):
         return len(self._list)
+
+    def __getitem__(self, index):
+        return self._list.__get__(index)
 
     def __repr__(self):
         return "{name}({entry})".format(name=self.__class__.__name__, entry=self._dict)

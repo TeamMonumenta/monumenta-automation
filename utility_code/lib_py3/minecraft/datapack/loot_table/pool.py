@@ -13,7 +13,7 @@ from entry import BaseEntryList
 
 # datapack folder
 sys.path.append(os.path.join(this_folder, "../"))
-from util import PlaceholderNumberOrRandom
+from util import GetNumberOrRandom
 
 class Pool(object):
     """A loot table pool."""
@@ -32,8 +32,8 @@ class Pool(object):
             raise TypeError("Expected pool to be type dict.")
 
         self.conditions = BaseConditionList(self._dict.get('conditions', []))
-        self.rolls = PlaceholderNumberOrRandom(self._dict['rolls'])
-        self.bonus_rolls = PlaceholderNumberOrRandom(self._dict['bonus_rolls'])
+        self.rolls = GetNumberOrRandom(self._dict['rolls'])
+        self.bonus_rolls = GetNumberOrRandom(self._dict['bonus_rolls'])
         self.entries = BaseEntryList(self._dict.get('entries', []))
 
     def generate(self, generation_state):
@@ -43,7 +43,23 @@ class Pool(object):
 
     def _generate(self, generation_state):
         """Generate a pool entry after confirming the conditions are met."""
-        NotImplemented
+        if len(self.entries) == 0:
+            # Generate nothing
+            return
+
+        # There is at least one entry to generate
+        luck = 0 # TODO Get this from generation state
+        rolls = self.rolls + bonus_rolls * luck
+        weights = [max(0, entry.get_weight(generation_state)) for entry in self.entries]
+        total_weight = sum(weights)
+
+        if total_weight == 0:
+            # Nothing would generate
+            return
+
+        for entry in random.choice(self.entries, replace=True, size=rolls, p=[vote/total_votes for vote in vote_scores]):
+            # TODO see what happens when an entry fails; re-roll?
+            entry.generate(generation_state)
 
     def description(self):
         """A description of what this pool does"""

@@ -12,7 +12,7 @@ from condition import BaseConditionList
 
 # datapack folder
 sys.path.append(os.path.join(this_folder, "../"))
-from util import PlaceholderNumberOrRandom
+from util import GetNumberOrRandom
 
 # quarry folder
 sys.path.append(os.path.join(this_folder, "../../../../../quarry"))
@@ -327,7 +327,7 @@ class limit_count(BaseFunction):
         if "limit" not in self._dict:
             raise KeyError("No limit specified in limit_count function.")
 
-        self._limit = PlaceholderNumberOrRandom(self._dict["limit"], rand_float=False)
+        self._limit = GetNumberOrRandom(self._dict["limit"], rand_float=False)
 
     def _run(self, item_stack, generation_state):
         """Run the function after confirming its conditions are met."""
@@ -437,7 +437,7 @@ class set_count(BaseFunction):
         if "count" not in self._dict:
             raise KeyError("No count specified in set_count function.")
 
-        self._count = PlaceholderNumberOrRandom(self._dict["count"], rand_float=False)
+        self._count = GetNumberOrRandom(self._dict["count"], rand_float=False)
 
     def _run(self, item_stack, generation_state):
         """Run the function after confirming its conditions are met."""
@@ -464,7 +464,7 @@ class set_damage(BaseFunction):
         if "damage" not in self._dict:
             raise KeyError("No damage specified in set_damage function.")
 
-        self._damage = PlaceholderNumberOrRandom(self._dict["damage"], rand_float=True)
+        self._damage = GetNumberOrRandom(self._dict["damage"], rand_float=True)
 
     def _run(self, item_stack, generation_state):
         """Run the function after confirming its conditions are met."""
