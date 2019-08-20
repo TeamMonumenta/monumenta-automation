@@ -107,6 +107,8 @@ class BaseEntryList(BaseEntry):
         else:
             raise TypeError("Expected entry list to be type list.")
 
+        self.entries = [Entry(entry) for entry in self._list]
+
     def _generate(self, generation_state):
         """Generate the entries; does not check conditions."""
         NotImplemented
@@ -343,4 +345,13 @@ class tag(BaseEntry):
 
     def __repr__(self):
         return "{name}({entry})".format(name=self.__class__.__name__, entry=self._dict)
+
+
+entry_types = BaseFunction.recursive_public_subclasses()
+
+def load_entry(entry):
+    """Loads a function, determining the appropriate type automatically."""
+    entry_type = entry['type']
+    entry_class = entry_types[entry_type]
+    return entry_class(entry)
 

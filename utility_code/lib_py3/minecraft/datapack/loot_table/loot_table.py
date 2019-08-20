@@ -8,33 +8,36 @@ import sys
 this_folder = os.path.dirname(os.path.realpath(__file__))
 
 sys.path.append(this_folder)
-from condition import BaseConditionList
-from entry import BaseEntryList
+from pool import Pool
 
-# datapack folder
-sys.path.append(os.path.join(this_folder, "../"))
-from util import GetNumberOrRandom
+class LootTable(object):
+    """A loot table."""
+    type_descriptions = {
+        'empty': """Generates no items.""",
+        'entity': """Generates items from an entity.""",
+        'block': """Generates items from a block.""",
+        'chest': """Generates items from a chest.""",
+        'fishing': """Generates items from fishing.""",
+        'advancement_reward': """Generates items from an advancement reward.""",
+        'generic': """Generates items from any source."""
+    }
 
-class Pool(object):
-    """A loot table pool."""
-    def __init__(self, pool):
-        """Load the pool from a dict.
+    def __init__(self, loot_table):
+        """Load the loot table from a dict.
 
         A description of the arguements goes here.
         """
-        if isinstance(pool, type(self)):
-            self._dict = copy.deepcopy(pool._dict)
+        if isinstance(entry, type(self)):
+            self._dict = copy.deepcopy(entry._dict)
 
-        elif isinstance(pool, dict):
-            self._dict = copy.deepcopy(pool)
+        elif isinstance(entry, dict):
+            self._dict = copy.deepcopy(entry)
 
         else:
-            raise TypeError("Expected pool to be type dict.")
+            raise TypeError("Expected loot table to be type dict.")
 
-        self.conditions = BaseConditionList(self._dict.get('conditions', []))
-        self.rolls = GetNumberOrRandom(self._dict['rolls'])
-        self.bonus_rolls = GetNumberOrRandom(self._dict['bonus_rolls'])
-        self.entries = BaseEntryList(self._dict.get('entries', []))
+        self.type = self._dict.get('type', 'generic')
+        self.pools = [Pool(pool) for pool in self._dict.get('pools', [])]
 
     def generate(self, generation_state):
         """Generate a pool entry as part of generating loot from a loot table."""
