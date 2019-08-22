@@ -379,7 +379,6 @@ Examples:
 
         await message.channel.send("Shard list: \n{}".format(pformat(shards)))
 
-
     async def _start_stop_restart_common(self, cmd, message, action):
         arg_str = message.content[len(self._prefix + cmd)+1:].strip()
         if arg_str.startswith("shard "):
@@ -398,7 +397,22 @@ Examples:
         if not shards_changed:
             await self.display("No specified shards on this server.")
         else:
+            if action == self.stop:
+                await self.display("Stopping shards [{}]...".format(",".join(shards_changed)))
+            elif action == self.start:
+                await self.display("Starting shards [{}]...".format(",".join(shards_changed)))
+            elif action == self.restart:
+                await self.display("Restarting shards [{}]...".format(",".join(shards_changed)))
+
             await action(shards_changed)
+
+            if action == self.stop:
+                await self.display("Stopped shards [{}]".format(",".join(shards_changed)))
+            elif action == self.start:
+                await self.display("Started shards [{}]".format(",".join(shards_changed)))
+            elif action == self.restart:
+                await self.display("Restarted shards [{}]".format(",".join(shards_changed)))
+
             await self.display(message.author.mention)
 
     async def action_start(self, cmd, message):
