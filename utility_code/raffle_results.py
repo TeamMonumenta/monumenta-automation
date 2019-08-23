@@ -13,7 +13,7 @@ if (len(sys.argv) != 3):
 
 scoreboard = Scoreboard(os.path.join(sys.argv[1], "data", "scoreboard.dat"))
 raffle_results = tempfile.mktemp()
-meme_seed = '''I really need to automate this'''
+meme_seed = '''Cursed Raffle Seed:TM:'''
 vote_raffle(meme_seed, scoreboard, raffle_results, int(sys.argv[2]))
 
 rafflefp = open( raffle_results, "r" )
