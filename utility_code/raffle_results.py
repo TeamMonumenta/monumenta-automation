@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+#
+# NOTE! This file is not used by the terrain reset code anymore!
 
 import os
 import sys

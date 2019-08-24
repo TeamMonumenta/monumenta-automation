@@ -7,6 +7,9 @@ import asyncio
 import subprocess
 import json
 import re
+import tempfile
+import numpy
+
 from collections import OrderedDict
 from pprint import pformat
 
@@ -23,6 +26,8 @@ BYTES_PER_GB = 1<<30
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
+from lib_py3.raffle import vote_raffle
+from lib_py3.scoreboard import Scoreboard
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import parse_name_possibly_json
 
@@ -75,9 +80,11 @@ class AutomationBotInstance(object):
     ################################################################################
     # Entry points
 
-    def __init__(self, client, channel, config):
+    def __init__(self, client, channel, config, rreact):
         self._client = client
         self._channel = channel
+        # For raffle reactions
+        self._rreact = rreact
 
         self._always_listening_commands = [
             "list bots",
@@ -111,6 +118,7 @@ class AutomationBotInstance(object):
             "fetch reset bundle": self.action_fetch_reset_bundle,
             "stop and backup": self.action_stop_and_backup,
             "terrain reset": self.action_terrain_reset,
+            "get raffle seed": self.action_get_raffle_seed,
 
             "stage": self.action_stage,
             "generate demo release": self.action_gen_demo_release,
@@ -595,6 +603,14 @@ DELETES DUNGEON CORE PROTECT DATA'''
         await self.display("Backups complete! Ready for reset.")
         await self.display(message.author.mention)
 
+    async def action_get_raffle_seed(self, cmd, message):
+        '''Gets the current raffle seed based on reactions'''
+
+        if self._rreact["msg_contents"] is not None:
+            await self.display("Current raffle seed is: ```{}```".format(self._rreact["msg_contents"]))
+        else:
+            await self.display("No current raffle seed")
+
     async def action_terrain_reset(self, cmd, message):
         '''Dangerous!
 Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
@@ -645,8 +661,21 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.run("rm -rf /home/epic/project_epic/tutorial/")
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
 
+        ########################################
+        # Raffle
+
         await self.display("Raffle results:")
-        await self.run(os.path.join(_top_level, "utility_code/raffle_results.py /home/epic/project_epic/0_PREVIOUS/region_1/Project_Epic-region_1 2"), displayOutput=True)
+        raffle_seed = "Default raffle seed"
+        if self._rreact["msg_contents"] is not None:
+            raffle_seed = self._rreact["msg_contents"]
+
+        scoreboard = Scoreboard("/home/epic/project_epic/0_PREVIOUS/region_1/Project_Epic-region_1/data/scoreboard.dat")
+        raffle_results = tempfile.mktemp()
+        vote_raffle(raffle_seed, scoreboard, raffle_results, 2)
+        await self.run("cat {}".format(raffle_results), displayOutput=True)
+
+        # Raffle
+        ########################################
 
         await self.display("Running actual terrain reset (this will take a while!)...")
         await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))
