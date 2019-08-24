@@ -47,7 +47,7 @@ try:
     # This is passed by reference - so don't assign to it directly!
     rlogger = logging.getLogger("react")
     # Set debug verbosity for this feature here
-    rlogger.setLevel(logging.INFO)
+    rlogger.setLevel(logging.DEBUG)
     rreact = {};
     rreact["message_id"] = None
     rreact["channel_id"] = None
@@ -118,6 +118,7 @@ try:
                     #    return
 
                     highest_reaction_count = 0
+                    rlogger.debug("Reactions: {}".format(msg.reactions))
                     for reaction in msg.reactions:
                         if '\U0001f441' in reaction.emoji:
                             continue
@@ -125,8 +126,7 @@ try:
                         if reaction.count > highest_reaction_count:
                             highest_reaction_count = reaction.count
 
-                    if (highest_reaction_count > rreact["count"]
-                            or (time_cutoff < rreact["timestamp"])):
+                    if (highest_reaction_count > rreact["count"] or (time_cutoff > rreact["timestamp"])):
 
                         if rreact["msg"] is not None:
                             await rreact["msg"].remove_reaction('\U0001f441', client.user)
@@ -158,13 +158,14 @@ try:
             if config["reactions_enabled"]:
                 rlogger.debug("Processing removed reaction")
 
-                channel = client.get_channel(payload.channel_id)
-                msg = await channel.fetch_message(payload.message_id)
-
                 if rreact["channel_id"] == payload.channel_id and rreact["message_id"] == payload.message_id:
+                    channel = client.get_channel(payload.channel_id)
+                    msg = await channel.fetch_message(payload.message_id)
+
                     # Same message as the current winner - update counts
                     highest_reaction_count = 0
                     for reaction in msg.reactions:
+                        rlogger.debug("Reactions: {}".format(msg.reactions))
                         if '\U0001f441' in reaction.emoji:
                             continue
                         if reaction.count > highest_reaction_count:
