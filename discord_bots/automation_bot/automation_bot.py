@@ -171,8 +171,19 @@ try:
                         if reaction.count > highest_reaction_count:
                             highest_reaction_count = reaction.count
 
-                    rreact["count"] = highest_reaction_count
-                    rlogger.debug("Set count to {}".format(highest_reaction_count))
+                    if highest_reaction_count <= 0:
+                        # This no longer has any other reactions
+                        rreact["message_id"] = None
+                        rreact["channel_id"] = None
+                        rreact["msg_contents"] = None
+                        rreact["msg"] = None
+                        rreact["count"] = 0
+                        rreact["timestamp"] = datetime.datetime.now()
+                        await msg.remove_reaction('\U0001f441', client.user)
+                        rlogger.debug("Cleared currently leading raffle reaction because it has no more reactions")
+                    else:
+                        rreact["count"] = highest_reaction_count
+                        rlogger.debug("Set count to {}".format(highest_reaction_count))
 
         except Exception as e:
             rlogger.error("Failed to handle removing reaction")
@@ -189,6 +200,7 @@ try:
                     rreact["message_id"] = None
                     rreact["channel_id"] = None
                     rreact["msg_contents"] = None
+                    rreact["msg"] = None
                     rreact["count"] = 0
                     rreact["timestamp"] = datetime.datetime.now()
                     rlogger.debug("Cleared currently leading raffle reaction")
