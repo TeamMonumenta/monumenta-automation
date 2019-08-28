@@ -727,6 +727,37 @@ class World(object):
 
                             region.save_chunk(chunk)
 
+    def restore_chunks(self, old_world, chunk_coords):
+        """Restore chunks from an old world into a new world.
+
+        chunk_coords is an iterable of cx,cz tuples.
+        """
+        # Speed up processing by handling one region file at a time.
+        chunks_by_region = {}
+        for cx, cz in chunk_coords:
+            rx, cx = divmod(cx, 32)
+            rz, cz = divmod(cz, 32)
+            region = (rx, rz)
+            chunk = (cx, cz)
+
+            if region not in chunks_by_region:
+                chunks_by_region[region] = []
+            chunks_by_region[region].append(chunk)
+
+        for rx, rz in chunks_by_region:
+            new_region_path = os.path.join( self.path, "region", "r.{}.{}.mca".format(rx, rz) )
+            old_region_path = os.path.join( old_world.path, "region", "r.{}.{}.mca".format(rx, rz) )
+
+            if not os.path.isfile(new_region_path):
+                raise FileNotFoundError('No such region {},{} in world {}'.format(rx,rz,self.path))
+            if not os.path.isfile(old_region_path):
+                raise FileNotFoundError('No such region {},{} in world {}'.format(rx,rz,old_world.path))
+
+            with nbt.RegionFile(new_region_path) as new_region:
+                with nbt.RegionFile(old_region_path) as old_region:
+                    for cx, cz in chunks_by_region[(rx, rz)]:
+                        new_region.restore_chunk(old_region, cx, cz)
+
     def restore_area(self,pos1,pos2,old_world):
         """
         Restore the area in pos1,po2 in this world
