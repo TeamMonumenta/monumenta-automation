@@ -76,14 +76,87 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
             print("  Opening old play World...")
             old_world = World(localMainFolder)
 
-            print("  Copying needed terrain from the main world...")
+            print("  Preparing to copy needed terrain from the main world...")
+            chunks_to_copy = set()
+            chunks_to_replace_items = {}
+            item_replace_chunk_count = 0
             for section in config["coordinatesToCopy"]:
-                print("    Copying '" + section["name"] + "'")
-                dstWorld.restore_area(section["pos1"], section["pos2"], old_world);
-                if "replace_items" in section:
-                    item_replace_manager = section["replace_items"]
-                    for item, _, entity_path in dstWorld.items(readonly=False, pos1=section["pos1"], pos2=section["pos2"]):
+                chunks_selected = 0
+                pos1 = section["pos1"]
+                pos2 = section["pos2"]
+
+                min_x = min(pos1[0],pos2[0])
+                min_y = min(pos1[1],pos2[1])
+                min_z = min(pos1[2],pos2[2])
+
+                max_x = max(pos1[0],pos2[0]) + 1
+                max_y = max(pos1[1],pos2[1]) + 1
+                max_z = max(pos1[2],pos2[2]) + 1
+
+                min_pos = (min_x, min_y, min_z)
+                max_pos = (max_x, max_y, max_z)
+
+                cx_min = min_x // 16
+                cz_min = min_z // 16
+                cx_max = max_x // 16
+                cz_max = max_z // 16
+
+                for cx in range(cx_min, cx_max + 1):
+                    for cz in range(cz_min, cz_max + 1):
+                        chunks_selected += 1
+                        chunks_to_copy.add((cx, cz))
+                        if "replace_items" in section:
+                            if (cx, cz) not in chunks_to_replace_items:
+                                item_replace_chunk_count += 1
+
+                            rx = cx // 32
+                            rz = cz // 32
+
+                            if (rx, rz) not in chunks_to_replace_items:
+                                chunks_to_replace_items[(rx, rz)] = {}
+                            if (cx, cz) not in chunks_to_replace_items[(rx, rz)]:
+                                chunks_to_replace_items[(rx, rz)][(cx, cz)] = {
+                                    "manager": section["replace_items"],
+                                    "sections": []
+                                }
+                            chunks_to_replace_items[(rx, rz)][(cx, cz)]["sections"].append({
+                                "min": min_pos, "max": max_pos
+                            })
+
+                print("    Prepared to copy {!r} ({} chunks)".format(section["name"], chunks_selected))
+
+            print("  Copying needed terrain from the main world ({} chunks)...".format(len(chunks_to_copy)))
+            dstWorld.restore_chunks(old_world, chunks_to_copy)
+            
+            print("  Running item replacements on copied terrain ({} chunks)...".format(item_replace_chunk_count)
+            items_scanned = 0
+            for rx_rz, region_chunks in chunks_to_replace_items.items():
+                rx, rz = rx_rz
+                for cx_cz, sections in region_chunks.items():
+                    cx, cz = cx_cz
+                    item_replace_chunk_count -= 1
+                    item_replace_manager = sections["manager"]
+                    for item, source_pos, entity_path in dstWorld.items(readonly=False, pos1=(cx*16, 0, cz*16), pos2=(cx*16+15, 255, cz*16+15)):
+                        if source_pos is None:
+                            continue
+
+                        in_a_section = False
+                        for section in sections["sections"]:
+                            for i in range(3):
+                                if (
+                                    section["min"] <= source_pos[i]
+                                    and source_pos[i] < section["max"]
+                                ):
+                                    in_a_section = True
+                                    break
+                            if in_a_section:
+                                break
+                        if not in_a_section:
+                            continue
+
+                        items_scanned += 1
                         item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
+            print("  Ran item replacements on copied terrain ({} chunks not scanned, {} items scanned)...".format(item_replace_chunk_count, items_scanned)
 
         if "localMainFolder" in config and not os.path.exists(config["localMainFolder"]):
             eprint("!!!!!! WARNING: Missing previous week main folder '{}'!".format(config["localBuildFolder"]))
