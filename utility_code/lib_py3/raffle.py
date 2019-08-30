@@ -27,12 +27,14 @@ def vote_raffle( seed, scoreboard, log_path, num_winners ):
     # Get the votes from this week
     # Format: { "voter": (since_win, this_week) }
     votes = OrderedDict()
+    names_that_voted_this_week = []
     total_votes_weekly = 0
     for a_score in weekly_scores:
         voter = a_score.at_path( "Name" ).value
         votes_weekly = a_score.at_path( "Score" ).value
 
         votes[voter] = (votes_weekly, votes_weekly)
+        names_that_voted_this_week.append(voter)
 
         total_votes_weekly += votes_weekly
 
@@ -69,7 +71,8 @@ def vote_raffle( seed, scoreboard, log_path, num_winners ):
     # Reduce votes down to just the current list of votes
     simple_votes = OrderedDict()
     for voter in votes:
-        simple_votes[voter] = votes[voter][0]
+        if voter in names_that_voted_this_week:
+            simple_votes[voter] = votes[voter][0]
     votes = simple_votes
     logfp.write('''
 Run this code with python 3 (requires python3-numpy) to verify the results of the raffle:
