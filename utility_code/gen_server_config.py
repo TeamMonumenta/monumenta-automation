@@ -296,7 +296,7 @@ simple_view_distance_config = {
     'lime': 9,
     'pink': 8,
     'gray': 8,
-    'lightgray': 9,
+    'lightgray': 11,
     'cyan': 8,
     'purple': 8,
 
