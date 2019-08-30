@@ -29,7 +29,7 @@ available_configs = {
     "magenta": get_dungeon_config("magenta", "D3Access"),
     "lightblue": get_dungeon_config("lightblue", "D4Access"),
     "yellow": get_dungeon_config("yellow", "D5Access"),
-    "r1bonus": get_dungeon_config("r1bonus", "DB1Access"),
+    "willows": get_dungeon_config("willows", "DB1Access"),
     "reverie": get_dungeon_config("reverie", "DCAccess"),
     "roguelike": None, # TODO
     "build": None,

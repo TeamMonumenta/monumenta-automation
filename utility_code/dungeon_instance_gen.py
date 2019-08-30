@@ -46,7 +46,7 @@ config = {
             "region":{"x":-3, "z":2},
             "numDungeons":40,
         },{
-            "name":"r1bonus",
+            "name":"willows",
             "region":{"x":-3, "z":3},
             "numDungeons":40,
         },{

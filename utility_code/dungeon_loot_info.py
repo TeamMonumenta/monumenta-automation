@@ -31,7 +31,7 @@ dungeons = (
         "name":"yellow",
         "region":{"x":-3, "z":2},
     },{
-        "name":"r1bonus",
+        "name":"willows",
         "region":{"x":-3, "z":3},
     },{
         "name":"roguelike",

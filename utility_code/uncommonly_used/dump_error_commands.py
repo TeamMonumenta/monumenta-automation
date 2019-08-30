@@ -36,7 +36,7 @@ areas = [
         "size":(256, 256, 256),
         "region":{"x":-3, "z":2},
     },{
-        "name":"r1bonus",
+        "name":"willows",
         "shard":"dungeon",
         "size":(288, 93, 368),
         "region":{"x":-3, "z":3},

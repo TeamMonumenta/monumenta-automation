@@ -77,7 +77,7 @@ dungeons = (
             "-1513 40 1150",
         ),
     },{
-        "name":"r1bonus",
+        "name":"willows",
         "region":{"x":-3, "z":3},
     },{
         "name":"roguelike",
