@@ -566,17 +566,17 @@ DELETES DUNGEON CORE PROTECT DATA'''
         shards = await self._k8s.list()
 
         # Stop all shards
-        await self.stop([shard for shard in shards if shard in self._shards.keys()])
+        await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
 
         # Fail if any shards are still running
         await self.display("Checking that all shards are stopped...")
+        shards = await self._k8s.list()
         await self.display(pformat(shards))
-        for shard in shards:
-            if shard in self._shards.keys():
-                if shards[shard]['replicas'] != 0:
-                    await self.display("ERROR: shard '{}' is still running!".format(shard))
-                    await self.display(message.author.mention)
-                    return
+        for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
+            if shards[shard.replace('_', '')]['replicas'] != 0:
+                await self.display("ERROR: shard '{}' is still running!".format(shard))
+                await self.display(message.author.mention)
+                return
 
         await self.display("Deleting cache and select FAWE and CoreProtect data...")
         for shard in allShards:
@@ -625,12 +625,12 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         # Fail if any shards are still running
         await self.display("Checking that all shards are stopped...")
         shards = await self._k8s.list()
-        for shard in shards:
-            if shard in self._shards.keys():
-                if shards[shard]['replicas'] != 0:
-                    await self.display("ERROR: shard '{}' is still running!".format(shard))
-                    await self.display(message.author.mention)
-                    return
+        await self.display(pformat(shards))
+        for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
+            if shards[shard.replace('_', '')]['replicas'] != 0:
+                await self.display("ERROR: shard '{}' is still running!".format(shard))
+                await self.display(message.author.mention)
+                return
 
         # Sanity check to make sure this script is going to process everything that it needs to
         files = os.listdir("/home/epic/project_epic")
@@ -728,7 +728,7 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         shards = await self._k8s.list()
 
         # Stop all shards
-        await self.stop([shard for shard in shards if shard in self._shards.keys()])
+        await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
 
         await self.action_list_shards("~list shards", message)
 
