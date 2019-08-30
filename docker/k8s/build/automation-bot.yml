@@ -114,5 +114,8 @@ spec:
           mountPath: /home/epic/4_SHARED
         - name: secret-config
           mountPath: /home/epic/.monumenta_bot
+        resources:
+          limits:
+            cpu: "3"
       imagePullSecrets:
       - name: regcred
