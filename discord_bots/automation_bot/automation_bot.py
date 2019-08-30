@@ -96,7 +96,7 @@ try:
             if config["reactions_enabled"]:
                 rlogger.debug("Processing added reaction")
 
-                time_cutoff = datetime.datetime.utcnow() - datetime.timedelta(hours=1)
+                time_cutoff = datetime.datetime.utcnow() - datetime.timedelta(hours=2)
 
                 channel = client.get_channel(payload.channel_id)
 
