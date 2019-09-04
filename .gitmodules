@@ -1,3 +1,6 @@
 [submodule "quarry"]
 	path = quarry
 	url = git@github.com:TeamEpic/quarry.git
+[submodule "MCRcon"]
+	path = MCRcon
+	url = git@github.com:barneygale/MCRcon.git
