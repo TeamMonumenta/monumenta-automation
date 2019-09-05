@@ -30,8 +30,8 @@ from lib_py3.raffle import vote_raffle
 from lib_py3.scoreboard import Scoreboard
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import parse_name_possibly_json
+from lib_py3.lib_k8s import KubernetesManager
 
-from lib_k8s import KubernetesManager
 from automation_bot_lib import get_list_match, get_available_storage, datestr, split_string
 from quarry.types.text_format import unformat_text
 from quarry.types import nbt
