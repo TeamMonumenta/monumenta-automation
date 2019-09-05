@@ -16,6 +16,10 @@ spec:
   - name: "25565"
     port: 25565
     targetPort: 25565
+  # RCON port
+  - name: "25575"
+    port: 25575
+    targetPort: 25575
 
 ---
 
@@ -61,6 +65,7 @@ spec:
         stdin: true
         ports:
         - containerPort: 25565
+        - containerPort: 25575
         env:
         - name: "JAVA_MEM"
           value: "256M"
