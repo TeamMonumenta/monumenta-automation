@@ -266,6 +266,17 @@ config = {
         'linked':server_config + base_plugins,
     },
 
+    'fred':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+        ],
+        'linked':server_config + base_plugins + [
+            ('plugins/Roguelite', '../../server_config/data/Roguelite'),
+            ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
+        ],
+    },
+
     'purgatory':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=4'),
@@ -307,7 +318,6 @@ simple_view_distance_config = {
     'sanctum': 10,
     'reverie': 10,
     'test': 8,
-    'fred': 8,
 }
 
 for key in simple_view_distance_config:
