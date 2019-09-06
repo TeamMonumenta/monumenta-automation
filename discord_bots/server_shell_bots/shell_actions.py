@@ -329,7 +329,7 @@ Starts a bungee shutdown timer for 10 minutes. Returns immediately.'''
             self.display("Telling bungee it should stop in 10 minutes..."),
             self.run("mark2 send -n bungee ~stop 10m;5m;3m;2m;1m;30s;10s", None),
             self.run("mark2 send -n region_1 co purge t:30d", None),
-            self.run("mark2 send -n r1plots co purge t:30d", None),
+            self.run("mark2 send -n plots co purge t:30d", None),
             self.run("mark2 send -n betaplots co purge t:30d", None),
             # TODO: Something to wait for bungee to shut down
             self.display("Bungee will shut down in 10 minutes."),

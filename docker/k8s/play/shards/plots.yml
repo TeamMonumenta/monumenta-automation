@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: r1plots
+  name: plots
   namespace: play
   labels:
-    app: r1plots
+    app: plots
 spec:
   type: ClusterIP
   selector:
-    app: r1plots
+    app: plots
   ports:
   # Main minecraft port
   - name: "25565"
@@ -32,21 +32,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: r1plots
+  name: plots
   namespace: play
   labels:
-    app: r1plots
+    app: plots
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: r1plots
+      app: plots
   template:
     metadata:
       labels:
-        app: r1plots
+        app: plots
     spec:
       affinity:
         nodeAffinity:
@@ -71,7 +71,7 @@ spec:
             path: /nfs/4_SHARED
             type: Directory
       containers:
-      - name: r1plots
+      - name: plots
         image: monumenta-docker.injic.io/monumenta-java-shard
         tty: true
         stdin: true
@@ -90,7 +90,7 @@ spec:
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/r1plots"
+          value: "/project_epic/plots"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:

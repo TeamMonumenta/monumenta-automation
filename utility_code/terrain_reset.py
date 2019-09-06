@@ -98,15 +98,15 @@ betaplots = {
     "replace_items_globally": item_replace_manager,
 }
 
-r1plots = {
-    "server":"r1plots",
+plots = {
+    "server":"plots",
 
-    "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/r1plots/Project_Epic-r1plots/",
-    "localDstFolder":"/home/epic/project_epic/r1plots/Project_Epic-r1plots/",
+    "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/plots/Project_Epic-plots/",
+    "localDstFolder":"/home/epic/project_epic/plots/Project_Epic-plots/",
 
     "copyBaseFrom":"main",
 
-    "datapacks":datapacks_base + ['file/r1plots'],
+    "datapacks":datapacks_base + ['file/plots'],
     "tagPlayers":["MidTransfer","resetMessage"],
     "playerScoreChanges":dungeon_score_rules,
 
@@ -252,7 +252,7 @@ region_2 = {
 
 available_configs = {
     "betaplots": betaplots,
-    "r1plots": r1plots,
+    "plots": plots,
     "region_1": region_1,
     "region_2": region_2,
     "white": get_dungeon_config("white", "D1Access"),

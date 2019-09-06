@@ -297,7 +297,7 @@ config = {
 }
 
 simple_view_distance_config = {
-    'r1plots': 7,
+    'plots': 7,
 
     'white': 16,
     'orange': 12,

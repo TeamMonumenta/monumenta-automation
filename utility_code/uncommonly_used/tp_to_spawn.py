@@ -22,7 +22,7 @@ region_1 = {
 
 available_configs = {
     "betaplots": None,
-    "r1plots": None,
+    "plots": None,
     "region_1": region_1,
     "white": get_dungeon_config("white", "D1Access"),
     "orange": get_dungeon_config("orange", "D2Access"),
@@ -36,7 +36,7 @@ available_configs = {
     "tutorial": None,
     "bungee": None,
     "purgatory": None,
-    #"rollback": nov17_r1plots_rollback,
+    #"rollback": nov17_plots_rollback,
 }
 
 if (len(sys.argv) < 2):
