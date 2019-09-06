@@ -16,6 +16,10 @@ spec:
   - name: "25565"
     port: 25565
     targetPort: 25565
+  # RCON port
+  - name: "25575"
+    port: 25575
+    targetPort: 25575
   # Plan
   - name: "8804"
     port: 8804
@@ -64,6 +68,7 @@ spec:
         stdin: true
         ports:
         - containerPort: 25565
+        - containerPort: 25575
         - containerPort: 8804
         - containerPort: 8000
         env:
