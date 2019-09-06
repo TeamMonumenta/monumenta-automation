@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fred
+  name: shiftingcity
   namespace: build
   labels:
-    app: fred
+    app: shiftingcity
 spec:
   type: ClusterIP
   selector:
-    app: fred
+    app: shiftingcity
   ports:
   # Main minecraft port
   - name: "25565"
@@ -32,21 +32,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fred
+  name: shiftingcity
   namespace: build
   labels:
-    app: fred
+    app: shiftingcity
 spec:
   strategy:
     type: Recreate
   replicas: 0
   selector:
     matchLabels:
-      app: fred
+      app: shiftingcity
   template:
     metadata:
       labels:
-        app: fred
+        app: shiftingcity
     spec:
       volumes:
         - name: nfs-maps
@@ -62,7 +62,7 @@ spec:
             type: Directory
             path: /nfs/4_SHARED
       containers:
-      - name: fred
+      - name: shiftingcity
         image: monumenta-docker.injic.io/monumenta-java-shard
         tty: true
         stdin: true
@@ -80,7 +80,7 @@ spec:
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/fred"
+          value: "/project_epic/shiftingcity"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:

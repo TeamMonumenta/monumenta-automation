@@ -90,7 +90,7 @@ config = {
             "region":{"x":-3, "z":8},
             "numDungeons":40,
         },{
-            "name":"fred",
+            "name":"shiftingcity",
             "region":{"x":-2, "z":9},
             "numDungeons":20,
         },

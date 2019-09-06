@@ -266,7 +266,7 @@ config = {
         'linked':server_config + base_plugins,
     },
 
-    'fred':{
+    'shiftingcity':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
