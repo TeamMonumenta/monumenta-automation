@@ -86,6 +86,18 @@ mobs_to_replace = [
     ################################################################################
 
     ################################################################################
+    # Light Blue
+    {
+        'rules': {
+            'id': 'minecraft:zombie',
+            'CustomName': r'''Dark Magic'''
+        },
+        'mojangson': r'''{id:"minecraft:zombie",Passengers:[{NoGravity:1b,ReapplicationDelay:10,Radius:2.0f,Potion:"minecraft:water",Color:10234803,DurationOnUse:0.0f,Duration:700,Effects:[{Duration:20,Id:7,Amplifier:0}],RadiusPerTick:0.0f,Particle:"mobSpell",CustomName:"{\"text\":\"Dark Magic\"}",RadiusOnUse:0.0f,id:"minecraft:area_effect_cloud",WaitTime:0,Age:0}],CustomName:"{\"text\":\"Dark Magic\"}",IsBaby:1,Health:2.0f,Attributes:[{Base:2,Name:"generic.maxHealth"},{Base:0.19d,Name:"generic.movementSpeed"},{Base:0.0f,Name:"zombie.spawnReinforcements"},{Base:0,Name:"generic.attackDamage"},{Base:25,Name:"generic.followRange"},{Base:1,Name:"generic.knockbackResistance"}],Silent:1,ActiveEffects:[{ShowParticles:0b,Duration:600,Id:11,Amplifier:4},{ShowParticles:0b,Duration:199980,Id:14,Amplifier:0},{ShowParticles:0b,Duration:199980,Id:20,Amplifier:2}]}''',
+    },
+    # Region 1
+    ################################################################################
+
+    ################################################################################
     # Region 2
     {
         'rules': {
