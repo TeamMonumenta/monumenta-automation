@@ -1,0 +1,38 @@
+# NOTE: This uses the same permissions as the automation-bot! If the automation bot is not set up, this will not work.
+
+# This is the actual cron job, specifying what it should run
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cron-automated-restart
+  namespace: build
+  labels:
+    app: cron-automated-restart
+spec:
+  schedule: "55 8 * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: cron-automated-restart
+        spec:
+          serviceAccountName: automation-bot-service-account
+          volumes:
+            - name: secret-config
+              secret:
+                secretName: automation-bot-config
+          containers:
+          - name: cron-automated-restart
+            image: monumenta-docker.injic.io/monumenta-automation-bot
+            tty: false
+            stdin: false
+            args:
+            - /home/epic/MCEdit-And-Automation/utility_code/daily_restart.py
+            volumeMounts:
+            - name: secret-config
+              mountPath: /home/epic/.monumenta_bot
+          restartPolicy: Never
+          imagePullSecrets:
+          - name: regcred
