@@ -72,6 +72,7 @@ async def main():
     except:
         print("Failed to notify players about pending restart")
 
+    print("Stopping bungee...")
     await k8s.stop("bungee")
 
     for shard in shards:
@@ -81,11 +82,14 @@ async def main():
             # Only restart shards that are currently up!
             try:
                 if "bungee" not in shard:
+                    print("Stopping {}...".format(shard))
                     rcon_command(shard, config["rcon_port"], config["rcon_pass"], "stop")
             except:
                 print("Failed to restart shard {}".format(shard))
 
+    print("Sleeping for 120s...")
     await asyncio.sleep(120)
+    print("Starting bungee...")
     await k8s.start("bungee")
 
 
