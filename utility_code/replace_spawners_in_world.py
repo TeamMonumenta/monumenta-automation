@@ -20,10 +20,10 @@ from lib_py3.world import World
 spawners_to_replace = [
     {
         'rules': {
-            'mob_id': 'minecraft:skeleton',
-            'mob_HandItems': None,
+            'id': 'minecraft:stray',
+            'mob_CustomName': r'''Follower of Alutana'''
         },
-        'mojangson': r'''{MaxNearbyEntities:5s,RequiredPlayerRange:12s,SpawnCount:2s,SpawnData:{CustomName:"{\"text\":\"Shadow Spirit\"}",Health:26.0f,ArmorItems:[{},{},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:14282751,Name:"{\"text\":\"§9§lBluescale Torso\"}"}}},{}],Attributes:[{Base:26.0d,Name:"generic.maxHealth"},{Base:6.0d,Name:"generic.attackDamage"}],id:"minecraft:skeleton",HandItems:[{},{id:"minecraft:bone",Count:1b,tag:{display:{Name:"{\"text\":\"§6§lWand of C\\u0027Zanil\"}"}}}]},MaxSpawnDelay:150s,Delay:-1s,SpawnRange:4s,MinSpawnDelay:100s,SpawnPotentials:[{Entity:{CustomName:"{\"text\":\"Shadow Spirit\"}",Health:26.0f,ArmorItems:[{},{},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:14282751,Name:"{\"text\":\"§9§lBluescale Torso\"}"}}},{}],Attributes:[{Base:26.0d,Name:"generic.maxHealth"},{Base:6.0d,Name:"generic.attackDamage"}],id:"minecraft:skeleton",HandItems:[{},{id:"minecraft:bone",Count:1b,tag:{display:{Name:"{\"text\":\"§6§lWand of C\\u0027Zanil\"}"}}}]},Weight:1}]}''',
+        'mojangson': r'''{MaxNearbyEntities:4s,RequiredPlayerRange:16s,SpawnCount:4s,SpawnData:{CustomName:"[{\"text\":\"Follower of Alutana\"}]",Health:25.0f,Attributes:[{Base:0.3d,Name:"generic.movementSpeed"},{Base:25.0d,Name:"generic.maxHealth"}],id:"minecraft:stray",HandItems:[{id:"minecraft:iron_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§fStorm Dagger\"}"},Damage:0,AttributeModifiers:[{UUIDMost:-9012139191445993181L,UUIDLeast:-7426312281344377946L,Amount:8.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]},MaxSpawnDelay:800s,Delay:0s,SpawnRange:2s,MinSpawnDelay:200s,SpawnPotentials:[{Entity:{CustomName:"[{\"text\":\"Follower of Alutana\"}]",Health:25.0f,Attributes:[{Base:0.3d,Name:"generic.movementSpeed"},{Base:25.0d,Name:"generic.maxHealth"}],id:"minecraft:stray",HandItems:[{id:"minecraft:iron_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§fStorm Dagger\"}"},Damage:0,AttributeModifiers:[{UUIDMost:-9012139191445993181L,UUIDLeast:-7426312281344377946L,Amount:8.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]},Weight:1}]}''',
     },
 ]
 
