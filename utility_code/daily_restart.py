@@ -75,6 +75,7 @@ async def main():
     print("Stopping bungee...")
     await k8s.stop("bungee")
 
+    print("Saving running shards...")
     for shard in shards:
         if k8s_shards_list[shard]['replicas'] == 0:
             print("Skipping {} because it is already down".format(shard))
@@ -82,7 +83,23 @@ async def main():
             # Only restart shards that are currently up!
             try:
                 if "bungee" not in shard:
-                    print("Stopping {}...".format(shard))
+                    print("  Saving {}...".format(shard))
+                    rcon_command(shard, config["rcon_port"], config["rcon_pass"], "save-all")
+            except:
+                print("Failed to save shard {}".format(shard))
+
+    print("Sleeping for 10s...")
+    await asyncio.sleep(10)
+
+    print("Stopping running shards...")
+    for shard in shards:
+        if k8s_shards_list[shard]['replicas'] == 0:
+            print("Skipping {} because it is already down".format(shard))
+        else:
+            # Only restart shards that are currently up!
+            try:
+                if "bungee" not in shard:
+                    print("  Stopping {}...".format(shard))
                     rcon_command(shard, config["rcon_port"], config["rcon_pass"], "stop")
             except:
                 print("Failed to restart shard {}".format(shard))
