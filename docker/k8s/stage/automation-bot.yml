@@ -110,6 +110,6 @@ spec:
           mountPath: /home/epic/.monumenta_bot
         resources:
           limits:
-            cpu: "4"
+            cpu: "3"
       imagePullSecrets:
       - name: regcred
