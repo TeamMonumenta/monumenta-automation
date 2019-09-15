@@ -104,19 +104,22 @@ def make_loot_table(loot_table_base_path, container_nbt_list, loot_table_name=No
             pool = OrderedDict()
             pool["rolls"] = 1
             pool["entries"] = entries
-            make_single_loot_table(os.path.join(loot_table_base_path, loot_table_name), pool)
+            make_single_loot_table(os.path.join(loot_table_base_path, loot_table_name), [pool])
 
 def usage():
-    sys.exit("Usage: " + sys.argv[0] + " [-v, --verbose] <text_file_with_setblock_chest.txt> <output_directory> [loot_table_file_name]")
+    sys.exit("Usage: " + sys.argv[0] + " [-v, --verbose] <text_file_with_setblock_chest.txt> <output_directory> [loot_table_file_name] [--multi-pool]")
 
 filename = None
 outputdir = None
 loot_table_name = None
+multi_pool = False
 for arg in sys.argv[1:]:
     if (arg == "--verbose"):
         gverbose = True
     elif (arg == "-v"):
         gverbose = True
+    elif (arg == "--multi-pool"):
+        multi_pool = True
     elif filename is None:
         filename = arg
     elif outputdir is None:
@@ -150,4 +153,4 @@ with open(filename,'r') if filename != "-" else sys.stdin as f:
         item_nbt = nbt.TagCompound.from_mojangson(nbt_str)
         container_nbt_list.append(item_nbt)
 
-    make_loot_table(outputdir, container_nbt_list, loot_table_name)
+    make_loot_table(outputdir, container_nbt_list, loot_table_name=loot_table_name, multi_pool=multi_pool)
