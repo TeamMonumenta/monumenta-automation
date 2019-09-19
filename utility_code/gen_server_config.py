@@ -270,8 +270,8 @@ config = {
 
     'shiftingcity':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'view-distance', 'view-distance=15'),
+            ('spigot.yml', 'view-distance', '    view-distance: 15'),
         ],
         'linked':server_config + base_plugins + [
             ('plugins/Roguelite', '../../server_config/data/Roguelite'),
