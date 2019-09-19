@@ -67,7 +67,7 @@ config = {
             "numDungeons":40,
         },{
             "name":"labs",
-            "region":{"x":-2, "z":1},
+            "region":{"x":-2, "z":2},
             "numDungeons":75,
         },{
             "name":"lime",
