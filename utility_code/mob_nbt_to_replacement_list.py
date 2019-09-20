@@ -24,6 +24,12 @@ with open(sys.argv[1], 'r') as in_file:
 
         line = in_file.readline()
         while line:
+            if line[0] == "/":
+                line = line[1:]
+            if line.startswith("summon "):
+                split = line.split(' ', 5)
+                line = '{}id:"{}",{}'.format("{", split[1], split[5][1:])
+
             mob_nbt = nbt.TagCompound.from_mojangson(line)
 
             if not mob_nbt.has_path("id"):
