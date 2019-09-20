@@ -7,9 +7,6 @@ instance_week_offset = 1000
 
 dungeon_score_rules = [
     {"condition":{"Objective":"D0Access","Score":{"min":1}},
-        "actions":{"add":[
-            {"Objective":"D0Access","Score":instance_week_offset}]}},
-    {"condition":{"Objective":"D0Access","Score":{"min":3 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"D0Access","Score":0},
             {"Objective":"D0Finished","Score":0}]}},
