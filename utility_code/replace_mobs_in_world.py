@@ -86,6 +86,18 @@ mobs_to_replace = [
     ################################################################################
 
     ################################################################################
+    # Labs
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
+            'CustomName': r'''§6Rebel Marksman'''
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"§6Rebel Marksman\"}",Health:22.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:1645341,Name:"{\"text\":\"§fLeather Boots\"}"},Damage:0,AttributeModifiers:[{UUIDMost:8547382388562740130L,UUIDLeast:-5611961115798238564L,Amount:0.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:2304043,Name:"{\"text\":\"§fLeather Pants\"}"},Damage:0,AttributeModifiers:[{UUIDMost:-4153258568067363572L,UUIDLeast:-8303070907437016335L,Amount:0.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:12582912},AttributeModifiers:[{UUIDMost:6011068470946907486L,UUIDLeast:-6355626038562731704L,Amount:0.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"56a75ceb-3e56-4e35-9921-22cd0fd80ad1",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWRmMzU4NjlhMDcwZjE3YzEzZmU1YjgxYjlkODVjNjgzM2FjNmFiOTdiZjFkZjNjOGViZjY4YmZhNzM3YzQifX19"}]}},display:{Name:"{\"text\":\"Bandit\"}"}}}],Attributes:[{Base:22.0d,Name:"generic.maxHealth"}],HandItems:[{id:"minecraft:bow",Count:1b,tag:{Damage:0}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:15},Damage:0}}]}''',
+    },
+    # Labs
+    ################################################################################
+
+    ################################################################################
     # Light Blue
     {
         'rules': {
