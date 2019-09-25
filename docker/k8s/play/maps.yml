@@ -1,0 +1,79 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: maps
+  namespace: play
+spec:
+  rules:
+  - host: map.playmonumenta.com
+    http:
+      paths:
+      - backend:
+          serviceName: maps
+          servicePort: 80
+
+---
+
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: maps
+  namespace: play
+  labels:
+    app: maps
+spec:
+  type: ClusterIP
+  selector:
+    app: maps
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+
+---
+
+# This is the actual deployment, specifying what it should run
+#
+# This is just a stock nginx webserver with the appropriate directory mounted
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maps
+  namespace: play
+  labels:
+    app: maps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: maps
+  template:
+    metadata:
+      labels:
+        app: maps
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - ns547336.ip-66-70-181.net
+      volumes:
+        - name: nfs-maps
+          hostPath:
+            path: /nfs/play/maps
+            type: Directory
+      containers:
+      - name: maps
+        image: nginx:stable
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nfs-maps
+          mountPath: /usr/share/nginx/html
+          readOnly: true
