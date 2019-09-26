@@ -12,14 +12,9 @@ spec:
   selector:
     app: bungee
   ports:
-  # Socket4MC
-  - name: "9575"
-    port: 9575
-    targetPort: 9575
-  # Plan
-  - name: "8804"
-    port: 8804
-    targetPort: 8804
+  - name: monumenta-socket
+    port: 9576
+    targetPort: 9576
 
 ---
 
@@ -38,8 +33,7 @@ spec:
   selector:
     app: bungee
   ports:
-  # Main minecraft port
-  - name: "25565"
+  - name: minecraft
     port: 9001
     nodePort: 9001
     targetPort: 25565

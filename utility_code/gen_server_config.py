@@ -43,7 +43,6 @@ server_config_to_copy = [
         ('plugins/ScriptedQuests/config.yml',),
         ('plugins/OpenInv/config.yml',),
         ('plugins/ProtocolLib/config.yml',),
-        ('plugins/Socket4MC/config.yml',),
         ('plugins/Vault/config.yml',),
         ('plugins/ChestSort/config.yml',),
         ('plugins/dynmap/custom-lightings.txt',),
@@ -140,10 +139,6 @@ openinv = [
         ('plugins/OpenInv.jar', '../../server_config/plugins/OpenInv.jar'),
     ]
 
-socket4mc = [
-        ('plugins/socket4mc.jar', '../../server_config/plugins/socket4mc.jar'),
-    ]
-
 speedchanger = [
         ('plugins/SpeedChanger.jar', '../../server_config/plugins/SpeedChanger.jar'),
     ]
@@ -168,7 +163,7 @@ gobrush = [
 #   server_config
 #   structures
 
-base_plugins = luckperms + monumenta + openinv + socket4mc + worldedit + coreprotect
+base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect
 if (SERVER_TYPE == 'build'):
     base_plugins += speedchanger + nbteditor + voxelsniper + gobrush
 else:
@@ -227,7 +222,7 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
         ],
-        'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
+        'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
     },
 
     'pvp_do_not_use':{
@@ -235,7 +230,7 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
         ],
-        'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
+        'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
     },
 
     'build':{
@@ -247,7 +242,7 @@ config = {
             ('server.properties', 'difficulty', 'difficulty=0'),
             ('server.properties', 'gamemode', 'gamemode=1'),
         ],
-        'linked':server_config_min + luckperms_standalone + monumenta + socket4mc + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect + gobrush,
+        'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect + gobrush,
     },
 
     'mobs':{
@@ -256,7 +251,7 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 6'),
             ('server.properties', 'difficulty', 'difficulty=2'),
         ],
-        'linked':server_config + luckperms + openinv + socket4mc + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + coreprotect,
+        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + coreprotect,
     },
 
     'betaplots':{
