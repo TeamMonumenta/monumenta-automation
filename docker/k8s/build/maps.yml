@@ -15,6 +15,9 @@ metadata:
     nginx.ingress.kubernetes.io/auth-secret: maps-auth
     nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
 spec:
+  tls:
+  - hosts:
+    - build.playmonumenta.com
   rules:
   - host: build.playmonumenta.com
     http:

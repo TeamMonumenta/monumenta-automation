@@ -4,6 +4,9 @@ metadata:
   name: maps
   namespace: play
 spec:
+  tls:
+  - hosts:
+    - map.playmonumenta.com
   rules:
   - host: map.playmonumenta.com
     http:

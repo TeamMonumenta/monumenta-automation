@@ -15,6 +15,9 @@ metadata:
     nginx.ingress.kubernetes.io/auth-secret: plan-auth
     nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
 spec:
+  tls:
+  - hosts:
+    - plan.playmonumenta.com
   rules:
   - host: plan.playmonumenta.com
     http:
