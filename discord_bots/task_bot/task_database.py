@@ -139,7 +139,7 @@ class TaskDatabase(object):
         """
         Replies to a given message (in that channel)
         """
-        await self._client.send_message(message.channel, response)
+        await message.channel.send(response)
 
     def has_privilege(self, min_privilege, author, index=None):
         priv = 0; # Everyone has this level
@@ -196,7 +196,7 @@ class TaskDatabase(object):
 
         author_id = entry["author"]
         if author_id != 0 and author_id != "0":
-            author_name = (await self._client.get_user_info(author_id)).display_name
+            author_name = (self._client.get_user(author_id)).display_name
         else:
             author_name = ""
 
@@ -249,7 +249,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         else:
             # Send a new message
-            msg = await self._client.send_message(self._channel, entry_text, embed=embed);
+            msg = await self._channel.send(entry_text, embed=embed);
             entry["message_id"] = msg.id
             self.save()
 
@@ -267,7 +267,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         for index, entry in print_entries:
             entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-            msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+            msg = await message.channel.send(entry_text, embed=embed);
 
 
     async def handle_message(self, message):
@@ -471,8 +471,8 @@ You can also attach an image to your message to include it in the {single}
 
         image = None
         for attach in message.attachments:
-            if "url" in attach:
-                image = attach["url"]
+            if attach.url:
+                image = attach.url
         # TODO: Steal this code for something else?
         #for embed in message.embeds:
         #    print("EMBED URL: " + embed.url)
@@ -549,8 +549,8 @@ For example:```
         elif operation == 'image':
             image = None
             for attach in message.attachments:
-                if "url" in attach:
-                    image = attach["url"]
+                if attach.url:
+                    image = attach.url
 
             if image is None:
                 raise ValueError("You need to attach an image")
@@ -604,7 +604,7 @@ __Available Priorities:__
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed);
         await(self.reply(message, "{proper} #{index} updated successfully".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
@@ -644,7 +644,7 @@ __Available Priorities:__
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed);
         await(self.reply(message, "{proper} #{index} edited".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
@@ -705,7 +705,7 @@ __Available Priorities:__
 Total Open : {}
 Closed     : {}```'''.format(total_open, total_closed)
 
-        await self._client.send_message(message.channel, stats_text);
+        await message.channel.send(stats_text);
 
     ################################################################################
     # search core helper
@@ -859,7 +859,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed);
         await(self.reply(message, "{proper} #{index} rejected".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
@@ -903,7 +903,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed);
         await(self.reply(message, "{proper} #{index} marked as fixed".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
@@ -944,7 +944,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed);
         await(self.reply(message, "{proper} #{index} unmarked as fixed".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
@@ -1036,12 +1036,12 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
                         if entry["author"] in self._notifications_disabled:
                             opt_out += 1
                         else:
-                            author_mention = (await self._client.get_user_info(entry["author"])).mention
+                            author_mention = (self._client.get_user(entry["author"])).mention
 
                             entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
                             entry_text = '''{mention} Your {single} was updated:
 {entry}'''.format(mention=author_mention, single=self._descriptor_single, entry=entry_text)
-                            msg = await self._client.send_message(message.channel, entry_text, embed=embed);
+                            msg = await message.channel.send(entry_text, embed=embed);
                 except:
                     pass
 
@@ -1093,8 +1093,8 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
             image = None
             for attach in msg.attachments:
-                if "url" in attach:
-                    image = attach["url"]
+                if attach.url:
+                    image = attach.url
 
 
             created_text = "Created: " + msg.timestamp.strftime("%Y-%m-%d")

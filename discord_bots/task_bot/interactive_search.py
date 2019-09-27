@@ -30,7 +30,7 @@ class InteractiveSearch(object):
         # Send the first message
         index, entry = self._entries.pop(0)
         entry_text, embed = await self._db.format_entry(index, entry, include_reactions=True)
-        msg = await self._db._client.send_message(message.channel, entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed);
 
         self._last_index = index
 
@@ -96,7 +96,7 @@ class InteractiveSearch(object):
                 self._last_index = index
 
                 entry_text, embed = await self._db.format_entry(index, entry, include_reactions=True)
-                msg = await self._db._client.send_message(message.channel, entry_text, embed=embed);
+                msg = await message.channel.send(entry_text, embed=embed);
             elif match != "next":
                 # An actual command
                 args = ""
