@@ -121,6 +121,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:potion", "Waycrstal Extract", "minecraft:potion", "Waycrystal Extract"],
             ["minecraft:nether_wart_block", "Nightmare Key", "minecraft:nether_wart_block", "Reverie Key"],
             ["minecraft:dark_oak_leaves", "Bonus Key", "minecraft:dark_oak_leaves", "Willows Key"],
+            ["minecraft:iron_bars", "Old Labs Key", "minecraft:iron_bars", "Alchemy Labs Key"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
