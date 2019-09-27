@@ -202,7 +202,11 @@ class TaskDatabase(object):
 
         react_text = ""
         if include_reactions and "message_id" in entry:
-            msg = await self._channel.fetch_message(entry["message_id"])
+            try:
+                msg = await self._channel.fetch_message(entry["message_id"])
+            except discord.errors.NotFound:
+                msg = None
+                pass
             if msg is not None and msg.reactions:
                 react_text = '\n'
                 for react in msg.reactions:
@@ -235,7 +239,11 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         msg = None
         if "message_id" in entry:
-            msg = await self._channel.fetch_message(entry["message_id"])
+            try:
+                msg = await self._channel.fetch_message(entry["message_id"])
+            except discord.errors.NotFound:
+                msg = None
+                pass
 
         if msg is not None:
             # Edit the existing message
@@ -960,7 +968,11 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
             entry = self._entries[index]
             # If the entry is both closed AND present in the entry channel
             if ("close_reason" in entry) and ("message_id" in entry):
-                msg = await self._channel.fetch_message(entry["message_id"])
+                try:
+                    msg = await self._channel.fetch_message(entry["message_id"])
+                except discord.errors.NotFound:
+                    msg = None
+                    pass
                 if msg is not None:
                     await self._client.delete_message(msg)
 
