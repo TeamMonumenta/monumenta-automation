@@ -239,7 +239,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         if msg is not None:
             # Edit the existing message
-            await self._client.edit_message(msg, entry_text, embed=embed)
+            await msg.edit(content=entry_text, embed=embed)
 
         else:
             # Send a new message
