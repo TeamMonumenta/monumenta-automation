@@ -202,14 +202,11 @@ class TaskDatabase(object):
 
         react_text = ""
         if include_reactions and "message_id" in entry:
-            try:
-                msg = await self._client.get_message(self._channel, entry["message_id"])
-                if msg.reactions:
-                    react_text = '\n'
-                    for react in msg.reactions:
-                        react_text += "{} {}    ".format(react.emoji, react.count)
-            except Exception as e:
-                pass
+            msg = await self._channel.fetch_message(entry["message_id"])
+            if msg is not None and msg.reactions:
+                react_text = '\n'
+                for react in msg.reactions:
+                    react_text += "{} {}    ".format(react.emoji, react.count)
 
         entry_text = '''`
 #{} [{} - {}] {}`
@@ -238,10 +235,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         msg = None
         if "message_id" in entry:
-            try:
-                msg = await self._client.get_message(self._channel, entry["message_id"])
-            except:
-                pass
+            msg = await self._channel.fetch_message(entry["message_id"])
 
         if msg is not None:
             # Edit the existing message
@@ -966,17 +960,14 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
             entry = self._entries[index]
             # If the entry is both closed AND present in the entry channel
             if ("close_reason" in entry) and ("message_id" in entry):
-                try:
-                    msg = await self._client.get_message(self._channel, entry["message_id"])
-                    if msg is not None:
-                        await self._client.delete_message(msg)
+                msg = await self._channel.fetch_message(entry["message_id"])
+                if msg is not None:
+                    await self._client.delete_message(msg)
 
-                        # Since this message is no longer there...
-                        entry.pop("message_id")
-                        match_entries.append((index, entry))
-                        count += 1
-                except:
-                    pass
+                    # Since this message is no longer there...
+                    entry.pop("message_id")
+                    match_entries.append((index, entry))
+                    count += 1
 
         self.save()
 
@@ -1030,20 +1021,17 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         for index in self._entries:
             entry = self._entries[index]
             if entry["pending_notification"]:
-                try:
-                    if entry["author"] != 0:
-                        count += 1
-                        if entry["author"] in self._notifications_disabled:
-                            opt_out += 1
-                        else:
-                            author_mention = (self._client.get_user(entry["author"])).mention
+                if entry["author"] != 0:
+                    count += 1
+                    if entry["author"] in self._notifications_disabled:
+                        opt_out += 1
+                    else:
+                        author_mention = (self._client.get_user(entry["author"])).mention
 
-                            entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
-                            entry_text = '''{mention} Your {single} was updated:
+                        entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
+                        entry_text = '''{mention} Your {single} was updated:
 {entry}'''.format(mention=author_mention, single=self._descriptor_single, entry=entry_text)
-                            msg = await message.channel.send(entry_text, embed=embed);
-                except:
-                    pass
+                        msg = await message.channel.send(entry_text, embed=embed);
 
                 entry["pending_notification"] = False
 
