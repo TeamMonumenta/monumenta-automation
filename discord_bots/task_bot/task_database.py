@@ -254,7 +254,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             self.save()
 
         for reaction in self._reactions:
-            await self._client.add_reaction(msg, reaction)
+            await msg.add_reaction(reaction)
 
     async def print_search_results(self, message, match_entries, limit=10):
         # Sort the returned entries
