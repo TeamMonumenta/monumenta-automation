@@ -18,7 +18,7 @@ def from_player(cmd,global_score_cache):
             scoreboard = Scoreboard('/home/epic/project_epic/plots/Project_Epic-plots/data/scoreboard.dat')
             global_score_cache = scoreboard.get_cache(Objective=['R1Plot','R1Address','plotx','ploty','plotz'])
         except:
-            print("\nCould not load Region 1's scoreboard file. Remember to `~select play2`.")
+            print("\nCould not load Plots' scoreboard file. Are you running this on build?")
             sys.exit()
 
     cache = scoreboard.get_cache(Name=ign,Objective=['R1Plot','R1Address','plotx','ploty','plotz'],Cache=global_score_cache)
@@ -175,30 +175,74 @@ def from_address(cmd,global_score_cache):
         coords = lut.coordinates_from_r1address(addr)
         print( "- Coordinates: {}.".format( coords ) )
 
+def find_free(cmd, global_score_cache):
+    print("\nFinding free plots...")
+
+    known_plots = set()
+    shore_tiles = [(0, -1), (0, 0), (0, 1)]
+    for plot_x,plot_y,plot_z in lut.address_to_coord.values():
+        for tile_x, tile_z in shore_tiles:
+            x, y, z = plot_x, plot_y, plot_z
+            x += 768 * tile_x
+            z += 768 * tile_z
+            known_plots.add((x, y, z))
+
+    unused_plots = set(known_plots)
+
+    if global_score_cache is None:
+        try:
+            scoreboard = Scoreboard('/home/epic/project_epic/plots/Project_Epic-plots/data/scoreboard.dat')
+            global_score_cache = scoreboard.get_cache(Objective=['R1Plot','R1Address','plotx','ploty','plotz'])
+        except:
+            print("Could not load Plots' scoreboard file. Are you running this on build?")
+            sys.exit()
+
+    x_cache = scoreboard.get_cache(Objective='plotx', Cache=global_score_cache)
+    y_cache = scoreboard.get_cache(Objective='ploty', Cache=global_score_cache)
+    z_cache = scoreboard.get_cache(Objective='plotz', Cache=global_score_cache)
+
+    for y_score in scoreboard.search_scores(Score={"min":1}, Cache=y_cache):
+        ign = y_score.at_path('Name').value
+        y = y_score.at_path('Score').value
+
+        x = scoreboard.get_score(Name=ign, Objective='plotx', Cache=x_cache)
+        z = scoreboard.get_score(Name=ign, Objective='plotz', Cache=z_cache)
+
+        coords = (x, y, z)
+
+        unused_plots.discard(coords)
+        if coords not in known_plots:
+            print("Bad player plot scores! Could accidentally '/tp {} {} {} {}'!".format(ign, x, y, z))
+
+    print("There are {} plots in total, {} of which are unused:\n".format(len(known_plots), len(unused_plots)))
+    for plot in sorted(unused_plots):
+        print("  {} {} {}".format(plot[0], plot[1], plot[2]))
+
 def from_invalid(cmd,global_score_cache):
-    print("\nInvalid command '{}'. Please specify a 'player', 'R1Plot', or 'R1Address'.".format(cmd))
+    print("\nInvalid command {!r}. Please specify a 'player', 'plot', or 'address' - or 'free' for free plots.".format(cmd))
     sys.exit()
 
 commands = {
     'player': from_player,
-    'R1Plot': from_plot,
-    'R1Address': from_address,
+    'plot': from_plot,
+    'address': from_address,
+    'free': find_free,
 }
 
 print('''========================
 Player Address Lookup
 ========================
 In the event of conflict:
-- If R1Address says it's wrong, it's probably wrong.
-- plotx, ploty, plotz are the newest system, and I trust them if they work;
-  should be the coordinates just inside the plots.
+- plotx, ploty, plotz are the  coordinates just inside the plots.
+  This is the only one that matters now.
+- Failing that, if R1Address says it's wrong, it's probably wrong.
 - R1Plot is usually trusted, but it's a pain to figure out where these are.
 ''')
 
 args = sys.argv
 args.pop(0)
 if len(sys.argv) == 0:
-    print("Please specify a 'player', 'R1Plot', or 'R1Address'.")
+    print("Please specify a 'player', 'plot', or 'address' - or 'free' for free plots.")
     sys.exit()
 
 print("Getting addresses and coordinates...")
