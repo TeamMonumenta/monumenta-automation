@@ -195,10 +195,11 @@ class TaskDatabase(object):
                 raise Exception("Error getting channel!")
 
         author_id = entry["author"]
+        author_name = ""
         if author_id != 0 and author_id != "0":
-            author_name = (self._client.get_user(author_id)).display_name
-        else:
-            author_name = ""
+            user = self._client.get_user(author_id)
+            if user is not None:
+                author_name = user.display_name
 
         react_text = ""
         if include_reactions and "message_id" in entry:
@@ -1033,17 +1034,19 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         for index in self._entries:
             entry = self._entries[index]
             if entry["pending_notification"]:
-                if entry["author"] != 0:
-                    count += 1
-                    if entry["author"] in self._notifications_disabled:
-                        opt_out += 1
-                    else:
-                        author_mention = (self._client.get_user(entry["author"])).mention
+                if entry["author"] != 0 and author_id != "0":
+                    user = self._client.get_user(entry["author"])
+                    if user is not None:
+                        count += 1
+                        if entry["author"] in self._notifications_disabled:
+                            opt_out += 1
+                        else:
+                            author_mention = user.mention
 
-                        entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
-                        entry_text = '''{mention} Your {single} was updated:
-{entry}'''.format(mention=author_mention, single=self._descriptor_single, entry=entry_text)
-                        msg = await message.channel.send(entry_text, embed=embed);
+                            entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
+                            entry_text = '''{mention} Your {single} was updated:
+    {entry}'''.format(mention=author_mention, single=self._descriptor_single, entry=entry_text)
+                            msg = await message.channel.send(entry_text, embed=embed);
 
                 entry["pending_notification"] = False
 
