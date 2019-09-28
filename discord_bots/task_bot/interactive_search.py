@@ -86,14 +86,30 @@ class InteractiveSearch(object):
                 raise EOFError
 
             elif match == "next":
-                if len(self._entries) <= 0:
-                    # Nothing left to do here
-                    await(self.reply(message, "No more results to display"))
-                    raise EOFError
 
-                # Print the next entry
-                index, entry = self._entries.pop(0)
-                self._last_index = index
+                # Parse args to next as a counter
+                args = ""
+                if len(part) > 1:
+                    args = part[1].strip()
+
+                try:
+                    count = int(args)
+                except:
+                    count = 1
+                if count < 1:
+                    count = 1
+
+                # Pop that many entries off the next list
+                while count > 0:
+                    count -= 1
+                    if len(self._entries) <= 0:
+                        # Nothing left to do here
+                        await(self.reply(message, "No more results to display"))
+                        raise EOFError
+
+                    # Print the next entry
+                    index, entry = self._entries.pop(0)
+                    self._last_index = index
 
                 entry_text, embed = await self._db.format_entry(index, entry, include_reactions=True)
                 msg = await message.channel.send(entry_text, embed=embed);
