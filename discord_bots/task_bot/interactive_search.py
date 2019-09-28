@@ -22,7 +22,7 @@ class InteractiveSearch(object):
 
         # Constant settings
         self._max_auto_help_prompts = 2
-        self._max_inactive_seconds = 60 * 30
+        self._max_inactive_seconds = 60 * 60 * 6
 
     async def send_first_message(self, message):
         await(self.reply(message, "Started interactive session with {} entries".format(len(self._entries))))
