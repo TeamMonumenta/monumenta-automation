@@ -974,7 +974,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
                     msg = None
                     pass
                 if msg is not None:
-                    await self._client.delete_message(msg)
+                    await msg.delete()
 
                     # Since this message is no longer there...
                     entry.pop("message_id")
