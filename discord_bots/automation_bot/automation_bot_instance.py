@@ -395,6 +395,11 @@ Examples:
             arg_str = arg_str[len("shard "):].strip()
         commandArgs = arg_str.split()
 
+        # Kills the bot, causing k8s to restart it
+        if arg_str == 'bot' and (action == self.stop or action == self.restart):
+            await message.channel.send("Restarting bot. Note: This will not update the bot's image")
+            sys.exit(0)
+
         shards_changed = []
         if '*' in commandArgs:
             for shard in self._shards.keys():
