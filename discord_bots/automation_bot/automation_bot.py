@@ -98,6 +98,10 @@ try:
 
                 time_cutoff = datetime.datetime.utcnow() - datetime.timedelta(hours=2)
 
+                # TODO: This should be config. Ignore messages in bug reports, suggestions, and announcements
+                if payload.channel_id in [569283558741508107, 575186608761077760, 313403825442521088]:
+                    return
+
                 channel = client.get_channel(payload.channel_id)
 
                 try:
