@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lets-encrypt-nodeport
+  labels:
+    app: cron-lets-encrypt
+spec:
+  type: NodePort
+  selector:
+    app: cron-lets-encrypt
+  ports:
+  - name: http
+    port: 20080
+    nodePort: 20080
+    targetPort: 80
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cron-lets-encrypt
+  labels:
+    app: cron-lets-encrypt
+spec:
+  # 5:05 on 1st day of the month
+  schedule: "5 5 1 * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      # Try up to 2 times, 180 seconds max total duration
+      backoffLimit: 2
+      activeDeadlineSeconds: 180
+      template:
+        metadata:
+          labels:
+            app: cron-lets-encrypt
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                    - ns547336.ip-66-70-181.net
+          volumes:
+          - name: etc
+            hostPath:
+              type: Directory
+              path: /nfs/lets-encrypt/etc
+          - name: var
+            hostPath:
+              type: Directory
+              path: /nfs/lets-encrypt/var
+          containers:
+          - name: cron-lets-encrypt
+            image: certbot/certbot:latest
+            tty: true
+            stdin: true
+            ports:
+            - containerPort: 80
+            args: ["certonly", "--standalone", "-d", "playmonumenta.com", "-d", "www.playmonumenta.com", "-d", "api.playmonumenta.com", "-d", "map.playmonumenta.com", "-d", "build.playmonumenta.com", "-d", "plan.playmonumenta.com", "--non-interactive", "--preferred-challenges", "http", "--agree-tos", "--email", "admin@playmonumenta.com", "--http-01-port=80"]
+            volumeMounts:
+            - name: etc
+              mountPath: /etc/letsencrypt
+            - name: var
+              mountPath: /var/lib/letsencrypt
+          restartPolicy: Never
