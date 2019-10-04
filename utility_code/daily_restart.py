@@ -31,7 +31,7 @@ if "rcon_port" not in config:
 elif "rcon_pass" not in config:
     sys.exit("'rcon_pass' missing from config!")
 
-os.umask(0o027)
+os.umask(0o022)
 
 # Config / Environment
 ################################################################################
