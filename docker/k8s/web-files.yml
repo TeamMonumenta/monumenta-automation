@@ -1,0 +1,86 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: web-files
+spec:
+  tls:
+  - hosts:
+    - files.playmonumenta.com
+  rules:
+  - host: files.playmonumenta.com
+    http:
+      paths:
+      - backend:
+          serviceName: web-files
+          servicePort: 80
+
+---
+
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-files
+  labels:
+    app: web-files
+spec:
+  type: ClusterIP
+  selector:
+    app: web-files
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+
+---
+
+# This is the actual deployment, specifying what it should run
+#
+# This is just a stock nginx webserver with the appropriate directory mounted
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-files
+  labels:
+    app: web-files
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-files
+  template:
+    metadata:
+      labels:
+        app: web-files
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - ns547336.ip-66-70-181.net
+      volumes:
+        - name: nfs-web-files
+          hostPath:
+            path: /nfs/web-files/files
+            type: Directory
+        - name: nfs-web-logs
+          hostPath:
+            path: /nfs/web-files/logs
+            type: Directory
+      containers:
+      - name: web-files
+        image: nginx:stable
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nfs-web-files
+          mountPath: /usr/share/nginx/html
+          readOnly: true
+        - name: nfs-web-logs
+          mountPath: /var/log/nginx
+          readOnly: false
