@@ -20,9 +20,13 @@ spec:
         spec:
           serviceAccountName: automation-bot-service-account
           volumes:
-            - name: secret-config
-              secret:
-                secretName: automation-bot-config
+          - name: secret-config
+            secret:
+              secretName: automation-bot-config
+          - name: nfs-data
+            hostPath:
+              type: Directory
+              path: /nfs/build/project_epic/bungee/plugins/BungeeDisplay
           containers:
           - name: cron-automated-restart
             image: monumenta-docker.injic.io/monumenta-automation-bot
@@ -33,6 +37,8 @@ spec:
             volumeMounts:
             - name: secret-config
               mountPath: /home/epic/.monumenta_bot
+            - name: nfs-data
+              mountPath: /home/epic/project_epic/bungee/plugins/BungeeDisplay
           restartPolicy: Never
           imagePullSecrets:
           - name: regcred

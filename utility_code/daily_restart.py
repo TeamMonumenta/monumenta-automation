@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
+import shutil
 import sys
 import os
 import yaml
 import asyncio
+import traceback
 from pprint import pprint
 
-from lib_py3.lib_rcon import rcon_command
+from lib_py3.lib_sockets import SocketManager
 from lib_py3.lib_k8s import KubernetesManager
 
 ################################################################################
@@ -26,89 +28,92 @@ with open(config_path, 'r') as ymlfile:
 
 pprint("Config: \n{}".format(config))
 
-if "rcon_port" not in config:
-    sys.exit("'rcon_port' missing from config!")
-elif "rcon_pass" not in config:
-    sys.exit("'rcon_pass' missing from config!")
+socket = None
+k8s = None
+try:
+
+    if "socket" in config:
+        conf = config["socket"]
+        if "log_level" in conf:
+            log_level = conf["log_level"]
+        else:
+            log_level = 20
+
+        socket = SocketManager(conf["host"], conf["port"], conf["name"], callback=None, log_level=log_level)
+
+    k8s = KubernetesManager(config["k8s_namespace"])
+except KeyError as e:
+    sys.exit('Config missing key: {}'.format(e))
 
 os.umask(0o022)
 
 # Config / Environment
 ################################################################################
 
+def send_broadcast_msg(time_left):
+    socket.send_packet("*", "Monumenta.Broadcast.Command",
+            {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". This helps reduce lag! The server will be down for ~5 minutes."}]'''}
+    )
+
 async def main():
-    k8s = KubernetesManager(config["k8s_namespace"])
-
-    # Start with all the things in this namespace
-    k8s_shards_list = await k8s.list()
-
-    # Restrict this down to just the shards the bot is managing
-    shards = [shard.replace('_', '') for shard in config["shards"].keys() if shard.replace('_', '') in k8s_shards_list]
-
-    pprint("Will process these shards for potential restart: [{}]".format(" ".join(shards)))
+    # TODO: This is necessary because of a current data race initializing the SocketManager
+    await asyncio.sleep(3)
 
     try:
-        rcon_command("region1", config["rcon_port"], config["rcon_pass"],
-                     '''broadcastcommand tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" 5 minutes","color":"red"},{"text":". This helps reduce lag! The server will be down for ~5 minutes."}]''')
+        send_broadcast_msg("5 minutes")
+        await asyncio.sleep(120)
+        send_broadcast_msg("3 minutes")
         await asyncio.sleep(60)
-        rcon_command("region1", config["rcon_port"], config["rcon_pass"],
-                     '''broadcastcommand tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" 3 minutes","color":"red"},{"text":". This helps reduce lag! The server will be down for ~5 minutes."}]''')
+        send_broadcast_msg("2 minutes")
         await asyncio.sleep(60)
-        rcon_command("region1", config["rcon_port"], config["rcon_pass"],
-                     '''broadcastcommand tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" 2 minutes","color":"red"},{"text":". This helps reduce lag! The server will be down for ~5 minutes."}]''')
-        await asyncio.sleep(60)
-        rcon_command("region1", config["rcon_port"], config["rcon_pass"],
-                     '''broadcastcommand tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" 1 minute","color":"red"},{"text":". This helps reduce lag! The server will be down for ~5 minutes."}]''')
+        send_broadcast_msg("1 minute")
         await asyncio.sleep(30)
-        rcon_command("region1", config["rcon_port"], config["rcon_pass"],
-                     '''broadcastcommand tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" 30 seconds","color":"red"},{"text":". This helps reduce lag! The server will be down for ~5 minutes."}]''')
+        send_broadcast_msg("30 seconds")
         await asyncio.sleep(15)
-        rcon_command("region1", config["rcon_port"], config["rcon_pass"],
-                     '''broadcastcommand tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" 15 seconds","color":"red"},{"text":". This helps reduce lag! The server will be down for ~5 minutes."}]''')
+        send_broadcast_msg("15 seconds")
         await asyncio.sleep(10)
-        rcon_command("region1", config["rcon_port"], config["rcon_pass"],
-                     '''broadcastcommand tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" 5 seconds","color":"red"},{"text":". This helps reduce lag! The server will be down for ~5 minutes."}]''')
+        send_broadcast_msg("5 seconds")
         await asyncio.sleep(5)
     except:
-        print("Failed to notify players about pending restart")
+        print("Failed to notify players about pending restart: {}".format(traceback.format_exc()))
 
-    print("Stopping bungee...")
-    await k8s.stop("bungee")
+    # Make a backup of the BungeeDisplay config file
+    shutil.copy('/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml', '/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml.orig')
 
-    print("Saving running shards...")
-    for shard in shards:
-        if k8s_shards_list[shard]['replicas'] == 0:
-            print("Skipping {} because it is already down".format(shard))
-        else:
-            # Only restart shards that are currently up!
-            try:
-                if "bungee" not in shard:
-                    print("  Saving {}...".format(shard))
-                    rcon_command(shard, config["rcon_port"], config["rcon_pass"], "save-all")
-            except:
-                print("Failed to save shard {}".format(shard))
+    # Read the BungeeDisplay config file
+    with open('/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml', 'r') as ymlfile:
+        bungee_display_yml = yaml.load(ymlfile)
 
-    print("Sleeping for 10s...")
-    await asyncio.sleep(10)
+    # Modify one copy, and apply it - this kicks everyone
+    bungee_display_yml["maintenance"]["enabled"] = True
+    bungee_display_yml["maintenance"]["join"] = '&cMonumenta is currently down for daily restart - try again in a few minutes'
+    bungee_display_yml["maintenance"]["kick_message"] = '&cMonumenta is going down for daily restart - join again in 5 minutes'
+    bungee_display_yml["maintenance"]["information"] = '&6Please try again in a few minutes'
+    bungee_display_yml["motd"]["maintenance"]["line2"] = '            &c&lDown for Daily Restart'
+    with open('/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
+        yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
 
-    print("Stopping running shards...")
-    for shard in shards:
-        if k8s_shards_list[shard]['replicas'] == 0:
-            print("Skipping {} because it is already down".format(shard))
-        else:
-            # Only restart shards that are currently up!
-            try:
-                if "bungee" not in shard:
-                    print("  Stopping {}...".format(shard))
-                    rcon_command(shard, config["rcon_port"], config["rcon_pass"], "stop")
-            except:
-                print("Failed to restart shard {}".format(shard))
+    # Just a bit of time to process config and kick players
+    await asyncio.sleep(5)
 
-    print("Sleeping for 120s...")
-    await asyncio.sleep(120)
-    print("Starting bungee...")
-    await k8s.start("bungee")
+    # Restart all the shards via broadcastcommand
+    print("Broadcasting stop command to all shards...")
+    socket.send_packet("*", "Monumenta.Broadcast.Command",
+            {"command": 'stop'}
+    )
 
+    # Enough time for broadcastcommand to run
+    await asyncio.sleep(60)
+
+    # Restart bungee
+    print("Restarting bungee...")
+    socket.send_packet(None, "Monumenta.Bungee.Command", {"command": "end"})
+
+    # Enough time for everything to stabilize
+    await asyncio.sleep(180)
+
+    # Restore the original file
+    shutil.copy('/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml.orig', '/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml')
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())

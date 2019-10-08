@@ -107,5 +107,8 @@ class SocketManager(object):
         raw = json.dumps(packet, ensure_ascii=False)
         encoded = raw.encode("utf-8")
         logger.debug("Sending Packet: {}".format(pformat(encoded)))
+
+        # TODO: Block until socket has been initialized (or timeout occurs)
+
         self.socket.send(encoded)
 
