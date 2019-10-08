@@ -155,38 +155,6 @@ class DungeonLootAction(ShellAction):
         ]
 allActions.append(DungeonLootAction)
 
-
-class GitAction(ShellAction):
-    '''Dangerous!
-Doesn't have a good way to tell if changes are in progress.
-Check in #server-ops before using.
-
-Currently exposes all valid git syntax, including syntax that *will* softlock this action.'''
-    command = "git"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-
-        estimated_space_left = get_available_storage('/')
-
-        if estimated_space_left < min_free_gb * bytes_per_gb:
-            self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // bytes_per_gb)),]
-            return
-
-        commandArgs = message.content[len(commandPrefix):]
-        if len(commandArgs) > 3 and commandArgs[3] != ' ':
-            self._commands = [
-                self.display("Space expected at 4th character past prefix: " + repr(commandArgs)),
-            ]
-            return
-        self._commands = [
-            self.cd(_top_level),
-            self.display("Running `" + commandArgs + "`"),
-            self.run(commandArgs, displayOutput=True),
-        ]
-allActions.append(GitAction)
-
 class GetErrorsAction(ShellAction):
     '''Get the last minute of error log data from a given shard.
 
@@ -281,60 +249,3 @@ Syntax:
             self.display("Done."),
         ]
 allActions.append(R1AddressToEnglishAction)
-
-class R1PlotGetAction(ShellAction):
-    '''Get R1Plot address info in a human-readable format, including TP coordinates.
-Accepts existing scores or a player to look up.
-
-For syntax, run:
-~r1plot get'''
-    command = "r1plot get"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        commandArgs = message.content[len(commandPrefix + self.command):]
-        cmdString = _top_level + "/utility_code/r1plot_get.py"
-        self._commands = []
-        cmdString += commandArgs
-        self._commands = [
-            self.run(cmdString, displayOutput=True),
-            self.display("Done."),
-        ]
-allActions.append(R1PlotGetAction)
-
-class SkillInfoAction(ShellAction):
-    '''Print out skill info; used to update the public Google spreadsheet.
-
-This will be updated to use the Google Sheets API at some point so it won't need to be updated manually.'''
-    command = "skill info"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        self._commands = [
-            self.run(_top_level + "/utility_code/skill_info.py", displayOutput=True),
-        ]
-allActions.append(SkillInfoAction)
-
-class StopIn10MinutesAction(ShellAction):
-    '''Dangerous!
-Starts a bungee shutdown timer for 10 minutes. Returns immediately.'''
-    command = "stop in 10 minutes"
-    hasPermissions = checkPermissions
-
-    def __init__(self, botConfig, message):
-        super().__init__(botConfig["extraDebug"])
-        self._commands = [
-            self.display("Telling bungee it should stop in 10 minutes..."),
-            self.run("mark2 send -n bungee ~stop 10m;5m;3m;2m;1m;30s;10s", None),
-            self.run("mark2 send -n region_1 co purge t:30d", None),
-            self.run("mark2 send -n plots co purge t:30d", None),
-            self.run("mark2 send -n betaplots co purge t:30d", None),
-            # TODO: Something to wait for bungee to shut down
-            self.display("Bungee will shut down in 10 minutes."),
-            self.sleep(10*60),
-            self.display("Bungee should be shutting down."),
-            self.mention(),
-        ]
-allActions.append(StopIn10MinutesAction)

@@ -119,6 +119,7 @@ class AutomationBotInstance(object):
             "generate instances": self.action_generate_instances,
             "prepare reset bundle": self.action_prepare_reset_bundle,
             "fetch reset bundle": self.action_fetch_reset_bundle,
+            "stop in 10 minutes": self.action_stop_in_10_minutes,
             "stop and backup": self.action_stop_and_backup,
             "terrain reset": self.action_terrain_reset,
             "get raffle seed": self.action_get_raffle_seed,
@@ -573,6 +574,44 @@ Downloads the terrain reset bundle from the build server and unpacks it'''
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
         await self.run("tar xzf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz")
         await self.display("Build server template data retrieved and ready for reset.")
+        await self.display(message.author.mention)
+
+    async def action_stop_in_10_minutes(self, cmd, message):
+        '''Dangerous!
+Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data'''
+
+        async def send_broadcast_msg(time_left):
+            self._socket.send_packet("*", "Monumenta.Broadcast.Command",
+                    {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta's weekly update will begin in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". The server will be down for approximately 1.5 hours while we patch new content into the game."}]'''}
+            )
+            await self.display("{} to weekly update".format(time_left)),
+
+        await send_broadcast_msg("10 minutes")
+        await asyncio.sleep(3 * 60)
+        await send_broadcast_msg("7 minutes")
+        await asyncio.sleep(2 * 60)
+        await send_broadcast_msg("5 minutes")
+        self._socket.send_packet("region_1", "Monumenta.Broadcast.Command", {"command": 'co purge t:30d'})
+        self._socket.send_packet("plots", "Monumenta.Broadcast.Command", {"command": 'co purge t:30d'})
+        self._socket.send_packet("betaplots", "Monumenta.Broadcast.Command", {"command": 'co purge t:30d'})
+        await asyncio.sleep(2 * 60)
+        await send_broadcast_msg("3 minutes")
+        await asyncio.sleep(60)
+        await send_broadcast_msg("2 minutes")
+        await asyncio.sleep(60)
+        await send_broadcast_msg("1 minute")
+        await asyncio.sleep(30)
+        await send_broadcast_msg("30 seconds")
+        await asyncio.sleep(15)
+        await send_broadcast_msg("15 seconds")
+        self._socket.send_packet("*", "Monumenta.Broadcast.Command", {"command": 'save-all'})
+        await asyncio.sleep(10)
+        await send_broadcast_msg("5 seconds")
+        await asyncio.sleep(5)
+
+        # Stop all shards
+        await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
+
         await self.display(message.author.mention)
 
     async def action_stop_and_backup(self, cmd, message):
