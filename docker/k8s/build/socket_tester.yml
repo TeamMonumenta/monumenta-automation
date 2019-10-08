@@ -1,0 +1,47 @@
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sockettest
+  namespace: build
+  labels:
+    app: sockettest
+spec:
+  type: ClusterIP
+  selector:
+    app: sockettest
+  ports:
+  - name: "sockettest"
+    port: 9576
+    targetPort: 9576
+
+---
+
+# Deployment / the actual running application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sockettest
+  namespace: build
+  labels:
+    app: sockettest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sockettest
+  template:
+    metadata:
+      labels:
+        app: sockettest
+    spec:
+      containers:
+      - name: sockettest
+        image: subfuzion/netcat
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 9576
+        args: ["-l", "9576"]
