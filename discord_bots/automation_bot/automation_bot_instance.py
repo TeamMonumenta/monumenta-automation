@@ -31,6 +31,7 @@ from lib_py3.scoreboard import Scoreboard
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import parse_name_possibly_json
 from lib_py3.lib_k8s import KubernetesManager
+from lib_py3.lib_sockets import SocketManager
 
 from automation_bot_lib import get_list_match, get_available_storage, datestr, split_string
 from quarry.types.text_format import unformat_text
@@ -131,6 +132,21 @@ class AutomationBotInstance(object):
             self._shards = config["shards"]
             self._prefix = config["prefix"]
             self._project_epic_dir = config["project_epic_dir"]
+
+            if "socket" in config:
+                def socket_callback(message):
+                    logger.info("Got socket message: {}".format(pformat(message)))
+
+                conf = config["socket"]
+                if "log_level" in conf:
+                    log_level = conf["log_level"]
+                else:
+                    log_level = 20
+
+                self._socket = SocketManager(conf["host"], conf["port"], conf["name"], callback=socket_callback, log_level=log_level)
+
+                # Add commands that require the sockets here!
+                self._commands["broadcastcommand"] = self.action_broadcastcommand
 
             # Remove any commands that aren't available in the config
             for command in dict(self._commands):
@@ -945,3 +961,14 @@ Syntax:
 
         await self.display("Demo release version V{} generated successfully".format(version))
         await self.display(message.author.mention)
+
+    async def action_broadcastcommand(self, cmd, message):
+        '''Sends a command to all shards connected to bungeecord
+Syntax:
+`{cmdPrefix}broadcastcommand <command>`'''
+        commandArgs = message.content[len(self._prefix + cmd)+1:].strip()
+        if commandArgs.startswith("/"):
+            commandArgs = commandArgs[1:]
+
+        await self.display("Broadcasting command '{}' to all shards".format(commandArgs))
+        self._socket.send_packet("*", "Monumenta.Broadcast.Command", {"command": commandArgs})
