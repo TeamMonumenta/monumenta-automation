@@ -89,7 +89,7 @@ async def main():
     bungee_display_yml["maintenance"]["join"] = '&cMonumenta is currently down for daily restart - try again in a few minutes'
     bungee_display_yml["maintenance"]["kick_message"] = '&cMonumenta is going down for daily restart - join again in 5 minutes'
     bungee_display_yml["maintenance"]["information"] = '&6Please try again in a few minutes'
-    bungee_display_yml["motd"]["maintenance"]["line2"] = '            &c&lDown for Daily Restart'
+    bungee_display_yml["motd"]["maintenance"]["line2"] = '              &c&lDown for Daily Restart'
     with open('/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
         yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
 
