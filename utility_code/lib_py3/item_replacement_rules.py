@@ -331,7 +331,7 @@ class PreserveBlockEntityTag(GlobalRule):
         if self.block_entity_tag is not None:
             if not item.has_path('tag'):
                 item.value['tag'] = nbt.TagCompound({})
-            item.at_path('tag').value['BlockEntityTag'] = self.block_entity_tag.deep_copy()
+            item.at_path('tag').value['BlockEntityTag'] = self.block_entity_tag
 
 ################################################################################
 # Global rules end
