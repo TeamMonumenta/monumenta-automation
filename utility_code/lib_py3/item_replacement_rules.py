@@ -312,13 +312,10 @@ class PreserveSoulbound(GlobalRule):
         # Apply soulbound lore
         item.at_path('tag.display.Lore').value.append(self.player_line)
 
-class PreserveShieldBanner(GlobalRule):
+class PreserveBlockEntityTag(GlobalRule):
     name = 'Preserve shield banner'
 
     def preprocess(self, template, item):
-        if item.at_path('id').value != 'minecraft:shield':
-            return
-
         self.block_entity_tag = None
         if item.has_path('tag.BlockEntityTag'):
             self.block_entity_tag = item.at_path('tag.BlockEntityTag')
@@ -328,9 +325,6 @@ class PreserveShieldBanner(GlobalRule):
                 self.block_entity_tag.value.pop('id')
 
     def postprocess(self, item):
-        if item.at_path('id').value != 'minecraft:shield':
-            return
-
         if item.has_path('tag.BlockEntityTag'):
             item.at_path('tag').value.pop('BlockEntityTag')
 
