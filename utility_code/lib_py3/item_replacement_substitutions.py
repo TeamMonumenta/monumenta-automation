@@ -123,6 +123,18 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:dark_oak_leaves", "Bonus Key", "minecraft:dark_oak_leaves", "Willows Key"],
             ["minecraft:iron_bars", "Old Labs Key", "minecraft:iron_bars", "Alchemy Labs Key"],
             ["minecraft:player_head", "Aquiren's Head", "minecraft:player_head", "Aqurien's Head"],
+            ["minecraft:dark_oak_leaves", "Willows Key", "minecraft:mossy_cobblestone", "Black Willows Key"],
+            ["minecraft:nether_wart_block", "Reverie Key", "minecraft:nether_wart_block", "Malevolent Reverie Key"],
+            ["minecraft:white_stained_glass", "White Key", "minecraft:white_concrete", "White Wool Key"],
+            ["minecraft:orange_stained_glass", "Orange Key", "minecraft:orange_concrete", "Orange Wool Key"],
+            ["minecraft:magenta_stained_glass", "Magenta Key", "minecraft:magenta_concrete", "Magenta Wool Key"],
+            ["minecraft:light_blue_stained_glass", "Light Blue Key", "minecraft:light_blue_concrete", "Light Blue Wool Key"],
+            ["minecraft:yellow_stained_glass", "Yellow Key", "minecraft:yellow_concrete", "Yellow Wool Key"],
+            ["minecraft:lime_stained_glass", "Lime Key", "minecraft:lime_concrete", "Lime Wool Key"],
+            ["minecraft:pink_stained_glass", "Pink Key", "minecraft:pink_concrete", "Pink Wool Key"],
+            ["minecraft:gray_stained_glass", "Gray Key", "minecraft:gray_concrete", "Gray Wool Key"],
+            ["minecraft:light_gray_stained_glass", "Light Gray Key", "minecraft:light_gray_concrete", "Light Gray Wool Key"],
+            ["minecraft:cyan_stained_glass", "Cyan Key", "minecraft:cyan_concrete", "Cyan Wool Key"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
