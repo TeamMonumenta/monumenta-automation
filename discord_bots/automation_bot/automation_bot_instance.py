@@ -615,6 +615,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await asyncio.sleep(5)
 
         # Stop all shards
+        shards = await self._k8s.list()
         await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
 
         await self.display(message.author.mention)
