@@ -20,7 +20,6 @@ RUN groupadd --non-unique -g $GID $USERNAME && \
 
 USER $USERNAME
 
-COPY MCRcon $USERHOME/MCEdit-And-Automation/MCRcon
 COPY quarry $USERHOME/MCEdit-And-Automation/quarry
 COPY discord_bots $USERHOME/MCEdit-And-Automation/discord_bots
 COPY utility_code $USERHOME/MCEdit-And-Automation/utility_code
