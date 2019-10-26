@@ -22,14 +22,14 @@ class SocketManager(object):
         self.thread.daemon = True
         self.thread.start()
 
-        # Create a thread to send a heartbeat to the socket every minute
-        self.heart = threading.Thread(target=self._heartbeat)
-        self.heart.daemon = True
-
+        self.heart = None
+        self.heart_stop_flag = False
 
     def _connect(self):
+        logger.debug("Connect: starting")
         timeouts = 0
         while True:
+            logger.debug("Connect: looping")
             try:
                 # Create a new socket with a timeout of 90 seconds
                 # The socket will send (and should receive back) a heartbeat every 60 seconds
@@ -41,7 +41,10 @@ class SocketManager(object):
                 if self.name is not None:
                     self.send_packet(None, "Monumenta.Bungee.Handshake", {"name": self.name})
 
-                # Start the heartbeat
+                # Create a thread to send a heartbeat to the socket every minute
+                self.heart_stop_flag = False
+                self.heart = threading.Thread(target=self._heartbeat)
+                self.heart.daemon = True
                 self.heart.start()
 
                 # Start listening
@@ -54,20 +57,32 @@ class SocketManager(object):
             # Forcibly close the socket, just in case it's somehow still open
             self.socket.close()
 
+            if self.heart is not None:
+                self.heart_stop_flag = True
+                self.heart.join()
+
+
             # Add a delay then try to connect again
             timeouts += 1
             time.sleep(min(timeouts, 5)*2)
+        logger.debug("Connect: exiting")
 
     def _listen(self):
         dec = json.JSONDecoder()
         raw = u''
 
+        logger.debug("Listener: starting")
         while True:
+            logger.debug("Listener: looping")
             try:
                 # Read the next message whenever it is received
                 # If this takes longer than 90 seconds, assume the connection was closed and reconnect
 
                 raw = raw + self.socket.recv(4096).decode("utf-8")
+
+                if not raw:
+                    logger.warning("Socket read 0 bytes - this socket is dead. Aborting listener")
+                    return
 
                 while raw:
                     try:
@@ -84,16 +99,21 @@ class SocketManager(object):
 
             except Exception as e:
                 logger.warning("Socket Read Error: {}".format(pformat(e)))
-                break
+                return
+        logger.debug("Listener: exiting")
 
     def _heartbeat(self, interval = 60, retry = 5):
-        while True:
+        logger.debug("Heartbeat: starting")
+        while not self.heart_stop_flag:
+            logger.debug("Heartbeat: looping")
             try:
                 self.send_packet(None, "Monumenta.Bungee.Heartbeat", None)
             except Exception as e:
+                logger.debug("Heartbeat: got error, short sleep to retry")
                 time.sleep(retry)
                 continue
             time.sleep(interval)
+        logger.debug("Heartbeat: exiting")
 
 
     def send_packet(self, destination, operation, data):
