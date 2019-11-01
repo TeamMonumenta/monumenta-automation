@@ -1033,8 +1033,8 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         opt_out = 0
         for index in self._entries:
             entry = self._entries[index]
-            if entry["pending_notification"]:
-                if entry["author"] != 0 and author_id != "0":
+            if entry["pending_notification"] and "author" in entry:
+                if entry["author"] != 0 and entry["author"] != "0":
                     user = self._client.get_user(entry["author"])
                     if user is not None:
                         count += 1
