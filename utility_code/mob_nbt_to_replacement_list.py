@@ -17,6 +17,39 @@ def usage():
 if len(sys.argv) != 3:
     usage()
 
+def pop_if_present(spawner_entity, key):
+    if isinstance(spawner_entity, nbt.TagCompound) and key in spawner_entity.value:
+        print("Popping '{}' from spawner entity".format(key))
+        spawner_entity.value.pop(key)
+
+def remove_tags_from_spawner_entity(spawner_entity):
+    pop_if_present(spawner_entity, 'Pos')
+    pop_if_present(spawner_entity, 'Leashed')
+    pop_if_present(spawner_entity, 'Air')
+    pop_if_present(spawner_entity, 'OnGround')
+    pop_if_present(spawner_entity, 'Dimension')
+    pop_if_present(spawner_entity, 'Rotation')
+    pop_if_present(spawner_entity, 'WorldUUIDMost')
+    pop_if_present(spawner_entity, 'WorldUUIDLeast')
+    pop_if_present(spawner_entity, 'HurtTime')
+    pop_if_present(spawner_entity, 'HurtByTimestamp')
+    pop_if_present(spawner_entity, 'FallFlying')
+    pop_if_present(spawner_entity, 'PortalCooldown')
+    pop_if_present(spawner_entity, 'FallDistance')
+    pop_if_present(spawner_entity, 'DeathTime')
+    pop_if_present(spawner_entity, 'HandDropChances')
+    pop_if_present(spawner_entity, 'ArmorDropChances')
+    pop_if_present(spawner_entity, 'CanPickUpLoot')
+    pop_if_present(spawner_entity, 'Bukkit.updateLevel')
+    pop_if_present(spawner_entity, 'Spigot.ticksLived')
+    pop_if_present(spawner_entity, 'Paper.AAAB')
+    pop_if_present(spawner_entity, 'Paper.Origin')
+    pop_if_present(spawner_entity, 'Paper.FromMobSpawner')
+    pop_if_present(spawner_entity, 'Team')
+
+    # Recurse over passengers
+    if (spawner_entity.has_path('Passengers')):
+        remove_tags_from_spawner_entity(spawner_entity.at_path('Passengers'))
 
 with open(sys.argv[1], 'r') as in_file:
     with open(sys.argv[2], 'w') as out_file:
@@ -35,6 +68,8 @@ with open(sys.argv[1], 'r') as in_file:
             if not mob_nbt.has_path("id"):
                 sys.exit("ERROR: mob does not have an id! : {}".format(line))
 
+            remove_tags_from_spawner_entity(mob_nbt)
+
             mob_id = mob_nbt.at_path("id").value
 
             if mob_nbt.has_path("CustomName"):
@@ -45,7 +80,7 @@ with open(sys.argv[1], 'r') as in_file:
                 out_file.write("            'id': '{}',\n".format(mob_id))
                 out_file.write("            'CustomName': r'''{}'''\n".format(mob_name))
                 out_file.write("        },\n")
-                out_file.write("        'mojangson': r'''{}''',\n".format(line.strip()))
+                out_file.write("        'mojangson': r'''{}''',\n".format(mob_nbt.to_mojangson()))
                 out_file.write("    },\n")
             else:
                 hand_items = get_named_hand_items(mob_nbt)
@@ -58,10 +93,8 @@ with open(sys.argv[1], 'r') as in_file:
                 out_file.write("            'id': '{}',\n".format(mob_id))
                 out_file.write("            'HandItems': {},\n".format(hand_items))
                 out_file.write("        },\n")
-                out_file.write("        'mojangson': r'''{}''',\n".format(line.strip()))
+                out_file.write("        'mojangson': r'''{}''',\n".format(mob_nbt.to_mojangson()))
                 out_file.write("    },\n")
-
-
 
             line = in_file.readline()
 
