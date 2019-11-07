@@ -169,7 +169,7 @@ class AutomationBotInstance(object):
 
         msg = message.content
 
-        if msg.strip()[0] != self._prefix:
+        if not msg.strip().startswith(self._prefix):
             return
 
         match = None
