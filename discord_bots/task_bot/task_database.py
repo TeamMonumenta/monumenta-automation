@@ -9,7 +9,7 @@ from collections import OrderedDict
 from pprint import pprint
 
 from interactive_search import InteractiveSearch
-from common import get_list_match, datestr
+from common import get_list_match, datestr, split_string
 
 # Data Schema
 
@@ -19,6 +19,7 @@ from common import get_list_match, datestr
         # Key is entry number - fixed forever. Key is a string representation of an integer... for reasons.
         "42" : {
             "author": "302298391969267712", # Must be non-empty and a valid discord user
+            "assignee": "302298391969267712", # Optional - who is currently assigned to this bug
             "description": "Stuff", # Must be non-empty, escape input strings/etc.
             "labels": ["Misc"], # Must be non-empty
             # Automatically set to "N/A" on creation
@@ -135,6 +136,25 @@ class TaskDatabase(object):
             if changed:
                 self.save()
 
+    def get_entry(self, index_str):
+        """
+        Gets an entry for a given string index number
+        Throws ValueError if it does not exist or parsing fails
+        """
+
+        try:
+            index = int(index_str)
+        except:
+            raise ValueError("'{}' is not a number".format(index_str))
+
+        # Ugh, json keys need to be strings, not numbers
+        index = str(index)
+
+        if index not in self._entries:
+            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
+
+        return index, self._entries[index]
+
     async def reply(self, message, response):
         """
         Replies to a given message (in that channel)
@@ -213,8 +233,19 @@ class TaskDatabase(object):
                 for react in msg.reactions:
                     react_text += "{} {}    ".format(react.emoji, react.count)
 
+        assigned_text = ''
+        if "assignee" in entry:
+            assigned_name = ""
+            if entry["assignee"] != 0 and entry["assignee"] != "0":
+                user = self._client.get_user(entry["assignee"])
+                if user is not None:
+                    assigned_name = user.display_name
+
+            if assigned_name:
+                assigned_text = '''`Assigned: {}`\n'''.format(assigned_name)
+
         entry_text = '''`#{} [{} - {}] {}`
-{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, entry["description"], react_text)
+{}{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, assigned_text, entry["description"], react_text)
 
         if "close_reason" in entry:
             entry_text = '''~~{}~~
@@ -294,6 +325,10 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "stats": self.cmd_stats,
             "addlabel": self.cmd_addlabel,
             "test": self.cmd_test,
+            "assign": self.cmd_assign,
+            "unassign": self.cmd_unassign,
+            "list_assigned": self.cmd_list_assigned,
+            "ping_assigned": self.cmd_ping_assigned,
         }
 
         # First try to handle this message with any ongoing iterative searches
@@ -374,7 +409,10 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} append <number> text`
     Appends text to an existing {single}'s description
+'''.format(prefix=self._prefix, single=self._descriptor_single, plural=self._descriptor_plural, labels=" ".join(self._labels))
 
+        if self.has_privilege(2, message.author):
+            usage += '''
 **Commands team members can use:**
 `{prefix} edit <number> [author | priority] [argument]`
     Edits the specified field of the entry
@@ -393,6 +431,15 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} send_notifications`
     Notifies {single} authors about updates to their entries
+
+`{prefix} assign <number> [user]`
+    Assigns {single} to self, or user if specified
+
+`{prefix} unassign <number>`
+    Unassigns {single}
+
+`{prefix} list_assigned [user | all]`
+    Prints out open {plural} that are assigned to you, the specified user, or "all"
 '''.format(prefix=self._prefix, single=self._descriptor_single, plural=self._descriptor_plural, labels=" ".join(self._labels))
 
         if self.has_privilege(3, message.author):
@@ -400,6 +447,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 **Commands only leads can use:**
 `{prefix} prune`
     Removes all fixed {plural} from the tracking channel
+
+`{prefix} ping_assigned #channel`
+    Prints out all open {plural} in specified channel, pinging assigned people
 '''.format(prefix=self._prefix, plural=self._descriptor_plural)
 
         if self.has_privilege(4, message.author):
@@ -412,7 +462,8 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
     Reposts/edits all known {plural}
 '''.format(prefix=self._prefix, plural=self._descriptor_plural)
 
-        await self.reply(message, usage)
+        for chunk in split_string(usage):
+            await self.reply(message, chunk)
 
 
     ################################################################################
@@ -501,19 +552,7 @@ For example:```
 ```
 '''.format(prefix=self._prefix, single=self._descriptor_single))
 
-        index_str = part[0].strip()
-        try:
-            index = int(index_str)
-        except:
-            raise ValueError("'{}' is not a number".format(index_str))
-
-        # Ugh, json keys need to be strings, not numbers
-        index = str(index)
-
-        if index not in self._entries:
-            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
-
-        entry = self._entries[index]
+        index, entry = self.get_entry(part[0].strip())
 
         operation = get_list_match(part[1].strip(), ['description', 'label', 'image', 'author', 'priority'])
         if operation is None:
@@ -616,22 +655,10 @@ __Available Priorities:__
         if (not args) or (len(part) < 2):
             raise ValueError('''Usage: {prefix} append <number> [additional description text]'''.format(prefix=self._prefix))
 
-        index_str = part[0].strip()
-        try:
-            index = int(index_str)
-        except:
-            raise ValueError("'{}' is not a number".format(index_str))
-
-        # Ugh, json keys need to be strings, not numbers
-        index = str(index)
-
-        if index not in self._entries:
-            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
+        index, entry = self.get_entry(part[0].strip())
 
         if not self.has_privilege(1, message.author, index=index):
             raise ValueError("You do not have permission to append to #{}".format(index))
-
-        entry = self._entries[index]
 
         entry["description"] = "{}\n{}".format(entry["description"], part[1].strip())
 
@@ -655,19 +682,7 @@ __Available Priorities:__
         if not args:
             raise ValueError("Usage: {prefix} get <number>".format(prefix=self._prefix))
 
-        index_str = args.strip()
-        try:
-            index = int(index_str)
-        except:
-            raise ValueError("'{}' is not a number".format(index_str))
-
-        # Ugh, json keys need to be strings, not numbers
-        index = str(index)
-
-        if index not in self._entries:
-            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
-
-        match_entries = [(index, self._entries[index])]
+        match_entries = [(self.get_entry(args.strip()))]
         await self.print_search_results(message, match_entries)
 
     ################################################################################
@@ -831,22 +846,10 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         if (not args) or (len(part) < 2):
             raise ValueError('''Usage: {prefix} reject <number> <required explanation>'''.format(prefix=self._prefix))
 
-        index_str = part[0].strip()
-        try:
-            index = int(index_str)
-        except:
-            raise ValueError("'{}' is not a number".format(index_str))
-
-        # Ugh, json keys need to be strings, not numbers
-        index = str(index)
-
-        if index not in self._entries:
-            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
+        index, entry = self.get_entry(part[0].strip())
 
         if not self.has_privilege(1, message.author, index=index):
             raise ValueError("You do not have permission to reject #{}".format(index))
-
-        entry = self._entries[index]
 
         entry["close_reason"] = part[1].strip()
 
@@ -872,22 +875,10 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         if (not args) or (len(part) < 1):
             raise ValueError('''Usage: {prefix} fix <number> [optional explanation]'''.format(prefix=self._prefix))
 
-        index_str = part[0].strip()
-        try:
-            index = int(index_str)
-        except:
-            raise ValueError("'{}' is not a number".format(index_str))
-
-        # Ugh, json keys need to be strings, not numbers
-        index = str(index)
-
-        if index not in self._entries:
-            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
+        index, entry = self.get_entry(part[0].strip())
 
         if not self.has_privilege(1, message.author, index=index):
             raise ValueError("You do not have permission to fix #{}".format(index))
-
-        entry = self._entries[index]
 
         if len(part) > 1:
             entry["close_reason"] = part[1].strip()
@@ -915,22 +906,10 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         if (not args) or (len(part) != 1):
             raise ValueError('''Usage: {prefix} unfix <number>'''.format(prefix=self._prefix))
 
-        index_str = part[0].strip()
-        try:
-            index = int(index_str)
-        except:
-            raise ValueError("'{}' is not a number".format(index_str))
-
-        # Ugh, json keys need to be strings, not numbers
-        index = str(index)
-
-        if index not in self._entries:
-            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
+        index, entry = self.get_entry(part[0].strip())
 
         if not self.has_privilege(1, message.author, index=index):
             raise ValueError("You do not have permission to unfix #{}".format(index))
-
-        entry = self._entries[index]
 
         if "close_reason" in entry:
             entry.pop("close_reason")
@@ -1119,3 +1098,80 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
             await self.send_entry(index, entry)
 
         await(self.reply(message, "{} entries from channel {} imported successfully".format(len(to_import), part[0])))
+
+    ################################################################################
+    # assign
+    async def cmd_assign(self, message, args):
+        if not self.has_privilege(2, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        part = args.split(maxsplit=1)
+        if (not args) or (not part):
+            raise ValueError('''Usage: {prefix} assign <number> [user]'''.format(prefix=self._prefix))
+
+        index, entry = self.get_entry(part[0].strip())
+
+        assignee = message.author
+
+        if len(part) > 1:
+            try:
+                assign_id = int(part[1].strip())
+            except:
+                raise ValueError("'{}' is not a number".format(part[1].strip()))
+
+            user = self._client.get_user(assign_id)
+            if user is None:
+                raise ValueError("Can't find user for user ID '{}'".format(assign_id))
+
+            assignee = user
+
+        entry["assignee"] = assignee.id
+        self.save()
+
+        # Update the entry
+        await self.send_entry(index, entry)
+
+        entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
+        msg = await message.channel.send(entry_text, embed=embed);
+        await(self.reply(message, "{proper} #{index} assigned to {name}".format(proper=self._descriptor_proper, index=index, name=assignee.display_name)))
+
+    ################################################################################
+    # unassign
+    async def cmd_unassign(self, message, args):
+        if not self.has_privilege(2, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        part = args.split(maxsplit=1)
+        if (not args) or (not part):
+            raise ValueError('''Usage: {prefix} unassign <number>'''.format(prefix=self._prefix))
+
+        index, entry = self.get_entry(part[0].strip())
+
+        if "assignee" not in entry:
+            raise ValueError('{proper} #{index} is already unassigned'.format(proper=self._descriptor_proper, index=index))
+
+        entry.pop("assignee")
+        self.save()
+
+        # Update the entry
+        await self.send_entry(index, entry)
+
+        entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
+        msg = await message.channel.send(entry_text, embed=embed);
+        await(self.reply(message, "{proper} #{index} unassigned".format(proper=self._descriptor_proper, index=index)))
+
+    ################################################################################
+    # list_assigned
+    async def cmd_list_assigned(self, message, args):
+        if not self.has_privilege(2, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        await self.reply(message, "Not implemented yet")
+
+    ################################################################################
+    # ping_assigned
+    async def cmd_ping_assigned(self, message, args):
+        if not self.has_privilege(3, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        await self.reply(message, "Not implemented yet")
