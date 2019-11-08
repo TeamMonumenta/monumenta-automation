@@ -213,8 +213,7 @@ class TaskDatabase(object):
                 for react in msg.reactions:
                     react_text += "{} {}    ".format(react.emoji, react.count)
 
-        entry_text = '''`
-#{} [{} - {}] {}`
+        entry_text = '''`#{} [{} - {}] {}`
 {}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, entry["description"], react_text)
 
         if "close_reason" in entry:
