@@ -155,6 +155,32 @@ class TaskDatabase(object):
 
         return index, self._entries[index]
 
+    def get_user(self, user_id, allow_empty=False):
+        """
+        Gets a user given a user_id int or string int
+        Throws ValueError if user does not exist or parsing fails
+        If allow_empty is true:
+          if user_id is 0 or None, returns None
+        else:
+          if user_id is 0 or None, throws exception
+        """
+
+        if (user_id is None) or user_id == "0" or user_id == 0:
+            if allow_empty:
+                return None
+            else:
+                raise ValueError("User ID is 0 or None")
+
+        if type(user_id) is not int:
+            try:
+                user_id = int(user_id)
+            except:
+                raise ValueError("'{}' is not a number".format(user_id))
+
+        user = self._client.get_user(user_id)
+
+        return user
+
     async def reply(self, message, response):
         """
         Replies to a given message (in that channel)
@@ -208,18 +234,16 @@ class TaskDatabase(object):
 
         return (index, entry)
 
-    async def format_entry(self, index, entry, include_reactions=False):
+    async def format_entry(self, index, entry, include_reactions=False, mention_assigned=False):
         if self._channel is None:
             self._channel = self._client.get_channel(self._channel_id)
             if self._channel is None:
                 raise Exception("Error getting channel!")
 
-        author_id = entry["author"]
         author_name = ""
-        if author_id != 0 and author_id != "0":
-            user = self._client.get_user(author_id)
-            if user is not None:
-                author_name = user.display_name
+        user = self.get_user(entry["author"], allow_empty=True)
+        if user is not None:
+            author_name = user.display_name
 
         react_text = ""
         if include_reactions and "message_id" in entry:
@@ -235,14 +259,12 @@ class TaskDatabase(object):
 
         assigned_text = ''
         if "assignee" in entry:
-            assigned_name = ""
-            if entry["assignee"] != 0 and entry["assignee"] != "0":
-                user = self._client.get_user(entry["assignee"])
-                if user is not None:
-                    assigned_name = user.display_name
-
-            if assigned_name:
-                assigned_text = '''`Assigned: {}`\n'''.format(assigned_name)
+            user = self.get_user(entry["assignee"], allow_empty=True)
+            if user is not None:
+                if mention_assigned:
+                    assigned_text = '''`Assigned: `{}\n'''.format(user.mention)
+                else:
+                    assigned_text = '''`Assigned: {}`\n'''.format(user.display_name)
 
         entry_text = '''`#{} [{} - {}] {}`
 {}{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, assigned_text, entry["description"], react_text)
@@ -289,18 +311,18 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         for reaction in self._reactions:
             await msg.add_reaction(reaction)
 
-    async def print_search_results(self, message, match_entries, limit=10):
+    async def print_search_results(self, channel, match_entries, limit=10, mention_assigned=False):
         # Sort the returned entries
         print_entries = sorted(match_entries, key=lambda k: (self._priorities.index(k[1]['priority']), int(k[0])))
 
         # Limit to specified number of replies at a time
         if len(print_entries) > limit:
-            await self.reply(message, 'Limiting to top {} results'.format(limit))
+            await channel.send('Limiting to top {} results'.format(limit))
             print_entries = print_entries[:limit]
 
         for index, entry in print_entries:
-            entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-            msg = await message.channel.send(entry_text, embed=embed);
+            entry_text, embed = await self.format_entry(index, entry, include_reactions=True, mention_assigned=mention_assigned)
+            msg = await channel.send(entry_text, embed=embed);
 
 
     async def handle_message(self, message):
@@ -683,7 +705,7 @@ __Available Priorities:__
             raise ValueError("Usage: {prefix} get <number>".format(prefix=self._prefix))
 
         match_entries = [(self.get_entry(args.strip()))]
-        await self.print_search_results(message, match_entries)
+        await self.print_search_results(message.channel, match_entries)
 
     ################################################################################
     # roulette
@@ -694,7 +716,7 @@ __Available Priorities:__
             if "close_reason" not in entry:
                 match_entries.append((index, entry))
 
-        await self.print_search_results(message, [random.choice(match_entries)])
+        await self.print_search_results(message.channel, [random.choice(match_entries)])
 
     ################################################################################
     # stats
@@ -777,7 +799,7 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
     async def cmd_search(self, message, args):
         match_entries, match_labels, match_priorities, max_count = await self.search_helper(args, max_count=10)
 
-        await self.print_search_results(message, match_entries, limit=max_count)
+        await self.print_search_results(message.channel, match_entries, limit=max_count)
 
         await(self.reply(message, "{} {} found matching labels={} priorities={}".format(len(match_entries), self._descriptor_plural, ",".join(match_labels), ",".join(match_priorities))))
 
@@ -802,7 +824,7 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
                     count += 1
                     match_entries.append((index, entry))
 
-        await self.print_search_results(message, match_entries)
+        await self.print_search_results(message.channel, match_entries)
 
         await(self.reply(message, "{} {} found matching {}".format(count, self._descriptor_plural, ",".join(part))))
 
@@ -858,6 +880,9 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         else:
             entry["pending_notification"] = True
 
+        if "assignee" in entry:
+            entry.pop("assignee")
+
         self.save()
 
         # Update the entry
@@ -889,6 +914,9 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
             entry["pending_notification"] = False
         else:
             entry["pending_notification"] = True
+
+        if "assignee" in entry:
+            entry.pop("assignee")
 
         self.save()
 
@@ -962,7 +990,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         self.save()
 
-        await self.print_search_results(message, match_entries, limit=99999)
+        await self.print_search_results(message.channel, match_entries, limit=99999)
         await(self.reply(message, "{} entries pruned successfully".format(count)))
 
     ################################################################################
@@ -1012,19 +1040,16 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         for index in self._entries:
             entry = self._entries[index]
             if entry["pending_notification"] and "author" in entry:
-                if entry["author"] != 0 and entry["author"] != "0":
-                    user = self._client.get_user(entry["author"])
-                    if user is not None:
-                        count += 1
-                        if entry["author"] in self._notifications_disabled:
-                            opt_out += 1
-                        else:
-                            author_mention = user.mention
-
-                            entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
-                            entry_text = '''{mention} Your {single} was updated:
-    {entry}'''.format(mention=author_mention, single=self._descriptor_single, entry=entry_text)
-                            msg = await message.channel.send(entry_text, embed=embed);
+                user = self.get_user(entry["author"], allow_empty=True)
+                if user is not None:
+                    count += 1
+                    if entry["author"] in self._notifications_disabled:
+                        opt_out += 1
+                    else:
+                        entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
+                        entry_text = '''{mention} Your {single} was updated:
+{entry}'''.format(mention=user.mention, single=self._descriptor_single, entry=entry_text)
+                        msg = await message.channel.send(entry_text, embed=embed);
 
                 entry["pending_notification"] = False
 
@@ -1114,16 +1139,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         assignee = message.author
 
         if len(part) > 1:
-            try:
-                assign_id = int(part[1].strip())
-            except:
-                raise ValueError("'{}' is not a number".format(part[1].strip()))
-
-            user = self._client.get_user(assign_id)
-            if user is None:
-                raise ValueError("Can't find user for user ID '{}'".format(assign_id))
-
-            assignee = user
+            assignee = self.get_user(part[1].strip())
 
         entry["assignee"] = assignee.id
         self.save()
@@ -1166,7 +1182,32 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         if not self.has_privilege(2, message.author):
             raise ValueError("You do not have permission to use this command")
 
-        await self.reply(message, "Not implemented yet")
+        match_assignee = message.author
+
+        if args:
+            if args.lower() == "all":
+                # Match any non-empty assignee
+                match_assignee = None
+            else:
+                # Match any non-empty assignee
+                match_assignee = self.get_user(args)
+
+        match_entries = []
+        count = 0
+        for index in self._entries:
+            entry = self._entries[index]
+            if "close_reason" not in entry:
+                if "assignee" in entry:
+                    if (match_assignee is None) or (entry["assignee"] == match_assignee.id):
+                        count += 1
+                        match_entries.append((index, entry))
+
+        await self.print_search_results(message.channel, match_entries)
+
+        if match_assignee is None:
+            await self.reply(message, "{} total assigned {} found".format(count, self._descriptor_plural))
+        else:
+            await self.reply(message, "{} assigned {} found for user {}".format(count, self._descriptor_plural, match_assignee.display_name))
 
     ################################################################################
     # ping_assigned
@@ -1174,4 +1215,26 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         if not self.has_privilege(3, message.author):
             raise ValueError("You do not have permission to use this command")
 
-        await self.reply(message, "Not implemented yet")
+        try:
+            channel_id = int(args)
+        except:
+            raise ValueError("'{}' is not a number".format(args))
+
+        channel = self._client.get_channel(channel_id)
+        if self._channel is None:
+            raise Exception("Error getting channel!")
+
+        await self.reply(message, "Starting notification process...")
+
+        match_entries = []
+        count = 0
+        for index in self._entries:
+            entry = self._entries[index]
+            if "close_reason" not in entry:
+                if "assignee" in entry:
+                    count += 1
+                    match_entries.append((index, entry))
+
+        await self.print_search_results(channel, match_entries, limit=9999, mention_assigned=True)
+
+        await self.reply(message, "{} total assigned {} mentioned in channel {}".format(count, self._descriptor_plural, channel.name))
