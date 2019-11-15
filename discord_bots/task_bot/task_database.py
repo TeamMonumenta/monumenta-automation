@@ -1202,7 +1202,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
                         count += 1
                         match_entries.append((index, entry))
 
-        await self.print_search_results(message.channel, match_entries)
+        await self.print_search_results(message.channel, match_entries, limit=9999)
 
         if match_assignee is None:
             await self.reply(message, "{} total assigned {} found".format(count, self._descriptor_plural))
