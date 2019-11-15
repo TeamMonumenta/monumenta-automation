@@ -155,7 +155,7 @@ class TaskDatabase(object):
 
         return index, self._entries[index]
 
-    def get_user(self, user_id, allow_empty=False):
+    def get_user_by_id(self, user_id, allow_empty=False):
         """
         Gets a user given a user_id int or string int
         Throws ValueError if user does not exist or parsing fails
@@ -180,6 +180,42 @@ class TaskDatabase(object):
         user = self._client.get_user(user_id)
 
         return user
+
+    def get_user(self, guild, user):
+        """
+        Gets a user given a display name, username, or user id
+        Throws ValueError if user does not exist or parsing fails
+        """
+
+        if (user is None) or user == "0" or user == 0:
+            raise ValueError("User ID is 0 or None")
+
+        if type(user) is not int:
+            try:
+                user = int(user)
+            except:
+                # Try to find the user by name
+                matches = []
+                for member in guild.members:
+                    if member.display_name.lower().startswith(user.lower()):
+                        matches.append(member)
+                    elif member.name.lower().startswith(user.lower()):
+                        matches.append(member)
+
+                if len(matches) < 1:
+                    raise ValueError("User '{}' not found".format(user))
+                if len(matches) > 1:
+                    multimatch = []
+                    for member in matches:
+                        if (member.name != member.display_name):
+                            multimatch.append("{} ({})".format(member.name, member.display_name))
+                        else:
+                            multimatch.append("{}".format(member.name))
+                    raise ValueError("Multiple users match '{}': {}".format(user, "\n".join(multimatch)))
+
+                user = matches[0].id
+
+        return self._client.get_user(user)
 
     async def reply(self, message, response):
         """
@@ -241,7 +277,7 @@ class TaskDatabase(object):
                 raise Exception("Error getting channel!")
 
         author_name = ""
-        user = self.get_user(entry["author"], allow_empty=True)
+        user = self.get_user_by_id(entry["author"], allow_empty=True)
         if user is not None:
             author_name = user.display_name
 
@@ -259,7 +295,7 @@ class TaskDatabase(object):
 
         assigned_text = ''
         if "assignee" in entry:
-            user = self.get_user(entry["assignee"], allow_empty=True)
+            user = self.get_user_by_id(entry["assignee"], allow_empty=True)
             if user is not None:
                 if mention_assigned:
                     assigned_text = '''`Assigned: `{}\n'''.format(user.mention)
@@ -1040,7 +1076,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         for index in self._entries:
             entry = self._entries[index]
             if entry["pending_notification"] and "author" in entry:
-                user = self.get_user(entry["author"], allow_empty=True)
+                user = self.get_user_by_id(entry["author"], allow_empty=True)
                 if user is not None:
                     count += 1
                     if entry["author"] in self._notifications_disabled:
@@ -1139,7 +1175,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         assignee = message.author
 
         if len(part) > 1:
-            assignee = self.get_user(part[1].strip())
+            assignee = self.get_user(message.guild, part[1].strip())
 
         entry["assignee"] = assignee.id
         self.save()
@@ -1190,7 +1226,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
                 match_assignee = None
             else:
                 # Match any non-empty assignee
-                match_assignee = self.get_user(args)
+                match_assignee = self.get_user(message.guild, args)
 
         match_entries = []
         count = 0

@@ -48,6 +48,8 @@ class InteractiveSearch(object):
             "append": self._db.cmd_append,
             "fix": self._db.cmd_fix,
             "unfix": self._db.cmd_unfix,
+            "assign": self._db.cmd_assign,
+            "unassign": self._db.cmd_unassign,
             "help": cmd_help,
             "next": None,
             "stop": None
