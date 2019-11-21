@@ -1217,7 +1217,7 @@ mobs_to_replace = [
             'id': 'minecraft:ocelot',
             'CustomName': r'''Rabid Ocelot'''
         },
-        'mojangson': r'''{id:"minecraft:ocelot",AgeLocked:1b,CustomName:"[{\"text\":\"Rabid Ocelot\"}]",Health:45.0f,Attributes:[{Base:45.0d,Name:"generic.maxHealth"},{Base:128.0d,Name:"generic.followRange"},{Base:1.5d,Name:"generic.movementSpeed"}],Tags:["boss_targetplayer"],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{display:{Name:"{\"italic\":false,\"text\":\"Fangs\"}"},AttributeModifiers:[{UUIDMost:-8960180552131130808L,UUIDLeast:-5455308468062322858L,Amount:5.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
+        'mojangson': r'''{id:"minecraft:ocelot",AgeLocked:1b,CustomName:"[{\"text\":\"Rabid Ocelot\"}]",Health:45.0f,Attributes:[{Base:45.0d,Name:"generic.maxHealth"},{Base:128.0d,Name:"generic.followRange"},{Base:0.15d,Name:"generic.movementSpeed"}],Tags:["boss_targetplayer"],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{display:{Name:"{\"italic\":false,\"text\":\"Fangs\"}"},AttributeModifiers:[{UUIDMost:-8960180552131130808L,UUIDLeast:-5455308468062322858L,Amount:5.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
     },
     {
         'rules': {
@@ -1231,7 +1231,7 @@ mobs_to_replace = [
             'id': 'minecraft:cave_spider',
             'CustomName': r'''Caustic Spider'''
         },
-        'mojangson': r'''{id:"minecraft:cave_spider",CustomName:"[{\"text\":\"Caustic Spider\"}]",Health:68.0f,Attributes:[{Base:68.0d,Name:"generic.maxHealth"},{Base:128.0d,Name:"generic.followRange"},{Base:2.0d,Name:"generic.movementSpeed"}],Tags:["boss_witherhit"],HandItems:[{id:"minecraft:iron_sword",Count:1b,tag:{display:{Name:"{\"italic\":false,\"text\":\"Caustic Fangs\"}"},AttributeModifiers:[{UUIDMost:1158475432269859507L,UUIDLeast:-6278179334097696682L,Amount:8.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
+        'mojangson': r'''{id:"minecraft:cave_spider",CustomName:"[{\"text\":\"Caustic Spider\"}]",Health:68.0f,Attributes:[{Base:68.0d,Name:"generic.maxHealth"},{Base:128.0d,Name:"generic.followRange"},{Base:0.2d,Name:"generic.movementSpeed"}],Tags:["boss_witherhit"],HandItems:[{id:"minecraft:iron_sword",Count:1b,tag:{display:{Name:"{\"italic\":false,\"text\":\"Caustic Fangs\"}"},AttributeModifiers:[{UUIDMost:1158475432269859507L,UUIDLeast:-6278179334097696682L,Amount:8.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]}''',
     },
     {
         'rules': {
