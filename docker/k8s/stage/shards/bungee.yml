@@ -106,7 +106,7 @@ spec:
         livenessProbe:
           tcpSocket:
             port: 25565
-          initialDelaySeconds: 120
+          initialDelaySeconds: 240
           timeoutSeconds: 5
           periodSeconds: 10
         volumeMounts:
