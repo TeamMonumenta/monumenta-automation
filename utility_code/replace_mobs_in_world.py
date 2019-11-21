@@ -84,6 +84,13 @@ mobs_to_replace = [
     },
     {
         'rules': {
+            'id': 'minecraft:skeleton',
+            'CustomName': r'''Bandit Archer'''
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"Bandit Archer\"}",ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:6704179}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:7955020}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:6704179}}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"f778d9a1-3995-4be4-8853-d2c788e94230",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE4YjkyOTM4MWFiNWZiZWIwY2NiNzFkM2ZjYjhlMzk2MzJlMjUyZmI1NDQxNzFiYzBlNTc3YmMwYjFkIn19fQ=="}]}},display:{Name:"{\"text\":\"Bandit\"}"}}}],HandItems:[{id:"minecraft:bow",Count:1b,tag:{}},{id:"minecraft:shield",Count:1b,tag:{}}]}''',
+    },
+    {
+        'rules': {
             'id': 'minecraft:zombie',
             'CustomName': 'Corrupt Foreman'
         },

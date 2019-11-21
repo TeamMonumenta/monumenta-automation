@@ -42,7 +42,7 @@ spawners_to_replace = [
     {
         'rules': {
             'id': 'minecraft:ocelot',
-            'mob_CustomName': r'''Rabid Ocelot\'''
+            'mob_CustomName': r'''Rabid Ocelot'''
         },
         'mojangson': r'''{MaxNearbyEntities:4s,RequiredPlayerRange:12s,SpawnCount:5s,SpawnData:{AgeLocked:1b,CustomName:"[{\"text\":\"Rabid Ocelot\"}]",Health:45.0f,Attributes:[{Base:45.0d,Name:"generic.maxHealth"},{Base:128.0d,Name:"generic.followRange"},{Base:0.2d,Name:"generic.movementSpeed"}],id:"minecraft:ocelot",Tags:["boss_targetplayer"],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{display:{Name:"{\"italic\":false,\"text\":\"Fangs\"}"},AttributeModifiers:[{UUIDMost:-8960180552131130808L,UUIDLeast:-5455308468062322858L,Amount:5.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]},MaxSpawnDelay:800s,Delay:0s,SpawnRange:2s,MinSpawnDelay:400s,SpawnPotentials:[{Entity:{AgeLocked:1b,CustomName:"[{\"text\":\"Rabid Ocelot\"}]",Health:45.0f,Attributes:[{Base:45.0d,Name:"generic.maxHealth"},{Base:128.0d,Name:"generic.followRange"},{Base:0.2d,Name:"generic.movementSpeed"}],id:"minecraft:ocelot",Tags:["boss_targetplayer"],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{display:{Name:"{\"italic\":false,\"text\":\"Fangs\"}"},AttributeModifiers:[{UUIDMost:-8960180552131130808L,UUIDLeast:-5455308468062322858L,Amount:5.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{}]},Weight:1}]}''',
     },
