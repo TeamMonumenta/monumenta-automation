@@ -39,7 +39,7 @@ try:
         else:
             log_level = 20
 
-        socket = SocketManager(conf["host"], conf["port"], conf["name"], callback=None, log_level=log_level)
+        socket = SocketManager(conf["host"], conf["port"], "daily_restart", callback=None, log_level=log_level)
 
     k8s = KubernetesManager(config["k8s_namespace"])
 except KeyError as e:
