@@ -18,8 +18,8 @@ from common import get_list_match, datestr, split_string
     "entries" = {
         # Key is entry number - fixed forever. Key is a string representation of an integer... for reasons.
         "42" : {
-            "author": "302298391969267712", # Must be non-empty and a valid discord user
-            "assignee": "302298391969267712", # Optional - who is currently assigned to this bug
+            "author": 302298391969267712, # Must be non-empty and a valid discord user
+            "assignee": 302298391969267712, # Optional - who is currently assigned to this bug
             "description": "Stuff", # Must be non-empty, escape input strings/etc.
             "labels": ["Misc"], # Must be non-empty
             # Automatically set to "N/A" on creation
@@ -347,7 +347,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         for reaction in self._reactions:
             await msg.add_reaction(reaction)
 
-    async def print_search_results(self, channel, match_entries, limit=10, mention_assigned=False):
+    async def print_search_results(self, channel, match_entries, limit=15, mention_assigned=False):
         # Sort the returned entries
         print_entries = sorted(match_entries, key=lambda k: (self._priorities.index(k[1]['priority']), int(k[0])))
 
@@ -370,6 +370,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "search": self.cmd_search,
             "dsearch": self.cmd_dsearch,
             "isearch": self.cmd_isearch,
+            "asearch": self.cmd_asearch,
             "reject": self.cmd_reject,
             "edit": self.cmd_edit,
             "append": self.cmd_append,
@@ -445,6 +446,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} dsearch <search terms>`
     Searches all {single} descriptions for ones that contain all the specified search terms
+
+`{prefix} asearch [author]`
+    Finds all {plural} added by self, or author if specified
 
 `{prefix} get <number>`
     Gets the {single} with the specified number
@@ -875,6 +879,28 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
         inter = InteractiveSearch(self, message.author, match_entries)
         self._interactive_sessions.append(inter)
         await inter.send_first_message(message)
+
+    ################################################################################
+    # asearch
+    async def cmd_asearch(self, message, args):
+        author = message.author
+        if args:
+            author = self.get_user(message.guild, args)
+
+        match_entries = []
+        open_count = 0
+        total_count = 0
+        for index in self._entries:
+            entry = self._entries[index]
+            if "author" in entry and entry["author"] == author.id:
+                total_count += 1
+                if "close_reason" not in entry:
+                    match_entries.append((index, entry))
+                    open_count += 1
+
+        await self.print_search_results(message.channel, match_entries)
+
+        await(self.reply(message, "{} open {} of {} total from author {}".format(open_count, self._descriptor_plural, total_count, author.display_name)))
 
     ################################################################################
     # addlabel
