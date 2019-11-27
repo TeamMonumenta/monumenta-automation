@@ -382,6 +382,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "import": self.cmd_import,
             "repost": self.cmd_repost,
             "stats": self.cmd_stats,
+            "astats": self.cmd_astats,
             "addlabel": self.cmd_addlabel,
             "test": self.cmd_test,
             "assign": self.cmd_assign,
@@ -461,6 +462,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} stats`
     Gets current {single} statistics
+
+`{prefix} astats`
+    Gets current {single} author statistics
 
 **Commands the original {single} author and team members can use:**
 `{prefix} reject <number> <reason why>`
@@ -792,6 +796,30 @@ Total Open : {}
 Closed     : {}```'''.format(total_open, total_closed)
 
         await message.channel.send(stats_text);
+
+    ################################################################################
+    # astats
+    async def cmd_astats(self, message, args):
+        stats = {}
+
+        for index in self._entries:
+            entry = self._entries[index]
+            if "author" in entry and entry["author"] != 0:
+                author = entry["author"]
+                if author in stats:
+                    stats[author] += 1
+                else:
+                    stats[author] = 1
+
+        await self.reply(message, '''Current {single} author stats:'''.format(single=self._descriptor_single))
+        stats_text = ''
+        for author_id, count in sorted(stats.items(), key=lambda kv: kv[1], reverse=True):
+            author = self.get_user_by_id(author_id)
+            if author is not None:
+                stats_text += '''{} : {}\n'''.format(author.display_name.ljust(20), count)
+
+        for chunk in split_string(stats_text):
+            await self.reply(message, '```python\n' + chunk + '```')
 
     ################################################################################
     # search core helper
