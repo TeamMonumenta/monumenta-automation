@@ -561,12 +561,16 @@ You can also attach an image to your message to include it in the {single}
             raise ValueError('Description must contain at least 5 words')
 
         if len(args) != len(discord.utils.escape_mentions(args)):
-            raise ValueError('Please do not include pings in your {}'.format(self._descriptor_single))
+            raise ValueError('Please do not include pings in your {single}'.format(single=self._descriptor_single))
 
         part = args.split(maxsplit=1)
 
         labels = part[0].strip().lower().split(',')
         description = part[1].strip()
+
+        if len(description) > 1600:
+            raise ValueError('Please limit your {single} to 1600 characters to allow for formatting and close info (currently {} characters)'
+                    .format(len(description), single=self._descriptor_single))
 
         good_labels = []
         failed_labels = False
