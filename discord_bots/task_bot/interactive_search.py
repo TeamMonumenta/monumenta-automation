@@ -16,7 +16,8 @@ class InteractiveSearch(object):
         self._db = db
         self._author_id = author.id
         self._entries = entries
-        self._last_index = None
+        self._prev_entries = []
+        self._current_index = None
         self._num_help_prompts = 0
         self._last_active_time = datetime.datetime.now()
 
@@ -29,10 +30,11 @@ class InteractiveSearch(object):
 
         # Send the first message
         index, entry = self._entries.pop(0)
+        self._prev_entries.insert(0, (index, entry))
         entry_text, embed = await self._db.format_entry(index, entry, include_reactions=True)
         msg = await message.channel.send(entry_text, embed=embed);
 
-        self._last_index = index
+        self._current_index = index
 
     async def handle_message(self, message):
         '''
@@ -52,6 +54,7 @@ class InteractiveSearch(object):
             "unassign": self._db.cmd_unassign,
             "help": cmd_help,
             "next": None,
+            "prev": None,
             "stop": None
         }
 
@@ -83,12 +86,7 @@ class InteractiveSearch(object):
                         await(self.reply(message, "To see these options again, use 'help'"))
                 return False
 
-            if match == "stop":
-                await(self.reply(message, "Iteration aborted"))
-                raise EOFError
-
-            elif match == "next":
-
+            if match == "next" or match == "prev":
                 # Parse args to next as a counter
                 args = ""
                 if len(part) > 1:
@@ -101,6 +99,11 @@ class InteractiveSearch(object):
                 if count < 1:
                     count = 1
 
+            if match == "stop":
+                await(self.reply(message, "Iteration aborted"))
+                raise EOFError
+
+            elif match == "next":
                 # Pop that many entries off the next list
                 while count > 0:
                     count -= 1
@@ -111,10 +114,35 @@ class InteractiveSearch(object):
 
                     # Print the next entry
                     index, entry = self._entries.pop(0)
-                    self._last_index = index
+                    self._prev_entries.insert(0, (index, entry))
+                    self._current_index = index
 
                 entry_text, embed = await self._db.format_entry(index, entry, include_reactions=True)
                 msg = await message.channel.send(entry_text, embed=embed);
+
+            elif match == "prev":
+                if len(self._prev_entries) < 2:
+                    # _prev_entries list always needs to contain at least one thing
+                    # which is the "current" thing being considered
+                    await(self.reply(message, "Nothing to go back to"))
+                else:
+                    # _prev_entries contains at least two things (previous things, current thing)
+
+                    # Pop that many entries off the prev list and back onto the next list
+                    while count > 0:
+                        count -= 1
+                        if len(self._prev_entries) < 2:
+                            # Nothing left to do here
+                            await(self.reply(message, "Reached beginning of list"))
+                            break
+
+                        self._entries.insert(0, self._prev_entries.pop(0))
+
+                    index, entry = self._prev_entries[0]
+                    self._current_index = index
+                    entry_text, embed = await self._db.format_entry(index, entry, include_reactions=True)
+                    msg = await message.channel.send(entry_text, embed=embed);
+
             elif match != "next":
                 # An actual command
                 args = ""
@@ -122,7 +150,7 @@ class InteractiveSearch(object):
                     args = part[1].strip()
 
                 try:
-                    await commands[match](message, (str(self._last_index) + " " + args).strip())
+                    await commands[match](message, (str(self._current_index) + " " + args).strip())
                 except ValueError as e:
                     await self.reply(message, str(e))
 
