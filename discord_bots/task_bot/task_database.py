@@ -75,7 +75,9 @@ class TaskDatabase(object):
             self._descriptor_plural = config["descriptor_plural"]
             self._descriptor_proper = config["descriptor_proper"]
             self._reactions  = config["reactions"]
-            self._channel = None
+            self._channel = self._client.get_channel(self._channel_id)
+            if self._channel is None:
+                raise Exception("Error getting bot channel!")
             self._database_path = os.path.join(config_dir, config["database_path"])
             self._interactive_sessions = []
             self.load()
@@ -271,11 +273,6 @@ class TaskDatabase(object):
         return (index, entry)
 
     async def format_entry(self, index, entry, include_reactions=False, mention_assigned=False):
-        if self._channel is None:
-            self._channel = self._client.get_channel(self._channel_id)
-            if self._channel is None:
-                raise Exception("Error getting channel!")
-
         author_name = ""
         user = self.get_user_by_id(entry["author"], allow_empty=True)
         if user is not None:
@@ -317,12 +314,6 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         return entry_text, embed
 
     async def send_entry(self, index, entry):
-        # Fetch the channel if not already stored
-        if self._channel is None:
-            self._channel = self._client.get_channel(self._channel_id)
-            if self._channel is None:
-                raise Exception("Error getting channel!")
-
         # Compute the new entry text
         entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
 
@@ -347,9 +338,12 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         for reaction in self._reactions:
             await msg.add_reaction(reaction)
 
-    async def print_search_results(self, channel, match_entries, limit=15, mention_assigned=False):
+    async def print_search_results(self, channel, match_entries, limit=15, sort_entries=True, mention_assigned=False):
         # Sort the returned entries
-        print_entries = sorted(match_entries, key=lambda k: (self._priorities.index(k[1]['priority']), int(k[0])))
+        if sort_entries:
+            print_entries = sorted(match_entries, key=lambda k: (self._priorities.index(k[1]['priority']), int(k[0])))
+        else:
+            print_entries = match_entries
 
         # Limit to specified number of replies at a time
         if len(print_entries) > limit:
@@ -371,6 +365,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "dsearch": self.cmd_dsearch,
             "isearch": self.cmd_isearch,
             "asearch": self.cmd_asearch,
+            "rsearch": self.cmd_rsearch,
             "reject": self.cmd_reject,
             "edit": self.cmd_edit,
             "append": self.cmd_append,
@@ -450,6 +445,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} asearch [author]`
     Finds all {plural} added by self, or author if specified
+
+`{prefix} rsearch <:reaction:>`
+    Gets open {plural}, sorted by count of the specified reaction
 
 `{prefix} get <number>`
     Gets the {single} with the specified number
@@ -951,6 +949,39 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
         await(self.reply(message, "{} open {} of {} total from author {}".format(open_count, self._descriptor_plural, total_count, author.display_name)))
 
     ################################################################################
+    # rsearch
+    async def cmd_rsearch(self, message, args):
+        if (not args) or (" " in args):
+            raise ValueError('''Usage: {prefix} rsearch <:reaction:>'''.format(prefix=self._prefix))
+
+        await self.reply(message, "Getting a list of most-reacted entries. This will take some time...")
+
+        # Will be a list with entries of the form (reaction count, (index, entry))
+        raw_entries = []
+        for index in self._entries:
+            entry = self._entries[index]
+            if ("message_id" in entry) and ("close_reason" not in entry):
+                try:
+                    msg = await self._channel.fetch_message(entry["message_id"])
+                    if msg is not None and msg.reactions:
+                        react_text = '\n'
+                        for react in msg.reactions:
+                            if react.emoji == args:
+                                raw_entries.append((react.count, (index, entry)))
+                                break;
+                except discord.errors.NotFound:
+                    pass
+
+        # TODO: Custom reaction searching support
+        if not raw_entries:
+            raise ValueError("No entries with reaction '{}' - note that custom reactions are not supported yet".format(args))
+
+        raw_entries.sort(key=lambda kv: kv[0], reverse=True)
+        match_entries = [x[1] for x in raw_entries]
+
+        await self.print_search_results(message.channel, match_entries, sort_entries=False)
+
+    ################################################################################
     # addlabel
     async def cmd_addlabel(self, message, args):
         if not self.has_privilege(2, message.author):
@@ -1071,11 +1102,6 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
     async def cmd_prune(self, message, args):
         if not self.has_privilege(3, message.author):
             raise ValueError("You do not have permission to use this command")
-
-        if self._channel is None:
-            self._channel = self._client.get_channel(self._channel_id)
-            if self._channel is None:
-                raise Exception("Error getting bot channel!")
 
         await(self.reply(message, "Prune started, this will take some time..."))
 

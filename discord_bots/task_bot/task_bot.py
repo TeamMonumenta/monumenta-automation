@@ -36,10 +36,6 @@ try:
     client = discord.Client()
 
     facet_channels = []
-    for facet in bot_config["facets"]:
-        db = TaskDatabase(client, facet, config_dir)
-        for input_channel in facet["bot_input_channels"]:
-            facet_channels.append((input_channel, db))
 
     ################################################################################
     # Discord event handlers
@@ -49,6 +45,11 @@ try:
         logging.info('Logged in as')
         logging.info(client.user.name)
         logging.info(client.user.id)
+
+        for facet in bot_config["facets"]:
+            db = TaskDatabase(client, facet, config_dir)
+            for input_channel in facet["bot_input_channels"]:
+                facet_channels.append((input_channel, db))
 
     @client.event
     async def on_message(message):
