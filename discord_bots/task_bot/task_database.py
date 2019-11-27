@@ -444,7 +444,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
     For example:
         {prefix} search quest,class,high
 
-`{prefix} dsearch <search terms>`
+`{prefix} dsearch <search terms, count>`
     Searches all {single} descriptions for ones that contain all the specified search terms
 
 `{prefix} asearch [author]`
@@ -855,7 +855,20 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
     async def cmd_dsearch(self, message, args):
         part = args.replace(","," ").split()
         if (not args) or (len(part) < 1):
-            raise ValueError('''Usage: {prefix} dsearch <search terms>'''.format(prefix=self.prefix))
+            raise ValueError('''Usage: {prefix} dsearch <search terms, count>'''.format(prefix=self._prefix))
+
+        # Try to parse each argument as an integer - and if so, use that as the limit
+        limit = 15
+        search_terms = []
+        for term in part:
+            try:
+                limit = int(term)
+            except:
+                # Don't search for numbers
+                search_terms.append(term)
+
+        if len(search_terms) < 1:
+            raise ValueError('''Usage: {prefix} dsearch <search terms, count>'''.format(prefix=self._prefix))
 
         match_entries = []
         count = 0
@@ -863,7 +876,7 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
             entry = self._entries[index]
             if "close_reason" not in entry:
                 matches = True
-                for term in part:
+                for term in search_terms:
                     if term.strip().lower() not in entry["description"].lower():
                         matches = False
 
@@ -871,7 +884,7 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
                     count += 1
                     match_entries.append((index, entry))
 
-        await self.print_search_results(message.channel, match_entries)
+        await self.print_search_results(message.channel, match_entries, limit=limit)
 
         await(self.reply(message, "{} {} found matching {}".format(count, self._descriptor_plural, ",".join(part))))
 
