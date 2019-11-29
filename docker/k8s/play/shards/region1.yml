@@ -21,30 +21,6 @@ spec:
     port: 8804
     targetPort: 8804
 
----
-
-# Service / external network ports
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: region1-nodeport
-  namespace: play
-  labels:
-    app: region1
-spec:
-  type: NodePort
-  selector:
-    app: region1
-  ports:
-  # Main minecraft port
-  - name: "3333"
-    port: 3333
-    nodePort: 3333
-    targetPort: 3333
-
----
-
 # Deployment / the actual running application
 
 apiVersion: apps/v1
@@ -96,7 +72,6 @@ spec:
         ports:
         - containerPort: 25565
         - containerPort: 8804
-        - containerPort: 3333
         - containerPort: 8000
         env:
         # Set this to however much RAM the shard needs

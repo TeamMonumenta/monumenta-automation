@@ -70,6 +70,10 @@ spec:
     port: 25565
     nodePort: 25565
     targetPort: 25565
+  - name: votifier
+    port: 3333
+    nodePort: 3333
+    targetPort: 8192
 
 ---
 
@@ -117,6 +121,7 @@ spec:
         - containerPort: 25565
         - containerPort: 9575
         - containerPort: 8804
+        - containerPort: 8192
         env:
         - name: "JAVA_MEM"
           value: "4G"
