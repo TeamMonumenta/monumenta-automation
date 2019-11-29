@@ -194,10 +194,7 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
         ],
-        'linked':server_config + base_plugins + dynmap + [
-            ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
-            ('plugins/Votifier', '../../server_config/data/plugins/region_1/Votifier'),
-        ],
+        'linked':server_config + base_plugins + dynmap,
     },
 
     'region_2':{
