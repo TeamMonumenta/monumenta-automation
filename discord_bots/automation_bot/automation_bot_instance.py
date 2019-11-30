@@ -135,8 +135,21 @@ class AutomationBotInstance(object):
             self._project_epic_dir = config["project_epic_dir"]
 
             if "socket" in config:
+                # Get the event loop on the main thread
+                loop = asyncio.get_event_loop()
+
                 def socket_callback(message):
-                    logger.info("Got socket message: {}".format(pformat(message)))
+                    if "op" in message:
+                        if "Heartbeat" in message["op"]:
+                            return;
+
+                        logger.info("Got socket message: {}".format(pformat(message)))
+                        if self._audit_channel:
+                            if (message["op"] == "Monumenta.Automation.AuditLog"):
+                                # Schedule the display coroutine back on the main event loop
+                                asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
+                                                                                       channel=self._audit_channel),
+                                                                 loop)
 
                 conf = config["socket"]
                 if "log_level" in conf:
@@ -148,6 +161,12 @@ class AutomationBotInstance(object):
 
                 # Add commands that require the sockets here!
                 self._commands["broadcastcommand"] = self.action_broadcastcommand
+
+                self._audit_channel = None
+                try:
+                    self._audit_channel = client.get_channel(conf["audit_channel"])
+                except:
+                    logging.error( "Cannot connect to audit channel: " + conf["audit_channel"] )
 
             # Remove any commands that aren't available in the config
             for command in dict(self._commands):
@@ -228,9 +247,12 @@ class AutomationBotInstance(object):
 
         return result
 
-    async def display_verbatim(self, text):
+    async def display_verbatim(self, text, channel=None):
+        if channel is None:
+            channel = self._channel
+
         for chunk in split_string(text):
-            await self._channel.send("```" + chunk + "```")
+            await channel.send("```" + chunk + "```")
 
     async def debug(self, text):
         logger.debug(text)
