@@ -166,7 +166,7 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
 
                 if "tpToSpawn" in config and config["tpToSpawn"] == True:
                     a_player.spawn = dstWorld.spawn
-                    if a_player.pos[1] < -10:
+                    if a_player.pos[1] < -1:
                         print("    Not moving a player to spawn because they are in the void")
                     else:
                         a_player.pos = dstWorld.spawn
