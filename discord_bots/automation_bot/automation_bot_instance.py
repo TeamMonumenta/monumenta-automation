@@ -27,7 +27,6 @@ BYTES_PER_GB = 1<<30
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from lib_py3.raffle import vote_raffle
-from lib_py3.scoreboard import Scoreboard
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import parse_name_possibly_json
 from lib_py3.lib_k8s import KubernetesManager
@@ -123,6 +122,7 @@ class AutomationBotInstance(object):
             "stop and backup": self.action_stop_and_backup,
             "terrain reset": self.action_terrain_reset,
             "get raffle seed": self.action_get_raffle_seed,
+            "run test raffle": self.action_run_test_raffle,
 
             "stage": self.action_stage,
             "generate demo release": self.action_gen_demo_release,
@@ -701,6 +701,18 @@ DELETES DUNGEON CORE PROTECT DATA'''
         else:
             await self.display("No current raffle seed")
 
+    async def action_run_test_raffle(self, cmd, message):
+        '''Runs a test raffle (does not save results)'''
+
+        await self.display("Test raffle results:")
+        raffle_seed = "Default raffle seed"
+        if self._rreact["msg_contents"] is not None:
+            raffle_seed = self._rreact["msg_contents"]
+
+        raffle_results = tempfile.mktemp()
+        vote_raffle(raffle_seed, '/home/epic/project_epic/bungee/uuid2name.yml', '/home/epic/project_epic/bungee/plugins/Monumenta-Bungee/votes', raffle_results, 2, dry_run=True)
+        await self.run("cat {}".format(raffle_results), displayOutput=True)
+
     async def action_terrain_reset(self, cmd, message):
         '''Dangerous!
 Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
@@ -759,9 +771,8 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         if self._rreact["msg_contents"] is not None:
             raffle_seed = self._rreact["msg_contents"]
 
-        scoreboard = Scoreboard("/home/epic/project_epic/0_PREVIOUS/region_1/Project_Epic-region_1/data/scoreboard.dat")
         raffle_results = tempfile.mktemp()
-        vote_raffle(raffle_seed, scoreboard, raffle_results, 2)
+        vote_raffle(raffle_seed, '/home/epic/project_epic/bungee/uuid2name.yml', '/home/epic/project_epic/bungee/plugins/Monumenta-Bungee/votes', raffle_results, 2)
         await self.run("cat {}".format(raffle_results), displayOutput=True)
 
         # Raffle
