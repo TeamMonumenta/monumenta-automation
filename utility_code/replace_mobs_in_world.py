@@ -132,6 +132,13 @@ mobs_to_replace = [
     {
         'rules': {
             'id': 'minecraft:skeleton',
+            'CustomName': r'''Grove Lurker'''
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"§6Grove Lurker\"}",Health:25.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:1069568}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:499202}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:1069568}}},{id:"minecraft:jungle_leaves",Count:1b}],Attributes:[{Base:25.0d,Name:"generic.maxHealth"},{Base:0.23d,Name:"generic.movementSpeed"},{Base:20.0d,Name:"generic.followRange"}],Tags:["Elite"],HandItems:[{id:"minecraft:bow",tag:{Enchantments:[{lvl:2,id:"minecraft:power"}]},Count:1b},{id:"minecraft:tipped_arrow",tag:{CustomPotionEffects:[{Duration:60,Id:2,Amplifier:6}],Potion:"minecraft:awkward"},Count:1b}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
             'CustomName': r'''§6Grove Lurker'''
         },
         'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"§6Grove Lurker\"}",Health:25.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:1069568}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:499202}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:1069568}}},{id:"minecraft:jungle_leaves",Count:1b}],Attributes:[{Base:25.0d,Name:"generic.maxHealth"},{Base:0.23d,Name:"generic.movementSpeed"},{Base:20.0d,Name:"generic.followRange"}],Tags:["Elite"],HandItems:[{id:"minecraft:bow",tag:{Enchantments:[{lvl:2,id:"minecraft:power"}]},Count:1b},{id:"minecraft:tipped_arrow",tag:{CustomPotionEffects:[{Duration:60,Id:2,Amplifier:6}],Potion:"minecraft:awkward"},Count:1b}]}''',
@@ -837,9 +844,16 @@ mobs_to_replace = [
     {
         'rules': {
             'id': 'minecraft:drowned',
-            'CustomName': '§6Silver Theruge'
+            'CustomName': r'''§6Silver Theruge'''
         },
-        'mojangson': r'''{id:"minecraft:drowned",CustomName:"{\"text\":\"§6Silver Theruge\"}",Health:45.0f,ArmorItems:[{id:"minecraft:iron_boots",tag:{display:{Name:"{\"text\":\"Silver chariot boots\"}"},Enchantments:[{lvl:3s,id:"minecraft:feather_falling"}],Damage:0},Count:1b},{id:"minecraft:leather_leggings",tag:{display:{color:1908001,Name:"{\"text\":\"Silver chariot legs\"}"},Enchantments:[{lvl:3s,id:"minecraft:blast_protection"}],Damage:0},Count:1b},{id:"minecraft:iron_chestplate",tag:{display:{Name:"{\"text\":\"Silver chariot chest\"}"},Enchantments:[{lvl:2s,id:"minecraft:blast_protection"}]},Count:1b},{id:"minecraft:player_head",tag:{SkullOwner:{Id:"d4681bb1-040f-415c-a900-44592f56c250",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzBiZTdkYmIxODIzMmJlNjEzNTZiY2ZlNTI4NjYzMTU1ZDRiOGU5YmRmYmFjZjA2YWM1YTNkNTBiMTg2MDg3NyJ9fX0="}]}}},Count:1b}],Attributes:[{Base:45.0d,Name:"generic.maxHealth"}],Tags:["Elite"],HandItems:[{id:"minecraft:trident",tag:{Damage:0},Count:1b},{}]}''',
+        'mojangson': r'''{id:"minecraft:drowned",CustomName:"{\"text\":\"§6Silver Theurge\"}",Health:45.0f,ArmorItems:[{id:"minecraft:iron_boots",tag:{display:{Name:"{\"text\":\"Silver chariot boots\"}"},Enchantments:[{lvl:3s,id:"minecraft:feather_falling"}],Damage:0},Count:1b},{id:"minecraft:leather_leggings",tag:{display:{color:1908001,Name:"{\"text\":\"Silver chariot legs\"}"},Enchantments:[{lvl:3s,id:"minecraft:blast_protection"}],Damage:0},Count:1b},{id:"minecraft:iron_chestplate",tag:{display:{Name:"{\"text\":\"Silver chariot chest\"}"},Enchantments:[{lvl:2s,id:"minecraft:blast_protection"}]},Count:1b},{id:"minecraft:player_head",tag:{SkullOwner:{Id:"d4681bb1-040f-415c-a900-44592f56c250",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzBiZTdkYmIxODIzMmJlNjEzNTZiY2ZlNTI4NjYzMTU1ZDRiOGU5YmRmYmFjZjA2YWM1YTNkNTBiMTg2MDg3NyJ9fX0="}]}}},Count:1b}],Attributes:[{Base:45.0d,Name:"generic.maxHealth"}],Tags:["Elite"],HandItems:[{id:"minecraft:trident",tag:{Damage:0},Count:1b},{}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:drowned',
+            'CustomName': r'''§6Silver Theurge'''
+        },
+        'mojangson': r'''{id:"minecraft:drowned",CustomName:"{\"text\":\"§6Silver Theurge\"}",Health:45.0f,ArmorItems:[{id:"minecraft:iron_boots",tag:{display:{Name:"{\"text\":\"Silver chariot boots\"}"},Enchantments:[{lvl:3s,id:"minecraft:feather_falling"}],Damage:0},Count:1b},{id:"minecraft:leather_leggings",tag:{display:{color:1908001,Name:"{\"text\":\"Silver chariot legs\"}"},Enchantments:[{lvl:3s,id:"minecraft:blast_protection"}],Damage:0},Count:1b},{id:"minecraft:iron_chestplate",tag:{display:{Name:"{\"text\":\"Silver chariot chest\"}"},Enchantments:[{lvl:2s,id:"minecraft:blast_protection"}]},Count:1b},{id:"minecraft:player_head",tag:{SkullOwner:{Id:"d4681bb1-040f-415c-a900-44592f56c250",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzBiZTdkYmIxODIzMmJlNjEzNTZiY2ZlNTI4NjYzMTU1ZDRiOGU5YmRmYmFjZjA2YWM1YTNkNTBiMTg2MDg3NyJ9fX0="}]}}},Count:1b}],Attributes:[{Base:45.0d,Name:"generic.maxHealth"}],Tags:["Elite"],HandItems:[{id:"minecraft:trident",tag:{Damage:0},Count:1b},{}]}''',
     },
     {
         'rules': {
