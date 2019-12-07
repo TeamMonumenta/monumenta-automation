@@ -163,10 +163,11 @@ class AutomationBotInstance(object):
                 self._commands["broadcastcommand"] = self.action_broadcastcommand
 
                 self._audit_channel = None
-                try:
-                    self._audit_channel = client.get_channel(conf["audit_channel"])
-                except:
-                    logging.error( "Cannot connect to audit channel: " + conf["audit_channel"] )
+                if "audit_channel" in conf:
+                    try:
+                        self._audit_channel = client.get_channel(conf["audit_channel"])
+                    except:
+                        logging.error( "Cannot connect to audit channel: " + conf["audit_channel"] )
 
             # Remove any commands that aren't available in the config
             for command in dict(self._commands):
