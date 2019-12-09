@@ -917,7 +917,15 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
     ################################################################################
     # isearch
     async def cmd_isearch(self, message, args):
-        match_entries, _, __, ___ = await self.search_helper(args, max_count=100)
+        if "assigned" == args:
+            match_entries = []
+            for index in self._entries:
+                entry = self._entries[index]
+                if "close_reason" not in entry:
+                    if "assignee" in entry:
+                        match_entries.append((index, entry))
+        else:
+            match_entries, _, __, ___ = await self.search_helper(args, max_count=100)
 
         if len(match_entries) <= 0:
             raise ValueError("No results to display")
