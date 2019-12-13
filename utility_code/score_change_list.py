@@ -176,6 +176,9 @@ dungeon_score_rules = [
             {"Objective":"DRAccess","Score":0}]}},
 
     {"condition":{"Objective":"DRL2Access","Score":{"min":1}},
+        "actions":{"add":[
+            {"Objective":"DRL2Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"DRL2Access","Score":{"min":3 * instance_week_offset}},
         "actions":{"set":[
             {"Objective":"DRL2Access","Score":0}]}},
     {"condition":{"Name":"$last","Objective":"DRL2Access"},
