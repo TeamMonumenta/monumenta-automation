@@ -17,6 +17,42 @@ from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_en
 from lib_py3.common import eprint, parse_name_possibly_json, get_named_hand_items
 from lib_py3.world import World
 
+bad_tags_for_spawners = (
+    'Air',
+    'ArmorDropChances',
+    'Bukkit.updateLevel',
+    'CanPickUpLoot',
+    'DeathTime',
+    'Dimension',
+    'FallDistance',
+    'FallFlying',
+    'HandDropChances',
+    'HurtByTimestamp',
+    'HurtTime',
+    'Leashed',
+    'OnGround',
+    'Paper.AAAB',
+    'Paper.FromMobSpawner',
+    'Paper.Origin',
+    'PortalCooldown',
+    'Pos',
+    'Rotation',
+    'Spigot.ticksLived',
+    'Team',
+    'WorldUUIDLeast',
+    'WorldUUIDMost',
+)
+
+good_tags_for_not_spawners = (
+    'Dimension',
+    'Leashed',
+    'OnGround',
+    'Pos',
+    'Rotation',
+    'WorldUUIDLeast',
+    'WorldUUIDMost',
+)
+
 def pop_if_present(spawner_entity, entity_path, log_handle, key):
     if isinstance(spawner_entity, nbt.TagCompound) and key in spawner_entity.value:
         if log_handle is not None:
@@ -24,29 +60,8 @@ def pop_if_present(spawner_entity, entity_path, log_handle, key):
         spawner_entity.value.pop(key)
 
 def remove_tags_from_spawner_entity(spawner_entity, entity_path, log_handle):
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Pos')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Leashed')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Air')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'OnGround')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Dimension')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Rotation')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'WorldUUIDMost')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'WorldUUIDLeast')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'HurtTime')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'HurtByTimestamp')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'FallFlying')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'PortalCooldown')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'FallDistance')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'DeathTime')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'HandDropChances')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'ArmorDropChances')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'CanPickUpLoot')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Bukkit.updateLevel')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Spigot.ticksLived')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Paper.AAAB')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Paper.Origin')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Paper.FromMobSpawner')
-    pop_if_present(spawner_entity, entity_path, log_handle, 'Team')
+    for tag_name in bad_tags_for_spawners:
+        pop_if_present(spawner_entity, entity_path, log_handle, tag_name)
 
     # Recurse over passengers
     if (spawner_entity.has_path('Passengers')):
@@ -68,13 +83,13 @@ def remove_tags_from_entities_in_spawner(entity, entity_path, log_handle):
 mobs_to_replace = [
     ################################################################################
     # Global NPCs
-    #{
-    #    'rules': {
-    #        'id': 'minecraft:villager',
-    #        'CustomName': r'''Moneychanger'''
-    #    },
-    #    'mojangson': r'''{id:"minecraft:villager",Attributes:[{Base:20.0d,Name:"generic.maxHealth"},{Base:1.0d,Name:"generic.knockbackResistance"},{Base:0.0d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"}],Riches:0,Invulnerable:0b,Paper.SpawnReason:"DEFAULT",Offers:{Recipes:[{maxUses:2147483647,buy:{id:"minecraft:experience_bottle",Count:8b},sell:{id:"minecraft:dragon_breath",Count:1b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 enchanting bottles"],Name:"{\"text\":\"§6Concentrated Experience\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},uses:182,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:dragon_breath",Count:1b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 enchanting bottles"],Name:"{\"text\":\"§6Concentrated Experience\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},sell:{id:"minecraft:experience_bottle",Count:8b},uses:741,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:dragon_breath",Count:64b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 enchanting bottles"],Name:"{\"text\":\"§6Concentrated Experience\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},sell:{id:"minecraft:sunflower",Count:1b,tag:{HideFlags:3,display:{Lore:["§7Worth 64 Concentrated Experience"],Name:"{\"text\":\"§6§lHyperexperience\"}"},Enchantments:[{lvl:1s,id:"minecraft:infinity"}],AttributeModifiers:[{UUIDMost:5878651091356175442L,UUIDLeast:-7328029284549672579L,Amount:0.12d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},uses:16,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:sunflower",Count:1b,tag:{HideFlags:3,display:{Lore:["§7Worth 64 Concentrated Experience"],Name:"{\"text\":\"§6§lHyperexperience\"}"},Enchantments:[{lvl:1s,id:"minecraft:infinity"}],AttributeModifiers:[{UUIDMost:5878651091356175442L,UUIDLeast:-7328029284549672579L,Amount:0.12d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},sell:{id:"minecraft:dragon_breath",Count:64b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 enchanting bottles"],Name:"{\"text\":\"§6Concentrated Experience\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},uses:35,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:prismarine_shard",Count:8b,tag:{HideFlags:1,display:{Name:"{\"text\":\"§bCrystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},sell:{id:"minecraft:prismarine_crystals",Count:1b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 Crystalline Shards"],Name:"{\"text\":\"§bCompressed Crystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},uses:65,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:prismarine_crystals",Count:1b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 Crystalline Shards"],Name:"{\"text\":\"§bCompressed Crystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},sell:{id:"minecraft:prismarine_shard",Count:8b,tag:{HideFlags:1,display:{Name:"{\"text\":\"§bCrystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},uses:0,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:prismarine_crystals",Count:64b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 Crystalline Shards"],Name:"{\"text\":\"§bCompressed Crystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},sell:{id:"minecraft:nether_star",Count:1b,tag:{display:{Lore:["§7Worth 64 Compressed Crystalline Shards"],Name:"{\"text\":\"§b§lHyper Crystalline Shard\"}"}}},uses:2,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:nether_star",Count:1b,tag:{display:{Lore:["§7Worth 64 Compressed Crystalline Shards"],Name:"{\"text\":\"§b§lHyper Crystalline Shard\"}"}}},sell:{id:"minecraft:prismarine_crystals",Count:64b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 Crystalline Shards"],Name:"{\"text\":\"§bCompressed Crystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},uses:2,rewardExp:0b}]},AbsorptionAmount:0.0f,Profession:1,CustomName:"{\"text\":\"Moneychanger\"}",PersistenceRequired:1b,CareerLevel:42,Career:3,Inventory:[]}''',
-    #},
+    {
+        'rules': {
+            'id': 'minecraft:villager',
+            'CustomName': r'''Moneychanger'''
+        },
+        'mojangson': r'''{id:"minecraft:villager",Attributes:[{Base:20.0d,Name:"generic.maxHealth"},{Base:1.0d,Name:"generic.knockbackResistance"},{Base:0.0d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"}],Riches:0,Invulnerable:0b,Paper.SpawnReason:"DEFAULT",Offers:{Recipes:[{maxUses:2147483647,buy:{id:"minecraft:experience_bottle",Count:8b},sell:{id:"minecraft:dragon_breath",Count:1b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 enchanting bottles"],Name:"{\"text\":\"§6Concentrated Experience\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},uses:0,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:dragon_breath",Count:64b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 enchanting bottles"],Name:"{\"text\":\"§6Concentrated Experience\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},sell:{id:"minecraft:sunflower",Count:1b,tag:{HideFlags:3,display:{Lore:["§7Worth 64 Concentrated Experience"],Name:"{\"text\":\"§6§lHyperexperience\"}"},Enchantments:[{lvl:1s,id:"minecraft:infinity"}],AttributeModifiers:[{UUIDMost:5878651091356175442L,UUIDLeast:-7328029284549672579L,Amount:0.12d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},uses:0,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:dragon_breath",Count:1b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 enchanting bottles"],Name:"{\"text\":\"§6Concentrated Experience\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},sell:{id:"minecraft:experience_bottle",Count:8b},uses:0,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:sunflower",Count:1b,tag:{HideFlags:3,display:{Lore:["§7Worth 64 Concentrated Experience"],Name:"{\"text\":\"§6§lHyperexperience\"}"},Enchantments:[{lvl:1s,id:"minecraft:infinity"}],AttributeModifiers:[{UUIDMost:5878651091356175442L,UUIDLeast:-7328029284549672579L,Amount:0.12d,Slot:"mainhand",AttributeName:"generic.movementSpeed",Operation:1,Name:"Modifier"}]}},sell:{id:"minecraft:dragon_breath",Count:64b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 enchanting bottles"],Name:"{\"text\":\"§6Concentrated Experience\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},uses:0,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:prismarine_shard",Count:8b,tag:{HideFlags:1,display:{Name:"{\"text\":\"§bCrystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},sell:{id:"minecraft:prismarine_crystals",Count:1b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 Crystalline Shards"],Name:"{\"text\":\"§bCompressed Crystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},uses:0,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:prismarine_crystals",Count:64b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 Crystalline Shards"],Name:"{\"text\":\"§bCompressed Crystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},sell:{id:"minecraft:nether_star",Count:1b,tag:{display:{Lore:["§7Worth 64 Compressed Crystalline Shards"],Name:"{\"text\":\"§b§lHyper Crystalline Shard\"}"}}},uses:0,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:prismarine_crystals",Count:1b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 Crystalline Shards"],Name:"{\"text\":\"§bCompressed Crystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},sell:{id:"minecraft:prismarine_shard",Count:8b,tag:{HideFlags:1,display:{Name:"{\"text\":\"§bCrystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},uses:0,rewardExp:0b},{maxUses:2147483647,buy:{id:"minecraft:nether_star",Count:1b,tag:{display:{Lore:["§7Worth 64 Compressed Crystalline Shards"],Name:"{\"text\":\"§b§lHyper Crystalline Shard\"}"}}},sell:{id:"minecraft:prismarine_crystals",Count:64b,tag:{HideFlags:1,display:{Lore:["§7Worth 8 Crystalline Shards"],Name:"{\"text\":\"§bCompressed Crystalline Shard\"}"},Enchantments:[{lvl:1s,id:"minecraft:power"}]}},uses:0,rewardExp:0b}]},AbsorptionAmount:0.0f,Profession:1,CustomName:"{\"text\":\"Moneychanger\"}",PersistenceRequired:1b,CareerLevel:42,Career:3,Inventory:[]}''',
+    },
     # Global NPCs
     ################################################################################
 
@@ -1443,6 +1458,13 @@ for entity, source_pos, entity_path in world.entity_iterator(readonly=dry_run):
                         matches = False
 
             if matches:
+                # Make a copy of any details to preserve
+                preserved = nbt.TagCompound({})
+                if not entity_path.has_path('id') or entity_path.at_path('id') != 'minecraft:spawner':
+                    for tag_name in good_tags_for_not_spawners:
+                        if entity.has_path(tag_name):
+                            preserved.value[tag_name] = entity.value[tag_name]
+
                 # Replace this entity
                 log_handle.write("\n")
                 log_handle.write("    TO:    {}\n".format(replacement['mojangson']))
@@ -1451,6 +1473,12 @@ for entity, source_pos, entity_path in world.entity_iterator(readonly=dry_run):
                 log_handle.write("\n")
 
                 entity.value = nbt.TagCompound.from_mojangson(replacement['mojangson']).value
+
+                # Restore any tags to preserve
+                if not entity_path.has_path('id') or entity_path.at_path('id') != 'minecraft:spawner':
+                    for tag_name in good_tags_for_not_spawners:
+                        if preserved.has_path(tag_name):
+                            entity.value[tag_name] = preserved[tag_name]
 
 
 
