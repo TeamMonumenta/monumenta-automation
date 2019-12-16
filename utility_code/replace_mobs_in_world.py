@@ -876,6 +876,13 @@ mobs_to_replace = [
         },
         'mojangson': r'''{id:"minecraft:creeper",CustomName:"{\"text\":\"Spectral Creeper\"}",powered:1b,Tags:["boss_invisible"]}''',
     },
+    {
+        'rules': {
+            'id': 'minecraft:spider',
+            'CustomName': r'''Rockspider'''
+        },
+        'mojangson': r'''{id:"minecraft:spider",CustomName:"{\"text\":\"Rockspider\"}",Passengers:[{Passengers:[{BlockState:{Name:"minecraft:obsidian"},Time:1b,id:"minecraft:falling_block"}],Value:0s,id:"minecraft:experience_orb"}],Health:30.0f,Attributes:[{Base:30.0d,Name:"generic.maxHealth"}]}''',
+    },
     # Region 2
     ################################################################################
 
