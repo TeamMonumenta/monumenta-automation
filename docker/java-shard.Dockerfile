@@ -15,8 +15,7 @@ RUN groupadd --non-unique -g $GID $USERNAME && \
 	useradd -lmNs /bin/bash -u $UID -g $GID $USERNAME
 
 COPY monumenta.sh /
-RUN wget "http://builds.enginehub.org/job/warmroast/4523/download/warmroast-1.0.0-SNAPSHOT.jar" && \
-	chmod +x /monumenta.sh
+RUN chmod +x /monumenta.sh
 
 USER $USERNAME
 WORKDIR $USERHOME
