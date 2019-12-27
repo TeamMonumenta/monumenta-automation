@@ -95,14 +95,12 @@ monumenta_without_mobs_plugins = [
         ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
-        ('plugins/MonumentaMain/Properties.json', '../../../server_config/data/plugins/{servername}/MonumentaMain/Properties.json'),
+        ('plugins/Monumenta/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
         ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
         ('plugins/PremiumVanish/config.yml', '../../../server_config/data/plugins/all/PremiumVanish/config.yml'),
     ]
 monumenta = monumenta_without_mobs_plugins + [
-        ('plugins/MonumentaMain.jar', '../../server_config/plugins/MonumentaMain.jar'),
-        ('plugins/MonumentaNMS.jar', '../../server_config/plugins/MonumentaNMS.jar'),
-        ('plugins/MonumentaBosses.jar', '../../server_config/plugins/MonumentaBosses.jar'),
+        ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
     ]
 
 coreprotect = [
