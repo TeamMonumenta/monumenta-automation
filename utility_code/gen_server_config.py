@@ -299,7 +299,7 @@ config = {
 }
 
 simple_view_distance_config = {
-    'white': 16,
+    'white': 8,
     'orange': 12,
     'magenta': 12,
     'lightblue': 12,
