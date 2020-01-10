@@ -147,6 +147,39 @@ mobs_to_replace = [
     ################################################################################
 
     ################################################################################
+    # Reverie
+    {
+        'rules': {
+            'id': 'minecraft:wither_skeleton',
+            'CustomName': r'''§6Harbinger of Hunger'''
+        },
+        'mojangson': r'''{id:"minecraft:wither_skeleton",CustomName:"{\"text\":\"§6Harbinger of Hunger\"}",Health:100.0f,ArmorItems:[{id:"minecraft:golden_boots",Count:1b,tag:{Enchantments:[{lvl:1s,id:"minecraft:feather_falling"}],AttributeModifiers:[{UUIDMost:-8685110482381287921L,UUIDLeast:-7229480404573233213L,Amount:0.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:2359296},AttributeModifiers:[{UUIDMost:7204803383985784080L,UUIDLeast:-6300413992584138652L,Amount:0.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:golden_chestplate",Count:1b,tag:{Enchantments:[{lvl:8s,id:"minecraft:projectile_protection"}],AttributeModifiers:[{UUIDMost:5353429785389515811L,UUIDLeast:-4931080707260041410L,Amount:0.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"9eee34ea-2c9f-47a1-98f8-34105af45215",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVmMzE3ZmFhOGRjZjEzYTJmYzE4ZWEwYmYwYTA3MzZhNGZmOTVjMjg1MDFiYjFjZmE0MzAyNTQyMjc4ZjhhIn19fQ=="}]}}}}],Attributes:[{Base:0.21d,Name:"generic.movementSpeed"},{Base:25.0d,Name:"generic.followRange"},{Base:100.0d,Name:"generic.maxHealth"}],PersistenceRequired:1b,Tags:["Elite","HungerAura"],ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:2147483647,Id:24b,Amplifier:0b}],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§6§lSmouldering Flame\"}"},AttributeModifiers:[{UUIDMost:-3492455892873362396L,UUIDLeast:-8044241991377390956L,Amount:8.5d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{id:"minecraft:banner",Patterns:[{Pattern:"tt",Color:15},{Pattern:"cbo",Color:15},{Pattern:"bt",Color:15},{Pattern:"bts",Color:14},{Pattern:"tts",Color:14}],Base:14}}}],CustomNameVisible:1b}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:wither_skeleton',
+            'CustomName': r'''§6Harbinger of Weakness'''
+        },
+        'mojangson': r'''{id:"minecraft:wither_skeleton",CustomName:"{\"text\":\"§6Harbinger of Weakness\"}",Health:100.0f,ArmorItems:[{id:"minecraft:golden_boots",Count:1b,tag:{Enchantments:[{lvl:1s,id:"minecraft:feather_falling"}],AttributeModifiers:[{UUIDMost:-8685110482381287921L,UUIDLeast:-7229480404573233213L,Amount:0.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:2359296},AttributeModifiers:[{UUIDMost:7204803383985784080L,UUIDLeast:-6300413992584138652L,Amount:0.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:golden_chestplate",Count:1b,tag:{Enchantments:[{lvl:8s,id:"minecraft:projectile_protection"}],AttributeModifiers:[{UUIDMost:5353429785389515811L,UUIDLeast:-4931080707260041410L,Amount:0.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"9eee34ea-2c9f-47a1-98f8-34105af45215",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVmMzE3ZmFhOGRjZjEzYTJmYzE4ZWEwYmYwYTA3MzZhNGZmOTVjMjg1MDFiYjFjZmE0MzAyNTQyMjc4ZjhhIn19fQ=="}]}}}}],Attributes:[{Base:0.21d,Name:"generic.movementSpeed"},{Base:25.0d,Name:"generic.followRange"},{Base:100.0d,Name:"generic.maxHealth"}],PersistenceRequired:1b,Tags:["Elite","WeaknessAura"],ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:2147483647,Id:24b,Amplifier:0b}],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§6§lSmouldering Flame\"}"},AttributeModifiers:[{UUIDMost:-3492455892873362396L,UUIDLeast:-8044241991377390956L,Amount:8.5d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{id:"minecraft:banner",Patterns:[{Pattern:"tt",Color:15},{Pattern:"cbo",Color:15},{Pattern:"bt",Color:15},{Pattern:"bts",Color:14},{Pattern:"tts",Color:14}],Base:14}}}],CustomNameVisible:1b}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:wither_skeleton',
+            'CustomName': r'''§6Harbinger of Slowness'''
+        },
+        'mojangson': r'''{id:"minecraft:wither_skeleton",CustomName:"{\"text\":\"§6Harbinger of Slowness\"}",Health:100.0f,ArmorItems:[{id:"minecraft:golden_boots",Count:1b,tag:{Enchantments:[{lvl:1s,id:"minecraft:feather_falling"}],AttributeModifiers:[{UUIDMost:-8685110482381287921L,UUIDLeast:-7229480404573233213L,Amount:0.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:2359296},AttributeModifiers:[{UUIDMost:7204803383985784080L,UUIDLeast:-6300413992584138652L,Amount:0.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:golden_chestplate",Count:1b,tag:{Enchantments:[{lvl:8s,id:"minecraft:projectile_protection"}],AttributeModifiers:[{UUIDMost:5353429785389515811L,UUIDLeast:-4931080707260041410L,Amount:0.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"9eee34ea-2c9f-47a1-98f8-34105af45215",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVmMzE3ZmFhOGRjZjEzYTJmYzE4ZWEwYmYwYTA3MzZhNGZmOTVjMjg1MDFiYjFjZmE0MzAyNTQyMjc4ZjhhIn19fQ=="}]}}}}],Attributes:[{Base:0.21d,Name:"generic.movementSpeed"},{Base:25.0d,Name:"generic.followRange"},{Base:100.0d,Name:"generic.maxHealth"}],PersistenceRequired:1b,Tags:["Elite","SlownessAura"],ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:2147483647,Id:24b,Amplifier:0b}],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§6§lSmouldering Flame\"}"},AttributeModifiers:[{UUIDMost:-3492455892873362396L,UUIDLeast:-8044241991377390956L,Amount:8.5d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{id:"minecraft:banner",Patterns:[{Pattern:"tt",Color:15},{Pattern:"cbo",Color:15},{Pattern:"bt",Color:15},{Pattern:"bts",Color:14},{Pattern:"tts",Color:14}],Base:14}}}],CustomNameVisible:1b}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:wither_skeleton',
+            'CustomName': r'''§6Harbinger of Fatigue'''
+        },
+        'mojangson': r'''{id:"minecraft:wither_skeleton",CustomName:"{\"text\":\"§6Harbinger of Fatigue\"}",Health:100.0f,ArmorItems:[{id:"minecraft:golden_boots",Count:1b,tag:{Enchantments:[{lvl:1s,id:"minecraft:feather_falling"}],AttributeModifiers:[{UUIDMost:-8685110482381287921L,UUIDLeast:-7229480404573233213L,Amount:0.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:2359296},AttributeModifiers:[{UUIDMost:7204803383985784080L,UUIDLeast:-6300413992584138652L,Amount:0.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:golden_chestplate",Count:1b,tag:{Enchantments:[{lvl:8s,id:"minecraft:projectile_protection"}],AttributeModifiers:[{UUIDMost:5353429785389515811L,UUIDLeast:-4931080707260041410L,Amount:0.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"9eee34ea-2c9f-47a1-98f8-34105af45215",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVmMzE3ZmFhOGRjZjEzYTJmYzE4ZWEwYmYwYTA3MzZhNGZmOTVjMjg1MDFiYjFjZmE0MzAyNTQyMjc4ZjhhIn19fQ=="}]}}}}],Attributes:[{Base:0.21d,Name:"generic.movementSpeed"},{Base:25.0d,Name:"generic.followRange"},{Base:100.0d,Name:"generic.maxHealth"}],PersistenceRequired:1b,Tags:["Elite","FatigueAura"],ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:2147483647,Id:24b,Amplifier:0b}],HandItems:[{id:"minecraft:golden_sword",Count:1b,tag:{display:{Name:"{\"text\":\"§6§lSmouldering Flame\"}"},AttributeModifiers:[{UUIDMost:-3492455892873362396L,UUIDLeast:-8044241991377390956L,Amount:8.5d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{id:"minecraft:banner",Patterns:[{Pattern:"tt",Color:15},{Pattern:"cbo",Color:15},{Pattern:"bt",Color:15},{Pattern:"bts",Color:14},{Pattern:"tts",Color:14}],Base:14}}}],CustomNameVisible:1b}''',
+    },
+    # Reverie
+    ################################################################################
+
+    ################################################################################
     # Yellow
     {
         'rules': {
@@ -933,7 +966,14 @@ mobs_to_replace = [
             'id': 'minecraft:ghast',
             'CustomName': 'Dessicated Ghast'
         },
-        'mojangson': r'''{id:"minecraft:ghast",CustomName:"{\"text\":\"Dessicated Ghast\"}",Health:25.0f,Attributes:[{Base:25.0d,Name:"generic.maxHealth"}],ExplosionPower:2}''',
+        'mojangson': r'''{id:"minecraft:ghast",CustomName:"[{\"text\":\"Desiccated Ghast\"}]",Health:25.0f,Attributes:[{Base:25.0d,Name:"generic.maxHealth"}],ExplosionPower:2}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:ghast',
+            'CustomName': r'''Desiccated Ghast'''
+        },
+        'mojangson': r'''{id:"minecraft:ghast",CustomName:"[{\"text\":\"Desiccated Ghast\"}]",Health:25.0f,Attributes:[{Base:25.0d,Name:"generic.maxHealth"}],ExplosionPower:2}''',
     },
     {
         'rules': {
@@ -1180,6 +1220,13 @@ mobs_to_replace = [
 
     ################################################################################
     # Fred Mobs
+    {
+        'rules': {
+            'id': 'minecraft:creeper',
+            'CustomName': r'''Water Boomer'''
+        },
+        'mojangson': r'''{id:"minecraft:creeper",CustomName:"{\"text\":\"Water Boomer\"}",Passengers:[{Potion:{id:"minecraft:lingering_potion",Count:1b,tag:{CustomPotionEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:1600,Id:19b,Amplifier:1b}],Potion:"minecraft:empty"}},id:"minecraft:potion"}],Health:30.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{Enchantments:[{lvl:3s,id:"minecraft:depth_strider"}],AttributeModifiers:[{UUIDMost:-4922752950493362541L,UUIDLeast:-6253577500229384161L,Amount:0.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{},{},{}],Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],ExplosionRadius:4b}''',
+    },
     {
         'rules': {
             'id': 'minecraft:drowned',
