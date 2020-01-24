@@ -423,7 +423,7 @@ mobs_to_replace = [
             'id': 'minecraft:zombie',
             'CustomName': 'Nightmare Cultist'
         },
-        'mojangson': r'''{id:"minecraft:zombie",Attributes:[{Base:0.2d,Name:"generic.movementSpeed"},{Base:2.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:35.0d,Name:"generic.followRange"},{Base:7.0d,Name:"generic.attackDamage"},{Base:0.08852623664344506d,Name:"zombie.spawnReinforcements"},{Base:0.5d,Name:"generic.knockbackResistance"},{Base:26.0d,Name:"generic.maxHealth"}],Invulnerable:0b,PersistenceRequired:0b,Health:30.0f,HandItems:[{id:"minecraft:ender_eye",tag:{Enchantments:[{lvl:1,id:"minecraft:knockback"},{lvl:1,id:"minecraft:fire_aspect"}]},Count:1b},{}],Passengers:[{shake:0b,xTile:0,Potion:{id:"minecraft:splash_potion",tag:{CustomPotionEffects:[{ShowParticles:0b,Duration:30,Id:25,Amplifier:30}]},Count:1b},inGround:0b,Invulnerable:0b,ownerName:"",zTile:0,yTile:0,id:"minecraft:potion"}],CustomName:"{\"text\":\"Nightmare Cultist\"}",CanBreakDoors:0b,ArmorItems:[{},{},{id:"minecraft:leather_chestplate",tag:{display:{color:3473469}},Count:1b},{id:"minecraft:player_head",tag:{SkullOwner:{Id:"c8354db9-fc75-4011-989a-013471e7aa84",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWVjM2ZmNTYzMjkwYjEzZmYzYmNjMzY4OThhZjdlYWE5ODhiNmNjMThkYzI1NDE0N2Y1ODM3NGFmZTliMjFiOSJ9fX0="}]}}},Count:1b}],WorldActiveEffects:[{Ambient:0b,ShowParticles:0b,Duration:199999252,Id:14b,Amplifier:1b}],CustomNameVisible:1b}''',
+        'mojangson': r'''{id:"minecraft:zombie",Health:30.0f,Attributes:[{Base:0.2d,Name:"generic.movementSpeed"},{Base:2.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:35.0d,Name:"generic.followRange"},{Base:7.0d,Name:"generic.attackDamage"},{Base:0.08852623664344506d,Name:"zombie.spawnReinforcements"},{Base:0.5d,Name:"generic.knockbackResistance"},{Base:26.0d,Name:"generic.maxHealth"}],Invulnerable:0b,WorldActiveEffects:[{Ambient:0b,ShowParticles:0b,Duration:199999252,Id:14b,Amplifier:1b}],HandItems:[{id:"minecraft:ender_eye",tag:{Enchantments:[{lvl:1,id:"minecraft:knockback"},{lvl:1,id:"minecraft:fire_aspect"}]},Count:1b},{}],Passengers:[{shake:0b,xTile:0,ownerName:"",Potion:{id:"minecraft:splash_potion",tag:{CustomPotionEffects:[{ShowParticles:0b,Duration:30,Id:25,Amplifier:30}]},Count:1b},zTile:0,inGround:0b,yTile:0,Invulnerable:0b,id:"minecraft:potion"}],CustomName:"{\"text\":\"Nightmare Cultist\"}",CanBreakDoors:0b,ArmorItems:[{},{},{id:"minecraft:leather_chestplate",tag:{display:{color:3473469}},Count:1b},{id:"minecraft:player_head",tag:{SkullOwner:{Id:"c8354db9-fc75-4011-989a-013471e7aa84",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYWVjM2ZmNTYzMjkwYjEzZmYzYmNjMzY4OThhZjdlYWE5ODhiNmNjMThkYzI1NDE0N2Y1ODM3NGFmZTliMjFiOSJ9fX0="}]}}},Count:1b}],PersistenceRequired:0b,ActiveEffects:[{Ambient:1b,ShowIcon:1b,ShowParticles:1b,Duration:999999999,Id:14b,Amplifier:0b}],CustomNameVisible:1b}''',
     },
     {
         'rules': {
@@ -915,6 +915,13 @@ mobs_to_replace = [
             'CustomName': r'''Rockspider'''
         },
         'mojangson': r'''{id:"minecraft:spider",CustomName:"{\"text\":\"Rockspider\"}",Passengers:[{Passengers:[{BlockState:{Name:"minecraft:obsidian"},Time:1b,id:"minecraft:falling_block"}],Value:0s,id:"minecraft:experience_orb"}],Health:30.0f,Attributes:[{Base:30.0d,Name:"generic.maxHealth"}]}''',
+    },
+    {
+        'rules': {
+            'id': 'minecraft:skeleton',
+            'CustomName': r'''Mercenary Archer'''
+        },
+        'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"Mercenary Archer\"}",Health:30.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:10506272,Name:"{\"text\":\"§aHardened Leather Boots\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:10506272,Name:"{\"text\":\"§aHardened Leather Pants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:8606770,Name:"{\"text\":\"§bLighthouseWarrior\"}"}}},{}],Attributes:[{Base:30.0d,Name:"generic.maxHealth"}],HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§fFrost Knight Archer\\u0027s Bow\"}"},Enchantments:[{lvl:1s,id:"minecraft:punch"},{lvl:2s,id:"minecraft:power"}],Damage:0}},{id:"minecraft:tipped_arrow",Count:1b,tag:{Potion:"minecraft:swiftness"}}]}''',
     },
     # Region 2
     ################################################################################
