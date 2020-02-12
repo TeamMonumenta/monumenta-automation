@@ -137,6 +137,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:cyan_stained_glass", "Cyan Key", "minecraft:cyan_concrete", "Cyan Wool Key"],
             ["minecraft:stone_shovel", "Greyskull's Spellcaster", "minecraft:bone", "Greyskull's Spellcaster"],
             ["minecraft:prismarine_crystals", "Shifting Crystals", "minecraft:quartz", "Shifting Crystals"],
+            ["minecraft:leather_leggings", "Sports Leggings", "minecraft:leather_leggings", "Yoga Pants"]
         ]:
             old_id, old_name, new_id, new_name = substitution
 
