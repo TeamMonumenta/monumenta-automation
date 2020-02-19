@@ -4,6 +4,7 @@ import json
 import time
 from pprint import pformat
 from lib_py3.common import parse_name_possibly_json, eprint
+from lib_py3.mob_replacement_manager import MobReplacementManager
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 
@@ -13,10 +14,11 @@ from quarry.types.text_format import unformat_text
 
 
 class LibraryOfSouls(object):
-    def __init__(self, path: str):
+    def __init__(self, path: str, readonly=False):
         self._path = path
         self._souls = []
         self._index = None
+        self._readonly = readonly
 
         with open(path, "r") as fp:
             self._souls = json.load(fp)
@@ -74,6 +76,8 @@ class LibraryOfSouls(object):
         return None
 
     def add_soul(self, soul_nbt: TagCompound) -> None:
+        if self._readonly:
+            raise Exception("Attempted to save read-only Library of Souls")
         if self._index is None:
             self.refresh_index()
 
@@ -93,7 +97,18 @@ class LibraryOfSouls(object):
         self._index[name] = soul_entry
         self._souls.append(soul_entry)
 
-    def save(self):
+    def load_replacements(self, mgr: MobReplacementManager) -> None:
+        if self._index is None:
+            self.refresh_index()
+
+        current_nbt = []
+        for name in self._index:
+            current_nbt.append(self.get_soul_current_nbt(name))
+
+        mgr.add_replacements(current_nbt)
+
+    def save(self) -> None:
+        if self._readonly:
+            raise Exception("Attempted to save read-only Library of Souls")
         with open(self._path, "w") as fp:
             json.dump(self._souls, fp, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
-        pass

@@ -9,18 +9,27 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types.text_format import unformat_text
+from quarry.types import nbt
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
-def get_item_name_from_nbt(item_nbt):
+def get_entity_name_from_nbt(entity_nbt: nbt.TagCompound, remove_color=True) -> str:
+    """
+    Parses a color-removed name out of an entity's NBT. Returns a string or None if no name exists
+    """
+    if not entity_nbt.has_path('CustomName'):
+        return None
+    return parse_name_possibly_json(entity_nbt.at_path('CustomName').value, remove_color)
+
+def get_item_name_from_nbt(item_nbt: nbt.TagCompound, remove_color=True):
     """
     Parses a color-removed name out of an item's NBT. Returns a string or None if no name exists
     """
     if not item_nbt.has_path("display.Name"):
         return None
 
-    return parse_name_possibly_json(item_nbt.at_path("display.Name").value, remove_color=True)
+    return parse_name_possibly_json(item_nbt.at_path("display.Name").value, remove_color)
 
 def json_text_to_plain_text(json_text):
     result = ""

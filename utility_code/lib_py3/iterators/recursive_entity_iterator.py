@@ -62,6 +62,10 @@ def get_debug_string_from_entity_path(entity_path, ansii_colors=False):
             # This is a player
             uuidint = ((location.at_path("UUIDMost").value & 0xffffffffffffffff) << 64) | (location.at_path("UUIDLeast").value & 0xffffffffffffffff)
             debug_string += "player:" + str(UUID(int=uuidint))
+        elif location.has_path("SpawnPotentials"):
+            debug_string += "spawner"
+            if location.has_path("Pos"):
+                debug_string += "  {} {} {}".format(location.at_path("Pos").value[0], location.at_path("Pos").value[1], location.at_path("Pos").value[2])
         elif location.has_path("id"):
             # Not a player
             debug_string += location.at_path("id").value.replace("minecraft:","")

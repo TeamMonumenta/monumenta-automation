@@ -132,11 +132,12 @@ class SchematicEntityIterator(object):
 
 class Schematic(object):
     def __init__(self, path: str):
+        self._path = path
         name = os.path.basename(path)
         self._schematic_name = os.path.splitext(name)[0]
 
-        nbtfile = nbt.NBTFile.load(path)
-        self._schematic = nbtfile.root_tag
+        self._nbtfile = nbt.NBTFile.load(path)
+        self._schematic = self._nbtfile.root_tag
 
     @property
     def name(self):
@@ -154,3 +155,7 @@ class Schematic(object):
             entity.tree()
         '''
         return SchematicEntityIterator(self._schematic, readonly)
+
+    def save(self):
+        self._nbtfile.save(self._path)
+
