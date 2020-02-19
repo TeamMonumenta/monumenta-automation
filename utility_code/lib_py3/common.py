@@ -20,11 +20,7 @@ def get_item_name_from_nbt(item_nbt):
     if not item_nbt.has_path("display.Name"):
         return None
 
-    item_name = item_nbt.at_path("display.Name").value
-    item_name = parse_name_possibly_json(item_name)
-    item_name = unformat_text(item_name)
-
-    return item_name
+    return parse_name_possibly_json(item_nbt.at_path("display.Name").value, remove_color=True)
 
 def json_text_to_plain_text(json_text):
     result = ""
@@ -42,13 +38,16 @@ def json_text_to_plain_text(json_text):
 
     return result
 
-def parse_name_possibly_json(name):
+def parse_name_possibly_json(name, remove_color=False):
     name = re.sub(r"\\u0027", "'", name)
     try:
         name_json = json.loads(name)
         name = json_text_to_plain_text(name_json)
     except:
         pass
+
+    if remove_color:
+        name = unformat_text(name)
 
     return name
 
