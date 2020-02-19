@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mobs
+  name: test115
   namespace: build
   labels:
-    app: mobs
+    app: test115
 spec:
   type: ClusterIP
   selector:
-    app: mobs
+    app: test115
   ports:
   # Main minecraft port
   - name: "25565"
@@ -28,21 +28,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mobs
+  name: test115
   namespace: build
   labels:
-    app: mobs
+    app: test115
 spec:
   strategy:
     type: Recreate
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
-      app: mobs
+      app: test115
   template:
     metadata:
       labels:
-        app: mobs
+        app: test115
     spec:
       volumes:
         - name: nfs-maps
@@ -58,7 +58,7 @@ spec:
             type: Directory
             path: /nfs/4_SHARED
       containers:
-      - name: mobs
+      - name: test115
         image: monumenta-docker.injic.io/monumenta-java-shard
         tty: true
         stdin: true
@@ -68,30 +68,16 @@ spec:
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
-          value: "1536M"
+          value: "2G"
         # Set this to 256M regardless of JAVA_MEM
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/mobs"
+          value: "/project_epic/test115"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8000
-          initialDelaySeconds: 10
-          timeoutSeconds: 5
-          periodSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /alive
-            port: 8000
-          initialDelaySeconds: 240
-          timeoutSeconds: 5
-          periodSeconds: 10
         volumeMounts:
         - name: nfs-project-epic
           mountPath: /project_epic
@@ -106,12 +92,12 @@ spec:
             # It should not need much/any...
             memory: 1Gi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 1888Mi
+            hugepages-2Mi: 2432Mi
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 1888Mi
+            hugepages-2Mi: 2432Mi
       imagePullSecrets:
       - name: regcred
