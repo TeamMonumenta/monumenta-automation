@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import time
 from pprint import pformat
 from lib_py3.common import parse_name_possibly_json, eprint
 
@@ -20,6 +21,17 @@ class LibraryOfSouls(object):
         with open(path, "r") as fp:
             self._souls = json.load(fp)
 
+        self.upgrade()
+
+    def upgrade(self):
+        for soul_entry in self._souls:
+            if "mojangson" in soul_entry:
+                hist_element = {}
+                hist_element["mojangson"] = soul_entry["mojangson"]
+                hist_element["modified_on"] = int(time.time())
+                soul_entry["history"] = [hist_element, ]
+                soul_entry.pop("mojangson")
+
     def clear_tags(self) -> None:
         for soul_entry in self._souls:
             if "tags" in soul_entry:
@@ -32,7 +44,7 @@ class LibraryOfSouls(object):
 
         new_souls = []
         for soul_entry in self._souls:
-            soul_nbt = nbt.TagCompound.from_mojangson(soul_entry["mojangson"])
+            soul_nbt = nbt.TagCompound.from_mojangson(soul_entry["history"][0]["mojangson"])
 
             if not soul_nbt.has_path("CustomName"):
                 eprint("WARNING: Souls database entry is missing a name: {}".format(pformat(soul_entry)))
@@ -51,6 +63,14 @@ class LibraryOfSouls(object):
 
         if name in self._index:
             return self._index[name]
+        return None
+
+    def get_soul_current_nbt(self, name: str) -> TagCompound:
+        if self._index is None:
+            self.refresh_index()
+
+        if name in self._index:
+            return nbt.TagCompound.from_mojangson(self._index[name]["history"][0]["mojangson"])
         return None
 
     def add_soul(self, soul_nbt: TagCompound) -> None:
