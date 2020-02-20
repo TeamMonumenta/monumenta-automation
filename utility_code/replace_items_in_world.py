@@ -29,7 +29,7 @@ except getopt.GetoptError as err:
     usage()
 
 world_path = None
-logfile = 'stdout'
+logfile = None
 dry_run = False
 interactive = False
 update_tables = False
@@ -107,4 +107,4 @@ if log_handle is not None:
 if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
     log_handle.close()
 
-eprint("Replaced {} items".format(num_replacements))
+print("Replaced {} items".format(num_replacements))

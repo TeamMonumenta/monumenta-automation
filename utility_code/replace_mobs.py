@@ -82,7 +82,7 @@ except getopt.GetoptError as err:
 world_path = None
 schematics_path = None
 library_of_souls_path = None
-logfile = 'stdout'
+logfile = None
 dry_run = False
 
 for o, a in opts:
@@ -135,12 +135,14 @@ try:
                 new_potentials = []
                 for nested_entity in entity.at_path('SpawnPotentials').value:
                     if nested_entity.has_path('Entity.id') and nested_entity.at_path('Entity.id').value == "minecraft:pig":
-                        log_handle.write("Removing pig from SpawnPotentials at {}\n".format(get_debug_string_from_entity_path(entity_path)))
+                        if log_handle is not None:
+                            log_handle.write("Removing pig from SpawnPotentials at {}\n".format(get_debug_string_from_entity_path(entity_path)))
                     else:
                         new_potentials.append(nested_entity)
                 entity.at_path('SpawnPotentials').value = new_potentials
             if entity.has_path("SpawnData.id") and entity.at_path("SpawnData.id").value == "minecraft:pig":
-                log_handle.write("Removing pig Spawndata at {}\n".format(get_debug_string_from_entity_path(entity_path)))
+                if log_handle is not None:
+                    log_handle.write("Removing pig Spawndata at {}\n".format(get_debug_string_from_entity_path(entity_path)))
                 entity.value.pop("SpawnData")
 
 
