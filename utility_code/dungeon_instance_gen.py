@@ -6,15 +6,14 @@ import codecs
 import multiprocessing as mp
 import tempfile
 import traceback
+import getopt
+from pprint import pprint
 
 from lib_py3.copy_region import copy_region
-from lib_py3.common import copy_paths
+from lib_py3.common import copy_paths, eprint
 from lib_py3.world import World
 
 config = {
-    "dungeonRefFolder":"/home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon/",
-    "outFolder":"/home/epic/5_SCRATCH/tmpreset/dungeons-out/",
-
     # Dungeons are placed one per MC region file (32x32 chunks)
     # Each dungeon starts in the most-negative corner of the region
     # Regions with dungeons form a line of consecutive regions in +z
@@ -178,6 +177,74 @@ def generateDungeonInstances(config, dungeon, outputFile, statusQueue):
         statusQueue.put({"server":dungeonName, "done":True, "error":e})
 
 
+def usage():
+    sys.exit("Usage: {} <--master-world /path/to/world> <--out-folder /path/to/out> [--count #] [dungeon1 dungeon2 dungeon3 ...]".format(sys.argv[0]))
+
+try:
+    opts, args = getopt.getopt(sys.argv[1:], "w:o:c:", ["master-world=", "out-folder=", "count="])
+except getopt.GetoptError as err:
+    eprint(str(err))
+    usage()
+
+world_path = None
+out_folder = None
+force_count = None
+specific_worlds = []
+
+for o, a in opts:
+    if o in ("-w", "--master-world"):
+        world_path = a
+        if not world_path.endswith("/"):
+            world_path += "/"
+    elif o in ("-o", "--out-folder"):
+        out_folder = a
+        if not out_folder.endswith("/"):
+            out_folder += "/"
+    elif o in ("-c", "--count"):
+        force_count = int(a)
+        if force_count < 1 or force_count > 1000:
+            eprint("--count must be between 1 and 1000")
+            usage()
+    else:
+        eprint("Unknown argument: {}".format(o))
+        usage()
+
+# Parse additional non-option arguments
+for arg in args:
+    match = None
+    for dungeon in config["dungeons"]:
+        if arg == dungeon["name"]:
+            match = arg
+
+    if not match:
+        eprint("Unknown dungeon: {}".format(arg))
+        usage()
+
+    specific_worlds.append(match)
+
+if world_path is None:
+    eprint("--master-world must be specified!")
+    usage()
+if out_folder is None:
+    eprint("--out-folder must be specified!")
+    usage()
+
+config["dungeonRefFolder"] = world_path
+config["outFolder"] = out_folder
+
+if force_count is not None:
+    # Override all dungeon counts
+    for dungeon in config["dungeons"]:
+        dungeon["numDungeons"] = force_count
+
+if len(specific_worlds) > 0:
+    # Only generate the specified worlds
+    new_dungeons = []
+    for specified in specific_worlds:
+        for dungeon in config["dungeons"]:
+            if specified == dungeon["name"]:
+                new_dungeons.append(dungeon)
+    config["dungeons"] = new_dungeons
 
 # Multiprocessing implementation based on:
 # http://sebastianraschka.com/Articles/2014_multiprocessing.html

@@ -117,6 +117,7 @@ class AutomationBotInstance(object):
 
             "generate instances": self.action_generate_instances,
             "prepare reset bundle": self.action_prepare_reset_bundle,
+            "prepare stage bundle": self.action_prepare_stage_bundle,
             "fetch reset bundle": self.action_fetch_reset_bundle,
             "stop in 10 minutes": self.action_stop_in_10_minutes,
             "stop and backup": self.action_stop_and_backup,
@@ -518,13 +519,6 @@ Deletes previous terrain reset data
 Temporarily brings down the dungeon shard to generate dungeon instances.
 Must be run before preparing the build server reset bundle'''
 
-        # TODO Space check
-        # estimated_space_left = get_available_storage('/home/epic/4_SHARED')
-        # await self.display("Space left: {}".format(estimated_space_left // BYTES_PER_GB))
-        #if estimated_space_left < min_free_gb * BYTES_PER_GB:
-        #    self._commands = [self.display("Estimated less than {} GB disk space free after operation ({} GB), aborting.".format(min_free_gb, estimated_space_left // BYTES_PER_GB)),]
-        #    return
-
         await self.display("Cleaning up old terrain reset data...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
@@ -540,7 +534,8 @@ Must be run before preparing the build server reset bundle'''
         await self.start("dungeon")
 
         await self.display("Generating dungeon instances (this may take a while)...")
-        await self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py"))
+        instance_gen_arg = " --master-world /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon/ --out-folder /home/epic/5_SCRATCH/tmpreset/dungeons-out/"
+        await self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py") + instance_gen_arg)
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE")
 
         await self.display("Cleaning up instance generation temp files...")
@@ -553,8 +548,6 @@ Must be run before preparing the build server reset bundle'''
 Temporarily brings down the region_1 and region_2 shards to prepare for terrain reset
 Packages up all of the pre-reset server components needed by the play server for reset
 Must be run before starting terrain reset on the play server'''
-
-        # TODO Space check
 
         await self.display("Stopping region_1 and region_2...")
         await self.stop(["region_1", "region_2"])
@@ -589,12 +582,103 @@ Must be run before starting terrain reset on the play server'''
         await self.display("Reset bundle ready!")
         await self.display(message.author.mention)
 
+    async def action_prepare_stage_bundle(self, cmd, message):
+        arg_str = message.content[len(self._prefix + cmd)+1:].strip()
+        shards = arg_str.split()
+
+        if len(shards) <= 0:
+            await self.display("No shards specified")
+            return
+
+        instance_gen_required = []
+        main_shards = []
+        for shard in shards:
+            if shard == "region_1" or shard == "region_2":
+                main_shards.append(shard)
+            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "reverie", "willows", "sanctum", "shiftingcity"]:
+                instance_gen_required.append(shard)
+            else:
+                await self.display("Unknown shard specified: {}".format(shard))
+                return
+
+        await self.display("Starting stage bundle preparation for shards: [{}]".format(" ".join(shards)))
+
+        await self.display("Cleaning up old stage data...")
+        await self.run("rm -rf /home/epic/5_SCRATCH/tmpstage", None)
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpstage")
+
+        if len(main_shards) > 0:
+            # Need to copy primary shards
+
+            for shard in main_shards:
+                await self.display("Stopping {shard}...".format(shard=shard))
+                await self.stop(shard)
+
+                await self.display("Copying {shard}...".format(shard=shard))
+                await self.run("mkdir -p /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}".format(shard=shard))
+                await self.run("cp -a /home/epic/project_epic/{shard}/Project_Epic-{shard} /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/".format(shard=shard))
+
+                await self.display("Restarting {shard}...".format(shard=shard))
+                await self.start(shard)
+
+                await self.display("Running replacements on copied version of {shard}...".format(shard=shard))
+                args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard}".format(shard=shard)
+                await self.run(os.path.join(_top_level, "utility_code/replace_items_in_world.py") + args, displayOutput=True)
+                # TODO: Update LoS path from mobs dir
+                args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard} --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json".format(shard=shard)
+                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
+
+        if len(instance_gen_required) > 0:
+            # Need to generate instances
+            await self.display("Stopping the dungeon shard...")
+            await self.stop("dungeon")
+
+            await self.display("Copying the dungeon master copies...")
+            await self.run("cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon")
+
+            await self.display("Restarting the dungeon shard...")
+            await self.cd("/home/epic/project_epic/dungeon")
+            await self.start("dungeon")
+
+            await self.display("Running replacements on copied dungeon masters...")
+            args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon"
+            await self.run(os.path.join(_top_level, "utility_code/replace_items_in_world.py") + args, displayOutput=True)
+            # TODO: Update LoS path from mobs dir
+            args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json"
+            await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
+
+            await self.display("Generating dungeon instances for [{}]...".format(" ".join(instance_gen_required)))
+            instance_gen_arg = (" --master-world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon/" +
+                                " --out-folder /home/epic/5_SCRATCH/tmpstage/TEMPLATE" +
+                                " --count 8 " + " ".join(instance_gen_required))
+            await self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py") + instance_gen_arg)
+
+            await self.display("Dungeon instance generation complete!")
+
+        await self.display("Copying server_config...")
+        await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpstage/TEMPLATE/")
+
+        await self.display("Running replacements on copied structures...")
+        # TODO: Needs item replacements support for schematics
+        args = " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json"
+        await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
+
+        await self.display("Packaging up stage bundle...")
+        await self.cd("/home/epic/5_SCRATCH/tmpstage")
+
+        await self.run("rm -f /home/epic/4_SHARED/stage_bundle.tgz", None)
+        await self.run("tar czf /home/epic/4_SHARED/stage_bundle.tgz TEMPLATE")
+
+        await self.display("Cleaning up stage temp files...")
+        await self.run("rm -rf /home/epic/5_SCRATCH/tmpstage")
+
+        await self.display("Stage bundle ready!")
+        await self.display(message.author.mention)
+
     async def action_fetch_reset_bundle(self, cmd, message):
         '''Dangerous!
 Deletes in-progress terrain reset info on the play server
 Downloads the terrain reset bundle from the build server and unpacks it'''
-
-        # TODO Space check
 
         await self.display("Unpacking reset bundle...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
@@ -647,8 +731,6 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         '''Dangerous!
 Brings down all play server shards and backs them up in preparation for terrain reset.
 DELETES DUNGEON CORE PROTECT DATA'''
-
-        # TODO Space check
 
         allShards = self._shards.keys()
 
@@ -719,8 +801,6 @@ DELETES DUNGEON CORE PROTECT DATA'''
 Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         allShards = self._shards.keys()
-
-        # TODO Space check
 
         await self.run("mkdir -p /home/epic/1_ARCHIVE")
         await self.run("mkdir -p /home/epic/0_OLD_BACKUPS")
@@ -822,8 +902,6 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         # Just in case...
         if "stage" not in self._name:
             raise Exception("WARNING: bot name does not contain 'stage', aborting to avoid mangling real data")
-
-        # TODO Space check
 
         await self.display("Stopping all stage server shards...")
 
@@ -936,8 +1014,6 @@ For convenience, leading 'give @p' is ignored, along with any data after the las
 Syntax:
 `{cmdPrefix}run replacements shard region_1 region_2 orange`'''
 
-        # TODO Space check
-
         commandArgs = message.content[len(self._prefix + cmd)+1:].split()
 
         replace_shards = []
@@ -959,7 +1035,8 @@ Syntax:
             await self.cd(self._shards[shard])
             await self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard))
             await self.run(os.path.join(_top_level, "utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name)), displayOutput=True)
-            await self.run(os.path.join(_top_level, "utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name)), displayOutput=True)
+            await self.display("WARNING: Mob replacements currently disabled / needs upgrade!")
+            #await self.run(os.path.join(_top_level, "utility_code/replace_mobs_in_world.py --world Project_Epic-{} --logfile {}_mobs.txt".format(shard, base_backup_name)), displayOutput=True)
             await self.start(shard)
 
         await self.display(message.author.mention)
