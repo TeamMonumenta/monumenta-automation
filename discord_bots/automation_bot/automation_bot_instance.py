@@ -118,6 +118,7 @@ class AutomationBotInstance(object):
             "generate instances": self.action_generate_instances,
             "prepare reset bundle": self.action_prepare_reset_bundle,
             "prepare stage bundle": self.action_prepare_stage_bundle,
+            "apply stage bundle": self.action_apply_stage_bundle,
             "fetch reset bundle": self.action_fetch_reset_bundle,
             "stop in 10 minutes": self.action_stop_in_10_minutes,
             "stop and backup": self.action_stop_and_backup,
@@ -595,7 +596,7 @@ Must be run before starting terrain reset on the play server'''
         for shard in shards:
             if shard == "region_1" or shard == "region_2":
                 main_shards.append(shard)
-            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "reverie", "willows", "sanctum", "shiftingcity"]:
+            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "tutorial", "reverie", "willows", "sanctum", "shiftingcity"]:
                 instance_gen_required.append(shard)
             else:
                 await self.display("Unknown shard specified: {}".format(shard))
@@ -675,6 +676,74 @@ Must be run before starting terrain reset on the play server'''
         await self.display("Stage bundle ready!")
         await self.display(message.author.mention)
 
+    async def action_apply_stage_bundle(self, cmd, message):
+        await self.display("Unpacking stage bundle...")
+        await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
+        await self.cd("/home/epic/5_SCRATCH/tmpreset")
+        await self.run("tar xzf /home/epic/4_SHARED/stage_bundle.tgz")
+
+        folders_to_update = os.listdir("/home/epic/5_SCRATCH/tmpreset/TEMPLATE")
+        await self.display("Loading from stage bundle: [{}]".format(" ".join(folders_to_update)))
+
+        # Stop all shards
+        await self.display("Stopping all shards...")
+        shards = await self._k8s.list()
+        await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
+        for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
+            if shards[shard.replace('_', '')]['replicas'] != 0:
+                await self.display("ERROR: shard '{}' is still running!".format(shard))
+                await self.display(message.author.mention)
+                return
+
+        await self.display("Saving ops and banned players")
+        await self.run("mkdir -p /home/epic/4_SHARED/op-ban-sync/stage/")
+        await self.run("cp -a /home/epic/project_epic/region_1/banned-ips.json /home/epic/4_SHARED/op-ban-sync/stage/")
+        await self.run("cp -a /home/epic/project_epic/region_1/banned-players.json /home/epic/4_SHARED/op-ban-sync/stage/")
+        await self.run("cp -a /home/epic/project_epic/region_1/ops.json /home/epic/4_SHARED/op-ban-sync/stage/")
+
+        await self.display("Deleting previous reset data...")
+        await self.cd("/home/epic/project_epic")
+        await self.run("rm -rf 0_PREVIOUS")
+        await self.run("mkdir 0_PREVIOUS")
+
+        await self.display("Moving [{}] to 0_PREVIOUS...".format(" ".join(folders_to_update)))
+        for f in folders_to_update:
+            await self.run("mv {} 0_PREVIOUS/".format(f))
+
+        if "server_config" in folders_to_update:
+            await self.display("Getting new server config...")
+            await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/epic/project_epic/")
+            folders_to_update.remove("server_config")
+
+        await self.display("Running actual terrain reset (this will take a while!)...")
+        await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(folders_to_update)))
+
+        for shard in ["plots", "betaplots", "region_1", "region_2"]:
+            if shard in folders_to_update:
+                await self.display("Preserving warps for {0}...".format(shard))
+                await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/EpicWarps".format(shard))
+                await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/EpicWarps/warps.yml"))
+
+        for shard in folders_to_update:
+            if shard in ["build","bungee"]:
+                continue
+
+            await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/stage/banned-ips.json /home/epic/project_epic/{}/".format(shard))
+            await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/stage/banned-players.json /home/epic/project_epic/{}/".format(shard))
+            await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/stage/ops.json /home/epic/project_epic/{}/".format(shard))
+
+        await self.display("Generating per-shard config...")
+        await self.cd("/home/epic/project_epic")
+        await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(folders_to_update)))
+
+        await self.display("Checking for broken symbolic links...")
+        await self.run("find /home/epic/project_epic -xtype l", displayOutput=True)
+
+        await self.display("Done.")
+        await self.display(message.author.mention)
+
+
     async def action_fetch_reset_bundle(self, cmd, message):
         '''Dangerous!
 Deletes in-progress terrain reset info on the play server
@@ -726,6 +795,16 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
 
         await self.display(message.author.mention)
+
+        # Fail if any shards are still running
+        await self.display("Checking that all shards are stopped...")
+        shards = await self._k8s.list()
+        await self.display(pformat(shards))
+        for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
+            if shards[shard.replace('_', '')]['replicas'] != 0:
+                await self.display("ERROR: shard '{}' is still running!".format(shard))
+                await self.display(message.author.mention)
+                return
 
     async def action_stop_and_backup(self, cmd, message):
         '''Dangerous!
