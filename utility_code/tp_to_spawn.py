@@ -20,6 +20,7 @@ valid_names = (
     "gray",
     "lightgray",
     "cyan",
+    "purple",
     "willows",
     "reverie",
     "sanctum",

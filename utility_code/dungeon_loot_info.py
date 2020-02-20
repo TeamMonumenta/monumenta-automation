@@ -61,8 +61,11 @@ dungeons = (
         "name":"cyan",
         "region":{"x":-3, "z":9},
     },{
-        "name":"lighy_gray",
+        "name":"light_gray",
         "region":{"x":-3, "z":8},
+    },{
+        "name":"purple",
+        "region":{"x":-3, "z":13},
     },{
         "name":"shiftingcity",
         "region":{"x":-2, "z":9},

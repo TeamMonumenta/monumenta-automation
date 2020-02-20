@@ -223,6 +223,7 @@ available_configs = {
     "gray": get_dungeon_config("gray", "D8Access"),
     "lightgray": get_dungeon_config("lightgray", "D9Access"),
     "cyan": get_dungeon_config("cyan", "D10Access"),
+    "purple": get_dungeon_config("purple", "D11Access"),
     "willows": get_dungeon_config("willows", "DB1Access"),
     "reverie": get_dungeon_config("reverie", "DCAccess"),
     "sanctum": get_dungeon_config("sanctum", "DS1Access"),
