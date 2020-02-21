@@ -19,7 +19,7 @@ metadata:
   namespace: stage
 data:
   mysql.cnf: |
-    [mysql]
+    [mysqld]
     max_connections = 500
   docker.cnf: |
     [mysqld]
