@@ -709,7 +709,7 @@ Must be run before starting terrain reset on the play server'''
 
         await self.display("Moving [{}] to 0_PREVIOUS...".format(" ".join(folders_to_update)))
         for f in folders_to_update:
-            await self.run("mv {} 0_PREVIOUS/".format(f))
+            await self.run("mv {} 0_PREVIOUS/".format(f), None)
 
         if "server_config" in folders_to_update:
             await self.display("Getting new server config...")
