@@ -10,7 +10,7 @@ import getopt
 
 from lib_py3.mob_replacement_manager import MobReplacementManager, remove_unwanted_spawner_tags
 from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
-from lib_py3.common import eprint
+from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items
 from lib_py3.world import World
 from lib_py3.library_of_souls import LibraryOfSouls
 from lib_py3.schematic import Schematic
@@ -30,44 +30,44 @@ def is_entity_in_spawner(entity_path: [nbt.TagCompound]) -> bool:
 
     return contains_spawner and not last
 
-custom_replace_rules_for_later = [
-    {
-        'rules': {
-            'id': 'minecraft:skeleton',
-            'HandItems': ["'§fEnraged Captain's Axe'", "'§bHawk's Talon'"],
-        },
-        'mojangson': r'''{id:"minecraft:skeleton",CustomName:"{\"text\":\"§6Lighthouse Defender\"}",Health:75.0f,ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:4521728,Name:"{\"text\":\"§2§lBoots of Vitality\"}"}}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:10506272,Name:"{\"text\":\"§aHardened Leather Pants\"}"}}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:10506272,Name:"{\"text\":\"§aHardened Leather Tunic\"}"}}},{}],Attributes:[{Base:75.0d,Name:"generic.maxHealth"}],Tags:["Elite","boss_weaponswitch","boss_charger"],HandItems:[{id:"minecraft:iron_axe",Count:1b,tag:{display:{Name:"{\"text\":\"§fEnraged Captain\\u0027s Axe\"}"},Enchantments:[{lvl:1s,id:"minecraft:knockback"},{lvl:1s,id:"minecraft:sharpness"}],Damage:0}},{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§bHawk\\u0027s Talon\"}"},Enchantments:[{lvl:3s,id:"minecraft:power"}],Damage:0}}]}''',
-    },
-    {
-        'rules': {
-            'id': 'minecraft:skeleton',
-            'HandItems': ["'fComposite Bow'", None],
-        },
-        'mojangson': r'''{id:"minecraft:skeleton",Health:30.0f,Fire:-1s,Attributes:[{Base:30.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,PersistenceRequired:0b,LeftHanded:0b,AbsorptionAmount:0.0f,HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§fComposite Bow\"}"},Enchantments:[{lvl:3s,id:"minecraft:power"}]}},{}]}''',
-    },
-    {
-        'rules': {
-            'id': 'minecraft:wither_skeleton',
-            # Note this typo'd name!
-            'CustomName': '6Frost Moon Brute'
-        },
-        'mojangson': r'''{id:"minecraft:wither_skeleton",Health:100.0f,Attributes:[{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.5d,Name:"generic.knockbackResistance"},{Base:100.0d,Name:"generic.maxHealth"},{Base:32.0d,Name:"generic.followRange"}],LeftHanded:1b,OnGround:1b,HandItems:[{id:"minecraft:iron_sword",Count:1b,tag:{display:{Name:"{\"italic\":false,\"text\":\"Dual Frost Greatsword\"}"},Enchantments:[{lvl:1s,id:"minecraft:knockback"}],AttributeModifiers:[{UUIDMost:-3834667671152932107L,UUIDLeast:-6852958939107637417L,Amount:17.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}},{id:"minecraft:iron_sword",Count:1b,tag:{display:{Name:"{\"italic\":false,\"text\":\"Dual Frost Greatsword\"}"},Enchantments:[{lvl:1s,id:"minecraft:knockback"}],AttributeModifiers:[{UUIDMost:-3834667671152932107L,UUIDLeast:-6852958939107637417L,Amount:17.0d,Slot:"mainhand",AttributeName:"generic.attackDamage",Operation:0,Name:"Modifier"}]}}],CustomName:"[{\"text\":\"Frost Moon Brute\",\"color\":\"gold\"}]",ArmorItems:[{id:"minecraft:leather_boots",Count:1b,tag:{display:{color:60395,Name:"{\"text\":\"F.B\"}"},AttributeModifiers:[{UUIDMost:31492316112044816L,UUIDLeast:-8556528064959196441L,Amount:0.0d,Slot:"feet",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:leather_leggings",Count:1b,tag:{display:{color:60395,Name:"{\"text\":\"F.L\"}"},AttributeModifiers:[{UUIDMost:2502059920319923451L,UUIDLeast:-7340807275252271259L,Amount:0.0d,Slot:"legs",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:leather_chestplate",Count:1b,tag:{display:{color:60395,Name:"{\"text\":\"F.C\"}"},AttributeModifiers:[{UUIDMost:7253508311050896534L,UUIDLeast:-8328577651339812818L,Amount:0.0d,Slot:"chest",AttributeName:"generic.armor",Operation:0,Name:"Modifier"}]}},{id:"minecraft:player_head",Count:1b,tag:{SkullOwner:{Id:"0c3eedc4-a350-439c-8489-af2a768bdc41",Properties:{textures:[{Value:"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjE2ZjdkYjY3YTcyM2Q1YzMwYmY5ZDQ3ZWQ2YzI4YmY3ZDQzNmQ4ODZlMGYzNTk1MTAzMzY4MTk5ZTNhMTliYiJ9fX0="}]}}}}],PersistenceRequired:0b,Tags:["Elite","boss_charger"]}''',
-    },
-    {
-        'rules': {
-            # Spelled wrong
-            'id': 'minecraft:ghast',
-            'CustomName': 'Dessicated Ghast'
-        },
-        'mojangson': r'''{id:"minecraft:ghast",CustomName:"[{\"text\":\"Desiccated Ghast\"}]",Health:25.0f,Attributes:[{Base:25.0d,Name:"generic.maxHealth"}],ExplosionPower:2}''',
-    },
-    {
-        'rules': {
-            'id': 'minecraft:skeleton',
-            'HandItems': ["'§fViridian Hunter'", None],
-        },
-        'mojangson': r'''{id:"minecraft:skeleton",Attributes:[{Base:30.0d,Name:"generic.maxHealth"},{Base:0.0d,Name:"generic.knockbackResistance"},{Base:0.25d,Name:"generic.movementSpeed"},{Base:0.0d,Name:"generic.armor"},{Base:0.0d,Name:"generic.armorToughness"},{Base:16.0d,Name:"generic.followRange"},{Base:2.0d,Name:"generic.attackDamage"}],Invulnerable:0b,PersistenceRequired:0b,Team:"mobs",Health:30.0f,HandItems:[{id:"minecraft:bow",Count:1b,tag:{display:{Name:"{\"text\":\"§fViridian Hunter\"}"},Enchantments:[{lvl:4s,id:"minecraft:power"}]}},{}]}''',
-    },
+def match_id(target_id: str, chain=lambda mob: True):
+    return lambda mob : mob.at_path("id").value == target_id and chain(mob)
+
+def match_hand(hand: [str], chain=lambda mob: True):
+    return lambda mob : mob.has_path('HandItems') and get_named_hand_items(mob) == hand and chain(mob)
+
+def match_name(name: str, chain=lambda mob: True):
+    return lambda mob : mob.has_path('CustomName') and get_entity_name_from_nbt(mob) == name and chain(mob)
+
+def match_passenger(host_chain, passenger_chain):
+    return lambda mob : (host_chain(mob)
+            and mob.has_path('Passengers')
+            and len(mob.at_path('Passengers').value) >= 1
+            and passenger_chain(mob.at_path('Passengers').value[0]))
+
+# Note that these will be evaluated last to first - so put more broad checks first for performance
+sub = [
+    ("Lighthouse Defender", match_hand(["Enraged Captain's Axe", "Hawk's Talon"], match_id('minecraft:skeleton'))),
+    ("Frost Moon Brute", match_name('6Frost Moon Brute', match_id('minecraft:wither_skeleton'))),
+    ("Desiccated Ghast", match_name('Dessicated Ghast', match_id('minecraft:ghast'))),
+
+
+    ("Gear Gremlin", match_passenger(match_id('minecraft:endermite'), match_name('Gear Gremlin', match_id('minecraft:drowned')))),
+    ("Rusted Gear", match_passenger(match_id('minecraft:guardian'), match_name('Rusted Gear', match_id('minecraft:drowned')))),
+    ("Silver Theurge", match_passenger(match_id('minecraft:silverfish'), match_name('Silver Theurge', match_id('minecraft:drowned')))),
+
+    ("Pirate Buccaneer", match_name('Pirate Buckaneer', match_id('minecraft:husk'))),
+    ("Pirate Oarsman", match_name('Pirate Oarman', match_id('minecraft:vindicator'))),
+
+    # Pink same-named mobs
+    ("Fall Citizen", match_hand(["Earthbound Runeblade", None], match_name("Tempered Citizen", match_id('minecraft:zombie_villager')))),
+    ("Summer Citizen", match_hand(["Lingering Flame", None], match_name("Tempered Citizen", match_id('minecraft:zombie_villager')))),
+    ("Spring Citizen", match_hand(["Rosethorn Blade", "Talaya's Blossom"], match_name("Tempered Citizen", match_id('minecraft:zombie_villager')))),
+    ("Winter Citizen", match_hand(["Iceborn Runeblade", None], match_name("Tempered Citizen", match_id('minecraft:zombie_villager')))),
+    ("Fall Watcher", match_hand(["Soulvenom Bow", None], match_name("Tempered Watcher", match_id('minecraft:skeleton')))),
+    ("Summer Watcher", match_hand(["Ishkarian Longbow", None], match_name("Tempered Watcher", match_id('minecraft:skeleton')))),
+    ("Spring Watcher", match_hand(["Steelsiege", None], match_name("Tempered Watcher", match_id('minecraft:skeleton')))),
+    ("Winter Watcher", match_hand(["Icicle Greatbow", None], match_name("Tempered Watcher", match_id('minecraft:skeleton')))),
 ]
 
 def usage():
@@ -110,6 +110,7 @@ elif library_of_souls_path is None:
 los = LibraryOfSouls(library_of_souls_path, readonly=True)
 replace_mgr = MobReplacementManager()
 los.load_replacements(replace_mgr)
+replace_mgr.add_substitutions(sub)
 
 log_handle = None
 if logfile == "stdout":

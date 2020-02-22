@@ -61,20 +61,19 @@ def parse_name_possibly_json(name, remove_color=False):
     return name
 
 def get_named_hand_items(entity):
-    hand_items = []
-    hand_items_nbt = entity.at_path("HandItems")
-
     if not entity.has_path("HandItems"):
         return [None, None]
+
+    hand_items = []
+    hand_items_nbt = entity.at_path("HandItems")
 
     if len(hand_items_nbt.value) != 2:
         if len(hand_items_nbt.value) == 1:
             hand_items.append(None)
             for hand_item in hand_items_nbt.value:
                 if hand_item.has_path("tag.display.Name"):
-                    item_name = parse_name_possibly_json(hand_item.at_path("tag.display.Name").value)
-                    # Sorta janky - put quotes around the item name here
-                    hand_items.append("'{}'".format(item_name))
+                    item_name = parse_name_possibly_json(hand_item.at_path("tag.display.Name").value, remove_color=True)
+                    hand_items.append("{}".format(item_name))
                 else:
                     hand_items.append(None)
 
@@ -85,9 +84,8 @@ def get_named_hand_items(entity):
 
     for hand_item in hand_items_nbt.value:
         if hand_item.has_path("tag.display.Name"):
-            item_name = parse_name_possibly_json(hand_item.at_path("tag.display.Name").value)
-            # Sorta janky - put quotes around the item name here
-            hand_items.append("'{}'".format(item_name))
+            item_name = parse_name_possibly_json(hand_item.at_path("tag.display.Name").value, remove_color=True)
+            hand_items.append("{}".format(item_name))
         else:
             hand_items.append(None)
 
