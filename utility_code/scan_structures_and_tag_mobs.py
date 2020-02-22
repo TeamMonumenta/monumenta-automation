@@ -119,23 +119,12 @@ for dungeon in dungeons:
         process_entity(entity, source_pos, entity_path, dungeon)
 
 
-#print("\n\n\n\n\n\nNot found unique mobs:")
-#pprint(not_found_unique_mobs)
-
-added = 0
+print("\n\n\n\n\n\nNot found unique mobs:")
 for name in not_found_unique_mobs:
-    if mob_counts[name] < 5:
-        not_found_unique_low_count_mobs.add(name)
-    else:
-        los.add_soul(not_found_unique_mobs[name])
-        added += 1
-
-print("\n\n\n\n\n\nAdded {} mobs to souls index".format(added))
-
-print("\n\n\n\n\n\nNot found unique low-count mobs:")
-pprint(not_found_unique_low_count_mobs)
+    print("  {}".format(name))
 
 print("\n\n\n\n\n\nNot found different mobs:")
-pprint(not_found_different_mobs)
+for name in not_found_different_mobs:
+    print("  {}".format(name))
 
 los.save()
