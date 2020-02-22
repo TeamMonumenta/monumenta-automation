@@ -49,6 +49,7 @@ def match_passenger(host_chain, passenger_chain):
 sub = [
     ("Lighthouse Defender", match_hand(["Enraged Captain's Axe", "Hawk's Talon"], match_id('minecraft:skeleton'))),
     ("Frost Moon Brute", match_name('6Frost Moon Brute', match_id('minecraft:wither_skeleton'))),
+    ("Frost Moon Archer", match_name('Frost Moon Brute', match_id('minecraft:skeleton'))),
     ("Desiccated Ghast", match_name('Dessicated Ghast', match_id('minecraft:ghast'))),
 
 
