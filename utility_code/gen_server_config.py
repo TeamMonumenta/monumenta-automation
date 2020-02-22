@@ -313,7 +313,7 @@ simple_view_distance_config = {
     'gray': 8,
     'lightgray': 11,
     'cyan': 8,
-    'purple': 8,
+    'purple': 10,
 
     'tutorial': 9,
     'labs': 9,
