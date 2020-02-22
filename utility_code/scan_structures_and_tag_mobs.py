@@ -2,15 +2,13 @@
 
 import sys
 import os
-from pprint import pprint, pformat
-from lib_py3.common import parse_name_possibly_json, eprint
+from pprint import pprint
+from lib_py3.common import parse_name_possibly_json
 from lib_py3.schematic import Schematic
 from lib_py3.library_of_souls import LibraryOfSouls
 from lib_py3.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
-
-from quarry.types.text_format import unformat_text
 
 # This ugly function references tons of global variables...
 def process_entity(entity, source_pos, entity_path, source_name):
@@ -25,7 +23,7 @@ def process_entity(entity, source_pos, entity_path, source_name):
             if forbidden in entity.at_path("id").value:
                 return
 
-        name = unformat_text(parse_name_possibly_json(entity.at_path("CustomName").value))
+        name = parse_name_possibly_json(entity.at_path("CustomName").value, remove_color=True)
 
         # Keep track of how many times each mob is seen
         if name not in mob_counts:
