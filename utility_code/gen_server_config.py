@@ -71,7 +71,7 @@ server_config = server_config_min + [
     ]
 
 monumenta_without_mobs_plugins = [
-        ('plugins/EpicWarps.jar', '../../server_config/plugins/EpicWarps.jar'),
+        ('plugins/MonumentaWarps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/JeffChestSort.jar', '../../server_config/plugins/JeffChestSort.jar'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
