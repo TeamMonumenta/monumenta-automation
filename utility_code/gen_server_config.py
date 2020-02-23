@@ -392,10 +392,8 @@ def gen_server_config(servername):
             print("Warning - file '" + new + "' is link; not replacing it")
             continue
 
-        try:
-            os.makedirs(os.path.dirname(new))
-        except OSError as e:
-            pass
+        if not os.path.isdir(os.path.dirname(new)):
+            os.makedirs(os.path.dirname(new), mode=0o775)
 
         with open(old, "rt") as fin:
             with open(new, "wt") as fout:
@@ -457,10 +455,8 @@ def gen_server_config(servername):
             print("  rm -rf " + linkname)
             continue
 
-        try:
-            os.makedirs(os.path.dirname(linkname))
-        except OSError as e:
-            pass
+        if not os.path.isdir(os.path.dirname(linkname)):
+            os.makedirs(os.path.dirname(linkname), mode=0o775)
 
         os.symlink(targetname, linkname)
 

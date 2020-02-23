@@ -267,7 +267,8 @@ for p in processes.values():
     p["process"].start()
 
 logfile = "/home/epic/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{}.log".format(datetime.date.today().strftime("%Y-%m-%d"))
-os.makedirs(os.path.dirname(logfile))
+if not os.path.isdir(os.path.dirname(logfile)):
+    os.makedirs(os.path.dirname(logfile), mode=0o775)
 update_tables = False
 with open(logfile, 'w') as log_handle:
     while len(processes.keys()) > 0:

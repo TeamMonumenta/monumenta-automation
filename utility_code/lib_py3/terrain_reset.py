@@ -136,7 +136,6 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
                     eprint("WARNING: Missing dungeon instance {}".format(instanceID))
                     dungeonScoreObjects = worldScores.search_scores(Objective=dungeonScore,Score=instanceID)
                     for scoreObject in dungeonScoreObjects:
-                        # Consider setting this value to -1 to indicate an error
                         scoreObject.at_path("Score").value = 0
                     continue
 

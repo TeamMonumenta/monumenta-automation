@@ -138,7 +138,8 @@ def generateDungeonInstances(config, dungeon, outputFile, statusQueue):
         print("Working on {}...0/{}".format(dungeonName,numDungeons))
 
         # Create target directories
-        os.makedirs(os.path.join(dstFolder,"region"),mode=0o775,exist_ok=True)
+        if not os.path.isdir(os.path.join(dstFolder,"region")):
+            os.makedirs(os.path.join(dstFolder,"region"), mode=0o775)
 
         # Copy files/directories
         copy_paths(dungeonRefFolder, dstFolder, config["copyPaths"])

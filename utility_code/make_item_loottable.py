@@ -22,7 +22,7 @@ def make_single_loot_table(loot_table_path, pools):
 
     # Make directories if they don't exist
     if not os.path.isdir(os.path.dirname(loot_table_path)):
-        os.makedirs(os.path.dirname(loot_table_path))
+        os.makedirs(os.path.dirname(loot_table_path), mode=0o775)
 
     with open(loot_table_path, "w", encoding="utf-8") as f:
         f.write(loot_table_string)
