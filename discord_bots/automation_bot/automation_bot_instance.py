@@ -722,8 +722,12 @@ Must be run before starting terrain reset on the play server'''
         for shard in ["plots", "betaplots", "region_1", "region_2"]:
             if shard in folders_to_update:
                 await self.display("Preserving warps for {0}...".format(shard))
-                await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
-                await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/MonumentaWarps/warps.yml"))
+                os.makedirs("/home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
+                if os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml".format(shard)):
+                    await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
+                # TODO Upgrade from old version - remove this eventually
+                elif os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/EpicWarps/warps.yml".format(shard)):
+                    await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/EpicWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
 
         for shard in folders_to_update:
             if shard in ["build","bungee"]:
@@ -948,8 +952,12 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         for shard in ["plots", "betaplots", "region_1", "region_2"]:
             await self.display("Preserving warps for {0}...".format(shard))
-            await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
-            await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/MonumentaWarps/warps.yml"))
+            os.makedirs("/home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
+            if os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml".format(shard)):
+                await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
+            # TODO Upgrade from old version - remove this eventually
+            elif os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/EpicWarps/warps.yml".format(shard)):
+                await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/EpicWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
 
         for shard in allShards:
             if shard in ["build","bungee"]:
