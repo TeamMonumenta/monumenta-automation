@@ -228,6 +228,8 @@ class World(object):
         # Set disabled packs to desired list
         self._disabled_data_packs = other
 
+    # Note - this only saves datapacks to the loaded version of level.dat
+    # Caller must also call World.save() to commit this back to the disk
     def save_data_packs(self):
         if not self.level_dat.has_path('Data.DataPacks'):
             self.level_dat.at_path('Data').value['DataPacks'] = nbt.TagCompound({})

@@ -90,6 +90,8 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
             eprint("If you are not adding a shard, this is a critical problem!")
             if statusQueue is not None:
                 statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log})
+            # Needed to actually commit datapack changes
+            dstWorld.save()
             return
 
         worldScores = None
