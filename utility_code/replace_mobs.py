@@ -3,6 +3,7 @@
 # For interactive shell
 import readline
 import code
+import math
 
 import sys
 import os
@@ -10,7 +11,7 @@ import getopt
 
 from lib_py3.mob_replacement_manager import MobReplacementManager, remove_unwanted_spawner_tags
 from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
-from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items
+from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items, get_named_armor_items
 from lib_py3.world import World
 from lib_py3.library_of_souls import LibraryOfSouls
 from lib_py3.schematic import Schematic
@@ -31,13 +32,29 @@ def is_entity_in_spawner(entity_path: [nbt.TagCompound]) -> bool:
     return contains_spawner and not last
 
 def match_id(target_id: str, chain=lambda mob: True):
-    return lambda mob : mob.at_path("id").value == target_id and chain(mob)
+    return lambda mob : chain(mob) and mob.at_path("id").value == target_id
+
+def match_armor(armor: [str], chain=lambda mob: True):
+    return lambda mob : chain(mob) and get_named_armor_items(mob) == armor
+
+def match_noarmor(chain=lambda mob: True):
+    return lambda mob : chain(mob) and (not mob.has_path('ArmorItems'))
 
 def match_hand(hand: [str], chain=lambda mob: True):
-    return lambda mob : mob.has_path('HandItems') and get_named_hand_items(mob) == hand and chain(mob)
+    return lambda mob : chain(mob) and get_named_hand_items(mob) == hand
+
+def match_nohand(chain=lambda mob: True):
+    return lambda mob : chain(mob) and (not mob.has_path('HandItems'))
 
 def match_name(name: str, chain=lambda mob: True):
-    return lambda mob : mob.has_path('CustomName') and get_entity_name_from_nbt(mob) == name and chain(mob)
+    return lambda mob : chain(mob) and mob.has_path('CustomName') and get_entity_name_from_nbt(mob) == name
+
+def match_noname(chain=lambda mob: True):
+    return lambda mob : chain(mob) and (not mob.has_path('CustomName'))
+
+# Matches health to within += 1.0
+def match_hp(hp: float, chain=lambda mob: True):
+    return lambda mob : chain(mob) and mob.has_path('Health') and math.isclose(mob.at_path('Health').value, hp, abs_tol=1.0)
 
 def match_passenger(host_chain, passenger_chain):
     return lambda mob : (host_chain(mob)
@@ -48,10 +65,16 @@ def match_passenger(host_chain, passenger_chain):
 # Note that these will be evaluated last to first - so put more broad checks first for performance
 sub = [
     ("Lighthouse Defender", match_hand(["Enraged Captain's Axe", "Hawk's Talon"], match_id('minecraft:skeleton'))),
-    ("Frost Moon Brute", match_name('6Frost Moon Brute', match_id('minecraft:wither_skeleton'))),
     ("Frost Moon Archer", match_name('Frost Moon Brute', match_id('minecraft:skeleton'))),
+    ("Frost Moon Archer", match_name('Frost Moon Knight', match_id('minecraft:skeleton'))),
     ("Desiccated Ghast", match_name('Dessicated Ghast', match_id('minecraft:ghast'))),
+    ("Mercenary Bowman", match_name('Mercenery Bowman', match_id('minecraft:skeleton'))),
 
+    # Generic, un-named R2 mobs
+    ("Molten Citizen", match_hp(30, match_nohand(match_noname(match_id('minecraft:zombie_pigman'))))),
+    ("Theraphosidae", match_armor(["Generic spider5", None, None, None],match_nohand(match_noname(match_id('minecraft:spider'))))),
+    ("Drowned Pirate", match_armor([None,"generic drowned",None,None],match_nohand(match_noname(match_id('minecraft:drowned'))))),
+    ("Drowned Pirate", match_passenger(match_id('minecraft:guardian'), match_name('Drowned Pirate', match_id('minecraft:drowned')))),
 
     ("Gear Gremlin", match_passenger(match_id('minecraft:endermite'), match_name('Gear Gremlin', match_id('minecraft:drowned')))),
     ("Rusted Gear", match_passenger(match_id('minecraft:guardian'), match_name('Rusted Gear', match_id('minecraft:drowned')))),
@@ -59,6 +82,9 @@ sub = [
 
     ("Pirate Buccaneer", match_name('Pirate Buckaneer', match_id('minecraft:husk'))),
     ("Pirate Oarsman", match_name('Pirate Oarman', match_id('minecraft:vindicator'))),
+
+    # Cyan
+    ("Cursed Demolitionist", match_name('Cursed Demolitionist', match_id('minecraft:zombie_villager'))),
 
     # Pink same-named mobs
     ("Fall Citizen", match_hand(["Earthbound Runeblade", None], match_name("Tempered Citizen", match_id('minecraft:zombie_villager')))),

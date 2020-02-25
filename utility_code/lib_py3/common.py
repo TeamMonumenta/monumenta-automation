@@ -60,37 +60,34 @@ def parse_name_possibly_json(name, remove_color=False):
 
     return name
 
-def get_named_hand_items(entity):
-    if not entity.has_path("HandItems"):
-        return [None, None]
+def get_named_items(entity: nbt.TagCompound, path: str, expected_len: int) -> [str]:
+    items = []
 
-    hand_items = []
-    hand_items_nbt = entity.at_path("HandItems")
+    if not entity.has_path(path):
+        for x in range(expected_len):
+            items.append(None)
+    else:
+        items_nbt = entity.at_path(path)
 
-    if len(hand_items_nbt.value) != 2:
-        if len(hand_items_nbt.value) == 1:
-            hand_items.append(None)
-            for hand_item in hand_items_nbt.value:
-                if hand_item.has_path("tag.display.Name"):
-                    item_name = parse_name_possibly_json(hand_item.at_path("tag.display.Name").value, remove_color=True)
-                    hand_items.append("{}".format(item_name))
+        if len(items_nbt.value) != expected_len:
+            eprint("Entity has weird {} length! Got {}, expected {}: {}".format(path, len(items_nbt.value), expected_len, entity.to_mojangson()))
+            for x in range(expected_len):
+                items.append(None)
+        else:
+            for item in items_nbt.value:
+                if item.has_path("tag.display.Name"):
+                    item_name = parse_name_possibly_json(item.at_path("tag.display.Name").value, remove_color=True)
+                    items.append("{}".format(item_name))
                 else:
-                    hand_items.append(None)
+                    items.append(None)
 
-        else:
-            eprint("Entity has weird hand items length!")
-            entity.tree()
-            return [None, None]
+    return items
 
-    for hand_item in hand_items_nbt.value:
-        if hand_item.has_path("tag.display.Name"):
-            item_name = parse_name_possibly_json(hand_item.at_path("tag.display.Name").value, remove_color=True)
-            hand_items.append("{}".format(item_name))
-        else:
-            hand_items.append(None)
+def get_named_hand_items(entity):
+    return get_named_items(entity, "HandItems", 2)
 
-    return hand_items
-
+def get_named_armor_items(entity):
+    return get_named_items(entity, "ArmorItems", 4)
 
 class AlwaysEqual(object):
     def __init__(self):
