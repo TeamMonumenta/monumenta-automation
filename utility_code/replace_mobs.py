@@ -69,6 +69,10 @@ sub = [
     ("Frost Moon Archer", match_name('Frost Moon Knight', match_id('minecraft:skeleton'))),
     ("Desiccated Ghast", match_name('Dessicated Ghast', match_id('minecraft:ghast'))),
     ("Mercenary Bowman", match_name('Mercenery Bowman', match_id('minecraft:skeleton'))),
+    ("Flame Imp", match_name('Fire Imp', match_id('minecraft:zombie'))),
+    ("Earth Spectre", match_name('Earth Shade', match_id('minecraft:skeleton'))),
+    ("Phaser Guardian", match_name('Phaser Assassin', match_id('minecraft:guardian'))),
+    ("Jungle Flyer", match_hand(["Druidic Stick", None], match_no_name(match_id('minecraft:vex')))),
 
     # Generic, un-named R2 mobs
     ("Molten Citizen", match_hp(30, match_nohand(match_noname(match_id('minecraft:zombie_pigman'))))),
