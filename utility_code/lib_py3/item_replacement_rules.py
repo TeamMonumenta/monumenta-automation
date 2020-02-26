@@ -57,7 +57,7 @@ class GlobalRule(object):
 
         return result
 
-def enchantify(item, player, regions, enchantment, owner_prefix=None):
+def enchantify(item, player, enchantment, owner_prefix=None):
     """Applies a lore-text enchantment to item (full item nbt, including id and Count).
 
     Must be kept in sync with the plugin version!
@@ -85,29 +85,21 @@ def enchantify(item, player, regions, enchantment, owner_prefix=None):
         return
 
     newLore = []
-
     enchantmentFound = False
     nameAdded = (owner_prefix is None)
-    regionFound = False
     for loreEntry in lore:
         loreText = loreEntry.value
-        if ( enchantment ) in loreText:
+        if (enchantment) in loreText:
             enchantmentFound = True
 
-        for region in regions:
-            if region in loreText:
-                regionFound = True
-
         loreStripped = unformat_text(loreText)
-
-        for region in regions:
-            if (not enchantmentFound and (region in loreText or
-                                          "Armor" in loreText or
-                                          "Magic Wand" in loreText or
-                                          len(loreStripped) == 0)):
-                newLore.append(nbt.TagString(enchantment))
-                enchantmentFound = True
-                break
+        HEADER_LORE = ("King's Valley :", "Celsian Isles :", "Monumenta :", "Armor", "Magic Wand")
+        if not enchantmentFound and (
+            any(x in loreStripped for x in HEADER_LORE) or
+            len(loreStripped) == 0
+        ):
+            newLore.append(nbt.TagString(enchantment))
+            enchantmentFound = True
 
         if (not nameAdded and len(loreStripped) == 0):
             newLore.append(nbt.TagString(owner_prefix + " " + player))
@@ -115,11 +107,12 @@ def enchantify(item, player, regions, enchantment, owner_prefix=None):
 
         newLore.append(nbt.TagString(loreText))
 
+    if not enchantmentFound:
+        # Don't apply changes
+        return
+
     if not nameAdded:
         newLore.append(nbt.TagString(owner_prefix + " " + player))
-
-    if not regionFound:
-        return
 
     item.at_path('tag.display.Lore').value = newLore
 
@@ -151,7 +144,6 @@ def shatter_item(item):
 
 class _PreserveEnchantmentBase(GlobalRule):
     name = 'Preserve Enchantment Base (SHOULD NOT BE USED DIRECTLY)'
-    regions = ["King's Valley", "Celsian Isles"]
     enchantment = '§7Enchantment'
     owner_prefix = 'Whatever by'
 
@@ -177,10 +169,10 @@ class _PreserveEnchantmentBase(GlobalRule):
             return
 
         if self.player:
-            enchantify(item, self.player, self.regions, self.enchantment, owner_prefix=self.owner_prefix)
+            enchantify(item, self.player, self.enchantment, owner_prefix=self.owner_prefix)
         else:
             # Apply the enchantment without saying who added it (workaround for previous bug)
-            enchantify(item, self.player, self.regions, self.enchantment, owner_prefix=None)
+            enchantify(item, self.player, self.enchantment, owner_prefix=None)
 
 ################################################################################
 # Global rules begin
