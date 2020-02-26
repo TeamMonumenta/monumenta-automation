@@ -49,8 +49,10 @@ def process_entity(entity, source_pos, entity_path, source_name):
                         not_found_unique_mobs.pop(name)
                 else:
                     not_found_unique_mobs[name] = entity
+                mob_pos[name] = (source_pos, source_name)
 
 
+mob_pos = {}
 not_found_different_mobs = set()
 not_found_unique_mobs = {}
 not_found_unique_low_count_mobs = set()
@@ -123,10 +125,10 @@ for dungeon in dungeons:
 
 print("\n\n\n\n\n\nNot found unique mobs:")
 for name in not_found_unique_mobs:
-    print("  {}".format(name))
+    print("  {} - {}".format(name, mob_pos[name]))
 
 print("\n\n\n\n\n\nNot found different mobs:")
 for name in not_found_different_mobs:
-    print("  {}".format(name))
+    print("  {} - {}".format(name, mob_pos[name]))
 
 los.save()
