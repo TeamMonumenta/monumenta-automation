@@ -102,10 +102,10 @@ sub = [
 ]
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> <--library-of-souls /path/to/library-of-souls.json> [--logfile <stdout|stderr|path>] [--dry-run]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--dry-run]".format(sys.argv[0]))
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:s:b:l:di", ["world=", "schematics=", "library-of-souls=", "logfile=", "dry-run"])
+    opts, args = getopt.getopt(sys.argv[1:], "w:s:b:l:di", ["world=", "schematics=", "library-of-souls=", "logfile=", "dry-run", "pos1=", "pos2="])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
@@ -113,6 +113,8 @@ except getopt.GetoptError as err:
 world_path = None
 schematics_path = None
 library_of_souls_path = None
+pos1 = None
+pos2 = None
 logfile = None
 dry_run = False
 
@@ -123,6 +125,20 @@ for o, a in opts:
         schematics_path = a
     elif o in ("-b", "--library-of-souls"):
         library_of_souls_path = a
+    elif o in ("--pos1"):
+        try:
+            split = a.split(",")
+            pos1 = (int(split[0]), int(split[1]), int(split[2]))
+        except:
+            eprint("Invalid --pos1 argument")
+            usage()
+    elif o in ("--pos2"):
+        try:
+            split = a.split(",")
+            pos2 = (int(split[0]), int(split[1]), int(split[2]))
+        except:
+            eprint("Invalid --pos2 argument")
+            usage()
     elif o in ("-l", "--logfile"):
         logfile = a
     elif o in ("-d", "--dry-run"):
@@ -137,6 +153,13 @@ if world_path is None and schematics_path is None:
 elif library_of_souls_path is None:
     eprint("--library-of-souls must be specified!")
     usage()
+elif ((pos1 is not None) and (pos2 is None)) or ((pos1 is None) and (pos2 is not None)):
+    eprint("--pos1 and --pos2 must be specified (or neither specified)!")
+    usage()
+elif (pos1 is not None) and (schematics_path is not None):
+    eprint("--pos1 and --pos2 do not currently work for schematics")
+    usage()
+
 
 los = LibraryOfSouls(library_of_souls_path, readonly=True)
 replace_mgr = MobReplacementManager()
@@ -186,7 +209,7 @@ try:
     if world_path:
         world = World(world_path)
         debug_path = os.path.basename(world_path) + " -> "
-        for entity, source_pos, entity_path in world.entity_iterator(readonly=dry_run):
+        for entity, source_pos, entity_path in world.entity_iterator(readonly=dry_run, pos1=pos1, pos2=pos2):
             process_entity(entity, source_pos, entity_path, debug_path=debug_path)
 
     if schematics_path:
