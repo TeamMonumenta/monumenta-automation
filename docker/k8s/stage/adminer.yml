@@ -31,6 +31,15 @@ spec:
       labels:
         app: adminer
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-8
       containers:
         - name: adminer
           image: adminer:4.6.3

@@ -44,6 +44,16 @@ spec:
       labels:
         app: gray
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: NotIn
+                values:
+                - monumenta-8
       volumes:
         - name: nfs-maps
           hostPath:

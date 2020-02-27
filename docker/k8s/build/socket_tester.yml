@@ -37,6 +37,16 @@ spec:
       labels:
         app: sockettest
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-8
       containers:
       - name: sockettest
         image: subfuzion/netcat
