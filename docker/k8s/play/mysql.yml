@@ -57,7 +57,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - ns547336.ip-66-70-181.net
+                - monumenta-8
       containers:
       - image: mysql:5.6
         name: mysql

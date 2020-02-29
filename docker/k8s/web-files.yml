@@ -62,7 +62,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - ns547336.ip-66-70-181.net
+                - monumenta-8
       volumes:
         - name: nfs-web-files
           hostPath:

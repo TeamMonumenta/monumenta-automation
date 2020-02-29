@@ -76,7 +76,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - ns547336.ip-66-70-181.net
+                - monumenta-8
       serviceAccountName: automation-bot-service-account
       volumes:
         - name: nfs-data
