@@ -13,9 +13,9 @@ spec:
     app: purgatory
   ports:
   # Main minecraft port
-  - name: "25565"
-    port: 25565
-    targetPort: 25565
+  - name: "25566"
+    port: 25566
+    targetPort: 25566
 
 ---
 
@@ -51,7 +51,7 @@ spec:
         tty: true
         stdin: true
         ports:
-        - containerPort: 25565
+        - containerPort: 25566
         env:
         - name: "JAVA_MEM"
           value: "256M"
@@ -63,13 +63,13 @@ spec:
           value: "/project_epic/purgatory"
         readinessProbe:
           tcpSocket:
-            port: 25565
+            port: 25566
           initialDelaySeconds: 5
           timeoutSeconds: 5
           periodSeconds: 5
         livenessProbe:
           tcpSocket:
-            port: 25565
+            port: 25566
           initialDelaySeconds: 240
           timeoutSeconds: 5
           periodSeconds: 10

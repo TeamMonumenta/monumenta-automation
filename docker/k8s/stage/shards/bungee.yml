@@ -39,7 +39,7 @@ spec:
   - name: minecraft
     port: 9002
     nodePort: 9002
-    targetPort: 25565
+    targetPort: 25566
 
 ---
 
@@ -84,7 +84,7 @@ spec:
         tty: true
         stdin: true
         ports:
-        - containerPort: 25565
+        - containerPort: 25566
         - containerPort: 9575
         - containerPort: 8804
         env:
@@ -100,13 +100,13 @@ spec:
           value: "yes"
         readinessProbe:
           tcpSocket:
-            port: 25565
+            port: 25566
           initialDelaySeconds: 10
           timeoutSeconds: 5
           periodSeconds: 5
         livenessProbe:
           tcpSocket:
-            port: 25565
+            port: 25566
           initialDelaySeconds: 240
           timeoutSeconds: 5
           periodSeconds: 10
