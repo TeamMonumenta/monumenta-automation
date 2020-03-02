@@ -139,6 +139,8 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:prismarine_crystals", "Shifting Crystals", "minecraft:quartz", "Shifting Crystals"],
             ["minecraft:leather_leggings", "Sports Leggings", "minecraft:leather_leggings", "Yoga Pants"],
             ["minecraft:iron_sword", "Dutiful Blade", "minecraft:stone_sword", "Dutiful Blade"],
+            ["minecraft:zombie_head", "Zombie Plushy", "minecraft:zombie_head", "Zombie Plushie"],
+            ["minecraft:potion", "Priestly Porter", "minecraft:potion", "Priestly Porter"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
