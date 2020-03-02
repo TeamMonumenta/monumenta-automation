@@ -20,7 +20,7 @@ metadata:
 data:
   mysql.cnf: |
     [mysqld]
-    max_connections = 500
+    max_connections = 1000
   docker.cnf: |
     [mysqld]
     skip-host-cache
