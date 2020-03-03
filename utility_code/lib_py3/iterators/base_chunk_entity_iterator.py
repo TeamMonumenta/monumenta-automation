@@ -27,6 +27,8 @@ class BaseChunkEntityIterator(object):
         if ((pos1 is None) and (not pos2 is None)) or ((pos2 is None) and (not pos1 is None)):
             raise Exception("Only one iteration corner was specified!")
 
+        self._regions = set(world.region_files)
+
         if (not pos1 is None) and (not pos2 is None):
             self._min_x = min(pos1[0],pos2[0])
             self._min_y = min(pos1[1],pos2[1])
@@ -35,16 +37,29 @@ class BaseChunkEntityIterator(object):
             self._max_x = max(pos1[0],pos2[0])
             self._max_y = max(pos1[1],pos2[1])
             self._max_z = max(pos1[2],pos2[2])
+
+            newregions = set()
+            for region in self._regions:
+                if (region[0] >= self._min_x // 512
+                    and region[0] <= self._max_x // 512
+                    and region[1] >= self._min_z // 512
+                    and region[1] <= self._max_z // 512):
+
+                    newregions.add(region)
+
+            self._regions = newregions
         else:
             # Compute region boundaries for the world
             xregions = [r[0] for r in world.region_files]
             zregions = [r[1] for r in world.region_files]
             self._min_x = min(xregions) * 512
-            self._max_x = max(xregions) * 512
+            self._max_x = (max(xregions) + 1) * 512
             self._min_y = 0
             self._max_y = 255
             self._min_z = min(zregions) * 512
-            self._max_z = max(zregions) * 512
+            self._max_z = (max(zregions) + 1) * 512
+
+            # Use the original / unmodified region list
 
     def __iter__(self):
         """
@@ -73,22 +88,11 @@ class BaseChunkEntityIterator(object):
                 # Save the current region - maybe nothing to do here?
                 self._region = None
 
-            if self._first_run:
-                # This was the first call to __next__ - need to load the initial region files
-                # and not iterate them just yet
-                self._first_run = False
-                self._rx = self._min_x//512
-                self._rz = self._min_z//512
-            else:
-                # Get the next region
-                self._rx += 1
-                if self._rx > self._max_x//512:
-                    self._rx = self._min_x//512
-                    self._rz += 1
+            if len(self._regions) <= 0:
+                # All done!
+                raise StopIteration
 
-                if self._rz > self._max_z//512:
-                    # All done!
-                    raise StopIteration
+            self._rx, self._rz = self._regions.pop()
 
             # Load the next indicated region (_rx/_rz)
             region_path = os.path.join(self._world.path, "region", "r.{}.{}.mca".format(self._rx, self._rz))
@@ -128,6 +132,7 @@ class BaseChunkEntityIterator(object):
                 # This was the first call to __next__ - need to load the initial region files
                 # and not iterate the chunk index's just yet
                 self._next_region()
+                self._first_run = False
             else:
                 # Get the next chunk
                 self._cx_idx += 1
