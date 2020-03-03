@@ -79,6 +79,10 @@ spec:
           hostPath:
             type: Directory
             path: "/nfs/4_SHARED/sound_pack"
+        - name: nfs-stage
+          hostPath:
+            type: Directory
+            path: /nfs/stage/project_epic
       containers:
       - name: basic-ssh
         image: monumenta-docker.injic.io/monumenta-basic-ssh
@@ -101,5 +105,7 @@ spec:
           mountPath: /home/epic/sound_pack
         - name: nfs-venture-chat
           mountPath: /home/epic/venture-chat
+        - name: nfs-stage
+          mountPath: /home/epic/stage
       imagePullSecrets:
       - name: regcred
