@@ -153,6 +153,19 @@ dungeon_score_rules = [
         "actions":{"set":[
             {"Objective":"D10Access","Score":0}]}},
 
+    {"condition":{"Objective":"D11Access","Score":{"min":1}},
+        "actions":{"add":[
+            {"Objective":"D11Access","Score":instance_week_offset}]}},
+    {"condition":{"Objective":"D11Access","Score":{"min":3 * instance_week_offset}},
+        "actions":{"set":[
+            {"Objective":"D11Access","Score":0},
+            {"Objective":"D11Finished","Score":0},
+            {"Objective":"Delve10Challenge","Score":0},
+        ]}},
+    {"condition":{"Name":"$last","Objective":"D11Access"},
+        "actions":{"set":[
+            {"Objective":"D11Access","Score":0}]}},
+
     {"condition":{"Objective":"DCAccess","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"DCAccess","Score":instance_week_offset}]}},
