@@ -136,40 +136,44 @@ class AutomationBotInstance(object):
             self._prefix = config["prefix"]
             self._project_epic_dir = config["project_epic_dir"]
 
-            if "socket" in config:
-                # Get the event loop on the main thread
-                loop = asyncio.get_event_loop()
+            if "rabbitmq" in config:
+                try:
+                    # Get the event loop on the main thread
+                    loop = asyncio.get_event_loop()
 
-                def socket_callback(message):
-                    if "op" in message:
-                        if "Heartbeat" in message["op"]:
-                            return;
+                    def socket_callback(message):
+                        if "op" in message:
+                            if "Heartbeat" in message["op"]:
+                                return;
 
-                        logger.info("Got socket message: {}".format(pformat(message)))
-                        if self._audit_channel:
-                            if (message["op"] == "Monumenta.Automation.AuditLog"):
-                                # Schedule the display coroutine back on the main event loop
-                                asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
-                                                                                       channel=self._audit_channel),
-                                                                 loop)
+                            logger.info("Got socket message: {}".format(pformat(message)))
+                            if self._audit_channel:
+                                if (message["op"] == "Monumenta.Automation.AuditLog"):
+                                    # Schedule the display coroutine back on the main event loop
+                                    asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
+                                                                                           channel=self._audit_channel),
+                                                                     loop)
 
-                conf = config["socket"]
-                if "log_level" in conf:
-                    log_level = conf["log_level"]
-                else:
-                    log_level = 20
+                    conf = config["rabbitmq"]
+                    if "log_level" in conf:
+                        log_level = conf["log_level"]
+                    else:
+                        log_level = 20
 
-                self._socket = SocketManager(conf["host"], conf["port"], conf["name"], callback=socket_callback, log_level=log_level)
+                    self._socket = SocketManager(conf["host"], conf["name"], durable=True, callback=socket_callback, log_level=log_level)
 
-                # Add commands that require the sockets here!
-                self._commands["broadcastcommand"] = self.action_broadcastcommand
+                    # Add commands that require the sockets here!
+                    self._commands["broadcastcommand"] = self.action_broadcastcommand
 
-                self._audit_channel = None
-                if "audit_channel" in conf:
-                    try:
-                        self._audit_channel = client.get_channel(conf["audit_channel"])
-                    except:
-                        logging.error( "Cannot connect to audit channel: " + conf["audit_channel"] )
+                    self._audit_channel = None
+                    if "audit_channel" in conf:
+                        try:
+                            self._audit_channel = client.get_channel(conf["audit_channel"])
+                        except:
+                            logging.error( "Cannot connect to audit channel: " + conf["audit_channel"] )
+
+                except Exception as e:
+                    logger.warn('Failed to connect to rabbitmq: {}'.format(e))
 
             # Remove any commands that aren't available in the config
             for command in dict(self._commands):

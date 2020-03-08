@@ -32,14 +32,14 @@ socket = None
 k8s = None
 try:
 
-    if "socket" in config:
-        conf = config["socket"]
+    if "rabbitmq" in config:
+        conf = config["rabbitmq"]
         if "log_level" in conf:
             log_level = conf["log_level"]
         else:
             log_level = 20
 
-        socket = SocketManager(conf["host"], conf["port"], "daily_restart", callback=None, log_level=log_level)
+        socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level)
 
     k8s = KubernetesManager(config["k8s_namespace"])
 except KeyError as e:
@@ -104,7 +104,7 @@ async def main():
 
     # Restart bungee
     print("Restarting bungee...")
-    socket.send_packet(None, "Monumenta.Bungee.Command", {"command": "end"})
+    socket.send_packet("bungee", "Monumenta.Bungee.Command", {"command": "end"})
 
     # Enough time for everything to stabilize
     await asyncio.sleep(180)
