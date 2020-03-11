@@ -1,0 +1,123 @@
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev1
+  namespace: build
+  labels:
+    app: dev1
+spec:
+  type: ClusterIP
+  selector:
+    app: dev1
+  ports:
+  # Main minecraft port
+  - name: "25566"
+    port: 25566
+    targetPort: 25566
+
+---
+
+# Deployment / the actual running application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev1
+  namespace: build
+  labels:
+    app: dev1
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dev1
+  template:
+    metadata:
+      labels:
+        app: dev1
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: NotIn
+                values:
+                - monumenta-8
+      volumes:
+        - name: nfs-maps
+          hostPath:
+            type: Directory
+            path: /nfs/build/maps
+        - name: nfs-project-epic
+          hostPath:
+            type: Directory
+            path: /nfs/build/project_epic
+        - name: nfs-shared
+          hostPath:
+            type: Directory
+            path: /nfs/4_SHARED
+      containers:
+      - name: dev1
+        image: monumenta-docker.injic.io/monumenta-java-shard
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 25566
+        - containerPort: 8000
+        env:
+        # Set this to however much RAM the shard needs
+        - name: "JAVA_MEM"
+          value: "1536M"
+        # Set this to 256M regardless of JAVA_MEM
+        - name: "JAVA_META_MEM"
+          value: "256M"
+        - name: "JAVA_JAR"
+          value: "paperclip.jar"
+        - name: "SERVER_DIR"
+          value: "/project_epic/dev1"
+        - name: "JAVA_LARGE_PAGES"
+          value: "yes"
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 8000
+          initialDelaySeconds: 240
+          timeoutSeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: nfs-project-epic
+          mountPath: /project_epic
+        - name: nfs-maps
+          mountPath: /home/epic/maps/dynmap/build
+        - name: nfs-shared
+          mountPath: /home/epic/4_SHARED
+        resources:
+          limits:
+            # Set this to 1Gi
+            # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
+            # It should not need much/any...
+            memory: 1Gi
+            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: 1888Mi
+          requests:
+            # Set this to 64Mi
+            # The shard should not need non-hugepage RAM by default
+            memory: 64Mi
+            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: 1888Mi
+      imagePullSecrets:
+      - name: regcred
