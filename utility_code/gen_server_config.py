@@ -70,7 +70,8 @@ server_config = server_config_min + [
         ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks'),
     ]
 
-monumenta_without_mobs_plugins = [
+monumenta = [
+        ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
         ('plugins/MonumentaWarps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/JeffChestSort.jar', '../../server_config/plugins/JeffChestSort.jar'),
@@ -102,9 +103,6 @@ monumenta_without_mobs_plugins = [
         ('plugins/Monumenta/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
         ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
         ('plugins/PremiumVanish/config.yml', '../../../server_config/data/plugins/all/PremiumVanish/config.yml'),
-    ]
-monumenta = monumenta_without_mobs_plugins + [
-        ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
     ]
 
 coreprotect = [
@@ -252,7 +250,25 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 6'),
             ('server.properties', 'difficulty', 'difficulty=2'),
         ],
-        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta_without_mobs_plugins + coreprotect,
+        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect,
+    },
+
+    'dev1':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=6'),
+            ('spigot.yml', 'view-distance', '    view-distance: 6'),
+            ('server.properties', 'difficulty', 'difficulty=2'),
+        ],
+        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect,
+    },
+
+    'dev2':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=6'),
+            ('spigot.yml', 'view-distance', '    view-distance: 6'),
+            ('server.properties', 'difficulty', 'difficulty=2'),
+        ],
+        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect,
     },
 
     'plots':{
