@@ -76,6 +76,8 @@ sub = [
     ("Cherry Boomsom", match_name('Cheery Boomsome', match_id('minecraft:creeper'))),
     ("Blast Miner", match_name('Pyro Miner', match_id('minecraft:zombie'))),
     ("Viridian Juggernaut", match_name('Viridian Juggernaught', match_id('minecraft:wither_skeleton'))),
+    ("Frozen Grunt", match_name('Frost Knight', match_id('minecraft:zombie_villager'))),
+    ("Frozen Sniper", match_name('Frost Knight Archer', match_id('minecraft:stray'))),
 
     # Generic, un-named R2 mobs
     ("Molten Citizen", match_hp(30, match_nohand(match_noname(match_id('minecraft:zombie_pigman'))))),
