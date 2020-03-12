@@ -75,6 +75,7 @@ sub = [
     ("Jungle Flyer", match_hand(["Druidic Stick", None], match_noname(match_id('minecraft:vex')))),
     ("Cherry Boomsom", match_name('Cheery Boomsome', match_id('minecraft:creeper'))),
     ("Blast Miner", match_name('Pyro Miner', match_id('minecraft:zombie'))),
+    ("Viridian Juggernaut", match_name('Viridian Juggernaught', match_id('minecraft:wither_skeleton'))),
 
     # Generic, un-named R2 mobs
     ("Molten Citizen", match_hp(30, match_nohand(match_noname(match_id('minecraft:zombie_pigman'))))),
