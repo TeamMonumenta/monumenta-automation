@@ -80,6 +80,7 @@ sub = [
     # Generic, un-named R2 mobs
     ("Molten Citizen", match_hp(30, match_nohand(match_noname(match_id('minecraft:zombie_pigman'))))),
     ("Theraphosidae", match_armor(["Generic spider5", None, None, None],match_nohand(match_noname(match_id('minecraft:spider'))))),
+    ("Hungry Dolphin", match_armor([None, None, None, "Generic Fang"],match_nohand(match_noname(match_id('minecraft:dolphin'))))),
     ("Drowned Pirate", match_armor([None,"generic drowned",None,None],match_nohand(match_noname(match_id('minecraft:drowned'))))),
     ("Drowned Pirate", match_passenger(match_id('minecraft:guardian'), match_name('Drowned Pirate', match_id('minecraft:drowned')))),
 
