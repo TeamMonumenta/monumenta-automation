@@ -141,6 +141,9 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:iron_sword", "Dutiful Blade", "minecraft:stone_sword", "Dutiful Blade"],
             ["minecraft:zombie_head", "Zombie Plushy", "minecraft:zombie_head", "Zombie Plushie"],
             ["minecraft:potion", "Priestly Porter", "minecraft:potion", "Priestly Porter"],
+            ["minecraft:golden_leggings", "Ethereal Greaves", "minecraft:chainmail_leggings", "Ethereal Greaves"],
+            # Note the former incorrect apostraphe
+            ["minecraft:stick", r"Alcanretia’s Blossom", "minecraft:stick", "Alcanretia's Blossom"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
