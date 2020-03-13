@@ -101,6 +101,9 @@ monumenta = [
         ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
         ('plugins/Monumenta/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
+    ]
+
+vanish = [
         ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
         ('plugins/PremiumVanish/config.yml', '../../../server_config/data/plugins/all/PremiumVanish/config.yml'),
     ]
@@ -171,7 +174,7 @@ base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect
 if (SERVER_TYPE == 'build'):
     base_plugins += speedchanger + nbteditor + voxelsniper + gobrush
 else:
-    base_plugins += []
+    base_plugins += vanish
 
 # String replacements:
 # {servername} - server name
