@@ -80,6 +80,7 @@ sub = [
     ("Frozen Sniper", match_name('Frost Knight Archer', match_id('minecraft:stray'))),
 
     # Generic, un-named R2 mobs
+    ("Celsian Sniper", match_hp(30, match_hand(["Composite Bow", None], match_noarmor(match_noname(match_id('minecraft:skeleton')))))),
     ("Celsian Ghast", match_hand(["Generic blaze1", None], match_noname(match_id('minecraft:ghast'))))),
     ("Molten Citizen", match_hp(30, match_nohand(match_noname(match_id('minecraft:zombie_pigman'))))),
     ("Theraphosidae", match_armor(["Generic spider5", None, None, None],match_nohand(match_noname(match_id('minecraft:spider'))))),
