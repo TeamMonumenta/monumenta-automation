@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import sys
 
 import traceback
@@ -145,15 +146,43 @@ def shatter_item(item):
 class _PreserveEnchantmentBase(GlobalRule):
     name = 'Preserve Enchantment Base (SHOULD NOT BE USED DIRECTLY)'
     enchantment = '§7Enchantment'
-    owner_prefix = 'Whatever by'
+    owner_prefix = None
+    # This, but requiring a space at the beginning, while still matching an empty string.
+    # Also matches a single space, requiring a final check.
+    # https://stackoverflow.com/a/267405
+    _RE_ROMAN_NUMERAL = re.compile(r'''^( M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))?$''')
+
+    def __init__(self):
+        self.enchant_found = False
+        self.enchant_level = None
+        self.player = None
+
+    def _get_enchant_level(self, lore):
+        """Return the string that represents the enchantment level.
+
+        An empty string "" is a valid level - the default of 1.
+        Returns None if the enchantment doesn't match.
+        """
+        if not lore.startswith(self.enchantment):
+            return None
+
+        enchant_level = lore[len(self.enchantment):]
+        if self._RE_ROMAN_NUMERAL.match(enchant_level):
+            if enchant_level == ' ':
+                return None
+            else:
+                return enchant_level
+        else:
+            return None
 
     def preprocess(self, template, item):
         self.enchant_found = False
+        self.enchant_level = None
         self.player = None
 
         if template.has_path('display.Lore'):
             for lore in template.at_path('display.Lore').value:
-                if self.enchantment in lore.value:
+                if lore.value.startswith(self.enchantment):
                     # Don't apply the enchant if it already exists
                     return
 
@@ -161,18 +190,19 @@ class _PreserveEnchantmentBase(GlobalRule):
             for lore in item.at_path('tag.display.Lore').value:
                 if self.enchantment in lore.value:
                     self.enchant_found = True
-                if self.owner_prefix in lore.value:
+                    self.enchant_level = self._get_enchant_level(lore.value)
+                if self.owner_prefix is not None and self.owner_prefix in lore.value:
                     self.player = lore.value[len(self.owner_prefix)+1:]
 
     def postprocess(self, item):
-        if self.enchant_found is False:
+        if not self.enchant_found:
             return
 
         if self.player:
-            enchantify(item, self.player, self.enchantment, owner_prefix=self.owner_prefix)
+            enchantify(item, self.player, self.enchantment + self.enchant_level, owner_prefix=self.owner_prefix)
         else:
             # Apply the enchantment without saying who added it (workaround for previous bug)
-            enchantify(item, self.player, self.enchantment, owner_prefix=None)
+            enchantify(item, self.player, self.enchantment + self.enchant_level, owner_prefix=None)
 
 ################################################################################
 # Global rules begin
@@ -258,6 +288,30 @@ class PreserveFestive(_PreserveEnchantmentBase):
                 if self.wrongPrefix in lore.value:
                     self.player = lore.value[len(self.wrongPrefix)+1:]
                     return
+
+class PreserveAcumen(_PreserveEnchantmentBase):
+    name = 'Preserve Acumen'
+    enchantment = '§7Acumen'
+
+class PreserveFocus(_PreserveEnchantmentBase):
+    name = 'Preserve Focus'
+    enchantment = '§7Focus'
+
+class PreservePerspicacity(_PreserveEnchantmentBase):
+    name = 'Preserve Perspicacity'
+    enchantment = '§7Perspicacity'
+
+class PreserveTenacity(_PreserveEnchantmentBase):
+    name = 'Preserve Tenacity'
+    enchantment = '§7Tenacity'
+
+class PreserveVigor(_PreserveEnchantmentBase):
+    name = 'Preserve Vigor'
+    enchantment = '§7Vigor'
+
+class PreserveVitality(_PreserveEnchantmentBase):
+    name = 'Preserve Vitality'
+    enchantment = '§7Vitality'
 
 class PreserveShattered(GlobalRule):
     name = 'Preserve Shattered'
