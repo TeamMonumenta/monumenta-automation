@@ -141,12 +141,6 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
                         scoreObject.at_path("Score").value = 0
                     continue
 
-                # Looks good! Replace items if specified
-                if "replace_items" in instanceConfig:
-                    item_replace_manager = instanceConfig["replace_items"]
-                    for item, _, entity_path in dstWorld.items(readonly=False, pos1=(newRx * 512, 0, newRz * 512), pos2=((newRx + 1) * 512 - 1, 255, (newRz + 1) * 512 - 1)):
-                        item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
-
         # Save the scoreboards if they were used
         if worldScores is not None:
             worldScores.save()

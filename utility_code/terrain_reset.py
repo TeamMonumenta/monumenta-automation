@@ -74,10 +74,8 @@ def get_dungeon_config(name, scoreboard):
         "preserveInstance":{
             "dungeonScore":scoreboard,
             "targetRegion":{"x":-3, "z":-2},
-
-            # Replace items in preserved instances
-            "replace_items": item_replace_manager,
         },
+        "replace_items_globally": item_replace_manager,
         "tagPlayers":["MidTransfer","resetMessage"],
         "tpToSpawn":True,
     }
