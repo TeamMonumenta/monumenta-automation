@@ -109,7 +109,7 @@ never_equal = NeverEqual()
 
 def move_file(old, new):
     if not os.path.exists(old):
-        print("*** '{}' does not exist, preserving original.".format(old))
+        print("*** {!r} does not exist, preserving original.".format(old))
         return False
     if os.path.exists(new):
         os.remove(new)
@@ -123,7 +123,7 @@ def move_file(old, new):
 
 def copy_file(old, new):
     if not os.path.exists(old):
-        print("*** '{}' does not exist, preserving original.".format(old))
+        print("*** {!r} does not exist, preserving original.".format(old))
         return False
     if not os.path.isdir(os.path.dirname(new)):
         os.makedirs(os.path.dirname(new), mode=0o775)
@@ -139,7 +139,7 @@ def copy_file(old, new):
 def copy_folder(old, new):
     # This does not check if it's a path or a file, but there's another function for that case.
     if not os.path.exists(old):
-        print("*** '{}' does not exist, preserving original.".format(old))
+        print("*** {!r} does not exist, preserving original.".format(old))
         return
     if not os.path.isdir(os.path.dirname(new)):
         os.makedirs(os.path.dirname(new), mode=0o775)

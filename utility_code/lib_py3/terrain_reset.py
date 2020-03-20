@@ -43,12 +43,12 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
         if "copyBaseFrom" in config:
             if config["copyBaseFrom"] == "build":
                 if not os.path.exists(config["localBuildFolder"]):
-                    raise Exception("ERROR: Build folder '{}' does not exist!!".format(config["localBuildFolder"]))
+                    raise Exception("ERROR: Build folder {!r} does not exist!!".format(config["localBuildFolder"]))
                 print("  Copying build world as base...")
                 copy_folder(config["localBuildFolder"], localDstFolder)
             elif config["copyBaseFrom"] == "main":
                 if not os.path.exists(config["localMainFolder"]):
-                    raise Exception("ERROR: Main folder '{}' does not exist!!".format(config["localMainFolder"]))
+                    raise Exception("ERROR: Main folder {!r} does not exist!!".format(config["localMainFolder"]))
                 print("  Copying main world as base...")
                 copy_folder(localMainFolder, localDstFolder)
 
@@ -69,7 +69,7 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
         if "coordinatesToFill" in config:
             print("  Filling selected regions with specified blocks...")
             for section in config["coordinatesToFill"]:
-                print("    Filling '" + section["name"] + "' with " + str(section["block"]))
+                print("    Filling " + repr(section["name"]) + " with " + str(section["block"]))
                 dstWorld.fill_blocks(section["pos1"], section["pos2"], {"block": section["block"]})
 
         if "coordinatesToCopy" in config:
@@ -78,7 +78,7 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
 
             print("  Copying needed terrain from the main world...")
             for section in config["coordinatesToCopy"]:
-                print("    Copying '" + section["name"] + "'")
+                print("    Copying " + repr(section["name"]))
                 dstWorld.restore_area(section["pos1"], section["pos2"], old_world);
                 if "replace_items" in section:
                     item_replace_manager = section["replace_items"]
@@ -86,7 +86,7 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
                         item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
 
         if "localMainFolder" in config and not os.path.exists(config["localMainFolder"]):
-            eprint("!!!!!! WARNING: Missing previous week main folder '{}'!".format(config["localBuildFolder"]))
+            eprint("!!!!!! WARNING: Missing previous week main folder {!r}!".format(config["localBuildFolder"]))
             eprint("If you are not adding a shard, this is a critical problem!")
             if statusQueue is not None:
                 statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log})

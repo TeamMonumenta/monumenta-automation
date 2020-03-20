@@ -36,7 +36,7 @@ class LootTableManager(object):
                 break
 
         if not namespace:
-            raise ValueError("'loot_tables' not found in path '{}'".format(path))
+            raise ValueError("'loot_tables' not found in path {!r}".format(path))
 
         if key.lower().endswith('.json'):
             key = key[:-5]
@@ -66,9 +66,9 @@ class LootTableManager(object):
             ench_list = item_nbt.at_path("Enchantments")
             for enchant in ench_list.value:
                 if not "lvl" in enchant.value:
-                    raise KeyError("Item '{}' enchantment does not contain 'lvl'".format(item_name))
+                    raise KeyError("Item {!r} enchantment does not contain 'lvl'".format(item_name))
                 if not "id" in enchant.value:
-                    raise KeyError("Item '{}' enchantment does not contain 'id'".format(item_name))
+                    raise KeyError("Item {!r} enchantment does not contain 'id'".format(item_name))
 
                 # Make sure the enchantment is namespaced
                 if not ":" in enchant.at_path("id").value:
@@ -166,7 +166,7 @@ class LootTableManager(object):
 
                         json_file.save(filename, indent=indent)
                     except Exception as e:
-                        print("Failed to autoformat '{}' : {}".format(filename, e))
+                        print("Failed to autoformat {!r} : {}".format(filename, e))
 
     #
     # Loot table autoformatting class methods
@@ -314,7 +314,7 @@ class LootTableManager(object):
                     try:
                         self.load_loot_tables_file(filename)
                     except:
-                        eprint("Error parsing '" + filename + "'")
+                        eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def load_loot_tables_subdirectories(self, directory):
@@ -389,7 +389,7 @@ class LootTableManager(object):
                     try:
                         self.load_scripted_quests_file(filename)
                     except:
-                        eprint("Error parsing '" + filename + "'")
+                        eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def update_table_link_in_quest_recursive(self, filename, element, old_namespaced_path, new_namespaced_path):
@@ -462,7 +462,7 @@ class LootTableManager(object):
                     try:
                         self.load_advancements_file(filename)
                     except:
-                        eprint("Error parsing '" + filename + "'")
+                        eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def load_advancements_subdirectories(self, directory):
@@ -526,7 +526,7 @@ class LootTableManager(object):
                             for line in fp.readlines():
                                 self.load_command(line, "functions", filename)
                     except:
-                        eprint("Error parsing '" + filename + "'")
+                        eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def load_functions_subdirectories(self, directory):
@@ -722,10 +722,10 @@ class LootTableManager(object):
             raise ValueError("Item NBT does not have a name")
 
         if not item_id in self.item_map:
-            raise ValueError("Item id '{}' not in loot tables".format(item_id))
+            raise ValueError("Item id {!r} not in loot tables".format(item_id))
 
         if not item_name in self.item_map[item_id]:
-            raise ValueError("Item id '{}' name '{}' not in loot tables".format(item_id, item_name))
+            raise ValueError("Item id {!r} name {!r} not in loot tables".format(item_id, item_name))
 
         # Get a list of all the occurrences for iterating
         match_list = []
@@ -833,7 +833,7 @@ class LootTableManager(object):
                     if show_errors:
                         if different:
                             eprint("\033[1;31m", end="")
-                            eprint("ERROR: Item '{}' type '{}' is different and duplicated in the loot tables!".format(item_name, item_id))
+                            eprint("ERROR: Item {!r} type {!r} is different and duplicated in the loot tables!".format(item_name, item_id))
 
                             count = 1
                             for loc in self.item_map[item_id][item_name]:

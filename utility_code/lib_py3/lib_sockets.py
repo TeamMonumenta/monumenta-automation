@@ -35,7 +35,7 @@ class SocketManager(object):
                     self._callback(obj)
 
             except Exception as e:
-                logger.warn("Failed to process rabbitmq message: '{}'".format(body))
+                logger.warn("Failed to process rabbitmq message: {!r}".format(body))
                 logger.warn(traceback.format_exc())
 
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)

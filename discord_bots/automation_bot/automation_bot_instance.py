@@ -182,7 +182,7 @@ class AutomationBotInstance(object):
 
             for command in config["commands"]:
                 if command not in self._commands:
-                    logger.warn("Command '{}' specified in config but does not exist".format(command))
+                    logger.warn("Command {!r} specified in config but does not exist".format(command))
 
             self._permissions = config["permissions"]
             self._debug = False
@@ -289,7 +289,7 @@ class AutomationBotInstance(object):
 
         stdout = stdout.decode('utf-8')
         if stdout:
-            await self.debug("stdout from command '{}':".format(cmd))
+            await self.debug("stdout from command {!r}:".format(cmd))
             logger.debug(stdout)
 
             if self._debug or displayOutput:
@@ -297,11 +297,11 @@ class AutomationBotInstance(object):
 
         stderr = stderr.decode('utf-8')
         if stderr:
-            await self._channel.send("stderr from command '{}':".format(cmd))
+            await self._channel.send("stderr from command {!r}:".format(cmd))
             await self.display_verbatim(stderr)
 
         if ret != None and rc != ret:
-            raise ValueError("Expected result {}, got result {} while processing '{}'".format(ret, rc, cmd))
+            raise ValueError("Expected result {}, got result {} while processing {!r}".format(ret, rc, cmd))
 
         return stdout
 
@@ -365,7 +365,7 @@ class AutomationBotInstance(object):
                 helptext += "```" + self._commands[command].__doc__.replace('{cmdPrefix}',self._prefix) + "```"
 
             if helptext is None:
-                helptext = '''Command '{}' does not exist!'''.format(target_command)
+                helptext = '''Command {!r} does not exist!'''.format(target_command)
 
         await message.channel.send(helptext)
 
@@ -696,7 +696,7 @@ Must be run before starting terrain reset on the play server'''
         await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
         for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
-                await self.display("ERROR: shard '{}' is still running!".format(shard))
+                await self.display("ERROR: shard {!r} is still running!".format(shard))
                 await self.display(message.author.mention)
                 return
 
@@ -810,7 +810,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await self.display(pformat(shards))
         for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
-                await self.display("ERROR: shard '{}' is still running!".format(shard))
+                await self.display("ERROR: shard {!r} is still running!".format(shard))
                 await self.display(message.author.mention)
                 return
 
@@ -834,7 +834,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         await self.display(pformat(shards))
         for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
-                await self.display("ERROR: shard '{}' is still running!".format(shard))
+                await self.display("ERROR: shard {!r} is still running!".format(shard))
                 await self.display(message.author.mention)
                 return
 
@@ -898,7 +898,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.display(pformat(shards))
         for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
-                await self.display("ERROR: shard '{}' is still running!".format(shard))
+                await self.display("ERROR: shard {!r} is still running!".format(shard))
                 await self.display(message.author.mention)
                 return
 
@@ -906,7 +906,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         files = os.listdir("/home/epic/project_epic")
         for f in files:
             if f not in ["server_config", "0_PREVIOUS"] and f not in allShards:
-                await self.display("ERROR: project_epic directory contains file '{}' which will not be processed!".format(f))
+                await self.display("ERROR: project_epic directory contains file {!r} which will not be processed!".format(f))
                 await self.display(message.author.mention)
                 return
 
@@ -1230,5 +1230,5 @@ Syntax:
         if commandArgs.startswith("/"):
             commandArgs = commandArgs[1:]
 
-        await self.display("Broadcasting command '{}' to all shards".format(commandArgs))
+        await self.display("Broadcasting command {!r} to all shards".format(commandArgs))
         self._socket.send_packet("*", "Monumenta.Broadcast.Command", {"command": commandArgs})

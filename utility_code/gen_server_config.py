@@ -391,7 +391,7 @@ else:
 
 def gen_server_config(servername):
     if not(servername in config):
-        print("ERROR: No config available for '" + servername + "'")
+        print("ERROR: No config available for " + repr(servername))
         return
 
     dest = config[servername]
@@ -410,7 +410,7 @@ def gen_server_config(servername):
         old = template_dir + "/" + filename
         new = servername + "/" + filename
         if (os.path.islink(new)):
-            print("Warning - file '" + new + "' is link; not replacing it")
+            print("Warning - file " + repr(new) + " is link; not replacing it")
             continue
 
         if not os.path.isdir(os.path.dirname(new)):
