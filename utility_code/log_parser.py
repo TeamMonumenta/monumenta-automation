@@ -24,6 +24,16 @@ whitelist_ignore = [
     "Something went wrong upgrading!",
     "it doesn't exist anymore?",
     "No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime",
+    "com.mojang.authlib.exceptions.Authentication",
+    "moved wrongly!",
+    " was kicked due to keepalive timeout!",
+    " was kicked for floating too long!",
+    "Skipping BlockEntity with id",
+    "Could not pass event AsyncPlayerChatEvent to VentureChat",
+    "org.sqlite.SQLiteException",
+    "Wrong location! (",
+    "com.djrapitops.plan.storage.database.MySQLDB",
+    "Bukkit will attempt to fix this, but there may be additional damage that we cannot recover",
 ]
 
 def translate(s):
@@ -47,7 +57,7 @@ def store_result(time, severity, contents):
         if key not in error_map[severity]:
             error_map[severity][key] = (contents, 1)
         else:
-            error_map[severity][key] = (contents, error_map[severity][key][1])
+            error_map[severity][key] = (contents, error_map[severity][key][1] + 1)
 
 
 log_file_list = []
