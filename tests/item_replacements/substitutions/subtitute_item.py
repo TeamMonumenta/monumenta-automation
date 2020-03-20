@@ -9,9 +9,9 @@ from lib.item_test import ItemTest
 
 test_item = ItemTest(
     test_name="Substitutions: Substitute the ID and name of items, ignoring other NBT",
-    template_item=r'''{id: "minecraft:nether_star",tag:{display:{Lore:["§7Worth 64 Compressed Crystalline Shards"],Name:"{\"text\":\"§b§lHyper Crystalline Shard\"}"}}}''',
-    item_under_test=r'''{id: "minecraft:nether_star",Count:3b,tag:{display:{Lore:["§7Worth 8 Compressed Crystalline Shards"],Name:"{\"text\":\"§b§lPurified Crystalline Shard\"}"}}}''',
-    expected_result_item=r'''{id: "minecraft:nether_star",Count:3b,tag:{display:{Lore:["§7Worth 64 Compressed Crystalline Shards"],Name:"{\"text\":\"§b§lHyper Crystalline Shard\"}"}}}'''
+    template_item=r'''{id: "minecraft:jungle_sapling", Count: 1b, tag: {display: {Lore: ["§8* Magic Wand *", "§8King's Valley : §eRare", "§7The Black Willows", "§8We need more trees!", "§r", "§7When in main hand:", "§2 4 Attack Speed", "§2 3 Attack Damage"], Name: "{\"text\":\"§2§lChimarian Wand\"}"}, Enchantments: [{lvl: 2s, id: "minecraft:bane_of_arthropods"}, {lvl: 1s, id: "minecraft:fire_aspect"}, {lvl: 3s, id: "minecraft:sharpness"}, {lvl: 2s, id: "minecraft:smite"}]}}''',
+    item_under_test=r'''{id: "minecraft:oak_sapling", Count: 1b, tag: {display: {Lore: ["§7Hope", "§8* Magic Wand *", "§8King's Valley : §eRare", "§7The Black Willows", "§8We need more trees!", "Infused by NickNackGus", "§r", "§7When in main hand:", "§2 4 Attack Speed", "§2 3 Attack Damage"], Name: "{\"text\":\"§2§lChimarian Wand\"}"}, Enchantments: [{lvl: 2s, id: "minecraft:bane_of_arthropods"}, {lvl: 1s, id: "minecraft:fire_aspect"}, {lvl: 3s, id: "minecraft:sharpness"}, {lvl: 2s, id: "minecraft:smite"}]}}''',
+    expected_result_item=r'''{id: "minecraft:jungle_sapling", Count: 1b, tag: {display: {Lore: ["§7Hope", "§8* Magic Wand *", "§8King's Valley : §eRare", "§7The Black Willows", "§8We need more trees!", "Infused by NickNackGus", "§r", "§7When in main hand:", "§2 4 Attack Speed", "§2 3 Attack Damage"], Name: "{\"text\":\"§2§lChimarian Wand\"}"}, Enchantments: [{lvl: 2s, id: "minecraft:bane_of_arthropods"}, {lvl: 1s, id: "minecraft:fire_aspect"}, {lvl: 3s, id: "minecraft:sharpness"}, {lvl: 2s, id: "minecraft:smite"}]}}'''
 )
 test_item.run()
 
