@@ -91,6 +91,11 @@ sub = [
     ("Gear Gremlin", match_passenger(match_id('minecraft:endermite'), match_name('Gear Gremlin', match_id('minecraft:drowned')))),
     ("Rusted Gear", match_passenger(match_id('minecraft:guardian'), match_name('Rusted Gear', match_id('minecraft:drowned')))),
     ("Silver Theurge", match_passenger(match_id('minecraft:silverfish'), match_name('Silver Theurge', match_id('minecraft:drowned')))),
+    ("Inundated Draugr", match_passenger(match_id('minecraft:silverfish'), match_name('Inundated Draugr', match_id('minecraft:drowned')))),
+    ("Drowned Lancer", match_passenger(match_id('minecraft:silverfish'), match_name('Drowned Lancer', match_id('minecraft:drowned')))),
+    ("Water Wisp", match_passenger(match_id('minecraft:silverfish'), match_name('Water Wisp', match_id('minecraft:drowned')))),
+    ("Sodden Corpse", match_passenger(match_id('minecraft:silverfish'), match_name('Sodden Corpse', match_id('minecraft:drowned')))),
+    ("Camouflaged Swarmer", match_passenger(match_id('minecraft:silverfish'), match_name('Camouflaged Swarmer', match_id('minecraft:drowned')))),
 
     ("Pirate Buccaneer", match_name('Pirate Buckaneer', match_id('minecraft:husk'))),
     ("Pirate Oarsman", match_name('Pirate Oarman', match_id('minecraft:vindicator'))),
