@@ -10,7 +10,7 @@ import getopt
 from pprint import pprint
 
 from lib_py3.copy_region import copy_region
-from lib_py3.common import copy_paths, eprint
+from lib_py3.common import copy_paths, copy_maps, eprint
 from lib_py3.world import World
 
 config = {
@@ -143,6 +143,7 @@ def generateDungeonInstances(config, dungeon, outputFile, statusQueue):
 
         # Copy files/directories
         copy_paths(dungeonRefFolder, dstFolder, config["copyPaths"])
+        copy_maps(dungeonRefFolder, dstFolder)
 
         # Copy spawn chunks
         spawnRegion = config["spawnRegion"]
