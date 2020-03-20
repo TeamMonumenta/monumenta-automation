@@ -8,7 +8,7 @@ import traceback
 import datetime
 
 from lib_py3.copy_region import copy_region
-from lib_py3.common import copy_paths, copy_folder
+from lib_py3.common import copy_paths, copy_folder, copy_maps
 from lib_py3.world import World
 from lib_py3.move_region import MoveRegion
 from lib_py3.scoreboard import Scoreboard
@@ -57,6 +57,16 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
         if "copyMainPaths" in config:
             print("  Copying paths from main world...")
             copy_paths(localMainFolder, localDstFolder, config["copyMainPaths"])
+
+        if "copyMaps" in config:
+            if config["copyMaps"] == "build":
+                print("  Copying maps from build...")
+                copy_maps(config["localBuildFolder"], localDstFolder)
+            elif config["copyMaps"] == "main":
+                print("  Copying maps from main...")
+                copy_maps(localMainFolder, localDstFolder)
+            else:
+                raise Exception("ERROR: Could not copy maps from {!r}, invalid config!".format(config["copyMaps"]))
 
         print("  Opening Destination World...")
         dstWorld = World(localDstFolder)

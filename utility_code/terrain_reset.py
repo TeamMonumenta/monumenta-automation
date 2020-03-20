@@ -69,6 +69,7 @@ def get_dungeon_config(name, scoreboard):
         "localDstFolder":"/home/epic/project_epic/{0}/Project_Epic-{0}/".format(name),
         "copyBaseFrom":"build",
         "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+        "copyMaps": "build",
         "datapacks":datapacks_dungeon + ['file/'+name],
         "playerScoreChanges":dungeon_score_rules,
         "preserveInstance":{
@@ -159,6 +160,7 @@ region_1 = {
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data"],
+    "copyMaps": "build",
 
     # Replace items on all players
     "replace_items_on_players": item_replace_manager,
@@ -203,6 +205,7 @@ region_2 = {
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+    "copyMaps": "build",
 
     # Replace items on all players
     "replace_items_on_players": item_replace_manager,
