@@ -43,7 +43,7 @@ for command in config["commands"]:
     if command in allActionsDict:
         actions[command] = allActionsDict[command]
     else:
-        logging.error('Config error: No such command "{}"'.format(command))
+        logging.error('Config error: No such command {!r}'.format(command))
 config["actions"] = actions
 
 config["extraDebug"] = False

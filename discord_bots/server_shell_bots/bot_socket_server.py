@@ -62,7 +62,7 @@ class BotSocketServer(object):
 
                         actionClass = findBestMatchCommand(self.bot_config, command)
                         if actionClass is None:
-                            data_out = json.dumps({"result": 1, "message": "No matching command '{}'".format(command)})
+                            data_out = json.dumps({"result": 1, "message": "No matching command {!r}".format(command)})
                         else:
                             action = actionClass(self.bot_config, command)
                             # In-game commands are those that Team Epic can use
@@ -72,7 +72,7 @@ class BotSocketServer(object):
                                 data_out = json.dumps({"result": 0, "message": "DEBUG SUCCESS"})
                                 #await action.doActions(client, command.channel, command.author)
                 else:
-                    data_out = json.dumps({"result": 1, "message": "No handler for action '{}' available".format(data_in["action"])})
+                    data_out = json.dumps({"result": 1, "message": "No handler for action {!r} available".format(data_in["action"])})
 
                 ################################################################################
 

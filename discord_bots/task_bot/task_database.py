@@ -147,7 +147,7 @@ class TaskDatabase(object):
         try:
             index = int(index_str)
         except:
-            raise ValueError("'{}' is not a number".format(index_str))
+            raise ValueError("{!r} is not a number".format(index_str))
 
         # Ugh, json keys need to be strings, not numbers
         index = str(index)
@@ -177,7 +177,7 @@ class TaskDatabase(object):
             try:
                 user_id = int(user_id)
             except:
-                raise ValueError("'{}' is not a number".format(user_id))
+                raise ValueError("{!r} is not a number".format(user_id))
 
         user = self._client.get_user(user_id)
 
@@ -205,7 +205,7 @@ class TaskDatabase(object):
                         matches.append(member)
 
                 if len(matches) < 1:
-                    raise ValueError("User '{}' not found".format(user))
+                    raise ValueError("User {!r} not found".format(user))
                 if len(matches) > 1:
                     multimatch = []
                     for member in matches:
@@ -213,7 +213,7 @@ class TaskDatabase(object):
                             multimatch.append("{} ({})".format(member.name, member.display_name))
                         else:
                             multimatch.append("{}".format(member.name))
-                    raise ValueError("Multiple users match '{}': {}".format(user, "\n".join(multimatch)))
+                    raise ValueError("Multiple users match {!r}: {}".format(user, "\n".join(multimatch)))
 
                 user = matches[0].id
 
@@ -843,7 +843,7 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
             elif re.search("^[0-9][0-9]*$", item):
                 max_count = int(item)
             else:
-                raise ValueError('''No priority or label matching "{}"'''.format(item))
+                raise ValueError('''No priority or label matching {!r}'''.format(item))
 
         if len(match_labels) == 0 and len(match_priorities) == 0:
             raise ValueError('Must specify something to search for')
@@ -982,7 +982,7 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
 
         # TODO: Custom reaction searching support
         if not raw_entries:
-            raise ValueError("No entries with reaction '{}' - note that custom reactions are not supported yet".format(args))
+            raise ValueError("No entries with reaction {!r} - note that custom reactions are not supported yet".format(args))
 
         raw_entries.sort(key=lambda kv: kv[0], reverse=True)
         match_entries = [x[1] for x in raw_entries]
@@ -1232,7 +1232,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         channel_id = channel_id[2:-1]
         import_channel = self._client.get_channel(channel_id)
         if import_channel is None:
-            raise ValueError("Can not find channel '{}'".format(channel_id))
+            raise ValueError("Can not find channel {!r}".format(channel_id))
 
         await(self.reply(message, "Import started, this will take some time..."))
 
@@ -1362,7 +1362,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         try:
             channel_id = int(args)
         except:
-            raise ValueError("'{}' is not a number".format(args))
+            raise ValueError("{!r} is not a number".format(args))
 
         channel = self._client.get_channel(channel_id)
         if self._channel is None:

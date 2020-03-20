@@ -95,7 +95,7 @@ from numpy import random
 import hashlib
 from collections import OrderedDict
 
-seed = \'\'\'{}\'\'\'
+seed = {!r}
 num_winners = {}
 votes = {}
 

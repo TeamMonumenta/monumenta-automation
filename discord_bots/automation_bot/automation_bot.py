@@ -146,7 +146,7 @@ try:
                         try:
                             await msg.add_reaction('\U0001f441')
                         except Exception as e:
-                            rlogger.warn("Permission denied adding reaction in channel '{}'".format(channel.name))
+                            rlogger.warn("Permission denied adding reaction in channel {!r}".format(channel.name))
                             return
         except Exception as e:
             rlogger.error("Failed to handle adding reaction")

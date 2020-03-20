@@ -35,7 +35,7 @@ class jsonFile(object):
                     fContent = fContent[1:]
                 self.dict = json.loads(fContent, object_pairs_hook=OrderedDict)
             except:
-                eprint("Error loading '{}':".format(path))
+                eprint("Error loading {!r}:".format(path))
                 raise
             f.close()
 

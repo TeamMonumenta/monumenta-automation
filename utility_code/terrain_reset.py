@@ -49,7 +49,7 @@ def log_replacements(log_handle, shard_name, replacements_log):
                 if (from_nbt == to_nbt) and (not from_nbt.equals_exact(to_nbt)):
                     table_updates_from_this_item += 1
                     if table_updates_from_this_item > 1:
-                        eprint("WARNING: Item '{}' updated multiple times!".format(replacements_log[to_item]["NAME"]))
+                        eprint("WARNING: Item {!r} updated multiple times!".format(replacements_log[to_item]["NAME"]))
 
                     # NBT is the "same" as the loot table entry but in a different order
                     # Need to update the loot tables with the correctly ordered NBT

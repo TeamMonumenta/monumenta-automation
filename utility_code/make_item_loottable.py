@@ -79,7 +79,7 @@ def make_loot_table(loot_table_base_path, container_nbt_list, loot_table_name=No
                     if "text" in name_json:
                         item_name = name_json["text"]
                 except:
-                    raise ValueError("WARNING: Item '" + item_name + "isn't json!")
+                    raise ValueError("WARNING: Item " + repr(item_name) + " isn't json!")
                 filename = item_name.lower()
                 filename = re.sub(" +", "_", filename)
                 filename = "".join([i if re.match('[a-z0-9-_]', i) else '' for i in filename])
