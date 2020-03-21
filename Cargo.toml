@@ -1,0 +1,12 @@
+[package]
+name = "find_unused_functions"
+version = "0.1.0"
+authors = ["Byron Marohn <combustible@live.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1.0.104", features = ["derive"] }
+serde_json = "1.0.48"
+walkdir = "2"
