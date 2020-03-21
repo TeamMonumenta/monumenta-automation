@@ -3,6 +3,7 @@ use std::fmt;
 use walkdir::WalkDir;
 use std::fs;
 use std::collections::HashMap;
+use regex::Regex;
 
 
 #[derive(PartialEq, Eq, Hash)]
@@ -164,13 +165,30 @@ fn main() {
     }
 
     /* Create reference links for functions */
+    let re = Regex::new(r"function [a-z][^ :]*:[a-z][^ :]*").unwrap();
     for (_, val) in functions.iter_mut() {
         if let NamespacedItem::Function(function) = val {
             for line in function.data.lines() {
 
+                /* Link functions to the other functions they call */
+                /* Schedule function and function both have the same syntax, so one match will do */
+                if let Some(func_match) = re.find(line) {
+                    if let Some(key) = NamespacedKey::from_str(func_match.as_str().trim_start_matches("function ")) {
+                        if let Some(called_function) = functions.get_mut(&key) {
+                            let raw_function: *mut _ = &mut *called_function;
+                            function.children.push(raw_function);
+                        }
+
+
+                        println!("{}", key)
+                    }
+                }
+
+                // "function tape_measure:feet_from"
+
+
 
             }
-            /* Need to handle function and schedule function */
         }
     }
 }
