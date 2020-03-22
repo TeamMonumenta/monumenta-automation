@@ -1,10 +1,13 @@
+#[macro_use] extern crate log;
+#[macro_use] extern crate lazy_static;
 
+use std::env;
 use std::fmt;
 use walkdir::WalkDir;
 use std::fs;
 use std::collections::HashMap;
 use regex::Regex;
-
+use simplelog::*;
 
 #[derive(PartialEq, Eq, Hash, Clone)]
 enum NamespaceType {
@@ -37,6 +40,9 @@ impl NamespacedKey {
                     return Some(NamespacedKey{key_type: NamespaceType::Function, namespace: namespace.to_string(), key: key.trim_start_matches("functions/").trim_end_matches(".mcfunction").to_string()});
                 }
             }
+        } else {
+            error!("Error: Datapack does not contain 'data' subfolder!");
+            panic!()
         }
 
         None
@@ -142,7 +148,7 @@ fn load_file(path: String,
                     return Some((namespace, NamespacedItem::Advancement(Advancement{ path: path, parent: None, children: vec!(), used: false, data: json })))
                 }
             } else {
-                println!("Warning: Failed to parse file as json: {}", path);
+                warn!("Failed to parse file as json: {}", path);
             }
         } else if path.ends_with(".mcfunction") {
             if let Some(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
@@ -150,16 +156,20 @@ fn load_file(path: String,
             }
         }
     } else {
-        println!("Warning: Failed to read file as string: {}", &path);
+        warn!("Failed to read file as string: {}", &path);
     }
 
     None
 }
 
-fn main() {
-    let dir = "/home/bmarohn/home/datapacks/region_1";
-
-    let mut items: HashMap<NamespacedKey, NamespacedItem> = HashMap::new();
+fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>,
+                 pending: &mut Vec<NamespacedKey>,
+                 dir: &str) {
+    lazy_static! {
+        static ref RE_FUNC: Regex = Regex::new(r"function [a-z][^ :]*:[a-z][^ :]*").unwrap();
+        static ref RE_ADV: Regex = Regex::new(r"advancement (grant|revoke) .* (everything|from|only|through|until) [a-z][^ :]*:[a-z][^ :]*").unwrap();
+        static ref RE_ADV_ONLY: Regex = Regex::new(r" only [a-z][^ :]*:[a-z][^ :]*").unwrap();
+    }
 
     /* Load files into the advancements/functions maps */
     for entry in WalkDir::new(dir).follow_links(true) {
@@ -172,13 +182,6 @@ fn main() {
             }
         }
     }
-
-    let re_func = Regex::new(r"function [a-z][^ :]*:[a-z][^ :]*").unwrap();
-    let re_adv = Regex::new(r"advancement (grant|revoke) .* (everything|from|only|through|until) [a-z][^ :]*:[a-z][^ :]*").unwrap();
-    let re_adv_only = Regex::new(r" only [a-z][^ :]*:[a-z][^ :]*").unwrap();
-
-    /* A list of all the namespaced keys that are used but have not yet had their children processed */
-    let mut pending: Vec<NamespacedKey> = Vec::new();
 
     /* Create links between the various files */
     for (key, val) in items.iter_mut() {
@@ -220,25 +223,55 @@ fn main() {
 
                     /* Link functions to the other functions they call */
                     /* Schedule function and function both have the same syntax, so one match will do */
-                    if let Some(func_match) = re_func.find(line) {
+                    if let Some(func_match) = RE_FUNC.find(line) {
                         if let Some(key) = NamespacedKey::from_str(func_match.as_str().trim_start_matches("function "), NamespaceType::Function) {
                             function.children.push(key);
                         }
                     }
 
                     /* Link functions to advancements */
-                    if let Some(adv_match) = re_adv.find(line) {
-                        if let Some(adv_only_match) = re_adv_only.find(adv_match.as_str()) {
+                    if let Some(adv_match) = RE_ADV.find(line) {
+                        if let Some(adv_only_match) = RE_ADV_ONLY.find(adv_match.as_str()) {
                             if let Some(key) = NamespacedKey::from_str(adv_only_match.as_str().trim_start_matches(" only "), NamespaceType::Advancement) {
                                 function.children.push(key);
                             }
                         } else {
-                            println!("Warning: No support for advancement command {}", adv_match.as_str());
+                            warn!("No support for advancement command {}", adv_match.as_str());
                         }
                     }
                 }
             }
         }
+    }
+
+
+
+}
+
+fn main() {
+    CombinedLogger::init(
+        vec![
+            TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed).unwrap(),
+        ]
+    ).unwrap();
+
+    /* A map of all of the advancements and functions that have been loaded */
+    let mut items: HashMap<NamespacedKey, NamespacedItem> = HashMap::new();
+
+    /* A list of all the namespaced keys that are used but have not yet had their children processed */
+    let mut pending: Vec<NamespacedKey> = Vec::new();
+
+    /* Load all the arguments as datapacks */
+    let mut args: Vec<String> = env::args().collect();
+
+    if args.len() <= 1 {
+        error!("Usage: {} path/to/datapack path/to/other_datapack ...", args.get(0).unwrap());
+        return
+    }
+
+    args.remove(0);
+    while let Some(arg) = args.pop() {
+        load_datapack(&mut items, &mut pending, &arg);
     }
 
     /* Iterate through the pending list and mark things as used */
@@ -256,16 +289,15 @@ fn main() {
                 pending.extend(map_value.get_children().iter().cloned());
             }
         } else {
-            println!("Warning: Missing item {}", key);
+            warn!("Missing item {}", key);
         }
     }
 
-    println!("\n");
-    println!("Used:");
+    println!("\nUsed:");
 
     for (_, val) in items.iter() {
         if val.is_used() {
-            println!("  {}", val.get_path());
+            println!("{}", val.get_path());
         }
     }
 
