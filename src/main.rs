@@ -211,13 +211,59 @@ fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>,
     }
 }
 
-fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>,
-                pending: &mut Vec<NamespacedKey>) {
+fn load_commands_file(pending: &mut Vec<NamespacedKey>, path: &str) {
+    if let Ok(file) = fs::read_to_string(&path) {
+        if let Ok(json) = serde_json::from_str(&file) {
+            if let serde_json::value::Value::Array(array) = json {
+                for item in array.iter() {
+                    if let serde_json::value::Value::Object(obj) = item {
+                        if let Some(serde_json::value::Value::String(command)) = obj.get("command") {
+                            if let Some(key) = get_command_target_namespacedkey(command) {
+                                pending.push(key);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            warn!("Failed to parse file as json: {}", path);
+        }
+    } else {
+        warn!("Failed to read file as string: {}", &path);
+    }
+}
+
+fn get_command_target_namespacedkey(command: &str) -> Option<NamespacedKey> {
     lazy_static! {
         static ref RE_FUNC: Regex = Regex::new(r"function [a-z][^ :]*:[a-z][^ :]*").unwrap();
         static ref RE_ADV: Regex = Regex::new(r"advancement (grant|revoke) .* (everything|from|only|through|until) [a-z][^ :]*:[a-z][^ :]*").unwrap();
         static ref RE_ADV_ONLY: Regex = Regex::new(r" only [a-z][^ :]*:[a-z][^ :]*").unwrap();
     }
+
+    /* Link functions to the other functions they call */
+    /* Schedule function and function both have the same syntax, so one match will do */
+    if let Some(func_match) = RE_FUNC.find(command) {
+        if let Some(key) = NamespacedKey::from_str(func_match.as_str().trim_start_matches("function "), NamespaceType::Function) {
+            return Some(key);
+        }
+    }
+
+    /* Link functions to advancements */
+    if let Some(adv_match) = RE_ADV.find(command) {
+        if let Some(adv_only_match) = RE_ADV_ONLY.find(adv_match.as_str()) {
+            if let Some(key) = NamespacedKey::from_str(adv_only_match.as_str().trim_start_matches(" only "), NamespaceType::Advancement) {
+                return Some(key);
+            }
+        } else {
+            warn!("No support for advancement command {}", adv_match.as_str());
+        }
+    }
+
+    None
+}
+
+fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>,
+                pending: &mut Vec<NamespacedKey>) {
 
     /* Create links between the various files */
     for (key, val) in items.iter_mut() {
@@ -268,33 +314,14 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>,
                 /* Create reference links for functions */
                 for data in function.data.iter() {
                     for line in data.lines() {
-
-                        /* Link functions to the other functions they call */
-                        /* Schedule function and function both have the same syntax, so one match will do */
-                        if let Some(func_match) = RE_FUNC.find(line) {
-                            if let Some(key) = NamespacedKey::from_str(func_match.as_str().trim_start_matches("function "), NamespaceType::Function) {
-                                function.children.push(key);
-                            }
-                        }
-
-                        /* Link functions to advancements */
-                        if let Some(adv_match) = RE_ADV.find(line) {
-                            if let Some(adv_only_match) = RE_ADV_ONLY.find(adv_match.as_str()) {
-                                if let Some(key) = NamespacedKey::from_str(adv_only_match.as_str().trim_start_matches(" only "), NamespaceType::Advancement) {
-                                    function.children.push(key);
-                                }
-                            } else {
-                                warn!("No support for advancement command {}", adv_match.as_str());
-                            }
+                        if let Some(key) = get_command_target_namespacedkey(line) {
+                            function.children.push(key);
                         }
                     }
                 }
             }
         }
     }
-
-
-
 }
 
 fn main() {
@@ -320,7 +347,11 @@ fn main() {
 
     args.remove(0);
     while let Some(arg) = args.pop() {
-        load_datapack(&mut items, &arg);
+        if arg.ends_with(".json") {
+            load_commands_file(&mut pending, &arg)
+        } else {
+            load_datapack(&mut items, &arg);
+        }
     }
 
     create_links(&mut items, &mut pending);
