@@ -159,8 +159,7 @@ fn get_function<'c>(advancement: &'c serde_json::Value) -> Option<NamespacedKey>
     None
 }
 
-fn load_file(path: String,
-             datapacks_path: &str) -> Option<(NamespacedKey, NamespacedItem)> {
+fn load_datapack_file(path: String, datapacks_path: &str) -> Option<(NamespacedKey, NamespacedItem)> {
 
     if let Ok(file) = fs::read_to_string(&path) {
         if path.ends_with(".json") {
@@ -183,6 +182,26 @@ fn load_file(path: String,
     None
 }
 
+fn load_quests(pending: &mut Vec<NamespacedKey>, dir: &str) {
+    for entry in WalkDir::new(dir).follow_links(true) {
+        if let Ok(entry) = entry {
+            let path = entry.path().to_str().unwrap();
+            if entry.path().is_file() && path.ends_with(".json") {
+                if let Ok(file) = fs::read_to_string(&path) {
+                    if let Ok(json @ serde_json::value::Value::Object(_)) = serde_json::from_str(&file) {
+                        load_quest_file_recursive(pending, &json);
+                    } else {
+                        warn!("Failed to parse file as json: {}", path);
+                    }
+                } else {
+                    warn!("Failed to read file as string: {}", &path);
+                }
+            }
+        }
+    }
+}
+
+
 fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>,
                  dir: &str) {
     lazy_static! {
@@ -191,11 +210,10 @@ fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>,
         static ref RE_ADV_ONLY: Regex = Regex::new(r" only [a-z][^ :]*:[a-z][^ :]*").unwrap();
     }
 
-    /* Load files into the advancements/functions maps */
     for entry in WalkDir::new(dir).follow_links(true) {
         if let Ok(entry) = entry {
             if entry.path().is_file() {
-                if let Some((namespace, item)) = load_file(entry.path().to_str().unwrap().to_string(), dir) {
+                if let Some((namespace, item)) = load_datapack_file(entry.path().to_str().unwrap().to_string(), dir) {
                     /*
                      * If an existing item already exists with this path, add it as a variant to
                      * the existing node
@@ -208,6 +226,36 @@ fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>,
                 }
             }
         }
+    }
+}
+
+fn load_quest_file_recursive(pending: &mut Vec<NamespacedKey>, value: &serde_json::value::Value) {
+    match value {
+        serde_json::value::Value::Array(array) => {
+            for item in array.iter() {
+                load_quest_file_recursive(pending, item);
+            }
+        }
+        serde_json::value::Value::Object(obj) => {
+            for (key, value) in obj.iter() {
+                if key == "command" {
+                    if let serde_json::value::Value::String(command) = value {
+                        if let Some(key) = get_command_target_namespacedkey(command) {
+                            pending.push(key);
+                        }
+                    }
+                } else if key == "function" {
+                    if let serde_json::value::Value::String(function) = value {
+                        if let Some(key) = NamespacedKey::from_str(function, NamespaceType::Function) {
+                            pending.push(key);
+                        }
+                    }
+                } else {
+                    load_quest_file_recursive(pending, value);
+                }
+            }
+        }
+        _ => ()
     }
 }
 
@@ -354,6 +402,8 @@ fn main() {
         }
     }
 
+    load_quests(&mut pending, "/home/bmarohn/home/scriptedquests");
+
     create_links(&mut items, &mut pending);
 
     /* Iterate through the pending list and mark things as used */
@@ -377,12 +427,14 @@ fn main() {
 
     println!("\nUnused:");
 
+    let mut count = 0;
     for (_, val) in items.iter() {
         if !val.is_used() {
             for path in val.get_paths() {
                 println!("{}", path);
+                count += 1;
             }
         }
     }
-
+    println!("\nFound {} unused files", count);
 }
