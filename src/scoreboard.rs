@@ -7,29 +7,29 @@ use std::io::{Read};
 use nbt;
 
 #[derive(Debug)]
-struct Scoreboard {
-    filepath: String,
-    DataVersion: i32,
-    objectives: HashMap<String, Objective>,
+pub struct Scoreboard {
+    pub filepath: String,
+    pub DataVersion: i32,
+    pub objectives: HashMap<String, Objective>,
 }
 
 #[derive(Debug)]
-struct Score {
-    Score: i32,
-    Locked: bool,
+pub struct Score {
+    pub Score: i32,
+    pub Locked: bool,
 }
 
 #[derive(Debug)]
-struct Objective {
-    RenderType: String,
-    DisplayName: String,
-    CriteriaName: String,
-    data: HashMap<String, Score>,
+pub struct Objective {
+    pub RenderType: String,
+    pub DisplayName: String,
+    pub CriteriaName: String,
+    pub data: HashMap<String, Score>,
 }
 
 /* TODO: This really needs to return some kind of error string instead of panic'ing */
 impl Scoreboard {
-    fn load(filepath: &str) -> Result<Scoreboard, String> {
+    pub fn load(filepath: &str) -> Result<Scoreboard, String> {
         let mut file = File::open(filepath).unwrap();
         let mut contents = Vec::new();
         file.read_to_end(&mut contents).unwrap();

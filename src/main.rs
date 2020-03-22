@@ -11,6 +11,8 @@ use simplelog::*;
 
 mod scoreboard;
 
+use scoreboard::Scoreboard;
+
 #[derive(PartialEq, Eq, Hash, Clone)]
 enum NamespaceType {
     Advancement,
@@ -430,16 +432,43 @@ fn main() {
         }
     }
 
-    println!("\nUnused:");
+    if let Ok(scoreboard) = Scoreboard::load("/home/bmarohn/home/scoreboard.dat") {
+        let mut count_vec: Vec<(&str, f64)> = Vec::new();
 
-    let mut count = 0;
-    for (_, val) in items.iter() {
-        if !val.is_used() {
-            for path in val.get_paths() {
-                println!("{}", path);
-                count += 1;
+        for (objective_name, objective) in scoreboard.objectives.iter() {
+            let mut nonzero_count = 0;
+            let mut total_entries = 0;
+            for (_, score) in objective.data.iter() {
+                total_entries += 1;
+                if score.Score != 0 {
+                    nonzero_count += 1
+                }
+            }
+
+            count_vec.push((objective_name, nonzero_count as f64 / total_entries as f64));
+        }
+
+        count_vec.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+
+        println!("Unused objectives:");
+        for (objective_name, percentage) in count_vec.iter() {
+            if *percentage == 0.0 {
+                println!("{}", objective_name);
             }
         }
     }
-    println!("\nFound {} unused files", count);
+
+
+    //println!("\nUnused:");
+
+    //let mut count = 0;
+    //for (_, val) in items.iter() {
+    //    if !val.is_used() {
+    //        for path in val.get_paths() {
+    //            println!("{}", path);
+    //            count += 1;
+    //        }
+    //    }
+    //}
+    //println!("\nFound {} unused files", count);
 }
