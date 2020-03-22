@@ -79,7 +79,6 @@ impl fmt::Debug for NamespacedKey {
 #[derive(Debug)]
 struct Advancement {
     path: Vec<String>,
-    parent: Option<NamespacedKey>,
     children: Vec<NamespacedKey>,
     used: bool,
     data: Vec<serde_json::value::Value>
@@ -161,22 +160,24 @@ fn get_function<'c>(advancement: &'c serde_json::Value) -> Option<NamespacedKey>
 
 fn load_datapack_file(path: String, datapacks_path: &str) -> Option<(NamespacedKey, NamespacedItem)> {
 
-    if let Ok(file) = fs::read_to_string(&path) {
-        if path.ends_with(".json") {
-            if let Ok(json) = serde_json::from_str(&file) {
-                if let Some(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
-                    return Some((namespace, NamespacedItem::Advancement(Advancement{ path: vec!(path), parent: None, children: vec!(), used: false, data: vec!(json) })))
+    if path.ends_with(".json") | path.ends_with(".mcfunction") {
+        if let Ok(file) = fs::read_to_string(&path) {
+            if path.ends_with(".json") {
+                if let Ok(json) = serde_json::from_str(&file) {
+                    if let Some(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
+                        return Some((namespace, NamespacedItem::Advancement(Advancement{ path: vec!(path), children: vec!(), used: false, data: vec!(json) })))
+                    }
+                } else {
+                    warn!("Failed to parse file as json: {}", path);
                 }
-            } else {
-                warn!("Failed to parse file as json: {}", path);
+            } else if path.ends_with(".mcfunction") {
+                if let Some(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
+                    return Some((namespace, NamespacedItem::Function(Function{ path: vec!(path), children: vec!(), used: false, data: vec!(file) })))
+                }
             }
-        } else if path.ends_with(".mcfunction") {
-            if let Some(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
-                return Some((namespace, NamespacedItem::Function(Function{ path: vec!(path), children: vec!(), used: false, data: vec!(file) })))
-            }
+        } else {
+            warn!("Failed to read file as string: {}", &path);
         }
-    } else {
-        warn!("Failed to read file as string: {}", &path);
     }
 
     None
@@ -321,7 +322,9 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>,
 
                 /* Link to parent advancement - mostly just interesting, not actually used */
                 if let Some(serde_json::Value::String(parent)) = advancement.data.get(0).unwrap().get("parent") {
-                    advancement.parent = NamespacedKey::from_str(parent, NamespaceType::Advancement);
+                    if let Some(key) = NamespacedKey::from_str(parent, NamespaceType::Advancement) {
+                        pending.push(key);
+                    }
                 }
 
                 /* Link to function */
