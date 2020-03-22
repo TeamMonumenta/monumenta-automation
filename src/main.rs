@@ -78,19 +78,19 @@ impl fmt::Debug for NamespacedKey {
 
 #[derive(Debug)]
 struct Advancement {
-    path: String,
+    path: Vec<String>,
     parent: Option<NamespacedKey>,
     children: Vec<NamespacedKey>,
     used: bool,
-    data: serde_json::value::Value
+    data: Vec<serde_json::value::Value>
 }
 
 #[derive(Debug)]
 struct Function {
-    path: String,
+    path: Vec<String>,
     children: Vec<NamespacedKey>,
     used: bool,
-    data: String
+    data: Vec<String>
 }
 
 #[derive(Debug)]
@@ -107,7 +107,28 @@ impl NamespacedItem {
         }
     }
 
-    fn get_path(&self) -> &str {
+    fn add_variant(&mut self, variant: NamespacedItem) {
+        match self {
+            NamespacedItem::Advancement(inner) => {
+                if let NamespacedItem::Advancement(var_inner) = variant {
+                    inner.path.extend(var_inner.path.iter().cloned());
+                    inner.data.extend(var_inner.data.iter().cloned());
+                } else {
+                    panic!("Advancement and function with same namespace!");
+                }
+            }
+            NamespacedItem::Function(inner) => {
+                if let NamespacedItem::Function(var_inner) = variant {
+                    inner.path.extend(var_inner.path.iter().cloned());
+                    inner.data.extend(var_inner.data.iter().cloned());
+                } else {
+                    panic!("Function and advancement with same namespace!");
+                }
+            }
+        }
+    }
+
+    fn get_paths(&self) -> &Vec<String> {
         match self {
             NamespacedItem::Advancement(advancement) => &advancement.path,
             NamespacedItem::Function(function) => &function.path,
@@ -145,14 +166,14 @@ fn load_file(path: String,
         if path.ends_with(".json") {
             if let Ok(json) = serde_json::from_str(&file) {
                 if let Some(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
-                    return Some((namespace, NamespacedItem::Advancement(Advancement{ path: path, parent: None, children: vec!(), used: false, data: json })))
+                    return Some((namespace, NamespacedItem::Advancement(Advancement{ path: vec!(path), parent: None, children: vec!(), used: false, data: vec!(json) })))
                 }
             } else {
                 warn!("Failed to parse file as json: {}", path);
             }
         } else if path.ends_with(".mcfunction") {
             if let Some(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
-                return Some((namespace, NamespacedItem::Function(Function{ path: path, children: vec!(), used: false, data: file })))
+                return Some((namespace, NamespacedItem::Function(Function{ path: vec!(path), children: vec!(), used: false, data: vec!(file) })))
             }
         }
     } else {
@@ -175,8 +196,15 @@ fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>,
         if let Ok(entry) = entry {
             if entry.path().is_file() {
                 if let Some((namespace, item)) = load_file(entry.path().to_str().unwrap().to_string(), dir) {
-                    /* TODO: Handle overlaps from different datapacks ? */
-                    items.insert(namespace, item);
+                    /*
+                     * If an existing item already exists with this path, add it as a variant to
+                     * the existing node
+                     */
+                    if let Some(existing) = items.get_mut(&namespace) {
+                        existing.add_variant(item);
+                    } else {
+                        items.insert(namespace, item);
+                    }
                 }
             }
         }
@@ -198,53 +226,66 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>,
                 /* Create reference links for advancements */
 
                 /* Link to parent advancement - mostly just interesting, not actually used */
-                if let Some(serde_json::Value::String(parent)) = advancement.data.get("parent") {
+                if let Some(serde_json::Value::String(parent)) = advancement.data.get(0).unwrap().get("parent") {
                     advancement.parent = NamespacedKey::from_str(parent, NamespaceType::Advancement);
                 }
 
                 /* Link to function */
-                if let Some(run_func) = get_function(&advancement.data) {
-                    advancement.children.push(run_func);
-                }
-
-                /* Mark as used by default unless it has an impossible trigger */
-                advancement.used = true;
-                if let Some(serde_json::Value::Object(criteria)) = advancement.data.get("criteria") {
-                    for (_c_key, c_value) in criteria.iter() {
-                        if let Some(serde_json::Value::String(trigger)) = c_value.get("trigger") {
-                            if trigger == "minecraft:impossible" {
-                                advancement.used = false;
-                            }
-                        }
+                for data in advancement.data.iter() {
+                    if let Some(run_func) = get_function(&data) {
+                        advancement.children.push(run_func);
                     }
                 }
 
-                if advancement.used {
-                    /* Advancement is used - push it and its children to the pending list */
-                    pending.push(key.clone());
-                    pending.extend(advancement.children.iter().cloned());
+                /* Mark as used if any non-impossible triggers exist */
+                advancement.used = false;
+                for data in advancement.data.iter() {
+                    if let Some(serde_json::Value::Object(criteria)) = data.get("criteria") {
+                        for (_c_key, c_value) in criteria.iter() {
+                            if let Some(trigger_compound) = c_value.get("trigger") {
+                                if let serde_json::Value::String(trigger) = trigger_compound {
+                                    if trigger != "minecraft:impossible" {
+                                        /* Has a string trigger that is not impossible -> used */
+                                        advancement.used = true;
+                                    }
+                                } else {
+                                    /* Has a non-string trigger -> used */
+                                    advancement.used = true;
+                                }
+                            }
+                        }
+                    }
+
+                    if advancement.used {
+                        /* Advancement is used - push it and its children to the pending list */
+                        pending.push(key.clone());
+                        pending.extend(advancement.children.iter().cloned());
+                        break
+                    }
                 }
             }
             NamespacedItem::Function(function) => {
                 /* Create reference links for functions */
-                for line in function.data.lines() {
+                for data in function.data.iter() {
+                    for line in data.lines() {
 
-                    /* Link functions to the other functions they call */
-                    /* Schedule function and function both have the same syntax, so one match will do */
-                    if let Some(func_match) = RE_FUNC.find(line) {
-                        if let Some(key) = NamespacedKey::from_str(func_match.as_str().trim_start_matches("function "), NamespaceType::Function) {
-                            function.children.push(key);
-                        }
-                    }
-
-                    /* Link functions to advancements */
-                    if let Some(adv_match) = RE_ADV.find(line) {
-                        if let Some(adv_only_match) = RE_ADV_ONLY.find(adv_match.as_str()) {
-                            if let Some(key) = NamespacedKey::from_str(adv_only_match.as_str().trim_start_matches(" only "), NamespaceType::Advancement) {
+                        /* Link functions to the other functions they call */
+                        /* Schedule function and function both have the same syntax, so one match will do */
+                        if let Some(func_match) = RE_FUNC.find(line) {
+                            if let Some(key) = NamespacedKey::from_str(func_match.as_str().trim_start_matches("function "), NamespaceType::Function) {
                                 function.children.push(key);
                             }
-                        } else {
-                            warn!("No support for advancement command {}", adv_match.as_str());
+                        }
+
+                        /* Link functions to advancements */
+                        if let Some(adv_match) = RE_ADV.find(line) {
+                            if let Some(adv_only_match) = RE_ADV_ONLY.find(adv_match.as_str()) {
+                                if let Some(key) = NamespacedKey::from_str(adv_only_match.as_str().trim_start_matches(" only "), NamespaceType::Advancement) {
+                                    function.children.push(key);
+                                }
+                            } else {
+                                warn!("No support for advancement command {}", adv_match.as_str());
+                            }
                         }
                     }
                 }
@@ -303,11 +344,13 @@ fn main() {
         }
     }
 
-    println!("\nUsed:");
+    println!("\nUnused:");
 
     for (_, val) in items.iter() {
-        if val.is_used() {
-            println!("{}", val.get_path());
+        if !val.is_used() {
+            for path in val.get_paths() {
+                println!("{}", path);
+            }
         }
     }
 
