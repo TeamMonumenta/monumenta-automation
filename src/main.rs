@@ -163,7 +163,6 @@ fn load_file(path: String,
 }
 
 fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>,
-                 pending: &mut Vec<NamespacedKey>,
                  dir: &str) {
     lazy_static! {
         static ref RE_FUNC: Regex = Regex::new(r"function [a-z][^ :]*:[a-z][^ :]*").unwrap();
@@ -181,6 +180,15 @@ fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>,
                 }
             }
         }
+    }
+}
+
+fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>,
+                pending: &mut Vec<NamespacedKey>) {
+    lazy_static! {
+        static ref RE_FUNC: Regex = Regex::new(r"function [a-z][^ :]*:[a-z][^ :]*").unwrap();
+        static ref RE_ADV: Regex = Regex::new(r"advancement (grant|revoke) .* (everything|from|only|through|until) [a-z][^ :]*:[a-z][^ :]*").unwrap();
+        static ref RE_ADV_ONLY: Regex = Regex::new(r" only [a-z][^ :]*:[a-z][^ :]*").unwrap();
     }
 
     /* Create links between the various files */
@@ -271,8 +279,10 @@ fn main() {
 
     args.remove(0);
     while let Some(arg) = args.pop() {
-        load_datapack(&mut items, &mut pending, &arg);
+        load_datapack(&mut items, &arg);
     }
+
+    create_links(&mut items, &mut pending);
 
     /* Iterate through the pending list and mark things as used */
     while pending.len() > 0 {
