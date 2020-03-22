@@ -96,6 +96,13 @@ sub = [
     ("Water Wisp", match_passenger(match_id('minecraft:silverfish'), match_name('Water Wisp', match_id('minecraft:drowned')))),
     ("Sodden Corpse", match_passenger(match_id('minecraft:silverfish'), match_name('Sodden Corpse', match_id('minecraft:drowned')))),
     ("Camouflaged Swarmer", match_passenger(match_id('minecraft:silverfish'), match_name('Camouflaged Swarmer', match_id('minecraft:drowned')))),
+    ("Gillman Fighter", match_passenger(match_id('minecraft:silverfish'), match_name('Gillman Fighter', match_id('minecraft:drowned')))),
+    ("Elder Gillman", match_passenger(match_id('minecraft:silverfish'), match_name('Elder Gillman', match_id('minecraft:drowned')))),
+    ('Viridian Defender', match_passenger(match_id('minecraft:silverfish'), match_name('Viridian Defender', match_id('minecraft:drowned')))),
+    ('Viridian Wizard', match_passenger(match_id('minecraft:silverfish'), match_name('Viridian Wizard', match_id('minecraft:drowned')))),
+    ('Viridian Royal Guard', match_passenger(match_id('minecraft:guardian'), match_name('Viridian Royal Guard', match_id('minecraft:drowned')))),
+    ('Viridian Royal Harpooner', match_passenger(match_id('minecraft:guardian'), match_name('Viridian Royal Harpooner', match_id('minecraft:drowned')))),
+    ('Mutated Royal Guard', match_passenger(match_id('minecraft:guardian'), match_name('Mutated Royal Guard', match_id('minecraft:drowned')))),
 
     ("Pirate Buccaneer", match_name('Pirate Buckaneer', match_id('minecraft:husk'))),
     ("Pirate Oarsman", match_name('Pirate Oarman', match_id('minecraft:vindicator'))),
