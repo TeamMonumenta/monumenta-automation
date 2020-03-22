@@ -1,5 +1,5 @@
 [package]
-name = "find_unused_functions"
+name = "monumenta"
 version = "0.1.0"
 authors = ["Byron Marohn <combustible@live.com>"]
 edition = "2018"
@@ -13,5 +13,6 @@ walkdir = "2"
 regex = "1"
 lazy_static = "1"
 simplelog = "0.7"
+simple-error = "0.2"
 log = "0.4"
 hematite-nbt = { git = "https://github.com/PistonDevelopers/hematite_nbt" }
