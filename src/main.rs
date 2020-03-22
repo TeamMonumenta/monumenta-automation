@@ -9,6 +9,8 @@ use std::collections::HashMap;
 use regex::Regex;
 use simplelog::*;
 
+mod scoreboard;
+
 #[derive(PartialEq, Eq, Hash, Clone)]
 enum NamespaceType {
     Advancement,

@@ -14,3 +14,4 @@ regex = "1"
 lazy_static = "1"
 simplelog = "0.7"
 log = "0.4"
+hematite-nbt = { git = "https://github.com/PistonDevelopers/hematite_nbt" }
