@@ -1,4 +1,5 @@
-#![allow(non_snake_case)]
+use std::error::Error;
+type BoxResult<T> = Result<T,Box<dyn Error>>;
 
 use std::fs::File;
 use std::collections::HashMap;
@@ -8,84 +9,83 @@ use nbt;
 
 #[derive(Debug)]
 pub struct Scoreboard {
-    pub filepath: String,
-    pub DataVersion: i32,
+    filepath: String,
+    data_version: i32, // DataVersion
     pub objectives: HashMap<String, Objective>,
 }
 
 #[derive(Debug)]
 pub struct Score {
-    pub Score: i32,
-    pub Locked: bool,
+    pub score: i32, // Score
+    pub locked: bool, // Locked
 }
 
 #[derive(Debug)]
 pub struct Objective {
-    pub RenderType: String,
-    pub DisplayName: String,
-    pub CriteriaName: String,
+    pub render_type: String, // RenderType
+    pub display_name: String, // DisplayName
+    pub criteria_name: String, // CriteriaName
     pub data: HashMap<String, Score>,
 }
 
-/* TODO: This really needs to return some kind of error string instead of panic'ing */
 impl Scoreboard {
-    pub fn load(filepath: &str) -> Result<Scoreboard, String> {
+    pub fn load(filepath: &str) -> BoxResult<Scoreboard> {
         let mut file = File::open(filepath).unwrap();
         let mut contents = Vec::new();
         file.read_to_end(&mut contents).unwrap();
         let mut src = std::io::Cursor::new(&contents[..]);
         let blob = nbt::Blob::from_gzip_reader(&mut src).unwrap();
 
-        let DataVersion: i32 = if let Some(nbt::Value::Int(DataVersion)) = blob.get("DataVersion") { *DataVersion } else { panic!("Scoreboard missing DataVersion") };
+        let data_version: i32 = if let Some(nbt::Value::Int(data_version)) = blob.get("DataVersion") { *data_version } else { bail!("Scoreboard missing DataVersion") };
 
-        let mut scoreboard = Scoreboard{filepath: filepath.to_string(), DataVersion: DataVersion, objectives: HashMap::new()};
+        let mut scoreboard = Scoreboard{filepath: filepath.to_string(), data_version: data_version, objectives: HashMap::new()};
 
         if let Some(nbt::Value::Compound(data)) = blob.get("data") {
             if let Some(nbt::Value::List(objectives)) = data.get("Objectives") {
                 for objectives_entry in objectives.iter() {
                     if let nbt::Value::Compound(objective) = objectives_entry {
-                        let Name: String = if let Some(nbt::Value::String(Name)) = objective.get("Name") { Name.to_string() } else { panic!("Objective missing Name") };
+                        let name: String = if let Some(nbt::Value::String(name)) = objective.get("Name") { name.to_string() } else { bail!("Objective missing Name") };
 
                         let new_objective = Objective {
-                            CriteriaName: if let Some(nbt::Value::String(CriteriaName)) = objective.get("CriteriaName") { CriteriaName.to_string() } else { panic!("Objective missing CriteriaName") },
-                            DisplayName: if let Some(nbt::Value::String(DisplayName)) = objective.get("DisplayName") { DisplayName.to_string() } else { panic!("Objective missing DisplayName") },
-                            RenderType: if let Some(nbt::Value::String(RenderType)) = objective.get("RenderType") { RenderType.to_string() } else { panic!("Objective missing RenderType") },
+                            criteria_name: if let Some(nbt::Value::String(criteria_name)) = objective.get("CriteriaName") { criteria_name.to_string() } else { bail!("Objective missing CriteriaName") },
+                            display_name: if let Some(nbt::Value::String(display_name)) = objective.get("DisplayName") { display_name.to_string() } else { bail!("Objective missing DisplayName") },
+                            render_type: if let Some(nbt::Value::String(render_type)) = objective.get("RenderType") { render_type.to_string() } else { bail!("Objective missing RenderType") },
                             data: HashMap::new(),
                         };
 
-                        scoreboard.objectives.insert(Name, new_objective);
+                        scoreboard.objectives.insert(name, new_objective);
                     }
                 }
             } else {
-                panic!("Scoreboard data missing Objectives");
+                bail!("Scoreboard data missing Objectives");
             }
-            if let Some(nbt::Value::List(PlayerScores)) = data.get("PlayerScores") {
-                for player_score_entry in PlayerScores.iter() {
-                    if let nbt::Value::Compound(score) = player_score_entry {
-                        let Name: String = if let Some(nbt::Value::String(Name)) = score.get("Name") { Name.to_string() } else { panic!("Score missing Name") };
-                        let Objective: String = if let Some(nbt::Value::String(Objective)) = score.get("Objective") { Objective.to_string() } else { panic!("Score missing Objective") };
-                        let Score: i32 = if let Some(nbt::Value::Int(Score)) = score.get("Score") { *Score } else { panic!("Score missing Score") };
-                        let Locked: bool = if let Some(nbt::Value::Byte(Locked)) = score.get("Locked") { *Locked != 0 } else { panic!("Score missing Locked") };
+            if let Some(nbt::Value::List(player_scores)) = data.get("PlayerScores") {
+                for player_score_entry in player_scores.iter() {
+                    if let nbt::Value::Compound(score_compound) = player_score_entry {
+                        let name: String = if let Some(nbt::Value::String(name)) = score_compound.get("Name") { name.to_string() } else { bail!("Score missing Name") };
+                        let objective: String = if let Some(nbt::Value::String(objective)) = score_compound.get("Objective") { objective.to_string() } else { bail!("Score missing Objective") };
+                        let score: i32 = if let Some(nbt::Value::Int(score)) = score_compound.get("Score") { *score } else { bail!("Score missing Score") };
+                        let locked: bool = if let Some(nbt::Value::Byte(locked)) = score_compound.get("Locked") { *locked != 0 } else { bail!("Score missing Locked") };
 
-                        scoreboard.set_score(Name, Objective, Score{ Score: Score, Locked: Locked })?;
+                        scoreboard.set_score(name, objective, Score{ score: score, locked: locked })?;
                     }
                 }
             } else {
-                panic!("Scoreboard data missing PlayerScores");
+                bail!("Scoreboard data missing PlayerScores");
             }
             /* TODO: Also load Teams, DisplaySlots */
         } else {
-            panic!("Scoreboard data missing data");
+            bail!("Scoreboard data missing data");
         }
 
         Ok(scoreboard)
     }
 
-    fn set_score(&mut self, Name: String, Objective: String, Score: Score) -> Result<(), String> {
-        if let Some(Objective) = self.objectives.get_mut(&Objective) {
-            Objective.data.insert(Name, Score);
+    fn set_score(&mut self, name: String, objective: String, score: Score) -> Result<(), String> {
+        if let Some(objective) = self.objectives.get_mut(&objective) {
+            objective.data.insert(name, score);
         } else {
-            panic!("Can't insert score into missing objective {}", Objective);
+            panic!("Can't insert score into missing objective {}", objective);
         }
 
         Ok(())

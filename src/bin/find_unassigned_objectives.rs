@@ -43,7 +43,7 @@ fn main() -> BoxResult<()> {
 
             for (_, score) in objective.data.iter() {
                 total_entries += 1;
-                if score.Score != 0 {
+                if score.score != 0 {
                     nonzero_count += 1
                 }
             }
