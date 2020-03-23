@@ -110,15 +110,11 @@ struct Function {
 
 #[derive(Debug)]
 struct Quest {
-    /*
-     * These will never have more than one entry - but keeping them as vectors
-     * makes them easier to operate on
-     */
-    path: Vec<String>,
+    path: String,
     children: Vec<NamespacedKey>, /* TODO: Currently always empty! */
     used: bool, /* TODO: Currently always true! */
-    data: Vec<String>,
-    json_data: Vec<serde_json::value::Value>,
+    data: String,
+    json_data: serde_json::value::Value,
 }
 
 #[derive(Debug)]
@@ -161,11 +157,12 @@ impl NamespacedItem {
         }
     }
 
-    fn get_paths(&self) -> &Vec<String> {
+    /* TODO: This is somewhat wasteful, since it makes a clone of all the paths... */
+    fn get_paths(&self) -> Vec<String> {
         match self {
-            NamespacedItem::Advancement(advancement) => &advancement.path,
-            NamespacedItem::Function(function) => &function.path,
-            NamespacedItem::Quest(quest) => &quest.path,
+            NamespacedItem::Advancement(advancement) => advancement.path.clone(),
+            NamespacedItem::Function(function) => function.path.clone(),
+            NamespacedItem::Quest(quest) => vec![quest.path.to_string()],
         }
     }
 
@@ -235,7 +232,7 @@ fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) {
                 if let Ok(file) = fs::read_to_string(&path) {
                     if let Ok(json @ serde_json::value::Value::Object(_)) = serde_json::from_str(&file) {
                         if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(dir)) {
-                            items.insert(namespace, NamespacedItem::Quest(Quest{ path: vec!(path.to_string()), children: vec!(), used: false, data: vec!(file), json_data: vec!(json) }));
+                            items.insert(namespace, NamespacedItem::Quest(Quest{ path: path.to_string(), children: vec!(), used: false, data: file, json_data: json }));
                         } else {
                             warn!("Failed to create namespaced key for: {}", path);
                         }
@@ -420,12 +417,9 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>,
                 }
             }
             NamespacedItem::Quest(quest) => {
-                /* Create reference links for functions */
-                for data in quest.json_data.iter() {
-                    /* TODO: Quest is always used and has no children */
-                    quest.used = true;
-                    link_quest_file_recursive(pending, &data);
-                }
+                /* TODO: Quest is always used and has no children */
+                quest.used = true;
+                link_quest_file_recursive(pending, &quest.json_data);
             }
         }
     }
