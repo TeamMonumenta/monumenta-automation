@@ -110,7 +110,7 @@ struct Function {
 
 #[derive(Debug)]
 struct Quest {
-    path: String,
+    path: Vec<String>,
     children: Vec<NamespacedKey>, /* TODO: Currently always empty! */
     used: bool, /* TODO: Currently always true! */
     data: String,
@@ -157,12 +157,11 @@ impl NamespacedItem {
         }
     }
 
-    /* TODO: This is somewhat wasteful, since it makes a clone of all the paths... */
-    fn get_paths(&self) -> Vec<String> {
+    fn get_paths(&self) -> &Vec<String> {
         match self {
-            NamespacedItem::Advancement(advancement) => advancement.path.clone(),
-            NamespacedItem::Function(function) => function.path.clone(),
-            NamespacedItem::Quest(quest) => vec![quest.path.to_string()],
+            NamespacedItem::Advancement(advancement) => &advancement.path,
+            NamespacedItem::Function(function) => &function.path,
+            NamespacedItem::Quest(quest) => &quest.path
         }
     }
 
@@ -232,7 +231,7 @@ fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) {
                 if let Ok(file) = fs::read_to_string(&path) {
                     if let Ok(json @ serde_json::value::Value::Object(_)) = serde_json::from_str(&file) {
                         if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(dir)) {
-                            items.insert(namespace, NamespacedItem::Quest(Quest{ path: path.to_string(), children: vec!(), used: false, data: file, json_data: json }));
+                            items.insert(namespace, NamespacedItem::Quest(Quest{ path: vec!(path.to_string()), children: vec!(), used: false, data: file, json_data: json }));
                         } else {
                             warn!("Failed to create namespaced key for: {}", path);
                         }
