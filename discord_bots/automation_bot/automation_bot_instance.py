@@ -1130,7 +1130,7 @@ Syntax:
                 await self.cd("/home/epic/project_epic/server_config/data")
                 await self.run("tar czf {}.tgz structures".format(base_backup_name))
                 await self.display("WARNING: Item replacements does not currently run on structures!")
-                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py --schematics structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {}_mobs.txt".format(shard, base_backup_name)), displayOutput=True)
+                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py --schematics structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {}_mobs.txt".format(base_backup_name)), displayOutput=True)
 
             else:
                 base_backup_name = "/home/epic/0_OLD_BACKUPS/Project_Epic-{}_pre_entity_loot_updates_{}".format(shard, datestr())
