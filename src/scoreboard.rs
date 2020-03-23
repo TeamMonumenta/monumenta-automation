@@ -3,6 +3,7 @@ type BoxResult<T> = Result<T,Box<dyn Error>>;
 
 use std::fs::File;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::io::{Read};
 
 use nbt;
@@ -26,6 +27,33 @@ pub struct Objective {
     pub display_name: String, // DisplayName
     pub criteria_name: String, // CriteriaName
     pub data: HashMap<String, Score>,
+}
+
+pub struct ScoreboardCollection {
+    pub scoreboards: HashMap<String, Scoreboard>,
+    objectives: HashSet<String>,
+}
+
+impl ScoreboardCollection {
+    pub fn new() -> ScoreboardCollection {
+        ScoreboardCollection{ scoreboards: HashMap::new(), objectives: HashSet::new() }
+    }
+
+    pub fn add_scoreboard(&mut self, filepath: &str) -> BoxResult<()> {
+        let scoreboard = Scoreboard::load(filepath)?;
+
+        for objective_name in scoreboard.objectives.keys() {
+            self.objectives.insert(objective_name.to_string());
+        }
+
+        self.scoreboards.insert(filepath.to_string(), scoreboard);
+
+        Ok(())
+    }
+
+    pub fn objectives(&self) -> &HashSet<String> {
+        &self.objectives
+    }
 }
 
 impl Scoreboard {

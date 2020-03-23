@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::error::Error;
 type BoxResult<T> = Result<T,Box<dyn Error>>;
 
-use monumenta::scoreboard::Scoreboard;
+use monumenta::scoreboard;
 
 fn main() -> BoxResult<()> {
     /* Load all the arguments as datapacks */
@@ -15,11 +15,11 @@ fn main() -> BoxResult<()> {
         return Ok(());
     }
 
-    let mut scoreboards: HashMap<String, Scoreboard> = HashMap::new();
+    let mut scoreboards = scoreboard::ScoreboardCollection::new();
 
     args.remove(0);
     while let Some(arg) = args.pop() {
-        scoreboards.insert(arg.to_string(), Scoreboard::load(&arg)?);
+        scoreboards.add_scoreboard(&arg)?;
     }
 
     /*
@@ -30,7 +30,7 @@ fn main() -> BoxResult<()> {
      * val = (nonzero_count, total_entries)
      */
     let mut counts: HashMap<String, (i32, i32)> = HashMap::new();
-    for (_, scoreboard) in scoreboards.iter() {
+    for (_, scoreboard) in scoreboards.scoreboards.iter() {
         for (objective_name, objective) in scoreboard.objectives.iter() {
             let mut nonzero_count = 0;
             let mut total_entries = 0;
