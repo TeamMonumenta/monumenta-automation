@@ -479,16 +479,19 @@ fn main() -> BoxResult<()> {
 
     println!("\nUnused Files:");
 
-    let mut count = 0;
-    for (_, val) in items.iter() {
-        if !val.is_used() {
-            for path in val.get_paths() {
-                println!("{}", path);
-                count += 1;
-            }
-        }
+    /* Collect all unused items to a vector */
+    let unused_items: Vec<&NamespacedItem> = items.iter().map(| (_, val) | val).filter(| val | !val.is_used()).collect();
+    let mut unused_paths: Vec<&String> = Vec::new();
+    for item in unused_items {
+        unused_paths.extend(item.get_paths().iter());
     }
-    println!("\nFound {} unused files", count);
+    unused_paths.sort_by(|a, b| b.partial_cmp(&a).unwrap());
+
+    println!("\n\nUnused objectives:");
+    for path in unused_paths.iter() {
+        println!("{}", path);
+    }
+    println!("\nFound {} unused files", unused_paths.len());
 
     Ok(())
 }
