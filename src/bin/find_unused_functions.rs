@@ -9,6 +9,9 @@ use std::collections::HashMap;
 use regex::Regex;
 use simplelog::*;
 
+use std::error::Error;
+type BoxResult<T> = Result<T,Box<dyn Error>>;
+
 #[derive(PartialEq, Eq, Hash, Clone)]
 enum NamespaceType {
     Advancement,
@@ -81,7 +84,8 @@ struct Advancement {
     path: Vec<String>,
     children: Vec<NamespacedKey>,
     used: bool,
-    data: Vec<serde_json::value::Value>
+    data: Vec<String>,
+    json_data: Vec<serde_json::value::Value>
 }
 
 #[derive(Debug)]
@@ -165,7 +169,7 @@ fn load_datapack_file(path: String, datapacks_path: &str) -> Option<(NamespacedK
             if path.ends_with(".json") {
                 if let Ok(json) = serde_json::from_str(&file) {
                     if let Some(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
-                        return Some((namespace, NamespacedItem::Advancement(Advancement{ path: vec!(path), children: vec!(), used: false, data: vec!(json) })))
+                        return Some((namespace, NamespacedItem::Advancement(Advancement{ path: vec!(path), children: vec!(), used: false, data: vec!(file), json_data: vec!(json) })))
                     }
                 } else {
                     warn!("Failed to parse file as json: {}", path);
@@ -321,14 +325,14 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>,
                 /* Create reference links for advancements */
 
                 /* Link to parent advancement - mostly just interesting, not actually used */
-                if let Some(serde_json::Value::String(parent)) = advancement.data.get(0).unwrap().get("parent") {
+                if let Some(serde_json::Value::String(parent)) = advancement.json_data.get(0).unwrap().get("parent") {
                     if let Some(key) = NamespacedKey::from_str(parent, NamespaceType::Advancement) {
                         pending.push(key);
                     }
                 }
 
                 /* Link to function */
-                for data in advancement.data.iter() {
+                for data in advancement.json_data.iter() {
                     if let Some(run_func) = get_function(&data) {
                         advancement.children.push(run_func);
                     }
@@ -336,7 +340,7 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>,
 
                 /* Mark as used if any non-impossible triggers exist */
                 advancement.used = false;
-                for data in advancement.data.iter() {
+                for data in advancement.json_data.iter() {
                     if let Some(serde_json::Value::Object(criteria)) = data.get("criteria") {
                         for (_c_key, c_value) in criteria.iter() {
                             if let Some(trigger_compound) = c_value.get("trigger") {
@@ -375,7 +379,7 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>,
     }
 }
 
-fn main() {
+fn main() -> BoxResult<()> {
     CombinedLogger::init(
         vec![
             TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed).unwrap(),
@@ -393,7 +397,7 @@ fn main() {
 
     if args.len() <= 1 {
         error!("Usage: {} path/to/datapack path/to/other_datapack ...", args.get(0).unwrap());
-        return
+        return Ok(());
     }
 
     args.remove(0);
@@ -428,7 +432,7 @@ fn main() {
         }
     }
 
-    println!("\nUnused:");
+    println!("\nUnused Files:");
 
     let mut count = 0;
     for (_, val) in items.iter() {
@@ -440,4 +444,6 @@ fn main() {
         }
     }
     println!("\nFound {} unused files", count);
+
+    Ok(())
 }
