@@ -467,8 +467,10 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
                 /* Create reference links for functions */
                 for data in function.data.iter() {
                     for line in data.lines() {
-                        if let Some(key) = get_command_target_namespacedkey(line) {
-                            function.children.push(key);
+                        if !line.trim().starts_with("#") {
+                            if let Some(key) = get_command_target_namespacedkey(line) {
+                                function.children.push(key);
+                            }
                         }
                     }
                 }
