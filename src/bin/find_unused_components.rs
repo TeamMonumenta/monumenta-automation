@@ -349,7 +349,7 @@ fn load_commands_file(items: &mut HashMap<NamespacedKey, NamespacedItem>, path: 
                                 if let Some(serde_json::value::Value::Number(y)) = pos.get(1) {
                                     if let Some(serde_json::value::Value::Number(z)) = pos.get(2) {
                                         let namespace = NamespacedKey::from_command(path, &format!("{} {} {}", x, y, z));
-                                        let val = NamespacedItem::Command(Command{ path: vec!(path.to_string()), children: vec!(), data: vec!(command.to_string()) });
+                                        let val = NamespacedItem::Command(Command{ path: vec!(namespace.to_string()), children: vec!(), data: vec!(command.to_string()) });
                                         if let Some(existing) = items.get_mut(&namespace) {
                                             existing.add_variant(val);
                                         } else {
@@ -638,7 +638,8 @@ fn main() -> BoxResult<()> {
     }
 
     println!("\nMissing items that are referenced by used files:");
-    for (key, paths) in missing.iter() {
+    for (key, paths) in missing.iter_mut() {
+        paths.sort_by(|a, b| b.partial_cmp(&a).unwrap());
         println!("{}", key);
         for path in paths {
             println!("  {}", path);
