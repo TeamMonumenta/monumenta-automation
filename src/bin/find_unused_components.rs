@@ -305,11 +305,11 @@ fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) 
     Ok(())
 }
 
-fn link_quest_file_recursive(children: &mut Vec<NamespacedKey>, value: &serde_json::value::Value) {
+fn link_quest_file_recursive(path: &str, children: &mut Vec<NamespacedKey>, value: &serde_json::value::Value) {
     match value {
         serde_json::value::Value::Array(array) => {
             for item in array.iter() {
-                link_quest_file_recursive(children, item);
+                link_quest_file_recursive(path, children, item);
             }
         }
         serde_json::value::Value::Object(obj) => {
@@ -325,11 +325,11 @@ fn link_quest_file_recursive(children: &mut Vec<NamespacedKey>, value: &serde_js
                         if let Ok(key) = NamespacedKey::from_str(function, NamespaceType::Function) {
                             children.push(key);
                         } else {
-                            warn!("Quest file contains unparseable reward function {}", function);
+                            warn!("Quest file contains unparseable function '{}': {}", function, path);
                         }
                     }
                 } else {
-                    link_quest_file_recursive(children, value);
+                    link_quest_file_recursive(path, children, value);
                 }
             }
         }
@@ -411,7 +411,7 @@ fn get_command_target_namespacedkey(command: &str) -> Option<NamespacedKey> {
                 warn!("Command contains unparseable advancement {}", advancement);
             }
         } else {
-            warn!("No support for advancement command {}", adv_match.as_str());
+            info!("No support for advancement command {}", adv_match.as_str());
         }
     }
 
@@ -476,7 +476,7 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
             NamespacedItem::Quest(quest) => {
                 /* TODO: Quest is always used */
                 quest.used = true;
-                link_quest_file_recursive(&mut quest.children, &quest.json_data);
+                link_quest_file_recursive(&quest.path.get(0).unwrap(), &mut quest.children, &quest.json_data);
             }
             NamespacedItem::Command(command) => {
                 for data in command.data.iter() {
@@ -596,17 +596,27 @@ fn main() -> BoxResult<()> {
     /*
      * Load all the things that are used into the pending list, which contains items that are
      * children of used items but have not yet been processed / marked as used
+     *
+     * Also include the paths where those items are used from
      */
-    let mut pending: Vec<NamespacedKey> = Vec::new();
+    let mut pending: Vec<(NamespacedKey, Vec<String>)> = Vec::new();
     for (_, value) in items.iter() {
         if value.is_used() {
-            pending.extend(value.get_children().iter().cloned());
+            for child_key in value.get_children().iter() {
+                pending.push((child_key.clone(), value.get_paths().clone()));
+            }
         }
     }
 
+    /*
+     * Store a map of all the keys that are referenced by used items but don't actually
+     * exist. This maps to a list of all the places these things are used from
+     */
+    let mut missing: HashMap<NamespacedKey, Vec<String>> = HashMap::new();
+
     /* Iterate through the pending list and mark things as used */
     while pending.len() > 0 {
-        let key = pending.pop().unwrap();
+        let (key, paths) = pending.pop().unwrap();
         if let Some(map_value) = items.get_mut(&key) {
             /*
              * Only do work on nodes not marked as used. If a node is already
@@ -616,10 +626,20 @@ fn main() -> BoxResult<()> {
             if !map_value.is_used() {
                 map_value.set_used(true);
                 /* Copy the children into the pending list */
-                pending.extend(map_value.get_children().iter().cloned());
+                for child_key in map_value.get_children().iter() {
+                    pending.push((child_key.clone(), map_value.get_paths().clone()));
+                }
             }
         } else {
-            warn!("Missing item {}", key);
+            missing.entry(key).or_insert(vec!()).extend(paths);
+        }
+    }
+
+    println!("\nMissing items that are referenced by used files:");
+    for (key, paths) in missing.iter() {
+        println!("{}", key);
+        for path in paths {
+            println!("  {}", path);
         }
     }
 
