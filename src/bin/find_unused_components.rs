@@ -233,68 +233,62 @@ fn get_function<'c>(advancement: &'c serde_json::Value) -> Option<NamespacedKey>
     None
 }
 
-fn load_datapack_file(path: String, datapacks_path: &str) -> Option<(NamespacedKey, NamespacedItem)> {
+fn load_datapack_file(path: String, datapacks_path: &str) -> BoxResult<Option<(NamespacedKey, NamespacedItem)>> {
 
     if path.ends_with(".json") | path.ends_with(".mcfunction") {
-        if let Ok(file) = fs::read_to_string(&path) {
-            if path.ends_with(".json") {
-                if let Ok(json) = serde_json::from_str(&file) {
-                    if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
-                        return Some((namespace, NamespacedItem::Advancement(Advancement{ path: vec!(path), children: vec!(), used: false, data: vec!(file), json_data: vec!(json) })))
-                    } else {
-                        /* Suppress warnings about intentionally failing objects */
-                        if !path.contains("loot_tables") && !path.contains("recipes") && !path.contains("/tags/") {
-                            warn!("Failed to create namespaced key for: {}", path);
-                        }
-                    }
-                } else {
-                    warn!("Failed to parse file as json: {}", path);
-                }
-            } else if path.ends_with(".mcfunction") {
+        let file = fs::read_to_string(&path)?;
+        if path.ends_with(".json") {
+            if let Ok(json) = serde_json::from_str(&file) {
                 if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
-                    return Some((namespace, NamespacedItem::Function(Function{ path: vec!(path), children: vec!(), used: false, data: vec!(file) })))
+                    return Ok(Some((namespace, NamespacedItem::Advancement(Advancement{ path: vec!(path), children: vec!(), used: false, data: vec!(file), json_data: vec!(json) }))))
                 } else {
-                    warn!("Failed to create namespaced key for: {}", path);
+                    /* Suppress warnings about intentionally failing objects */
+                    if !path.contains("loot_tables") && !path.contains("recipes") && !path.contains("/tags/") {
+                        warn!("Failed to create namespaced key for: {}", path);
+                    }
                 }
+            } else {
+                warn!("Failed to parse file as json: {}", path);
             }
-        } else {
-            warn!("Failed to read file as string: {}", &path);
+        } else if path.ends_with(".mcfunction") {
+            if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
+                return Ok(Some((namespace, NamespacedItem::Function(Function{ path: vec!(path), children: vec!(), used: false, data: vec!(file) }))))
+            } else {
+                warn!("Failed to create namespaced key for: {}", path);
+            }
         }
     }
 
-    None
+    Ok(None)
 }
 
-fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) {
+fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> BoxResult<()> {
     for entry in WalkDir::new(dir).follow_links(true) {
         if let Ok(entry) = entry {
             let path = entry.path().to_str().unwrap();
             if entry.path().is_file() && path.ends_with(".json") {
-                if let Ok(file) = fs::read_to_string(&path) {
-                    if let Ok(json @ serde_json::value::Value::Object(_)) = serde_json::from_str(&file) {
-                        if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(dir)) {
-                            items.insert(namespace, NamespacedItem::Quest(Quest{ path: vec!(path.to_string()), children: vec!(), used: false, data: vec!(file), json_data: json }));
-                        } else {
-                            warn!("Failed to create namespaced key for: {}", path);
-                        }
+                let file = fs::read_to_string(&path)?;
+                if let Ok(json @ serde_json::value::Value::Object(_)) = serde_json::from_str(&file) {
+                    if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(dir)) {
+                        items.insert(namespace, NamespacedItem::Quest(Quest{ path: vec!(path.to_string()), children: vec!(), used: false, data: vec!(file), json_data: json }));
                     } else {
-                        warn!("Failed to parse file as json: {}", path);
+                        warn!("Failed to create namespaced key for: {}", path);
                     }
                 } else {
-                    warn!("Failed to read file as string: {}", &path);
+                    bail!("Failed to parse file as json object: {}", path);
                 }
             }
         }
     }
+    Ok(())
 }
 
 
-fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>,
-                 dir: &str) {
+fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> BoxResult<()> {
     for entry in WalkDir::new(dir).follow_links(true) {
         if let Ok(entry) = entry {
             if entry.path().is_file() {
-                if let Some((namespace, item)) = load_datapack_file(entry.path().to_str().unwrap().to_string(), dir) {
+                if let Some((namespace, item)) = load_datapack_file(entry.path().to_str().unwrap().to_string(), dir)? {
                     /*
                      * If an existing item already exists with this path, add it as a variant to
                      * the existing node
@@ -308,6 +302,7 @@ fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>,
             }
         }
     }
+    Ok(())
 }
 
 fn link_quest_file_recursive(children: &mut Vec<NamespacedKey>, value: &serde_json::value::Value) {
@@ -342,26 +337,23 @@ fn link_quest_file_recursive(children: &mut Vec<NamespacedKey>, value: &serde_js
     }
 }
 
-fn load_commands_file(items: &mut HashMap<NamespacedKey, NamespacedItem>, path: &str) {
-    if let Ok(file) = fs::read_to_string(&path) {
-        if let Ok(json) = serde_json::from_str(&file) {
-            if let serde_json::value::Value::Array(array) = json {
-                for item in array.iter() {
-                    if let serde_json::value::Value::Object(obj) = item {
-                        if let Some(serde_json::value::Value::String(command)) = obj.get("command") {
-                            if let Some(serde_json::value::Value::Array(pos)) = obj.get("pos") {
-                                if let Some(serde_json::value::Value::Number(x)) = pos.get(0) {
-                                    if let Some(serde_json::value::Value::Number(y)) = pos.get(1) {
-                                        if let Some(serde_json::value::Value::Number(z)) = pos.get(2) {
-                                            let namespace = NamespacedKey::from_command(path, &format!("{} {} {}", x, y, z));
-                                            let val = NamespacedItem::Command(Command{ path: vec!(path.to_string()), children: vec!(), data: vec!(command.to_string()) });
-                                            if let Some(existing) = items.get_mut(&namespace) {
-                                                existing.add_variant(val);
-                                            } else {
-                                                items.insert(namespace, val);
-                                            }
+fn load_commands_file(items: &mut HashMap<NamespacedKey, NamespacedItem>, path: &str) -> BoxResult<()> {
+    let file = fs::read_to_string(&path)?;
+    if let Ok(json) = serde_json::from_str(&file) {
+        if let serde_json::value::Value::Array(array) = json {
+            for item in array.iter() {
+                if let serde_json::value::Value::Object(obj) = item {
+                    if let Some(serde_json::value::Value::String(command)) = obj.get("command") {
+                        if let Some(serde_json::value::Value::Array(pos)) = obj.get("pos") {
+                            if let Some(serde_json::value::Value::Number(x)) = pos.get(0) {
+                                if let Some(serde_json::value::Value::Number(y)) = pos.get(1) {
+                                    if let Some(serde_json::value::Value::Number(z)) = pos.get(2) {
+                                        let namespace = NamespacedKey::from_command(path, &format!("{} {} {}", x, y, z));
+                                        let val = NamespacedItem::Command(Command{ path: vec!(path.to_string()), children: vec!(), data: vec!(command.to_string()) });
+                                        if let Some(existing) = items.get_mut(&namespace) {
+                                            existing.add_variant(val);
                                         } else {
-                                            warn!("Invalid commands json pos: {}", path);
+                                            items.insert(namespace, val);
                                         }
                                     } else {
                                         warn!("Invalid commands json pos: {}", path);
@@ -370,24 +362,25 @@ fn load_commands_file(items: &mut HashMap<NamespacedKey, NamespacedItem>, path: 
                                     warn!("Invalid commands json pos: {}", path);
                                 }
                             } else {
-                                warn!("Commands json entry missing 'pos': {}", path);
+                                warn!("Invalid commands json pos: {}", path);
                             }
                         } else {
-                            warn!("Commands json entry missing 'command': {}", path);
+                            warn!("Commands json entry missing 'pos': {}", path);
                         }
                     } else {
-                        warn!("Failed to parse commands json entry as object: {}", path);
+                        warn!("Commands json entry missing 'command': {}", path);
                     }
+                } else {
+                    warn!("Failed to parse commands json entry as object: {}", path);
                 }
-            } else {
-                warn!("Failed to parse file as json: {}", path);
             }
         } else {
             warn!("Failed to parse file as json: {}", path);
         }
     } else {
-        warn!("Failed to read file as string: {}", path);
+        warn!("Failed to parse file as json: {}", path);
     }
+    Ok(())
 }
 
 fn get_command_target_namespacedkey(command: &str) -> Option<NamespacedKey> {
@@ -578,13 +571,13 @@ fn main() -> BoxResult<()> {
             arg => {
                 if separator == DATAPACKS_ARG {
                     info!("Loading datapack {}", arg);
-                    load_datapack(&mut items, arg);
+                    load_datapack(&mut items, arg)?;
                 } else if separator == COMMANDS_ARG {
                     info!("Loading commands {}", arg);
-                    load_commands_file(&mut items, arg);
+                    load_commands_file(&mut items, arg)?;
                 } else if separator == QUESTS_ARG {
                     info!("Loading quests {}", arg);
-                    load_quests(&mut items, arg);
+                    load_quests(&mut items, arg)?;
                 } else if separator == SCOREBOARDS_ARG {
                     info!("Loading scoreboard {}", arg);
                     scoreboards.add_scoreboard(arg)?;
