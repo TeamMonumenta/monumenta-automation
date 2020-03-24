@@ -7,8 +7,10 @@ use std::fmt;
 use walkdir::WalkDir;
 use std::fs;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use regex::Regex;
 use simplelog::*;
+use monumenta::scoreboard;
 
 use std::error::Error;
 type BoxResult<T> = Result<T,Box<dyn Error>>;
@@ -119,7 +121,7 @@ struct Quest {
     path: Vec<String>,
     children: Vec<NamespacedKey>,
     used: bool, /* TODO: Currently always true! */
-    data: String,
+    data: Vec<String>,
     json_data: serde_json::value::Value,
 }
 
@@ -186,6 +188,15 @@ impl NamespacedItem {
             NamespacedItem::Function(function) => &function.path,
             NamespacedItem::Quest(quest) => &quest.path,
             NamespacedItem::Command(command) => &command.path,
+        }
+    }
+
+    fn get_data(&self) -> &Vec<String> {
+        match self {
+            NamespacedItem::Advancement(advancement) => &advancement.data,
+            NamespacedItem::Function(function) => &function.data,
+            NamespacedItem::Quest(quest) => &quest.data,
+            NamespacedItem::Command(command) => &command.data,
         }
     }
 
@@ -261,7 +272,7 @@ fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) {
                 if let Ok(file) = fs::read_to_string(&path) {
                     if let Ok(json @ serde_json::value::Value::Object(_)) = serde_json::from_str(&file) {
                         if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(dir)) {
-                            items.insert(namespace, NamespacedItem::Quest(Quest{ path: vec!(path.to_string()), children: vec!(), used: false, data: file, json_data: json }));
+                            items.insert(namespace, NamespacedItem::Quest(Quest{ path: vec!(path.to_string()), children: vec!(), used: false, data: vec!(file), json_data: json }));
                         } else {
                             warn!("Failed to create namespaced key for: {}", path);
                         }
@@ -484,6 +495,41 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
     }
 }
 
+fn is_objective_used(objective: &str, items: &HashMap<NamespacedKey, NamespacedItem>) -> bool {
+    for (_, val) in items.iter() {
+        for data in val.get_data() {
+            if data.contains(objective) {
+                return true
+            }
+        }
+    }
+    false
+}
+
+fn find_unused_scoreboards(items: &HashMap<NamespacedKey, NamespacedItem>) -> BoxResult<()> {
+    let mut scoreboards = scoreboard::ScoreboardCollection::new();
+    scoreboards.add_scoreboard("/home/bmarohn/home/scoreboard.dat")?;
+
+    let mut unused_objectives: HashSet<&String> = HashSet::new();
+    for objective in scoreboards.objectives() {
+        if !is_objective_used(objective, &items) {
+            unused_objectives.insert(objective);
+        }
+    }
+
+    let scoreboard_usage = scoreboards.get_objective_usage_sorted();
+    let mut unused_objectives: Vec<&(String, f64)> = scoreboard_usage.iter().filter(|(objective, _)| unused_objectives.contains(objective)).collect();
+    unused_objectives.sort_by(|(a1, a2), (b1, b2)| if a2 == b2 { a1.partial_cmp(&b1).unwrap() } else { a2.partial_cmp(b2).unwrap() });
+
+    println!("\nUnused Objectives : % of entities with nonzero score");
+    for (objective, percentage) in unused_objectives.iter() {
+        println!("{0: <20}{1}", objective, percentage);
+    }
+    println!("\nTotal unused objectives: {}", unused_objectives.len());
+
+    Ok(())
+}
+
 fn main() -> BoxResult<()> {
     CombinedLogger::init(
         vec![
@@ -558,6 +604,8 @@ fn main() -> BoxResult<()> {
         println!("{}", path);
     }
     println!("\nFound {} unused files", unused_paths.len());
+
+    find_unused_scoreboards(&items)?;
 
     Ok(())
 }

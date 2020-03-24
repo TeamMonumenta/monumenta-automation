@@ -55,7 +55,7 @@ impl ScoreboardCollection {
         &self.objectives
     }
 
-    pub fn get_objective_usage(&self) -> Vec<(String, f64)> {
+    pub fn get_objective_usage(&self) -> HashMap<String, f64> {
         /*
          * Iterate over all scoreboards and accumulate the nonzero_count and total_entries for each
          * objective
@@ -95,8 +95,13 @@ impl ScoreboardCollection {
             }
         }
 
+        counts.iter().map(|(objective_name, (nonzero_count, total_entries))| (objective_name.to_string(), *nonzero_count as f64 / *total_entries as f64)).collect()
+    }
+
+    pub fn get_objective_usage_sorted(&self) -> Vec<(String, f64)> {
+
         /* Create a vector from the hash table data and sort it by value */
-        let mut count_vec: Vec<(String, f64)> = counts.iter().map(|(objective_name, (nonzero_count, total_entries))| (objective_name.to_string(), *nonzero_count as f64 / *total_entries as f64)).collect();
+        let mut count_vec: Vec<(String, f64)> = self.get_objective_usage().iter().map(|(a, b)| (a.clone(), b.clone())).collect();
         count_vec.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
 
         count_vec

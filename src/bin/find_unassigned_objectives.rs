@@ -21,7 +21,7 @@ fn main() -> BoxResult<()> {
         scoreboards.add_scoreboard(&arg)?;
     }
 
-    let count_vec: Vec<(String, f64)> = scoreboards.get_objective_usage();
+    let count_vec: Vec<(String, f64)> = scoreboards.get_objective_usage_sorted();
 
     println!("Objectives by usage:");
     for (objective_name, percentage) in count_vec.iter() {
