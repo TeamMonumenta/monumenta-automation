@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use regex::Regex;
 use simplelog::*;
-use monumenta::scoreboard;
+use monumenta::scoreboard::ScoreboardCollection;
 
 use std::error::Error;
 type BoxResult<T> = Result<T,Box<dyn Error>>;
@@ -156,6 +156,7 @@ impl NamespacedItem {
                 if let NamespacedItem::Advancement(var_inner) = variant {
                     inner.path.extend(var_inner.path.iter().cloned());
                     inner.data.extend(var_inner.data.iter().cloned());
+                    inner.json_data.extend(var_inner.json_data.iter().cloned());
                 } else {
                     panic!("Advancement and other with same namespace!");
                 }
@@ -506,10 +507,7 @@ fn is_objective_used(objective: &str, items: &HashMap<NamespacedKey, NamespacedI
     false
 }
 
-fn find_unused_scoreboards(items: &HashMap<NamespacedKey, NamespacedItem>) -> BoxResult<()> {
-    let mut scoreboards = scoreboard::ScoreboardCollection::new();
-    scoreboards.add_scoreboard("/home/bmarohn/home/scoreboard.dat")?;
-
+fn find_unused_scoreboards(scoreboards: &ScoreboardCollection, items: &HashMap<NamespacedKey, NamespacedItem>) -> BoxResult<()> {
     let mut unused_objectives: HashSet<&String> = HashSet::new();
     for objective in scoreboards.objectives() {
         if !is_objective_used(objective, &items) {
@@ -530,6 +528,11 @@ fn find_unused_scoreboards(items: &HashMap<NamespacedKey, NamespacedItem>) -> Bo
     Ok(())
 }
 
+const DATAPACKS_ARG: &str = "--datapacks";
+const COMMANDS_ARG: &str = "--commands";
+const QUESTS_ARG: &str = "--quests";
+const SCOREBOARDS_ARG: &str = "--scoreboards";
+
 fn main() -> BoxResult<()> {
     CombinedLogger::init(
         vec![
@@ -548,16 +551,52 @@ fn main() -> BoxResult<()> {
         return Ok(());
     }
 
+    let mut scoreboards = ScoreboardCollection::new();
+
+    /* Basically an argument state machine */
+    let mut separator = "";
+
     args.remove(0);
-    while let Some(arg) = args.pop() {
-        if arg.ends_with(".json") {
-            load_commands_file(&mut items, &arg)
-        } else {
-            load_datapack(&mut items, &arg);
+    while args.len() > 0 {
+        match &args.remove(0)[..] {
+            DATAPACKS_ARG => {
+                info!("Loading datapacks...");
+                separator = DATAPACKS_ARG;
+            },
+            COMMANDS_ARG => {
+                info!("Loading commands...");
+                separator = COMMANDS_ARG;
+            },
+            QUESTS_ARG => {
+                info!("Loading quests...");
+                separator = QUESTS_ARG ;
+            },
+            SCOREBOARDS_ARG => {
+                info!("Loading scoreboards...");
+                separator = SCOREBOARDS_ARG ;
+            },
+            arg => {
+                if separator == DATAPACKS_ARG {
+                    info!("Loading datapack {}", arg);
+                    load_datapack(&mut items, arg);
+                } else if separator == COMMANDS_ARG {
+                    info!("Loading commands {}", arg);
+                    load_commands_file(&mut items, arg);
+                } else if separator == QUESTS_ARG {
+                    info!("Loading quests {}", arg);
+                    load_quests(&mut items, arg);
+                } else if separator == SCOREBOARDS_ARG {
+                    info!("Loading scoreboard {}", arg);
+                    scoreboards.add_scoreboard(arg)?;
+                } else {
+                    error!("Got unexpected argument: {}", arg);
+                    error!("Usage: find_unused_components -- --type1 file1 file2 ... --type2 file1 ... ...");
+                    error!("   Where --type is one of --datapacks --commands --quests --scoreboards");
+                    return Ok(());
+                }
+            }
         }
     }
-
-    load_quests(&mut items, "/home/bmarohn/home/scriptedquests");
 
     create_links(&mut items);
 
@@ -605,7 +644,7 @@ fn main() -> BoxResult<()> {
     }
     println!("\nFound {} unused files", unused_paths.len());
 
-    find_unused_scoreboards(&items)?;
+    find_unused_scoreboards(&scoreboards, &items)?;
 
     Ok(())
 }
