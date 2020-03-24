@@ -475,7 +475,7 @@ class World(object):
 
         Liquids are not yet supported
         """
-        x,y,z = pos
+        x,y,z = (int(pos[0]), int(pos[1]), int(pos[2]))
         # bx,by,bz are block coordinates within the chunk section
         rx, bx = divmod(x, 512)
         by = y
