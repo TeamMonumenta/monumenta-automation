@@ -17,7 +17,6 @@ class SocketManager(object):
         self._callback = callback
         self._rabbit_host = rabbit_host
         self._durable_queue = durable
-        self._channel = None
         logger.setLevel(log_level);
 
         # Create a thread to connect to the queue and block / consume messages
@@ -68,13 +67,10 @@ class SocketManager(object):
         if data is None or len(data) == 0:
             logger.warn("data can not be None!")
 
-        if self._channel is None or self._channel.is_closed:
-            # Create the connection and declare the queue
-            # pika is not thread safe - need a channel per thread
-            connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
-            self._channel = connection.channel()
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
+        channel = connection.channel()
 
-        if self._channel.is_closed:
+        if channel.is_closed:
             raise Exception("Failed to send message to rabbitmq despite attempting to reconnect")
 
         packet = {}
@@ -92,10 +88,13 @@ class SocketManager(object):
             exchange = 'broadcast'
             routing_key = ''
 
-        self._channel.basic_publish(
+        channel.basic_publish(
             exchange=exchange,
             routing_key=routing_key,
             body=encoded,
             properties=pika.BasicProperties(
                 delivery_mode=2,  # make message persistent
-        ))
+            )
+        )
+
+        channel.close()
