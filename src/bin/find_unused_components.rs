@@ -7,7 +7,6 @@ use std::fmt;
 use walkdir::WalkDir;
 use std::fs;
 use std::collections::HashMap;
-use std::collections::HashSet;
 use regex::Regex;
 use simplelog::*;
 use monumenta::scoreboard::ScoreboardCollection;
@@ -491,34 +490,50 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
     }
 }
 
-fn is_objective_used(objective: &str, items: &HashMap<NamespacedKey, NamespacedItem>) -> bool {
-    for (_, val) in items.iter() {
-        for data in val.get_data() {
-            if data.contains(objective) {
-                return true
-            }
-        }
-    }
-    false
-}
-
 fn find_unused_scoreboards(scoreboards: &ScoreboardCollection, items: &HashMap<NamespacedKey, NamespacedItem>) -> BoxResult<()> {
-    let mut unused_objectives: HashSet<&String> = HashSet::new();
+    let mut used_objectives: HashMap<&String, Vec<&NamespacedKey>> = HashMap::new();
+
     for objective in scoreboards.objectives() {
-        if !is_objective_used(objective, &items) {
-            unused_objectives.insert(objective);
+        for (key, val) in items.iter() {
+            'outer: for data in val.get_data() {
+                for line in data.lines() {
+                    if !line.trim().starts_with("#") && line.contains(objective) {
+                        used_objectives.entry(objective).or_insert(vec!()).push(key);
+                        break 'outer;
+                    }
+                }
+            }
         }
     }
 
     let scoreboard_usage = scoreboards.get_objective_usage_sorted();
-    let mut unused_objectives: Vec<&(String, f64)> = scoreboard_usage.iter().filter(|(objective, _)| unused_objectives.contains(objective)).collect();
+    let mut unused_objectives: Vec<&(String, f64)> = scoreboard_usage.iter().filter(|(objective, _)| !used_objectives.contains_key(objective)).collect();
     unused_objectives.sort_by(|(a1, a2), (b1, b2)| if a2 == b2 { a1.partial_cmp(&b1).unwrap() } else { a2.partial_cmp(b2).unwrap() });
 
-    println!("\n\n\nUnused Objectives : % of entities with nonzero score");
+    println!("\n\n\nUnused Objectives (not used by any datapacks/quests/commands) : % of entities with nonzero score");
     for (objective, percentage) in unused_objectives.iter() {
         println!("{0: <20}{1}", objective, percentage);
     }
-    println!("\nTotal unused objectives: {}", unused_objectives.len());
+    println!("\nTotal unused objectives (not used by any datapacks/quests/commands) : {}", unused_objectives.len());
+
+    println!("\n\n\nLow usage objectives (low usage but referenced somewhere) : % of entities with nonzero score");
+    let mut low_usage = 0;
+    for (objective, percentage) in scoreboard_usage {
+        if percentage <= 0.01f64 {
+            if let Some(used_locs) = used_objectives.get(&objective) {
+                low_usage += 1;
+                println!("{0: <20}{1}", objective, percentage);
+                if used_locs.len() <= 5 {
+                    for loc in used_locs {
+                        println!("  {}", loc);
+                    }
+                } else {
+                    println!("  <{} locations>", used_locs.len());
+                }
+            }
+        }
+    }
+    println!("\nTotal low usage objectives (not used by any datapacks/quests/commands) : {}", low_usage);
 
     Ok(())
 }
