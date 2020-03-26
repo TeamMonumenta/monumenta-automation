@@ -150,34 +150,15 @@ class _PreserveEnchantmentBase(GlobalRule):
     # This, but requiring a space at the beginning, while still matching an empty string.
     # Also matches a single space, requiring a final check.
     # https://stackoverflow.com/a/267405
-    _RE_ROMAN_NUMERAL = re.compile(r'''^( M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}))?$''')
 
     def __init__(self):
         self.enchant_found = False
-        self.enchant_level = None
+        self.enchant_line = None
         self.player = None
-
-    def _get_enchant_level(self, lore):
-        """Return the string that represents the enchantment level.
-
-        An empty string "" is a valid level - the default of 1.
-        Returns None if the enchantment doesn't match.
-        """
-        if not lore.startswith(self.enchantment):
-            return None
-
-        enchant_level = lore[len(self.enchantment):]
-        if self._RE_ROMAN_NUMERAL.match(enchant_level):
-            if enchant_level == ' ':
-                return None
-            else:
-                return enchant_level
-        else:
-            return None
 
     def preprocess(self, template, item):
         self.enchant_found = False
-        self.enchant_level = None
+        self.enchant_line = None
         self.player = None
 
         if template.has_path('display.Lore'):
@@ -188,9 +169,9 @@ class _PreserveEnchantmentBase(GlobalRule):
 
         if item.has_path('tag.display.Lore'):
             for lore in item.at_path('tag.display.Lore').value:
-                if self.enchantment in lore.value:
+                if lore.value.startswith(self.enchantment):
                     self.enchant_found = True
-                    self.enchant_level = self._get_enchant_level(lore.value)
+                    self.enchant_line = lore.value
                 if self.owner_prefix is not None and self.owner_prefix in lore.value:
                     self.player = lore.value[len(self.owner_prefix)+1:]
 
@@ -199,10 +180,10 @@ class _PreserveEnchantmentBase(GlobalRule):
             return
 
         if self.player:
-            enchantify(item, self.player, self.enchantment + self.enchant_level, owner_prefix=self.owner_prefix)
+            enchantify(item, self.player, self.enchant_line, owner_prefix=self.owner_prefix)
         else:
             # Apply the enchantment without saying who added it (workaround for previous bug)
-            enchantify(item, self.player, self.enchantment + self.enchant_level, owner_prefix=None)
+            enchantify(item, self.player, self.enchant_line, owner_prefix=None)
 
 ################################################################################
 # Global rules begin
