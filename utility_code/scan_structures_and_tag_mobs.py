@@ -119,7 +119,7 @@ for dungeon in dungeons:
     rz = dungeons[dungeon]["z"]
     pos1 = (512*rx      ,   0, 512*rz      )
     pos2 = (512*rx + 511, 255, 512*rz + 511)
-    for entity, source_pos, entity_path in dungeonWorld.entity_iterator(pos1, pos2, readonly=True):
+    for entity, source_pos, entity_path in dungeonWorld.entity_iterator(pos1=pos1, pos2=pos2, readonly=True):
         process_entity(entity, source_pos, entity_path, dungeon)
 
 

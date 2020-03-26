@@ -188,7 +188,7 @@ for dungeon in dungeons:
     """
     Find missing loot tables
     """
-    for entity, source_pos, entity_path in world.entity_iterator(pos1, pos2, readonly=True):
+    for entity, source_pos, entity_path in world.entity_iterator(pos1=pos1, pos2=pos2, readonly=True):
         if entity.has_path('LootTable'):
             # This container is all set
             ok_loottable += 1
