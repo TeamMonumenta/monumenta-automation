@@ -143,45 +143,6 @@ def shatter_item(item):
     lore.append(nbt.TagString("§4Maybe a Master Repairman"))
     lore.append(nbt.TagString("§4could reforge it..."))
 
-class _PreserveEnchantmentBase(GlobalRule):
-    name = 'Preserve Enchantment Base (SHOULD NOT BE USED DIRECTLY)'
-    enchantment = '§7Enchantment'
-    owner_prefix = None
-
-    def __init__(self):
-        self.enchant_found = False
-        self.enchant_line = None
-        self.player = None
-
-    def preprocess(self, template, item):
-        self.enchant_found = False
-        self.enchant_line = None
-        self.player = None
-
-        if template.has_path('display.Lore'):
-            for lore in template.at_path('display.Lore').value:
-                if lore.value.startswith(self.enchantment):
-                    # Don't apply the enchant if it already exists
-                    return
-
-        if item.has_path('tag.display.Lore'):
-            for lore in item.at_path('tag.display.Lore').value:
-                if lore.value.startswith(self.enchantment):
-                    self.enchant_found = True
-                    self.enchant_line = lore.value
-                if self.owner_prefix is not None and self.owner_prefix in lore.value:
-                    self.player = lore.value[len(self.owner_prefix)+1:]
-
-    def postprocess(self, item):
-        if not self.enchant_found:
-            return
-
-        if self.player:
-            enchantify(item, self.player, self.enchant_line, owner_prefix=self.owner_prefix)
-        else:
-            # Apply the enchantment without saying who added it (workaround for previous bug)
-            enchantify(item, self.player, self.enchant_line, owner_prefix=None)
-
 ################################################################################
 # Global rules begin
 
@@ -241,55 +202,70 @@ class PreserveDamage(GlobalRule):
         # Apply damage
         item.at_path('tag.Damage').value = self.damage
 
-class PreserveHope(_PreserveEnchantmentBase):
-    name = 'Preserve Hope'
-    enchantment = '§7Hope'
-    owner_prefix = 'Infused by'
+class PreserveEnchantments(GlobalRule):
+    name = 'Preserve Enchantments'
+    enchantments = (
+        {"enchantment": '§7Hope', "owner_prefix": 'Infused by'},
+        {"enchantment": '§7Gilded', "owner_prefix": 'Gilded by'},
+        {"enchantment": '§7Festive', "owner_prefix": 'Decorated by'},
+        {"enchantment": '§7Acumen', "owner_prefix": None},
+        {"enchantment": '§7Focus', "owner_prefix": None},
+        {"enchantment": '§7Perspicacity', "owner_prefix": None},
+        {"enchantment": '§7Tenacity', "owner_prefix": None},
+        {"enchantment": '§7Vigor', "owner_prefix": None},
+        {"enchantment": '§7Vitality', "owner_prefix": None},
+    )
 
-class PreserveGilded(_PreserveEnchantmentBase):
-    name = 'Preserve Gilded'
-    enchantment = '§7Gilded'
-    owner_prefix = 'Gilded by'
-
-class PreserveFestive(_PreserveEnchantmentBase):
-    name = 'Preserve Festive'
-    enchantment = '§7Festive'
-    owner_prefix = 'Decorated by'
-
-    wrongPrefix = "Infused by"
+    def __init__(self):
+        self.enchantment_state = []
 
     def preprocess(self, template, item):
-        super().preprocess(template, item)
+        self.enchantment_state = []
 
-        if self.enchant_found and not self.player:
+        for enchantment in self.enchantments:
+            self.enchantment_state.append({
+                'enchantment': enchantment['enchantment'],
+                'owner_prefix': enchantment['owner_prefix'],
+                'enchant_on_template': False,
+                'enchant_found': False,
+                'enchant_line': None,
+                'player': None
+            })
+
+        if template.has_path('display.Lore'):
+            for lore in template.at_path('display.Lore').value:
+                for enchantment in self.enchantment_state:
+                    if lore.value.startswith(enchantment['enchantment']):
+                        enchantment['enchant_on_template'] = True
+
+        if item.has_path('tag.display.Lore'):
             for lore in item.at_path('tag.display.Lore').value:
-                if self.wrongPrefix in lore.value:
-                    self.player = lore.value[len(self.wrongPrefix)+1:]
-                    return
+                for enchantment in self.enchantment_state:
+                    if enchantment['enchant_on_template']:
+                        # Don't apply the enchant if it already exists
+                        continue
+                    owner_prefix = enchantment['owner_prefix']
+                    if lore.value.startswith(enchantment['enchantment']):
+                        enchantment['enchant_found'] = True
+                        enchantment['enchant_line'] = lore.value
+                    if owner_prefix is not None and lore.value.startswith(owner_prefix):
+                        enchantment['player'] = lore.value[len(owner_prefix)+1:]
 
-class PreserveAcumen(_PreserveEnchantmentBase):
-    name = 'Preserve Acumen'
-    enchantment = '§7Acumen'
+    def postprocess(self, item):
+        for enchantment in self.enchantment_state:
+            enchant_found = enchantment['enchant_found']
+            player = enchantment['player']
+            enchant_line = enchantment['enchant_line']
+            owner_prefix = enchantment['owner_prefix']
 
-class PreserveFocus(_PreserveEnchantmentBase):
-    name = 'Preserve Focus'
-    enchantment = '§7Focus'
+            if not enchant_found:
+                continue
 
-class PreservePerspicacity(_PreserveEnchantmentBase):
-    name = 'Preserve Perspicacity'
-    enchantment = '§7Perspicacity'
-
-class PreserveTenacity(_PreserveEnchantmentBase):
-    name = 'Preserve Tenacity'
-    enchantment = '§7Tenacity'
-
-class PreserveVigor(_PreserveEnchantmentBase):
-    name = 'Preserve Vigor'
-    enchantment = '§7Vigor'
-
-class PreserveVitality(_PreserveEnchantmentBase):
-    name = 'Preserve Vitality'
-    enchantment = '§7Vitality'
+            if player:
+                enchantify(item, player, enchant_line, owner_prefix=owner_prefix)
+            else:
+                # Apply the enchantment without saying who added it (workaround for past bug)
+                enchantify(item, player, enchant_line, owner_prefix=None)
 
 class PreserveShattered(GlobalRule):
     name = 'Preserve Shattered'
