@@ -147,9 +147,6 @@ class _PreserveEnchantmentBase(GlobalRule):
     name = 'Preserve Enchantment Base (SHOULD NOT BE USED DIRECTLY)'
     enchantment = '§7Enchantment'
     owner_prefix = None
-    # This, but requiring a space at the beginning, while still matching an empty string.
-    # Also matches a single space, requiring a final check.
-    # https://stackoverflow.com/a/267405
 
     def __init__(self):
         self.enchant_found = False
