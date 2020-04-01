@@ -170,9 +170,9 @@ gobrush = [
 #   server_config
 #   structures
 
-base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect
+base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor
 if (SERVER_TYPE == 'build'):
-    base_plugins += speedchanger + nbteditor + voxelsniper + gobrush
+    base_plugins += speedchanger + voxelsniper + gobrush
 else:
     base_plugins += vanish
 
