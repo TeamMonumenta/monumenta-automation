@@ -23,6 +23,7 @@ shards = [
     'region_1',
     'region_2',
     'reverie',
+    'rush',
     'roguelike',
     'sanctum',
     'shiftingcity',

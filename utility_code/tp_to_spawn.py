@@ -23,6 +23,7 @@ valid_names = (
     "purple",
     "willows",
     "reverie",
+    "rush",
     "sanctum",
     "labs",
     "shiftingcity",

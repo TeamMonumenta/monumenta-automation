@@ -333,6 +333,7 @@ simple_view_distance_config = {
     'roguelike': 8,
     'sanctum': 10,
     'reverie': 10,
+    'rush': 5,
     'test': 8,
 }
 

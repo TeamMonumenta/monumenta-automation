@@ -218,6 +218,7 @@ available_configs = {
     "purple": get_dungeon_config("purple", "D11Access"),
     "willows": get_dungeon_config("willows", "DB1Access"),
     "reverie": get_dungeon_config("reverie", "DCAccess"),
+    "rush": get_dungeon_config("rush", "DRDAccess"),
     "sanctum": get_dungeon_config("sanctum", "DS1Access"),
     "labs": get_dungeon_config("labs", "D0Access"),
     "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),

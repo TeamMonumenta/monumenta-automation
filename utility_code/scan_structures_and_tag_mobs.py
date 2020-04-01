@@ -109,6 +109,7 @@ dungeons = {
     "cyan":{"x":-3, "z":9},
     "lightgray":{"x":-3, "z":8},
     "purple":{"x":-3, "z":13},
+    "rush":{"x":-3, "z":15},
 }
 
 dungeonWorld = World('/home/epic/project_epic/dungeon/Project_Epic-dungeon')
