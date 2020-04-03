@@ -46,10 +46,13 @@ try:
         logging.info(client.user.name)
         logging.info(client.user.id)
 
-        for facet in bot_config["facets"]:
-            db = TaskDatabase(client, facet, config_dir)
-            for input_channel in facet["bot_input_channels"]:
-                facet_channels.append((input_channel, db))
+        # On ready can happen multiple times when the bot automatically reconnects
+        # Don't re-create the per-channel listeners when this happens
+        if len(facet_channels) == 0:
+            for facet in bot_config["facets"]:
+                db = TaskDatabase(client, facet, config_dir)
+                for input_channel in facet["bot_input_channels"]:
+                    facet_channels.append((input_channel, db))
 
     @client.event
     async def on_message(message):
