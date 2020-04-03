@@ -1181,26 +1181,32 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         count = 0
         opt_out = 0
+        no_user = 0
         for index in self._entries:
             entry = self._entries[index]
-            if entry["pending_notification"] and "author" in entry:
-                user = self.get_user_by_id(entry["author"], allow_empty=True)
-                if user is not None:
-                    count += 1
-                    if entry["author"] in self._notifications_disabled:
-                        opt_out += 1
+            if entry["pending_notification"]:
+                count += 1
+                if "author" in entry:
+                    user = self.get_user_by_id(entry["author"], allow_empty=True)
+                    if user is not None:
+                        if entry["author"] in self._notifications_disabled:
+                            opt_out += 1
+                        else:
+                            entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
+                            entry_text = '''{mention} Your {single} was updated:
+    {entry}'''.format(mention=user.mention, single=self._descriptor_single, entry=entry_text)
+                            msg = await message.channel.send(entry_text, embed=embed)
                     else:
-                        entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
-                        entry_text = '''{mention} Your {single} was updated:
-{entry}'''.format(mention=user.mention, single=self._descriptor_single, entry=entry_text)
-                        msg = await message.channel.send(entry_text, embed=embed)
+                        no_user += 1
+                else:
+                    no_user += 1
 
                 entry["pending_notification"] = False
 
                 # Might as well save a bunch of times in case this gets interrupted
                 self.save()
 
-        await(self.reply(message, "{} notifications processed successfully, {} of which were suppressed by user opt-out".format(count, opt_out)))
+        await(self.reply(message, "{} notifications processed successfully, {} of which were suppressed by user opt-out, {} of which could not find a user to ping".format(count, opt_out, no_user)))
 
     ################################################################################
     # repost
