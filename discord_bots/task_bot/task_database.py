@@ -128,7 +128,7 @@ class TaskDatabase(object):
             else:
                 self._notifications_disabled = set([])
 
-            changed = False;
+            changed = False
             for item_id in self._entries:
                 entry = self._entries[item_id]
                 if "pending_notification" not in entry:
@@ -331,7 +331,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         else:
             # Send a new message
-            msg = await self._channel.send(entry_text, embed=embed);
+            msg = await self._channel.send(entry_text, embed=embed)
             entry["message_id"] = msg.id
             self.save()
 
@@ -352,7 +352,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         for index, entry in print_entries:
             entry_text, embed = await self.format_entry(index, entry, include_reactions=True, mention_assigned=mention_assigned)
-            msg = await channel.send(entry_text, embed=embed);
+            msg = await channel.send(entry_text, embed=embed)
 
 
     async def handle_message(self, message):
@@ -716,7 +716,7 @@ __Available Priorities:__
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await message.channel.send(entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed)
         await(self.reply(message, "{proper} #{index} updated successfully".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
@@ -744,7 +744,7 @@ __Available Priorities:__
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await message.channel.send(entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed)
         await(self.reply(message, "{proper} #{index} edited".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
@@ -793,7 +793,7 @@ __Available Priorities:__
 Total Open : {}
 Closed     : {}```'''.format(total_open, total_closed)
 
-        await message.channel.send(stats_text);
+        await message.channel.send(stats_text)
 
     ################################################################################
     # astats
@@ -976,7 +976,7 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
                         for react in msg.reactions:
                             if react.emoji == args:
                                 raw_entries.append((react.count, (index, entry)))
-                                break;
+                                break
                 except discord.errors.NotFound:
                     pass
 
@@ -1038,7 +1038,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await message.channel.send(entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed)
         await(self.reply(message, "{proper} #{index} rejected".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
@@ -1073,7 +1073,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await message.channel.send(entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed)
         await(self.reply(message, "{proper} #{index} marked as fixed".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
@@ -1102,7 +1102,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await message.channel.send(entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed)
         await(self.reply(message, "{proper} #{index} unmarked as fixed".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
@@ -1193,7 +1193,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
                         entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
                         entry_text = '''{mention} Your {single} was updated:
 {entry}'''.format(mention=user.mention, single=self._descriptor_single, entry=entry_text)
-                        msg = await message.channel.send(entry_text, embed=embed);
+                        msg = await message.channel.send(entry_text, embed=embed)
 
                 entry["pending_notification"] = False
 
@@ -1292,7 +1292,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await message.channel.send(entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed)
         await(self.reply(message, "{proper} #{index} assigned to {name}".format(proper=self._descriptor_proper, index=index, name=assignee.display_name)))
 
     ################################################################################
@@ -1317,7 +1317,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         await self.send_entry(index, entry)
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
-        msg = await message.channel.send(entry_text, embed=embed);
+        msg = await message.channel.send(entry_text, embed=embed)
         await(self.reply(message, "{proper} #{index} unassigned".format(proper=self._descriptor_proper, index=index)))
 
     ################################################################################
