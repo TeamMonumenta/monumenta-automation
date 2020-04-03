@@ -1210,6 +1210,32 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         await(self.reply(message, "Repost started, this will take some time..."))
 
+        await(self.reply(message, "Building a set of all valid {single} message ids...".format(single=self._descriptor_single)))
+
+        valid = set()
+        for index in self._entries:
+            entry = self._entries[index]
+            if "message_id" in entry:
+                valid.add(entry["message_id"])
+
+        await(self.reply(message, "Searching the channel for untracked messages..."))
+
+        def predicate(iter_msg):
+            return iter_msg.author.bot and iter_msg.id not in valid
+
+        count = 0
+        async for iter_msg in self._channel.history().filter(predicate):
+            await(self.reply(message, "Removing untracked message:"))
+            embed = None
+            if iter_msg.embeds is not None and len(iter_msg.embeds) > 0:
+                embed = iter_msg.embeds[0]
+            await message.channel.send(iter_msg.content, embed=embed)
+            await iter_msg.delete()
+
+        await(self.reply(message, "{} untracked messages removed successfully".format(count)))
+
+        await(self.reply(message, "Reposting missing messages..."))
+
         count = 0
         for index in self._entries:
             if "close_reason" not in self._entries[index]:
