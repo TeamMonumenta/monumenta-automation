@@ -7,7 +7,6 @@ from lib_py3.world import World
 
 root='/home/epic/play/project_epic'
 shards = [
-    'betaplots',
     'build',
     'cyan',
     'gray',

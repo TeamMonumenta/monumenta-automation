@@ -86,22 +86,6 @@ def get_dungeon_config(name, scoreboard):
         "replace_items_on_players": item_replace_manager,
     }
 
-betaplots = {
-    "server":"betaplots",
-
-    "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/betaplots/Project_Epic-betaplots/",
-    "localDstFolder":"/home/epic/project_epic/betaplots/Project_Epic-betaplots/",
-
-    "copyBaseFrom":"main",
-
-    "datapacks":datapacks_base + ['file/betaplots'],
-    "tagPlayers":["MidTransfer","resetMessage"],
-    "playerScoreChanges":dungeon_score_rules,
-
-    # Replace items worldwide
-    "replace_items_globally": item_replace_manager,
-}
-
 plots = {
     "server":"plots",
 
@@ -218,7 +202,6 @@ region_2 = {
 }
 
 available_configs = {
-    "betaplots": betaplots,
     "plots": plots,
     "region_1": region_1,
     "region_2": region_2,

@@ -723,7 +723,7 @@ Must be run before starting terrain reset on the play server'''
         await self.display("Running actual terrain reset (this will take a while!)...")
         await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(folders_to_update)))
 
-        for shard in ["plots", "betaplots", "region_1", "region_2"]:
+        for shard in ["plots", "region_1", "region_2"]:
             if shard in folders_to_update:
                 await self.display("Preserving warps for {0}...".format(shard))
                 os.makedirs("/home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
@@ -782,7 +782,6 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await send_broadcast_msg("5 minutes")
         self._socket.send_packet("region_1", "Monumenta.Broadcast.Command", {"command": 'co purge t:30d'})
         self._socket.send_packet("plots", "Monumenta.Broadcast.Command", {"command": 'co purge t:30d'})
-        self._socket.send_packet("betaplots", "Monumenta.Broadcast.Command", {"command": 'co purge t:30d'})
         await asyncio.sleep(2 * 60)
         await send_broadcast_msg("3 minutes")
         await asyncio.sleep(60)
@@ -847,7 +846,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
                 await self.run("rm -rf /home/epic/project_epic/{}/plugins/FastAsyncWorldEdit/history".format(shard))
                 await self.run("rm -rf /home/epic/project_epic/{}/plugins/FastAsyncWorldEdit/sessions".format(shard))
 
-            if shard not in ["build", "region_1", "plots", "betaplots"]:
+            if shard not in ["build", "region_1", "plots"]:
                 await self.run("rm -rf /home/epic/project_epic/{}/plugins/CoreProtect".format(shard))
 
         await self.display("Saving ops and banned players")
@@ -949,12 +948,12 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.display("Running actual terrain reset (this will take a while!)...")
         await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))
 
-        for shard in ["plots", "betaplots", "region_1"]:
+        for shard in ["plots", "region_1"]:
             await self.display("Preserving coreprotect for {0}...".format(shard))
             await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/CoreProtect".format(shard))
             await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/CoreProtect/database.db"))
 
-        for shard in ["plots", "betaplots", "region_1", "region_2"]:
+        for shard in ["plots", "region_1", "region_2"]:
             await self.display("Preserving warps for {0}...".format(shard))
             os.makedirs("/home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
             if os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml".format(shard)):

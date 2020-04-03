@@ -284,15 +284,6 @@ config = {
         'linked':server_config + base_plugins + dynmap,
     },
 
-    'betaplots':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=7'),
-            ('spigot.yml', 'view-distance', '    view-distance: 7'),
-            ('server.properties', 'difficulty', 'difficulty=0'),
-        ],
-        'linked':server_config + base_plugins,
-    },
-
     'shiftingcity':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=15'),
