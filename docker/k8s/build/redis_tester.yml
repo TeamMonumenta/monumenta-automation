@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redistest
+  namespace: build
+spec:
+  ports:
+  - port: 6379
+  selector:
+    app: redistest
+  clusterIP: None
+
+---
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: redistest
+  namespace: build
+spec:
+  selector:
+    matchLabels:
+      app: redistest
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: redistest
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-9
+      containers:
+      - image: redis:5
+        name: redistest
+        ports:
+        - containerPort: 6379
+          name: redistest
+
