@@ -77,7 +77,7 @@ spec:
             path: /nfs/build/project_epic
       containers:
       - name: bungee
-        image: monumenta-docker.injic.io/monumenta-java-shard
+        image: monumentammo/monumenta-java-shard
         tty: true
         stdin: true
         ports:

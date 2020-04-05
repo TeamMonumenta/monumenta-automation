@@ -1,7 +1,7 @@
 # Building images
 
 ```
-docker build . --file java-shard.Dockerfile -t monumenta-docker.injic.io/monumenta-java-shard --build-arg USERNAME=epic --build-arg UID=1000 --build-arg GID=1000
+docker build . --file java-shard.Dockerfile -t monumentammo/monumenta-java-shard --build-arg USERNAME=epic --build-arg UID=1000 --build-arg GID=1000
 docker build . --file basic-ssh.Dockerfile -t monumenta-docker.injic.io/monumenta-basic-ssh --build-arg USERNAME=epic --build-arg UID=1000 --build-arg GID=1000 --build-arg PASS='<thepassword>'
 docker build .. --file automation-bot.Dockerfile -t monumenta-docker.injic.io/monumenta-automation-bot --build-arg USERNAME=epic --build-arg UID=1000 --build-arg GID=1000
 ```
@@ -23,7 +23,7 @@ docker login monumenta-docker.injic.io
 # Push
 
 ```
-docker push monumenta-docker.injic.io/monumenta-java-shard
+docker push monumentammo/monumenta-java-shard
 docker push monumenta-docker.injic.io/monumenta-basic-ssh
 docker push monumenta-docker.injic.io/monumenta-automation-bot
 docker push monumenta-docker.injic.io/monumenta-dev-environment
