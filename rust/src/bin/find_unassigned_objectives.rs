@@ -10,7 +10,7 @@ fn main() -> BoxResult<()> {
     let mut args: Vec<String> = env::args().collect();
 
     if args.len() <= 1 {
-        println!("Usage: find_unassigned_objectives path/to/datapack path/to/other_datapack ...");
+        println!("Usage: find_unassigned_objectives path/to/scoreboard.dat path/to/other_scoreboard.dat ...");
         return Ok(());
     }
 
