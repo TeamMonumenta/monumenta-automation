@@ -52,14 +52,20 @@ os.umask(0o022)
 
 def send_broadcast_msg(time_left):
     socket.send_packet("*", "Monumenta.Broadcast.Command",
-            {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". This helps reduce lag! The server will be down for ~5 minutes."}]'''}
+            {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". This helps reduce lag! The server will be down for ~90 seconds."}]'''}
     )
 
 async def main():
-    # TODO: This is necessary because of a current data race initializing the SocketManager
+    # Short wait to make sure socket connects correctly
     await asyncio.sleep(3)
 
     try:
+        # Set all shards to restart the next time they are empty (many will restart immediately)
+        print("Broadcasting restart-empty command to all shards...")
+        socket.send_packet("*", "Monumenta.Broadcast.Command",
+                {"command": 'restart-empty'}
+        )
+
         send_broadcast_msg("5 minutes")
         await asyncio.sleep(120)
         send_broadcast_msg("3 minutes")
@@ -93,21 +99,14 @@ async def main():
     # Just a bit of time to process config and kick players
     await asyncio.sleep(5)
 
-    # Restart all the shards via broadcastcommand
-    print("Broadcasting stop command to all shards...")
-    socket.send_packet("*", "Monumenta.Broadcast.Command",
-            {"command": 'stop'}
-    )
-
-    # Enough time for broadcastcommand to run
-    await asyncio.sleep(60)
-
     # Restart bungee
     print("Restarting bungee...")
     socket.send_packet("bungee", "Monumenta.Bungee.Command", {"command": "end"})
 
+    # At this point shards that didn't already restart will do so
+
     # Enough time for everything to stabilize
-    await asyncio.sleep(180)
+    await asyncio.sleep(85)
 
     # Turn maintenance mode back off
     bungee_display_yml["maintenance"]["enabled"] = False
