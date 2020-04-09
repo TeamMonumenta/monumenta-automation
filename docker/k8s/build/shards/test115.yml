@@ -59,7 +59,7 @@ spec:
             path: /nfs/4_SHARED
       containers:
       - name: test115
-        image: monumentammo/monumenta-java-shard
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
         tty: true
         stdin: true
         ports:
@@ -100,4 +100,4 @@ spec:
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
             hugepages-2Mi: 2432Mi
       imagePullSecrets:
-      - name: regcred
+      - name: githubcred

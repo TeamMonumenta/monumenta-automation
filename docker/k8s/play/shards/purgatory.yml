@@ -57,7 +57,7 @@ spec:
             path: /nfs/play/project_epic
       containers:
       - name: purgatory
-        image: monumentammo/monumenta-java-shard
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
         tty: true
         stdin: true
         ports:
@@ -92,4 +92,4 @@ spec:
           requests:
             memory: 256Mi
       imagePullSecrets:
-      - name: regcred
+      - name: githubcred
