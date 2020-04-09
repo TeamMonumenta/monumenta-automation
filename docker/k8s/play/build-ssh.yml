@@ -55,7 +55,7 @@ spec:
             path: /nfs/4_SHARED/build_shard_data
       containers:
       - name: build-ssh
-        image: monumenta-docker.injic.io/monumenta-build-ssh
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-build-ssh
         tty: false
         stdin: false
         ports:
@@ -64,4 +64,4 @@ spec:
         - name: nfs-data
           mountPath: /home/build/data
       imagePullSecrets:
-      - name: regcred
+      - name: githubcred

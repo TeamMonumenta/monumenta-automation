@@ -2,37 +2,30 @@
 
 ```
 docker build . --file java-shard.Dockerfile -t monumentammo/monumenta-java-shard --build-arg USERNAME=epic --build-arg UID=1000 --build-arg GID=1000
-docker build . --file basic-ssh.Dockerfile -t monumenta-docker.injic.io/monumenta-basic-ssh --build-arg USERNAME=epic --build-arg UID=1000 --build-arg GID=1000 --build-arg PASS='<thepassword>'
-docker build .. --file automation-bot.Dockerfile -t monumenta-docker.injic.io/monumenta-automation-bot --build-arg USERNAME=epic --build-arg UID=1000 --build-arg GID=1000
-```
-
-Building the `monumenta-dev-environment` image requires getting Combustible/Byron's configscripts repo to build.
-```
-git clone git@github.com:Combustible/configscripts.git configscripts.formonumenta
-cd configscripts.formonumenta
-git checkout for_monumenta
-docker build . -t monumenta-docker.injic.io/monumenta-dev-environment --build-arg USERNAME=epic --build-arg GIT_NAME="Monumenta" --build-arg GIT_EMAIL=MonumentaMMO@gmail.com --build-arg UID=1000 --build-arg GID=1000 --build-arg DOCKER_GID=999
+docker build . --file basic-ssh.Dockerfile -t docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-basic-ssh --build-arg USERNAME=epic --build-arg UID=1000 --build-arg GID=1000 --build-arg PASS='<thepassword>'
+docker build . --file basic-ssh.Dockerfile -t docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-build-ssh --build-arg USERNAME=builder --build-arg UID=1000 --build-arg GID=1000 --build-arg PASS='<thepassword>'
+docker build .. --file automation-bot.Dockerfile -t docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot --build-arg USERNAME=epic --build-arg UID=1000 --build-arg GID=1000
 ```
 
 # Logging in to the docker registry
 
 ```
-docker login monumenta-docker.injic.io
+docker login docker.pkg.github.com
 ```
 
 # Push
 
 ```
 docker push monumentammo/monumenta-java-shard
-docker push monumenta-docker.injic.io/monumenta-basic-ssh
-docker push monumenta-docker.injic.io/monumenta-automation-bot
-docker push monumenta-docker.injic.io/monumenta-dev-environment
+docker push docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-basic-ssh
+docker push docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-build-ssh
+docker push docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
 ```
 
 # Kubernetes config for registry:
 
 ```
-kubectl create secret docker-registry regcred -n build --docker-server=monumenta-docker.injic.io --docker-username=monumenta --docker-password=<password>
+kubectl create secret docker-registry githubcred -n build --docker-server=docker.pkg.github.com --docker-username=monumenta --docker-password=<password>
 ```
 
 # Changing the automation bot's config

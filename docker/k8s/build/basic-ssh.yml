@@ -101,7 +101,7 @@ spec:
             path: /nfs/stage/project_epic
       containers:
       - name: basic-ssh
-        image: monumenta-docker.injic.io/monumenta-basic-ssh
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-basic-ssh
         tty: false
         stdin: false
         ports:
@@ -132,4 +132,4 @@ spec:
         - name: nfs-stage
           mountPath: /home/epic/stage
       imagePullSecrets:
-      - name: regcred
+      - name: githubcred

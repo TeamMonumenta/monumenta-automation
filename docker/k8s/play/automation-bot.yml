@@ -100,7 +100,7 @@ spec:
             secretName: automation-bot-config
       containers:
       - name: automation-bot
-        image: monumenta-docker.injic.io/monumenta-automation-bot
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
         tty: false
         stdin: false
         volumeMounts:
@@ -115,4 +115,4 @@ spec:
         - name: secret-config
           mountPath: /home/epic/.monumenta_bot
       imagePullSecrets:
-      - name: regcred
+      - name: githubcred
