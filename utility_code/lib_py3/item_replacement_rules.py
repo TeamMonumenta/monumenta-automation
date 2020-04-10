@@ -58,7 +58,7 @@ class GlobalRule(object):
 
         return result
 
-def enchantify(item, player, enchantment, owner_prefix=None, TEMPLORE=False):
+def enchantify(item, player, enchantment, owner_prefix=None):
     """Applies a lore-text enchantment to item (full item nbt, including id and Count).
 
     Must be kept in sync with the plugin version!
@@ -91,8 +91,6 @@ def enchantify(item, player, enchantment, owner_prefix=None, TEMPLORE=False):
     for loreEntry in lore:
         loreText = loreEntry.value
         if (enchantment) in loreText:
-            if TEMPLORE:
-                newLore.append(nbt.TagString("PRE COST ADJUST"))
             enchantmentFound = True
 
         loreStripped = unformat_text(loreText)
@@ -101,8 +99,6 @@ def enchantify(item, player, enchantment, owner_prefix=None, TEMPLORE=False):
             any(x in loreStripped for x in HEADER_LORE) or
             len(loreStripped) == 0
         ):
-            if TEMPLORE:
-                newLore.append(nbt.TagString("PRE COST ADJUST"))
             newLore.append(nbt.TagString(enchantment))
             enchantmentFound = True
 
@@ -209,15 +205,15 @@ class PreserveDamage(GlobalRule):
 class PreserveEnchantments(GlobalRule):
     name = 'Preserve Enchantments'
     enchantments = (
-        {"enchantment": '§7Hope', "owner_prefix": 'Infused by', "TEMPLORE": False},
-        {"enchantment": '§7Gilded', "owner_prefix": 'Gilded by', "TEMPLORE": False},
-        {"enchantment": '§7Festive', "owner_prefix": 'Decorated by', "TEMPLORE": False},
-        {"enchantment": '§7Acumen', "owner_prefix": None, "TEMPLORE": True},
-        {"enchantment": '§7Focus', "owner_prefix": None, "TEMPLORE": True},
-        {"enchantment": '§7Perspicacity', "owner_prefix": None, "TEMPLORE": True},
-        {"enchantment": '§7Tenacity', "owner_prefix": None, "TEMPLORE": True},
-        {"enchantment": '§7Vigor', "owner_prefix": None, "TEMPLORE": True},
-        {"enchantment": '§7Vitality', "owner_prefix": None, "TEMPLORE": True},
+        {"enchantment": '§7Hope', "owner_prefix": 'Infused by'},
+        {"enchantment": '§7Gilded', "owner_prefix": 'Gilded by'},
+        {"enchantment": '§7Festive', "owner_prefix": 'Decorated by'},
+        {"enchantment": '§7Acumen', "owner_prefix": None},
+        {"enchantment": '§7Focus', "owner_prefix": None},
+        {"enchantment": '§7Perspicacity', "owner_prefix": None},
+        {"enchantment": '§7Tenacity', "owner_prefix": None},
+        {"enchantment": '§7Vigor', "owner_prefix": None},
+        {"enchantment": '§7Vitality', "owner_prefix": None},
     )
 
     def __init__(self):
@@ -230,7 +226,6 @@ class PreserveEnchantments(GlobalRule):
             self.enchantment_state.append({
                 'enchantment': enchantment['enchantment'],
                 'owner_prefix': enchantment['owner_prefix'],
-                'TEMPLORE': enchantment['TEMPLORE'],
                 'enchant_on_template': False,
                 'enchant_found': False,
                 'enchant_line': None,
@@ -267,10 +262,10 @@ class PreserveEnchantments(GlobalRule):
                 continue
 
             if player:
-                enchantify(item, player, enchant_line, owner_prefix=owner_prefix, TEMPLORE=enchantment['TEMPLORE'])
+                enchantify(item, player, enchant_line, owner_prefix=owner_prefix)
             else:
                 # Apply the enchantment without saying who added it (workaround for past bug)
-                enchantify(item, player, enchant_line, owner_prefix=None, TEMPLORE=enchantment['TEMPLORE'])
+                enchantify(item, player, enchant_line, owner_prefix=None)
 
 class PreserveShattered(GlobalRule):
     name = 'Preserve Shattered'
