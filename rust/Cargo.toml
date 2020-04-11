@@ -16,3 +16,6 @@ simplelog = "0.7"
 simple-error = "0.2"
 log = "0.4"
 hematite-nbt = { git = "https://github.com/PistonDevelopers/hematite_nbt" }
+redis = "0.15"
+serde_yaml = "0.8"
+uuid = "0.8"

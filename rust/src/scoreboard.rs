@@ -110,7 +110,7 @@ impl ScoreboardCollection {
 
 impl Scoreboard {
     pub fn load(filepath: &str) -> BoxResult<Scoreboard> {
-        let mut file = File::open(filepath).unwrap();
+        let mut file = File::open(filepath)?;
         let mut contents = Vec::new();
         file.read_to_end(&mut contents).unwrap();
         let mut src = std::io::Cursor::new(&contents[..]);
@@ -161,7 +161,7 @@ impl Scoreboard {
         Ok(scoreboard)
     }
 
-    fn set_score(&mut self, name: String, objective: String, score: Score) -> Result<(), String> {
+    pub fn set_score(&mut self, name: String, objective: String, score: Score) -> Result<(), String> {
         if let Some(objective) = self.objectives.get_mut(&objective) {
             objective.data.insert(name, score);
         } else {
@@ -169,5 +169,17 @@ impl Scoreboard {
         }
 
         Ok(())
+    }
+
+    pub fn get_player_scores(&self, player_name: &str) -> HashMap<String, i32> {
+        let mut data: HashMap<String, i32> = HashMap::new();
+
+        for (objective_name, objective) in self.objectives.iter() {
+            if let Some(score) = objective.data.get(player_name) {
+                data.insert(objective_name.to_string(), score.score);
+            }
+        }
+
+        data
     }
 }
