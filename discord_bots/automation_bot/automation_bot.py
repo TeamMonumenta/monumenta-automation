@@ -71,7 +71,8 @@ try:
                 channel = client.get_channel(channel_id)
                 instance = AutomationBotInstance(client, channel, config, rreact)
                 channels[channel_id] = instance
-                await channel.send(config["name"] + " started and now listening.")
+                if channel_id != 486019840134610965:
+                    await channel.send(config["name"] + " started and now listening.")
             except:
                 logging.error( "Cannot connect to channel: " + config["channels"] )
 
