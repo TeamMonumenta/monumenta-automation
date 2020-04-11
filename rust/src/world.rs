@@ -3,7 +3,7 @@ type BoxResult<T> = Result<T,Box<dyn Error>>;
 
 use std::path::Path;
 use std::fs::File;
-use std::io::{Read};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 use crate::scoreboard::Scoreboard;
@@ -18,44 +18,54 @@ impl World {
         Ok(World{basepath: basepath.to_string(), scoreboard: None})
     }
 
-    pub fn get_scoreboard(&mut self) -> &Option<Scoreboard> {
-        // If the scoreboard is already loaded, return it. Otherwise load it and hang onto it
-        if let Some(_) = &self.scoreboard {
-            &self.scoreboard
+    pub fn load_scoreboard(&mut self) -> BoxResult<()> {
+        // Load scoreboard only if not already loaded
+        if let Some(_) = self.scoreboard {
+            return Ok(());
+        }
+
+        let path = Path::new(&self.basepath).join("data/scoreboard.dat");
+        let strpath = path.to_str().unwrap();
+        if let Ok(scoreboard) = Scoreboard::load(strpath) {
+            self.scoreboard = Some(scoreboard);
+            Ok(())
         } else {
-            if let Ok(scoreboard) = Scoreboard::load(Path::new(&self.basepath).join("data/scoreboard.dat").to_str().unwrap()) {
-                self.scoreboard = Some(scoreboard);
-                &self.scoreboard
-            } else {
-                &None
-            }
+            bail!("Could not load scoreboard {}", strpath)
         }
     }
 
-    pub fn get_player_data(&self, uuid: &Uuid) -> BoxResult<Vec<u8>> {
-        let path = Path::new(&self.basepath).join(format!("playerdata/{}.dat", uuid.to_hyphenated().to_string()));
-        if !path.is_file() {
-            bail!("Player data file does not exist!");
+    pub fn get_scoreboard(&self) -> BoxResult<&Scoreboard> {
+        if let Some(scoreboard) = &self.scoreboard {
+            Ok(scoreboard)
+        } else {
+            bail!("Scoreboard not loaded");
         }
-
-        let mut file = File::open(path.to_str().unwrap())?;
-        let mut contents = Vec::new();
-        file.read_to_end(&mut contents)?;
-
-        Ok(contents)
     }
 
-    pub fn get_advancements_data(&self, uuid: &Uuid) -> BoxResult<String> {
-        let path = Path::new(&self.basepath).join(format!("advancements/{}.json", uuid.to_hyphenated().to_string()));
+    pub fn get_player_scores(&self, player_name: &str) -> BoxResult<HashMap<String, i32>> {
+        Ok(self.get_scoreboard()?.get_player_scores(player_name))
+    }
+
+    pub fn get_player_data_file(&self, uuid: &Uuid) -> BoxResult<File> {
+        World::get_file_common(&Path::new(&self.basepath).join(format!("playerdata/{}.dat", uuid.to_hyphenated().to_string())))
+    }
+
+    pub fn get_player_advancements_file(&self, uuid: &Uuid) -> BoxResult<File> {
+        World::get_file_common(&Path::new(&self.basepath).join(format!("advancements/{}.json", uuid.to_hyphenated().to_string())))
+    }
+
+    pub fn get_player_stats_file(&self, uuid: &Uuid) -> BoxResult<File> {
+        World::get_file_common(&Path::new(&self.basepath).join(format!("stats/{}.json", uuid.to_hyphenated().to_string())))
+    }
+
+    fn get_file_common(path: &Path) -> BoxResult<File> {
+        let strpath = path.to_str().unwrap();
         if !path.is_file() {
-            bail!("Player advancements file does not exist!");
+            bail!("path {} does not exist or is not a file", strpath);
         }
-
-        let mut file = File::open(path.to_str().unwrap())?;
-        let mut contents = String::new();
-        file.read_to_string(&mut contents)?;
-
-        Ok(contents)
+        match File::open(strpath.to_string()) {
+            Ok(file) => Ok(file),
+            Err(err) => bail!("Failed to open file {}: {}", strpath, err),
+        }
     }
 }
-

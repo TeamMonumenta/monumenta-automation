@@ -11,6 +11,7 @@ use uuid::Uuid;
 use simplelog::*;
 
 use monumenta::world::World;
+use monumenta::player::Player;
 
 fn main() -> BoxResult<()> {
     CombinedLogger::init(
@@ -45,7 +46,6 @@ fn main() -> BoxResult<()> {
     let mut worlds: HashMap<String, World> = HashMap::new();
     let mut uuid2name: HashMap<Uuid, String> = HashMap::new();
 
-
     for (uuid, world_name) in locations {
         if !worlds.contains_key(world_name) {
             let sub_path = format!("{0}/Project_Epic-{0}", world_name);
@@ -56,41 +56,22 @@ fn main() -> BoxResult<()> {
         if let Some(world) = worlds.get_mut(world_name) {
             println!("{}, {}", uuid, world_name);
 
-            if let Ok(data) = world.get_player_data(&uuid) {
-                let mut src = std::io::Cursor::new(&data[..]);
-                let blob = nbt::Blob::from_gzip_reader(&mut src).unwrap();
+            let _ = world.load_scoreboard();
 
-                // Grab the player's last known name from the data
-                // Need this to get scoreboards
-                if let Some(nbt::Value::Compound(bukkit_compound)) = blob.get("bukkit") {
-                    if let Some(nbt::Value::String(name)) = bukkit_compound.get("lastKnownName") {
-                        uuid2name.insert(uuid, name.to_string());
-                    }
-                }
-                //debug!("{:x?}", data);
-            } else {
-                warn!("Failed to load player data for {} on {}", uuid, world_name);
+            let mut player = Player::new(uuid);
+
+            if let Err(err) = player.load_world(&world) {
+                warn!("Failed to load player {} on {}: {}", uuid, world_name, err);
+                continue;
             }
 
-            if let Some(scoreboard) = world.get_scoreboard() {
-                if let Some(name) = uuid2name.get(&uuid) {
-                    //debug!("{}", serde_json::to_string(&scoreboard.get_player_scores(name)).unwrap());
-                } else {
-                    warn!("Unable to determine player name for {} while trying to load their scores", uuid);
-                }
-            } else {
-                warn!("Failed to load scoreboard for {}", world_name);
+            if let Some(name) = player.name {
+                uuid2name.insert(uuid, name.to_string());
             }
 
-            if let Ok(advancements) = world.get_advancements_data(&uuid) {
-                if let Ok(serde_json::Value::Object(advancements)) = serde_json::from_str(&advancements) {
-                    //debug!("{}", serde_json::to_string(&advancements).unwrap());
-                } else {
-                    warn!("Failed to parse advancements data for {} on {} as string", uuid, world_name);
-                }
-            } else {
-                warn!("Failed to load advancements data for {} on {}", uuid, world_name);
-            }
+            //debug!("{:x?}", player.playerdata_bytes);
+            //debug!("{}", serde_json::to_string(&player.scores.unwrap()).unwrap());
+            //debug!("{}", player.advancements.unwrap().to_string_pretty())
         }
     }
 
