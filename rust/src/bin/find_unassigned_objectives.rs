@@ -31,7 +31,7 @@ fn main() -> BoxResult<()> {
     /* Put all the zero count items into a new unused_vec and sort by name */
     let unused_vec: Vec<&(String, f64)> = count_vec.iter().filter(|(_, val)| *val == 0.0).collect();
     let mut unused_vec: Vec<&String> = unused_vec.iter().map(|(objective_name, _)| objective_name).collect();
-    unused_vec.sort_by(|a, b| b.partial_cmp(&a).unwrap());
+    unused_vec.sort_by(|a, b| b.partial_cmp(a).unwrap());
 
     println!("\n\nUnused objectives:");
     for objective_name in unused_vec.iter() {

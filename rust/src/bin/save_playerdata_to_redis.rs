@@ -46,6 +46,9 @@ fn main() -> BoxResult<()> {
     let mut worlds: HashMap<String, World> = HashMap::new();
     let mut uuid2name: HashMap<Uuid, String> = HashMap::new();
 
+    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let mut con : redis::Connection = client.get_connection()?;
+
     for (uuid, world_name) in locations {
         if !worlds.contains_key(world_name) {
             let sub_path = format!("{0}/Project_Epic-{0}", world_name);
@@ -65,8 +68,14 @@ fn main() -> BoxResult<()> {
                 continue;
             }
 
-            if let Some(name) = player.name {
+            if let Some(name) = &player.name {
                 uuid2name.insert(uuid, name.to_string());
+            }
+
+            let domain = "build";
+            if let Err(err) = player.save_redis(domain, &mut con) {
+                warn!("Failed to save player {} domain {} to redis: {}", uuid, domain, err);
+                continue;
             }
 
             //debug!("{:x?}", player.playerdata_bytes);

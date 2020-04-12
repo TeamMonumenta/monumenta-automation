@@ -508,7 +508,7 @@ fn find_unused_scoreboards(scoreboards: &ScoreboardCollection, items: &HashMap<N
 
     let scoreboard_usage = scoreboards.get_objective_usage_sorted();
     let mut unused_objectives: Vec<&(String, f64)> = scoreboard_usage.iter().filter(|(objective, _)| !used_objectives.contains_key(objective)).collect();
-    unused_objectives.sort_by(|(a1, a2), (b1, b2)| if a2 == b2 { a1.partial_cmp(&b1).unwrap() } else { a2.partial_cmp(b2).unwrap() });
+    unused_objectives.sort_by(|(a1, a2), (b1, b2)| if a2 == b2 { a1.partial_cmp(b1).unwrap() } else { a2.partial_cmp(b2).unwrap() });
 
     println!("\n\n\nUnused Objectives (not used by any datapacks/quests/commands) : % of entities with nonzero score");
     for (objective, percentage) in unused_objectives.iter() {
@@ -654,7 +654,7 @@ fn main() -> BoxResult<()> {
 
     println!("\n\n\nMissing items that are referenced by used files:");
     for (key, paths) in missing.iter_mut() {
-        paths.sort_by(|a, b| b.partial_cmp(&a).unwrap());
+        paths.sort_by(|a, b| b.partial_cmp(a).unwrap());
         println!("{}", key);
         for path in paths {
             println!("  {}", path);
@@ -667,7 +667,7 @@ fn main() -> BoxResult<()> {
     for item in unused_items {
         unused_paths.extend(item.get_paths().iter());
     }
-    unused_paths.sort_by(|a, b| b.partial_cmp(&a).unwrap());
+    unused_paths.sort_by(|a, b| b.partial_cmp(a).unwrap());
 
     println!("\n\n\nUnused Files:");
     for path in unused_paths.iter() {
