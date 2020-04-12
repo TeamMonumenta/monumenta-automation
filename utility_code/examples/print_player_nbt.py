@@ -5,7 +5,11 @@ import os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 from lib_py3.player import Player
 
+args = sys.argv
 
-player = Player("/home/epic/play/project_epic/lightgray/Project_Epic-lightgray/playerdata/f374dfda-9760-4d74-aae8-7be7f61294b5.dat")
+if len(args) != 2:
+    print("Usage: print_player_nbt </path/to/player.dat>")
+else:
+    player = Player(args[1])
 
-player.player_tag.tree()
+    player.player_tag.tree()
