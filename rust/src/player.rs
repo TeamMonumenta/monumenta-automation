@@ -1,8 +1,13 @@
 use std::error::Error;
 type BoxResult<T> = Result<T,Box<dyn Error>>;
 
+use std::fs;
+use std::fmt;
+use std::path::Path;
 use std::io::{Read};
 use std::collections::HashMap;
+use std::collections::HashSet;
+use std::hash::{Hash, Hasher};
 use uuid::Uuid;
 use redis::Commands;
 use crate::world::World;
@@ -16,9 +21,59 @@ pub struct Player {
     pub scores: Option<HashMap<String, i32>>,
 }
 
+impl PartialEq for Player {
+    fn eq(&self, other: &Self) -> bool {
+        self.uuid == other.uuid
+    }
+}
+impl Eq for Player {}
+impl Hash for Player {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.uuid.hash(state);
+    }
+}
+
+impl fmt::Display for Player {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}: name={}, data={}, advancements={}, scores={}",
+               self.uuid,
+               if let Some(name) = &self.name { name } else { "?" },
+               if let Some(_) = self.playerdata { "Some" } else { "None" },
+               if let Some(_) = self.advancements { "Some" } else { "None" },
+               if let Some(_) = self.scores { "Some" } else { "None" })
+    }
+}
+
+impl fmt::Debug for Player {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}:\n  name={},\n  data={},\n  advancements={},\n  scores={}",
+               self.uuid,
+               if let Some(name) = &self.name { name } else { "?" },
+               if let Some(data) = &self.playerdata { format!("{:?}", data) } else { "None".to_string() },
+               if let Some(advancements) = &self.advancements { advancements.to_string_pretty() } else { "None".to_string() },
+               if let Some(scores) = &self.scores { format!("{:?}", scores) } else { "None".to_string() })
+    }
+}
+
 impl Player {
     pub fn new(uuid: Uuid) -> Player {
         Player{uuid: uuid, name: None, playerdata: None, advancements: None, scores: None}
+    }
+
+    pub fn get_redis_players(domain: &str, con: &mut redis::Connection) -> BoxResult<HashMap<Uuid, Player>> {
+        let mut uuid: HashSet<Uuid> = HashSet::new();
+
+        let keys: Vec<String> = con.keys(format!("{}:playerdata:*", domain))?;
+        for key in keys {
+            let split: Vec<&str> = key.split(":").collect();
+            if split.len() >= 3 {
+                uuid.insert(Uuid::parse_str(split[2])?);
+            } else {
+                warn!("Found unrecognized player data key: {}", key);
+            }
+        }
+
+        Ok(uuid.iter().map(|uuid| (*uuid, Player::new(*uuid))).collect())
     }
 
     pub fn load_world(&mut self, world: &World) -> BoxResult<()> {
@@ -100,6 +155,49 @@ impl Player {
         if let Some(scores) = &self.scores {
             let scores: String = serde_json::to_string(scores)?;
             con.lpush(format!("{}:playerdata:{}:scores", domain, self.uuid.to_hyphenated().to_string()), scores)?;
+        }
+        Ok(())
+    }
+
+    pub fn save_dir(&self, basepath: &str) -> BoxResult<()> {
+        let basepath = Path::new(basepath);
+        let uuidstr = self.uuid.to_hyphenated().to_string();
+
+        self.save_file_player_data(basepath.join(format!("playerdata/{}.dat", uuidstr)).to_str().unwrap())?;
+        self.save_file_advancements(basepath.join(format!("advancements/{}.json", uuidstr)).to_str().unwrap())?;
+        self.save_file_scores(basepath.join(format!("scores/{}.json", uuidstr)).to_str().unwrap())?;
+        Ok(())
+    }
+
+    pub fn save_file_player_data(&self, filepath: &str) -> BoxResult<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(playerdata) = &self.playerdata {
+            let mut contents : Vec<u8> = Vec::new();
+            playerdata.to_gzip_writer(&mut contents)?;
+            fs::write(filepath, contents)?;
+        }
+        Ok(())
+    }
+
+    pub fn save_file_advancements(&self, filepath: &str) -> BoxResult<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(advancements) = &self.advancements {
+            fs::write(filepath, advancements.to_string_pretty())?;
+        }
+        Ok(())
+    }
+
+    pub fn save_file_scores(&self, filepath: &str) -> BoxResult<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(scores) = &self.scores {
+            let scores: String = serde_json::to_string_pretty(scores)?;
+            fs::write(filepath, scores)?;
         }
         Ok(())
     }

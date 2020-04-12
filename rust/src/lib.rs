@@ -1,4 +1,5 @@
 #[macro_use] extern crate simple_error;
+#[macro_use] extern crate log;
 
 
 pub mod scoreboard;
