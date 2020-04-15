@@ -219,6 +219,13 @@ dungeon_score_rules = [
         "actions":{"set":[
             {"Objective":"VotesWeekly","Score":0}]}},
 
+    {"condition":{"Objective":"DRDAccess","Score":{"min":1}},
+        "actions":{"set":[
+            {"Objective":"DRDAccess","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"DRDAccess"},
+        "actions":{"set":[
+            {"Objective":"DRDAccess","Score":0}]}},
+
     {"condition":{"Objective":"MarketBanned","Score":{"min":1,"max":7}},
         "actions":{"set":[
             {"Objective":"MarketBanned","Score":0}]}},

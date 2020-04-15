@@ -126,6 +126,22 @@ roguelike = {
     "replace_items_on_players": item_replace_manager,
 }
 
+rush = {
+    "server":"rush",
+    "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/rush/Project_Epic-rush/",
+    "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/rush/Project_Epic-rush/",
+    "localDstFolder":"/home/epic/project_epic/rush/Project_Epic-rush/",
+    "copyBaseFrom":"build",
+    "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+    "datapacks":datapacks_dungeon + ['file/rush'],
+    "playerScoreChanges":dungeon_score_rules,
+    "tagPlayers":["MidTransfer","resetMessage"],
+    "tpToSpawn":True,
+
+    # Replace items on all players
+    "replace_items_on_players": item_replace_manager,
+}
+
 region_1 = {
     "server":"region_1",
 
@@ -218,11 +234,11 @@ available_configs = {
     "purple": get_dungeon_config("purple", "D11Access"),
     "willows": get_dungeon_config("willows", "DB1Access"),
     "reverie": get_dungeon_config("reverie", "DCAccess"),
-    "rush": get_dungeon_config("rush", "DRDAccess"),
     "sanctum": get_dungeon_config("sanctum", "DS1Access"),
     "labs": get_dungeon_config("labs", "D0Access"),
     "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
     "roguelike": roguelike,
+    "rush": rush,
     "tutorial": tutorial,
     "build": None,
     "bungee": None,
