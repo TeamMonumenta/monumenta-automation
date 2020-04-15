@@ -1006,11 +1006,13 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         await self.run("rm -rf 0_PREVIOUS")
         await self.run("mkdir 0_PREVIOUS")
 
+        await self.display("Moving existing stage data to 0_PREVIOUS")
         files = os.listdir(".")
         for f in files:
             if "0_PREVIOUS" not in f:
                 await self.run("mv {} 0_PREVIOUS/".format(f))
 
+        await self.display("Loading data from the play server. Will ping when done, this might take a while...")
         files = os.listdir("/home/epic/play/project_epic/")
         for f in files:
             if '0_PREVIOUS' not in f:
