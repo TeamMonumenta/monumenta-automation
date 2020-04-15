@@ -73,7 +73,7 @@ fn main() -> BoxResult<()> {
             }
 
             let domain = "build";
-            if let Err(err) = player.save_redis(domain, &mut con) {
+            if let Err(err) = player.save_redis(domain, &mut con, "Player File Import") {
                 warn!("Failed to save player {} domain {} to redis: {}", uuid, domain, err);
                 continue;
             }

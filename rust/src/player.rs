@@ -8,6 +8,7 @@ use std::io::{Read};
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::hash::{Hash, Hasher};
+use std::time::{SystemTime, UNIX_EPOCH};
 use uuid::Uuid;
 use redis::Commands;
 use crate::world::World;
@@ -128,34 +129,14 @@ impl Player {
         Ok(())
     }
 
-    pub fn save_redis(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
+    pub fn save_redis(&self, domain: &str, con: &mut redis::Connection, description: &str) -> BoxResult<()> {
         self.save_redis_player_data(domain, con)?;
         self.save_redis_advancements(domain, con)?;
         self.save_redis_scores(domain, con)?;
-        Ok(())
-    }
 
-    pub fn save_redis_player_data(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
-        if let Some(playerdata) = &self.playerdata {
-            let mut contents : Vec<u8> = Vec::new();
-            playerdata.to_gzip_writer(&mut contents)?;
-            let _: () = con.lpush(format!("{}:playerdata:{}:data", domain, self.uuid.to_hyphenated().to_string()), contents)?;
-        }
-        Ok(())
-    }
-
-    pub fn save_redis_advancements(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
-        if let Some(advancements) = &self.advancements {
-            con.lpush(format!("{}:playerdata:{}:advancements", domain, self.uuid.to_hyphenated().to_string()), advancements.to_string())?;
-        }
-        Ok(())
-    }
-
-    pub fn save_redis_scores(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
-        if let Some(scores) = &self.scores {
-            let scores: String = serde_json::to_string(scores)?;
-            con.lpush(format!("{}:playerdata:{}:scores", domain, self.uuid.to_hyphenated().to_string()), scores)?;
-        }
+        let start = SystemTime::now();
+        let history: String = format!("{}|{}|{}", description, start.duration_since(UNIX_EPOCH).expect("Time went backwards").as_millis(), (&self.name).as_ref().unwrap_or(&"Unknown".to_string()));
+        let _: () = con.lpush(format!("{}:playerdata:{}:history", domain, self.uuid.to_hyphenated().to_string()), history)?;
         Ok(())
     }
 
@@ -169,7 +150,33 @@ impl Player {
         Ok(())
     }
 
-    pub fn save_file_player_data(&self, filepath: &str) -> BoxResult<()> {
+    /********************* Private Functions *********************/
+
+    fn save_redis_player_data(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
+        if let Some(playerdata) = &self.playerdata {
+            let mut contents : Vec<u8> = Vec::new();
+            playerdata.to_gzip_writer(&mut contents)?;
+            let _: () = con.lpush(format!("{}:playerdata:{}:data", domain, self.uuid.to_hyphenated().to_string()), contents)?;
+        }
+        Ok(())
+    }
+
+    fn save_redis_advancements(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
+        if let Some(advancements) = &self.advancements {
+            con.lpush(format!("{}:playerdata:{}:advancements", domain, self.uuid.to_hyphenated().to_string()), advancements.to_string())?;
+        }
+        Ok(())
+    }
+
+    fn save_redis_scores(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
+        if let Some(scores) = &self.scores {
+            let scores: String = serde_json::to_string(scores)?;
+            con.lpush(format!("{}:playerdata:{}:scores", domain, self.uuid.to_hyphenated().to_string()), scores)?;
+        }
+        Ok(())
+    }
+
+    fn save_file_player_data(&self, filepath: &str) -> BoxResult<()> {
         let path = Path::new(filepath);
         fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
 
@@ -181,7 +188,7 @@ impl Player {
         Ok(())
     }
 
-    pub fn save_file_advancements(&self, filepath: &str) -> BoxResult<()> {
+    fn save_file_advancements(&self, filepath: &str) -> BoxResult<()> {
         let path = Path::new(filepath);
         fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
 
@@ -191,7 +198,7 @@ impl Player {
         Ok(())
     }
 
-    pub fn save_file_scores(&self, filepath: &str) -> BoxResult<()> {
+    fn save_file_scores(&self, filepath: &str) -> BoxResult<()> {
         let path = Path::new(filepath);
         fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
 
@@ -201,8 +208,6 @@ impl Player {
         }
         Ok(())
     }
-
-    /********************* Private Functions *********************/
 
     fn load_player_data_common(&mut self, contents: Vec<u8>) -> BoxResult<()> {
         let mut src = std::io::Cursor::new(&contents[..]);
