@@ -320,12 +320,10 @@ class AutomationBotInstance(object):
         await self.debug("Started shards [{}]".format(",".join(shards)))
 
     async def restart(self, shards):
+        if not type(shards) is list:
+            shards=[shards,]
         await self.debug("Restarting shards [{}]...".format(",".join(shards)))
-        for shard in shards:
-            if "bungee" == shard:
-                self._socket.send_packet(None, "Monumenta.Bungee.Command", {"command": "end"})
-            else:
-                self._socket.send_packet(shard, "Monumenta.Broadcast.Command", {"command": 'stop'})
+        await self._k8s.restart(shards)
         await self.debug("Restarted shards [{}]".format(",".join(shards)))
 
     # Infrastructure
