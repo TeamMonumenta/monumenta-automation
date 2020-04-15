@@ -46,6 +46,7 @@ server_config_to_copy = [
         ('plugins/Vault/config.yml',),
         ('plugins/ChestSort/config.yml',),
         ('plugins/dynmap/custom-lightings.txt',),
+        ('plugins/MonumentaRedisSync/config.yml',),
     ]
 
 purgatory_min = [
@@ -72,6 +73,7 @@ server_config = server_config_min + [
 
 monumenta = [
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
+        ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/MonumentaWarps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/JeffChestSort.jar', '../../server_config/plugins/JeffChestSort.jar'),
@@ -380,6 +382,15 @@ else:
             else:
                 config[key]['linked'] = config[key]['linked'] + plan
 
+def get_server_domain(servername):
+    if servername == 'purgatory':
+        return 'purgatory'
+    elif servername == 'build':
+        return 'playerbuild'
+    elif servername == 'tutorial':
+        return 'tutorial'
+    return SERVER_TYPE
+
 
 def gen_server_config(servername):
     if not(servername in config):
@@ -397,7 +408,7 @@ def gen_server_config(servername):
     files = [i[0] for i in serverConfig]
     files = list(set(files))
 
-    # Copy those files and replace {servername} with the appropriate string
+    # Copy those files and replace {servername} and {serverdomain} with the appropriate string
     for filename in files:
         old = template_dir + "/" + filename
         new = servername + "/" + filename
@@ -411,14 +422,14 @@ def gen_server_config(servername):
         with open(old, "rt") as fin:
             with open(new, "wt") as fout:
                 for line in fin:
-                    fout.write(line.replace("{servername}",servername))
+                    fout.write(line.replace("{servername}", servername).replace("{serverdomain}", get_server_domain(servername)))
                 fout.close()
             fin.close()
 
     # Do the per-file replacements
     for replacement in serverConfig:
         filename = servername + "/" + replacement[0]
-        filename = filename.replace("{servername}",servername)
+        filename = filename.replace("{servername}", servername).replace("{serverdomain}", get_server_domain(servername))
         if (len(replacement) == 1):
             # Nothing to do here, just copying the file was enough
             continue;
@@ -454,8 +465,8 @@ def gen_server_config(servername):
     for link in linked:
         linkname = servername + "/" + link[0]
         targetname = link[1]
-        linkname = linkname.replace("{servername}",servername)
-        targetname = targetname.replace("{servername}",servername)
+        linkname = linkname.replace("{servername}", servername).replace("{serverdomain}", get_server_domain(servername))
+        targetname = targetname.replace("{servername}", servername).replace("{serverdomain}", get_server_domain(servername))
 
         if (os.path.islink(linkname)):
             os.unlink(linkname)
