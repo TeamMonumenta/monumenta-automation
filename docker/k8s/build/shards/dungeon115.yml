@@ -3,14 +3,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: test115
+  name: dungeon115
   namespace: build
   labels:
-    app: test115
+    app: dungeon115
 spec:
   type: ClusterIP
   selector:
-    app: test115
+    app: dungeon115
   ports:
   # Main minecraft port
   - name: "25566"
@@ -28,22 +28,32 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test115
+  name: dungeon115
   namespace: build
   labels:
-    app: test115
+    app: dungeon115
 spec:
   strategy:
     type: Recreate
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
-      app: test115
+      app: dungeon115
   template:
     metadata:
       labels:
-        app: test115
+        app: dungeon115
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-8
       volumes:
         - name: nfs-maps
           hostPath:
@@ -58,7 +68,7 @@ spec:
             type: Directory
             path: /nfs/4_SHARED
       containers:
-      - name: test115
+      - name: dungeon115
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
         tty: true
         stdin: true
@@ -68,14 +78,14 @@ spec:
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
-          value: "2G"
+          value: "3G"
         # Set this to 256M regardless of JAVA_MEM
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/test115"
+          value: "/project_epic/dungeon115"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         volumeMounts:
@@ -92,12 +102,12 @@ spec:
             # It should not need much/any...
             memory: 1Gi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 2432Mi
+            hugepages-2Mi: 3520Mi
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 2432Mi
+            hugepages-2Mi: 3520Mi
       imagePullSecrets:
       - name: githubcred
