@@ -212,6 +212,14 @@ config = {
         'linked':server_config + base_plugins + dynmap,
     },
 
+    'region_3':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+        ],
+        'linked':server_config + base_plugins + dynmap,
+    },
+
     'dungeon':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=12'),
