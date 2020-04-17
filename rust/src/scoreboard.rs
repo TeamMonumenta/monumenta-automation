@@ -147,7 +147,7 @@ impl Scoreboard {
                         let score: i32 = if let Some(nbt::Value::Int(score)) = score_compound.get("Score") { *score } else { bail!("Score missing Score") };
                         let locked: bool = if let Some(nbt::Value::Byte(locked)) = score_compound.get("Locked") { *locked != 0 } else { bail!("Score missing Locked") };
 
-                        scoreboard.set_score(name, objective, Score{ score: score, locked: locked })?;
+                        scoreboard.set_score(name, objective, Score{ score: score, locked: locked });
                     }
                 }
             } else {
@@ -161,14 +161,12 @@ impl Scoreboard {
         Ok(scoreboard)
     }
 
-    pub fn set_score(&mut self, name: String, objective: String, score: Score) -> Result<(), String> {
+    pub fn set_score(&mut self, name: String, objective: String, score: Score) {
         if let Some(objective) = self.objectives.get_mut(&objective) {
             objective.data.insert(name, score);
         } else {
-            panic!("Can't insert score into missing objective {}", objective);
+            warn!("Can't insert score into missing objective {}", objective);
         }
-
-        Ok(())
     }
 
     pub fn get_player_scores(&self, player_name: &str) -> HashMap<String, i32> {

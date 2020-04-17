@@ -72,7 +72,7 @@ fn main() -> BoxResult<()> {
                 uuid2name.insert(uuid, name.to_string());
             }
 
-            let domain = "build";
+            let domain = "play";
             if let Err(err) = player.save_redis(domain, &mut con, "Player File Import") {
                 warn!("Failed to save player {} domain {} to redis: {}", uuid, domain, err);
                 continue;
