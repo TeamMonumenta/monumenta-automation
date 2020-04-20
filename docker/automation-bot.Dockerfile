@@ -23,6 +23,7 @@ USER $USERNAME
 COPY quarry $USERHOME/MCEdit-And-Automation/quarry
 COPY discord_bots $USERHOME/MCEdit-And-Automation/discord_bots
 COPY utility_code $USERHOME/MCEdit-And-Automation/utility_code
+COPY rust/bin $USERHOME/MCEdit-And-Automation/rust/bin
 
 WORKDIR $USERHOME/MCEdit-And-Automation
 CMD ["./discord_bots/automation_bot/automation_bot.py"]
