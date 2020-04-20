@@ -42,6 +42,10 @@ impl World {
         }
     }
 
+    pub fn get_name(&self) -> String {
+        Path::new(&self.basepath).file_name().unwrap().to_str().unwrap().to_string()
+    }
+
     pub fn get_player_scores(&self, player_name: &str) -> BoxResult<HashMap<String, i32>> {
         Ok(self.get_scoreboard()?.get_player_scores(player_name))
     }

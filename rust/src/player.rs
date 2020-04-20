@@ -7,7 +7,6 @@ use std::path::Path;
 use std::io::{Read};
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::hash::{Hash, Hasher};
 use std::time::{SystemTime, UNIX_EPOCH};
 use uuid::Uuid;
 use redis::Commands;
@@ -20,35 +19,26 @@ pub struct Player {
     pub playerdata: Option<nbt::Blob>,
     pub advancements: Option<Advancements>,
     pub scores: Option<HashMap<String, i32>>,
-}
-
-impl PartialEq for Player {
-    fn eq(&self, other: &Self) -> bool {
-        self.uuid == other.uuid
-    }
-}
-impl Eq for Player {}
-impl Hash for Player {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.uuid.hash(state);
-    }
+    pub history: Option<String>,
 }
 
 impl fmt::Display for Player {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}: name={}, data={}, advancements={}, scores={}",
+        write!(f, "{}: name={}, data={}, advancements={}, scores={}, history={}",
                self.uuid,
                if let Some(name) = &self.name { name } else { "?" },
                if let Some(_) = self.playerdata { "Some" } else { "None" },
                if let Some(_) = self.advancements { "Some" } else { "None" },
-               if let Some(_) = self.scores { "Some" } else { "None" })
+               if let Some(_) = self.scores { "Some" } else { "None" },
+               if let Some(history) = &self.history { history } else { "None" })
     }
 }
 
 impl fmt::Debug for Player {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}:\n  name={},\n  data={},\n  advancements={},\n  scores={}",
+        write!(f, "{}: history={}\n  name={},\n  data={},\n  advancements={},\n  scores={}",
                self.uuid,
+               if let Some(history) = &self.history { history } else { "None" },
                if let Some(name) = &self.name { name } else { "?" },
                if let Some(data) = &self.playerdata { format!("{:?}", data) } else { "None".to_string() },
                if let Some(advancements) = &self.advancements { advancements.to_string_pretty() } else { "None".to_string() },
@@ -58,7 +48,7 @@ impl fmt::Debug for Player {
 
 impl Player {
     pub fn new(uuid: Uuid) -> Player {
-        Player{uuid: uuid, name: None, playerdata: None, advancements: None, scores: None}
+        Player{uuid: uuid, name: None, playerdata: None, advancements: None, scores: None, history: None}
     }
 
     pub fn get_redis_players(domain: &str, con: &mut redis::Connection) -> BoxResult<HashMap<Uuid, Player>> {
@@ -81,6 +71,7 @@ impl Player {
         self.load_world_player_data(world)?;
         self.load_world_advancements(world)?;
         self.load_world_scores(world)?;
+        self.generate_new_history(&world.get_name());
         Ok(())
     }
 
@@ -108,6 +99,7 @@ impl Player {
         self.load_redis_player_data(domain, con)?;
         self.load_redis_advancements(domain, con)?;
         self.load_redis_scores(domain, con)?;
+        self.load_redis_history(domain, con)?;
         Ok(())
     }
 
@@ -129,14 +121,18 @@ impl Player {
         Ok(())
     }
 
-    pub fn save_redis(&self, domain: &str, con: &mut redis::Connection, description: &str) -> BoxResult<()> {
+    pub fn load_redis_history(&mut self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
+        self.history = Some(con.lindex(format!("{}:playerdata:{}:history", domain, self.uuid.to_hyphenated().to_string()), 0)?);
+        Ok(())
+    }
+
+    pub fn save_redis(&mut self, domain: &str, con: &mut redis::Connection, description: &str) -> BoxResult<()> {
         self.save_redis_player_data(domain, con)?;
         self.save_redis_advancements(domain, con)?;
         self.save_redis_scores(domain, con)?;
 
-        let start = SystemTime::now();
-        let history: String = format!("{}|{}|{}", description, start.duration_since(UNIX_EPOCH).expect("Time went backwards").as_millis(), (&self.name).as_ref().unwrap_or(&"Unknown".to_string()));
-        let _: () = con.lpush(format!("{}:playerdata:{}:history", domain, self.uuid.to_hyphenated().to_string()), history)?;
+        self.generate_new_history(description);
+        let _: () = con.lpush(format!("{}:playerdata:{}:history", domain, self.uuid.to_hyphenated().to_string()), (&self.history).as_ref().unwrap())?;
         Ok(())
     }
 
@@ -147,10 +143,15 @@ impl Player {
         self.save_file_player_data(basepath.join(format!("playerdata/{}.dat", uuidstr)).to_str().unwrap())?;
         self.save_file_advancements(basepath.join(format!("advancements/{}.json", uuidstr)).to_str().unwrap())?;
         self.save_file_scores(basepath.join(format!("scores/{}.json", uuidstr)).to_str().unwrap())?;
+        self.save_file_history(basepath.join(format!("history/{}.txt", uuidstr)).to_str().unwrap())?;
         Ok(())
     }
 
     /********************* Private Functions *********************/
+
+    fn generate_new_history(&mut self, description: &str) {
+        self.history = Some(format!("{}|{}|{}", description, SystemTime::now().duration_since(UNIX_EPOCH).expect("Time went backwards").as_millis(), (&self.name).as_ref().unwrap_or(&"Unknown".to_string())));
+    }
 
     fn save_redis_player_data(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
         if let Some(playerdata) = &self.playerdata {
@@ -205,6 +206,16 @@ impl Player {
         if let Some(scores) = &self.scores {
             let scores: String = serde_json::to_string_pretty(scores)?;
             fs::write(filepath, scores)?;
+        }
+        Ok(())
+    }
+
+    fn save_file_history(&self, filepath: &str) -> BoxResult<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(history) = &self.history {
+            fs::write(filepath, history)?;
         }
         Ok(())
     }
