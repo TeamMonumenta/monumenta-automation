@@ -1010,11 +1010,16 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
             if "0_PREVIOUS" not in f:
                 await self.run("mv {} 0_PREVIOUS/".format(f))
 
-        await self.display("Loading data from the play server. Will ping when done, this might take a while...")
+        await self.display("Loading world data from the play server. Will ping when done, this might take a while...")
         files = os.listdir("/home/epic/play/project_epic/")
         for f in files:
             if '0_PREVIOUS' not in f:
                 await self.run("cp -a /home/epic/play/project_epic/{} /home/epic/project_epic/".format(f))
+
+        await self.display("Loading player data from the play server...")
+        await self.run("rm -rf ~/playerdata")
+        await self.run("~/MCEdit-And-Automation/rust/bin/redis_playerdata_save_load 'redis://redis.play/' play --output ~/playerdata")
+        await self.run("~/MCEdit-And-Automation/rust/bin/redis_playerdata_save_load 'redis://redis.stage/' play --input ~/playerdata")
 
         await self.display("Stage server loaded with current play server data")
         await self.display(message.author.mention)
