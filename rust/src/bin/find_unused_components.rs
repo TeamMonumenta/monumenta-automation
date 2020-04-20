@@ -543,6 +543,11 @@ const COMMANDS_ARG: &str = "--commands";
 const QUESTS_ARG: &str = "--quests";
 const SCOREBOARDS_ARG: &str = "--scoreboards";
 
+fn usage() {
+    error!("Usage: find_unused_components -- --type1 file1 file2 ... --type2 file1 ... ...");
+    error!("   Where --type is one of --datapacks --commands --quests --scoreboards");
+}
+
 fn main() -> BoxResult<()> {
     CombinedLogger::init(
         vec![
@@ -557,7 +562,7 @@ fn main() -> BoxResult<()> {
     let mut args: Vec<String> = env::args().collect();
 
     if args.len() <= 1 {
-        error!("Usage: {} path/to/datapack path/to/other_datapack ...", args.get(0).unwrap());
+        usage();
         return Ok(());
     }
 
@@ -600,8 +605,7 @@ fn main() -> BoxResult<()> {
                     scoreboards.add_scoreboard(arg)?;
                 } else {
                     error!("Got unexpected argument: {}", arg);
-                    error!("Usage: find_unused_components -- --type1 file1 file2 ... --type2 file1 ... ...");
-                    error!("   Where --type is one of --datapacks --commands --quests --scoreboards");
+                    usage();
                     return Ok(());
                 }
             }
