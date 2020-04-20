@@ -71,7 +71,7 @@ impl Player {
         self.load_world_player_data(world)?;
         self.load_world_advancements(world)?;
         self.load_world_scores(world)?;
-        self.generate_new_history(&world.get_name());
+        self.update_history(&world.get_name());
         Ok(())
     }
 
@@ -126,13 +126,11 @@ impl Player {
         Ok(())
     }
 
-    pub fn save_redis(&mut self, domain: &str, con: &mut redis::Connection, description: &str) -> BoxResult<()> {
+    pub fn save_redis(&mut self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
         self.save_redis_player_data(domain, con)?;
         self.save_redis_advancements(domain, con)?;
         self.save_redis_scores(domain, con)?;
-
-        self.generate_new_history(description);
-        let _: () = con.lpush(format!("{}:playerdata:{}:history", domain, self.uuid.to_hyphenated().to_string()), (&self.history).as_ref().unwrap())?;
+        self.save_redis_history(domain, con)?;
         Ok(())
     }
 
@@ -147,11 +145,22 @@ impl Player {
         Ok(())
     }
 
-    /********************* Private Functions *********************/
+    pub fn load_dir(&mut self, basepath: &str) -> BoxResult<()> {
+        let basepath = Path::new(basepath);
+        let uuidstr = self.uuid.to_hyphenated().to_string();
 
-    fn generate_new_history(&mut self, description: &str) {
+        self.load_file_player_data(&basepath.join(format!("playerdata/{}.dat", uuidstr)))?;
+        self.load_file_advancements(&basepath.join(format!("advancements/{}.json", uuidstr)))?;
+        self.load_file_scores(&basepath.join(format!("scores/{}.json", uuidstr)))?;
+        self.load_file_history(&basepath.join(format!("history/{}.txt", uuidstr)))?;
+        Ok(())
+    }
+
+    pub fn update_history(&mut self, description: &str) {
         self.history = Some(format!("{}|{}|{}", description, SystemTime::now().duration_since(UNIX_EPOCH).expect("Time went backwards").as_millis(), (&self.name).as_ref().unwrap_or(&"Unknown".to_string())));
     }
+
+    /********************* Private Functions *********************/
 
     fn save_redis_player_data(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
         if let Some(playerdata) = &self.playerdata {
@@ -173,6 +182,13 @@ impl Player {
         if let Some(scores) = &self.scores {
             let scores: String = serde_json::to_string(scores)?;
             con.lpush(format!("{}:playerdata:{}:scores", domain, self.uuid.to_hyphenated().to_string()), scores)?;
+        }
+        Ok(())
+    }
+
+    fn save_redis_history(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
+        if let Some(history) = &self.history {
+            con.lpush(format!("{}:playerdata:{}:history", domain, self.uuid.to_hyphenated().to_string()), history)?;
         }
         Ok(())
     }
@@ -217,6 +233,30 @@ impl Player {
         if let Some(history) = &self.history {
             fs::write(filepath, history)?;
         }
+        Ok(())
+    }
+
+    fn load_file_player_data(&mut self, path: &Path) -> BoxResult<()> {
+        let mut contents = Vec::new();
+        World::get_file_common(path)?.read_to_end(&mut contents)?;
+        self.load_player_data_common(contents)
+    }
+
+    fn load_file_advancements(&mut self, path: &Path) -> BoxResult<()> {
+        self.advancements = Some(Advancements::load_from_file(&mut World::get_file_common(path)?)?);
+        Ok(())
+    }
+
+    fn load_file_scores(&mut self, path: &Path) -> BoxResult<()> {
+        let contents = fs::read_to_string(path)?;
+        let scores: HashMap<String, i32> = serde_json::from_str(&contents)?;
+        self.scores = Some(scores);
+        Ok(())
+    }
+
+    fn load_file_history(&mut self, path: &Path) -> BoxResult<()> {
+        let contents = fs::read_to_string(path)?;
+        self.history = Some(contents);
         Ok(())
     }
 

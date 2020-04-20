@@ -62,7 +62,7 @@ impl World {
         World::get_file_common(&Path::new(&self.basepath).join(format!("stats/{}.json", uuid.to_hyphenated().to_string())))
     }
 
-    fn get_file_common(path: &Path) -> BoxResult<File> {
+    pub fn get_file_common(path: &Path) -> BoxResult<File> {
         let strpath = path.to_str().unwrap();
         if !path.is_file() {
             bail!("path {} does not exist or is not a file", strpath);

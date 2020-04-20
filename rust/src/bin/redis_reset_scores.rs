@@ -32,7 +32,8 @@ fn main() -> BoxResult<()> {
         player.load_redis(&domain, &mut con)?;
         if let Some(scores) = &mut player.scores {
             scores.insert(objective.to_string(), 0);
-            player.save_redis(&domain, &mut con, &format!("Reset scores for {}", &objective))?;
+            player.update_history(&format!("Reset scores for {}", &objective));
+            player.save_redis(&domain, &mut con)?;
         }
         println!("{}", player);
     }
