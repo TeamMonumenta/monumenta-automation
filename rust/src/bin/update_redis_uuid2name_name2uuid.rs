@@ -9,11 +9,12 @@ use simplelog::*;
 use monumenta::player::Player;
 
 fn main() -> BoxResult<()> {
-    CombinedLogger::init(
-        vec![
-            TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed).unwrap(),
-        ]
-    ).unwrap();
+    let mut multiple = vec![];
+    match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
+        Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),
+        None => multiple.push(SimpleLogger::new(LevelFilter::Debug, Config::default())),
+    }
+    CombinedLogger::init(multiple).unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 

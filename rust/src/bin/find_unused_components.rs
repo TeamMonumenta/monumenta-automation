@@ -549,11 +549,12 @@ fn usage() {
 }
 
 fn main() -> BoxResult<()> {
-    CombinedLogger::init(
-        vec![
-            TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed).unwrap(),
-        ]
-    ).unwrap();
+    let mut multiple = vec![];
+    match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
+        Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),
+        None => multiple.push(SimpleLogger::new(LevelFilter::Debug, Config::default())),
+    }
+    CombinedLogger::init(multiple).unwrap();
 
     /* A map of all of the advancements and functions that have been loaded */
     let mut items: HashMap<NamespacedKey, NamespacedItem> = HashMap::new();
