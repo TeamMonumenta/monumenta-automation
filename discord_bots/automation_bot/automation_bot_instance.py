@@ -1017,9 +1017,9 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
                 await self.run("cp -a /home/epic/play/project_epic/{} /home/epic/project_epic/".format(f))
 
         await self.display("Loading player data from the play server...")
-        await self.run("rm -rf ~/playerdata")
-        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " 'redis://redis.play/' play --output ~/playerdata")
-        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " 'redis://redis.stage/' play --input ~/playerdata")
+        await self.run("rm -rf temp_player_data")
+        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.play/ play --output /home/epic/temp_player_data")
+        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.stage/ play --input /home/epic/temp_player_data")
 
         await self.display("Stage server loaded with current play server data")
         await self.display(message.author.mention)
