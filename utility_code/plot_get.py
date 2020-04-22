@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import sys
 
-from lib_py3.scoreboard import Scoreboard
+from lib_py3.redis_scoreboard import RedisScoreboard
 from r1plot_lookup import lut
 
 global_score_cache = None
@@ -15,7 +15,7 @@ def from_player(cmd,global_score_cache):
 
     if global_score_cache is None:
         try:
-            scoreboard = Scoreboard('/home/epic/project_epic/plots/Project_Epic-plots/data/scoreboard.dat')
+            scoreboard = RedisScoreboard("play", redis_host="redis")
             global_score_cache = scoreboard.get_cache(Objective=['R1Plot','R1Address','plotx','ploty','plotz'])
         except:
             print("\nCould not load Plots' scoreboard file. Are you running this on build?")

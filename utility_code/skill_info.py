@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from lib_py3.scoreboard import Scoreboard
+from lib_py3.redis_scoreboard import RedisScoreboard
 from lib_py3.timing import Timings
 
 mainTiming = Timings(enabled=True)
@@ -91,7 +91,7 @@ for skills in classSkills:
     for skill in skills:
         Objectives.append(skill["Objective"])
 
-worldScores = Scoreboard("/home/epic/project_epic/region_1/Project_Epic-region_1/data/scoreboard.dat")
+worldScores = RedisScoreboard("play", redis_host="redis")
 
 nextStep("Building caches")
 

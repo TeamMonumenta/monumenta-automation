@@ -29,7 +29,7 @@ view scores -d {"Objective":"Apartment","Score":{"min":1}} Objective Score Name
 
 import sys
 import ast
-from lib_py3.scoreboard import Scoreboard
+from lib_py3.redis_scoreboard import RedisScoreboard
 
 sys.argv.pop(0)
 
@@ -65,7 +65,7 @@ for i in components:
         Order.append(i)
 # Order is finalized
 
-scores = Scoreboard('/home/epic/project_epic/region_1/Project_Epic-region_1/data/scoreboard.dat')
+scores = RedisScoreboard("play", redis_host="redis")
 unsorted = scores.search_scores(Conditions=Conditions)
 
 scoreMap = {}
