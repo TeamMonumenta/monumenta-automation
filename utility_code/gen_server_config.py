@@ -55,7 +55,7 @@ purgatory_min = [
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
-        ('plugins/VentureChat/config.yml', '../../../server_config/plugins/VentureChat/{}/config.yml'.format(SERVER_TYPE)),
+        ('plugins/VentureChat/config.yml', '../../../server_config/data/plugins/all/VentureChat/config.yml'),
     ]
 
 server_config_min = purgatory_min + [
