@@ -155,7 +155,7 @@ dungeon_score_rules = [
         "actions":{"set":[
             {"Objective":"D11Access","Score":0},
             {"Objective":"D11Finished","Score":0},
-            {"Objective":"Delve10Challenge","Score":0},
+            {"Objective":"Delve11Challenge","Score":0},
         ]}},
     {"condition":{"Name":"$last","Objective":"D11Access"},
         "actions":{"set":[
@@ -220,6 +220,10 @@ dungeon_score_rules = [
     {"condition":{"Name":"$last","Objective":"DRDAccess"},
         "actions":{"set":[
             {"Objective":"DRDAccess","Score":0}]}},
+
+    {"condition":{"Objective":"DelveDungeon","Score":{"min":1}},
+        "actions":{"set":[
+            {"Objective":"DelveDungeon","Score":0}]}},
 
     {"condition":{"Objective":"MarketBanned","Score":{"min":1,"max":7}},
         "actions":{"set":[
