@@ -6,11 +6,6 @@
 instance_week_offset = 1000
 
 dungeon_score_rules = [
-    # TODO REMOVE ME AFTER THIS UPDATE
-    {"condition":{"Objective":"Quest37","Score":{"min":9,"max":9}},
-        "actions":{"set":[
-            {"Objective":"Quest37","Score":10}]}},
-
     {"condition":{"Objective":"D0Access","Score":{"min":1}},
         "actions":{"add":[
             {"Objective":"D0Access","Score":instance_week_offset}]}},
