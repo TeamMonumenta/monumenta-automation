@@ -169,6 +169,5 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
 
     except:
         e = traceback.format_exc()
-        print("Total time: {} :(".format(str(time_end - time_start)))
         if statusQueue is not None:
             statusQueue.put({"server":shard_name, "done":True, "replacements_log":replacements_log, "error":e})

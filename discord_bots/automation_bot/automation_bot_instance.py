@@ -973,9 +973,6 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             os.makedirs("/home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
             if os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml".format(shard)):
                 await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
-            # TODO Upgrade from old version - remove this eventually
-            elif os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/EpicWarps/warps.yml".format(shard)):
-                await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/EpicWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
 
         for shard in allShards:
             if shard in ["build","bungee"]:

@@ -71,7 +71,7 @@ def get_dungeon_config(name, objective):
         "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/{0}/Project_Epic-{0}/".format(name),
         "localDstFolder":"/home/epic/project_epic/{0}/Project_Epic-{0}/".format(name),
         "copyBaseFrom":"build",
-        "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+        "copyMainPaths":["stats", "data/scoreboard.dat"],
         "copyMaps": "build",
         "datapacks":datapacks_dungeon + ['file/'+name],
         "preserveInstance":{
@@ -112,7 +112,7 @@ roguelike = {
     "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/roguelike/Project_Epic-roguelike/",
     "localDstFolder":"/home/epic/project_epic/roguelike/Project_Epic-roguelike/",
     "copyBaseFrom":"build",
-    "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+    "copyMainPaths":["stats", "data/scoreboard.dat"],
     "datapacks":datapacks_dungeon + ['file/roguelike'],
 }
 
@@ -122,7 +122,7 @@ rush = {
     "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/rush/Project_Epic-rush/",
     "localDstFolder":"/home/epic/project_epic/rush/Project_Epic-rush/",
     "copyBaseFrom":"build",
-    "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+    "copyMainPaths":["stats", "data/scoreboard.dat"],
     "datapacks":datapacks_dungeon + ['file/rush'],
 }
 
@@ -137,7 +137,7 @@ region_1 = {
     "localDstFolder":"/home/epic/project_epic/region_1/Project_Epic-region_1/",
 
     # World score changes ($last...)
-    "worldScoreChanges" = world_dungeon_score_rules,
+    "worldScoreChanges": world_dungeon_score_rules,
 
     "datapacks":datapacks_base + ['file/region_1'],
 
@@ -147,7 +147,7 @@ region_1 = {
 
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
-    "copyMainPaths":["advancements", "playerdata", "stats", "data"],
+    "copyMainPaths":["stats", "data"],
     "copyMaps": "build",
 
     "coordinatesToCopy":(
@@ -177,7 +177,7 @@ region_2 = {
     "localDstFolder":"/home/epic/project_epic/region_2/Project_Epic-region_2/",
 
     # World score changes ($last...)
-    "worldScoreChanges" = world_dungeon_score_rules,
+    "worldScoreChanges": world_dungeon_score_rules,
 
     "datapacks":datapacks_base + ['file/region_2'],
 
@@ -187,7 +187,7 @@ region_2 = {
 
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
-    "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
+    "copyMainPaths":["stats", "data/scoreboard.dat"],
     "copyMaps": "build",
 }
 
