@@ -852,6 +852,9 @@ DELETES DUNGEON CORE PROTECT DATA'''
         await self.run("cp -a /home/epic/project_epic/region_1/banned-players.json /home/epic/4_SHARED/op-ban-sync/region_1/")
         await self.run("cp -a /home/epic/project_epic/region_1/ops.json /home/epic/4_SHARED/op-ban-sync/region_1/")
 
+        await self.display("Copying player data from redis")
+        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --output /home/epic/project_epic/server_config/redis_data_final")
+
         await self.display("Performing backup...")
         await self.cd("/home/epic")
         await self.run("mkdir -p /home/epic/1_ARCHIVE")
@@ -922,9 +925,14 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.display("Getting new server config...")
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/epic/project_epic/")
 
+        await self.display("Copying playerdata...")
+        await self.run("cp -a /home/epic/project_epic/0_PREVIOUS/server_config/redis_data_final /home/epic/project_epic/server_config/redis_data_initial")
+
+        await self.display("Copying purgatory...")
         await self.run("rm -rf /home/epic/project_epic/purgatory/")
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory /home/epic/project_epic/")
 
+        await self.display("Copying tutorial...")
         await self.run("rm -rf /home/epic/project_epic/tutorial/")
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
 
@@ -942,6 +950,15 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         # Raffle
         ########################################
+
+        await self.display("Running score changes for players and moving them to spawn...")
+        await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + " /home/epic/project_epic/server_config/redis_data_initial")
+
+        await self.display("Running item replacements for players...")
+        await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --redisworld /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.log")
+
+        await self.display("Loading player data back into redis...")
+        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial")
 
         await self.display("Running actual terrain reset (this will take a while!)...")
         await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))

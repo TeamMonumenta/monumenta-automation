@@ -101,21 +101,20 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
             dstWorld.save()
             return
 
-        worldScores = None
-        if ("playerScoreChanges" in config) or ("preserveInstance" in config):
+        if "worldScoreChanges" in config:
+            print("  Adjusting world scores...")
             worldScores = dstWorld.scoreboard
-
-        if "playerScoreChanges" in config:
-            print("  Adjusting player scores (dungeon scores)...")
-            worldScores.batch_score_changes(config["playerScoreChanges"])
+            worldScores.batch_score_changes(config["worldScoreChanges"])
+            worldScores.save()
 
         if "preserveInstance" in config:
             instanceConfig = config["preserveInstance"]
             targetRegion = instanceConfig["targetRegion"]
             dungeonScore = instanceConfig["dungeonScore"]
+            redisScoreboard = instanceConfig["redisScoreboard"]
             instancesPerWeek = 1000
 
-            dungeonScoreObjects = worldScores.search_scores(Objective=dungeonScore,Score={"min":1})
+            dungeonScoreObjects = redisScoreboard.search_scores(Objective=dungeonScore,Score={"min":1})
             dungeonScores = set()
             for scoreObject in dungeonScoreObjects:
                 dungeonScores.add(scoreObject.at_path("Score").value)
@@ -143,7 +142,7 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
                     # Failed to move the region file; this happens if the old file is missing.
                     # This does not indicate that the player's instance was removed intentionally.
                     eprint("WARNING: Missing dungeon instance {}".format(instanceID))
-                    dungeonScoreObjects = worldScores.search_scores(Objective=dungeonScore,Score=instanceID)
+                    dungeonScoreObjects = redisScoreboard.search_scores(Objective=dungeonScore,Score=instanceID)
                     for scoreObject in dungeonScoreObjects:
                         scoreObject.at_path("Score").value = 0
                     continue
@@ -154,43 +153,10 @@ def terrain_reset_instance(config, outputFile=None, statusQueue=None):
                     for item, _, entity_path in dstWorld.items(readonly=False, no_players=True, pos1=(newRx * 512, 0, newRz * 512), pos2=((newRx + 1) * 512 - 1, 255, (newRz + 1) * 512 - 1)):
                         item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
 
-        # Save the scoreboards if they were used
-        if worldScores is not None:
-            worldScores.save()
-
-        # TODO: Would be nice to make saving the world would save the players too
-        if "tagPlayers" in config or ("tpToSpawn" in config and config["tpToSpawn"] == True):
-            if "tagPlayers" in config:
-                print("  Giving scoreboard tags to players...")
-
-            if "tpToSpawn" in config and config["tpToSpawn"] == True:
-                print("  Moving players to spawn (" + ",".join(str(e) for e in dstWorld.spawn) + ") ...")
-
-            for a_player in dstWorld.players:
-                a_player.full_heal()
-
-                if "tagPlayers" in config:
-                    a_player.modify_tags(config["tagPlayers"])
-
-                if "tpToSpawn" in config and config["tpToSpawn"] == True:
-                    a_player.spawn = dstWorld.spawn
-                    if a_player.pos[1] < -1:
-                        print("    Not moving a player to spawn because they are in the void")
-                    else:
-                        a_player.pos = dstWorld.spawn
-
-                a_player.save()
-
         # Replace items worldwide if specified
         if "replace_items_globally" in config:
             item_replace_manager = config["replace_items_globally"]
-            for item, _, entity_path in dstWorld.items(readonly=False):
-                item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
-
-        # Replace items on all players if specified
-        if "replace_items_on_players" in config:
-            item_replace_manager = config["replace_items_on_players"]
-            for item, _, entity_path in dstWorld.items(readonly=False, players_only=True):
+            for item, _, entity_path in dstWorld.items(readonly=False, no_players=True):
                 item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path))
 
         dstWorld.save()

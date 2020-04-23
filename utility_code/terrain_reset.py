@@ -8,11 +8,12 @@ import multiprocessing as mp
 import tempfile
 import traceback
 
-from score_change_list import dungeon_score_rules
+from score_change_list import world_dungeon_score_rules
 from lib_py3.terrain_reset import terrain_reset_instance
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import eprint
+from lib_py3.redis_scoreboard import RedisScoreboard
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types import nbt
@@ -24,6 +25,8 @@ datapacks_dungeon = datapacks_base + ['file/dungeon']
 loot_table_manager = LootTableManager()
 loot_table_manager.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
 item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map(show_errors=False))
+
+redisScoreboard = RedisScoreboard("play", redis_host="redis")
 
 # Log replacements separately by shard name
 def log_replacements(log_handle, shard_name, replacements_log):
@@ -61,7 +64,7 @@ def log_replacements(log_handle, shard_name, replacements_log):
 
         log_handle.write("\n")
 
-def get_dungeon_config(name, scoreboard):
+def get_dungeon_config(name, objective):
     return {
         "server":name,
         "localMainFolder":"/home/epic/project_epic/0_PREVIOUS/{0}/Project_Epic-{0}/".format(name),
@@ -71,19 +74,14 @@ def get_dungeon_config(name, scoreboard):
         "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
         "copyMaps": "build",
         "datapacks":datapacks_dungeon + ['file/'+name],
-        "playerScoreChanges":dungeon_score_rules,
         "preserveInstance":{
-            "dungeonScore":scoreboard,
+            "dungeonScore":objective,
             "targetRegion":{"x":-3, "z":-2},
+            "redisScoreboard": redisScoreboard,
 
             # Replace items in preserved instances
             "replace_items": item_replace_manager,
         },
-        "tagPlayers":["MidTransfer","resetMessage"],
-        "tpToSpawn":True,
-
-        # Replace items on all players
-        "replace_items_on_players": item_replace_manager,
     }
 
 plots = {
@@ -95,8 +93,6 @@ plots = {
     "copyBaseFrom":"main",
 
     "datapacks":datapacks_base + ['file/plots'],
-    "tagPlayers":["MidTransfer","resetMessage"],
-    "playerScoreChanges":dungeon_score_rules,
 
     # Replace items worldwide
     "replace_items_globally": item_replace_manager,
@@ -118,12 +114,6 @@ roguelike = {
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
     "datapacks":datapacks_dungeon + ['file/roguelike'],
-    "playerScoreChanges":dungeon_score_rules,
-    "tagPlayers":["MidTransfer","resetMessage"],
-    "tpToSpawn":True,
-
-    # Replace items on all players
-    "replace_items_on_players": item_replace_manager,
 }
 
 rush = {
@@ -134,12 +124,6 @@ rush = {
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
     "datapacks":datapacks_dungeon + ['file/rush'],
-    "playerScoreChanges":dungeon_score_rules,
-    "tagPlayers":["MidTransfer","resetMessage"],
-    "tpToSpawn":True,
-
-    # Replace items on all players
-    "replace_items_on_players": item_replace_manager,
 }
 
 region_1 = {
@@ -152,12 +136,10 @@ region_1 = {
     "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/Project_Epic-region_1/",
     "localDstFolder":"/home/epic/project_epic/region_1/Project_Epic-region_1/",
 
-    # Reset dungeon scores
-    "playerScoreChanges":dungeon_score_rules,
+    # World score changes ($last...)
+    "worldScoreChanges" = world_dungeon_score_rules,
 
     "datapacks":datapacks_base + ['file/region_1'],
-    "tpToSpawn":True,
-    "tagPlayers":["MidTransfer","resetMessage"],
 
     "coordinatesToFill":(
         {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
@@ -167,9 +149,6 @@ region_1 = {
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data"],
     "copyMaps": "build",
-
-    # Replace items on all players
-    "replace_items_on_players": item_replace_manager,
 
     "coordinatesToCopy":(
         # "name":"a unique name"
@@ -197,12 +176,10 @@ region_2 = {
     "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/Project_Epic-region_2/",
     "localDstFolder":"/home/epic/project_epic/region_2/Project_Epic-region_2/",
 
-    # Reset dungeon scores
-    "playerScoreChanges":dungeon_score_rules,
+    # World score changes ($last...)
+    "worldScoreChanges" = world_dungeon_score_rules,
 
     "datapacks":datapacks_base + ['file/region_2'],
-    "tpToSpawn":True,
-    "tagPlayers":["MidTransfer","resetMessage"],
 
     "coordinatesToFill":(
         {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
@@ -212,9 +189,6 @@ region_2 = {
     "copyBaseFrom":"build",
     "copyMainPaths":["advancements", "playerdata", "stats", "data/scoreboard.dat"],
     "copyMaps": "build",
-
-    # Replace items on all players
-    "replace_items_on_players": item_replace_manager,
 }
 
 available_configs = {
