@@ -115,7 +115,13 @@ fn main() -> BoxResult<()> {
                 let mut player = Player::new(uuid);
                 player.load_dir(basedir.to_str().unwrap())?;
 
+                player.update_history("Weekly update");
                 update_player_scores(&mut player);
+
+                /* Remove all the per-shard data except plots */
+                if let Some(sharddata) = &mut player.sharddata {
+                    sharddata.retain(|key, _| key == "plots");
+                }
 
                 player.save_dir(basedir.to_str().unwrap())?;
             }
