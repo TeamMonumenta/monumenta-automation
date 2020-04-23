@@ -127,10 +127,11 @@ class RecursiveEntityIterator(object):
 
     def __init__(self, world, pos1=None, pos2=None, readonly=True, no_players=False, players_only=False):
         self._player_iterator = world.players
-        self._baseiterator = BaseChunkEntityIterator(world, pos1=pos1, pos2=pos2, readonly=readonly)
+        self._players_only = players_only
+        if not self._players_only:
+            self._baseiterator = BaseChunkEntityIterator(world, pos1=pos1, pos2=pos2, readonly=readonly)
         self._readonly = readonly
         self._no_players = no_players
-        self._players_only = players_only
 
     def __iter__(self):
         """
@@ -150,7 +151,8 @@ class RecursiveEntityIterator(object):
         self._players_done = self._no_players
 
         # Initialize the base iterator
-        self._baseiterator.__iter__()
+        if not self._players_only:
+            self._baseiterator.__iter__()
 
         # Use a stack to keep track of what items still need to be processed
         # Both players and in-world entities/tile entities share the same stack for simplicity

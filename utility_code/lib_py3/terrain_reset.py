@@ -7,12 +7,9 @@ import traceback
 
 import datetime
 
-from lib_py3.copy_region import copy_region
 from lib_py3.common import copy_paths, copy_folder, copy_maps
 from lib_py3.world import World
 from lib_py3.move_region import MoveRegion
-from lib_py3.scoreboard import Scoreboard
-from lib_py3.player import Player
 from lib_py3.common import eprint
 from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
 

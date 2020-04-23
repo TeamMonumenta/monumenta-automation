@@ -2,7 +2,6 @@
 
 import os
 import sys
-import uuid
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
