@@ -18,7 +18,7 @@ fn main() -> BoxResult<()> {
 
     let mut args: Vec<String> = env::args().collect();
 
-    if args.len() != 2 {
+    if args.len() != 3 {
         println!("Usage: save_playerdata_to_redis 'redis://127.0.0.1/' <domain>");
         return Ok(());
     }
