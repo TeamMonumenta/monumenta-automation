@@ -19,17 +19,18 @@ fn main() -> BoxResult<()> {
     let mut args: Vec<String> = env::args().collect();
 
     if args.len() != 2 {
-        println!("Usage: save_playerdata_to_redis path/to/directory");
+        println!("Usage: save_playerdata_to_redis 'redis://127.0.0.1/' <domain>");
         return Ok(());
     }
 
     args.remove(0);
 
+    let redis_uri = args.remove(0);
     let domain = args.remove(0);
 
     let mut uuid2name: HashMap<String, String> = HashMap::new();
 
-    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let client = redis::Client::open(redis_uri)?;
     let mut con : redis::Connection = client.get_connection()?;
 
     for (uuid, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {

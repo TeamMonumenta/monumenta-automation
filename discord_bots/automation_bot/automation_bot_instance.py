@@ -1038,6 +1038,9 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.play/ play --output /home/epic/temp_player_data")
         await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.stage/ play --input /home/epic/temp_player_data")
 
+        await self.display("Updating uuid2name and name2uuid indexes...")
+        await self.run(os.path.join(_top_level, "rust/bin/update_redis_uuid2name_name2uuid") + " redis://redis/ play")
+
         await self.display("Stage server loaded with current play server data")
         await self.display(message.author.mention)
 
