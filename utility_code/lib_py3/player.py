@@ -292,8 +292,6 @@ class Player(object):
         """
         self.player_tag.at_path( 'Health' ).value = 20.0
         self.player_tag.at_path( 'Fire' ).value = -20
-        self.player_tag.at_path( 'FallDistance' ).value = 0.0
-        self.motion = [0.0,0.0,0.0]
         self.player_tag.at_path( 'Air' ).value = 300
         self.player_tag.at_path( 'foodLevel' ).value = 20
         self.player_tag.at_path( 'foodSaturationLevel' ).value = 5.0
