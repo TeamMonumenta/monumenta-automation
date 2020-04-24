@@ -59,10 +59,6 @@ with open(input_path) as f:
 
             if item_nbt_str[-1] != '}':
                 item_nbt_str = item_nbt_str[:item_nbt_str.rfind("}") + 1]
-
-            mgr = LootTableManager()
-            #mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
-            mgr.load_loot_tables_subdirectories("/home/epic/MCEdit-And-Automation/utility_code/uncommonly_used/datapacks")
             locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
 
             succeeded.append(commandArgs)
@@ -75,6 +71,6 @@ with open(input_path) as f:
 print("\n\nSucceeded:\n")
 pprint(succeeded)
 print("\n\n\n\n\n\n\n\n\n\n\n\nFailed:\n")
-pprint(failed)
+#pprint(failed)
 print("\n\n\n\n\n\n\n\n\n\n\n\nFailed (errors only):\n")
 pprint([x[1] for x in failed])
