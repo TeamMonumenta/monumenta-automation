@@ -166,6 +166,61 @@ impl Player {
         Ok(())
     }
 
+    pub fn save_file_player_data(&self, filepath: &str) -> BoxResult<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(playerdata) = &self.playerdata {
+            let mut contents : Vec<u8> = Vec::new();
+            playerdata.to_gzip_writer(&mut contents)?;
+            fs::write(filepath, contents)?;
+        }
+        Ok(())
+    }
+
+    pub fn save_file_advancements(&self, filepath: &str) -> BoxResult<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(advancements) = &self.advancements {
+            fs::write(filepath, advancements.to_string_pretty())?;
+        }
+        Ok(())
+    }
+
+    pub fn save_file_scores(&self, filepath: &str) -> BoxResult<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(scores) = &self.scores {
+            let scores: String = serde_json::to_string_pretty(scores)?;
+            fs::write(filepath, scores)?;
+        }
+        Ok(())
+    }
+
+    pub fn save_file_sharddata(&self, filepath: &str) -> BoxResult<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(sharddata) = &self.sharddata {
+            let sharddata: String = serde_json::to_string_pretty(sharddata)?;
+            fs::write(filepath, sharddata)?;
+        }
+        Ok(())
+    }
+
+    pub fn save_file_history(&self, filepath: &str) -> BoxResult<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(history) = &self.history {
+            fs::write(filepath, history)?;
+        }
+        Ok(())
+    }
+
+
     pub fn load_dir(&mut self, basepath: &str) -> BoxResult<()> {
         let basepath = Path::new(basepath);
         let uuidstr = self.uuid.to_hyphenated().to_string();
@@ -222,60 +277,6 @@ impl Player {
     fn save_redis_history(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
         if let Some(history) = &self.history {
             con.lpush(format!("{}:playerdata:{}:history", domain, self.uuid.to_hyphenated().to_string()), history)?;
-        }
-        Ok(())
-    }
-
-    fn save_file_player_data(&self, filepath: &str) -> BoxResult<()> {
-        let path = Path::new(filepath);
-        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
-
-        if let Some(playerdata) = &self.playerdata {
-            let mut contents : Vec<u8> = Vec::new();
-            playerdata.to_gzip_writer(&mut contents)?;
-            fs::write(filepath, contents)?;
-        }
-        Ok(())
-    }
-
-    fn save_file_advancements(&self, filepath: &str) -> BoxResult<()> {
-        let path = Path::new(filepath);
-        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
-
-        if let Some(advancements) = &self.advancements {
-            fs::write(filepath, advancements.to_string_pretty())?;
-        }
-        Ok(())
-    }
-
-    fn save_file_scores(&self, filepath: &str) -> BoxResult<()> {
-        let path = Path::new(filepath);
-        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
-
-        if let Some(scores) = &self.scores {
-            let scores: String = serde_json::to_string_pretty(scores)?;
-            fs::write(filepath, scores)?;
-        }
-        Ok(())
-    }
-
-    fn save_file_sharddata(&self, filepath: &str) -> BoxResult<()> {
-        let path = Path::new(filepath);
-        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
-
-        if let Some(sharddata) = &self.sharddata {
-            let sharddata: String = serde_json::to_string_pretty(sharddata)?;
-            fs::write(filepath, sharddata)?;
-        }
-        Ok(())
-    }
-
-    fn save_file_history(&self, filepath: &str) -> BoxResult<()> {
-        let path = Path::new(filepath);
-        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
-
-        if let Some(history) = &self.history {
-            fs::write(filepath, history)?;
         }
         Ok(())
     }

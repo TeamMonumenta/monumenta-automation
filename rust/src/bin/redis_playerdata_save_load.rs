@@ -18,7 +18,7 @@ enum Mode {
 }
 
 fn usage() {
-    println!("Usage: save_playerdata_to_redis 'redis://127.0.0.1/' <domain> <--input path/to/directory | --output path/to/directory>");
+    println!("Usage: redis_playerdata_save_load 'redis://127.0.0.1/' <domain> <--input path/to/directory | --output path/to/directory>");
 }
 
 fn main() -> BoxResult<()> {
@@ -51,7 +51,7 @@ fn main() -> BoxResult<()> {
         }
     };
 
-    // Get the path to the project_epic directory
+    // Get the path to the input/output directory
     let basedir = args.remove(0);
     let basedir = Path::new(&basedir);
     if mode == Mode::OUTPUT && basedir.is_dir() {
