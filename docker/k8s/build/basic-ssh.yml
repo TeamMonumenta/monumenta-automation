@@ -79,10 +79,6 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/build/project_epic/mobs/plugins
-        - name: nfs-venture-chat
-          hostPath:
-            type: Directory
-            path: /nfs/build/project_epic/server_config/plugins/VentureChat/build
         - name: nfs-white-demo
           hostPath:
             type: Directory
@@ -127,8 +123,6 @@ spec:
           mountPath: /home/epic/white-demo-release
         - name: nfs-sound-pack
           mountPath: /home/epic/sound_pack
-        - name: nfs-venture-chat
-          mountPath: /home/epic/venture-chat
         - name: nfs-stage
           mountPath: /home/epic/stage
       imagePullSecrets:
