@@ -490,9 +490,6 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 `{prefix} isearch <search terms>`
     Interactive search session
 
-`{prefix} addlabel <newlabel>`
-    Adds a new label
-
 `{prefix} send_notifications`
     Notifies {single} authors about updates to their entries
 
@@ -509,6 +506,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         if self.has_privilege(3, message.author):
             usage += '''
 **Commands only leads can use:**
+`{prefix} addlabel <newlabel>`
+    Adds a new label
+
 `{prefix} prune`
     Removes all fixed {plural} from the tracking channel
 
@@ -992,7 +992,7 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
     ################################################################################
     # addlabel
     async def cmd_addlabel(self, message, args):
-        if not self.has_privilege(2, message.author):
+        if not self.has_privilege(3, message.author):
             raise ValueError("You do not have permission to use this command")
 
         args = args.lower()
