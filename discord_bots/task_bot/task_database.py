@@ -21,7 +21,7 @@ from common import get_list_match, datestr, split_string
             "author": 302298391969267712, # Must be non-empty and a valid discord user
             "assignee": 302298391969267712, # Optional - who is currently assigned to this bug
             "description": "Stuff", # Must be non-empty, escape input strings/etc.
-            "labels": ["Misc"], # Must be non-empty
+            "labels": ["misc"], # Must be non-empty
             # Automatically set to "N/A" on creation
             "priority": "High", # Case sensitive for matching, do case insensitive compare for input
 
@@ -379,6 +379,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "stats": self.cmd_stats,
             "astats": self.cmd_astats,
             "addlabel": self.cmd_addlabel,
+            "dellabel": self.cmd_dellabel,
             "test": self.cmd_test,
             "assign": self.cmd_assign,
             "unassign": self.cmd_unassign,
@@ -508,6 +509,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 **Commands only leads can use:**
 `{prefix} addlabel <newlabel>`
     Adds a new label
+
+`{prefix} dellabel <label>`
+    Removes a label
 
 `{prefix} prune`
     Removes all fixed {plural} from the tracking channel
@@ -1009,6 +1013,46 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         self.save()
 
         await(self.reply(message, "Label {} added successfully".format(args)))
+
+    ################################################################################
+    # dellabel
+    async def cmd_dellabel(self, message, args):
+        if not self.has_privilege(3, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        args = args.lower()
+
+        if (not args) or re.search("[^a-z]", args):
+            raise ValueError('''Usage: {prefix} dellabel <label>
+Labels can only contain a-z characters'''.format(prefix=self._prefix))
+
+        match = get_list_match(args, self._labels)
+        if match is None:
+            raise ValueError('Input {} does not match any existing labels [{}]'.format(args, ",".join(self._labels)))
+
+        self._labels.remove(match)
+
+        count = 0
+
+        # Remove label from all entries
+        for index in self._entries:
+            entry = self._entries[index]
+            changed = False
+            if match in entry["labels"]:
+                changed = True
+                entry["labels"].remove(match)
+                count += 1
+            # Make sure there is at least one label
+            if len(entry["labels"]) == 0:
+                entry["labels"].append("misc")
+
+            # Update the entry in the task channel
+            if changed and (("close_reason" not in entry) or ("message_id" in entry)):
+                await self.send_entry(index, entry)
+
+        self.save()
+
+        await(self.reply(message, "Label {} removed successfully from {} {plural}".format(match, count, plural=self._descriptor_plural)))
 
     ################################################################################
     # reject
