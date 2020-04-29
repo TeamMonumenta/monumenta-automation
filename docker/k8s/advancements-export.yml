@@ -1,0 +1,53 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cron-advancements-export
+  labels:
+    app: cron-advancements-export
+spec:
+  # Every hour
+  schedule: "0 * * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      # Try up to 2 times, 600 seconds max total duration
+      backoffLimit: 2
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels:
+            app: cron-advancements-export
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                    - monumenta-8
+          volumes:
+          - name: advancements
+            hostPath:
+              type: Directory
+              path: /nfs/play/advancements
+          containers:
+          - name: task-bot
+            image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
+            tty: false
+            stdin: false
+            volumeMounts:
+            - name: advancements
+              mountPath: /advancements
+            command: ["/home/epic/MCEdit-And-Automation/rust/bin/export_redis_advancements", "redis://redis.play/", "play", "/advancements"]
+            resources:
+              limits:
+                cpu: 250m
+                memory: 1Gi
+              requests:
+                cpu: 100m
+                memory: 512Mi
+          restartPolicy: Never
+          imagePullSecrets:
+          - name: githubcred
