@@ -27,7 +27,7 @@ config = {
         {
             "name":"white",
             "region":{"x":-3, "z":-2},
-            "numDungeons":40,
+            "numDungeons":60,
         },{
             "name":"orange",
             "region":{"x":-3, "z":-1},
@@ -99,7 +99,7 @@ config = {
         },{
             "name":"rush",
             "region":{"x":-3, "z":15},
-            "numDungeons":70,
+            "numDungeons":60,
         },
     ),
 
