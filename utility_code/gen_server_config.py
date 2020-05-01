@@ -40,7 +40,8 @@ server_config_to_copy = [
         ('plugins/CoreProtect/config.yml',),
         ('plugins/FastAsyncWorldEdit/config.yml',),
         ('plugins/FastAsyncWorldEdit/config-legacy.yml',),
-        ('plugins/ScriptedQuests/config.yml',),
+        ('plugins/ScriptedQuests/{}/config.yml'.format(SERVER_TYPE),),
+        ('plugins/PrometheusExporter/config.yml',),
         ('plugins/OpenInv/config.yml',),
         ('plugins/ProtocolLib/config.yml',),
         ('plugins/Vault/config.yml',),
@@ -77,6 +78,7 @@ monumenta = [
         ('plugins/MonumentaWarps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/JeffChestSort.jar', '../../server_config/plugins/JeffChestSort.jar'),
+        ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
         ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
         ('plugins/ScriptedQuests/clickables/{servername}', '../../../../server_config/data/scriptedquests/clickables/{servername}'),
@@ -375,12 +377,10 @@ if (SERVER_TYPE == 'build'):
     config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=0'))
     config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
-    config = add_config_if_not_set(config, ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: true'))
 else:
     config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=2'))
     config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
-    config = add_config_if_not_set(config, ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: false'))
 
     # Player analytics plugin only for play server
     for key in config:
