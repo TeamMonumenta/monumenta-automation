@@ -795,21 +795,11 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await send_broadcast_msg("5 seconds")
         await asyncio.sleep(5)
 
-        # Stop all shards
+        # Stop bungee
         shards = await self._k8s.list()
-        await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
+        await self.stop("bungee")
 
         await self.display(message.author.mention)
-
-        # Fail if any shards are still running
-        await self.display("Checking that all shards are stopped...")
-        shards = await self._k8s.list()
-        await self.display(pformat(shards))
-        for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
-            if shards[shard.replace('_', '')]['replicas'] != 0:
-                await self.display("ERROR: shard {!r} is still running!".format(shard))
-                await self.display(message.author.mention)
-                return
 
     async def action_stop_and_backup(self, cmd, message):
         '''Dangerous!
