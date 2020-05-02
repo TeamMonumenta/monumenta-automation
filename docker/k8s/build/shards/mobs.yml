@@ -7,6 +7,11 @@ metadata:
   namespace: build
   labels:
     app: mobs
+    k8s-app: minecraft-metrics
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9225"
+
 spec:
   type: ClusterIP
   selector:
@@ -16,10 +21,12 @@ spec:
   - name: "25566"
     port: 25566
     targetPort: 25566
-  # Plan
-  - name: "8804"
+  - name: plan
     port: 8804
     targetPort: 8804
+  - name: metrics
+    port: 9225
+    targetPort: 9225
 
 ---
 
@@ -75,6 +82,7 @@ spec:
         ports:
         - containerPort: 25566
         - containerPort: 8000
+        - containerPort: 9225
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
