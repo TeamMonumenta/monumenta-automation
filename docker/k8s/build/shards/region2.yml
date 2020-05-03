@@ -7,10 +7,7 @@ metadata:
   namespace: build
   labels:
     app: region2
-    k8s-app: minecraft-metrics
-  annotations:
-    prometheus.io/scrape: "true"
-    prometheus.io/port: "9225"
+    k8s-app: monumenta-metrics
 
 spec:
   type: ClusterIP
@@ -58,7 +55,7 @@ spec:
             preference:
               matchExpressions:
               - key: kubernetes.io/hostname
-                operator: In
+                operator: NotIn
                 values:
                 - monumenta-8
       volumes:
