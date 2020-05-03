@@ -119,7 +119,6 @@ coreprotect = [
 worldedit = [
         ('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit.jar'),
         ('plugins/DummyFawe.jar', '../../server_config/plugins/DummyFawe.jar'),
-        ('plugins/FastAsyncWorldEdit/commands', '../../../server_config/plugins/FastAsyncWorldEdit/commands'),
         ('plugins/FastAsyncWorldEdit/schematics', '/home/epic/4_SHARED/schematics'),
     ]
 
@@ -141,7 +140,6 @@ luckperms = [
 
 nbteditor = [
         ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
-        ('plugins/NBTEditor', '../../server_config/plugins/NBTEditor'),
         ('plugins/LibraryOfSouls.jar', '../../server_config/plugins/LibraryOfSouls.jar'),
         ('plugins/LibraryOfSouls/souls_database.json', '../../../server_config/data/plugins/all/LibraryOfSouls/souls_database.json'),
     ]
