@@ -40,7 +40,7 @@ fn update_instance_scores(scores: &mut HashMap<String, i32>, objective: &str, ma
 fn update_player_scores(player: &mut Player) {
     if let Some(scores) = &mut player.scores {
         /*
-         * These scores increment by 1000 or if exceeding max are reset to 0, along with resetting
+         * These scores increment by 1000 or if >= max are reset to 0, along with resetting
          * the additional objectives listed at the end
          */
         update_instance_scores(scores, "D0Access", 3 * INSTANCE_WEEK_OFFSET, &["D0Finished"]);
@@ -59,6 +59,7 @@ fn update_player_scores(player: &mut Player) {
         update_instance_scores(scores, "DB1Access", 3 * INSTANCE_WEEK_OFFSET, &[]);
         update_instance_scores(scores, "DRL2Access", 3 * INSTANCE_WEEK_OFFSET, &[]);
         update_instance_scores(scores, "DS1Access", 3 * INSTANCE_WEEK_OFFSET, &["DS1Finished"]);
+        update_instance_scores(scores, "DS1Finished", 1, &["DS1Access"]);
 
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
