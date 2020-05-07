@@ -3,12 +3,17 @@ kind: Service
 metadata:
   name: redis
   namespace: stage
+  labels:
+    k8s-app: monumenta-metrics
 spec:
-  ports:
-  - port: 6379
   selector:
     app: redis
   clusterIP: None
+  ports:
+  - name: redis
+    port: 6379
+  - name: metrics
+    port: 9121
 
 ---
 
@@ -49,6 +54,14 @@ spec:
         - name: redis-config
           mountPath: /usr/local/etc/redis/
         command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+      - name: redis-exporter
+        image: oliver006/redis_exporter:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 9121
       volumes:
         - name: redis-persistent-storage
           hostPath:
