@@ -154,6 +154,14 @@ impl Player {
         Ok(())
     }
 
+    pub fn trim_redis_history(&mut self, domain: &str, con: &mut redis::Connection, count: isize) -> BoxResult<()> {
+        con.ltrim(format!("{}:playerdata:{}:history", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
+        con.ltrim(format!("{}:playerdata:{}:scores", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
+        con.ltrim(format!("{}:playerdata:{}:advancements", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
+        con.ltrim(format!("{}:playerdata:{}:data", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
+        Ok(())
+    }
+
     pub fn save_dir(&self, basepath: &str) -> BoxResult<()> {
         let basepath = Path::new(basepath);
         let uuidstr = self.uuid.to_hyphenated().to_string();
