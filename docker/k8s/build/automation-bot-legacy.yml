@@ -1,72 +1,22 @@
-
-# This is a service account for the bot's pod to use to talk to the controller
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: automation-bot-service-account
-  namespace: build
-
----
-
-# This is the permission object that will be attached to the above service account
-# This specifies what the pod is allowed to do
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: Role
-metadata:
-  name: automation-bot-role
-  namespace: build
-rules:
-  - apiGroups:
-      - ""
-      - "apps"
-    resources:
-      - deployments
-      # TODO: Don't need this?
-      - pods
-    verbs:
-      - list
-      - patch
-      # TODO: Don't need this?
-      - update
-
----
-
-# This binds the role to the service account, giving it perms
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: RoleBinding
-metadata:
-  name: automation-bot-role-binding
-  namespace: build
-roleRef:
-  kind: Role
-  name: automation-bot-role
-  apiGroup: rbac.authorization.k8s.io
-subjects:
- - kind: ServiceAccount
-   name: automation-bot-service-account
-   namespace: build
-
----
-
 # This is the actual bot's deployment, specifying what it should run
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: automation-bot
+  name: automation-bot-legacy
   namespace: build
   labels:
-    app: automation-bot
+    app: automation-bot-legacy
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: automation-bot
+      app: automation-bot-legacy
   template:
     metadata:
       labels:
-        app: automation-bot
+        app: automation-bot-legacy
     spec:
       affinity:
         nodeAffinity:
@@ -82,7 +32,7 @@ spec:
         - name: nfs-data
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic
+            path: /nfs/build/project_epic_legacy
         - name: nfs-old-backups
           hostPath:
             type: Directory
@@ -97,10 +47,10 @@ spec:
             path: /nfs/4_SHARED
         - name: secret-config
           secret:
-            secretName: automation-bot-config
+            secretName: automation-bot-config-legacy
       containers:
-      - name: automation-bot
-        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
+      - name: automation-bot-legacy
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-legacy
         tty: false
         stdin: false
         volumeMounts:

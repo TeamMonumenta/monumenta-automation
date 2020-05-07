@@ -526,15 +526,10 @@ Must be run before preparing the build server reset bundle'''
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
 
-        await self.display("Stopping the dungeon shard...")
-        await self.stop("dungeon")
-
         await self.display("Copying the dungeon master copies...")
         await self.run("cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
 
-        await self.display("Restarting the dungeon shard...")
         await self.cd("/home/epic/project_epic/dungeon")
-        await self.start("dungeon")
 
         await self.display("Generating dungeon instances (this may take a while)...")
         instance_gen_arg = " --master-world /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon/ --out-folder /home/epic/5_SCRATCH/tmpreset/dungeons-out/"
@@ -552,22 +547,13 @@ Temporarily brings down the region_1 and region_2 shards to prepare for terrain 
 Packages up all of the pre-reset server components needed by the play server for reset
 Must be run before starting terrain reset on the play server'''
 
-        await self.display("Stopping region_1 and region_2...")
-        await self.stop(["region_1", "region_2"])
-
         await self.display("Copying region_1...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1")
         await self.run("cp -a /home/epic/project_epic/region_1/Project_Epic-region_1 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/")
 
-        await self.display("Restarting the region_1 shard...")
-        await self.start("region_1")
-
         await self.display("Copying region_2...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2")
         await self.run("cp -a /home/epic/project_epic/region_2/Project_Epic-region_2 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/")
-
-        await self.display("Restarting the region_2 shard...")
-        await self.start("region_2")
 
         await self.display("Copying bungee...")
         await self.run("cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
