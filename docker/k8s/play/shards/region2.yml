@@ -7,7 +7,7 @@ metadata:
   namespace: play
   labels:
     app: region2
-    k8s-app: monumenta-metrics
+    k8s-app: monumenta-metrics-fast
 spec:
   type: ClusterIP
   selector:

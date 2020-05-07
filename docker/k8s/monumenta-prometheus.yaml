@@ -48,6 +48,28 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
+  name: minecraft-prometheus-monitor-fast
+  labels:
+    k8s-app: monumenta-metrics-fast
+    # Needed so prometheus operator picks up this service monitor
+    release: prom-op
+spec:
+  selector:
+    matchLabels:
+      k8s-app: monumenta-metrics-fast
+  namespaceSelector:
+    matchNames:
+    - build
+    - play
+    - stage
+  endpoints:
+  - port: metrics
+    interval: 5s
+    path: /metrics
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
   name: minecraft-prometheus-monitor
   labels:
     k8s-app: monumenta-metrics
@@ -64,5 +86,5 @@ spec:
     - stage
   endpoints:
   - port: metrics
-    interval: 10s
+    interval: 30s
     path: /metrics
