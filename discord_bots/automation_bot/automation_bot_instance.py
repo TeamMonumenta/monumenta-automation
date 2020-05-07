@@ -948,7 +948,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --redisworld /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.log")
 
         await self.display("Loading player data back into redis...")
-        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial")
+        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial 20")
 
         await self.display("Running actual terrain reset (this will take a while!)...")
         await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))
@@ -1023,7 +1023,7 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         await self.display("Loading player data from the play server...")
         await self.run("rm -rf /home/epic/temp_player_data")
         await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.play/ play --output /home/epic/temp_player_data")
-        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.stage/ play --input /home/epic/temp_player_data")
+        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.stage/ play --input /home/epic/temp_player_data 2")
 
         await self.display("Updating uuid2name and name2uuid indexes...")
         await self.run(os.path.join(_top_level, "rust/bin/update_redis_uuid2name_name2uuid") + " redis://redis/ play")

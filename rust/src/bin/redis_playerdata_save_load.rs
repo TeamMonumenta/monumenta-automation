@@ -18,7 +18,7 @@ enum Mode {
 }
 
 fn usage() {
-    println!("Usage: redis_playerdata_save_load 'redis://127.0.0.1/' <domain> <--input path/to/directory | --output path/to/directory>");
+    println!("Usage: redis_playerdata_save_load 'redis://127.0.0.1/' <domain> <--input path/to/directory [history-amount-to-keep] | --output path/to/directory>");
 }
 
 fn main() -> BoxResult<()> {
@@ -31,7 +31,7 @@ fn main() -> BoxResult<()> {
 
     let mut args: Vec<String> = env::args().collect();
 
-    if args.len() != 5 {
+    if args.len() < 5 {
         usage();
         return Ok(());
     }
@@ -60,6 +60,17 @@ fn main() -> BoxResult<()> {
         bail!("Supplied input directory does not exist");
     }
 
+    // Default to keeping all history elements
+    let mut to_keep : isize = 999999;
+    if Mode::INPUT == mode {
+        if args.len() > 0 {
+            to_keep = args.remove(0).parse::<isize>().unwrap();
+        }
+        if to_keep < 0 {
+            bail!("Number of history elements to keep must be 1 or more");
+        }
+    }
+
     let client = redis::Client::open(redis_uri)?;
     let mut con : redis::Connection = client.get_connection()?;
 
@@ -84,6 +95,9 @@ fn main() -> BoxResult<()> {
                         let mut player = Player::new(uuid);
                         player.load_dir(basedir.to_str().unwrap())?;
                         player.save_redis(&domain, &mut con)?;
+                        if to_keep < 999999 {
+                            player.trim_redis_history(&domain, &mut con, to_keep)?;
+                        }
 
                         println!("{}", player);
                     }
