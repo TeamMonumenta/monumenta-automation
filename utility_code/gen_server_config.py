@@ -234,8 +234,8 @@ config = {
 
     'update_do_not_use':{
         'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('server.properties', 'view-distance', 'view-distance=12'),
+            ('spigot.yml', 'view-distance', '    view-distance: 12'),
         ],
         'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
     },
