@@ -254,8 +254,8 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
-            ('server.properties', 'difficulty', 'difficulty=0'),
-            ('server.properties', 'gamemode', 'gamemode=1'),
+            ('server.properties', 'difficulty', 'difficulty=peaceful'),
+            ('server.properties', 'gamemode', 'gamemode=creative'),
         ],
         'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect + gobrush,
     },
@@ -264,7 +264,7 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=6'),
             ('spigot.yml', 'view-distance', '    view-distance: 6'),
-            ('server.properties', 'difficulty', 'difficulty=2'),
+            ('server.properties', 'difficulty', 'difficulty=normal'),
         ],
         'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect,
     },
@@ -273,7 +273,7 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=6'),
             ('spigot.yml', 'view-distance', '    view-distance: 6'),
-            ('server.properties', 'difficulty', 'difficulty=2'),
+            ('server.properties', 'difficulty', 'difficulty=normal'),
         ],
         'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect,
     },
@@ -282,7 +282,7 @@ config = {
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=6'),
             ('spigot.yml', 'view-distance', '    view-distance: 6'),
-            ('server.properties', 'difficulty', 'difficulty=2'),
+            ('server.properties', 'difficulty', 'difficulty=normal'),
         ],
         'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect,
     },
@@ -311,7 +311,7 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=4'),
             ('spigot.yml', 'view-distance', '    view-distance: 4'),
             ('server.properties', 'force-gamemode', 'force-gamemode=true'),
-            ('server.properties', 'gamemode', 'gamemode=2'),
+            ('server.properties', 'gamemode', 'gamemode=adventure'),
             ('server.properties', 'enable-command-block', 'enable-command-block=false'),
             ('server.properties', 'white-list', 'white-list=false'),
             ('server.properties', 'spawn-monsters', 'spawn-monsters=false'),
@@ -359,7 +359,7 @@ for key in simple_view_distance_config:
     }
 
 # config should be the entire config map
-# data should be a tuple like ('server.properties', 'difficulty', 'difficulty=0')
+# data should be a tuple like ('server.properties', 'difficulty', 'difficulty=peaceful')
 def add_config_if_not_set(config, data):
     for key in config:
         exists = False
@@ -373,11 +373,11 @@ def add_config_if_not_set(config, data):
 
 # Config additions that are specific to build or play server
 if (SERVER_TYPE == 'build'):
-    config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=0'))
+    config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=peaceful'))
     config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
 else:
-    config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=2'))
+    config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=normal'))
     config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
     config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
 
