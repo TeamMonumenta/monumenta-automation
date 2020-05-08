@@ -7,6 +7,7 @@ metadata:
   namespace: stage
   labels:
     app: pink
+    k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
@@ -16,10 +17,12 @@ spec:
   - name: "25566"
     port: 25566
     targetPort: 25566
-  # Plan
-  - name: "8804"
+  - name: plan
     port: 8804
     targetPort: 8804
+  - name: metrics
+    port: 9225
+    targetPort: 9225
 
 ---
 
@@ -76,6 +79,7 @@ spec:
         - containerPort: 25566
         - containerPort: 8804
         - containerPort: 8000
+        - containerPort: 9225
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
