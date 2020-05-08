@@ -78,6 +78,9 @@ spec:
           mountPath: /var/lib/mysql
         - name: mysql-config
           mountPath: /etc/mysql/conf.d
+        resources:
+          limits:
+            cpu: "3"
       volumes:
         - name: mysql-persistent-storage
           hostPath:
