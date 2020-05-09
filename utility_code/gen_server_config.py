@@ -268,6 +268,7 @@ config = {
             ('server.properties', 'view-distance', 'view-distance=6'),
             ('spigot.yml', 'view-distance', '    view-distance: 6'),
             ('server.properties', 'difficulty', 'difficulty=normal'),
+            ('plugins/LibraryOfSouls/config.yml', 'read_only', 'read_only: false'),
         ],
         'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect,
     },
