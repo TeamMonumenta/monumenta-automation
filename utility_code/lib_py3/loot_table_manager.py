@@ -82,6 +82,20 @@ class LootTableManager(object):
                 enchant.value["lvl"] = nbt.TagShort(enchant_lvl)
                 enchant.value["id"] = nbt.TagString(enchant_id)
 
+        # Convert item lore text to raw json text
+        if item_nbt.has_path("display.Lore"):
+            new_lore_list = []
+            for lore_nbt in item_nbt.at_path("display.Lore").value:
+                lore_text_possibly_json = lore_nbt.value
+                try:
+                    json.loads(lore_text_possibly_json)
+                    new_lore_list.append(nbt.TagString(lore_text_possibly_json))
+                except Exception:
+                    json_data = {"text": lore_text_possibly_json}
+                    json_str = json.dumps(json_data, separators=(',', ':'))
+                    new_lore_list.append(nbt.TagString(json_str))
+            item_nbt.at_path("display.Lore").value = new_lore_list
+
         return item_nbt
 
     @classmethod

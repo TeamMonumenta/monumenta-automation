@@ -6,6 +6,7 @@ import os
 import re
 import shutil
 import sys
+import uuid
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types.text_format import unformat_text
@@ -30,6 +31,34 @@ def get_item_name_from_nbt(item_nbt: nbt.TagCompound, remove_color=True):
         return None
 
     return parse_name_possibly_json(item_nbt.at_path("display.Name").value, remove_color)
+
+def get_entity_uuid(entity: nbt.TagCompound):
+    """Returns UUID or None for any entity with a UUID, including 1.16"""
+    result = None
+
+    if entity.has_path("UUIDMost") and entity.has_path("UUIDLeast"):
+        upper = entity.at_path("UUIDMost").value
+        if upper < 0:
+            upper += 1<<64
+
+        lower = entity.at_path("UUIDLeast").value
+        if lower < 0:
+            lower += 1<<64
+
+        uuid_int = upper << 64 | lower
+        result = uuid.UUID(int=uuid_int)
+
+    elif entity.has_path("UUID") and isinstance(entity.at_path("UUID"), nbt.TagIntArray) and len(entity.at_path("UUID").value) == 4:
+        uuid_int = 0
+        for part in entity.at_path("UUID").value:
+            uuid_int <<= 32
+            part_val = part.value
+            if part_val < 0:
+                part_val += 1<<32
+            uuid_int += part_val
+        result = uuid.UUID(int=uuid_int)
+
+    return result
 
 def json_text_to_plain_text(json_text):
     result = ""

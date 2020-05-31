@@ -16,6 +16,8 @@ from quarry.types.text_format import ansify_text
 
 _single_item_locations = (
     "ArmorItem",
+    "Book",
+    "ChargedProjectiles", # Crossbows
     "Item",
     "RecordItem",
     "SaddleItem",
@@ -261,6 +263,9 @@ class RecursiveEntityIterator(object):
 
         # Add more work to the stack for next time
         # Tile entities!
+        if current_entity.has_path("Bees"):
+            self._work_stack.append((current_entity.at_path("Bees"), source_pos, entity_path))
+
         if current_entity.has_path("SpawnPotentials"):
             for spawn in current_entity.at_path("SpawnPotentials").value:
                 if spawn.has_path("Entity"):
