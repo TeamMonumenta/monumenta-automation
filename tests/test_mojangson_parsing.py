@@ -42,6 +42,10 @@ test(r'''{display: {Lore: ["§9Cloth Armor", "§8King's Valley : §6Patron Made"
 print("\n\nFirework test")
 test(r'''{display:{Lore:["§9To signal that you're","§9ready to party!"],Name:"{\"text\":\"§5§lSignal Flare - Party Rocket\"}"},Fireworks:{Flight:1b,Explosions:[{Type:2b,Colors:[I;16711680],FadeColors:[I;16738063]},{Type:2b,Colors:[I;526591],FadeColors:[I;15138563]},{Type:2b,Colors:[I;1310467],FadeColors:[I;754951]}]}}''')
 
+# Book test / nested quotes
+print("\n\nBook test / nested quotes")
+test(r'''{display:{Name:'{"text":"§2§lNecronomicon"}',Lore:['{"text":"§8Monumenta : §6Patron Made"}','{"text":"§8The lexicon of forbidden knowledge comes"}','{"text":"§8in many forms, some are even cute."}','{"text":"§r"}','{"text":"§7When in main hand:"}','{"text":"§eRight click to spend 10 levels worth"}','{"text":"§eof EXP and remove Poison and Nausea."}']}}''')
+
 # Test that serialization is reverse of deserialization
 print("\n\nSerialize/Deserialize test:")
 rawinput = r'''{display:{Lore:["§9To signal that you're","§9ready to party!"],Name:"{\"text\":\"§5§lSignal Flare - Party Rocket\"}"},Fireworks:{Flight:1b,Explosions:[{Type:2b,Colors:[I;16711680],FadeColors:[I;16738063]},{Type:2b,Colors:[I;526591],FadeColors:[I;15138563]},{Type:2b,Colors:[I;1310467],FadeColors:[I;754951]}]}}'''
