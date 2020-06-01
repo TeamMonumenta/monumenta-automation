@@ -150,8 +150,11 @@ class AbortNoLore(GlobalRule):
     name = "Abort if there's no lore text"
 
     def preprocess(self, template, item):
-        if not item.has_path('tag.display.Lore'):
-            'Abort!'
+        if item.at_path('id').value == 'minecraft:written_book':
+        	# Allow replacing written books
+        	return
+        elif not item.has_path('tag.display.Lore'):
+            # Abort!
             return True
 
 class PreserveArmorColor(GlobalRule):
