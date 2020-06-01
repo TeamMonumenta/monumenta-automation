@@ -63,6 +63,15 @@ substitution_rules = []
 ################################################################################
 # Substitution rules begin
 
+class FixBookTitles(SubstitutionRule):
+    name = "Fix book titles"
+
+    def process(self, item_meta, item):
+        if item.has_path('tag.display.Name') or not item.has_path('tag.title'):
+            return
+        title = item.at_path('tag.title').value
+        item_meta['name'] = unformat_text(parse_name_possibly_json(title))
+
 class FixBrokenSectionSymbols(SubstitutionRule):
     name = "Fix broken section symbols"
 
