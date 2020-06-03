@@ -78,10 +78,12 @@ server_config = server_config_min + [
 
 monumenta = [
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
+        ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/JeffChestSort.jar', '../../server_config/plugins/JeffChestSort.jar'),
+        ('plugins/nbt-api.jar', '../../server_config/plugins/nbt-api.jar'),
         ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
         ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
