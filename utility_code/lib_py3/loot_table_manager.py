@@ -98,8 +98,7 @@ class LootTableManager(object):
 
         return item_nbt
 
-    @classmethod
-    def fixup_loot_table(cls, loot_table):
+    def fixup_loot_table(self, filename, loot_table):
         """
         Autoformats a single json file
         """
@@ -126,7 +125,7 @@ class LootTableManager(object):
                         raise KeyError("item loot table entry does not contain 'name'")
                     item_id = entry["name"]
 
-                    # Add the minecraft: namespace to items that don't have ti
+                    # Add the minecraft: namespace to items that don't have it
                     if not ":" in item_id:
                         entry["name"] = "minecraft:" + item_id
                         item_id = entry["name"]
@@ -151,7 +150,25 @@ class LootTableManager(object):
                             if "tag" not in function:
                                 raise KeyError('set_nbt function is missing nbt field!')
                             item_nbt = nbt.TagCompound.from_mojangson(function["tag"])
-                            function["tag"] = cls.autoformat_item(item_id, item_nbt).to_mojangson()
+                            function["tag"] = self.autoformat_item(item_id, item_nbt).to_mojangson()
+
+                            ################################################################################
+                            # Update item entry to use index instead
+
+                            if not "epic/loot_tables/index" in filename and item_nbt.has_path('display.Name'):
+                                item_name = get_item_name_from_nbt(item_nbt)
+
+                                item_index_entry = self.item_map.get(item_id,{}).get(item_name,None)
+                                if item_index_entry is not None and "epic:index" in item_index_entry["namespaced_key"]:
+                                    print("Updating item in loot table to point to index: {} - {} - {}".format(item_id, item_name, filename))
+
+                                    entry["type"] = "loot_table"
+                                    entry["name"] = item_index_entry["namespaced_key"]
+                                    entry.pop("functions")
+                                    break
+
+                            # Update item entry to use index instead
+                            ################################################################################
 
                 if entry["type"] == "loot_table":
                     if "name" not in entry:
@@ -162,8 +179,7 @@ class LootTableManager(object):
                         entry.pop("name")
                         continue
 
-    @classmethod
-    def autoformat_json_files_in_directory(cls, directory, indent=4):
+    def autoformat_json_files_in_directory(self, directory, indent=4):
         """
         Autoformats all json files in a directory
         """
@@ -176,7 +192,7 @@ class LootTableManager(object):
                         json_file = jsonFile(filename)
                         if type(json_file.dict) is OrderedDict and "pools" in json_file.dict:
                             # This is probably a loot table - no other json files have "pools" at the top level
-                            cls.fixup_loot_table(json_file.dict)
+                            self.fixup_loot_table(filename, json_file.dict)
 
                         json_file.save(filename, indent=indent)
                     except Exception as e:
