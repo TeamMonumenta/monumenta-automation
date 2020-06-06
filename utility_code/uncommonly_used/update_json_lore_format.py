@@ -23,8 +23,6 @@ from pprint import pprint
 
 textpattern = re.compile(r'''\\*"text\\*"''')
 lorepattern = re.compile(r'''Lore:\["[^]]*"\]''')
-unescapedpattern = re.compile(r'''(?<!\\)"''')
-escapedpattern = re.compile(r'''\\"''')
 
 def process_one_command(line):
     '''
@@ -46,8 +44,6 @@ def process_one_command(line):
             for loreentry in js:
                 newjs.append("""{"text":""" + '"' + loreentry + '"' + """}""")
             newloreblock = json.dumps(newjs, ensure_ascii=False, sort_keys=False, separators=(',', ':'))
-            newloreblock = re.sub(unescapedpattern, "'", newloreblock)
-            newloreblock = re.sub(escapedpattern, '"', newloreblock)
 
             # Add whatever came before the match
             newline += line[end:m.start(0)]
