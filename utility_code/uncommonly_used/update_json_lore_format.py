@@ -4,6 +4,7 @@ import json
 import os
 import sys
 import re
+import traceback
 from pprint import pprint
 
 # Pseudocode for what this does
@@ -36,7 +37,11 @@ def process_one_command(line):
     for m in re.finditer(lorepattern, line):
         if not textpattern.search(m.group(0)):
             loreblock = m.group(0)[5:]
-            js = json.loads(loreblock)
+            try:
+                js = json.loads(loreblock)
+            except Exception as e:
+                print("Failing line was:\n" + loreblock)
+                raise e
             newjs = []
             for loreentry in js:
                 newjs.append("""{"text":""" + '"' + loreentry + '"' + """}""")
@@ -129,6 +134,8 @@ def process_one_json_file(filepath):
                 fp.write('\n')
     except Exception as e:
         print("Failed to process '{}': {}".format(filepath, e))
+        traceback.print_exc()
+
 
 
 for subdir, dirs, files in os.walk("data"):
@@ -138,5 +145,5 @@ for subdir, dirs, files in os.walk("data"):
             process_one_function_file(filepath)
             pass
         elif filepath.lower().endswith(".json"):
-            # process_one_json_file(filepath)
+            process_one_json_file(filepath)
             pass
