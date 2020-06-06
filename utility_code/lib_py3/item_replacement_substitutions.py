@@ -151,6 +151,12 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:zombie_head", "Zombie Plushy", "minecraft:zombie_head", "Zombie Plushie"],
             ["minecraft:potion", "Priestly Porter", "minecraft:potion", "Priestly Porter"],
             ["minecraft:golden_leggings", "Ethereal Greaves", "minecraft:chainmail_leggings", "Ethereal Greaves"],
+            ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
+            ["minecraft:bow", "Heatwave", "minecraft:crossbow", "Heatwave"],
+            ["minecraft:bow", "Steel Arbalest", "minecraft:crossbow", "Steel Arbalest"],
+            ["minecraft:bow", "Ghastcaller's Gunblade", "minecraft:crossbow", "Ghastcaller's Gunblade"],
+            ["minecraft:bow", "Incendiary Inferno", "minecraft:crossbow", "Incendiary Inferno"],
+            ["minecraft:bow", "Pirate's Flintlock", "minecraft:crossbow", "Pirate's Flintlock"],
             # Note the former incorrect apostraphe
             ["minecraft:stick", r"Alcanretia’s Blossom", "minecraft:stick", "Alcanretia's Blossom"],
         ]:
