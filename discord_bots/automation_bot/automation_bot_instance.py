@@ -1104,7 +1104,7 @@ For convenience, leading 'give @p' is ignored, along with any data after the las
             table_dict = OrderedDict()
             table_dict["pools"] = [pool,]
 
-            loot_table_string = json.dumps(table_dict, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
+            loot_table_string = json.dumps(table_dict, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
 
             await self.display("Here is a basic loot table for this item:\n\n" +
                            "You must put this somewhere **sensible** in the loot tables \n\n" +
