@@ -86,7 +86,7 @@ for entity, source_pos, entity_path in world.entity_iterator(pos1=pos1, pos2=pos
             out.append(entry)
 
 with open(output_path, 'w') as outfile:
-    json.dump(out, outfile, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
+    json.dump(out, outfile, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
 
 if interactive:
     print("Starting interactive mode")

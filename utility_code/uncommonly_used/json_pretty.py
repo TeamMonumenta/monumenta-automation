@@ -18,7 +18,7 @@ try:
     with open(filename, "r") as fin:
         data = json.load(fin)
     with open(filename, "w") as fout:
-        json.dump(data, fout, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
+        json.dump(data, fout, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
         fout.write('\n')
 except Exception as ex:
     print("{}: {}".format(filename, ex));

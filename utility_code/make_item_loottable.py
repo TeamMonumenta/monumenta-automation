@@ -18,7 +18,7 @@ def make_single_loot_table(loot_table_path, pools):
     table_dict = OrderedDict()
     table_dict["pools"] = pools
 
-    loot_table_string = json.dumps(table_dict, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
+    loot_table_string = json.dumps(table_dict, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
 
     # Make directories if they don't exist
     if not os.path.isdir(os.path.dirname(loot_table_path)):

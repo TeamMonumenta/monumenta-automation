@@ -100,7 +100,7 @@ elif logfile is not None:
     log_handle = open(logfile, 'w')
 
 if log_handle is not None:
-    json.dump(items, log_handle, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
+    json.dump(items, log_handle, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
 
 if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
     log_handle.close()

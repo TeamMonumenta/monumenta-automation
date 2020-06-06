@@ -18,7 +18,7 @@ from quarry.types import nbt
 mgr = LootTableManager()
 
 # AUTOFORMAT
-mgr.autoformat_json_files_in_directory("/home/epic/project_epic/server_config/data/datapacks", indent=4)
+mgr.autoformat_json_files_in_directory("/home/epic/project_epic/server_config/data/datapacks", indent=2)
 mgr.autoformat_json_files_in_directory("/home/epic/project_epic/server_config/data/scriptedquests", indent=2)
 sys.exit(0)
 

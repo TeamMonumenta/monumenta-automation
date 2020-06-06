@@ -179,7 +179,7 @@ class LootTableManager(object):
                         entry.pop("name")
                         continue
 
-    def autoformat_json_files_in_directory(self, directory, indent=4):
+    def autoformat_json_files_in_directory(self, directory, indent=2):
         """
         Autoformats all json files in a directory
         """

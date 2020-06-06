@@ -111,4 +111,4 @@ class LibraryOfSouls(object):
         if self._readonly:
             raise Exception("Attempted to save read-only Library of Souls")
         with open(self._path, "w") as fp:
-            json.dump(self._souls, fp, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
+            json.dump(self._souls, fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
