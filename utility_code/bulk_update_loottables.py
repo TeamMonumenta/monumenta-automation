@@ -33,8 +33,12 @@ def update_items(container_nbt_list):
             item_nbt_str = item_nbt.at_path("tag").to_mojangson()
             item_name = parse_name_possibly_json(item_nbt.at_path('tag.display.Name').value)
 
-            locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
-            print("Updated '{}' in loot tables: \n{}".format(item_name, "\n".join(locations)))
+            try:
+                locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
+                print("Updated '{}' in loot tables: \n{}".format(item_name, "\n".join(locations)))
+            except ValueError as e:
+                print("WARNING: Failed to update '{}' in loot tables: {}".format(item_name, e))
+
 
 def usage():
     sys.exit("Usage: " + sys.argv[0] + " <text_file_with_setblock_chest.txt>")
