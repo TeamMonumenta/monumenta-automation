@@ -143,6 +143,10 @@ class Schematic(object):
     def name(self):
         return self._schematic_name
 
+    @property
+    def root_tag(self):
+        return self._schematic
+
     def entity_iterator(self, readonly=True):
         '''
         Returns an iterator of all entities and tile entities in the schematic.
