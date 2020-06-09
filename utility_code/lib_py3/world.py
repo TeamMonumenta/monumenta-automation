@@ -857,8 +857,9 @@ class World(object):
                                     new_blocks = BlockArray.from_nbt(new_section, block_map)
                                     old_blocks = BlockArray.from_nbt(old_section, block_map)
 
-                                    new_section.at_path('BlockLight').value = old_section.at_path('BlockLight').value
-                                    new_section.at_path('SkyLight').value = old_section.at_path('SkyLight').value
+                                    # TODO: This seems at least partially broken in 1.15
+                                    # new_section.at_path('BlockLight').value = old_section.at_path('BlockLight').value
+                                    # new_section.at_path('SkyLight').value = old_section.at_path('SkyLight').value
 
                                     for by in bounded_range(min_y,max_y,cy,16):
                                         for bz in bounded_range(min_z,max_z,32*rz+cz,16):
