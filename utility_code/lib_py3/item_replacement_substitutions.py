@@ -157,6 +157,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:bow", "Ghastcaller's Gunblade", "minecraft:crossbow", "Ghastcaller's Gunblade"],
             ["minecraft:bow", "Incendiary Inferno", "minecraft:crossbow", "Incendiary Inferno"],
             ["minecraft:bow", "Pirate's Flintlock", "minecraft:crossbow", "Pirate's Flintlock"],
+            ["minecraft:bow", "Miner's Flintlock", "minecraft:crossbow", "Miner's Flintlock"],
             # Note the former incorrect apostraphe
             ["minecraft:stick", r"Alcanretia’s Blossom", "minecraft:stick", "Alcanretia's Blossom"],
         ]:
