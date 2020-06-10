@@ -105,7 +105,7 @@ class LootTableManager(object):
         if not type(loot_table) is OrderedDict:
             raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
         if "pools" not in loot_table:
-            raise ValueError("loot table does not contain 'pools'")
+            return
         if not type(loot_table["pools"]) is list:
             raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
         for pool in loot_table["pools"]:
@@ -305,7 +305,7 @@ class LootTableManager(object):
             # Nothing to do
             return
         if "pools" not in loot_table:
-            raise ValueError("loot table does not contain 'pools'")
+            return
         if not type(loot_table["pools"]) is list:
             raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
 
@@ -694,7 +694,7 @@ class LootTableManager(object):
         if not type(loot_table) is OrderedDict:
             raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
         if "pools" not in loot_table:
-            raise ValueError("loot table does not contain 'pools'")
+            return
         if not type(loot_table["pools"]) is list:
             raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
         for pool in loot_table["pools"]:
@@ -784,7 +784,7 @@ class LootTableManager(object):
         if not type(loot_table) is OrderedDict:
             raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
         if "pools" not in loot_table:
-            raise ValueError("loot table does not contain 'pools'")
+            return
         if not type(loot_table["pools"]) is list:
             raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
         for pool in loot_table["pools"]:
@@ -879,10 +879,10 @@ class LootTableManager(object):
 
                     if not item_id in unique_item_map:
                         unique_item_map[item_id] = {}
-                    unique_item_map[item_id][item_name] = self.item_map[item_id][item_name][0];
+                    unique_item_map[item_id][item_name] = self.item_map[item_id][item_name][0]
                 else:
                     if not item_id in unique_item_map:
                         unique_item_map[item_id] = {}
-                    unique_item_map[item_id][item_name] = self.item_map[item_id][item_name];
+                    unique_item_map[item_id][item_name] = self.item_map[item_id][item_name]
 
         return unique_item_map
