@@ -72,6 +72,7 @@ def make_loot_table(loot_table_base_path, container_nbt_list, loot_table_name=No
                 item_name = item_nbt.at_path("tag.display.Name").value
                 # Fix minecraft annoyingly escaping apostraphes in item name
                 item_name = re.sub(r"\\u0027", "'", item_name)
+                item_name = re.sub(r"\\u00a7", "§", item_name)
                 item_name = unformat_text(item_name)
                 # If the item name is JSON, parse it down to just the name text
                 try:

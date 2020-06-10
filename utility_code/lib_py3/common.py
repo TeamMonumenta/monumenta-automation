@@ -78,6 +78,7 @@ def json_text_to_plain_text(json_text):
 
 def parse_name_possibly_json(name, remove_color=False):
     name = re.sub(r"\\u0027", "'", name)
+    name = re.sub(r"\\u00a7", "§", name)
     try:
         name_json = json.loads(name)
         name = json_text_to_plain_text(name_json)

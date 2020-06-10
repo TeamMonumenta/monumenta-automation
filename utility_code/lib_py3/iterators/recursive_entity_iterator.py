@@ -34,6 +34,7 @@ _list_item_locations = (
 
 def get_name(name, ansii_colors=False):
     name = re.sub(r"\\u0027", "'", name)
+    name = re.sub(r"\\u00a7", "§", name)
 
     # If the name is JSON, parse it down to just the name text
     try:
