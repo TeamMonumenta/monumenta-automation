@@ -4,6 +4,7 @@ import os
 import sys
 import traceback
 import json
+import re
 from collections import OrderedDict
 
 from lib_py3.json_file import jsonFile
@@ -93,6 +94,23 @@ class LootTableManager(object):
                 except Exception:
                     json_data = {"text": lore_text_possibly_json}
                     json_str = json.dumps(json_data, separators=(',', ':'))
+                    new_lore_list.append(nbt.TagString(json_str))
+            item_nbt.at_path("display.Lore").value = new_lore_list
+
+        # Convert item lore text to raw json text
+        if item_nbt.has_path("display.Lore"):
+            new_lore_list = []
+            for lore_nbt in item_nbt.at_path("display.Lore").value:
+                lore_text_possibly_json = lore_nbt.value
+                lore_text_possibly_json = re.sub(r"\\u0027", "'", lore_text_possibly_json)
+                lore_text_possibly_json = re.sub(r"\\u00a7", "§", lore_text_possibly_json)
+
+                try:
+                    json.loads(lore_text_possibly_json)
+                    new_lore_list.append(nbt.TagString(lore_text_possibly_json))
+                except Exception:
+                    json_data = {"text": lore_text_possibly_json}
+                    json_str = json.dumps(json_data, ensure_ascii=False, separators=(',', ':'))
                     new_lore_list.append(nbt.TagString(json_str))
             item_nbt.at_path("display.Lore").value = new_lore_list
 
