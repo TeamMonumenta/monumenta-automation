@@ -90,6 +90,9 @@ def parse_name_possibly_json(name, remove_color=False):
 
     return name
 
+def jsonify_text(text):
+    return json.dumps({"text":text}, ensure_ascii=False, separators=(',', ':'))
+
 def get_named_items(entity: nbt.TagCompound, path: str, expected_len: int) -> [str]:
     items = []
 

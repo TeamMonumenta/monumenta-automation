@@ -6,6 +6,9 @@ import sys
 
 import traceback
 
+from lib_py3.common import jsonify_text
+from lib_py3.common import parse_name_possibly_json
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 from quarry.types.text_format import unformat_text
@@ -89,8 +92,8 @@ def enchantify(item, player, enchantment, owner_prefix=None):
     enchantmentFound = False
     nameAdded = (owner_prefix is None)
     for loreEntry in lore:
-        loreText = loreEntry.value
-        if (enchantment) in loreText:
+        loreText = parse_name_possibly_json(loreEntry.value)
+        if enchantment in loreText:
             enchantmentFound = True
 
         loreStripped = unformat_text(loreText)
@@ -99,21 +102,25 @@ def enchantify(item, player, enchantment, owner_prefix=None):
             any(x in loreStripped for x in HEADER_LORE) or
             len(loreStripped) == 0
         ):
-            newLore.append(nbt.TagString(enchantment))
+            enchantment_json = jsonify_text(enchantment)
+            newLore.append(nbt.TagString(enchantment_json))
             enchantmentFound = True
 
         if (not nameAdded and len(loreStripped) == 0):
-            newLore.append(nbt.TagString(owner_prefix + " " + player))
+            owner_json = jsonify_text(owner_prefix + " " + player)
+            newLore.append(nbt.TagString(owner_json))
             nameAdded = True
 
-        newLore.append(nbt.TagString(loreText))
+        loreText_json = jsonify_text(loreText)
+        newLore.append(nbt.TagString(loreText_json))
 
     if not enchantmentFound:
         # Don't apply changes
         return
 
     if not nameAdded:
-        newLore.append(nbt.TagString(owner_prefix + " " + player))
+        owner_json = jsonify_text(owner_prefix + " " + player)
+        newLore.append(nbt.TagString(owner_json))
 
     item.at_path('tag.display.Lore').value = newLore
 
@@ -139,9 +146,9 @@ def shatter_item(item):
 
     lore = item.at_path('tag.display.Lore').value
 
-    lore.append(nbt.TagString("§4§l* SHATTERED *"))
-    lore.append(nbt.TagString("§4Maybe a Master Repairman"))
-    lore.append(nbt.TagString("§4could reforge it..."))
+    lore.append(nbt.TagString(jsonify_text("§4§l* SHATTERED *")))
+    lore.append(nbt.TagString(jsonify_text("§4Maybe a Master Repairman")))
+    lore.append(nbt.TagString(jsonify_text("§4could reforge it...")))
 
 ################################################################################
 # Global rules begin
@@ -238,7 +245,8 @@ class PreserveEnchantments(GlobalRule):
         if template.has_path('display.Lore'):
             for lore in template.at_path('display.Lore').value:
                 for enchantment in self.enchantment_state:
-                    if lore.value.startswith(enchantment['enchantment']):
+                    lore_text = parse_name_possibly_json(lore.value)
+                    if lore_text.startswith(enchantment['enchantment']):
                         enchantment['enchant_on_template'] = True
 
         if item.has_path('tag.display.Lore'):
@@ -248,11 +256,12 @@ class PreserveEnchantments(GlobalRule):
                         # Don't apply the enchant if it already exists
                         continue
                     owner_prefix = enchantment['owner_prefix']
-                    if lore.value.startswith(enchantment['enchantment']):
+                    lore_text = parse_name_possibly_json(lore.value)
+                    if lore_text.startswith(enchantment['enchantment']):
                         enchantment['enchant_found'] = True
-                        enchantment['enchant_line'] = lore.value
-                    if owner_prefix is not None and lore.value.startswith(owner_prefix):
-                        enchantment['player'] = lore.value[len(owner_prefix)+1:]
+                        enchantment['enchant_line'] = lore_text
+                    if owner_prefix is not None and lore_text.startswith(owner_prefix):
+                        enchantment['player'] = lore_text[len(owner_prefix)+1:]
 
     def postprocess(self, item):
         for enchantment in self.enchantment_state:
@@ -281,7 +290,7 @@ class PreserveShattered(GlobalRule):
             return
 
         for lore in item.at_path('tag.display.Lore').value:
-            if lore.value == self.enchantment:
+            if parse_name_possibly_json(lore.value) == self.enchantment:
                 self.shattered = True
                 return
 
@@ -296,7 +305,8 @@ class PreserveSoulbound(GlobalRule):
         self.player_line = None
         if item.has_path('tag.display.Lore'):
             for lore in item.at_path('tag.display.Lore').value:
-                if lore.value.startswith("* Soulbound to "):
+                lore_text = parse_name_possibly_json(lore.value)
+                if lore_text.startswith("* Soulbound to "):
                     self.player_line = lore
                     return
 

@@ -9,9 +9,9 @@ from lib.item_test import ItemTest
 
 test_item = ItemTest(
     test_name="Substitutions: Fixed json in json names",
-    template_item=r'''{id:"minecraft:golden_sword",tag:{display:{Lore:["§7Radiant","§7Hope","§8King's Valley : §4Artifact","§l","§7When in main hand:","§7 1.6 Attack Speed","§7 3 Attack Damage"],Name:"{\"text\":\"§e§l§nLight of Salvation\"}"}}}''',
-    item_under_test=r'''{id:"minecraft:golden_sword",tag:{display:{Lore:["§7Radiant","§7Hope","§7Festive","§8King's Valley : §4Artifact","Decorated by Combustible","§l","§7When in main hand:","§7 1.6 Attack Speed","§7 3 Attack Damage","* Soulbound to Combustible *"],Name:"{\"text\":\"{\\\"text\\\":\\\"§e§l§nLight of Salvation\\\"}\"}"}}}''',
-    expected_result_item=r'''{id:"minecraft:golden_sword",tag:{display:{Lore:["§7Radiant","§7Hope","§7Festive","§8King's Valley : §4Artifact","Decorated by Combustible","§l","§7When in main hand:","§7 1.6 Attack Speed","§7 3 Attack Damage","* Soulbound to Combustible *"],Name:"{\"text\":\"§e§l§nLight of Salvation\"}"}}}'''
+    template_item=r'''{id:"minecraft:golden_sword",tag:{display:{Lore:['{"text":"§7Radiant"}','{"text":"§7Hope"}','{"text":"§8King\'s Valley : §4Artifact"}','{"text":"§l"}','{"text":"§7When in main hand:"}','{"text":"§7 1.6 Attack Speed"}','{"text":"§7 3 Attack Damage"}'],Name:"{\"text\":\"§e§l§nLight of Salvation\"}"}}}''',
+    item_under_test=r'''{id:"minecraft:golden_sword",tag:{display:{Lore:['{"text":"§7Radiant"}','{"text":"§7Hope"}','{"text":"§7Festive"}','{"text":"§8King\'s Valley : §4Artifact"}','{"text":"Decorated by Combustible"}','{"text":"§l"}','{"text":"§7When in main hand:"}','{"text":"§7 1.6 Attack Speed"}','{"text":"§7 3 Attack Damage"}','{"text":"* Soulbound to Combustible *"}'],Name:"{\"text\":\"{\\\"text\\\":\\\"§e§l§nLight of Salvation\\\"}\"}"}}}''',
+    expected_result_item=r'''{id:"minecraft:golden_sword",tag:{display:{Lore:['{"text":"§7Radiant"}','{"text":"§7Hope"}','{"text":"§7Festive"}','{"text":"§8King\'s Valley : §4Artifact"}','{"text":"Decorated by Combustible"}','{"text":"§l"}','{"text":"§7When in main hand:"}','{"text":"§7 1.6 Attack Speed"}','{"text":"§7 3 Attack Damage"}','{"text":"* Soulbound to Combustible *"}'],Name:"{\"text\":\"§e§l§nLight of Salvation\"}"}}}'''
 )
 test_item.run()
 
