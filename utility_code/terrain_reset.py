@@ -150,20 +150,19 @@ region_1 = {
     "copyMainPaths":["stats", "data"],
     "copyMaps": "build",
 
-    # TODO: Disabled for 1.15 - needs update!
-    #"coordinatesToCopy":(
-    #    # "name":"a unique name"
-    #    # "pos1":(x1,y1,z1)
-    #    # "pos2":(x2,y2,z2)
-    #    {"name":"Apartments_101-132",     "pos1":( -811,  99,   44), "pos2":(-873,  99,   44), "replace_items": item_replace_manager},
-    #    {"name":"Apartments_201-232",     "pos1":( -811,  99,   36), "pos2":(-873,  99,   36), "replace_items": item_replace_manager},
-    #    {"name":"Apartments_301-332",     "pos1":( -811,  99,   31), "pos2":(-873,  99,   31), "replace_items": item_replace_manager},
-    #    {"name":"Apartments_401-432",     "pos1":( -811,  99,   23), "pos2":(-873,  99,   23), "replace_items": item_replace_manager},
-    #    {"name":"Apartments_501-524",     "pos1":( -815,  99,   10), "pos2":(-861,  99,   10), "replace_items": item_replace_manager},
-    #    {"name":"Apartments_601-624",     "pos1":( -815,  99,    5), "pos2":(-861,  99,    5), "replace_items": item_replace_manager},
-    #    {"name":"Apartments_701-816",     "pos1":( -811,  99,   18), "pos2":(-873,  99,   18), "replace_items": item_replace_manager},
-    #    {"name":"Apartments_units",       "pos1":( -817, 109,   87), "pos2":(-859, 164,   16), "replace_items": item_replace_manager},
-    #),
+    "coordinatesToCopy":(
+        # "name":"a unique name"
+        # "pos1":(x1,y1,z1)
+        # "pos2":(x2,y2,z2)
+        {"name":"Apartments_101-132",     "pos1":( -811,  99,   44), "pos2":(-873,  99,   44), "replace_items": item_replace_manager},
+        {"name":"Apartments_201-232",     "pos1":( -811,  99,   36), "pos2":(-873,  99,   36), "replace_items": item_replace_manager},
+        {"name":"Apartments_301-332",     "pos1":( -811,  99,   31), "pos2":(-873,  99,   31), "replace_items": item_replace_manager},
+        {"name":"Apartments_401-432",     "pos1":( -811,  99,   23), "pos2":(-873,  99,   23), "replace_items": item_replace_manager},
+        {"name":"Apartments_501-524",     "pos1":( -815,  99,   10), "pos2":(-861,  99,   10), "replace_items": item_replace_manager},
+        {"name":"Apartments_601-624",     "pos1":( -815,  99,    5), "pos2":(-861,  99,    5), "replace_items": item_replace_manager},
+        {"name":"Apartments_701-816",     "pos1":( -811,  99,   18), "pos2":(-873,  99,   18), "replace_items": item_replace_manager},
+        {"name":"Apartments_units",       "pos1":( -817, 109,   87), "pos2":(-859, 164,   16), "replace_items": item_replace_manager},
+    ),
 }
 
 
