@@ -325,14 +325,15 @@ class World(object):
                             break
 
                         for section in chunk_sections:
-                            # Check block light > 0
-                            for block_light in section.at_path('BlockLight').value:
-                                if block_light > 0:
-                                    confirmed_valid = True
-                                    break
-
-                            if confirmed_valid:
-                                break
+                            # TODO: Needs updating for 1.15
+                            # # Check block light > 0
+                            # for block_light in section.at_path('BlockLight').value:
+                            #     if block_light > 0:
+                            #         confirmed_valid = True
+                            #         break
+                            #
+                            # if confirmed_valid:
+                            #     break
 
                             # Check for non-air block
                             # This is an expensive check, keep it low priority
