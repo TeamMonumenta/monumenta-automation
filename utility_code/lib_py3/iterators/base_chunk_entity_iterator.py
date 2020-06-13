@@ -147,7 +147,11 @@ class BaseChunkEntityIterator(object):
                 self._next_region()
 
             # Load the next indicated chunk (_cx/_cz)
-            self._chunk = self._region.load_chunk(self._cx_range[self._cx_idx], self._cz_range[self._cz_idx])
+            try:
+                self._chunk = self._region.load_chunk(self._cx_range[self._cx_idx], self._cz_range[self._cz_idx])
+            except Exception as e:
+                print("Failed to load chunk {},{} in region {},{}: {}".format(self._cx_range[self._cx_idx], self._cz_range[self._cz_idx], self._rx, self._rz, e))
+                raise e
 
             if (
                 (self._chunk is None) or
