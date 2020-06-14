@@ -82,7 +82,7 @@ monumenta = [
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
-        ('plugins/JeffChestSort.jar', '../../server_config/plugins/JeffChestSort.jar'),
+        ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
         ('plugins/nbt-api.jar', '../../server_config/plugins/nbt-api.jar'),
         ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
@@ -218,13 +218,13 @@ config = {
         'linked':server_config + base_plugins + dynmap,
     },
 
-    'region_3':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-        ],
-        'linked':server_config + base_plugins + dynmap,
-    },
+    #'region_3':{
+    #    'config':server_config_to_copy + [
+    #        ('server.properties', 'view-distance', 'view-distance=8'),
+    #        ('spigot.yml', 'view-distance', '    view-distance: 8'),
+    #    ],
+    #    'linked':server_config + base_plugins + dynmap,
+    #},
 
     'dungeon':{
         'config':server_config_to_copy + [
