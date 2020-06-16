@@ -45,6 +45,8 @@ from common import get_list_match, datestr, split_string
         "...",
         "misc"
     ],
+    # Difficulty can be "easy", "medium", or "hard". Neutral if not present.
+    "complexity": "easy",
     "priorities": [
         "N/A",
         "Critical",
@@ -244,7 +246,7 @@ class TaskDatabase(object):
 
         return priv >= min_privilege
 
-    def add_entry(self, description, labels=["misc"], author=None, image=None, priority="N/A"):
+    def add_entry(self, description, labels=["misc"], author=None, image=None, priority="N/A", complexity=None):
         entry = {
             "description": description,
             "labels": labels,
@@ -260,6 +262,9 @@ class TaskDatabase(object):
 
         if priority is not None:
             entry["priority"] = priority
+
+        if complexity is not None:
+            entry["complexity"] = complexity
 
         entry["pending_notification"] = False
 
@@ -299,8 +304,20 @@ class TaskDatabase(object):
                 else:
                     assigned_text = '''`Assigned: {}`\n'''.format(user.display_name)
 
-        entry_text = '''`#{} [{} - {}] {}`
-{}{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, assigned_text, entry["description"], react_text)
+        complexity = ':white_circle:'
+        if "complexity" in entry:
+            if entry["complexity"] == "easy":
+                complexity = ':green_circle:'
+            elif entry["complexity"] == "medium":
+                complexity = ':orange_circle:'
+            elif entry["complexity"] == "hard":
+                complexity = ':red_circle:'
+            else:
+                complexity = ':white_circle:'
+
+
+        entry_text = '''`#{} [{} - {}] {}` {}
+{}{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, complexity, assigned_text, entry["description"], react_text)
 
         if "close_reason" in entry:
             entry_text = '''~~{}~~
@@ -620,7 +637,7 @@ You can also attach an image to your message to include it in the {single}
         part = args.split(maxsplit=2)
         if (not args) or (len(part) < 2):
             raise ValueError('''How to edit a {single}:```
-{prefix} edit # [description | label | image | author | priority] edited stuff
+{prefix} edit # [description | label | image | author | priority | complexity] edited stuff
 ```
 For example:```
 {prefix} edit 5 description Much more detail here
@@ -629,14 +646,14 @@ For example:```
 
         index, entry = self.get_entry(part[0].strip())
 
-        operation = get_list_match(part[1].strip(), ['description', 'label', 'image', 'author', 'priority'])
+        operation = get_list_match(part[1].strip(), ['description', 'label', 'image', 'author', 'priority', 'complexity'])
         if operation is None:
-            raise ValueError("Item to edit must be 'description', 'label', 'image', 'author', or 'priority'")
+            raise ValueError("Item to edit must be 'description', 'label', 'image', 'author', 'priority' or 'complexity'")
 
         min_priv = 4
         if operation in ['description', 'label', 'image']:
             min_priv = 1
-        if operation in ['author', 'priority']:
+        if operation in ['author', 'priority', 'complexity']:
             min_priv = 2
 
         if not self.has_privilege(min_priv, message.author, index=index):
@@ -707,6 +724,17 @@ __Available Priorities:__
                 raise ValueError("Priority must be one of: [{}]".format(",".join(self._priorities)))
 
             entry["priority"] = priority
+
+        elif operation == 'complexity':
+            complexities = ["easy", "medium", "hard"]
+            if len(part) < 3:
+                raise ValueError("Available complexities: [{}]".format(",".join(complexities)))
+
+            complexity = get_list_match(part[2].strip().lower(), complexities)
+            if complexity is None:
+                raise ValueError("Complexity must be one of: [{}]".format(",".join(complexities)))
+
+            entry["complexity"] = complexity
 
         if entry["author"] == message.author.id:
             entry["pending_notification"] = False
