@@ -83,6 +83,13 @@ class LootTableManager(object):
                 enchant.value["lvl"] = nbt.TagShort(enchant_lvl)
                 enchant.value["id"] = nbt.TagString(enchant_id)
 
+        # Fix up item name json
+        if item_nbt.has_path("display.Name"):
+            name_possibly_json = item_nbt.at_path("display.Name").value
+            name_possibly_json = name_possibly_json.replace(r"\\u0027", "'")
+            name_possibly_json = name_possibly_json.replace(r"\\u00a7", "§")
+            item_nbt.at_path("display.Name").value = name_possibly_json
+
         # Convert item lore text to raw json text
         if item_nbt.has_path("display.Lore"):
             new_lore_list = []
@@ -102,8 +109,8 @@ class LootTableManager(object):
             new_lore_list = []
             for lore_nbt in item_nbt.at_path("display.Lore").value:
                 lore_text_possibly_json = lore_nbt.value
-                lore_text_possibly_json = re.sub(r"\\u0027", "'", lore_text_possibly_json)
-                lore_text_possibly_json = re.sub(r"\\u00a7", "§", lore_text_possibly_json)
+                lore_text_possibly_json = lore_text_possibly_json.replace(r"\\u0027", "'")
+                lore_text_possibly_json = lore_text_possibly_json.replace(r"\\u00a7", "§")
 
                 try:
                     json.loads(lore_text_possibly_json)
