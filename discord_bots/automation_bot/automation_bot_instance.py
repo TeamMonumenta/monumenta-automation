@@ -941,6 +941,9 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         # Raffle
         ########################################
 
+        await self.display("Refreshing leaderboards")
+        await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
+
         await self.display("Running score changes for players and moving them to spawn...")
         await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + " /home/epic/project_epic/server_config/redis_data_initial")
 
@@ -1024,6 +1027,9 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         await self.run("rm -rf /home/epic/temp_player_data")
         await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.play/ play --output /home/epic/temp_player_data")
         await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.stage/ play --input /home/epic/temp_player_data 2")
+
+        await self.display("Refreshing leaderboards")
+        await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis.stage/ play " + os.path.join(_top_level, "leaderboards.yaml"))
 
         await self.display("Updating uuid2name and name2uuid indexes...")
         await self.run(os.path.join(_top_level, "rust/bin/update_redis_uuid2name_name2uuid") + " redis://redis/ play")
