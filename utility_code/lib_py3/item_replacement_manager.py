@@ -67,6 +67,9 @@ class ItemReplacementManager(object):
             return False
 
         # Remember the original tag (without damage)
+        if not item.has_path('tag'):
+            item.value['tag'] = nbt.TagCompound({})
+
         orig_tag_copy = item.at_path('tag').deep_copy()
         if "Damage" in orig_tag_copy.value:
             orig_tag_copy.value.pop("Damage")
@@ -98,6 +101,9 @@ class ItemReplacementManager(object):
         updated_tag_copy = item.at_path('tag').deep_copy()
         if "Damage" in updated_tag_copy.value:
             updated_tag_copy.value.pop("Damage")
+
+        if item.has_path('tag') and len(item.at_path('tag').value) == 0:
+            item.value.pop('tag')
 
         if not orig_tag_copy.equals_exact(updated_tag_copy):
             # Item changed

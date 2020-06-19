@@ -157,8 +157,17 @@ class AbortNoLore(GlobalRule):
     name = "Abort if there's no lore text"
 
     def preprocess(self, template, item):
-        if item.at_path('id').value == 'minecraft:written_book':
+        if item.has_path('tag.display.Name'):
+            name_text = parse_name_possibly_json(item.at_path('tag.display.Name').value)
+            name_plain = unformat_text(name_text)
+        else:
+            name_plain = None
+
+        if item.at_path('id').value in ('minecraft:written_book', 'minecraft:experience_bottle'):
             # Allow replacing written books
+            return
+        elif (item.at_path('id').value == 'minecraft:prismarine_shard'
+              and name_plain == 'Crystalline Shard'):
             return
         elif not item.has_path('tag.display.Lore'):
             # Abort!

@@ -138,9 +138,6 @@ class SubtituteItems(SubstitutionRule):
             id_replacements[old_name] = (new_id, new_name)
 
     def process(self, item_meta, item):
-        if not item.has_path('tag.display.Name'):
-            return
-
         old_id = item_meta['id']
         old_name = item_meta['name']
 
