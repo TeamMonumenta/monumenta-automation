@@ -98,17 +98,27 @@ class FixDoubleJsonNames(SubstitutionRule):
     name = "Fixed json in json names"
 
     def process(self, item_meta, item):
-        try:
-            if not item.has_path('tag.display.Name'):
-                return
-            name = item.at_path('tag.display.Name').value
-            name_json = parse_name_possibly_json(name)
-            name_json_json = parse_name_possibly_json(name_json)
-            if name_json != name_json_json:
-                item.at_path('tag.display.Name').value = name_json
-                item_meta['name'] = unformat_text(name_json_json)
-        except:
-            pass
+        if not item.has_path('tag.display.Name'):
+            return
+        name = item.at_path('tag.display.Name').value
+        name_json = parse_name_possibly_json(name)
+        name_json_json = parse_name_possibly_json(name_json)
+        if name_json != name_json_json:
+            item.at_path('tag.display.Name').value = name_json
+            item_meta['name'] = unformat_text(name_json_json)
+
+class FixEscapedNames(SubstitutionRule):
+    name = "Fixed escaped characters in json names"
+
+    def process(self, item_meta, item):
+        if not item.has_path('tag.display.Name'):
+            return
+        name = item.at_path('tag.display.Name').value
+        name = name.replace(r"\\u0027", "'")
+        name = name.replace(r"\\u00a7", "§")
+        name_json = parse_name_possibly_json(name)
+        item.at_path('tag.display.Name').value = name
+        item_meta['name'] = unformat_text(name_json)
 
 class SubtituteItems(SubstitutionRule):
     name = "Substitute the ID and name of items, ignoring other NBT"
