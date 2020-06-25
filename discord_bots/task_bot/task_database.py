@@ -26,6 +26,9 @@ from common import get_list_match, datestr, split_string
             # Automatically set to "N/A" on creation
             "priority": "High", # Case sensitive for matching, do case insensitive compare for input
 
+            # Automatically set to "unknown" on creation
+            "complexity": "easy",
+
             # Optional:
             "image": None, # Might be None OR not present at all
 
@@ -46,8 +49,12 @@ from common import get_list_match, datestr, split_string
         "...",
         "misc"
     ],
-    # Difficulty can be "easy", "medium", or "hard". Neutral if not present.
-    "complexity": "easy",
+    "complexities": {
+        "easy":     ":green_circle:",
+        "moderate": ":orange_circle:",
+        "hard":     ":red_circle:",
+        "unknown":  ":white_circle:"
+    },
     "priorities": [
         "N/A",
         "Critical",
@@ -92,6 +99,7 @@ class TaskDatabase(object):
             'entries': self._entries,
             'next_index': self._next_index,
             'labels': self._labels,
+            'complexities': self._complexities,
             'priorities': self._priorities,
             'notifications_disabled': list(self._notifications_disabled),
         }
@@ -114,17 +122,52 @@ class TaskDatabase(object):
                 "Zero",
                 "N/A",
             ]
+            self._complexities = {
+                "easy":     ":green_circle:",
+                "moderate": ":orange_circle:",
+                "hard":     ":red_circle:",
+                "unknown":  ":white_circle:"
+            }
             self._notifications_disabled = set([])
             self.save()
+            print("Initialized new {} database".format(self._descriptor_single), flush=True)
         else:
             with open(self._database_path, 'r') as f:
                 data = json.load(f)
 
+            # Must exist
             self._entries = data['entries']
             self._next_index = data['next_index']
+
             # TODO: Scan through and add all labels
-            self._labels = data['labels']
-            self._priorities = data['priorities']
+            if 'labels' in data:
+                self._labels = data['labels']
+            else:
+                self._labels = [
+                    "misc",
+                ]
+
+            if 'priorities' in data:
+                self._priorities = data['priorities']
+            else:
+                self._priorities = [
+                    "Critical",
+                    "High",
+                    "Medium",
+                    "Low",
+                    "Zero",
+                    "N/A",
+                ]
+
+            if 'complexities' in data:
+                self._complexities = data['complexities']
+            else:
+                self._complexities = {
+                    "easy":     ":green_circle:",
+                    "moderate": ":orange_circle:",
+                    "hard":     ":red_circle:",
+                    "unknown":  ":white_circle:"
+                }
 
             if 'notifications_disabled' in data:
                 self._notifications_disabled = set(data['notifications_disabled'])
@@ -137,9 +180,14 @@ class TaskDatabase(object):
                 if "pending_notification" not in entry:
                     entry["pending_notification"] = True
                     changed = True
+                if "complexity" not in entry:
+                    entry["complexity"] = "unknown"
+                    changed = True
 
             if changed:
                 self.save()
+
+            print("Loaded {} database".format(self._descriptor_single), flush=True)
 
     def get_entry(self, index_str):
         """
@@ -247,7 +295,7 @@ class TaskDatabase(object):
 
         return priv >= min_privilege
 
-    def add_entry(self, description, labels=["misc"], author=None, image=None, priority="N/A", complexity=None):
+    def add_entry(self, description, labels=["misc"], author=None, image=None, priority="N/A", complexity="unknown"):
         entry = {
             "description": description,
             "labels": labels,
@@ -261,12 +309,8 @@ class TaskDatabase(object):
         if image is not None:
             entry["image"] = image
 
-        if priority is not None:
-            entry["priority"] = priority
-
-        if complexity is not None:
-            entry["complexity"] = complexity
-
+        entry["priority"] = priority
+        entry["complexity"] = complexity
         entry["pending_notification"] = False
 
         index = self._next_index
@@ -305,20 +349,10 @@ class TaskDatabase(object):
                 else:
                     assigned_text = '''`Assigned: {}`\n'''.format(user.display_name)
 
-        complexity = ':white_circle:'
-        if "complexity" in entry:
-            if entry["complexity"] == "easy":
-                complexity = ':green_circle:'
-            elif entry["complexity"] == "medium":
-                complexity = ':orange_circle:'
-            elif entry["complexity"] == "hard":
-                complexity = ':red_circle:'
-            else:
-                complexity = ':white_circle:'
-
+        complexity_emoji = self._complexities[entry["complexity"]]
 
         entry_text = '''`#{} [{} - {}] {}` {}
-{}{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, complexity, assigned_text, entry["description"], react_text)
+{}{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, complexity_emoji, assigned_text, entry["description"], react_text)
 
         if "close_reason" in entry:
             entry_text = '''~~{}~~
@@ -488,7 +522,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 `{prefix} reject <number> <reason why>`
     Closes the specified {single} with the given reason
 
-`{prefix} edit <number> <description | label | image> [argument]`
+`{prefix} edit <number> <description | label | image | priority | complexity> [argument]`
     Edits the specified field of the entry
 
 `{prefix} append <number> text`
@@ -731,13 +765,12 @@ __Available Priorities:__
             entry["priority"] = priority
 
         elif operation == 'complexity':
-            complexities = ["easy", "medium", "hard"]
             if len(part) < 3:
-                raise ValueError("Available complexities: [{}]".format(",".join(complexities)))
+                raise ValueError("Available complexities: [{}]".format(",".join(self._complexities.keys())))
 
-            complexity = get_list_match(part[2].strip().lower(), complexities)
+            complexity = get_list_match(part[2].strip().lower(), self._complexities.keys())
             if complexity is None:
-                raise ValueError("Complexity must be one of: [{}]".format(",".join(complexities)))
+                raise ValueError("Complexity must be one of: [{}]".format(",".join(self._complexities.keys())))
 
             entry["complexity"] = complexity
 
@@ -861,28 +894,50 @@ Closed     : {}```'''.format(total_open, total_closed)
     async def search_helper(self, args, max_count):
         part = args.replace(","," ").split()
         if (not args) or (len(part) < 1):
-            raise ValueError('''Usage: {prefix} search labels,priorities
-Default limit is 10 results - include more by adding a number to the search terms
+            raise ValueError('''Usage: {prefix} search labels,priorities,complexities,assigned,max_count
+
+Search for items by tags. Note this does **not** search by description - use dsearch for that. Search items can be separated by commas or spaces.
+
+You can combine multiple different tags to search for specific things. For example:
+> `{prefix} search plugin cmd moderate hard assigned 5`
+
+This will search for items labeled plugin AND cmd, have complexity=hard OR complexity=moderate, are assigned to someone, and at most return 5 results
+
+Default limit is 10 results
 If using multiple labels, all specified labels must match
-If using multiple priorities, at least one must match'''.format(prefix=self._prefix))
+If using multiple priorities or complexities, at least one must match
+
+Available labels: {labels}
+Available priorities: {priorities}
+Available complexities: {complexities}'''.format(prefix=self._prefix, labels=self._labels, priorities=self._priorities, complexities=self._complexities.keys()))
 
         match_labels = []
         match_priorities = []
+        match_complexities = []
+        # If False, don't check assigned.
+        # If None, any assigned user matches
+        # Otherwise, only specific user matches
+        match_assigned = False
         for item in part:
             item = item.strip()
             label_match = get_list_match(item, self._labels)
             priority_match = get_list_match(item, self._priorities)
+            complexity_match = get_list_match(item, self._complexities.keys())
 
-            if label_match is not None:
+            if item.strip().lower() == "assigned":
+                match_assigned = None
+            elif label_match is not None:
                 match_labels.append(label_match)
+            elif complexity_match is not None:
+                match_complexities.append(complexity_match)
             elif priority_match is not None:
                 match_priorities.append(priority_match)
             elif re.search("^[0-9][0-9]*$", item):
                 max_count = int(item)
             else:
-                raise ValueError('''No priority or label matching {!r}'''.format(item))
+                raise ValueError('''No priority, label, complexity, or 'assigned' matching {!r}'''.format(item))
 
-        if len(match_labels) == 0 and len(match_priorities) == 0:
+        if len(match_labels) == 0 and len(match_priorities) == 0 and len(match_complexities) == 0 and match_assigned is False:
             raise ValueError('Must specify something to search for')
 
         match_entries = []
@@ -898,20 +953,32 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
                 if (len(match_priorities) > 0) and (entry["priority"] not in match_priorities):
                     matches = False
 
+                if (len(match_complexities) > 0) and (entry["complexity"] not in match_complexities):
+                    matches = False
+
+                if match_assigned is None:
+                    if "assignee" not in entry:
+                        matches = False
+                elif match_assigned is not False:
+                    # TODO
+                    raise NotImplementedError("Searching against a specific assigned user not implemented")
+
                 if matches:
                     count += 1
                     match_entries.append((index, entry))
 
-        return (match_entries, match_labels, match_priorities, max_count)
+        return (match_entries, match_labels, match_priorities, match_complexities, max_count)
 
     ################################################################################
     # search
     async def cmd_search(self, message, args):
-        match_entries, match_labels, match_priorities, max_count = await self.search_helper(args, max_count=10)
+        match_entries, match_labels, match_priorities, match_complexities, max_count = await self.search_helper(args, max_count=10)
 
         await self.print_search_results(message.channel, match_entries, limit=max_count)
 
-        await(self.reply(message, "{} {} found matching labels={} priorities={}".format(len(match_entries), self._descriptor_plural, ",".join(match_labels), ",".join(match_priorities))))
+        await self.reply(message, "{} {} found matching labels={} priorities={} complexities={}".format(
+            len(match_entries), self._descriptor_plural,
+            ",".join(match_labels), ",".join(match_priorities), ",".join(match_complexities)))
 
     ################################################################################
     # dsearch
@@ -954,15 +1021,7 @@ If using multiple priorities, at least one must match'''.format(prefix=self._pre
     ################################################################################
     # isearch
     async def cmd_isearch(self, message, args):
-        if "assigned" == args:
-            match_entries = []
-            for index in self._entries:
-                entry = self._entries[index]
-                if "close_reason" not in entry:
-                    if "assignee" in entry:
-                        match_entries.append((index, entry))
-        else:
-            match_entries, _, __, ___ = await self.search_helper(args, max_count=100)
+        match_entries, _, __, ___, ____ = await self.search_helper(args, max_count=100)
 
         if len(match_entries) <= 0:
             raise ValueError("No results to display")
@@ -1442,7 +1501,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
                 # Match any non-empty assignee
                 match_assignee = None
             else:
-                # Match any non-empty assignee
+                # Match specific assignee
                 match_assignee = self.get_user(message.guild, args)
 
         match_entries = []
