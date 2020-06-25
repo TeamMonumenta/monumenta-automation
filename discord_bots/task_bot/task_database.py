@@ -169,10 +169,10 @@ class TaskDatabase(object):
                     "unknown":  ":white_circle:"
                 }
 
+            self._notifications_disabled = set([])
             if 'notifications_disabled' in data:
-                self._notifications_disabled = set(data['notifications_disabled'])
-            else:
-                self._notifications_disabled = set([])
+                for author in data['notifications_disabled']:
+                    self._notifications_disabled.add(int(author))
 
             changed = False
             for item_id in self._entries:
@@ -1277,7 +1277,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
     # notify
     async def cmd_notify(self, message, args):
         if not args:
-            if str(message.author.id) in self._notifications_disabled:
+            if message.author.id in self._notifications_disabled:
                 await(self.reply(message, '''You will __not__ be notified of changes to your {plural}.
 To change this, `{prefix} notify on`'''.format(plural=self._descriptor_plural, prefix=self._prefix)))
             else:
@@ -1291,14 +1291,14 @@ To change this, `{prefix} notify off`'''.format(plural=self._descriptor_plural, 
             raise ValueError("Argument to {prefix} notify must be 'on' or 'off'".format(prefix=self._prefix))
 
         if match == "on":
-            if str(message.author.id) in self._notifications_disabled:
-                self._notifications_disabled.remove(str(message.author.id))
+            if message.author.id in self._notifications_disabled:
+                self._notifications_disabled.remove(message.author.id)
         else:
-            self._notifications_disabled.add(str(message.author.id))
+            self._notifications_disabled.add(message.author.id)
 
         self.save()
 
-        if str(message.author.id) in self._notifications_disabled:
+        if message.author.id in self._notifications_disabled:
             await(self.reply(message, '''You will __not__ be notified of changes to your {plural}.
 To change this, {prefix} notify on'''.format(plural=self._descriptor_plural, prefix=self._prefix)))
         else:
