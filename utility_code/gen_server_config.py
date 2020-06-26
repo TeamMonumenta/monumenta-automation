@@ -83,6 +83,7 @@ monumenta = [
         ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
+        ('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
         ('plugins/nbt-api.jar', '../../server_config/plugins/nbt-api.jar'),
         ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
