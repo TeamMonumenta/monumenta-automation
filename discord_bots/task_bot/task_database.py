@@ -393,7 +393,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
     async def print_search_results(self, channel, match_entries, limit=15, sort_entries=True, mention_assigned=False, include_reactions=True):
         # Sort the returned entries
         if sort_entries:
-            print_entries = sorted(match_entries, key=lambda k: (self._priorities.index(k[1]['priority']), int(k[0])))
+            print_entries = self.sort_entries_by_priority(match_entries)
         else:
             print_entries = match_entries
 
@@ -1556,34 +1556,34 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         return "  ".join(sorted(entry[1]["labels"]))
 
     def get_flattened_priority(cls, entry):
-        return entry[1]["priority"] + "," + entry[1].get("complexity", "none")
+        return entry[1]["priority"] + "," + entry[1]["complexity"]
 
     def sort_entries_by_priority(cls, entry_list):
         priority = {
             "Critical,easy": 1,
-            "Critical,medium": 2,
+            "Critical,moderate": 2,
             "Critical,hard": 3,
-            "Critical,none": 4,
+            "Critical,unknown": 4,
             "High,easy": 5,
-            "High,medium": 6,
+            "High,moderate": 6,
             "Medium,easy": 7,
             "High,hard": 8,
-            "High,none": 9,
-            "Medium,medium": 10,
+            "High,unknown": 9,
+            "Medium,moderate": 10,
             "Low,easy": 11,
             "N/A,easy": 12,
             "Medium,hard": 13,
-            "Medium,none": 14,
-            "Low,medium": 15,
-            "N/A,medium": 16,
+            "Medium,unknown": 14,
+            "Low,moderate": 15,
+            "N/A,moderate": 16,
             "Zero,easy": 17,
-            "N/A,none": 18,
+            "N/A,unknown": 18,
             "N/A,hard": 19,
             "Low,hard": 20,
-            "Low,none": 21,
-            "Zero,medium": 22,
+            "Low,unknown": 21,
+            "Zero,moderate": 22,
             "Zero,hard": 23,
-            "Zero,none": 24,
+            "Zero,unknown": 24,
         }
         def cmp(a, b):
             return (a > b) - (a < b)
@@ -1634,7 +1634,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
             if last_label_msg is not None:
                 await last_label_msg.pin()
             last_label_msg = await channel.send('''**{}**'''.format(bucket))
-            await self.print_search_results(channel, self.sort_entries_by_priority(buckets[bucket]), limit=10, sort_entries=False, mention_assigned=False, include_reactions=False)
+            await self.print_search_results(channel, buckets[bucket], limit=10, mention_assigned=False, include_reactions=False)
         if last_label_msg is not None:
             await last_label_msg.pin()
 
