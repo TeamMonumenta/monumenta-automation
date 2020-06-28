@@ -509,8 +509,8 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 `{prefix} notify [on|off]`
     Toggles whether you get notified of updates to your {plural}
 
-`{prefix} roulette`
-    Gets a random {single}
+`{prefix} roulette [search terms]`
+    Gets a random {single} matching search terms
 
 `{prefix} stats`
     Gets current {single} statistics
@@ -829,13 +829,20 @@ __Available Priorities:__
     ################################################################################
     # roulette
     async def cmd_roulette(self, message, args):
-        match_entries = []
-        for index in self._entries:
-            entry = self._entries[index]
-            if "close_reason" not in entry:
-                match_entries.append((index, entry))
-
-        await self.print_search_results(message.channel, [random.choice(match_entries)])
+        if args:
+            # If args are provided, use them to narrow the list
+            match_entries, _, __, ___, ____ = await self.search_helper(args, max_count=10)
+        else:
+            # If no args, random from any open item
+            match_entries = []
+            for index in self._entries:
+                entry = self._entries[index]
+                if "close_reason" not in entry:
+                    match_entries.append((index, entry))
+        if not match_entries:
+            await self.reply(message, "No {plural} found matching those search terms".format(plural=self._descriptor_plural))
+        else:
+            await self.print_search_results(message.channel, [random.choice(match_entries)])
 
     ################################################################################
     # stats
