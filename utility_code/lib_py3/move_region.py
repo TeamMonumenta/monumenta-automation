@@ -154,4 +154,17 @@ def _fixEntity(onMatchArgs,entityDetails):
     ):
         entity.at_path("xTile").value += dx
         entity.at_path("zTile").value += dz
+    if entity.has_path("Tags"):
+        tags = entity.at_path("Tags").value
+        for tag in tags:
+            if tag.value.startswith("PlayerDeathLocation;"):
+                death_loc_strs = tag.value.split(";")
+                if len(death_loc_strs) != 4:
+                    continue
+                try:
+                    death_loc_strs[1] = str(int(death_loc_strs[1]) + dx)
+                    death_loc_strs[3] = str(int(death_loc_strs[3]) + dx)
+                    tag.value = ";".join(death_loc_strs)
+                except:
+                    pass
 
