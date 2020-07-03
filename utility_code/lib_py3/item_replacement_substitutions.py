@@ -137,7 +137,9 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:bow", "Incendiary Inferno", "minecraft:crossbow", "Incendiary Inferno"],
             ["minecraft:bow", "Pirate's Flintlock", "minecraft:crossbow", "Pirate's Flintlock"],
             ["minecraft:bow", "Miner's Flintlock", "minecraft:crossbow", "Miner's Flintlock"],
-            ["minecraft:experience_bottle", always_equal, "minecraft:experience_bottle", "Bottle o' Enchanting"],
+            ["minecraft:experience_bottle", always_equal, "minecraft:experience_bottle", "Experience Bottle"],
+            ["minecraft:bow", "Swiftwood Shortbow", "minecraft:spruce_leaves", "Mistleaf Bracer"],
+            ["minecraft:bow", "Swiftwood Longbow", "minecraft:spruce_leaves", "Mistleaf Vambrace"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
