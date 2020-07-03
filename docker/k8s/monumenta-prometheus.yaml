@@ -1,7 +1,7 @@
 # helm repo add stable https://kubernetes-charts.storage.googleapis.com
 # helm repo update
-# helm install prom-op stable/prometheus-operator --set kubeProxy.enabled=false
-# Default password prom-operator
+# helm install prom-op stable/prometheus-operator --set kubeProxy.enabled=false --set grafana.plugins=grafana-piechart-panel --set grafana.adminPassword=...
+# Default password prom-operator if admin password not passed in
 
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
