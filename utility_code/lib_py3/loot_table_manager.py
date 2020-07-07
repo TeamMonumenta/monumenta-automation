@@ -86,8 +86,8 @@ class LootTableManager(object):
         # Fix up item name json
         if item_nbt.has_path("display.Name"):
             name_possibly_json = item_nbt.at_path("display.Name").value
-            name_possibly_json = name_possibly_json.replace(r"\\u0027", "'")
-            name_possibly_json = name_possibly_json.replace(r"\\u00a7", "§")
+            name_possibly_json = name_possibly_json.replace("\\u0027", "'")
+            name_possibly_json = name_possibly_json.replace("\\u00a7", "§")
             item_nbt.at_path("display.Name").value = name_possibly_json
 
         # Convert item lore text to raw json text
