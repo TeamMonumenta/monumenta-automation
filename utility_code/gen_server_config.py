@@ -170,9 +170,11 @@ plan = [
     ]
 
 gobrush = [
+        ('plugins/Arceon.jar', '../../server_config/plugins/Arceon.jar'),
         ('plugins/goBrush.jar', '../../server_config/plugins/goBrush.jar'),
+        ('plugins/goBrush', '../../server_config/data/plugins/all/goBrush'),
         ('plugins/goPaint.jar', '../../server_config/plugins/goPaint.jar'),
-        ('plugins/goBrush', '../../server_config/plugins/goBrush'),
+        ('plugins/goPaint', '../../server_config/data/plugins/all/goPaint'),
     ]
 
 # Index of nodes:
@@ -273,7 +275,7 @@ config = {
             ('server.properties', 'difficulty', 'difficulty=normal'),
             ('plugins/LibraryOfSouls/config.yml', 'read_only', 'read_only: false'),
         ],
-        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect,
+        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect + gobrush,
     },
 
     'dev1':{
@@ -282,7 +284,7 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 6'),
             ('server.properties', 'difficulty', 'difficulty=normal'),
         ],
-        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect,
+        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect + gobrush,
     },
 
     'dev2':{
@@ -291,7 +293,7 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 6'),
             ('server.properties', 'difficulty', 'difficulty=normal'),
         ],
-        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect,
+        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect + gobrush,
     },
 
     'plots':{
