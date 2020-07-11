@@ -28,6 +28,7 @@ shards = [
     'sanctum',
     'shiftingcity',
     'tutorial',
+    'teal',
     'white',
     'willows',
     'yellow',

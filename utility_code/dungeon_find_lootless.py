@@ -150,6 +150,10 @@ dungeons = (
         "name":"shiftingcity",
         "region":{"x":-2, "z":9},
         "whitelisted_lore_lines":("Monument Block",),
+    },{
+        "name":"teal",
+        "region":{"x":-2, "z":12},
+        "whitelisted_lore_lines":("Monument Block",),
     },
 )
 

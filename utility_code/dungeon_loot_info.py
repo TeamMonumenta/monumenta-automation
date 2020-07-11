@@ -70,6 +70,9 @@ dungeons = (
         "name":"shiftingcity",
         "region":{"x":-2, "z":9},
     },{
+        "name":"teal",
+        "region":{"x":-2, "z":12},
+    },{
         "name":"rush",
         "region":{"x":-3, "z":15},
     },

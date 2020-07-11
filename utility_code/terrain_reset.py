@@ -210,6 +210,7 @@ available_configs = {
     "reverie": get_dungeon_config("reverie", "DCAccess"),
     "sanctum": get_dungeon_config("sanctum", "DS1Access"),
     "labs": get_dungeon_config("labs", "D0Access"),
+    "teal": get_dungeon_config("teal", "DTLAccess"),
     "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
     "roguelike": roguelike,
     "rush": rush,
