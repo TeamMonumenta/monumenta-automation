@@ -55,6 +55,7 @@ fn update_player_scores(player: &mut Player) {
         update_instance_scores(scores, "D9Access", 3 * INSTANCE_WEEK_OFFSET, &["D9Finished", "Delve9Challenge"]);
         update_instance_scores(scores, "D10Access", 3 * INSTANCE_WEEK_OFFSET, &["D10Finished", "Delve10Challenge"]);
         update_instance_scores(scores, "D11Access", 3 * INSTANCE_WEEK_OFFSET, &["D11Finished", "Delve11Challenge"]);
+        update_instance_scores(scores, "DTLAccess", 3 * INSTANCE_WEEK_OFFSET, &["DTLFinished", "DelveTLChallenge"]);
         update_instance_scores(scores, "DCAccess", 3 * INSTANCE_WEEK_OFFSET, &[]);
         update_instance_scores(scores, "DB1Access", 3 * INSTANCE_WEEK_OFFSET, &["DelveWChallenge"]);
         update_instance_scores(scores, "DRL2Access", 3 * INSTANCE_WEEK_OFFSET, &[]);
