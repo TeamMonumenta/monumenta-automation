@@ -213,6 +213,13 @@ class LootTableManager(object):
                 if aFile.endswith(".json"):
                     filename = os.path.join(root, aFile)
 
+                    # Don't update the items index files, they are auto generated
+                    if "epic/loot_tables/index" in filename:
+                        continue
+                    # Don't update the LoS database
+                    if "LibraryOfSouls/souls_database" in filename:
+                        continue
+
                     try:
                         json_file = jsonFile(filename)
                         if type(json_file.dict) is OrderedDict and "pools" in json_file.dict:
