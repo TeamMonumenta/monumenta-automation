@@ -61,11 +61,12 @@ purgatory_min = [
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
         ('plugins/VentureChat/config.yml', '../../../server_config/data/plugins/all/VentureChat/config.yml'),
+        ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
+        ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
     ]
 
 server_config_min = purgatory_min + [
         ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
-        ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
         ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
         ('plugins/BKCommonLib.jar', '../../server_config/plugins/BKCommonLib.jar'),
         ('plugins/LightCleaner.jar', '../../server_config/plugins/LightCleaner.jar'),
@@ -79,7 +80,6 @@ server_config = server_config_min + [
 monumenta = [
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
         ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
-        ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
@@ -221,13 +221,13 @@ config = {
         'linked':server_config + base_plugins + dynmap,
     },
 
-    #'region_3':{
-    #    'config':server_config_to_copy + [
-    #        ('server.properties', 'view-distance', 'view-distance=8'),
-    #        ('spigot.yml', 'view-distance', '    view-distance: 8'),
-    #    ],
-    #    'linked':server_config + base_plugins + dynmap,
-    #},
+    'region_3':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=12'),
+            ('spigot.yml', 'view-distance', '    view-distance: 12'),
+        ],
+        'linked':server_config + base_plugins + dynmap,
+    },
 
     'dungeon':{
         'config':server_config_to_copy + [
@@ -327,6 +327,17 @@ config = {
             ('server.properties', 'spawn-npcs', 'spawn-npcs=false'),
             ('server.properties', 'spawn-protection', 'spawn-protection=16'),
             ('paper.yml', 'keep-spawn-loaded', '    keep-spawn-loaded: true'),
+            ('permissions.yml', 'players:'),
+            ('permissions.yml', '  description: Default players'),
+            ('permissions.yml', '  default: true'),
+            ('permissions.yml', '  children:'),
+            ('permissions.yml', '    minecraft.autocraft: true'),
+            ('permissions.yml', '    minecraft.command.help: true'),
+            ('permissions.yml', '    minecraft.command.list: true'),
+            ('permissions.yml', '    minecraft.command.me: true'),
+            ('permissions.yml', '    minecraft.command.tell: true'),
+            ('permissions.yml', '    minecraft.command.tps: true'),
+            ('permissions.yml', '    monumenta.command.transferserver: true'),
         ],
         'linked':purgatory_min,
     },
@@ -453,7 +464,7 @@ def gen_server_config(servername):
         elif (len(replacement) == 2):
             # Need to append the second argument to the file
             with open(filename, "a") as fout:
-                fout.write(replacement[1])
+                fout.write(replacement[1] + "\n")
                 fout.close()
         elif (len(replacement) == 3):
             os.rename(filename, filename + ".old")
