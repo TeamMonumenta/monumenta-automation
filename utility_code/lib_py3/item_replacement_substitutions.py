@@ -140,6 +140,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:experience_bottle", always_equal, "minecraft:experience_bottle", "Experience Bottle"],
             ["minecraft:bow", "Swiftwood Shortbow", "minecraft:spruce_leaves", "Mistleaf Bracer"],
             ["minecraft:bow", "Swiftwood Longbow", "minecraft:spruce_leaves", "Mistleaf Vambrace"],
+            ["minecraft:totem_of_undying", "Cobaltean Charm", "minecraft:compass", "Cobaltean Charm"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
