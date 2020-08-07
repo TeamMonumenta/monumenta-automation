@@ -112,7 +112,7 @@ roguelike = {
     "localBuildFolder":"/home/epic/5_SCRATCH/tmpreset/TEMPLATE/roguelike/Project_Epic-roguelike/",
     "localDstFolder":"/home/epic/project_epic/roguelike/Project_Epic-roguelike/",
     "copyBaseFrom":"build",
-    "copyMainPaths":["stats", "data/scoreboard.dat"],
+    "copyMainPaths":["stats",],
     "datapacks":datapacks_dungeon + ['file/roguelike'],
 }
 
