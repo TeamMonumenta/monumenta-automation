@@ -36,6 +36,44 @@ logging.info("Config: \n{}".format(pformat(config)))
 old_umask = os.umask(0o022)
 logging.info("New umask=0o022, old umask={}".format(oct(old_umask)))
 
+# TODO: This should be config. Ignore messages in bug reports, suggestions, and announcements
+ignored_reaction_channels = [
+        # rules
+        704049401588613161,
+        # welcome
+        313413923821060107,
+        # rules-faq
+        313066655494438922,
+        # announcements
+        313403825442521088,
+        # change-logs
+        313404193647886337,
+        # epic-bot
+        486019840134610965,
+        # server-status
+        579190910567317514,
+        # spoiler-chat
+        513043410526142484,
+        # community-bot
+        562691403596169216,
+        # self-promo
+        721491379020365835,
+        # suggestions-voting
+        575186608761077760,
+        # suggestions-bot-feed
+        575210423025139713,
+        # bugs-fixed-for-next-update
+        515270484322156575,
+        # bug-reports
+        569283558741508107,
+        # bug-report-bot-feed
+        569283901202366524,
+        # moderator-help
+        358326443609948160,
+        # rp-announcements
+        481866909097132043,
+]
+
 try:
     client = discord.Client()
 
@@ -99,8 +137,7 @@ try:
 
                 time_cutoff = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
 
-                # TODO: This should be config. Ignore messages in bug reports, suggestions, and announcements
-                if payload.channel_id in [569283558741508107, 575186608761077760, 313403825442521088]:
+                if payload.channel_id in ignored_reaction_channels:
                     return
 
                 channel = client.get_channel(payload.channel_id)
