@@ -769,7 +769,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
 
         async def send_broadcast_msg(time_left):
             self._socket.send_packet("*", "Monumenta.Broadcast.Command",
-                    {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta's weekly update will begin in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". The server will be down for approximately 1.5 hours while we patch new content into the game."}]'''}
+                    {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta's weekly update will begin in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". The server will be down for approximately 30 minutes while we patch new content into the game."}]'''}
             )
             await self.display("{} to weekly update".format(time_left)),
 
