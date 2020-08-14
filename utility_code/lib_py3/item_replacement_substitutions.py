@@ -141,6 +141,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:bow", "Swiftwood Shortbow", "minecraft:spruce_leaves", "Mistleaf Bracer"],
             ["minecraft:bow", "Swiftwood Longbow", "minecraft:spruce_leaves", "Mistleaf Vambrace"],
             ["minecraft:totem_of_undying", "Cobaltean Charm", "minecraft:compass", "Cobaltean Charm"],
+            ["minecraft:chainmail_leggings", "Jorts Of Monshee", "minecraft:chainmail_leggings", "Jorts of Monshee"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
