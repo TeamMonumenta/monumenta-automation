@@ -163,7 +163,7 @@ def _fixEntity(onMatchArgs,entityDetails):
                     continue
                 try:
                     death_loc_strs[1] = str(int(death_loc_strs[1]) + dx)
-                    death_loc_strs[3] = str(int(death_loc_strs[3]) + dx)
+                    death_loc_strs[3] = str(int(death_loc_strs[3]) + dz)
                     tag.value = ";".join(death_loc_strs)
                 except:
                     pass
