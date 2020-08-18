@@ -111,8 +111,7 @@ def enchantify(item, player, enchantment, owner_prefix=None):
             newLore.append(nbt.TagString(owner_json))
             nameAdded = True
 
-        loreText_json = jsonify_text(loreText)
-        newLore.append(nbt.TagString(loreText_json))
+        newLore.append(loreEntry)
 
     if not enchantmentFound:
         # Don't apply changes
@@ -248,7 +247,7 @@ class PreserveEnchantments(GlobalRule):
                 'enchant_on_template': False,
                 'enchant_found': False,
                 'enchant_line': None,
-                'player': None
+                'players': []
             })
 
         if template.has_path('display.Lore'):
@@ -270,23 +269,24 @@ class PreserveEnchantments(GlobalRule):
                         enchantment['enchant_found'] = True
                         enchantment['enchant_line'] = lore_text
                     if owner_prefix is not None and lore_text.startswith(owner_prefix):
-                        enchantment['player'] = lore_text[len(owner_prefix)+1:]
+                        enchantment['players'].append(lore_text[len(owner_prefix)+1:])
 
     def postprocess(self, item):
         for enchantment in self.enchantment_state:
             enchant_found = enchantment['enchant_found']
-            player = enchantment['player']
+            players = enchantment['players']
             enchant_line = enchantment['enchant_line']
             owner_prefix = enchantment['owner_prefix']
 
             if not enchant_found:
                 continue
 
-            if player:
-                enchantify(item, player, enchant_line, owner_prefix=owner_prefix)
+            if players:
+                for player in players:
+                   enchantify(item, player, enchant_line, owner_prefix=owner_prefix)
             else:
                 # Apply the enchantment without saying who added it (workaround for past bug)
-                enchantify(item, player, enchant_line, owner_prefix=None)
+                enchantify(item, None, enchant_line, owner_prefix=None)
 
 class PreserveShattered(GlobalRule):
     name = 'Preserve Shattered'
