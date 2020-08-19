@@ -244,25 +244,14 @@ class PreserveEnchantments(GlobalRule):
             self.enchantment_state.append({
                 'enchantment': enchantment['enchantment'],
                 'owner_prefix': enchantment['owner_prefix'],
-                'enchant_on_template': False,
                 'enchant_found': False,
                 'enchant_line': None,
                 'players': []
             })
 
-        if template.has_path('display.Lore'):
-            for lore in template.at_path('display.Lore').value:
-                for enchantment in self.enchantment_state:
-                    lore_text = parse_name_possibly_json(lore.value)
-                    if lore_text.startswith(enchantment['enchantment']):
-                        enchantment['enchant_on_template'] = True
-
         if item.has_path('tag.display.Lore'):
             for lore in item.at_path('tag.display.Lore').value:
                 for enchantment in self.enchantment_state:
-                    if enchantment['enchant_on_template']:
-                        # Don't apply the enchant if it already exists
-                        continue
                     owner_prefix = enchantment['owner_prefix']
                     lore_text = parse_name_possibly_json(lore.value)
                     if lore_text.startswith(enchantment['enchantment']):
