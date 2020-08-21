@@ -216,6 +216,7 @@ available_configs = {
     "rush": rush,
     "tutorial": tutorial,
     "build": None,
+    "build2": None,
     "bungee": None,
     "purgatory": None,
 }
