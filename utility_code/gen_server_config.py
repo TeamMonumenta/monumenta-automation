@@ -270,6 +270,18 @@ config = {
         'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect + gobrush,
     },
 
+    'build2':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'white-list', 'white-list=true'),
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+            ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
+            ('server.properties', 'difficulty', 'difficulty=peaceful'),
+            ('server.properties', 'gamemode', 'gamemode=creative'),
+        ],
+        'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect + gobrush,
+    },
+
     'mobs':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=6'),
@@ -417,6 +429,8 @@ def get_server_domain(servername):
         return 'purgatory'
     elif servername == 'build':
         return 'playerbuild'
+    elif servername == 'build2':
+        return 'build2'
     elif servername == 'tutorial':
         return 'tutorial'
     return SERVER_TYPE
