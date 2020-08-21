@@ -732,7 +732,7 @@ Must be run before starting terrain reset on the play server'''
                     await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/EpicWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
 
         for shard in folders_to_update:
-            if shard in ["build","bungee"]:
+            if shard in ["build","build2","bungee"]:
                 continue
 
             await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/stage/banned-ips.json /home/epic/project_epic/{}/".format(shard))
@@ -829,12 +829,12 @@ DELETES DUNGEON CORE PROTECT DATA'''
         for shard in allShards:
             await self.run("rm -rf /home/epic/project_epic/{}/cache".format(shard))
 
-            if shard not in ["build"]:
+            if shard not in ["build", "build2"]:
                 await self.run("rm -rf /home/epic/project_epic/{}/plugins/FastAsyncWorldEdit/clipboard".format(shard))
                 await self.run("rm -rf /home/epic/project_epic/{}/plugins/FastAsyncWorldEdit/history".format(shard))
                 await self.run("rm -rf /home/epic/project_epic/{}/plugins/FastAsyncWorldEdit/sessions".format(shard))
 
-            if shard not in ["build", "region_1", "plots"]:
+            if shard not in ["build", "build2", "region_1", "plots"]:
                 await self.run("rm -rf /home/epic/project_epic/{}/plugins/CoreProtect".format(shard))
 
         await self.display("Saving ops and banned players")
@@ -907,9 +907,9 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.run("mkdir 0_PREVIOUS")
 
         # Move everything to 0_PREVIOUS except bungee and build
-        await self.display("Moving everything except bungee and build to 0_PREVIOUS...")
+        await self.display("Moving everything except bungee, build, and build2 to 0_PREVIOUS...")
         for f in files:
-            if f not in ["0_PREVIOUS", "bungee", "build"]:
+            if f not in ["0_PREVIOUS", "bungee", "build", "build2"]:
                 await self.run("mv {} 0_PREVIOUS/".format(f))
 
         await self.display("Getting new server config...")
@@ -968,7 +968,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
                 await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
 
         for shard in allShards:
-            if shard in ["build","bungee"]:
+            if shard in ["build","build2","bungee"]:
                 continue
 
             await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-ips.json /home/epic/project_epic/{}/".format(shard))
