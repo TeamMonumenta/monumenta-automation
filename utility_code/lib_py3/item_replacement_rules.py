@@ -232,6 +232,8 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": '§7Tenacity', "owner_prefix": None},
         {"enchantment": '§7Vigor', "owner_prefix": None},
         {"enchantment": '§7Vitality', "owner_prefix": None},
+        {"enchantment": '§7Barking', "owner_prefix": None},
+        {"enchantment": '§7Debarking', "owner_prefix": None},
     )
 
     def __init__(self):
