@@ -3,7 +3,6 @@
 import copy
 import json
 import os
-import re
 import shutil
 import sys
 import uuid
@@ -77,8 +76,8 @@ def json_text_to_plain_text(json_text):
     return result
 
 def parse_name_possibly_json(name, remove_color=False):
-    name = re.sub(r"\\u0027", "'", name)
-    name = re.sub(r"\\u00a7", "§", name)
+    name = name.replace(r"\\u0027", "'")
+    name = name.replace(r"\\u00a7", "§")
     try:
         possibly_json_workaround = '{"value":' + name + '}'
         name_json_workaround = json.loads(possibly_json_workaround)
