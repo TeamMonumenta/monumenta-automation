@@ -145,7 +145,7 @@ impl Player {
         Ok(())
     }
 
-    pub fn save_redis(&mut self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
+    pub fn save_redis(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
         self.save_redis_player_data(domain, con)?;
         self.save_redis_advancements(domain, con)?;
         self.save_redis_scores(domain, con)?;
