@@ -905,6 +905,8 @@ Closed     : {}```'''.format(total_open, total_closed)
 
 Search for items by tags. Note this does **not** search by description - use dsearch for that. Search items can be separated by commas or spaces.
 
+Will not show zero priority things by default.
+
 You can combine multiple different tags to search for specific things. For example:
 > `{prefix} search plugin cmd moderate hard assigned 5`
 
@@ -946,6 +948,11 @@ Available complexities: {complexities}'''.format(prefix=self._prefix, labels=sel
 
         if len(match_labels) == 0 and len(match_priorities) == 0 and len(match_complexities) == 0 and match_assigned is False:
             raise ValueError('Must specify something to search for')
+
+        if len(match_priorities) == 0:
+            match_priorities = self._priorities.copy()
+            if "Zero" in match_priorities:
+                match_priorities.remove("Zero")
 
         match_entries = []
         count = 0
