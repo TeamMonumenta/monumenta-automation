@@ -95,6 +95,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/web-files/files/resource-packs
+        - name: authorized-keys-config
+          secret:
+            secretName: authorized-keys-config
+            defaultMode: 292
       containers:
       - name: basic-ssh
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-basic-ssh
@@ -125,5 +129,8 @@ spec:
           mountPath: /home/epic/region_1
         - name: nfs-resource-packs
           mountPath: /home/epic/resource-packs
+        - name: authorized-keys-config
+          mountPath: /home/epic/.ssh/authorized_keys
+          subPath: authorized_keys
       imagePullSecrets:
       - name: githubcred
