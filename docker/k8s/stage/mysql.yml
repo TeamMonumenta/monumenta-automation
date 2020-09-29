@@ -21,6 +21,9 @@ data:
   mysql.cnf: |
     [mysqld]
     max_connections = 200
+    # Helpful: https://tech.labelleassiette.com/how-to-reduce-the-memory-usage-of-mysql-61ea7d1a9bd
+    innodb_buffer_pool_size = 64M
+    tmp_table_size          = 8M
   docker.cnf: |
     [mysqld]
     skip-host-cache
@@ -80,7 +83,8 @@ spec:
           mountPath: /etc/mysql/conf.d
         resources:
           limits:
-            cpu: "3"
+            memory: 512Mi
+            cpu: "2"
       volumes:
         - name: mysql-persistent-storage
           hostPath:
