@@ -1034,6 +1034,10 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         await self.display("Updating uuid2name and name2uuid indexes...")
         await self.run(os.path.join(_top_level, "rust/bin/update_redis_uuid2name_name2uuid") + " redis://redis/ play")
 
+        await self.display("Disabling Plan and PremiumVanish...")
+        await self.run("mv -f /home/epic/project_epic/server_config/plugins/Plan.jar /home/epic/project_epic/server_config/plugins/Plan.jar.disabled")
+        await self.run("mv -f /home/epic/project_epic/server_config/plugins/PremiumVanish.jar /home/epic/project_epic/server_config/plugins/PremiumVanish.jar.disabled")
+
         await self.display("Stage server loaded with current play server data")
         await self.display(message.author.mention)
 
