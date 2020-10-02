@@ -145,6 +145,8 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:stone_sword", "The Frodian Keyblade", "minecraft:stone_sword", "Frodian Keyblade"],
             ["minecraft:golden_helmet", "Rageroot Crown", "minecraft:chainmail_helmet", "Rageroot Crown"],
             ["minecraft:potion", "Wormwood Oil", "minecraft:glass_bottle", "Wormwood Oil"],
+            ["minecraft:bone_meal", "Fierce Soul", "minecraft:white_dye", "Fierce Soul"],
+            ["minecraft:lapis_lazuli", "Speed Charm", "minecraft:blue_dye", "Speed Charm"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
