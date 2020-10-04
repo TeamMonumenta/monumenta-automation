@@ -951,7 +951,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
         await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --redisworld /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.log")
 
         await self.display("Loading player data back into redis...")
-        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial 20")
+        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial 5")
 
         await self.display("Running actual terrain reset (this will take a while!)...")
         await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))
