@@ -5,6 +5,7 @@ use std::fs::File;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::io::{Read};
+use crate::player::Player;
 
 use nbt;
 
@@ -41,13 +42,15 @@ impl ScoreboardCollection {
 
     pub fn add_scoreboard(&mut self, filepath: &str) -> BoxResult<()> {
         let scoreboard = Scoreboard::load(filepath)?;
+        self.add_existing_scoreboard(scoreboard)?;
+        Ok(())
+    }
 
+    pub fn add_existing_scoreboard(&mut self, scoreboard: Scoreboard) -> BoxResult<()> {
         for objective_name in scoreboard.objectives.keys() {
             self.objectives.insert(objective_name.to_string());
         }
-
-        self.scoreboards.insert(filepath.to_string(), scoreboard);
-
+        self.scoreboards.insert(scoreboard.filepath.to_string(), scoreboard);
         Ok(())
     }
 
@@ -109,6 +112,26 @@ impl ScoreboardCollection {
 }
 
 impl Scoreboard {
+    pub fn load_redis(domain: &str, con: &mut redis::Connection) -> BoxResult<Scoreboard> {
+        let mut scoreboard = Scoreboard{filepath: "TODO REDIS".to_string(), data_version: 0, objectives: HashMap::new()};
+
+        for (_, player) in Player::get_redis_players(&domain, con)?.iter_mut() {
+            player.load_redis_scores(domain, con)?;
+            player.load_redis_player_data(domain, con)?;
+
+            if let Some(scores) = &mut player.scores {
+                if let Some(playername) = &player.name {
+                    for (objective_name, value) in scores {
+                        let objective = scoreboard.objectives.entry(objective_name.to_string()).or_insert(Objective{criteria_name: "dummy".to_string(), display_name: objective_name.to_string(), render_type: "TODO REDIS".to_string(), data: HashMap::new()});
+
+                        objective.data.insert(playername.to_string(), Score{score: *value, locked: false});
+                    }
+                }
+            }
+        }
+        Ok(scoreboard)
+    }
+
     pub fn load(filepath: &str) -> BoxResult<Scoreboard> {
         let mut file = File::open(filepath)?;
         let mut contents = Vec::new();

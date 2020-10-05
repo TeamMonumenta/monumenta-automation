@@ -10,6 +10,7 @@ use std::collections::HashMap;
 use regex::Regex;
 use simplelog::*;
 use monumenta::scoreboard::ScoreboardCollection;
+use monumenta::scoreboard::Scoreboard;
 
 use std::error::Error;
 type BoxResult<T> = Result<T,Box<dyn Error>>;
@@ -533,7 +534,7 @@ fn find_unused_scoreboards(scoreboards: &ScoreboardCollection, items: &HashMap<N
             }
         }
     }
-    println!("\nTotal low usage objectives (not used by any datapacks/quests/commands) : {}", low_usage);
+    println!("\nTotal low usage objectives (low usage but referenced somewhere) : {}", low_usage);
 
     Ok(())
 }
@@ -542,10 +543,11 @@ const DATAPACKS_ARG: &str = "--datapacks";
 const COMMANDS_ARG: &str = "--commands";
 const QUESTS_ARG: &str = "--quests";
 const SCOREBOARDS_ARG: &str = "--scoreboards";
+const REDIS_SCOREBOARDS_ARG: &str = "--redis-scoreboards";
 
 fn usage() {
     error!("Usage: find_unused_components -- --type1 file1 file2 ... --type2 file1 ... ...");
-    error!("   Where --type is one of --datapacks --commands --quests --scoreboards");
+    error!("   Where --type is one of {} {} {} {} {}", DATAPACKS_ARG, COMMANDS_ARG, QUESTS_ARG, SCOREBOARDS_ARG, REDIS_SCOREBOARDS_ARG);
 }
 
 fn main() -> BoxResult<()> {
@@ -585,11 +587,15 @@ fn main() -> BoxResult<()> {
             },
             QUESTS_ARG => {
                 info!("Loading quests...");
-                separator = QUESTS_ARG ;
+                separator = QUESTS_ARG;
             },
             SCOREBOARDS_ARG => {
                 info!("Loading scoreboards...");
-                separator = SCOREBOARDS_ARG ;
+                separator = SCOREBOARDS_ARG;
+            },
+            REDIS_SCOREBOARDS_ARG => {
+                info!("Loading redis scoreboards...");
+                separator = REDIS_SCOREBOARDS_ARG;
             },
             arg => {
                 if separator == DATAPACKS_ARG {
@@ -604,6 +610,12 @@ fn main() -> BoxResult<()> {
                 } else if separator == SCOREBOARDS_ARG {
                     info!("Loading scoreboard {}", arg);
                     scoreboards.add_scoreboard(arg)?;
+                } else if separator == REDIS_SCOREBOARDS_ARG {
+                    info!("Loading redis scoreboard for domain {}", arg);
+                    let client = redis::Client::open("redis://127.0.0.1/")?;
+                    let mut con : redis::Connection = client.get_connection()?;
+                    let scoreboard = Scoreboard::load_redis(&arg, &mut con)?;
+                    scoreboards.add_existing_scoreboard(scoreboard)?;
                 } else {
                     error!("Got unexpected argument: {}", arg);
                     usage();

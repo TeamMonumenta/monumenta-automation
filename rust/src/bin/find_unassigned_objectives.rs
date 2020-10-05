@@ -5,21 +5,28 @@ type BoxResult<T> = Result<T,Box<dyn Error>>;
 
 use monumenta::scoreboard;
 
+fn usage() {
+    println!("Usage: find_unassigned_objectives <domain>");
+}
+
 fn main() -> BoxResult<()> {
     /* Load all the arguments as datapacks */
     let mut args: Vec<String> = env::args().collect();
 
-    if args.len() <= 1 {
-        println!("Usage: find_unassigned_objectives path/to/scoreboard.dat path/to/other_scoreboard.dat ...");
+    if args.len() < 2 {
+        usage();
         return Ok(());
     }
 
-    let mut scoreboards = scoreboard::ScoreboardCollection::new();
+    args.remove(0); // Program name
+    let domain = args.remove(0);
 
-    args.remove(0);
-    while let Some(arg) = args.pop() {
-        scoreboards.add_scoreboard(&arg)?;
-    }
+    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let mut con : redis::Connection = client.get_connection()?;
+
+    let mut scoreboards = scoreboard::ScoreboardCollection::new();
+    let scoreboard = scoreboard::Scoreboard::load_redis(&domain, &mut con)?;
+    scoreboards.add_existing_scoreboard(scoreboard)?;
 
     let count_vec: Vec<(String, f64)> = scoreboards.get_objective_usage_sorted();
 
