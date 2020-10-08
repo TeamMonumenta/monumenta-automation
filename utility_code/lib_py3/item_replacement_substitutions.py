@@ -147,6 +147,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:potion", "Wormwood Oil", "minecraft:glass_bottle", "Wormwood Oil"],
             ["minecraft:bone_meal", "Fierce Soul", "minecraft:white_dye", "Fierce Soul"],
             ["minecraft:lapis_lazuli", "Speed Charm", "minecraft:blue_dye", "Speed Charm"],
+            ["minecraft:iron_hoe", "Demon's Scar", "minecraft:stone_hoe", "Demon's Scar"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
