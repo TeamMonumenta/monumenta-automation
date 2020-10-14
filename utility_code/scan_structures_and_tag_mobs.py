@@ -59,7 +59,7 @@ not_found_unique_low_count_mobs = set()
 mob_counts = {}
 forbidden_ids = ["minecraft:armor_stand", "minecraft:painting", "minecraft:villager", "minecraft:potion", "minecraft:trident", "minecraft:boat",
                  "minecraft:minecart", "minecraft:falling_block", "minecraft:firework_rocket", "minecraft:item_frame", "minecraft:end_crystal",
-                 "minecraft:area_effect_cloud", "minecraft:command"]
+                 "minecraft:area_effect_cloud", "minecraft:command", "minecraft:command_block", "minecraft:chain_command_block", "minecraft:repeating_command_block"]
 
 los = LibraryOfSouls("/home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json")
 los.clear_tags()

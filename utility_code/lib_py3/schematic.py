@@ -29,6 +29,8 @@ class SchematicEntityIterator(object):
         self._entity_iter = None
         if self._schematic.has_path("Schematic.TileEntities"):
             self._tile_entity_iter = iter(self._schematic.at_path("Schematic.TileEntities").value)
+        if self._schematic.has_path("Schematic.BlockEntities"):
+            self._tile_entity_iter = iter(self._schematic.at_path("Schematic.BlockEntities").value)
         if self._schematic.has_path("Schematic.Entities"):
             self._entity_iter = iter(self._schematic.at_path("Schematic.Entities").value)
 
