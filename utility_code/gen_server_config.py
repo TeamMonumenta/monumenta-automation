@@ -127,7 +127,6 @@ coreprotect = [
 
 worldedit = [
         ('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit.jar'),
-        ('plugins/DummyFawe.jar', '../../server_config/plugins/DummyFawe.jar'),
         ('plugins/FastAsyncWorldEdit/schematics', '/home/epic/4_SHARED/schematics'),
     ]
 
