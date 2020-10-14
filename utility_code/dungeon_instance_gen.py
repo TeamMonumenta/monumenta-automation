@@ -99,7 +99,7 @@ config = {
         },{
             "name":"teal",
             "region":{"x":-2, "z":12},
-            "numDungeons":80,
+            "numDungeons":100,
         },{
             "name":"rush",
             "region":{"x":-3, "z":15},
