@@ -95,7 +95,7 @@ config = {
         },{
             "name":"shiftingcity",
             "region":{"x":-2, "z":9},
-            "numDungeons":40,
+            "numDungeons":100,
         },{
             "name":"teal",
             "region":{"x":-2, "z":12},
