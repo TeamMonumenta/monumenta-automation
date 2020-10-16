@@ -55,6 +55,9 @@ world_dungeon_score_rules = [
     {"condition":{"Name":"$last","Objective":"DS1Access"},
         "actions":{"set":[
             {"Objective":"DS1Access","Score":0}]}},
+    {"condition":{"Name":"$last","Objective":"DTLAccess"},
+        "actions":{"set":[
+            {"Objective":"DTLAccess","Score":0}]}},
     {"condition":{"Name":"$last","Objective":"DRDAccess"},
         "actions":{"set":[
             {"Objective":"DRDAccess","Score":0}]}},
