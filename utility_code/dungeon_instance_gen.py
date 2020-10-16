@@ -95,11 +95,11 @@ config = {
         },{
             "name":"shiftingcity",
             "region":{"x":-2, "z":9},
-            "numDungeons":100,
+            "numDungeons":60,
         },{
             "name":"teal",
             "region":{"x":-2, "z":12},
-            "numDungeons":100,
+            "numDungeons":60,
         },{
             "name":"rush",
             "region":{"x":-3, "z":15},
