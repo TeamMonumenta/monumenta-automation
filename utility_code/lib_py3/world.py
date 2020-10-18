@@ -10,7 +10,7 @@ from quarry.types.chunk import BlockArray
 from quarry.types.buffer import BufferUnderrun
 
 from lib_py3.block_map import block_map
-from lib_py3.common import bounded_range
+from lib_py3.common import bounded_range, get_entity_uuid
 from lib_py3.iterators.item_iterator import ItemIterator
 from lib_py3.iterators.recursive_entity_iterator import RecursiveEntityIterator
 from lib_py3.player import Player
@@ -204,20 +204,9 @@ class World(object):
         """
         uuids = set()
         for entity, source_pos, entity_path in self.entity_iterator():
-            if not (entity.has_path("UUIDMost") and entity.has_path("UUIDLeast")):
-                continue
-
-            upper = entity.at_path("UUIDMost").value
-            if upper < 0:
-                upper += 1<<64
-
-            lower = entity.at_path("UUIDLeast").value
-            if lower < 0:
-                lower += 1<<64
-
-            entity_uuid_int = upper << 64 | lower
-            entity_uuid = uuid.UUID(int=entity_uuid_int)
-            uuids.add(str(entity_uuid))
+            entity_uuid = get_entity_uuid(entity)
+            if entity_uuid is not None:
+                uuids.add(str(entity_uuid))
 
         return uuids
 

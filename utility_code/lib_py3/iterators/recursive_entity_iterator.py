@@ -8,6 +8,7 @@ import re
 import json
 from uuid import UUID
 
+from lib_py3.common import get_entity_uuid
 from lib_py3.iterators.base_chunk_entity_iterator import BaseChunkEntityIterator
 from lib_py3.iterators.iterator_interface import recursive_entity_iterator
 
@@ -46,8 +47,8 @@ def get_debug_string_from_entity_path(entity_path, ansii_colors=False):
 
         if location.has_path("playerGameType"):
             # This is a player
-            uuidint = ((location.at_path("UUIDMost").value & 0xffffffffffffffff) << 64) | (location.at_path("UUIDLeast").value & 0xffffffffffffffff)
-            debug_string += "player:" + str(UUID(int=uuidint))
+            player_uuid = get_entity_uuid(location)
+            debug_string += "player:" + str(player_uuid)
         elif location.has_path("SpawnPotentials"):
             debug_string += "spawner"
             if location.has_path("Pos"):

@@ -12,7 +12,7 @@ from pprint import pprint
 
 from lib_py3.common import get_item_name_from_nbt
 from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
-from lib_py3.common import eprint
+from lib_py3.common import eprint, get_entity_uuid
 from lib_py3.world import World
 from uuid import UUID
 
@@ -69,8 +69,9 @@ for world_path in world_paths:
                 if source_pos is not None:
                     pos = source_pos
                 elif len(entity_path) > 0 and entity_path[0].has_path("playerGameType"):
-                    uuidint = ((entity_path[0].at_path("UUIDMost").value & 0xffffffffffffffff) << 64) | (entity_path[0].at_path("UUIDLeast").value & 0xffffffffffffffff)
-                    pos = "player:" + str(UUID(int=uuidint))
+                    # This is a player
+                    player_uuid = get_entity_uuid(entity_path[0])
+                    pos = "player:" + str(player_uuid)
 
                 # Compute the quantity
                 count = 1

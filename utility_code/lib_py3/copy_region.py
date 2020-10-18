@@ -7,7 +7,7 @@ import uuid
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types.nbt import RegionFile
 
-from lib_py3.common import copy_file
+from lib_py3.common import copy_file, get_entity_uuid
 
 def copy_region(dir_src, dir_dst, rx_src, rz_src, rx_dst, rz_dst, item_replacements=None, entity_updates=None):
     """
@@ -107,6 +107,7 @@ def _fixEntity(onMatchArgs, entityDetails):
             for zTag in entity.iter_multipath(nbtPath[1]):
                 zTag.value += dz
 
+    # TODO: This needs a 1.16 UUID version
     if (
         entity.has_path("UUIDMost") and
         entity.has_path("UUIDLeast")
