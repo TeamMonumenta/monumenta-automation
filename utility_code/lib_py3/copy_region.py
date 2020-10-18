@@ -7,7 +7,11 @@ import uuid
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types.nbt import RegionFile
 
-from lib_py3.common import copy_file, get_entity_uuid
+from lib_py3.common import copy_file, get_entity_uuid, uuid_to_mc_uuid_tag_int_array
+
+def pop_if_present(entity, key):
+    if key in entity.value:
+        entity.value.pop(key)
 
 def copy_region(dir_src, dir_dst, rx_src, rz_src, rx_dst, rz_dst, item_replacements=None, entity_updates=None):
     """
@@ -107,17 +111,7 @@ def _fixEntity(onMatchArgs, entityDetails):
             for zTag in entity.iter_multipath(nbtPath[1]):
                 zTag.value += dz
 
-    # TODO: This needs a 1.16 UUID version
-    if (
-        entity.has_path("UUIDMost") and
-        entity.has_path("UUIDLeast")
-    ):
-        new_uuid = uuid.uuid4()
-        uuid_most, uuid_least = ( int(new_uuid)>>64, int(new_uuid) & ((1<<64)-1) )
-        if uuid_most >= 2**63:
-            uuid_most -= 2**64
-        if uuid_least >= 2**63:
-            uuid_least -= 2**64
-        entity.at_path("UUIDMost").value  = uuid_most
-        entity.at_path("UUIDLeast").value = uuid_least
-
+    if (entity.has_path("UUIDMost") or entity.has_path("UUIDLeast") or entity.has_path("UUID")):
+        pop_if_present(entity, "UUIDMost")
+        pop_if_present(entity, "UUIDLeast")
+        entity.value["UUID"] = uuid_to_mc_uuid_tag_int_array(uuid.uuid4())

@@ -10,6 +10,7 @@ import uuid
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types.text_format import unformat_text
 from quarry.types import nbt
+from quarry.types.chunk import PackedArray
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -51,13 +52,23 @@ def get_entity_uuid(entity: nbt.TagCompound):
         uuid_int = 0
         for part in entity.at_path("UUID").value:
             uuid_int <<= 32
-            part_val = part.value
-            if part_val < 0:
-                part_val += 1<<32
-            uuid_int += part_val
+            if part < 0:
+                part += 1<<32
+            uuid_int += part
         result = uuid.UUID(int=uuid_int)
 
     return result
+
+def uuid_to_mc_uuid_tag_int_array(uuid: uuid):
+    int_uuid = int(uuid)
+    uuid_components = [ (int_uuid>>96), (int_uuid>>64) & ((1<<32)-1), (int_uuid>>32) & ((1<<32)-1), int_uuid & ((1<<32)-1) ]
+    uuid_components_centered = []
+    for uuid_component in uuid_components:
+        if uuid_component >= (1<<31):
+            uuid_component -= (1<<32)
+        uuid_components_centered.append(uuid_component)
+
+    return nbt.TagIntArray(PackedArray.from_int_list(uuid_components_centered, 32))
 
 def json_text_to_plain_text(json_text):
     result = ""
