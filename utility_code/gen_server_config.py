@@ -273,19 +273,6 @@ config = {
         'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect + gobrush,
     },
 
-    'build2':{
-        'config':server_config_to_copy + [
-            ('server.properties', 'white-list', 'white-list=true'),
-            ('server.properties', 'view-distance', 'view-distance=8'),
-            ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
-            ('server.properties', 'difficulty', 'difficulty=peaceful'),
-            ('server.properties', 'gamemode', 'gamemode=creative'),
-            ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
-        ],
-        'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect + gobrush,
-    },
-
     'mobs':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=6'),
