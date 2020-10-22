@@ -356,6 +356,8 @@ config = {
             ('permissions.yml', '    minecraft.command.tell: true'),
             ('permissions.yml', '    minecraft.command.tps: true'),
             ('permissions.yml', '    monumenta.command.transferserver: true'),
+            ('plugins/MonumentaRedisSync/config.yml', 'saving_disabled:', 'saving_disabled: true'),
+            ('plugins/MonumentaRedisSync/config.yml', 'scoreboard_cleanup_enabled:', 'scoreboard_cleanup_enabled: false'),
         ],
         'linked':purgatory_min,
     },
