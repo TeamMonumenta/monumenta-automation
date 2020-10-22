@@ -382,11 +382,17 @@ class World(object):
 
                             # Check for non-air block
                             # This is an expensive check, keep it low priority
-                            blocks = BlockArray.from_nbt(section, block_map)
-                            for block in blocks:
-                                if block['name'] != "minecraft:air":
-                                    confirmed_valid = True
-                                    break
+
+                            # TODO: This try is sketchy
+                            try:
+                                blocks = BlockArray.from_nbt(section, block_map)
+                                for block in blocks:
+                                    if block['name'] != "minecraft:air":
+                                        confirmed_valid = True
+                                        break
+                            except IndexError:
+                                print("Warning: unable to iterate blocks. Assuming region is valid")
+                                confirmed_valid = True
 
             if not confirmed_valid:
                 deleted += 1
