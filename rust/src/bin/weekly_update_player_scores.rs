@@ -66,16 +66,6 @@ fn update_player_scores(player: &mut Player) {
         scores.insert("DRAccess".to_string(), 0);
         scores.insert("DRDAccess".to_string(), 0);
         scores.insert("DelveDungeon".to_string(), 0);
-
-        /* Market banned score updates */
-        // TODO: Remove next week
-        if let Some(market_banned) = scores.get("MarketBanned") {
-            if *market_banned >= 1 && *market_banned < 10000 {
-                let mut market_banned: i32 = *market_banned;
-                market_banned += 18550;
-                scores.insert("MarketBanned".to_string(), market_banned);
-            }
-        }
     }
 }
 
