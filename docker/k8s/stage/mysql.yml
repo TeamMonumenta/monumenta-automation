@@ -83,7 +83,7 @@ spec:
           mountPath: /etc/mysql/conf.d
         resources:
           limits:
-            memory: 512Mi
+            memory: 768Mi
             cpu: "2"
       volumes:
         - name: mysql-persistent-storage
