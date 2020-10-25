@@ -61,11 +61,13 @@ def get_entity_uuid(entity: nbt.TagCompound):
 
 def uuid_to_mc_uuid_tag_int_array(uuid: uuid):
     int_uuid = int(uuid)
-    uuid_components = [ (int_uuid>>96), (int_uuid>>64) & ((1<<32)-1), (int_uuid>>32) & ((1<<32)-1), int_uuid & ((1<<32)-1) ]
+    uuid_components = [ (int_uuid>>96) & ((1<<32)-1), (int_uuid>>64) & ((1<<32)-1), (int_uuid>>32) & ((1<<32)-1), int_uuid & ((1<<32)-1) ]
     uuid_components_centered = []
     for uuid_component in uuid_components:
         if uuid_component >= (1<<31):
             uuid_component -= (1<<32)
+        if (uuid_component < -2147483648 or uuid_component > 2147483647):
+            raise ValueError("uuid_component out of range: " + str(uuid_component))
         uuid_components_centered.append(uuid_component)
 
     return nbt.TagIntArray(PackedArray.from_int_list(uuid_components_centered, 32))

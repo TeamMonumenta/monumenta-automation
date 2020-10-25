@@ -4,6 +4,7 @@ import json
 import time
 from pprint import pformat
 from lib_py3.common import parse_name_possibly_json, eprint
+from lib_py3.upgrade import upgrade_entity
 from lib_py3.mob_replacement_manager import MobReplacementManager
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
@@ -112,3 +113,21 @@ class LibraryOfSouls(object):
             raise Exception("Attempted to save read-only Library of Souls")
         with open(self._path, "w") as fp:
             json.dump(self._souls, fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
+
+    def upgrade_all(self) -> None:
+        for soul_entry in self._souls:
+            for history_entry in soul_entry["history"]:
+                soul_nbt = nbt.TagCompound.from_mojangson(history_entry["mojangson"])
+
+                upgrade_entity(soul_nbt, True, ('Pos', 'Leashed', 'Air', 'OnGround', 'Dimension', 'Rotation', 'WorldUUIDMost',
+                             'WorldUUIDLeast', 'HurtTime', 'HurtByTimestamp', 'FallFlying', 'PortalCooldown',
+                             'FallDistance', 'DeathTime', 'HandDropChances', 'ArmorDropChances', 'CanPickUpLoot',
+                             'Bukkit.updateLevel', 'Spigot.ticksLived', 'Paper.AAAB', 'Paper.Origin',
+                             'Paper.FromMobSpawner', 'Team'))
+
+                for junk in ('UUID', ):
+                    if soul_nbt.has_path(junk):
+                        soul_nbt.value.pop(junk)
+
+                history_entry["mojangson"] = soul_nbt.to_mojangson()
+
