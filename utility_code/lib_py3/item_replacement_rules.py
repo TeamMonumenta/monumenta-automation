@@ -251,8 +251,15 @@ class PreserveEnchantments(GlobalRule):
                 'players': []
             })
 
+        if template.has_path('display.Lore'):
+            for lore in template.iter_multipath('display.Lore[]'):
+                for enchantment in self.enchantment_state:
+                    lore_text = parse_name_possibly_json(lore.value)
+                    if lore_text.startswith(enchantment['enchantment']):
+                        enchantment['enchant_on_template'] = True
+
         if item.has_path('tag.display.Lore'):
-            for lore in item.at_path('tag.display.Lore').value:
+            for lore in item.iter_multipath('tag.display.Lore[]'):
                 for enchantment in self.enchantment_state:
                     owner_prefix = enchantment['owner_prefix']
                     lore_text = parse_name_possibly_json(lore.value)
@@ -289,7 +296,7 @@ class PreserveShattered(GlobalRule):
         if not item.has_path('tag.display.Lore'):
             return
 
-        for lore in item.at_path('tag.display.Lore').value:
+        for lore in item.iter_multipath('tag.display.Lore[]'):
             if parse_name_possibly_json(lore.value) == self.enchantment:
                 self.shattered = True
                 return
@@ -304,7 +311,7 @@ class PreserveSoulbound(GlobalRule):
     def preprocess(self, template, item):
         self.player_line = None
         if item.has_path('tag.display.Lore'):
-            for lore in item.at_path('tag.display.Lore').value:
+            for lore in item.iter_multipath('tag.display.Lore[]'):
                 lore_text = parse_name_possibly_json(lore.value)
                 if lore_text.startswith("* Soulbound to "):
                     self.player_line = lore

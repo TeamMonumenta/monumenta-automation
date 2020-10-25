@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
+from quarry.types import nbt
+
+class BasePathDebug():
+    """A helper to follow where we are in a nested structure."""
+    def __init__(self, parent=None, path_from_parent_repr=None, path_from_parent_friendly=None):
+        # instance of BasePathDebug or None
+        if not (parent is None or isinstance(parent, BasePathDebug)):
+            raise TypeError(f'Expected parent to be instance of BasePathDebug or None, not type {type(parent)!r}.')
+        self.parent = parent
+
+        # The highest node in the debug path, usually a file or network response.
+        if self.parent is None:
+            self.root = self
+        else:
+            self.root = parent.root
+
+        # The index/key/method/whatever to access this node from the last
+        # A string representing the exact sequence of commands used to reach this node from its parent.
+        self.path_from_parent_repr = path_from_parent_repr
+        # A friendly representation of the path, like NBT's NBT paths, or xml's xpath.
+        self._path_from_parent_friendly = path_from_parent_friendly
+
+    def print_repr_directions(self):
+        """Return the text to be entered in a script or interpretter."""
+        if self.parent is None:
+            return repr(self)
+        return f'{self.parent.print_repr_directions()} \\\n    {self.path_from_parent_repr}'
+
+    def print_friendly_directions(self):
+        """Print the debug path from file root to here."""
+        raise NotImplementedError
+
+
+class NbtPathDebug(BasePathDebug):
+    """A helper to follow where in an NBT file we're recursively iterating."""
+    def __init__(self, nbt, parent=None, path_from_parent_repr=None, path_from_parent_friendly=None):
+        super(BasePathDebug).__init__(parent=parent,
+            path_from_parent_repr=path_from_parent_repr,
+            path_from_parent_friendly=path_from_parent_friendly)
+
+        if not isinstance(tag, nbt._Tag):
+            raise TypeError(f'NbtPathDebug requires an instance of nbt._Tag, not {type(tag)}')
+        self.nbt = nbt
+
+        self.data_version = None
+        if self.nbt.has_path('DataVersion'):
+            self.data_version = self.nbt.at_path('DataVersion').value
+        elif isinstance(self.parent, NbtPathDebug):
+            self.data_version = self.parent.data_version
+
+        # Root node of NBT - note this is local - it could be in json, potentially json inside a different bit of NBT!
+        if isinstance(self.parent, NbtPathDebug):
+            self._nbt_root = self.parent._nbt_root
+        else:
+            self._nbt_root = self
+
+    def has_path(self, path):
+        return self.nbt.has_path(path)
+
+    def at_path(self, path):
+        return NbtPathDebug(
+            nbt=self.nbt.at_path(path),
+            parent=self,
+            path_from_parent_repr=f'.at_path({path!r})',
+            path_from_parent_friendly = path
+        )
+
+    def count_multipath(self, path):
+        return self.nbt.count_multipath(path)
+
+    def iter_multipath_pair(self, path):
+        for subpath, tag in self.nbt.iter_multipath_pair(path):
+            debug_tag = NbtPathDebug(
+                nbt=tag,
+                parent=self,
+                path_from_parent_repr=f'.at_path({subpath!r})',
+                path_from_parent_friendly = subpath
+            )
+            yield subpath, debug_tag
+
+    def iter_multipath(self, path):
+        for _, tag in self.iter_multipath_pair(path):
+            yield tag
+
+    def full_nbt_path(self):
+        """Get the full NBT path from the original file."""
+        if self._nbt_root is self:
+            return '{}'
+
+        if self._nbt_root is self.parent:
+            return self._path_from_parent_friendly
+
+        return nbt.nbt_path_join(self.parent.full_nbt_path(), self._path_from_parent_friendly)
+
+    def print_friendly_directions(self):
+        if isinstance(self._nbt_root.parent, BasePathDebug):
+            self.parent.print_friendly_directions()
+        print(f'- go into {type(self)} at {self._path_from_parent_friendly}')
+

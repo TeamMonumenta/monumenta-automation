@@ -12,28 +12,28 @@ class Player(object):
 
     The path you provide is expected to be a player.dat file.
     """
-    def __init__(self,path=None):
+    def __init__(self, path=None):
         """
         Load a world folder, fetching the list of region files and players that it contains.
 
-        >>> player = Player( os.path.join( world.path, 'playerdata/25c8b7fa-dd4a-4bbb-8cf9-d534cf66d6f9.dat' ) )
+        >>> player = Player(os.path.join(world.path, 'playerdata/25c8b7fa-dd4a-4bbb-8cf9-d534cf66d6f9.dat'))
         """
         self.path = path
         if self.path is not None:
-            self.player_dat_file = nbt.NBTFile.load( self.path )
+            self.player_dat_file = nbt.NBTFile.load(self.path)
             self.player_tag = self.player_dat_file.root_tag.body
         else:
             self.player_dat_file = None
             self.player_tag = None
 
     @classmethod
-    def from_tag(cls,player_tag):
+    def from_tag(cls, player_tag):
         """
         Load a player from NBT; used for the player tag
         from level.dat. Must be saved from wherever the
         tag was loaded from to apply.
 
-        >>> singleplayer_player = Player.from_tag( world.single_player() )
+        >>> singleplayer_player = Player.from_tag(world.single_player())
         """
         result = cls()
         result.player_tag = player_tag
@@ -48,7 +48,7 @@ class Player(object):
         >>> self.save()
         """
         if self.path:
-            self.player_dat_file.save( self.path )
+            self.player_dat_file.save(self.path)
 
     @property
     def dimension(self):
@@ -65,7 +65,7 @@ class Player(object):
         return self.player_tag.at_path('Dimension').value
 
     @dimension.setter
-    def dimension(self,dimension):
+    def dimension(self, dimension):
         """
         Set the player's dimension
 
@@ -80,10 +80,10 @@ class Player(object):
     @property
     def pos(self):
         """
-        Returns the player's coordinates as [x,y,z,yaw,pitch]
+        Returns the player's coordinates as [x, y, z, yaw, pitch]
 
         >>> print(self.pos)
-        [2.71817181,63.5,3.1415]
+        [2.71817181, 63.5, 3.1415]
         """
         x = self.player_tag.at_path('Pos[0]').value
         y = self.player_tag.at_path('Pos[1]').value
@@ -92,79 +92,79 @@ class Player(object):
         yaw = self.player_tag.at_path('Rotation[0]').value
         pitch = self.player_tag.at_path('Rotation[1]').value
 
-        result = [x,y,z,yaw,pitch]
+        result = [x, y, z, yaw, pitch]
 
         return result
 
     @pos.setter
-    def pos(self,pos):
+    def pos(self, pos):
         """
-        Set the player's coordinates to pos=[x,y,z] or pos=[x,y,z,yaw,pitch]
+        Set the player's coordinates to pos=[x, y, z] or pos=[x, y, z, yaw, pitch]
 
-        >>> self.pos = [2.71817181,63.5,3.1415]
+        >>> self.pos = [2.71817181, 63.5, 3.1415]
         """
         if len(pos) != 3 and len(pos) != 5:
-            raise IndexError('pos must have 3 or 5 entries; x,y,z or x,y,z,yaw,pitch')
+            raise IndexError('pos must have 3 or 5 entries; x, y, z or x, y, z, yaw, pitch')
         for i in range(3):
-            self.player_tag.at_path( 'Pos[{}]'.format(i) ).value = pos[i]
+            self.player_tag.at_path(f'Pos[{i}]').value = pos[i]
         if len(pos) == 5:
             for i in range(2):
-                self.player_tag.at_path( 'Rotation[{}]'.format(i) ).value = pos[i+3]
+                self.player_tag.at_path('Rotation[{i}]').value = pos[i+3]
 
     @property
     def rotation(self):
         """
-        Returns the player's rotation as [yaw,pitch]
+        Returns the player's rotation as [yaw, pitch]
 
         >>> print(self.rotation)
-        [180.0,45.0]
+        [180.0, 45.0]
         """
         yaw = self.player_tag.at_path('Rotation[0]').value
         pitch = self.player_tag.at_path('Rotation[1]').value
 
-        result = [yaw,pitch]
+        result = [yaw, pitch]
 
         return result
 
     @rotation.setter
-    def rotation(self,rotation):
+    def rotation(self, rotation):
         """
-        Set the player's rotation to rotation=[yaw,pitch]
+        Set the player's rotation to rotation=[yaw, pitch]
 
-        >>> self.rotation = [180.0,45.0]
+        >>> self.rotation = [180.0, 45.0]
         """
         if len(rotation) != 2:
-            raise IndexError('rotation must have 2 entries; yaw,pitch')
+            raise IndexError('rotation must have 2 entries; yaw, pitch')
         for i in range(2):
-            self.player_tag.at_path( 'Rotation[{}]'.format(i) ).value = rotation[i]
+            self.player_tag.at_path(f'Rotation[{i}]').value = rotation[i]
 
     @property
     def motion(self):
         """
-        Returns the player's motion as [x,y,z]
+        Returns the player's motion as [x, y, z]
 
         >>> print(self.motion)
-        [0.7,-1.5,0.3]
+        [0.7, -1.5, 0.3]
         """
         x = self.player_tag.at_path('Motion[0]').value
         y = self.player_tag.at_path('Motion[1]').value
         z = self.player_tag.at_path('Motion[2]').value
 
-        result = [x,y,z]
+        result = [x, y, z]
 
         return result
 
     @motion.setter
-    def motion(self,motion):
+    def motion(self, motion):
         """
-        Set the player's coordinates to motion=[x,y,z]
+        Set the player's coordinates to motion=[x, y, z]
 
-        >>> self.motion = [0.7,-1.5,0.3]
+        >>> self.motion = [0.7, -1.5, 0.3]
         """
         if len(motion) != 3:
-            raise IndexError('motion must have 3 entries; x,y,z')
+            raise IndexError('motion must have 3 entries; x, y, z')
         for i in range(3):
-            self.player_tag.at_path( 'Motion[{}]'.format(i) ).value = motion[i]
+            self.player_tag.at_path('Motion[{i}]').value = motion[i]
 
     @property
     def spawn(self):
@@ -174,9 +174,9 @@ class Player(object):
 
         >>> print(self.spawn)
         None
-        >>> self.spawn = [1,2,5]
+        >>> self.spawn = [1, 2, 5]
         >>> print(self.spawn)
-        [1,2,5]
+        [1, 2, 5]
         """
         result = None
 
@@ -189,21 +189,21 @@ class Player(object):
             y = self.player_tag.at_path('SpawnY').value
             z = self.player_tag.at_path('SpawnZ').value
 
-            result = [x,y,z]
+            result = [x, y, z]
 
         return result
 
     @spawn.setter
-    def spawn(self,pos):
+    def spawn(self, pos):
         """
-        Set the player's spawn coordinates to pos=[x,y,z],
+        Set the player's spawn coordinates to pos=[x, y, z],
         or remove the player's spawn coordinates with pos=None
         to cause them to respawn at the world spawn.
 
         >>> self.spawn = None
-        >>> self.spawn = [1,2,5]
+        >>> self.spawn = [1, 2, 5]
         """
-        paths = ['SpawnX','SpawnY','SpawnZ']
+        paths = ['SpawnX', 'SpawnY', 'SpawnZ']
         if pos is None:
             for path in paths:
                 self.player_tag.value.pop(path)
@@ -213,14 +213,14 @@ class Player(object):
         if len(pos) != 3:
             raise IndexError('pos must have 3 entries, xyz')
         for i in range(3):
-            if self.player_tag.has_path( paths[i] ):
-                self.player_tag.at_path( paths[i] ).value = pos[i]
+            if self.player_tag.has_path(paths[i]):
+                self.player_tag.at_path(paths[i]).value = pos[i]
             else:
-                self.player_tag.value[ paths[i] ] = nbt.TagInt( pos[i] )
-        if self.player_tag.has_path( 'SpawnForced' ):
-            self.player_tag.at_path( 'SpawnForced' ).value = 1
+                self.player_tag.value[paths[i]] = nbt.TagInt(pos[i])
+        if self.player_tag.has_path('SpawnForced'):
+            self.player_tag.at_path('SpawnForced').value = 1
         else:
-            self.player_tag.value[ 'SpawnForced' ] = nbt.TagByte( 1 )
+            self.player_tag.value['SpawnForced'] = nbt.TagByte(1)
 
     @property
     def tags(self):
@@ -228,38 +228,38 @@ class Player(object):
         Returns the player's tags as a list of strings
 
         >>> print(self.tags)
-        ["TagA","TagB"]
+        ["TagA", "TagB"]
         """
         result = []
-        if self.player_tag.has_path( 'Tags' ):
-            for tag in self.player_tag.at_path( 'Tags' ).value:
-                result.append( tag.value )
+        if self.player_tag.has_path('Tags'):
+            for tag in self.player_tag.iter_multipath('Tags[]'):
+                result.append(tag.value)
 
         return result
 
     @tags.setter
-    def tags(self,tags):
+    def tags(self, tags):
         """
         Replace the player's tags with a list of strings
 
-        >>> self.tags = ["TagA","TagB"]
+        >>> self.tags = ["TagA", "TagB"]
         """
-        if not self.player_tag.has_path( 'Tags' ):
+        if not self.player_tag.has_path('Tags'):
             self.player_tag.value['Tags'] = nbt.TagList([])
 
         result = []
         for tag in tags:
-            result.append( nbt.TagString( tag ) )
-        self.player_tag.at_path( 'Tags' ).value = result
+            result.append(nbt.TagString(tag))
+        self.player_tag.at_path('Tags').value = result
 
-    def modify_tags(self,tags):
+    def modify_tags(self, tags):
         """
         Add and remove tags more like the in-game "/tags" command.
         Will not duplicate tags or throw errors for valid tags.
 
-        >>> self.modify_tags( "!DeletedTag" )
-        >>> self.modify_tags( "NewTag" )
-        >>> self.modify_tags( [ "!DeletedTag", "NewTag", "AlsoNew" ] )
+        >>> self.modify_tags("!DeletedTag")
+        >>> self.modify_tags("NewTag")
+        >>> self.modify_tags(["!DeletedTag", "NewTag", "AlsoNew"])
         """
         if type(tags) == str:
             tags = [tags]
@@ -290,12 +290,12 @@ class Player(object):
 
         >>> self.full_heal()
         """
-        self.player_tag.at_path( 'Health' ).value = 20.0
-        self.player_tag.at_path( 'Fire' ).value = -20
-        self.player_tag.at_path( 'Air' ).value = 300
-        self.player_tag.at_path( 'foodLevel' ).value = 20
-        self.player_tag.at_path( 'foodSaturationLevel' ).value = 5.0
-        self.player_tag.at_path( 'foodExhaustionLevel' ).value = 0.0
-        self.player_tag.at_path( 'foodTickTimer' ).value = 0
-        self.player_tag.at_path( 'DeathTime' ).value = 0
+        self.player_tag.at_path('Health').value = 20.0
+        self.player_tag.at_path('Fire').value = -20
+        self.player_tag.at_path('Air').value = 300
+        self.player_tag.at_path('foodLevel').value = 20
+        self.player_tag.at_path('foodSaturationLevel').value = 5.0
+        self.player_tag.at_path('foodExhaustionLevel').value = 0.0
+        self.player_tag.at_path('foodTickTimer').value = 0
+        self.player_tag.at_path('DeathTime').value = 0
 

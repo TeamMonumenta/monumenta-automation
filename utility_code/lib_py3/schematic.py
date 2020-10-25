@@ -28,11 +28,11 @@ class SchematicEntityIterator(object):
         self._tile_entity_iter = None
         self._entity_iter = None
         if self._schematic.has_path("Schematic.TileEntities"):
-            self._tile_entity_iter = iter(self._schematic.at_path("Schematic.TileEntities").value)
+            self._tile_entity_iter = self._schematic.iter_multipath("Schematic.TileEntities[]")
         if self._schematic.has_path("Schematic.BlockEntities"):
-            self._tile_entity_iter = iter(self._schematic.at_path("Schematic.BlockEntities").value)
+            self._tile_entity_iter = self._schematic.iter_multipath("Schematic.BlockEntities[]")
         if self._schematic.has_path("Schematic.Entities"):
-            self._entity_iter = iter(self._schematic.at_path("Schematic.Entities").value)
+            self._entity_iter = self._schematic.iter_multipath("Schematic.Entities[]")
 
         # Use a stack to keep track of what items still need to be processed
         # Both players and in-world entities/tile entities share the same stack for simplicity
@@ -85,7 +85,7 @@ class SchematicEntityIterator(object):
                 # Nothing to catch here - if this throws StopIteration, let it
                 entity = self._entity_iter.__next__()
             if entity is None:
-                raise StopIteration
+                return
 
             # Keep track of where the original entity was. This is useful because nested
             # items mostly don't have position tags
@@ -115,7 +115,7 @@ class SchematicEntityIterator(object):
         # Add more work to the stack for next time
         # Tile entities!
         if current_entity.has_path("SpawnPotentials"):
-            for spawn in current_entity.at_path("SpawnPotentials").value:
+            for spawn in current_entity.iter_multipath("SpawnPotentials[]"):
                 if spawn.has_path("Entity"):
                     self._work_stack.append((spawn.at_path("Entity"), source_pos, entity_path))
 
@@ -124,7 +124,7 @@ class SchematicEntityIterator(object):
 
         # Regular entities!
         if current_entity.has_path("Passengers"):
-            for passenger in current_entity.at_path("Passengers").value:
+            for passenger in current_entity.iter_multipath("Passengers[]"):
                 self._work_stack.append((passenger, source_pos, entity_path))
 
         # Scan items in current entity, and if any are found scan them for nested entities
@@ -164,4 +164,3 @@ class Schematic(object):
 
     def save(self):
         self._nbtfile.save(self._path)
-

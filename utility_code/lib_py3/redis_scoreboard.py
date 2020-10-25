@@ -362,9 +362,3 @@ class RedisScoreboard(object):
                         Objective = to_change["Objective"]
                         Score = to_change["Score"]
                         self.add_score(Name, Objective, Score, Cache=rule_cache)
-
-
-
-
-
-

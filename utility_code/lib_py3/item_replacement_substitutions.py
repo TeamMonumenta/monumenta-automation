@@ -89,7 +89,7 @@ class FixBrokenSectionSymbols(SubstitutionRule):
 
         # Lore lines
         if item.has_path('tag.display.Lore'):
-            for lore_line in item.at_path('tag.display.Lore').value:
+            for lore_line in item.iter_multipath('tag.display.Lore[]'):
                 lore = lore_line.value
                 new_lore = self._fix(lore)
                 lore_line.value = new_lore
