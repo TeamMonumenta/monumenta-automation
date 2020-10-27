@@ -10,6 +10,7 @@ from collections import OrderedDict
 from lib_py3.json_file import jsonFile
 from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
+from lib_py3.upgrade import upgrade_entity
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
@@ -90,36 +91,7 @@ class LootTableManager(object):
             name_possibly_json = name_possibly_json.replace("\\u00a7", "§")
             item_nbt.at_path("display.Name").value = name_possibly_json
 
-        # Convert item lore text to raw json text
-        if item_nbt.has_path("display.Lore"):
-            new_lore_list = []
-            for lore_nbt in item_nbt.at_path("display.Lore").value:
-                lore_text_possibly_json = lore_nbt.value
-                try:
-                    json.loads(lore_text_possibly_json)
-                    new_lore_list.append(nbt.TagString(lore_text_possibly_json))
-                except Exception:
-                    json_data = {"text": lore_text_possibly_json}
-                    json_str = json.dumps(json_data, separators=(',', ':'))
-                    new_lore_list.append(nbt.TagString(json_str))
-            item_nbt.at_path("display.Lore").value = new_lore_list
-
-        # Convert item lore text to raw json text
-        if item_nbt.has_path("display.Lore"):
-            new_lore_list = []
-            for lore_nbt in item_nbt.at_path("display.Lore").value:
-                lore_text_possibly_json = lore_nbt.value
-                lore_text_possibly_json = lore_text_possibly_json.replace(r"\\u0027", "'")
-                lore_text_possibly_json = lore_text_possibly_json.replace(r"\\u00a7", "§")
-
-                try:
-                    json.loads(lore_text_possibly_json)
-                    new_lore_list.append(nbt.TagString(lore_text_possibly_json))
-                except Exception:
-                    json_data = {"text": lore_text_possibly_json}
-                    json_str = json.dumps(json_data, ensure_ascii=False, separators=(',', ':'))
-                    new_lore_list.append(nbt.TagString(json_str))
-            item_nbt.at_path("display.Lore").value = new_lore_list
+        upgrade_entity(item_nbt, False, []);
 
         return item_nbt
 

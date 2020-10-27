@@ -1,6 +1,7 @@
 import sys
 import os
 import uuid
+import json
 from lib_py3.common import parse_name_possibly_json, get_entity_uuid, uuid_to_mc_uuid_tag_int_array
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
@@ -26,6 +27,22 @@ _list_item_locations = (
     "Inventory",
     "Items",
 )
+
+def translate_lore(lore: str) -> str:
+    lore = lore.replace(r"\\u0027", "'")
+    lore = lore.replace(r"\\u00a7", "§")
+    lore = lore.replace(r"When in main hand:", "When in Main Hand:")
+    lore = lore.replace(r"When in off hand:", "When in Off Hand:")
+    lore = lore.replace(r"When on head:", "When on Head:")
+    lore = lore.replace(r"When on body:", "When on Body:")
+    lore = lore.replace(r"When on legs:", "When on Legs:")
+    lore = lore.replace(r"When on feet:", "When on Feet:")
+    # This script doesn't do these
+    # Use this shell script:
+    #    find . -type f -exec perl -p -i -e 's|\+0\.([0-9]) Knockback Resistance|+\1 Knockback Resistance|g' {} \;
+    #"&9+0.X Knockback Resistance" --> "&9+X Knockback Resistance"
+    #"&c-0.X Knockback Resistance" --> "&c-X Knockback Resistance"
+    return lore
 
 def translate_attribute_name(name: str) -> str:
     name = name.replace("maxHealth", "max_health")
@@ -97,6 +114,19 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool, tagsToRemove: list) 
         upgrade_attributes(nbt.at_path("AttributeModifiers"))
     if nbt.has_path("Attributes"):
         upgrade_attributes(nbt.at_path("Attributes"))
+
+    if nbt.has_path("display.Lore"):
+        new_lore_list = []
+        for lore_nbt in nbt.at_path("display.Lore").value:
+            lore_text_possibly_json = translate_lore(lore_nbt.value)
+            try:
+                json.loads(lore_text_possibly_json)
+                new_lore_list.append(TagString(lore_text_possibly_json))
+            except Exception:
+                json_data = {"text": lore_text_possibly_json}
+                json_str = json.dumps(json_data, ensure_ascii=False, separators=(',', ':'))
+                new_lore_list.append(TagString(json_str))
+        nbt.at_path("display.Lore").value = new_lore_list
 
     # Upgrade items the entity is carrying
     for location in _single_item_locations:
