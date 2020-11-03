@@ -230,13 +230,15 @@ for dungeon in dungeons:
         if entity.has_path('Items'):
             found_whitelisted_item = False
 
-            items = entity.at_path('Items').value
-            for item in items:
+            for item in entity.iter_multipath('Items[]'):
+                # Ignore BoS:
+                if item.has_path('tag.author') and item.at_path('tag.author').value == "§6The Creator":
+                    continue
+
                 if not item.has_path('tag.display.Lore'):
                     continue
 
-                lore_lines = item.at_path('tag.display.Lore').value
-                for lore_line in lore_lines:
+                for lore_line in item.iter_multipath('tag.display.Lore[]'):
                     for whitelisted_lore_line in whitelisted_lore_lines:
                         if whitelisted_lore_line in lore_line.value:
                             found_whitelisted_item = True

@@ -33,7 +33,7 @@ def make_loot_table(loot_table_base_path, container_nbt_list, loot_table_name=No
         if "Items" not in container_nbt.value:
             raise KeyError("NBT does not contain Items!")
 
-        for item_nbt in container_nbt.at_path("Items").value:
+        for item_nbt in container_nbt.iter_multipath("Items[]"):
             #item_nbt.tree()
             if not entries or not loot_table_name:
                 entries = []

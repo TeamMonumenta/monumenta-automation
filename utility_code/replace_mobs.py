@@ -59,8 +59,8 @@ def match_hp(hp: float, chain=lambda mob: True):
 def match_passenger(host_chain, passenger_chain):
     return lambda mob : (host_chain(mob)
             and mob.has_path('Passengers')
-            and len(mob.at_path('Passengers').value) >= 1
-            and passenger_chain(mob.at_path('Passengers').value[0]))
+            and mob.count_multipath('Passengers[]') >= 1
+            and passenger_chain(mob.at_path('Passengers[0]')))
 
 # Note that these will be evaluated last to first - so put more broad checks first for performance
 sub = [
@@ -208,7 +208,7 @@ try:
             # Remove pigs
             if entity.has_path('SpawnPotentials'):
                 new_potentials = []
-                for nested_entity in entity.at_path('SpawnPotentials').value:
+                for nested_entity in entity.iter_multipath('SpawnPotentials[]'):
                     if nested_entity.has_path('Entity.id') and nested_entity.at_path('Entity.id').value == "minecraft:pig":
                         if log_handle is not None:
                             log_handle.write("Removing pig from SpawnPotentials at {}\n".format(get_debug_string_from_entity_path(entity_path)))

@@ -58,7 +58,7 @@ elif logfile is not None:
 num_missing_items = 0
 missing_items = {}
 for item, source_pos, entity_path in world.items(readonly=True):
-    if not ( item.has_path('id') and item.has_path('tag.display.Name') ):
+    if not (item.has_path('id') and item.has_path('tag.display.Name')):
         continue
 
     # For practical reasons, also ignore items that have no lore text
