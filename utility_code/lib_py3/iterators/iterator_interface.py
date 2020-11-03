@@ -124,5 +124,5 @@ def recursive_entity_iterator(world, pos1=None, pos2=None, readonly=True, no_pla
         for chunk in _new_chunk_iterator(world, min_x, min_y, min_z, max_x, max_y, max_z, autosave=(not readonly)):
             for block_entity in chunk.recursive_iter_block_entities(min_x, min_y, min_z, max_x, max_y, max_z):
                 yield block_entity.nbt, block_entity.pos, block_entity.get_legacy_debug()
-            for entity in player.recursive_iter_entities(min_x, min_y, min_z, max_x, max_y, max_z):
+            for entity in chunk.recursive_iter_entities(min_x, min_y, min_z, max_x, max_y, max_z):
                 yield entity.nbt, entity.pos, entity.get_legacy_debug()
