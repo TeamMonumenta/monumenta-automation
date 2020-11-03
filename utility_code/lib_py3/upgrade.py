@@ -61,7 +61,12 @@ def translate_attribute_name(name: str) -> str:
     return name
 
 def upgrade_uuid_if_present(nbt: TagCompound, regenerateUUIDs = False) -> None:
-    if nbt.has_path("UUIDMost") or nbt.has_path("UUIDLeast") or nbt.has_path("UUID")  :
+    if nbt.has_path("OwnerUUID"):
+        owneruuid = uuid.UUID(nbt.at_path("OwnerUUID").value)
+        nbt.value["Owner"] = uuid_to_mc_uuid_tag_int_array(owneruuid)
+        nbt.value.pop("OwnerUUID")
+
+    if nbt.has_path("UUIDMost") or nbt.has_path("UUIDLeast") or nbt.has_path("UUID"):
         modifierUUID = None
         if not regenerateUUIDs:
             modifierUUID = get_entity_uuid(nbt)
@@ -91,9 +96,10 @@ def upgrade_attributes(attributes_nbt: TagCompound, regenerateUUIDs = False) -> 
 
 
 def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool, tagsToRemove: list) -> None:
-    for junk in tagsToRemove:
-        if nbt.has_path(junk):
-            nbt.value.pop(junk)
+    if type(nbt) is TagCompound:
+        for junk in tagsToRemove:
+            if junk in nbt.value:
+                nbt.value.pop(junk)
 
     if nbt.has_path("id"):
         nbt.at_path("id").value = nbt.at_path("id").value.replace("zombie_pigman", "zombified_piglin")

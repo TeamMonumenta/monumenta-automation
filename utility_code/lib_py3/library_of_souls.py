@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import time
+import re
 from pprint import pformat
 from lib_py3.common import parse_name_possibly_json, eprint
 from lib_py3.upgrade import upgrade_entity
@@ -23,17 +24,6 @@ class LibraryOfSouls(object):
 
         with open(path, "r") as fp:
             self._souls = json.load(fp)
-
-        self.upgrade()
-
-    def upgrade(self):
-        for soul_entry in self._souls:
-            if "mojangson" in soul_entry:
-                hist_element = {}
-                hist_element["mojangson"] = soul_entry["mojangson"]
-                hist_element["modified_on"] = int(time.time())
-                soul_entry["history"] = [hist_element, ]
-                soul_entry.pop("mojangson")
 
     def clear_tags(self) -> None:
         for soul_entry in self._souls:
@@ -76,27 +66,43 @@ class LibraryOfSouls(object):
             return nbt.TagCompound.from_mojangson(self._index[name]["history"][0]["mojangson"])
         return None
 
-    def add_soul(self, soul_nbt: TagCompound) -> None:
+    # Add a soul to the database, and return its label for /los summon
+    def add_soul(self, soul_nbt: TagCompound) -> str:
         if self._readonly:
             raise Exception("Attempted to save read-only Library of Souls")
         if self._index is None:
             self.refresh_index()
 
+        # Make sure this NBT data is up to date, also prunes junk tags
+        soul_nbt = self.upgrade_nbt(soul_nbt)
+
         if not soul_nbt.has_path("CustomName"):
             raise ValueError("Attempted to add souls database entity with no name")
 
         name = unformat_text(parse_name_possibly_json(soul_nbt.at_path("CustomName").value))
+        los_summon_name = re.sub("[^a-zA-Z0-9]", "", name)
 
         if not name:
             raise ValueError("Attempted to add souls database entity with no name")
 
         if name in self._index:
+            other = self.get_soul(name)
+            other_nbt = nbt.TagCompound.from_mojangson(other["history"][0]["mojangson"])
+
+            if other_nbt == soul_nbt:
+                # Didn't need to add, it's already there and the same
+                return los_summon_name
             raise ValueError("Attempted to add souls database entity that already exists")
 
         soul_entry = {}
-        soul_entry["mojangson"] = soul_nbt.to_mojangson()
+        hist_element = {}
+        hist_element["mojangson"] = soul_nbt.to_mojangson()
+        hist_element["modified_on"] = int(time.time())
+        soul_entry["history"] = [hist_element, ]
         self._index[name] = soul_entry
         self._souls.append(soul_entry)
+
+        return los_summon_name
 
     def load_replacements(self, mgr: MobReplacementManager) -> None:
         if self._index is None:
@@ -114,20 +120,24 @@ class LibraryOfSouls(object):
         with open(self._path, "w") as fp:
             json.dump(self._souls, fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
 
+    @classmethod
+    def upgrade_nbt(cls, soul_nbt: TagCompound) -> TagCompound:
+        upgrade_entity(soul_nbt, True, ('Pos', 'Leashed', 'Air', 'OnGround', 'Dimension', 'Rotation', 'WorldUUIDMost',
+                     'WorldUUIDLeast', 'HurtTime', 'HurtByTimestamp', 'FallFlying', 'PortalCooldown',
+                     'FallDistance', 'DeathTime', 'HandDropChances', 'ArmorDropChances', 'CanPickUpLoot',
+                     'Bukkit.updateLevel', 'Spigot.ticksLived', 'Paper.AAAB', 'Paper.Origin',
+                     'Paper.FromMobSpawner', 'Team', 'Brain', 'Paper.SpawnReason', 'Bukkit.Aware',
+                     'Paper.ShouldBurnInDay', 'Paper.CanTick', 'Bukkit.MaxDomestication'))
+
+        for junk in ('UUID', ):
+            if soul_nbt.has_path(junk):
+                soul_nbt.value.pop(junk)
+
+        return soul_nbt
+
     def upgrade_all(self) -> None:
         for soul_entry in self._souls:
             for history_entry in soul_entry["history"]:
                 soul_nbt = nbt.TagCompound.from_mojangson(history_entry["mojangson"])
-
-                upgrade_entity(soul_nbt, True, ('Pos', 'Leashed', 'Air', 'OnGround', 'Dimension', 'Rotation', 'WorldUUIDMost',
-                             'WorldUUIDLeast', 'HurtTime', 'HurtByTimestamp', 'FallFlying', 'PortalCooldown',
-                             'FallDistance', 'DeathTime', 'HandDropChances', 'ArmorDropChances', 'CanPickUpLoot',
-                             'Bukkit.updateLevel', 'Spigot.ticksLived', 'Paper.AAAB', 'Paper.Origin',
-                             'Paper.FromMobSpawner', 'Team'))
-
-                for junk in ('UUID', ):
-                    if soul_nbt.has_path(junk):
-                        soul_nbt.value.pop(junk)
-
-                history_entry["mojangson"] = soul_nbt.to_mojangson()
+                history_entry["mojangson"] = self.upgrade_nbt(soul_nbt).to_mojangson()
 
