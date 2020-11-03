@@ -22,16 +22,16 @@ class NamespacedID():
         self.namespace = namespace
         self.name = name
 
-    @staticmethod
-    def _parse_part(text):
+    @classmethod
+    def _parse_part(cls, text):
         """Read the regex '[0-9a-z_-]*', advancing the cursor if text is a StringReader."""
         if not isinstance(text, StringReader):
             text = StringReader(text)
 
-        start = text.getCursor()
-        end = start + _RE_PART.match(text.getRemaining()).end()
-        text.setCursor(end)
-        return text.getString()[start:end]
+        start = text.get_cursor()
+        end = start + cls._RE_PART.match(text.get_remaining()).end()
+        text.set_cursor(end)
+        return text.get_string()[start:end]
 
     @staticmethod
     def parse_no_separator(text, default_namespace='minecraft'):
@@ -42,7 +42,7 @@ class NamespacedID():
         namespace = default_namespace
         name = NamespacedID._parse_part(text)
 
-        if text.canRead() and text.peek() == ':':
+        if text.can_read() and text.peek() == ':':
             text.skip()
             namespace = name
             name = NamespacedID._parse_part(text)
@@ -58,12 +58,12 @@ class NamespacedID():
         namespace = default_namespace
         name = NamespacedID._parse_part(text)
 
-        if text.canRead() and text.peek() == ':':
+        if text.can_read() and text.peek() == ':':
             text.skip()
             namespace = name
             name = NamespacedID._parse_part(text)
 
-        while text.canRead() and text.peek() == '.':
+        while text.can_read() and text.peek() == '.':
             text.skip()
             name = f'{name}.{NamespacedID._parse_part(text)}'
 
@@ -78,12 +78,12 @@ class NamespacedID():
         namespace = default_namespace
         name = NamespacedID._parse_part(text)
 
-        if text.canRead() and text.peek() == ':':
+        if text.can_read() and text.peek() == ':':
             text.skip()
             namespace = name
             name = NamespacedID._parse_part(text)
 
-        while text.canRead() and text.peek() == '/':
+        while text.can_read() and text.peek() == '/':
             text.skip()
             name = f'{name}/{NamespacedID._parse_part(text)}'
 

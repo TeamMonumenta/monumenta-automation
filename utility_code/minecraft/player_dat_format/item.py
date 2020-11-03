@@ -14,7 +14,7 @@ class Item(RecursiveMinecraftIterator):
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 
-    def __init__(self, nbt=None, path_debug=None, root=None):
+    def __init__(self, nbt_=None, path_debug=None, root=None):
         """Load an item from an NBT tag.
 
         Must be saved from wherever the tag was loaded from to apply.
@@ -26,17 +26,19 @@ class Item(RecursiveMinecraftIterator):
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
-        if nbt is None:
-            nbt = nbt.TagCompound({})
-        self.nbt = nbt
+        if nbt_ is None:
+            nbt_ = nbt.TagCompound({})
+        self.nbt = nbt_
         self.path_debug = path_debug
-        if self.path_debug is not None:
-            self.path_debug.obj = self
         self.root = root if root is not None else self
         self.root_entity = self
-        parent = self.path_debug.parent.obj
-        if isinstance(parent, (BlockEntity, Entity, Item)):
-            self.root_entity = parent.root_entity
+        if self.path_debug is not None:
+            self.path_debug.obj = self
+            parent = self.path_debug.parent.obj
+            if isinstance(parent, (BlockEntity, Entity, Item)):
+                self.root_entity = parent.root_entity
+        else:
+            self.root_entity = self
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
@@ -58,27 +60,28 @@ class Item(RecursiveMinecraftIterator):
             result = parent.get_legacy_debug() + result
         return result
 
-    def from_command_format(self, command, check_count=True):
+    @staticmethod
+    def from_command_format(command, check_count=True):
         """Get an item from a command, optionally checking the count of the command."""
-        if isinstance(command, string):
+        if isinstance(command, str):
             command = StringReader(command)
         if not isinstance(command, StringReader):
             raise TypeError("Expected command to be type str or StringReader.")
 
         item = Item()
-        item.id = NamespacedID.parse_no_separator(command)
-        if command.canRead() and command.peek() == '{':
-            item.tag = nbt.MojangsonParser(command).parse_compound(command)
+        item.id = str(NamespacedID.parse_no_separator(command))
+        if command.can_read() and command.peek() == '{':
+            item.tag = nbt.MojangsonParser(command).parse_compound()
         item.count = 1
-        if check_count and command.canRead():
+        if check_count and command.can_read():
             if command.peek() != ' ':
                 raise SyntaxError(f'Unexpected character {command.peek()!r}.')
             command.skip()
 
             # The count
-            if not command.canRead():
+            if not command.can_read():
                 raise SyntaxError('Expected an item count.')
-            item.count = command.readInt()
+            item.count = command.read_int()
 
         return item
 
@@ -95,7 +98,7 @@ class Item(RecursiveMinecraftIterator):
         return command_part
 
     @staticmethod
-    def from_raw_json_text_hover_event(cls, hover_event: dict):
+    def from_raw_json_text_hover_event(hover_event: dict):
         """Convert a raw json text hover event that shows an item into that item."""
         if not isinstance(hover_event, dict):
             raise TypeError('Expected hover event to be type dict.')
