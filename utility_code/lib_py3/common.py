@@ -66,8 +66,23 @@ def json_text_to_plain_text(json_text):
         result = json_text
 
     elif isinstance(json_text, dict):
+        result = ""
         if "text" in json_text:
             result = json_text["text"]
+        elif "translate" in json_text:
+            result = json_text["translate"]
+        elif "score" in json_text:
+            result = ""
+            if "value" in json_text["score"]:
+                result = str(json_text["score"]["score"])
+        elif "selector" in json_text:
+            result = ""
+        elif "keybind" in json_text:
+            result = json_text["keybind"]
+
+        if "extra" in json_text:
+            for extra in json_text["extra"]:
+                result += json_text_to_plain_text(extra)
 
     elif isinstance(json_text, list):
         for item in json_text:
