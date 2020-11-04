@@ -166,6 +166,9 @@ class Item(RecursiveMinecraftIterator):
 
         self.nbt.value['Count'] = nbt.TagByte(value)
 
+    def has_tag(self):
+        return self.nbt.has_path('tag')
+
     @property
     def tag(self):
         """Get the tag of an item."""
