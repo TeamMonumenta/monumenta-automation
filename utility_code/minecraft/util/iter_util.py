@@ -45,6 +45,10 @@ class RecursiveMinecraftIterator():
         """Iterates over class_ objects directly in this object."""
         from minecraft.player_dat_format.item import Item
 
+        check_coords = not (
+            min_x == -math.inf and max_x == math.inf and
+            min_y == -math.inf and max_y == math.inf and
+            min_z == -math.inf and max_z == math.inf)
         root = self.root if hasattr(self, 'root') else None
 
         for superclass_, multipaths in self._multipaths.items():
@@ -55,8 +59,8 @@ class RecursiveMinecraftIterator():
                             # Items never have a position, so position only needs to be checked for non-items.
                             item_path_debug = self.path_debug.get_child_debug(path, tag, tag)
                             obj = class_(tag, item_path_debug, root)
-                            x, y, z = obj.pos
-                            if (
+                            x, y, z = obj.pos if obj.pos is not None else (None, None, None)
+                            if not check_coords or (
                                 min_x <= x and x < max_x and
                                 min_y <= y and y < max_y and
                                 min_z <= z and z < max_z
