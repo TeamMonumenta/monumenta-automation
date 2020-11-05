@@ -121,11 +121,11 @@ class Region(MutableMapping):
                 break
 
         # Write extent header
-        self._region.fd.seek(4 * (32 * cz + cx))
+        self._region.fd.seek(4 * (32 * local_cz + local_cx))
         self._region.fd.write(Buffer.pack('I', (chunk_offset << 8) | (chunk_length & 0xff)))
 
         # Write timestamp header
-        self._region.fd.seek(4096 + 4 * (32 * cz + cx))
+        self._region.fd.seek(4096 + 4 * (32 * local_cz + local_cx))
         self._region.fd.write(Buffer.pack('I', int(time.time())))
 
         # Write chunk
@@ -166,11 +166,11 @@ class Region(MutableMapping):
         extents.append((extents[-1][0] + extents[-1][1], 0))
 
         # Write extent header
-        self._region.fd.seek(4 * (32 * cz + cx))
+        self._region.fd.seek(4 * (32 * local_cz + local_cx))
         self._region.fd.write(Buffer.pack('I', 0))
 
         # Write timestamp header
-        self._region.fd.seek(4096 + 4 * (32 * cz + cx))
+        self._region.fd.seek(4096 + 4 * (32 * local_cz + local_cx))
         self._region.fd.write(Buffer.pack('I', 0))
 
         # Truncate file
