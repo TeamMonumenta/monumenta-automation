@@ -877,114 +877,139 @@ DELETES DUNGEON CORE PROTECT DATA'''
         '''Dangerous!
 Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
+        # Check for any arguments
+        commandArgs = message.content[len(self._prefix):].strip()
+        min_phase = 0
+        if len(commandArgs) > len(cmd) + 1:
+            min_phase = int(commandArgs[len(cmd) + 1:].strip())
+        await self.display(f"Starting from phase {min_phase}")
+
         allShards = self._shards.keys()
 
         await self.run("mkdir -p /home/epic/1_ARCHIVE")
         await self.run("mkdir -p /home/epic/0_OLD_BACKUPS")
 
         # Fail if any shards are still running
-        await self.display("Checking that all shards are stopped...")
-        shards = await self._k8s.list()
-        await self.display(pformat(shards))
-        for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
-            if shards[shard.replace('_', '')]['replicas'] != 0:
-                await self.display("ERROR: shard {!r} is still running!".format(shard))
-                await self.display(message.author.mention)
-                return
+        if min_phase < 1:
+            await self.display("Checking that all shards are stopped...")
+            shards = await self._k8s.list()
+            await self.display(pformat(shards))
+            for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
+                if shards[shard.replace('_', '')]['replicas'] != 0:
+                    await self.display("ERROR: shard {!r} is still running!".format(shard))
+                    await self.display(message.author.mention)
+                    return
 
         # Sanity check to make sure this script is going to process everything that it needs to
-        files = os.listdir("/home/epic/project_epic")
-        for f in files:
-            if f not in ["server_config", "0_PREVIOUS"] and f not in allShards:
-                await self.display("ERROR: project_epic directory contains file {!r} which will not be processed!".format(f))
-                await self.display(message.author.mention)
-                return
+        if min_phase < 2:
+            files = os.listdir("/home/epic/project_epic")
+            for f in files:
+                if f not in ["server_config", "0_PREVIOUS"] and f not in allShards:
+                    await self.display("ERROR: project_epic directory contains file {!r} which will not be processed!".format(f))
+                    await self.display(message.author.mention)
+                    return
 
         # Delete previous reset data and move current data to 0_PREVIOUS
-        await self.display("Deleting previous reset data...")
         await self.cd("/home/epic/project_epic")
-        await self.run("rm -rf 0_PREVIOUS")
-        await self.run("mkdir 0_PREVIOUS")
+        if min_phase < 3:
+            await self.display("Deleting previous reset data...")
+            await self.run("rm -rf 0_PREVIOUS")
+            await self.run("mkdir 0_PREVIOUS")
 
         # Move everything to 0_PREVIOUS except bungee and build
-        await self.display("Moving everything except bungee, and build to 0_PREVIOUS...")
-        for f in files:
-            if f not in ["0_PREVIOUS", "bungee", "build"]:
-                await self.run("mv {} 0_PREVIOUS/".format(f))
+        if min_phase < 4:
+            await self.display("Moving everything except bungee, and build to 0_PREVIOUS...")
+            for f in files:
+                if f not in ["0_PREVIOUS", "bungee", "build"]:
+                    await self.run("mv {} 0_PREVIOUS/".format(f))
 
-        await self.display("Getting new server config...")
-        await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/epic/project_epic/")
+        if min_phase < 5:
+            await self.display("Getting new server config...")
+            await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/epic/project_epic/")
 
-        await self.display("Copying playerdata...")
-        await self.run("cp -a /home/epic/project_epic/0_PREVIOUS/server_config/redis_data_final /home/epic/project_epic/server_config/redis_data_initial")
+        if min_phase < 6:
+            await self.display("Copying playerdata...")
+            await self.run("cp -a /home/epic/project_epic/0_PREVIOUS/server_config/redis_data_final /home/epic/project_epic/server_config/redis_data_initial")
 
-        await self.display("Copying purgatory...")
-        await self.run("rm -rf /home/epic/project_epic/purgatory/")
-        await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory /home/epic/project_epic/")
+        if min_phase < 7:
+            await self.display("Copying purgatory...")
+            await self.run("rm -rf /home/epic/project_epic/purgatory/")
+            await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory /home/epic/project_epic/")
 
-        await self.display("Copying tutorial...")
-        await self.run("rm -rf /home/epic/project_epic/tutorial/")
-        await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
+        if min_phase < 8:
+            await self.display("Copying tutorial...")
+            await self.run("rm -rf /home/epic/project_epic/tutorial/")
+            await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
 
         ########################################
         # Raffle
 
-        await self.display("Raffle results:")
-        raffle_seed = "Default raffle seed"
-        if self._rreact["msg_contents"] is not None:
-            raffle_seed = self._rreact["msg_contents"]
+        if min_phase < 9:
+            await self.display("Raffle results:")
+            raffle_seed = "Default raffle seed"
+            if self._rreact["msg_contents"] is not None:
+                raffle_seed = self._rreact["msg_contents"]
 
-        raffle_results = tempfile.mktemp()
-        vote_raffle(raffle_seed, '/home/epic/project_epic/bungee/uuid2name.yml', '/home/epic/project_epic/bungee/plugins/Monumenta-Bungee/votes', raffle_results, 2)
-        await self.run("cat {}".format(raffle_results), displayOutput=True)
+            raffle_results = tempfile.mktemp()
+            vote_raffle(raffle_seed, '/home/epic/project_epic/bungee/uuid2name.yml', '/home/epic/project_epic/bungee/plugins/Monumenta-Bungee/votes', raffle_results, 2)
+            await self.run("cat {}".format(raffle_results), displayOutput=True)
 
         # Raffle
         ########################################
 
-        await self.display("Refreshing leaderboards")
-        await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
+        if min_phase < 10:
+            await self.display("Refreshing leaderboards")
+            await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
 
-        await self.display("Running score changes for players and moving them to spawn...")
-        await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + " /home/epic/project_epic/server_config/redis_data_initial")
+        if min_phase < 11:
+            await self.display("Running score changes for players and moving them to spawn...")
+            await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + " /home/epic/project_epic/server_config/redis_data_initial")
 
-        await self.display("Running item replacements for players...")
-        await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --redisworld /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.log")
+        if min_phase < 12:
+            await self.display("Running item replacements for players...")
+            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --redisworld /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.log")
 
-        await self.display("Loading player data back into redis...")
-        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial 1")
+        if min_phase < 13:
+            await self.display("Loading player data back into redis...")
+            await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial 1")
 
-        await self.display("Running actual terrain reset (this will take a while!)...")
-        await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))
+        if min_phase < 14:
+            await self.display("Running actual terrain reset (this will take a while!)...")
+            await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))
 
-        for shard in ["plots", "region_1"]:
-            await self.display("Preserving coreprotect for {0}...".format(shard))
-            await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/CoreProtect".format(shard))
-            await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/CoreProtect/database.db"))
+        if min_phase < 15:
+            for shard in ["plots", "region_1"]:
+                await self.display("Preserving coreprotect for {0}...".format(shard))
+                await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/CoreProtect".format(shard))
+                await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/CoreProtect/database.db"))
 
-        for shard in ["plots", "region_1", "region_2"]:
-            await self.display("Preserving warps for {0}...".format(shard))
-            os.makedirs("/home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
-            if os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml".format(shard)):
-                await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
+            for shard in ["plots", "region_1", "region_2"]:
+                await self.display("Preserving warps for {0}...".format(shard))
+                os.makedirs("/home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
+                if os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml".format(shard)):
+                    await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
 
-        for shard in allShards:
-            if shard in ["build","bungee"]:
-                continue
+            for shard in allShards:
+                if shard in ["build","bungee"]:
+                    continue
 
-            await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-ips.json /home/epic/project_epic/{}/".format(shard))
-            await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-players.json /home/epic/project_epic/{}/".format(shard))
-            await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/ops.json /home/epic/project_epic/{}/".format(shard))
+                await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-ips.json /home/epic/project_epic/{}/".format(shard))
+                await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-players.json /home/epic/project_epic/{}/".format(shard))
+                await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/ops.json /home/epic/project_epic/{}/".format(shard))
 
-        await self.display("Generating per-shard config...")
         await self.cd("/home/epic/project_epic")
-        await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(allShards)))
+        if min_phase < 16:
+            await self.display("Generating per-shard config...")
+            await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(allShards)))
 
-        await self.display("Checking for broken symbolic links...")
-        await self.run("find /home/epic/project_epic -xtype l", displayOutput=True)
+        if min_phase < 17:
+            await self.display("Checking for broken symbolic links...")
+            await self.run("find /home/epic/project_epic -xtype l", displayOutput=True)
 
-        await self.display("Backing up post-reset artifacts...")
         await self.cd("/home/epic")
-        await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic")
+        if min_phase < 18:
+            await self.display("Backing up post-reset artifacts...")
+            await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic")
 
         await self.display("Done.")
         await self.display(message.author.mention)
