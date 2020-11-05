@@ -74,9 +74,11 @@ class Entity(RecursiveMinecraftIterator):
 
     def get_legacy_debug(self):
         result = [self.nbt]
-        parent = self.path_debug.parent.obj
-        if isinstance(parent, (BlockEntity, Entity, Item)):
-            result = parent.get_legacy_debug() + result
+        if self.path_debug.parent is not None:
+            parent = self.path_debug.parent.obj
+            if isinstance(parent, (BlockEntity, Entity, Item)):
+                result = parent.get_legacy_debug() + result
+
         return result
 
     @property

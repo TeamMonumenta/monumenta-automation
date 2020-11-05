@@ -173,7 +173,7 @@ class World(object):
 
         Usage:
         ```
-        for player in world.players:
+        for player in world.players():
             player.pos = [0, 65, 0]
             player.save()
         ```

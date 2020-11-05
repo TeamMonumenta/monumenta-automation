@@ -60,7 +60,7 @@ elif logfile is not None:
 num_replacements = 0
 replacements_log = {}
 
-for player in world.players:
+for player in world.players():
     player.full_heal()
     tags = set(player.tags)
     tags.add("resetMessage")

@@ -20,7 +20,10 @@ class World():
         if self.name is None:
             self.name = os.path.basename(os.path.realpath(self.path))
         self.path_debug = NbtPathDebug(f'file://{os.path.realpath(self.path)}', self, self, f'"World {self.name}"')
-        self.level_dat = LevelDat(os.path.join(self.path, 'level.dat'))
+        if os.path.exists(os.path.join(self.path, 'level.dat')):
+            self.level_dat = LevelDat(os.path.join(self.path, 'level.dat'))
+        else:
+            self.level_dat = None
 
     def iter_regions(self):
         region_folder = os.path.join(self.path, 'region')
@@ -43,10 +46,11 @@ class World():
             yield Region(full_path, rx, rz)
 
     def iter_players(self, autosave=False):
-        yield self.level_dat.player
+        if self.level_dat is not None:
+            yield self.level_dat.player
 
-        if autosave:
-            self.level_dat.save()
+            if autosave:
+                self.level_dat.save()
 
         for filename in os.listdir(os.path.join(self.path, 'playerdata')):
             if not filename.endswith('.dat'):
