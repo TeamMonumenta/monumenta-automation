@@ -80,7 +80,7 @@ class Region(MutableMapping):
         ):
             raise KeyError(f'Region file ({self.rx}, {self.rz}) does not contain chunk coordinate ({cx}, {cz}).')
 
-        chunk = nbt.TagRoot.from_body(chunk)
+        chunk = nbt.TagRoot.from_body(chunk.nbt)
 
         # Compress chunk
         chunk = zlib.compress(chunk.to_bytes())
