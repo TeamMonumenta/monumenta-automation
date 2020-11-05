@@ -839,7 +839,7 @@ class World(object):
         for rz in range(min_z//512, max_z//512+1):
             for rx in range(min_x//512, max_x//512+1):
                 new_region_path = os.path.join(self.path, "region", f"r.{rx}.{rz}.mca")
-                old_region_path = os.path.join(old_world.path, "region", "r.{rx}.{rz}.mca")
+                old_region_path = os.path.join(old_world.path, "region", f"r.{rx}.{rz}.mca")
 
                 if not os.path.isfile(new_region_path):
                     raise FileNotFoundError(f'No such region {rx},{rz} in world {self.path}')
