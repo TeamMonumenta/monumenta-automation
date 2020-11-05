@@ -51,7 +51,7 @@ config = {
         },{
             "name":"roguelike",
             "region":{"x":-2, "z":-1},
-            "numDungeons":200,
+            "numDungeons":100,
         },{
             "name":"reverie",
             "region":{"x":-3, "z":4},
@@ -59,7 +59,7 @@ config = {
         },{
             "name":"tutorial",
             "region":{"x":-2, "z":0},
-            "numDungeons":600,
+            "numDungeons":500,
         },{
             "name":"sanctum",
             "region":{"x":-3, "z":12},
@@ -91,19 +91,19 @@ config = {
         },{
             "name":"purple",
             "region":{"x":-3, "z":13},
-            "numDungeons":50,
+            "numDungeons":40,
         },{
             "name":"shiftingcity",
             "region":{"x":-2, "z":9},
-            "numDungeons":60,
+            "numDungeons":50,
         },{
             "name":"teal",
             "region":{"x":-2, "z":12},
-            "numDungeons":60,
+            "numDungeons":50,
         },{
             "name":"rush",
             "region":{"x":-3, "z":15},
-            "numDungeons":60,
+            "numDungeons":50,
         },
     ),
 
