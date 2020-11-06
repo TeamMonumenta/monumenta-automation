@@ -1,0 +1,93 @@
+#
+# NOTE:
+# To generate the maps-auth secret, run these commands:
+# htpasswd -c ./auth plan
+# kubectl create secret generic plan-auth --from-file auth -n play
+# rm auth
+#
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: plan
+  namespace: play
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: plan-auth
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
+spec:
+  tls:
+  - hosts:
+    - plan.playmonumenta.com
+  rules:
+  - host: plan.playmonumenta.com
+    http:
+      paths:
+      - backend:
+          serviceName: plan
+          servicePort: 80
+
+---
+
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: plan
+  namespace: play
+  labels:
+    app: plan
+spec:
+  type: ClusterIP
+  selector:
+    app: plan
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+
+---
+
+# This is the actual deployment, specifying what it should run
+#
+# This is just a stock nginx webserver with the appropriate directory mounted
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plan
+  namespace: play
+  labels:
+    app: plan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plan
+  template:
+    metadata:
+      labels:
+        app: plan
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-8
+      volumes:
+        - name: nfs-plan
+          hostPath:
+            path: /nfs/play/plan
+            type: Directory
+      containers:
+      - name: plan
+        image: nginx:stable
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nfs-plan
+          mountPath: /usr/share/nginx/html
+          readOnly: true

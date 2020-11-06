@@ -1,33 +1,3 @@
-#
-# NOTE:
-# To generate the maps-auth secret, run these commands:
-# htpasswd -c ./auth plan
-# kubectl create secret generic plan-auth --from-file auth -n play
-# rm auth
-#
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: plan
-  namespace: play
-  annotations:
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: plan-auth
-    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
-spec:
-  tls:
-  - hosts:
-    - plan.playmonumenta.com
-  rules:
-  - host: plan.playmonumenta.com
-    http:
-      paths:
-      - backend:
-          serviceName: bungee
-          servicePort: 8804
-
----
-
 # Service / internal network ports
 
 apiVersion: v1
@@ -112,6 +82,10 @@ spec:
           hostPath:
             path: /nfs/play/project_epic
             type: Directory
+        - name: nfs-plan
+          hostPath:
+            type: Directory
+            path: /nfs/play/plan
       containers:
       - name: bungee
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
@@ -148,6 +122,8 @@ spec:
         volumeMounts:
         - name: nfs-volume
           mountPath: /project_epic
+        - name: nfs-plan
+          mountPath: /plan
         resources:
           limits:
             memory: 1Gi
