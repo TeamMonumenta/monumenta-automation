@@ -2,6 +2,8 @@
 
 import math
 
+from minecraft.chunk_format.block_entity import BlockEntity
+from minecraft.chunk_format.entity import Entity
 from minecraft.world import World
 
 def _new_chunk_iterator(world, min_x, min_y, min_z, max_x, max_y, max_z, autosave=False):
@@ -115,14 +117,12 @@ def recursive_entity_iterator(world, pos1=None, pos2=None, readonly=True, no_pla
 
     if not no_players:
         for player in world.iter_players(autosave=(not readonly)):
-            for block_entity in player.recursive_iter_block_entities():
-                yield block_entity.nbt, block_entity.pos, block_entity.get_legacy_debug()
-            for entity in player.recursive_iter_entities():
-                yield entity.nbt, entity.pos, entity.get_legacy_debug()
+            for obj in player.recursive_iter_all_types():
+                if isinstance(obj, (BlockEntity, Entity)):
+                    yield obj.nbt, obj.pos, obj.get_legacy_debug()
 
     if not players_only:
         for chunk in _new_chunk_iterator(world, min_x, min_y, min_z, max_x, max_y, max_z, autosave=(not readonly)):
-            for block_entity in chunk.recursive_iter_block_entities(min_x, min_y, min_z, max_x, max_y, max_z):
-                yield block_entity.nbt, block_entity.pos, block_entity.get_legacy_debug()
-            for entity in chunk.recursive_iter_entities(min_x, min_y, min_z, max_x, max_y, max_z):
-                yield entity.nbt, entity.pos, entity.get_legacy_debug()
+            for obj in chunk.recursive_iter_all_types():
+                if isinstance(obj, (BlockEntity, Entity)):
+                    yield obj.nbt, obj.pos, obj.get_legacy_debug()

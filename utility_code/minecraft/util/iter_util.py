@@ -71,6 +71,35 @@ class RecursiveMinecraftIterator():
                             item_path_debug = self.path_debug.get_child_debug(path, tag, tag)
                             yield class_(tag, item_path_debug, root)
 
+    def iter_all_types(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
+        """Iterates over all objects directly in this object."""
+        from minecraft.player_dat_format.item import Item
+
+        check_coords = not (
+            min_x == -math.inf and max_x == math.inf and
+            min_y == -math.inf and max_y == math.inf and
+            min_z == -math.inf and max_z == math.inf)
+        root = self.root if hasattr(self, 'root') else None
+
+        for class_, multipaths in self._multipaths.items():
+            for multipath in multipaths:
+                for path, tag in self.nbt.iter_multipath_pair(multipath):
+                    if not issubclass(class_, Item):
+                        # Items never have a position, so position only needs to be checked for non-items.
+                        item_path_debug = self.path_debug.get_child_debug(path, tag, tag)
+                        obj = class_(tag, item_path_debug, root)
+                        x, y, z = obj.pos if obj.pos is not None else (None, None, None)
+                        if not check_coords or (
+                            min_x <= x and x < max_x and
+                            min_y <= y and y < max_y and
+                            min_z <= z and z < max_z
+                        ):
+                            yield obj
+                    elif tag.has_path('id'):
+                        # Items without an ID tag are just empty slots, and can be ignored.
+                        item_path_debug = self.path_debug.get_child_debug(path, tag, tag)
+                        yield class_(tag, item_path_debug, root)
+
     def iter_block_entities(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
         """Iterates over block entities directly in this object."""
         from minecraft.chunk_format.block_entity import BlockEntity
@@ -99,6 +128,12 @@ class RecursiveMinecraftIterator():
 
         for child in self.iter_items():
             yield from child._recursive_iterator(class_, min_x, min_y, min_z, max_x, max_y, max_z)
+
+    def recursive_iter_all_types(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
+        """Recursively iterates all objects in this object."""
+        yield self
+        for child in self.iter_all_types():
+            yield from child.recursive_iter_all_types(min_x, min_y, min_z, max_x, max_y, max_z)
 
     def recursive_iter_block_entities(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
         """Recursively iterates over block entities in this object."""
