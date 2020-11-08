@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../qu
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry/brigadier.py"))
 
 from brigadier.string_reader import StringReader
-from lib_py3.common import parse_name_possibly_json
+from lib_py3.common import update_plain_tag
 from lib_py3.json_file import jsonFile
 from minecraft.player_dat_format.item import Item
 from quarry.types import nbt
@@ -35,7 +35,6 @@ def upgrade_line_nbt_format(line: str, debug: bool = False) -> str:
     if debug:
         print(line)
         match_line = ''
-        items = []
 
     start = 0
     for match in ITEM_WITH_NBT_START.finditer(line):
@@ -43,12 +42,11 @@ def upgrade_line_nbt_format(line: str, debug: bool = False) -> str:
         start = match.start() + 1
 
         reader.set_cursor(start)
-        item = Item.from_command_format(reader, check_count=False)
+        item = Item.from_command_format(reader, check_count=True)
         end = reader.get_cursor()
 
         if debug:
             match_line = f'{match_line:<{start}}[{"^"*(end - start - 2)}]'
-            items.append(item)
 
         if item.has_tag():
             tag = item.tag
@@ -57,44 +55,24 @@ def upgrade_line_nbt_format(line: str, debug: bool = False) -> str:
             # TODO handle remaining 1.15 -> 1.16 upgrades
 
             # Store unformatted version of formatted text on items
-            for formatted_path, plain_subpath_parts, is_multipath in (
-                ('display.Name', ['display', 'Name'], False),
-                ('display.Lore[]', ['display', 'Lore'], True),
-                #('pages[]', ['pages'], True),
-            ):
-                if tag.count_multipath(formatted_path) > 0:
-                    plain_subpath_parts = ['plain'] + plain_subpath_parts
-                    plain_subtag = tag
-                    for plain_subpath in plain_subpath_parts[:-1]:
-                        if not plain_subtag.has_path(plain_subpath):
-                            plain_subtag.value[plain_subpath] = nbt.TagCompound({})
-                        plain_subtag = plain_subtag.at_path(plain_subpath)
-                    plain_subpath = plain_subpath_parts[-1]
-
-                    if is_multipath:
-                        plain_subtag.value[plain_subpath] = nbt.TagList([])
-                        for formatted in tag.iter_multipath(formatted_path):
-                            formatted_str = formatted.value
-                            plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
-                            plain_subtag.at_path(plain_subpath).value.append(nbt.TagString(plain_str))
-
-                    else:
-                        formatted = tag.at_path(formatted_path)
-                        formatted_str = formatted.value
-                        plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
-                        plain_subtag.value[plain_subpath] = nbt.TagString(plain_str)
+            update_plain_tag(tag)
 
             if debug and tag.has_path('plain'):
                 tag.at_path('plain').tree()
 
+            if debug:
+                entry = item.to_loot_table_entry(include_count=True, weight=10)
+                print(json.dumps(entry, ensure_ascii=False, indent=4))
+
             item.tag = tag
 
-        result_line += item.to_command_format(include_count=False)
+        result_line += item.to_command_format(include_count=True)
         start = end
 
     result_line += line[start:]
 
     if debug:
+        print(line)
         print(match_line)
         print(result_line)
         print('='*4)
@@ -140,7 +118,7 @@ for prefix in ['give @s ', 'give @p[gamemode=survival] ', 'give @p[gamemode=surv
             new_line = upgrade_line_nbt_format(line)
 '''
 
-#upgrade_line_nbt_format('''give @s stone{} 5 stick 2 banana{display:{Name:'{"text":"Phone"}'}}''', debug=True)
+upgrade_line_nbt_format('''give @s stone{} 5 stick 2 banana{display:{Name:'{"text":"Phone"}'}}''', debug=True)
 #upgrade_line_nbt_format(r'''/give @p minecraft:written_book{pages:['{"extra":[{"obfuscated":true,"text":"\\u0027A NEI XEALOT OX A\\u0027I NTIIA NITE\\u0027 AAL NOONE AA O\\u0027IINIOTA TOAL TOATIACX NEI NIENE TIIXIAN NEI XNAXX T\\u0027NE NEI XOEITI OX ACC NE\\u0027ANX AAL NEIA COE HAC IANII NEI IIACH OX NIEI L\\u0027ANX"}],"text":""}'],generation:0,resolved:1b,display:{Lore:['{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"light_purple","text":"* Quest Item *"}],"text":""}','{"text":"#Q03I01"}']},author:"Ezariah",title:"Jungle Research Notes"} 16''', debug=True)
-upgrade_line_nbt_format(r'''/give @p minecraft:written_book{pages:['{"text":"C\'Zanil long remained an enigmatic figure within the Tlaxan forces, spoke of in little more than whispers by prisoners captured and coerced into giving information. They called him the Soulcrusher, but what this meant was unknown for the longest time."}','{"text":"It was only days ago that C\'Zanil\'s role in the war became clear, when we captured a powerful Ritualist carrying a Bottle of Souls. In a desperate attempt to cast his death magics, the Ritualist attempted to tear the bottle open as he screamed words of"}','{"text":"power, but a sharpshooter pierced his hand, rendering his attempts futile.§0\\n§0\\n§0Stunningly, the Ritualist talked to us. He told us of the three Tlaxan Shamans overseeing the war efforts, C\'Zanil, C\'Axtal, and C\'Shura. Detailed below is his"}','{"text":"account of C\'Zanil, the Soulcrusher.§0\\n§0\\n§0              -§0\\n§0\\"C\'Zanil, yes. The foremost of the three. The Soulcrusher, the harvester of the dead. C\'Zanil creates our magics. He fuels our power with the souls of the dead."}','{"text":"He lurks within our massive complex, A\'arsllum Quetzal, the Halls of Wind and Blood, wherein sacrifices are brought to him. With his magics and his blade, he harvests their souls, bottling them to allow our warlocks to hurl potent spells at your puny"}','{"text":"forces. This bottle alone should have wiped out your forces. I plan to shatter it soon, no matter how you try to stop me. I will see your people turned to bone, your ashes scattered on the winds, your souls screaming for C\'Zanil to harvest, to use to"}','{"text":"slaughter more.§0\\n§0\\n§0\\"You have no escape from this fate. This is the way things will be. This is the way Quetzalcoatl wills it. Kaul is on our side.§0\\n§0\\n§0\\"You invaders shall be removed from our home.\\"§0\\n§0             -"}','{"text":"After this, the Ritualist fell silent and refused to speak for hours. Later he would briefly touch on the other two Shamans he mentioned, but two days later, he was dead.§0\\n§0\\n§0The bottle remains safely locked in the Vault."}','{"text":"Whatever C\'Zanil has planned, whatever vile and strange magic he has sealed within this bottle using the souls of his own dying men, will never come to fruition if I have anything to do with it."}'],generation:0,title:"C'Zanil",author:"General Skeldin",display:{Name:'{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"C\'Zanil"}],"text":""}',Lore:['{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"light_purple","text":"* Quest Item *"}],"text":""}','{"text":"#Q23I02"}']},resolved:1b} 2''', debug=True)
+#upgrade_line_nbt_format(r'''/give @p minecraft:written_book{pages:['{"text":"C\'Zanil long remained an enigmatic figure within the Tlaxan forces, spoke of in little more than whispers by prisoners captured and coerced into giving information. They called him the Soulcrusher, but what this meant was unknown for the longest time."}','{"text":"It was only days ago that C\'Zanil\'s role in the war became clear, when we captured a powerful Ritualist carrying a Bottle of Souls. In a desperate attempt to cast his death magics, the Ritualist attempted to tear the bottle open as he screamed words of"}','{"text":"power, but a sharpshooter pierced his hand, rendering his attempts futile.§0\\n§0\\n§0Stunningly, the Ritualist talked to us. He told us of the three Tlaxan Shamans overseeing the war efforts, C\'Zanil, C\'Axtal, and C\'Shura. Detailed below is his"}','{"text":"account of C\'Zanil, the Soulcrusher.§0\\n§0\\n§0              -§0\\n§0\\"C\'Zanil, yes. The foremost of the three. The Soulcrusher, the harvester of the dead. C\'Zanil creates our magics. He fuels our power with the souls of the dead."}','{"text":"He lurks within our massive complex, A\'arsllum Quetzal, the Halls of Wind and Blood, wherein sacrifices are brought to him. With his magics and his blade, he harvests their souls, bottling them to allow our warlocks to hurl potent spells at your puny"}','{"text":"forces. This bottle alone should have wiped out your forces. I plan to shatter it soon, no matter how you try to stop me. I will see your people turned to bone, your ashes scattered on the winds, your souls screaming for C\'Zanil to harvest, to use to"}','{"text":"slaughter more.§0\\n§0\\n§0\\"You have no escape from this fate. This is the way things will be. This is the way Quetzalcoatl wills it. Kaul is on our side.§0\\n§0\\n§0\\"You invaders shall be removed from our home.\\"§0\\n§0             -"}','{"text":"After this, the Ritualist fell silent and refused to speak for hours. Later he would briefly touch on the other two Shamans he mentioned, but two days later, he was dead.§0\\n§0\\n§0The bottle remains safely locked in the Vault."}','{"text":"Whatever C\'Zanil has planned, whatever vile and strange magic he has sealed within this bottle using the souls of his own dying men, will never come to fruition if I have anything to do with it."}'],generation:0,title:"C'Zanil",author:"General Skeldin",display:{Name:'{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"C\'Zanil"}],"text":""}',Lore:['{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"light_purple","text":"* Quest Item *"}],"text":""}','{"text":"#Q23I02"}']},resolved:1b} 2''', debug=True)
 

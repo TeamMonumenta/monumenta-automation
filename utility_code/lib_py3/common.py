@@ -266,3 +266,36 @@ class DictWithDefault(dict):
     def __missing__(self, key):
         return copy.deepcopy(self._default)
 
+def update_plain_tag(item_nbt):
+    """Given a Minecraft item's tag, (re)generate tag.plain.
+
+    tag.plain stores the unformatted version of formatted text on items.
+    """
+    if item_nbt.has_tag('plain'):
+        item_nbt.value.pop('plain')
+    for formatted_path, plain_subpath_parts, is_multipath in (
+        ('display.Name', ['display', 'Name'], False),
+        ('display.Lore[]', ['display', 'Lore'], True),
+        #('pages[]', ['pages'], True),
+    ):
+        if item_nbt.count_multipath(formatted_path) > 0:
+            plain_subpath_parts = ['plain'] + plain_subpath_parts
+            plain_subtag = item_nbt
+            for plain_subpath in plain_subpath_parts[:-1]:
+                if not plain_subtag.has_path(plain_subpath):
+                    plain_subtag.value[plain_subpath] = nbt.TagCompound({})
+                plain_subtag = plain_subtag.at_path(plain_subpath)
+            plain_subpath = plain_subpath_parts[-1]
+
+            if is_multipath:
+                plain_subtag.value[plain_subpath] = nbt.TagList([])
+                for formatted in item_nbt.iter_multipath(formatted_path):
+                    formatted_str = formatted.value
+                    plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
+                    plain_subtag.at_path(plain_subpath).value.append(nbt.TagString(plain_str))
+
+            else: # Single path, not multipath
+                formatted = item_nbt.at_path(formatted_path)
+                formatted_str = formatted.value
+                plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
+                plain_subtag.value[plain_subpath] = nbt.TagString(plain_str)
