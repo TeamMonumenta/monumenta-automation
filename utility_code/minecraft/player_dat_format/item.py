@@ -7,6 +7,8 @@ from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMa
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry/brigadier.py"))
 from brigadier.string_reader import StringReader
 
 class Item(RecursiveMinecraftIterator):
@@ -60,15 +62,15 @@ class Item(RecursiveMinecraftIterator):
             result = parent.get_legacy_debug() + result
         return result
 
-    @staticmethod
-    def from_command_format(command, check_count=True):
+    @classmethod
+    def from_command_format(cls, command, check_count=True):
         """Get an item from a command, optionally checking the count of the command."""
         if isinstance(command, str):
             command = StringReader(command)
         if not isinstance(command, StringReader):
             raise TypeError("Expected command to be type str or StringReader.")
 
-        item = Item()
+        item = cls()
         item.id = str(NamespacedID.parse_no_separator(command))
         if command.can_read() and command.peek() == '{':
             item.tag = nbt.MojangsonParser(command).parse_compound()
@@ -97,8 +99,8 @@ class Item(RecursiveMinecraftIterator):
 
         return command_part
 
-    @staticmethod
-    def from_raw_json_text_hover_event(hover_event: dict):
+    @classmethod
+    def from_raw_json_text_hover_event(cls, hover_event: dict):
         """Convert a raw json text hover event that shows an item into that item."""
         if not isinstance(hover_event, dict):
             raise TypeError('Expected hover event to be type dict.')
@@ -113,13 +115,108 @@ class Item(RecursiveMinecraftIterator):
 
         item_mojangson = hover_event["value"]
         item_nbt = nbt.TagCompound.from_mojangson(item_mojangson)
-        return Item(item_nbt)
+        return cls(item_nbt)
 
     def to_raw_json_text_hover_event(self):
         return {
             "action": "show_item",
             "value": self.nbt.to_mojangson()
         }
+
+    @classmethod
+    def from_simple_loot_table_entry(cls, entry: dict, check_count: bool = True):
+        id_ = None
+        tag = None
+        count = 1
+
+        if not isinstance(entry, dict):
+            raise TypeError("Expected loot table entry to be a dict.")
+        if entry.get("type", None) not in ("minecraft:item", "item"):
+            raise ValueError("Expected loot table entry to be type item.")
+
+        id_ = entry.get("name", None)
+        if not isinstance(id_, str):
+            raise TypeError("Expected loot table entry name (id) to be type str")
+
+        for function in entry.get("functions", []):
+            func_type = function.get("function", None)
+            if func_type in ("minecraft:set_nbt" or "set_nbt"):
+                mojangson = function.get("tag", None)
+                if not isinstance(mojangson, str):
+                    raise TypeError("Loot table function set_nbt requiers a Mojangson string.")
+
+                reader = StringReader(mojangson)
+                tag = nbt.MojangsonParser(reader).parse_compound()
+                if reader.can_read():
+                    raise SyntaxError(f'Unexpected text after Mojangson in set_nbt loot table function: {reader.get_remaining()!r}')
+
+            elif func_type in ("minecraft:set_count" or "set_count"):
+                count = function.get("count", None)
+                if isinstance(count, int):
+                    pass
+                else:
+                    raise NotImplementedError(f'Unsupported set_count format: {count!r}')
+
+            else:
+                raise NotImplementedError(f'Unsupported function type {func_type!r}')
+
+        item = cls()
+        item.id = id_
+        item.count = count
+        if tag is not None:
+            item.tag = tag
+        return item
+
+    def to_loot_table_entry(self, include_count: bool = False, weight: int = None) -> dict:
+        entry = {"type": "item"}
+
+        if weight is not None:
+            entry["weight"] = int(weight)
+
+        entry["name"] = self.id
+
+        if self.has_tag() or include_count:
+            entry["functions"] = []
+
+            if self.has_tag():
+                entry["functions"].append({
+                    "function": "set_nbt",
+                    "tag": self.tag.to_mojangson()
+                })
+
+            if include_count:
+                entry["functions"].append({
+                    "function": "set_count",
+                    "count": self.count
+                })
+
+        return entry
+
+    @classmethod
+    def from_simple_item_predicate(cls, item_predicate: dict):
+        """For use with advancement requirements, predicate files, etc."""
+        if not isinstance(item_predicate, dict):
+            raise TypeError(f'item_predicate must be type dict, not {type(item_predicate)}.')
+
+        if "item" not in item_predicate:
+            raise KeyError('item_predicate must specify "item" id.')
+
+        item = cls()
+        item.id = item_predicate["item"]
+        if "nbt" in item_predicate:
+            mojangson = item_predicate["nbt"]
+            nbt_ = nbt.TagCompound.from_mojangson(mojangson)
+            item.tag = nbt_
+
+        return item
+
+    def to_item_predicate(self, include_count=False):
+        result = {"id": item.id}
+        if self.has_tag():
+            result["nbt"] = self.tag.to_mojangson()
+        if include_count:
+            result["count"] = self.count
+        return result
 
     @property
     def id(self):
@@ -210,9 +307,8 @@ class Item(RecursiveMinecraftIterator):
         self.nbt.value['Slot'] = nbt.TagByte(value)
 
     def __repr__(self):
-        return f'Item(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()}))'
+        return f'{type(self)}(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()}))'
 
 from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.chunk_format.entity import Entity
 from minecraft.util.namespace_util import NamespacedID
-
