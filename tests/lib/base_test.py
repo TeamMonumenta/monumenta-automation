@@ -19,41 +19,37 @@ class BaseTest(object):
         self.debug_error = None
 
     def test(self):
-        """
-        Run the test, raising an exception on error
-        """
+        """Run the test, raising an exception on error"""
         NotImplemented
 
     def debug(self):
-        """
-        Provide extra debug info on failure
-        """
+        """Provide extra debug info on failure"""
         pass
 
     def run(self):
-        """
-        Run the test
-        """
+        """Run the test"""
         try:
             self.test()
-        except:
+        except Exception:
             self.error = traceback.format_exc()
+        except KeyboardInterrupt:
+            sys.exit()
 
         if self.error is not None:
             print("f: {}".format(self.test_name))
             if self.interact_on_fail:
                 try:
                     self.debug()
-                except:
+                except Exception:
                     self.debug_error = traceback.format_exc()
+                except KeyboardInterrupt:
+                    sys.exit()
                 self.interact()
         else:
             print("p: {}".format(self.test_name))
 
     def interact(self):
-        """
-        Display errors and interact on fail
-        """
+        """Display errors and interact on fail"""
         print(self.spacer)
         print("Traceback:")
         print(self.error)

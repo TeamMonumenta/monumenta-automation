@@ -220,6 +220,35 @@ class PreserveDamage(GlobalRule):
         # Apply damage
         item.at_path('tag.Damage').value = self.damage
 
+class PreserveCrossbowItem(GlobalRule):
+    name = 'Preserve crossbow item'
+
+    def preprocess(self, template, item):
+        self.Charged = None
+        self.ChargedProjectiles = None
+        if item.has_path('tag.Charged'):
+            self.Charged = item.at_path('tag.Charged').deep_copy()
+        if item.has_path('tag.ChargedProjectiles'):
+            self.ChargedProjectiles = item.at_path('tag.ChargedProjectiles').deep_copy()
+
+    def postprocess(self, item):
+        if self.Charged is None:
+            if item.has_path('tag.Charged'):
+                item.at_path('tag').value.pop('Charged')
+        if self.ChargedProjectiles is None:
+            if item.has_path('tag.ChargedProjectiles'):
+                item.at_path('tag').value.pop('ChargedProjectiles')
+        if self.Charged is None and self.ChargedProjectiles is None:
+            return
+
+        # Make sure tag exists first
+        if not item.has_path('tag'):
+            item.value['tag'] = nbt.TagCompound({})
+        if self.Charged is not None:
+            item.at_path('tag').value['Charged'] = self.Charged
+        if self.ChargedProjectiles is not None:
+            item.at_path('tag').value['ChargedProjectiles'] = self.ChargedProjectiles
+
 class PreserveEnchantments(GlobalRule):
     name = 'Preserve Enchantments'
     enchantments = (

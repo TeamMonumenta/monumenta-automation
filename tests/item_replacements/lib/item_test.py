@@ -27,9 +27,7 @@ class ItemTest(BaseTest):
         self.result = None
 
     def test(self):
-        """
-        Run the test, raising an exception on error
-        """
+        """Run the test, raising an exception on error"""
         # Abort replacement if the item has no ID (empty/invalid item) or no name (no valid replacement)
         if not self.template_item.has_path('id'):
             raise KeyError("Template item has no id; did you supply just the item tag?")
@@ -60,13 +58,13 @@ class ItemTest(BaseTest):
             raise ValueError("Item matches expected result, but in the wrong order")
 
     def debug(self):
-        """
-        Provide extra debug info on failure
-        """
+        """Provide extra debug info on failure"""
         print(self.spacer)
         print("self is item under test, other is expected result:")
         try:
             self.result.diff(self.expected_result_item)
-        except:
+        except Exception:
             print("Additionally, a diff could not be generated.")
+        except KeyboardInterrupt:
+            sys.exit()
 
