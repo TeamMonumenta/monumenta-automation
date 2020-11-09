@@ -52,49 +52,6 @@ class LootTableManager(object):
     # Loot table autoformatting class methods
     #
 
-    @classmethod
-    def autoformat_item(cls, item_id, item_nbt):
-        """
-        Autoformats / reorders / fixes types for a single item's NBT
-        """
-        item_name = get_item_name_from_nbt(item_nbt)
-
-        # Rename "ench" -> "Enchantments"
-        if "ench" in item_nbt.value:
-            item_nbt.value["Enchantments"] = item_nbt.at_path("ench")
-            item_nbt.value.pop("ench")
-
-        if "Enchantments" in item_nbt.value:
-            ench_list = item_nbt.at_path("Enchantments")
-            for enchant in ench_list.value:
-                if not "lvl" in enchant.value:
-                    raise KeyError("Item {!r} enchantment does not contain 'lvl'".format(item_name))
-                if not "id" in enchant.value:
-                    raise KeyError("Item {!r} enchantment does not contain 'id'".format(item_name))
-
-                # Make sure the enchantment is namespaced
-                if not ":" in enchant.at_path("id").value:
-                    enchant.at_path("id").value = "minecraft:" + enchant.at_path("id").value
-
-                # Make sure the tags are in the correct order and of the correct type
-                enchant_id = enchant.at_path("id").value
-                enchant_lvl = enchant.at_path("lvl").value
-                enchant.value.pop("id")
-                enchant.value.pop("lvl")
-                enchant.value["lvl"] = nbt.TagShort(enchant_lvl)
-                enchant.value["id"] = nbt.TagString(enchant_id)
-
-        # Fix up item name json
-        if item_nbt.has_path("display.Name"):
-            name_possibly_json = item_nbt.at_path("display.Name").value
-            name_possibly_json = name_possibly_json.replace("\\u0027", "'")
-            name_possibly_json = name_possibly_json.replace("\\u00a7", "§")
-            item_nbt.at_path("display.Name").value = name_possibly_json
-
-        upgrade_entity(item_nbt, False, []);
-
-        return item_nbt
-
     def fixup_loot_table(self, filename, loot_table):
         """
         Autoformats a single json file
@@ -147,7 +104,8 @@ class LootTableManager(object):
                             if "tag" not in function:
                                 raise KeyError('set_nbt function is missing nbt field!')
                             item_nbt = nbt.TagCompound.from_mojangson(function["tag"])
-                            function["tag"] = self.autoformat_item(item_id, item_nbt).to_mojangson()
+                            upgrade_entity(item_nbt, False, [])
+                            function["tag"] = item_nbt.to_mojangson()
 
                             ################################################################################
                             # Update item entry to use index instead
