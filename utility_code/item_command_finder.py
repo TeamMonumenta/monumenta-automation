@@ -11,7 +11,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../qu
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry/brigadier.py"))
 
 from brigadier.string_reader import StringReader
-from lib_py3.common import update_plain_tag
+from lib_py3.upgrade import update_plain_tag
 from lib_py3.json_file import jsonFile
 from minecraft.player_dat_format.item import Item
 from quarry.types import nbt

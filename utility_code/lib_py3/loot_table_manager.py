@@ -10,7 +10,6 @@ from collections import OrderedDict
 from lib_py3.json_file import jsonFile
 from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
-from lib_py3.common import update_plain_tag
 from lib_py3.upgrade import upgrade_entity
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
@@ -91,8 +90,6 @@ class LootTableManager(object):
             name_possibly_json = name_possibly_json.replace("\\u0027", "'")
             name_possibly_json = name_possibly_json.replace("\\u00a7", "§")
             item_nbt.at_path("display.Name").value = name_possibly_json
-
-        update_plain_tag(item_nbt)
 
         upgrade_entity(item_nbt, False, []);
 

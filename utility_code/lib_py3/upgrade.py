@@ -28,6 +28,40 @@ _list_item_locations = (
     "Items",
 )
 
+def update_plain_tag(item_nbt: TagCompound) -> None:
+    """Given a Minecraft item's tag, (re)generate tag.plain.
+
+    tag.plain stores the unformatted version of formatted text on items.
+    """
+    if item_nbt.has_tag('plain'):
+        item_nbt.value.pop('plain')
+    for formatted_path, plain_subpath_parts, is_multipath in (
+        ('display.Name', ['display', 'Name'], False),
+        ('display.Lore[]', ['display', 'Lore'], True),
+        #('pages[]', ['pages'], True),
+    ):
+        if item_nbt.count_multipath(formatted_path) > 0:
+            plain_subpath_parts = ['plain'] + plain_subpath_parts
+            plain_subtag = item_nbt
+            for plain_subpath in plain_subpath_parts[:-1]:
+                if not plain_subtag.has_path(plain_subpath):
+                    plain_subtag.value[plain_subpath] = nbt.TagCompound({})
+                plain_subtag = plain_subtag.at_path(plain_subpath)
+            plain_subpath = plain_subpath_parts[-1]
+
+            if is_multipath:
+                plain_subtag.value[plain_subpath] = nbt.TagList([])
+                for formatted in item_nbt.iter_multipath(formatted_path):
+                    formatted_str = formatted.value
+                    plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
+                    plain_subtag.at_path(plain_subpath).value.append(nbt.TagString(plain_str))
+
+            else: # Single path, not multipath
+                formatted = item_nbt.at_path(formatted_path)
+                formatted_str = formatted.value
+                plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
+                plain_subtag.value[plain_subpath] = nbt.TagString(plain_str)
+
 def translate_lore(lore: str) -> str:
     lore = lore.replace(r"\\u0027", "'")
     lore = lore.replace(r"\\u00a7", "§")
@@ -96,10 +130,9 @@ def upgrade_attributes(attributes_nbt: TagCompound, regenerateUUIDs = False) -> 
 
 
 def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool, tagsToRemove: list) -> None:
-    if type(nbt) is TagCompound:
-        for junk in tagsToRemove:
-            if junk in nbt.value:
-                nbt.value.pop(junk)
+    for junk in tagsToRemove:
+        if junk in nbt.value:
+            nbt.value.pop(junk)
 
     if nbt.has_path("id"):
         nbt.at_path("id").value = nbt.at_path("id").value.replace("zombie_pigman", "zombified_piglin")
@@ -164,3 +197,6 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool, tagsToRemove: list) 
     # Recurse over item tags
     if nbt.has_path("tag"):
         upgrade_entity(nbt.at_path("tag"), regenerateUUIDs, tagsToRemove)
+
+    # Once all the inner upgrading is done, build the `plain` tag from the display tag
+    update_plain_tag(nbt)
