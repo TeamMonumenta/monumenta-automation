@@ -62,14 +62,14 @@ def update_plain_tag(item_nbt: TagCompound) -> None:
                 for formatted in item_nbt.iter_multipath(formatted_path):
                     formatted_str = formatted.value
                     plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
-                    plain_str = non_plain_regex.sub(' ', plain_str)
+                    plain_str = non_plain_regex.sub('', plain_str).strip()
                     plain_subtag.at_path(plain_subpath).value.append(nbt.TagString(plain_str))
 
             else: # Single path, not multipath
                 formatted = item_nbt.at_path(formatted_path)
                 formatted_str = formatted.value
                 plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
-                plain_str = non_plain_regex.sub(' ', plain_str)
+                plain_str = non_plain_regex.sub('', plain_str).strip()
                 plain_subtag.value[plain_subpath] = nbt.TagString(plain_str)
 
 def translate_lore(lore: str) -> str:
@@ -138,6 +138,42 @@ def upgrade_attributes(attributes_nbt: TagCompound, regenerateUUIDs = False) -> 
 
         upgrade_uuid_if_present(attribute, regenerateUUIDs)
 
+enchant_id_map = {
+    0:"minecraft:protection",
+    1:"minecraft:fire_protection",
+    2:"minecraft:feather_falling",
+    3:"minecraft:blast_protection",
+    4:"minecraft:projectile_protection",
+    5:"minecraft:respiration",
+    6:"minecraft:aqua_affinity",
+    7:"minecraft:thorns",
+    8:"minecraft:depth_strider",
+    9:"minecraft:frost_walker",
+    10:"minecraft:binding_curse",
+    16:"minecraft:sharpness",
+    17:"minecraft:smite",
+    18:"minecraft:bane_of_arthropods",
+    19:"minecraft:knockback",
+    20:"minecraft:fire_aspect",
+    21:"minecraft:looting",
+    22:"minecraft:sweeping",
+    32:"minecraft:efficiency",
+    33:"minecraft:silk_touch",
+    34:"minecraft:unbreaking",
+    35:"minecraft:fortune",
+    48:"minecraft:power",
+    49:"minecraft:punch",
+    50:"minecraft:flame",
+    51:"minecraft:infinity",
+    61:"minecraft:luck_of_the_sea",
+    62:"minecraft:lure",
+    65:"minecraft:loyalty",
+    66:"minecraft:impaling",
+    67:"minecraft:riptide",
+    68:"minecraft:channeling",
+    70:"minecraft:mending",
+    71:"minecraft:vanishing_curse",
+}
 
 def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove: list = [], remove_non_plain_display: bool = False) -> None:
     for junk in tagsToRemove:
@@ -177,6 +213,10 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
                 raise KeyError("Item enchantment does not contain 'lvl'")
             if not "id" in enchant.value:
                 raise KeyError("Item enchantment does not contain 'id'")
+
+            # Upgrade numeric enchants to strings
+            if type(enchant.at_path("id").value) is int:
+                enchant.value["id"] = TagString(enchant_id_map[enchant.at_path("id").value])
 
             # Make sure the enchantment is namespaced
             if not ":" in enchant.at_path("id").value:
@@ -241,6 +281,11 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
     if nbt.has_path("tag"):
         upgrade_entity(nbt.at_path("tag"), regenerateUUIDs, tagsToRemove, remove_non_plain_display)
 
+    # Recurse over Command block contents
+    if nbt.has_path("Command"):
+        # TODO: This probably should be plumbed through, not just set to auto
+        nbt.at_path("Command").value = upgrade_text_containing_mojangson(nbt.at_path("Command").value, convert_checks_to_plain="auto")
+
     # Once all the inner upgrading is done, build the `plain` tag from the display tag
     update_plain_tag(nbt)
 
@@ -258,6 +303,11 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
     """
     Takes in a line and parses/upgrades all the NBT contained in that line
     """
+
+    # Don't upgrade comments
+    if line.startswith("#"):
+        return line
+
     reader = StringReader(line)
     result_line = ''
 
@@ -288,8 +338,15 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
                 else:
                     # Not a JSON string
                     remove_non_plain_display = False
-                    if convert_checks_to_plain == "always" or (convert_checks_to_plain == "auto" and ("clear " in result_line or "testfor " in result_line or result_line.endswith("nbt="))):
+                    if convert_checks_to_plain == "always":
                         remove_non_plain_display = True
+                    elif convert_checks_to_plain == "auto":
+                        if "clear " in result_line or result_line.endswith("nbt=") or result_line.endswith("nbt=!"):
+                            remove_non_plain_display = True
+                        if "execute " in result_line and " run " not in result_line[result_line.rfind("execute "):]:
+                            remove_non_plain_display = True
+                        if re.match(".*fill .* replace [^{]+$", result_line):
+                            remove_non_plain_display = True
 
                     upgrade_entity(data, remove_non_plain_display=remove_non_plain_display)
 
