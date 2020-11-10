@@ -13,6 +13,7 @@ from lib_py3.block_map import block_map
 from lib_py3.common import bounded_range, get_entity_uuid
 from lib_py3.iterators.item_iterator import ItemIterator
 from lib_py3.iterators.recursive_entity_iterator import RecursiveEntityIterator
+from lib_py3.iterators.base_chunk_entity_iterator import BaseChunkEntityIterator
 from lib_py3.player import Player
 from lib_py3.scoreboard import Scoreboard
 
@@ -192,10 +193,26 @@ class World(object):
 
         Usage:
 
-        for entity, pos, entity_path in world.tile_entity_iterator():
+        for entity, pos, entity_path in world.entity_iterator():
             entity.tree()
         '''
         return RecursiveEntityIterator(self, pos1=pos1, pos2=pos2, readonly=readonly, no_players=no_players, players_only=players_only)
+
+    def base_entity_iterator(self, pos1=None, pos2=None, readonly=True):
+        '''
+        Returns an iterator of all entities and tile entities in the world.
+        If readonly=False, all chunks containing entities will be saved as
+        iteration passes them - meaning you can modify the entities returned
+
+        Note that this version is not recursive; each yielded item will just
+        be a single top-level entity.
+
+        Usage:
+
+        for entity: TagCompound in world.base_entity_iterator():
+            entity.tree()
+        '''
+        return BaseChunkEntityIterator(self, pos1=pos1, pos2=pos2, readonly=readonly)
 
     def entity_uuids(self):
         """

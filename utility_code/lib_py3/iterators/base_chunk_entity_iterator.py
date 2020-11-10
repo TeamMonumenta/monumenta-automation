@@ -50,4 +50,4 @@ class BaseChunkEntityIterator(object):
 
         This does the final check to make sure returned entities are in the bounding box
         """
-        return self._iter.__next__(self)
+        return self._iter.__next__()
