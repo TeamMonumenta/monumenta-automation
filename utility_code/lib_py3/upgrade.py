@@ -18,7 +18,6 @@ from brigadier.string_reader import StringReader
 _single_item_locations = (
     "ArmorItem",
     "Book",
-    "ChargedProjectiles", # Crossbows
     "Item",
     "RecordItem",
     "SaddleItem",
@@ -26,6 +25,7 @@ _single_item_locations = (
 )
 
 _list_item_locations = (
+    "ChargedProjectiles", # Crossbows
     "ArmorItems",
     "EnderItems",
     "HandItems",
@@ -49,6 +49,10 @@ def update_plain_tag(item_nbt: TagCompound) -> None:
         #('pages[]', ['pages'], True),
     ):
         if item_nbt.count_multipath(formatted_path) > 0:
+            if item_nbt.has_path("id") and "command_block" in item_nbt.at_path("id").value:
+                # Don't store plain names for command blocks
+                continue
+
             plain_subpath_parts = ['plain'] + plain_subpath_parts
             plain_subtag = item_nbt
             for plain_subpath in plain_subpath_parts[:-1]:
@@ -176,6 +180,9 @@ enchant_id_map = {
 }
 
 def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove: list = [], remove_non_plain_display: bool = False) -> None:
+    if type(nbt) is not TagCompound:
+        raise ValueError(f"Expected TagCompound, got {type(nbt)}")
+
     for junk in tagsToRemove:
         if junk in nbt.value:
             nbt.value.pop(junk)
@@ -326,8 +333,11 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
                 embedded_json = None
                 try:
                     embedded_json = json.loads(embedded_fragment)
-                except:
-                    pass
+                except Exception as e:
+                    try:
+                        embedded_json = json.loads(embedded_fragment.replace(r"""\'""", r"""'""").replace(r'''\\\\''', r'''\\'''))
+                    except Exception as e:
+                        pass
 
                 if embedded_json is not None:
                     # This is actually a JSON string!
