@@ -29,14 +29,6 @@ class Schematic(RecursiveMinecraftIterator):
 
         self.path_debug = NbtPathDebug(f'file://{os.path.realpath(self.path)}', self.nbt, self, "Schematic")
 
-    @property
-    def name(self):
-        return self._schematic_name
-
-    @property
-    def root_tag(self):
-        return self.nbt
-
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
         multipaths[BlockEntity] |= frozenset({
@@ -46,6 +38,14 @@ class Schematic(RecursiveMinecraftIterator):
         multipaths[Entity] |= frozenset({
             'Schematic.Entities[]',
         })
+
+    @property
+    def name(self):
+        return self._schematic_name
+
+    @property
+    def root_tag(self):
+        return self.nbt
 
     def __str__(self):
         return f'Schematic({self._schematic_name})'

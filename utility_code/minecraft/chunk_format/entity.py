@@ -45,7 +45,7 @@ class Entity(RecursiveMinecraftIterator):
 
             # Spawner minecarts
             'SpawnData',
-            'SpawnPotentials[]',
+            'SpawnPotentials[].Entity',
         })
         multipaths[Item] |= frozenset({
             # Mobs (common)

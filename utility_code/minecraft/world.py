@@ -45,6 +45,12 @@ class World():
             full_path = os.path.join(region_folder, filename)
             yield Region(full_path, rx, rz)
 
+    def get_region(self, rx, rz):
+        rx = int(rx)
+        rz = int(rz)
+        full_path = os.path.join(self.path, 'region', f'r.{rx}.{rz}.mca')
+        return Region(full_path, rx, rz)
+
     def iter_players(self, autosave=False):
         if self.level_dat is not None:
             yield self.level_dat.player

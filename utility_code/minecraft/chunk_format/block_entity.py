@@ -40,7 +40,7 @@ class BlockEntity(RecursiveMinecraftIterator):
         multipaths[Entity] |= frozenset({
             'Bees[]',
             'SpawnData',
-            'SpawnPotentials[]',
+            'SpawnPotentials[].Entity',
         })
         multipaths[Item] |= frozenset({
             'Book',

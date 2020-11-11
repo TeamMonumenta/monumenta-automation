@@ -196,7 +196,7 @@ class Region(MutableMapping):
             return False
 
         # Read extent header
-        self._region.fd.seek(4 * (32 * local_cx + local_cz))
+        self._region.fd.seek(4 * (32 * local_cz + local_cx))
         return Buffer(self._region.fd.read(4)).unpack('I') & 0xffffffff
 
     def _entry_valid(self, entry):
