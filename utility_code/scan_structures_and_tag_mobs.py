@@ -72,24 +72,24 @@ for basedir in ["/home/epic/project_epic/server_config/data/structures/region_1"
 
                 print("Processing schematic: {}".format(schem.name))
 
-                for entity, source_pos, entity_path in schem.entity_iterator(readonly=True):
-                    process_entity(entity, source_pos, entity_path, schem.name)
+                for entity in schem.recursive_iter_entities():
+                    process_entity(entity.nbt, entity.pos, entity.get_legacy_debug(), schem.name)
 
 print("Processing shiftingcity schematics...")
 for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/roguelite"):
     for fname in files:
         if fname.endswith(".schematic"):
             schem = Schematic(os.path.join(root, fname))
-            for entity, source_pos, entity_path in schem.entity_iterator(readonly=True):
-                process_entity(entity, source_pos, entity_path, "shiftingcity")
+            for entity in schem.recursive_iter_entities():
+                process_entity(entity.nbt, entity.pos, entity.get_legacy_debug(), "shiftingcity")
 
 print("Processing roguelike schematics...")
 for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/dungeon/rogue"):
     for fname in files:
         if fname.endswith(".schematic"):
             schem = Schematic(os.path.join(root, fname))
-            for entity, source_pos, entity_path in schem.entity_iterator(readonly=True):
-                process_entity(entity, source_pos, entity_path, "roguelike")
+            for entity in schem.recursive_iter_entities():
+                process_entity(entity.nbt, entity.pos, entity.get_legacy_debug(), "roguelike")
 
 dungeons = {
     "white":{"x":-3, "z":-2},

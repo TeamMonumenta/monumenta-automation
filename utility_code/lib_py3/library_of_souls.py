@@ -92,7 +92,7 @@ class LibraryOfSouls(object):
             if other_nbt == soul_nbt:
                 # Didn't need to add, it's already there and the same
                 return los_summon_name
-            raise ValueError("Attempted to add souls database entity that already exists")
+            raise ValueError(f"Attempted to add souls database entity '{name}' that already exists")
 
         soul_entry = {}
         hist_element = {}
@@ -122,7 +122,7 @@ class LibraryOfSouls(object):
 
     @classmethod
     def upgrade_nbt(cls, soul_nbt: TagCompound) -> TagCompound:
-        upgrade_entity(soul_nbt, True, ('Pos', 'Leashed', 'Air', 'OnGround', 'Dimension', 'Rotation', 'WorldUUIDMost',
+        upgrade_entity(soul_nbt, False, ('Pos', 'Leashed', 'Air', 'OnGround', 'Dimension', 'Rotation', 'WorldUUIDMost',
                      'WorldUUIDLeast', 'HurtTime', 'HurtByTimestamp', 'FallFlying', 'PortalCooldown',
                      'FallDistance', 'DeathTime', 'HandDropChances', 'ArmorDropChances', 'CanPickUpLoot',
                      'Bukkit.updateLevel', 'Spigot.ticksLived', 'Paper.AAAB', 'Paper.Origin',
@@ -132,6 +132,13 @@ class LibraryOfSouls(object):
         for junk in ('UUID', ):
             if soul_nbt.has_path(junk):
                 soul_nbt.value.pop(junk)
+
+        if soul_nbt.has_path("Passengers"):
+            for passenger in soul_nbt.at_path("Passengers").value:
+                for junk in ('UUID', ):
+                    if passenger.has_path(junk):
+                        passenger.value.pop(junk)
+
 
         return soul_nbt
 
