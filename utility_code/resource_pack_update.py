@@ -31,13 +31,11 @@ def upgrade_line(line: str) -> str:
             i += 1
 
         newval = to_remove.sub('', newval).strip()
-        print(f"\nBefore: {split[1]}")
-        print(f"After: {newval}")
-
-        return f"{split[0]}={newval}"
+        retval = f"{split[0]}={newval}"
     else:
-        return line
+        retval = line
 
+    return retval.rstrip().strip() + "\n"
 
 
 '''
@@ -49,10 +47,11 @@ for root, subdirs, files in os.walk('../tmp'):
         path = os.path.join(root, fname)
         if fname.endswith(".properties"):
             lines = []
-            with open(path, 'r', newline='\r\n') as fp:
+            with open(path, 'r') as fp:
                 lines = fp.readlines()
             newlines = []
             for line in lines:
                 newlines.append(upgrade_line(line))
             with open(path, 'w') as fp:
                 fp.writelines(newlines)
+
