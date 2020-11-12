@@ -8,6 +8,7 @@ from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
 from lib_py3.common import eprint
+from lib_py3.upgrade import upgrade_entity
 from lib_py3.fake_redis_world import FakeRedisWorld
 
 def usage():
@@ -67,6 +68,7 @@ for player in world.players():
     if "MidTransfer" in tags:
         tags.remove("MidTransfer")
     player.tags = tags
+    upgrade_entity(player.player_tag)
     if not dry_run:
         player.save()
 
