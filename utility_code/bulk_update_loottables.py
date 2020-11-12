@@ -4,9 +4,11 @@ import os
 import sys
 import json
 import re
+from collections import OrderedDict
 from pprint import pprint
 
 from lib_py3.loot_table_manager import LootTableManager
+from lib_py3.upgrade import upgrade_entity
 from lib_py3.common import parse_name_possibly_json
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
@@ -29,6 +31,8 @@ def update_items(container_nbt_list):
             if not item_nbt.has_path("tag.display.Name"):
                 raise KeyError("Item does not contain tag.display.Name!")
 
+            upgrade_entity(item_nbt)
+
             item_id = item_nbt.at_path("id").value
             item_nbt_str = item_nbt.at_path("tag").to_mojangson()
             item_name = parse_name_possibly_json(item_nbt.at_path('tag.display.Name').value)
@@ -38,6 +42,35 @@ def update_items(container_nbt_list):
                 print("Updated '{}' in loot tables: \n{}".format(item_name, "\n".join(locations)))
             except ValueError as e:
                 print("WARNING: Failed to update '{}' in loot tables: {}".format(item_name, e))
+
+                filename = item_name.lower()
+                filename = re.sub(" +", "_", filename)
+                filename = "".join([i if re.match('[a-z0-9-_]', i) else '' for i in filename])
+                filename = filename + ".json"
+
+                entry_json = OrderedDict()
+                entry_json["type"] = "item"
+                entry_json["weight"] = 10
+                entry_json["name"] = item_id
+                entry_json["functions"] = []
+
+                func = OrderedDict()
+                func["function"] = "set_nbt"
+                func["tag"] = item_nbt_str
+                entry_json["functions"].append(func)
+
+                pool = OrderedDict()
+                pool["rolls"] = 1
+                pool["entries"] = [entry_json, ]
+
+                table_dict = OrderedDict()
+                table_dict["pools"] = [pool,]
+
+                loot_table_string = json.dumps(table_dict, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
+
+                print(f"Here is a basic loot table for this item:\n\n" +
+                      f"Name: {filename}\n" +
+                      f"{loot_table_string}\n")
 
 
 def usage():
