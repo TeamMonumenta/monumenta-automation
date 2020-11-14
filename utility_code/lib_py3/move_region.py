@@ -43,8 +43,8 @@ def MoveRegion(dir_src, dir_dst, rx_src, rz_src, rx_dst, rz_dst, item_replacemen
                 # May not exist; skip if missing
                 continue
 
-            chunk.body.at_path('Level.xPos').value += dx * 16
-            chunk.body.at_path('Level.zPos').value += dz * 16
+            chunk.body.at_path('Level.xPos').value = rx_dst * 32 + (chunk.body.at_path('Level.xPos').value & 0x1f)
+            chunk.body.at_path('Level.zPos').value = rz_dst * 32 + (chunk.body.at_path('Level.zPos').value & 0x1f)
 
             if chunk.body.has_path('Level.Entities'):
                 # May not exist; skip if missing
