@@ -106,6 +106,33 @@ def translate_attribute_name(name: str) -> str:
     name = name.replace("jumpStrength", "jump_strength")
     name = name.replace("flyingSpeed", "flying_speed")
     name = name.replace("spawnReinforcements", "spawn_reinforcements")
+
+    if name == "max_health" or name == "generic.max_health":
+        name = "minecraft:generic.max_health"
+    if name == "follow_range" or name == "generic.follow_range":
+        name = "minecraft:generic.follow_range"
+    if name == "knockback_resistance" or name == "generic.knockback_resistance":
+        name = "minecraft:generic.knockback_resistance"
+    if name == "movement_speed" or name == "generic.movement_speed":
+        name = "minecraft:generic.movement_speed"
+    if name == "attack_damage" or name == "generic.attack_damage":
+        name = "minecraft:generic.attack_damage"
+    if name == "armor" or name == "generic.armor":
+        name = "minecraft:generic.armor"
+    if name == "armor_toughness" or name == "generic.armor_toughness":
+        name = "minecraft:generic.armor_toughness"
+    if name == "attack_knockback" or name == "generic.attack_knockback":
+        name = "minecraft:generic.attack_knockback"
+    if name == "attack_speed" or name == "generic.attack_speed":
+        name = "minecraft:generic.attack_speed"
+    if name == "luck" or name == "generic.luck":
+        name = "minecraft:generic.luck"
+    if name == "jump_strength" or name == "horse.jump_strength":
+        name = "minecraft:horse.jump_strength"
+    if name == "flying_speed" or name == "generic.flying_speed":
+        name = "minecraft:generic.flying_speed"
+    if name == "zombie.spawn_reinforcements" or name == "zombie.spawn_reinforcements":
+        name = "minecraft:zombie.spawn_reinforcements"
     return name
 
 def upgrade_uuid_if_present(nbt: TagCompound, regenerateUUIDs = False) -> None:
@@ -283,6 +310,10 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
     if nbt.has_path("Passengers"):
         for passenger in nbt.at_path("Passengers").value:
             upgrade_entity(passenger, regenerateUUIDs, tagsToRemove, remove_non_plain_display)
+
+    # Recurse over item tags
+    if nbt.has_path("SelectedItem"):
+        upgrade_entity(nbt.at_path("SelectedItem"), regenerateUUIDs, tagsToRemove, remove_non_plain_display)
 
     # Recurse over item tags
     if nbt.has_path("tag"):
