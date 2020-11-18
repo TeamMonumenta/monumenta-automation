@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import os
 import re
 import sys
@@ -11,33 +12,54 @@ from lib_py3.common import parse_name_possibly_json
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
-from quarry.types.text_format import unformat_text
+from quarry.types.text_format import unformat_text, TextFormats, TextStyles
+
+def jsonify_text_hack(text):
+    if text.startswith("§"):
+        extra = [{"bold":False,"italic":False,"underlined":False,"strikethrough":False,"obfuscated":False,"color":"light_purple","text":""}]
+        while text:
+            while text.startswith("§"):
+                try:
+                    format_ = TextFormats.get_format_by_section_code(text[:2])
+                    if format_ == TextFormats.reset.value:
+                        format_ = TextFormats.white.value
+                    if any(style.value == format_ for style in TextStyles):
+                        extra[-1][format_.technical_name] = True
+                    else:
+                        extra[-1]["color"] = format_.technical_name
+                    text = text[2:]
+                except KeyError:
+                    extra[-1]["text"] += text[:2]
+                    text = text[2:]
+                    break
+            while text and not text.startswith("§"):
+                extra[-1]["text"] += text[:1]
+                text = text[1:]
+            if text:
+                extra.append({"text":""})
+        return json.dumps({"extra":extra,"text":""}, ensure_ascii=False, separators=(',', ':'))
+    else:
+        return json.dumps({"extra":[{"text":text}],"text":""}, ensure_ascii=False, separators=(',', ':'))
 
 class GlobalRule(object):
-    """
-    Base pre/post processing rule for item replacements, used to preserve and edit data.
-    """
+    """Base pre/post processing rule for item replacements, used to preserve and edit data."""
     # Edit this for all new objects:
     name = "Undefined global rule"
 
     def __init__(self):
-        """
-        Local data storage
-        """
+        """Local data storage"""
         pass
 
     def preprocess(self, template, item):
-        """
-        Read the unedited item.
+        """Read the unedited item.
+
         Return True to abort replacement and changes.
         Make no edits here.
         """
         pass
 
     def postprocess(self, item):
-        """
-        Edit the item with last stored value
-        """
+        """Edit the item with last stored value"""
         pass
 
     @classmethod
@@ -102,12 +124,12 @@ def enchantify(item, player, enchantment, owner_prefix=None):
             any(x in loreStripped for x in HEADER_LORE) or
             len(loreStripped) == 0
         ):
-            enchantment_json = jsonify_text(enchantment)
+            enchantment_json = jsonify_text_hack(enchantment)
             newLore.append(nbt.TagString(enchantment_json))
             enchantmentFound = True
 
         if (not nameAdded and len(loreStripped) == 0):
-            owner_json = jsonify_text(owner_prefix + " " + player)
+            owner_json = jsonify_text_hack(owner_prefix + " " + player)
             newLore.append(nbt.TagString(owner_json))
             nameAdded = True
 
@@ -118,7 +140,7 @@ def enchantify(item, player, enchantment, owner_prefix=None):
         return
 
     if not nameAdded:
-        owner_json = jsonify_text(owner_prefix + " " + player)
+        owner_json = jsonify_text_hack(owner_prefix + " " + player)
         newLore.append(nbt.TagString(owner_json))
 
     item.at_path('tag.display.Lore').value = newLore
@@ -145,9 +167,9 @@ def shatter_item(item):
 
     lore = item.at_path('tag.display.Lore').value
 
-    lore.append(nbt.TagString(jsonify_text("§4§l* SHATTERED *")))
-    lore.append(nbt.TagString(jsonify_text("§4Maybe a Master Repairman")))
-    lore.append(nbt.TagString(jsonify_text("§4could reforge it...")))
+    lore.append(nbt.TagString(jsonify_text_hack("§4§l* SHATTERED *")))
+    lore.append(nbt.TagString(jsonify_text_hack("§4Maybe a Master Repairman")))
+    lore.append(nbt.TagString(jsonify_text_hack("§4could reforge it...")))
 
 ################################################################################
 # Global rules begin
@@ -284,7 +306,7 @@ class PreserveEnchantments(GlobalRule):
             for lore in template.iter_multipath('display.Lore[]'):
                 for enchantment in self.enchantment_state:
                     lore_text = parse_name_possibly_json(lore.value)
-                    if lore_text.startswith(enchantment['enchantment']):
+                    if unformat_text(lore_text).startswith(unformat_text(enchantment['enchantment'])):
                         enchantment['enchant_on_template'] = True
 
         if item.has_path('tag.display.Lore'):
@@ -292,7 +314,7 @@ class PreserveEnchantments(GlobalRule):
                 for enchantment in self.enchantment_state:
                     owner_prefix = enchantment['owner_prefix']
                     lore_text = parse_name_possibly_json(lore.value)
-                    if lore_text.startswith(enchantment['enchantment']):
+                    if unformat_text(lore_text).startswith(unformat_text(enchantment['enchantment'])):
                         enchantment['enchant_found'] = True
                         enchantment['enchant_line'] = lore_text
                     if owner_prefix is not None and lore_text.startswith(owner_prefix):
@@ -326,7 +348,7 @@ class PreserveShattered(GlobalRule):
             return
 
         for lore in item.iter_multipath('tag.display.Lore[]'):
-            if parse_name_possibly_json(lore.value) == self.enchantment:
+            if unformat_text(parse_name_possibly_json(lore.value)) == unformat_text(self.enchantment):
                 self.shattered = True
                 return
 
