@@ -266,7 +266,7 @@ class Entity(RecursiveMinecraftIterator):
         self.tags = result
 
     def __repr__(self):
-        return f'Entity(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()}))'
+        return f'Entity(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
 
 
 from minecraft.chunk_format.block_entity import BlockEntity

@@ -307,7 +307,7 @@ class Item(RecursiveMinecraftIterator):
         self.nbt.value['Slot'] = nbt.TagByte(value)
 
     def __repr__(self):
-        return f'{type(self)}(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()}))'
+        return f'Item(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
 
 from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.chunk_format.entity import Entity

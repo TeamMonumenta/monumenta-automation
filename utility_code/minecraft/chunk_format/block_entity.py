@@ -97,7 +97,7 @@ class BlockEntity(RecursiveMinecraftIterator):
             return
 
     def __repr__(self):
-        return f'Entity(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()}))'
+        return f'BlockEntity(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
 
 
 from minecraft.chunk_format.entity import Entity

@@ -17,20 +17,17 @@ from quarry.types import nbt
 from quarry.types.text_format import unformat_text
 
 class SubstitutionRule(object):
-    """
-    Base substitution rule for item replacements, used to preserve and edit data.
-    """
+    """Base substitution rule for item replacements, used to preserve and edit data."""
     # Edit this for all new objects:
     name = "Undefined substitution rule"
 
     def __init__(self):
-        """
-        Local data storage
-        """
+        """Local data storage"""
         pass
 
     def process(self, item_meta, item):
-        """
+        """Edit the item name and ID before doing other replacements.
+
         Read the item details.
         Edit item name and ID here, and it will change
         which item NBT is used for replacements.

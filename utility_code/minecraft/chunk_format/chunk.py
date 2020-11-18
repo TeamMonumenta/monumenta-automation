@@ -56,4 +56,4 @@ class Chunk(RecursiveMinecraftIterator):
         return f'Chunk ({self.cx}, {self.cz})'
 
     def __repr__(self):
-        return f'Chunk(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()}))'
+        return f'Chunk(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'

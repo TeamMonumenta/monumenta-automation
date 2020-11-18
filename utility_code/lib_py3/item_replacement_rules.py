@@ -115,7 +115,7 @@ def enchantify(item, player, enchantment, owner_prefix=None):
     nameAdded = (owner_prefix is None)
     for loreEntry in lore:
         loreText = parse_name_possibly_json(loreEntry.value)
-        if enchantment in loreText:
+        if unformat_text(enchantment) in loreText:
             enchantmentFound = True
 
         loreStripped = unformat_text(loreText)
@@ -317,7 +317,7 @@ class PreserveEnchantments(GlobalRule):
                     if unformat_text(lore_text).startswith(unformat_text(enchantment['enchantment'])):
                         enchantment['enchant_found'] = True
                         enchantment['enchant_line'] = lore_text
-                    if owner_prefix is not None and lore_text.startswith(owner_prefix):
+                    if owner_prefix is not None and unformat_text(lore_text).startswith(unformat_text(owner_prefix)):
                         enchantment['players'].append(lore_text[len(owner_prefix)+1:])
 
     def postprocess(self, item):
@@ -364,7 +364,7 @@ class PreserveSoulbound(GlobalRule):
         if item.has_path('tag.display.Lore'):
             for lore in item.iter_multipath('tag.display.Lore[]'):
                 lore_text = parse_name_possibly_json(lore.value)
-                if lore_text.startswith("* Soulbound to "):
+                if unformat_text(lore_text).startswith("* Soulbound to "):
                     self.player_line = lore
                     return
 

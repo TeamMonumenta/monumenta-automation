@@ -198,7 +198,7 @@ class Player(Entity):
         return self.name()
 
     def __repr__(self):
-        return f'Player(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()}))'
+        return f'Player(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
 
 
 class PlayerFile():
