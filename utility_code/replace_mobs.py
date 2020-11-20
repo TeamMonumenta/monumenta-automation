@@ -73,7 +73,8 @@ sub = [
     ("Earth Spectre", match_name('Earth Shade', match_id('minecraft:skeleton'))),
     ("Phaser Guardian", match_name('Phaser Assassin', match_id('minecraft:guardian'))),
     ("Jungle Flyer", match_hand(["Druidic Stick", None], match_noname(match_id('minecraft:vex')))),
-    ("Cherry Boomsom", match_name('Cheery Boomsome', match_id('minecraft:creeper'))),
+    # TODO: Re-enable when stacked mobs are fixed
+    #("Cherry Boomsom", match_name('Cheery Boomsome', match_id('minecraft:creeper'))),
     ("Blast Miner", match_name('Pyro Miner', match_id('minecraft:zombie'))),
     ("Viridian Juggernaut", match_name('Viridian Juggernaught', match_id('minecraft:wither_skeleton'))),
     ("Frozen Grunt", match_name('Frost Knight', match_id('minecraft:zombie_villager'))),
