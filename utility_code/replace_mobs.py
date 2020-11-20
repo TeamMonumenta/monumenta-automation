@@ -239,7 +239,10 @@ try:
                 if fname.endswith(".schematic"):
                     debug_path = fname + " -> "
                     schem = Schematic(os.path.join(root, fname))
-                    for entity, source_pos, entity_path in schem.entity_iterator(readonly=dry_run):
+                    for obj in schem.recursive_iter_entities():
+                        entity = obj.nbt
+                        source_pos = obj.pos
+                        entity_path = obj.get_legacy_debug()
                         process_entity(entity, source_pos, entity_path, debug_path=debug_path)
 
                     if not dry_run:
