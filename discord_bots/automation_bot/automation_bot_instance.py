@@ -1176,6 +1176,7 @@ Syntax:
                 await self.cd("/home/epic/project_epic/server_config/data")
                 await self.run("tar czf {}.tgz structures".format(base_backup_name))
                 await self.display("WARNING: Item replacements does not currently run on structures!")
+                await self.cd("/home/epic/project_epic/server_config/data")
                 await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py --schematics structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {}_mobs.txt".format(base_backup_name)), displayOutput=True)
 
             else:
@@ -1185,7 +1186,9 @@ Syntax:
                 await self.stop(shard)
                 await self.cd(self._shards[shard])
                 await self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard))
+                await self.cd(self._shards[shard])
                 await self.run(os.path.join(_top_level, "utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name)), displayOutput=True)
+                await self.cd(self._shards[shard])
                 await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py --world Project_Epic-{} --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {}_mobs.txt".format(shard, base_backup_name)), displayOutput=True)
                 await self.start(shard)
 
