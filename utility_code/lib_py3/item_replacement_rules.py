@@ -15,7 +15,9 @@ from quarry.types import nbt
 from quarry.types.text_format import unformat_text, TextFormats, TextStyles
 
 def jsonify_text_hack(text):
-    if text.startswith("§"):
+    if text == "":
+        return json.dumps({"text":""}, ensure_ascii=False, separators=(',', ':'))
+    elif text.startswith("§"):
         extra = [{"bold":False,"italic":False,"underlined":False,"strikethrough":False,"obfuscated":False,"color":"light_purple","text":""}]
         while text:
             while text.startswith("§"):
@@ -83,6 +85,12 @@ class GlobalRule(object):
 
         return result
 
+    def __str__(self):
+        return f'{self.name}: {vars(self)}'
+
+    def __repr__(self):
+        return f'{type(self).__name__}()'
+
 def enchantify(item, player, enchantment, owner_prefix=None):
     """Applies a lore-text enchantment to item (full item nbt, including id and Count).
 
@@ -115,20 +123,20 @@ def enchantify(item, player, enchantment, owner_prefix=None):
     nameAdded = (owner_prefix is None)
     for loreEntry in lore:
         loreText = parse_name_possibly_json(loreEntry.value)
-        if unformat_text(enchantment) in loreText:
+        if enchantment in loreText:
             enchantmentFound = True
 
-        loreStripped = unformat_text(loreText)
+        loreStripped = unformat_text(loreText).strip()
         HEADER_LORE = ("King's Valley :", "Celsian Isles :", "Monumenta :", "Armor", "Magic Wand")
         if not enchantmentFound and (
             any(x in loreStripped for x in HEADER_LORE) or
             len(loreStripped) == 0
         ):
-            enchantment_json = jsonify_text_hack(enchantment)
+            enchantment_json = jsonify_text_hack("§7" + enchantment)
             newLore.append(nbt.TagString(enchantment_json))
             enchantmentFound = True
 
-        if (not nameAdded and len(loreStripped) == 0):
+        if (not nameAdded and len(loreStripped.strip()) == 0):
             owner_json = jsonify_text_hack(owner_prefix + " " + player)
             newLore.append(nbt.TagString(owner_json))
             nameAdded = True
@@ -144,6 +152,25 @@ def enchantify(item, player, enchantment, owner_prefix=None):
         newLore.append(nbt.TagString(owner_json))
 
     item.at_path('tag.display.Lore').value = newLore
+
+def freeInfusion(player: str, item: nbt.TagCompound, selection: str, level: str):
+    """Infuse an item with <selection> infusion at level <level>"""
+    newLore = []
+    if item.has_path('tag.display.Lore'):
+        for line in item.iter_multipath('tag.display.Lore[]'):
+            if not line.value.contains("PRE COST ADJUST"):
+                newLore.append(line)
+        item.at_path('tag.display.Lore').value = newLore
+
+    numeral = level
+    if isinstance(level, int):
+        numeral = {
+            1: " I",
+            2: " II",
+            3: " III",
+            4: " IV",
+        }[level]
+    enchantify(item, player, selection + numeral)
 
 def shatter_item(item):
     """Applies shattered enchantment to an item
@@ -274,17 +301,17 @@ class PreserveCrossbowItem(GlobalRule):
 class PreserveEnchantments(GlobalRule):
     name = 'Preserve Enchantments'
     enchantments = (
-        {"enchantment": '§7Hope', "owner_prefix": 'Infused by'},
-        {"enchantment": '§7Gilded', "owner_prefix": 'Gilded by'},
-        {"enchantment": '§7Festive', "owner_prefix": 'Decorated by'},
-        {"enchantment": '§7Acumen', "owner_prefix": None},
-        {"enchantment": '§7Focus', "owner_prefix": None},
-        {"enchantment": '§7Perspicacity', "owner_prefix": None},
-        {"enchantment": '§7Tenacity', "owner_prefix": None},
-        {"enchantment": '§7Vigor', "owner_prefix": None},
-        {"enchantment": '§7Vitality', "owner_prefix": None},
-        {"enchantment": '§7Barking', "owner_prefix": None},
-        {"enchantment": '§7Debarking', "owner_prefix": None},
+        {"enchantment": 'Hope', "owner_prefix": 'Infused by'},
+        {"enchantment": 'Gilded', "owner_prefix": 'Gilded by'},
+        {"enchantment": 'Festive', "owner_prefix": 'Decorated by'},
+        {"enchantment": 'Acumen', "owner_prefix": None},
+        {"enchantment": 'Focus', "owner_prefix": None},
+        {"enchantment": 'Perspicacity', "owner_prefix": None},
+        {"enchantment": 'Tenacity', "owner_prefix": None},
+        {"enchantment": 'Vigor', "owner_prefix": None},
+        {"enchantment": 'Vitality', "owner_prefix": None},
+        {"enchantment": 'Barking', "owner_prefix": None},
+        {"enchantment": 'Debarking', "owner_prefix": None},
     )
 
     def __init__(self):
@@ -306,18 +333,18 @@ class PreserveEnchantments(GlobalRule):
             for lore in template.iter_multipath('display.Lore[]'):
                 for enchantment in self.enchantment_state:
                     lore_text = parse_name_possibly_json(lore.value)
-                    if unformat_text(lore_text).startswith(unformat_text(enchantment['enchantment'])):
+                    if unformat_text(lore_text).startswith(enchantment['enchantment']):
                         enchantment['enchant_on_template'] = True
 
         if item.has_path('tag.display.Lore'):
             for lore in item.iter_multipath('tag.display.Lore[]'):
                 for enchantment in self.enchantment_state:
                     owner_prefix = enchantment['owner_prefix']
-                    lore_text = parse_name_possibly_json(lore.value)
-                    if unformat_text(lore_text).startswith(unformat_text(enchantment['enchantment'])):
+                    lore_text = unformat_text(parse_name_possibly_json(lore.value))
+                    if lore_text.startswith(enchantment['enchantment']):
                         enchantment['enchant_found'] = True
                         enchantment['enchant_line'] = lore_text
-                    if owner_prefix is not None and unformat_text(lore_text).startswith(unformat_text(owner_prefix)):
+                    if owner_prefix is not None and lore_text.startswith(owner_prefix):
                         enchantment['players'].append(lore_text[len(owner_prefix)+1:])
 
     def postprocess(self, item):
