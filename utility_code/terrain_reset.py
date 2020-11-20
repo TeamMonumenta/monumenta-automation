@@ -141,10 +141,6 @@ region_1 = {
 
     "datapacks":datapacks_base + ['file/region_1'],
 
-    "coordinatesToFill":(
-        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
-    ),
-
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
     "copyMainPaths":["stats", "data"],
@@ -166,10 +162,6 @@ region_2 = {
     "worldScoreChanges": world_dungeon_score_rules,
 
     "datapacks":datapacks_base + ['file/region_2'],
-
-    "coordinatesToFill":(
-        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
-    ),
 
     # Which folder to copy the base world from. Either "build", "main", or not set
     "copyBaseFrom":"build",
