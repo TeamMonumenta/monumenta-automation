@@ -1,0 +1,115 @@
+# Service / external network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rivals1-nodeport
+  namespace: external
+  labels:
+    app: rivals1
+    k8s-app: monumenta-metrics
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  selector:
+    app: rivals1
+  ports:
+  - name: minecraft
+    port: 7001
+    nodePort: 7001
+    targetPort: 25566
+  - name: metrics
+    port: 9225
+    targetPort: 9225
+
+---
+
+# Deployment / the actual running application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rivals1
+  namespace: external
+  labels:
+    app: rivals1
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: rivals1
+  template:
+    metadata:
+      labels:
+        app: rivals1
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-9
+      volumes:
+        - name: nfs-external
+          hostPath:
+            type: Directory
+            path: /nfs/external
+      containers:
+      - name: rivals1
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 25566
+        - containerPort: 8000
+        - containerPort: 9225
+        env:
+        # Set this to however much RAM the shard needs
+        - name: "JAVA_MEM"
+          value: "2G"
+        # Set this to 256M regardless of JAVA_MEM
+        - name: "JAVA_META_MEM"
+          value: "256M"
+        - name: "JAVA_JAR"
+          value: "server.jar"
+        - name: "SERVER_DIR"
+          value: "/external/rivals/rivals1"
+        - name: "JAVA_LARGE_PAGES"
+          value: "yes"
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 8000
+          initialDelaySeconds: 240
+          timeoutSeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: nfs-external
+          mountPath: /external
+        resources:
+          limits:
+            # Set this to 1Gi
+            # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
+            # It should not need much/any...
+            memory: 1Gi
+            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: 2432Mi
+          requests:
+            # Set this to 64Mi
+            # The shard should not need non-hugepage RAM by default
+            memory: 64Mi
+            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: 2432Mi
+      imagePullSecrets:
+      - name: githubcred
