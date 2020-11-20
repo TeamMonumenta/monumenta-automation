@@ -63,6 +63,8 @@ class World():
                 continue
 
             full_path = os.path.join(self.path, 'playerdata', filename)
+            if os.path.getsize(full_path) <= 0:
+                continue
             player_file = PlayerFile(full_path)
             yield player_file.player
             if autosave:

@@ -153,7 +153,10 @@ class World(object):
                     if filename.endswith('.dat'):
                         player = uuid.UUID(filename[:-4])
                     if player:
-                        self._player_paths.append(os.path.join(player_data_path, filename))
+                        full_path = os.path.join(player_data_path, filename)
+                        if os.path.getsize(full_path) <= 0:
+                            continue
+                        self._player_paths.append(full_path)
                 except:
                     pass
 
