@@ -12,7 +12,7 @@ from minecraft.util.debug_util import NbtPathDebug
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
-from quarry.types.buffer import Buffer
+from quarry.types.buffer import Buffer, BufferUnderrun
 
 class Region(MutableMapping):
     """A region file."""
@@ -197,7 +197,10 @@ class Region(MutableMapping):
 
         # Read extent header
         self._region.fd.seek(4 * (32 * local_cz + local_cx))
-        return Buffer(self._region.fd.read(4)).unpack('I') & 0xffffffff
+        try:
+            return Buffer(self._region.fd.read(4)).unpack('I') & 0xffffffff
+        except BufferUnderrun:
+            return False
 
     def _entry_valid(self, entry):
         entry = entry & 0xffffffff
