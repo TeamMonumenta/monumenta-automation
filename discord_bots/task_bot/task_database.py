@@ -464,7 +464,6 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "unassign": self.cmd_unassign,
             "list_assigned": self.cmd_list_assigned,
             "ping_assigned": self.cmd_ping_assigned,
-            "post_priority_list": self.cmd_post_priority_list,
             "kanboard_create": self.cmd_kanboard_create,
             "kanboard_update_all": self.cmd_kanboard_update_all,
             "busty_debug": self.cmd_busty_debug,
@@ -601,9 +600,6 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} ping_assigned channel_id`
     Prints out all open {plural} in specified channel, pinging assigned people
-
-`{prefix} post_priority_list channel_id`
-    Prints out a summary display of open {plural} in specified channel
 '''.format(prefix=self._prefix, plural=self._descriptor_plural)
 
         if self.has_privilege(4, message.author):
@@ -1630,9 +1626,6 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         await self.reply(message, "{} total assigned {} mentioned in channel {}".format(count, self._descriptor_plural, channel.name))
 
 
-    def get_flattened_label(cls, entry):
-        return "  ".join(sorted(entry[1]["labels"]))
-
     def get_flattened_priority(cls, entry):
         return entry[1]["priority"] + "," + entry[1]["complexity"]
 
@@ -1668,55 +1661,6 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         # Sort first by the above list. If not in the list, sort by lex
         return sorted(entry_list, key=cmp_to_key(lambda x, y: cmp(priority[cls.get_flattened_priority(x)], priority[cls.get_flattened_priority(y)])))
-
-    async def cmd_post_priority_list(self, message, args):
-        if not self.has_privilege(3, message.author):
-            raise ValueError("You do not have permission to use this command")
-
-        try:
-            channel_id = int(args)
-        except:
-            raise ValueError("{!r} is not a number".format(args))
-
-        channel = self._client.get_channel(channel_id)
-        if self._channel is None:
-            raise Exception("Error getting channel!")
-
-        await self.reply(message, "Removing stale priority list...")
-
-        async for msg in channel.history(limit=500):
-            if msg.author.id == self._client.user.id:
-                await msg.delete()
-
-        await self.reply(message, "Starting priority list posting...")
-
-        # Start with all open entries
-        match_entries = []
-        for index in self._entries:
-            entry = self._entries[index]
-            if "close_reason" not in entry:
-                match_entries.append((index, entry))
-
-        # Sort the entries into buckets based on their labels
-        buckets = {}
-        for entry in match_entries:
-            flat_label = self.get_flattened_label(entry)
-            if flat_label in buckets:
-                buckets[flat_label].append(entry)
-            else:
-                buckets[flat_label] = [entry,]
-
-        # Print the results
-        last_label_msg = None
-        for bucket in sorted(buckets):
-            if last_label_msg is not None:
-                await last_label_msg.pin()
-            last_label_msg = await channel.send('''**{}**'''.format(bucket))
-            await self.print_search_results(channel, buckets[bucket], limit=10, mention_assigned=False, include_reactions=False)
-        if last_label_msg is not None:
-            await last_label_msg.pin()
-
-        await self.reply(message, "Priority list posted.")
 
     async def cmd_kanboard_create(self, message, args):
         if not self.has_privilege(4, message.author):
