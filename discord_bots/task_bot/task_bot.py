@@ -61,9 +61,11 @@ class GracefulKiller:
             db.save()
         logging.info("All saved. Handing off to discord client...")
 
+intents = discord.Intents.default()
+intents.members = True
 
 try:
-    client = discord.Client()
+    client = discord.Client(intents=intents)
     facet_channels = []
 
     killer = GracefulKiller(client, facet_channels)
