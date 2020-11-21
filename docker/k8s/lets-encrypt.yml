@@ -1,3 +1,8 @@
+#
+# To run manually:
+#   kubectl create job -n default --from=cronjob.batch/cron-lets-encrypt lets-encrypt-manual-force
+#
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -61,7 +66,7 @@ spec:
             stdin: true
             ports:
             - containerPort: 80
-            args: ["certonly", "--standalone", "-d", "playmonumenta.com", "-d", "www.playmonumenta.com", "-d", "api.playmonumenta.com", "-d", "files.playmonumenta.com", "-d", "map.playmonumenta.com", "-d", "build.playmonumenta.com", "-d", "plan.playmonumenta.com", "-d", "dashboard.playmonumenta.com", "-d", "prometheus.playmonumenta.com", "--non-interactive", "--preferred-challenges", "http", "--agree-tos", "--email", "admin@playmonumenta.com", "--http-01-port=80", "--expand", "--force-renewal"]
+            args: ["certonly", "--standalone", "-d", "playmonumenta.com", "-d", "www.playmonumenta.com", "-d", "api.playmonumenta.com", "-d", "files.playmonumenta.com", "-d", "kanboard.playmonumenta.com", "-d", "map.playmonumenta.com", "-d", "build.playmonumenta.com", "-d", "plan.playmonumenta.com", "-d", "dashboard.playmonumenta.com", "-d", "prometheus.playmonumenta.com", "--non-interactive", "--preferred-challenges", "http", "--agree-tos", "--email", "admin@playmonumenta.com", "--http-01-port=80", "--expand", "--force-renewal"]
             volumeMounts:
             - name: etc
               mountPath: /etc/letsencrypt

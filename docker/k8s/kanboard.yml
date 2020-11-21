@@ -1,0 +1,151 @@
+#
+# NOTE:
+# To generate the kanboard-auth secret, run these commands:
+# htpasswd -c ./auth epic
+# kubectl create secret generic kanboard-auth --from-file auth
+# rm auth
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: kanboard
+  #  annotations:
+  #    nginx.ingress.kubernetes.io/auth-type: basic
+  #    nginx.ingress.kubernetes.io/auth-secret: kanboard-auth
+  #    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
+spec:
+  tls:
+  - hosts:
+    - kanboard.playmonumenta.com
+  rules:
+  - host: kanboard.playmonumenta.com
+    http:
+      paths:
+      - backend:
+          serviceName: kanboard
+          servicePort: 80
+
+---
+
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kanboard
+  labels:
+    app: kanboard
+spec:
+  type: ClusterIP
+  selector:
+    app: kanboard
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+
+---
+
+# Main config file
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kanboard-config
+data:
+  config.php: |
+    <?php
+
+    // Enable/Disable debug
+    define('DEBUG', false);
+
+    // Available log drivers: syslog, stderr, stdout, system or file
+    define('LOG_DRIVER', 'system');
+
+    // Enable/disable email configuration from the user interface
+    define('MAIL_CONFIGURATION', false);
+
+    // Enable or disable "Strict-Transport-Security" HTTP header
+    define('ENABLE_HSTS', false);
+
+    // Enable/disable url rewrite
+    define('ENABLE_URL_REWRITE', false);
+
+    // Enable captcha after 3 authentication failure
+    define('BRUTEFORCE_CAPTCHA', 10);
+
+    // Lock the account after 6 authentication failure
+    define('BRUTEFORCE_LOCKDOWN', 20);
+
+    // Lock account duration in minute
+    define('BRUTEFORCE_LOCKDOWN_DURATION', 15);
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kanboard
+  labels:
+    app: kanboard
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kanboard
+  template:
+    metadata:
+      labels:
+        app: kanboard
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-8
+      volumes:
+        - name: kanboard-config
+          configMap:
+            name: kanboard-config
+        - name: kanboard-data
+          hostPath:
+            type: Directory
+            path: /nfs/kanboard/data
+        - name: kanboard-plugins
+          hostPath:
+            type: Directory
+            path: /nfs/kanboard/plugins
+        - name: kanboard-ssl
+          hostPath:
+            type: Directory
+            path: /nfs/kanboard/ssl
+      containers:
+      - name: kanboard
+        image: kanboard/kanboard:v1.2.16
+        tty: false
+        stdin: false
+        volumeMounts:
+        - name: kanboard-config
+          mountPath: /var/www/app/config.php
+          subPath: config.php
+        - name: kanboard-data
+          mountPath: /var/www/app/data
+        - name: kanboard-plugins
+          mountPath: /var/www/app/plugins
+        - name: kanboard-ssl
+          mountPath: /etc/nginx/ssl
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi
+            hugepages-2Mi: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+            hugepages-2Mi: 256Mi

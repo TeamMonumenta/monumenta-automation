@@ -6,6 +6,8 @@ import logging
 import traceback
 import yaml
 import asyncio
+import signal
+import kanboard
 from pprint import pformat
 
 logging.basicConfig(level=logging.INFO)
@@ -32,10 +34,39 @@ logging.info("\nBot Configuration: {}\n".format(pformat(bot_config)))
 if "login" not in bot_config is None:
     sys.exit('No login info is provided')
 
+kanboard_client = None
+if 'kanboard' in bot_config:
+    kanboard_client = kanboard.Client(bot_config['kanboard']['url'], 'jsonrpc', bot_config['kanboard']['token'])
+    if kanboard_client is None:
+        sys.exit("Kanboard specified but failed to connect")
+
+
+class GracefulKiller:
+
+    def __init__(self, client, facet_channels):
+        self.stopping = False
+        self._client = client
+        self._facet_channels = facet_channels
+
+    def register(self):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+    def exit_gracefully(self,signum, frame):
+        self.stopping = True
+        logging.info("Received signal; shutting down...")
+        for facet_channel, db in facet_channels:
+            logging.info(f"Saving {db._descriptor_plural}...")
+            db._stopping = True
+            db.save()
+        logging.info("All saved. Handing off to discord client...")
+
+
 try:
     client = discord.Client()
-
     facet_channels = []
+
+    killer = GracefulKiller(client, facet_channels)
 
     ################################################################################
     # Discord event handlers
@@ -46,16 +77,23 @@ try:
         logging.info(client.user.name)
         logging.info(client.user.id)
 
+        killer.register()
+
         # On ready can happen multiple times when the bot automatically reconnects
         # Don't re-create the per-channel listeners when this happens
         if len(facet_channels) == 0:
             for facet in bot_config["facets"]:
-                db = TaskDatabase(client, facet, config_dir)
+                db = TaskDatabase(client, kanboard_client, facet, config_dir)
                 for input_channel in facet["bot_input_channels"]:
                     facet_channels.append((input_channel, db))
 
     @client.event
     async def on_message(message):
+        # Don't process messages while stopping
+        if killer.stopping:
+            logging.info('Ignoring message during shutdown')
+            return
+
         for facet_channel, db in facet_channels:
             if message.channel.id == facet_channel:
                 try:

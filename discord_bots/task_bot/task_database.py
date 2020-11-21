@@ -11,6 +11,7 @@ from pprint import pprint
 
 from interactive_search import InteractiveSearch
 from common import get_list_match, datestr, split_string
+from task_kanboard import TaskKanboard
 
 # Data Schema
 
@@ -25,6 +26,9 @@ from common import get_list_match, datestr, split_string
             "labels": ["misc"], # Must be non-empty
             # Automatically set to "N/A" on creation
             "priority": "High", # Case sensitive for matching, do case insensitive compare for input
+
+            # Optional. If set, the corresponding kanboard database ID
+            "kanboard_id": 5
 
             # Automatically set to "unknown" on creation
             "complexity": "easy",
@@ -43,6 +47,11 @@ from common import get_list_match, datestr, split_string
             "pending_notification": True/False
         },
     },
+
+    "kanboard": {
+        # Kanboard stuff defined in task_kanboard
+    }
+
 
     "next_index": 985,
     "labels": [
@@ -67,14 +76,16 @@ from common import get_list_match, datestr, split_string
         "302298391969267712",
         ...
     ]
-]
+}
 '''
 
 class TaskDatabase(object):
-    def __init__(self, client, config, config_dir):
+    def __init__(self, client, kanboard_client, config, config_dir):
         """
         """
         self._client = client
+        self._kanboard_client = kanboard_client
+        self._stopping = False
 
         try:
             self._user_privileges = config["user_privileges"]
@@ -103,6 +114,9 @@ class TaskDatabase(object):
             'priorities': self._priorities,
             'notifications_disabled': list(self._notifications_disabled),
         }
+
+        if self._kanboard is not None:
+            savedata["kanboard"] = self._kanboard.save()
 
         with open(self._database_path, 'w') as f:
             json.dump(savedata, f, ensure_ascii=False, sort_keys=False, indent=4, separators=(',', ': '))
@@ -168,6 +182,10 @@ class TaskDatabase(object):
                     "hard":     ":red_circle:",
                     "unknown":  ":white_circle:"
                 }
+
+            self._kanboard = None
+            if 'kanboard' in data:
+                self._kanboard = TaskKanboard.load_kanboard(self, self._kanboard_client, data['kanboard'])
 
             self._notifications_disabled = set([])
             if 'notifications_disabled' in data:
@@ -377,6 +395,8 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
                 msg = None
                 pass
 
+        needs_save = False
+
         if msg is not None:
             # Edit the existing message
             await msg.edit(content=entry_text, embed=embed)
@@ -385,6 +405,13 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             # Send a new message
             msg = await self._channel.send(entry_text, embed=embed)
             entry["message_id"] = msg.id
+            needs_save = True
+
+        if self._kanboard is not None:
+            if await self._kanboard.update_entry(index, entry):
+                needs_save = True
+
+        if needs_save:
             self.save()
 
         for reaction in self._reactions:
@@ -438,6 +465,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "list_assigned": self.cmd_list_assigned,
             "ping_assigned": self.cmd_ping_assigned,
             "post_priority_list": self.cmd_post_priority_list,
+            "kanboard_create": self.cmd_kanboard_create,
+            "kanboard_update_all": self.cmd_kanboard_update_all,
+            "busty_debug": self.cmd_busty_debug,
         }
 
         # First try to handle this message with any ongoing iterative searches
@@ -584,6 +614,12 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} repost`
     Reposts/edits all known {plural}
+
+`{prefix} kanboard_create`
+    Creates a kanboard project & posts all {plural} to it
+
+`{prefix} kanboard_update_all`
+    Updates all {plural} on an existing kanboard project
 '''.format(prefix=self._prefix, plural=self._descriptor_plural)
 
         for chunk in split_string(usage):
@@ -950,6 +986,7 @@ Available complexities: {complexities}'''.format(prefix=self._prefix, labels=sel
             raise ValueError('Must specify something to search for')
 
         if len(match_priorities) == 0:
+            # Iterate a shallow copy of the entries table so new reports don't break it
             match_priorities = self._priorities.copy()
             if "Zero" in match_priorities:
                 match_priorities.remove("Zero")
@@ -1077,6 +1114,10 @@ Available complexities: {complexities}'''.format(prefix=self._prefix, labels=sel
         # Will be a list with entries of the form (reaction count, (index, entry))
         raw_entries = []
         for index in self._entries:
+            # Exit early if shutting down
+            if self._stopping:
+                return
+
             entry = self._entries[index]
             if ("message_id" in entry) and ("close_reason" not in entry):
                 try:
@@ -1142,6 +1183,10 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         # Remove label from all entries
         for index in self._entries:
+            # Exit early if shutting down
+            if self._stopping:
+                return
+
             entry = self._entries[index]
             changed = False
             if match in entry["labels"]:
@@ -1265,7 +1310,12 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         match_entries = []
         count = 0
-        for index in self._entries:
+        # Iterate a shallow copy of the entries table so new reports don't break it
+        for index in self._entries.copy():
+            # Exit early if shutting down
+            if self._stopping:
+                return
+
             entry = self._entries[index]
             # If the entry is both closed AND present in the entry channel
             if ("close_reason" in entry) and ("message_id" in entry):
@@ -1332,7 +1382,12 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         count = 0
         opt_out = 0
         no_user = 0
-        for index in self._entries:
+        # Iterate a shallow copy of the entries table so new reports don't break it
+        for index in self._entries.copy():
+            # Exit early if shutting down
+            if self._stopping:
+                return
+
             entry = self._entries[index]
             if entry["pending_notification"]:
                 count += 1
@@ -1369,7 +1424,8 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         await(self.reply(message, "Building a set of all valid {single} message ids...".format(single=self._descriptor_single)))
 
         valid = set()
-        for index in self._entries:
+        # Iterate a shallow copy of the entries table so new reports don't break it
+        for index in self._entries.copy():
             entry = self._entries[index]
             if "message_id" in entry:
                 valid.add(entry["message_id"])
@@ -1381,6 +1437,10 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         count = 0
         async for iter_msg in self._channel.history().filter(predicate):
+            # Exit early if shutting down
+            if self._stopping:
+                return
+
             await(self.reply(message, "Removing untracked message:"))
             embed = None
             if iter_msg.embeds is not None and len(iter_msg.embeds) > 0:
@@ -1394,6 +1454,10 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         count = 0
         for index in self._entries:
+            # Exit early if shutting down
+            if self._stopping:
+                return
+
             if "close_reason" not in self._entries[index]:
                 count += 1
                 await self.send_entry(index, self._entries[index])
@@ -1653,3 +1717,52 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
             await last_label_msg.pin()
 
         await self.reply(message, "Priority list posted.")
+
+    async def cmd_kanboard_create(self, message, args):
+        if not self.has_privilege(4, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        await self.reply(message, "Starting kanboard create...")
+
+        # Disassociate the existing entries with existing kanboard
+        for index in self._entries:
+            entry = self._entries[index]
+            if "kanboard_id" in entry:
+                entry.pop("kanboard_id")
+
+        self._kanboard = await TaskKanboard.create_kanboard(self, self._kanboard_client, self._descriptor_plural)
+        await self._kanboard.update_all_entries()
+        self.save()
+
+        await self.reply(message, "Kanboard create complete.")
+
+
+    async def cmd_kanboard_update_all(self, message, args):
+        if not self.has_privilege(4, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        if self._kanboard is None:
+            raise ValueError("This project does not have a kanboard")
+
+        await self.reply(message, "Starting update of all kanboard entries...")
+
+        await self._kanboard.update_all_entries()
+        self.save()
+
+        await self.reply(message, "Kanboard update complete.")
+
+    async def cmd_busty_debug(self, message, args):
+        if not self.has_privilege(4, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        await self.reply(message, "Starting BustyDebug:TM:")
+
+        if self._kanboard is None:
+            raise ValueError("This project does not have a kanboard")
+
+        for project in await self._kanboard_client.getAllProjects_async():
+            await self._kanboard_client.removeProject_async(project_id=project["id"])
+
+        await self.reply(message, "Finished BustyDebug:TM:")
+
+
