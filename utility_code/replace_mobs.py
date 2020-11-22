@@ -79,6 +79,7 @@ sub = [
     ("Viridian Juggernaut", match_name('Viridian Juggernaught', match_id('minecraft:wither_skeleton'))),
     ("Frozen Grunt", match_name('Frost Knight', match_id('minecraft:zombie_villager'))),
     ("Frozen Sniper", match_name('Frost Knight Archer', match_id('minecraft:stray'))),
+    ("Monstrous Arachnid", match_name('Monsterous Arachnid', match_id('minecraft:spider'))),
 
     # Generic, un-named R2 mobs
     ("Celsian Sniper", match_hp(30, match_hand(["Composite Bow", None], match_noarmor(match_noname(match_id('minecraft:skeleton')))))),
