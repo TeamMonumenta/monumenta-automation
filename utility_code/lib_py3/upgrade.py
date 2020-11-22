@@ -154,6 +154,11 @@ def upgrade_uuid_if_present(nbt: TagCompound, regenerateUUIDs = False) -> None:
             nbt.value.pop("UUIDLeast")
         nbt.value["UUID"] = uuid_to_mc_uuid_tag_int_array(modifierUUID)
 
+    # Somehow this attribute is still missing a UUID - fix it
+    if nbt.has_path("AttributeName") and not nbt.has_path("UUID"):
+        modifierUUID = uuid.uuid4()
+        nbt.value["UUID"] = uuid_to_mc_uuid_tag_int_array(modifierUUID)
+
 def upgrade_attributes(attributes_nbt: TagCompound, regenerateUUIDs = False) -> None:
     for attribute in attributes_nbt.value:
         if attribute.has_path("Name"):
