@@ -106,14 +106,12 @@ class LibraryOfSouls(object):
 
     @classmethod
     def is_mob_riding_itself(cls, soul_nbt: TagCompound, bad_names: [str]) -> bool:
-        if not soul_nbt.has_path("CustomName"):
-            return False
-
-        name = unformat_text(parse_name_possibly_json(soul_nbt.at_path("CustomName").value))
-        if name in bad_names:
-            return True
-        else:
-            bad_names.append(name)
+        if soul_nbt.has_path("CustomName"):
+            name = unformat_text(parse_name_possibly_json(soul_nbt.at_path("CustomName").value))
+            if name in bad_names:
+                return True
+            else:
+                bad_names.append(name)
 
         if soul_nbt.has_path("Passengers"):
             for passenger in soul_nbt.at_path("Passengers").value:
@@ -132,6 +130,7 @@ class LibraryOfSouls(object):
             if self.is_mob_riding_itself(soul_nbt, []):
                 eprint(f"WARNING: mob {name} is riding itself! Will not replace this mob")
                 continue
+
             current_nbt.append(soul_nbt)
 
         mgr.add_replacements(current_nbt)
