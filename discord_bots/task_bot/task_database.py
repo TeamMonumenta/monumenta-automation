@@ -207,6 +207,11 @@ class TaskDatabase(object):
 
             print("Loaded {} database".format(self._descriptor_single), flush=True)
 
+    async def on_webhook_post(self, json_msg):
+        if self._kanboard is not None:
+            if await self._kanboard.on_webhook_post(json_msg):
+                self.save()
+
     def get_entry(self, index_str):
         """
         Gets an entry for a given string index number
@@ -383,7 +388,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         return entry_text, embed
 
-    async def send_entry(self, index, entry):
+    async def send_entry(self, index, entry, kanboard_update=True):
         # Compute the new entry text
         entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
 
@@ -407,7 +412,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             entry["message_id"] = msg.id
             needs_save = True
 
-        if self._kanboard is not None:
+        if self._kanboard is not None and kanboard_update:
             if await self._kanboard.update_entry(index, entry):
                 needs_save = True
 

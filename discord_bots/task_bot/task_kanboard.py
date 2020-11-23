@@ -134,6 +134,91 @@ class TaskKanboard(object):
 
         return self._colors[-1][1]
 
+    # True = this changed something and need to save the database
+    # False = nothing changed
+    async def on_webhook_post(self, json_msg) -> bool:
+
+        if "event_name" not in json_msg or "event_data" not in json_msg or "task" not in json_msg["event_data"]:
+            print(f"Warning: Got invalid webhook request: {json_msg}", flush=True)
+            return False
+
+        task = json_msg["event_data"]["task"]
+
+        if not "project_id" in task or int(task["project_id"]) != int(self._project_id):
+            # Message meant for other project, silently ignore
+            return False
+
+        for field in ["reference", "column_id", "swimlane_id"]:
+            if not field in task:
+                print(f"Warning: task missing reference field {field}: {json_msg}", flush=True)
+                return False
+
+        # A str, which is the same as the key for entries
+        index = task["reference"]
+        if not index in self._task_database._entries:
+            print(f"Warning: task references nonexistent entry: {json_msg}", flush=True)
+            return False
+
+        entry = self._task_database._entries[index]
+
+        author = "unknown"
+        if "event_author" in json_msg:
+            author = json_msg["event_author"]
+
+        msg = None
+        if json_msg["event_name"] == "task.close":
+            msg = f"User {author} closed {self._task_database._descriptor_single} #{index}"
+            entry["close_reason"] = "Fixed"
+
+        elif json_msg["event_name"] == "task.open":
+            msg = f"User {author} reopened {self._task_database._descriptor_single} #{index}"
+            if "close_reason" in entry:
+                entry.pop("close_reason")
+
+        else:
+            column_id = int(task["column_id"])
+            swimlane_id = int(task["swimlane_id"])
+
+            complexity = None
+            for key, value in self._columns.items():
+                if value == column_id:
+                    complexity = key
+            if complexity is None:
+                print(f"Warning: Could not determine complexity for task: {json_msg}", flush=True)
+                return False
+
+
+            priority = None
+            for key, value in self._swimlanes.items():
+                if value == swimlane_id:
+                    priority = key
+            if priority is None:
+                print(f"Warning: Could not determine priority for task: {json_msg}", flush=True)
+                return False
+
+            if priority != entry["priority"] and complexity == entry["complexity"]:
+                msg = f"User {author} set priority of {index} to {priority}"
+                entry["priority"] = priority
+            if priority == entry["priority"] and complexity != entry["complexity"]:
+                msg = f"User {author} set complexity of {index} to {complexity}"
+                entry["complexity"] = complexity
+            if priority != entry["priority"] and complexity != entry["complexity"]:
+                msg = f"User {author} set priority of {index} to {priority} and complexity to {complexity}"
+                entry["priority"] = priority
+                entry["complexity"] = complexity
+
+        if msg is None:
+            # Nothing changed
+            return False
+
+        print(msg, flush=True)
+
+        # Update the entry
+        await self._task_database.send_entry(index, entry, kanboard_update=False)
+
+        # Need to save after this
+        return True
+
     async def update_entry(self, entry_id: int, entry: dict) -> bool:
         """
         Updates a kanboard entry. If the entry doesn't have a kanboard_id, one will be created.
@@ -146,7 +231,7 @@ class TaskKanboard(object):
             existing_task = await self._kanboard_client.getTask_async(task_id=kanboard_id)
 
             if not existing_task:
-                print(f"Warning: Failed to find kanboard_id: {kanboard_id}")
+                print(f"Warning: Failed to find kanboard_id: {kanboard_id}", flush=True)
                 kanboard_id = None
 
 
@@ -175,7 +260,7 @@ class TaskKanboard(object):
                 description=entry["image"]
             )
             if not result:
-                print(f"Warning: Failed to change task position for kanboard task id: {kanboard_id}")
+                print(f"Warning: Failed to change task position for kanboard task id: {kanboard_id}", flush=True)
 
 
         ### Update tags/labels
@@ -194,7 +279,7 @@ class TaskKanboard(object):
         )
 
         if not result:
-            print(f"Warning: Failed to change task position for kanboard task id: {kanboard_id}")
+            print(f"Warning: Failed to change task position for kanboard task id: {kanboard_id}", flush=True)
 
 
         ### Update closed/opened status

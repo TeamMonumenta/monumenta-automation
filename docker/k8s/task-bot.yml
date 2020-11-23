@@ -1,3 +1,19 @@
+
+# Webhook port for kanboard
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-bot
+spec:
+  ports:
+  - port: 5000
+  selector:
+    app: task-bot
+
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,9 +58,9 @@ spec:
         resources:
           limits:
             cpu: 250m
-            memory: 64Mi
+            memory: 512Mi
           requests:
             cpu: 100m
-            memory: 32Mi
+            memory: 128Mi
       imagePullSecrets:
       - name: githubcred

@@ -16,6 +16,7 @@ import discord
 
 from task_database import TaskDatabase
 from common import split_string
+from kanboard_webhooks import start_webhook_server
 
 ################################################################################
 # Config / Environment
@@ -35,10 +36,14 @@ if "login" not in bot_config is None:
     sys.exit('No login info is provided')
 
 kanboard_client = None
+kanboard_webhook_queue = None
+kanboard_webhook_process = None
 if 'kanboard' in bot_config:
     kanboard_client = kanboard.Client(bot_config['kanboard']['url'], 'jsonrpc', bot_config['kanboard']['token'])
     if kanboard_client is None:
         sys.exit("Kanboard specified but failed to connect")
+
+    kanboard_webhook_process, kanboard_webhook_queue = start_webhook_server()
 
 
 class GracefulKiller:
@@ -95,6 +100,13 @@ try:
         if killer.stopping:
             logging.info('Ignoring message during shutdown')
             return
+
+        if kanboard_webhook_queue is not None:
+            while not kanboard_webhook_queue.empty():
+                json_msg = kanboard_webhook_queue.get()
+                for _, db in facet_channels:
+                    await db.on_webhook_post(json_msg)
+
 
         for facet_channel, db in facet_channels:
             if message.channel.id == facet_channel:
