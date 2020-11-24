@@ -167,8 +167,9 @@ class TaskKanboard(object):
 
         msg = None
         if json_msg["event_name"] == "task.close":
-            msg = f"User {author} closed {self._task_database._descriptor_single} #{index}"
-            entry["close_reason"] = "Fixed"
+            if "close_reason" not in entry:
+                msg = f"User {author} closed {self._task_database._descriptor_single} #{index}"
+                entry["close_reason"] = "Fixed"
 
         elif json_msg["event_name"] == "task.open":
             msg = f"User {author} reopened {self._task_database._descriptor_single} #{index}"
