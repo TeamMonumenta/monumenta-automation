@@ -598,7 +598,7 @@ Must be run before starting terrain reset on the play server'''
         for shard in shards:
             if shard == "region_1" or shard == "region_2":
                 main_shards.append(shard)
-            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "tutorial", "reverie", "rush", "willows", "sanctum", "shiftingcity"]:
+            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "tutorial", "reverie", "rush", "willows", "sanctum", "shiftingcity", "labs"]:
                 instance_gen_required.append(shard)
             else:
                 await self.display("Unknown shard specified: {}".format(shard))
