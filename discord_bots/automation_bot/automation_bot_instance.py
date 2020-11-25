@@ -718,6 +718,14 @@ Must be run before starting terrain reset on the play server'''
             await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/epic/project_epic/")
             folders_to_update.remove("server_config")
 
+        if "tutorial" in folders_to_update:
+            await self.display("Copying tutorial...")
+            await self.run("rm -rf /home/epic/project_epic/tutorial/")
+            await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
+            await self.cd("/home/epic/project_epic")
+            await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play tutorial"))
+            folders_to_update.pop("tutorial")
+
         await self.display("Running actual terrain reset (this will take a while!)...")
         await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(folders_to_update)))
 
