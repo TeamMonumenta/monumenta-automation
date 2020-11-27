@@ -62,6 +62,21 @@ fn update_player_scores(player: &mut Player) {
         update_instance_scores(scores, "DS1Access", 3 * INSTANCE_WEEK_OFFSET, &["DS1Finished"]);
         update_instance_scores(scores, "DS1Finished", 1, &["DS1Access"]);
 
+        if let Some(tutorial) = scores.get("Tutorial") {
+            if let Some(total_level) = scores.get("TotalLevel") {
+                if *tutorial >= 30 && *total_level == 1 {
+                    scores.insert("Tutorial".to_string(), 20);
+                    scores.insert("TotalLevel".to_string(), 2);
+                } else if *tutorial <= 29 && *total_level == 1 {
+                    scores.insert("Tutorial".to_string(), 0);
+                    scores.insert("TotalLevel".to_string(), 0);
+                    scores.insert("Skill".to_string(), 0);
+                } else if *total_level >= 2 {
+                    scores.insert("Tutorial".to_string(), 20);
+                }
+            }
+        }
+
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
         scores.insert("DRDAccess".to_string(), 0);
