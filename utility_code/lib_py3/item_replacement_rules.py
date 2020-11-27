@@ -343,9 +343,13 @@ class PreserveEnchantments(GlobalRule):
                     lore_text = unformat_text(parse_name_possibly_json(lore.value))
                     if lore_text.startswith(enchantment['enchantment']):
                         enchantment['enchant_found'] = True
-                        enchantment['enchant_line'] = lore_text
+                        if not enchantment["enchantment"].startswith("Gilded"):
+                            enchantment['enchant_line'] = lore_text
+                        else:
+                            enchantment['enchant_line'] = 'Gilded'
                     if owner_prefix is not None and lore_text.startswith(owner_prefix):
-                        enchantment['players'].append(lore_text[len(owner_prefix)+1:])
+                        if not enchantment["enchantment"].startswith("Gilded") or len(enchantment['players']) <= 0:
+                            enchantment['players'].append(lore_text[len(owner_prefix)+1:])
 
     def postprocess(self, item):
         for enchantment in self.enchantment_state:
