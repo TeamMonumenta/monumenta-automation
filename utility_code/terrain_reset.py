@@ -93,9 +93,6 @@ plots = {
     "copyBaseFrom":"main",
 
     "datapacks":datapacks_base + ['file/plots'],
-
-    # Replace items worldwide
-    "replace_items_globally": item_replace_manager,
 }
 
 tutorial = {
