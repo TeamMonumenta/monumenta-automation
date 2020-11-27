@@ -44,7 +44,6 @@ def update_plain_tag(item_nbt: TagCompound) -> None:
     """
     for formatted_path, plain_subpath_parts, is_multipath in (
         ('display.Name', ['display', 'Name'], False),
-        ('CustomName', ['CustomName',], False),
         ('display.Lore[]', ['display', 'Lore'], True),
         #('pages[]', ['pages'], True),
     ):
