@@ -1,0 +1,130 @@
+#
+# NOTE:
+# To generate the wiki.db-pass secret, run:
+# kubectl create secret generic wiki --from-literal=db-pass="$(openssl rand -base64 32)"
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: wiki
+spec:
+  tls:
+  - hosts:
+    - wiki.playmonumenta.com
+  rules:
+  - host: wiki.playmonumenta.com
+    http:
+      paths:
+      - backend:
+          serviceName: wiki
+          servicePort: 80
+
+---
+
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: wiki
+  labels:
+    app: wiki
+spec:
+  type: ClusterIP
+  selector:
+    app: wiki
+  ports:
+  - name: "http"
+    port: 80
+    targetPort: 3000
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wiki-postgres-hugepages-config
+data:
+  postgresql.conf.sample: |
+    listen_addresses = '*'
+    huge_pages = off
+---
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: wiki
+spec:
+  selector:
+    matchLabels:
+      app: wiki
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: wiki
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-8
+      containers:
+      - name: wiki-js
+        image: requarks/wiki:2
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: "DB_TYPE"
+          value: "postgres"
+        - name: "DB_HOST"
+          value: "localhost"
+        - name: "DB_PORT"
+          value: "5432"
+        - name: "DB_USER"
+          value: "wiki"
+        - name: "DB_PASS"
+          valueFrom:
+            secretKeyRef:
+              name: wiki
+              key: db-pass
+        - name: "DB_NAME"
+          value: "wiki"
+        resources:
+          limits:
+            cpu: 200m
+      - name: wiki-db
+        image: postgres:11
+        env:
+        - name: "POSTGRES_DB"
+          value: "wiki"
+        - name: "POSTGRES_USER"
+          value: "wiki"
+        - name: "POSTGRES_PASSWORD"
+          valueFrom:
+            secretKeyRef:
+              name: wiki
+              key: db-pass
+        volumeMounts:
+        - name: wiki-persistent-storage
+          mountPath: /var/lib/postgresql/data
+        - name: wiki-postgres-hugepages-config
+          mountPath: /usr/share/postgresql/postgresql.conf.sample
+          subPath: postgresql.conf.sample
+        resources:
+          limits:
+            cpu: 200m
+      volumes:
+        - name: wiki-persistent-storage
+          hostPath:
+            type: Directory
+            path: /nfs/wiki
+        - name: wiki-postgres-hugepages-config
+          configMap:
+            name: wiki-postgres-hugepages-config
