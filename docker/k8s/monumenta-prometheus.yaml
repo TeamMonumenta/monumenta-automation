@@ -62,6 +62,7 @@ spec:
     - build
     - play
     - stage
+    - external
   endpoints:
   - port: metrics
     interval: 5s
@@ -84,6 +85,7 @@ spec:
     - build
     - play
     - stage
+    - external
   endpoints:
   - port: metrics
     interval: 30s

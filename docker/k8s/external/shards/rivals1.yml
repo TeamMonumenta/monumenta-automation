@@ -1,3 +1,25 @@
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rivals1
+  namespace: external
+  labels:
+    app: rivals1
+    k8s-app: monumenta-metrics-fast
+
+spec:
+  type: ClusterIP
+  selector:
+    app: rivals1
+  ports:
+  - name: metrics
+    port: 9225
+    targetPort: 9225
+
+---
+
 # Service / external network ports
 
 apiVersion: v1
@@ -7,7 +29,6 @@ metadata:
   namespace: external
   labels:
     app: rivals1
-    k8s-app: monumenta-metrics
 spec:
   type: NodePort
   externalTrafficPolicy: Local
@@ -18,9 +39,6 @@ spec:
     port: 7001
     nodePort: 7001
     targetPort: 25566
-  - name: metrics
-    port: 9225
-    targetPort: 9225
 
 ---
 
@@ -70,7 +88,7 @@ spec:
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
-          value: "2G"
+          value: "6G"
         # Set this to 256M regardless of JAVA_MEM
         - name: "JAVA_META_MEM"
           value: "256M"
@@ -104,12 +122,12 @@ spec:
             # It should not need much/any...
             memory: 1Gi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 2432Mi
+            hugepages-2Mi: 6784Mi
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 2432Mi
+            hugepages-2Mi: 6784Mi
       imagePullSecrets:
       - name: githubcred
