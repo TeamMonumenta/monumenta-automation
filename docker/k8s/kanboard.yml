@@ -1,18 +1,10 @@
-#
-# NOTE:
-# To generate the kanboard-auth secret, run these commands:
-# htpasswd -c ./auth epic
-# kubectl create secret generic kanboard-auth --from-file auth
-# rm auth
-
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: kanboard
-  #  annotations:
-  #    nginx.ingress.kubernetes.io/auth-type: basic
-  #    nginx.ingress.kubernetes.io/auth-secret: kanboard-auth
-  #    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "75m"
+    nginx.org/client-max-body-size: "75m"
 spec:
   tls:
   - hosts:
