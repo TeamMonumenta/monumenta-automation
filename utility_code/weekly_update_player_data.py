@@ -47,7 +47,7 @@ if datapacks is None:
 
 loot_table_manager = LootTableManager()
 loot_table_manager.load_loot_tables_subdirectories(datapacks)
-item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map(show_errors=True))
+item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map(show_errors=False))
 world = FakeRedisWorld(world_path)
 
 log_handle = None
