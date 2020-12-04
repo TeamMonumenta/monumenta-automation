@@ -44,8 +44,11 @@ for location in repair_map:
 
             if notexists:
                 if current_entry["name"] in unique_item_names:
-                    new_repair_map_loc.append(current_entry)
-                    num_remaining += 1
+                    if "Items:[" in current_entry["from"]:
+                        print("Warn: Skipping for items: ", current_entry["name"])
+                    else:
+                        new_repair_map_loc.append(current_entry)
+                        num_remaining += 1
                 else:
                     num_not_in_loot_tables += 1
                     repair_map_not_in_tables.append(current_entry)
@@ -54,8 +57,11 @@ for location in repair_map:
             # This location was NOT in the last attempt
 
             if current_entry["name"] in unique_item_names:
-                new_repair_map_loc.append(current_entry)
-                num_remaining_new += 1
+                if "Items:[" in current_entry["from"]:
+                    print("Warn: Skipping for items: ", current_entry["name"])
+                else:
+                    new_repair_map_loc.append(current_entry)
+                    num_remaining_new += 1
             else:
                 num_not_in_loot_tables += 1
                 repair_map_not_in_tables.append(current_entry)
