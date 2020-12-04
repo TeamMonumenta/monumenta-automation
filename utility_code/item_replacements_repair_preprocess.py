@@ -44,41 +44,10 @@ def get_item_location_key(debug_path: [nbt.TagCompound]) -> str:
 
     return f"{x}_{y}_{z}_{debug_path[0].at_path('id').value.lower().replace('minecraft:','')}_{len(debug_path)}"
 
-lost_enchants = [
-    ' SHATTERED ',
-    'Soulbound to',
-    'Hope',
-    'Gilded',
-    'Festive',
-    'Acumen',
-    'Focus',
-    'Perspicacity',
-    'Tenacity',
-    'Vigor',
-    'Vitality',
-    'Barking',
-    'Debarking',
-]
-
-def get_changed_infusions(broken_item) -> str:
-    global lost_enchants
-
-    count_before = 0
-    count_after = 0
-    changed_infusions = ""
-    for enchant in lost_enchants:
-        if broken_item["from"].count(enchant) > broken_item["to"].count(enchant):
-            if changed_infusions != "":
-                changed_infusions += ", "
-            changed_infusions += enchant
-
-    return changed_infusions
-
-
 repair_map = {}
 
 broken_items = []
-with open("REPAIR/all_lore_size_changed_items.json", "r") as fin:
+with open("REPAIR/all_plots_infusions_pre_116_upgrade.json", "r") as fin:
     broken_items = json.load(fin)
 
 num_broken = 0
@@ -91,23 +60,20 @@ for broken_item in broken_items:
     for debug_path_entry_str in broken_item["path"]:
         debug_path.append(nbt.TagCompound.from_mojangson(debug_path_entry_str))
 
-    broken_item['name'] = get_item_name_from_nbt(nbt.TagCompound.from_mojangson(broken_item["from"]), remove_color=True)
-    broken_item['changed'] = get_changed_infusions(broken_item)
-
-    if broken_item['changed'] == "":
-        nbttag = nbt.TagCompound.from_mojangson(broken_item['from'])
-        if not nbttag.has_path("plain.display.Lore"):
-            print("Skipping: WARNING: Item replacements missed:", broken_item["from"])
-        else:
-            print("Skipping:", nbttag.at_path("plain.display.Lore").to_mojangson())
-        num_skipped += 1
-        continue
+    fullitem = nbt.TagCompound.from_mojangson(broken_item["from"])
+    nbttag = fullitem.at_path("tag")
+    broken_item['from'] = nbttag.to_mojangson()
+    broken_item['name'] = get_item_name_from_nbt(nbttag, remove_color=True)
 
     location_key = get_item_location_key(debug_path)
     if location_key in repair_map:
         repair_map[location_key].append(broken_item)
     else:
         repair_map[location_key] = [broken_item,]
+
+    #print(json.dumps(repair_map, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': ')))
+    #crash
+
 
 with open("REPAIR/repair_map.json", "w") as fout:
     json.dump(repair_map, fout, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
