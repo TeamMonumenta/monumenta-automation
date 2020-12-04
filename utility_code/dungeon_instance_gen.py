@@ -27,7 +27,7 @@ config = {
         {
             "name":"white",
             "region":{"x":-3, "z":-2},
-            "numDungeons":100,
+            "numDungeons":150,
         },{
             "name":"orange",
             "region":{"x":-3, "z":-1},
@@ -59,7 +59,7 @@ config = {
         },{
             "name":"tutorial",
             "region":{"x":-2, "z":0},
-            "numDungeons":500,
+            "numDungeons":700,
         },{
             "name":"sanctum",
             "region":{"x":-3, "z":12},
@@ -67,7 +67,7 @@ config = {
         },{
             "name":"labs",
             "region":{"x":-2, "z":2},
-            "numDungeons":200,
+            "numDungeons":500,
         },{
             "name":"lime",
             "region":{"x":-3, "z":5},
