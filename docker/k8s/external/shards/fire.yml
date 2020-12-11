@@ -17,6 +17,10 @@ spec:
     port: 5565
     nodePort: 5565
     targetPort: 25566
+  - name: dynmap
+    port: 5566
+    nodePort: 5566
+    targetPort: 8123
 
 ---
 
