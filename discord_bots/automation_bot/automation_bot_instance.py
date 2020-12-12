@@ -970,22 +970,26 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
 
         if min_phase <= 11:
+            await self.display("Removing tutorial data")
+            await self.run(os.path.join(_top_level, "rust/bin/redis_remove_data") + " redis://redis/ tutorial:* --confirm")
+
+        if min_phase <= 12:
             await self.display("Running score changes for players and moving them to spawn...")
             await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + " /home/epic/project_epic/server_config/redis_data_initial")
 
-        if min_phase <= 12:
+        if min_phase <= 13:
             await self.display("Running item replacements for players...")
             await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --redisworld /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.log")
 
-        if min_phase <= 13:
+        if min_phase <= 14:
             await self.display("Loading player data back into redis...")
             await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial 1")
 
-        if min_phase <= 14:
+        if min_phase <= 15:
             await self.display("Running actual terrain reset (this will take a while!)...")
             await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))
 
-        if min_phase <= 15:
+        if min_phase <= 16:
             for shard in ["plots", "region_1"]:
                 await self.display("Preserving coreprotect for {0}...".format(shard))
                 await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/CoreProtect".format(shard))
@@ -1006,16 +1010,16 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
                 await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/ops.json /home/epic/project_epic/{}/".format(shard))
 
         await self.cd("/home/epic/project_epic")
-        if min_phase <= 16:
+        if min_phase <= 17:
             await self.display("Generating per-shard config...")
             await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(allShards)))
 
-        if min_phase <= 17:
+        if min_phase <= 18:
             await self.display("Checking for broken symbolic links...")
             await self.run("find /home/epic/project_epic -xtype l", displayOutput=True)
 
         await self.cd("/home/epic")
-        if min_phase <= 18:
+        if min_phase <= 19:
             await self.display("Backing up post-reset artifacts...")
             await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic")
 
