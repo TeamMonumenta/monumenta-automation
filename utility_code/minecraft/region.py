@@ -23,7 +23,6 @@ class Region(MutableMapping):
         self.rx = rx
         self.rz = rz
         self._region = nbt.RegionFile(self.path)
-        self.path_debug = NbtPathDebug(f'file://{os.path.realpath(self.path)}', self._region, self, "Anvil")
 
     def has_chunk(self, cx, cz):
         """Return True if this region contains chunk cx, cz (global coordinates)."""
@@ -54,8 +53,7 @@ class Region(MutableMapping):
         chunk_tag = nbt.TagRoot.from_bytes(chunk_tag)
         chunk_tag = chunk_tag.body
 
-        path_debug = self.path_debug.get_child_debug(f'"chunk at ({cx}, {cz})"', chunk_tag, chunk_tag)
-        chunk = Chunk(chunk_tag, path_debug)
+        chunk = Chunk(chunk_tag)
         return chunk
 
     def save_chunk(self, chunk, cx=None, cz=None):

@@ -3,39 +3,20 @@
 import os
 import sys
 
-from minecraft.player_dat_format.player import Player
-from minecraft.util.debug_util import NbtPathDebug
-from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
-
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
 
-class LevelDat(RecursiveMinecraftIterator):
+class LevelDat():
     """Global level data, loaded from disk."""
-    __CLASS_UNINITIALIZED = True
-    __MULTIPATHS = TypeMultipathMap()
 
     def __init__(self, path):
         """Load a level.dat file from the path provided, and allow saving."""
-        if type(self).__CLASS_UNINITIALIZED:
-            self._init_multipaths(type(self).__MULTIPATHS)
-            type(self).__CLASS_UNINITIALIZED = False
-        self._multipaths = type(self).__MULTIPATHS
 
         self.path = path
         with open(self.path, 'rb') as fp:
             self.level_dat_file = nbt.NBTFile.load(self.path)
             self.nbt = self.level_dat_file.root_tag.body
         self.data_version = self.nbt.at_path('Data.DataVersion').value
-        self.path_debug = NbtPathDebug(f'file://{self.path}', self.nbt, self, self.data_version)
-
-    def _init_multipaths(self, multipaths):
-        super()._init_multipaths(multipaths)
-
-    def iter_entities(self):
-        """Iterates over entities directly in this entity."""
-        yield from super().iter_entities()
-        yield self.player
 
     def save(self):
         """Save the level.dat file to its original location."""
@@ -118,18 +99,6 @@ class LevelDat(RecursiveMinecraftIterator):
         # Disable specified datapacks
         for datapack in datapacks:
             self.disable_datapack(datapack)
-
-    @property
-    def player(self):
-        """Access the single player, if they exist.
-
-        Returns Player or None.
-        """
-        if not self.nbt.has_path('Data.Player'):
-            return None
-        player_nbt = self.nbt.at_path('Data.Player')
-        player_debug = self.path_debug.get_child_debug('Data.Player', player_nbt, player_nbt)
-        return Player(player_nbt, player_debug, self)
 
     def __repr__(self):
         return f'LevelDat({self.path!r})'

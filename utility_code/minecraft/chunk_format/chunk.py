@@ -14,26 +14,28 @@ from quarry.types import nbt
 #from quarry.types.buffer import BufferUnderrun
 #from quarry.types.chunk import BlockArray
 
-class Chunk(RecursiveMinecraftIterator):
+class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
     """A chunk, loaded from a tag."""
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 
-    def __init__(self, nbt, path_debug):
+    def __init__(self, nbt):
         """Load an entity from an NBT tag.
 
-        Must be saved from wherever the tag was loaded from to apply.
-        path_debug is the new NbtPathDebug object for this object, missing its references to this.
+        Must be saved from wherever the tag was loaded from for changes to apply.
         """
         if type(self).__CLASS_UNINITIALIZED:
             self._init_multipaths(type(self).__MULTIPATHS)
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
+        ##############
+        # Required setup for NbtPathDebug
         self.nbt = nbt
-        self.path_debug = path_debug
-        self.path_debug.obj = self
-        self.path_debug.data_version = self.nbt.at_path('DataVersion')
+        self.parent = None
+        self.root = self
+        self.data_version = self.nbt.at_path('DataVersion')
+        #############
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
@@ -51,6 +53,13 @@ class Chunk(RecursiveMinecraftIterator):
     @property
     def cz(self):
         return self.nbt.at_path('Level.zPos').value
+
+    @property
+    def pos(self):
+        """Chunks don't return a position, even though they have one,
+        because everything inside a chunk should have a positioni
+        """
+        return None
 
     def __str__(self):
         return f'Chunk ({self.cx}, {self.cz})'

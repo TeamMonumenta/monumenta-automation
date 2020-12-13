@@ -6,7 +6,6 @@ import getopt
 import yaml
 
 from lib_py3.mob_replacement_manager import MobReplacementManager, remove_unwanted_spawner_tags
-from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
 from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items, get_named_armor_items
 from lib_py3.library_of_souls import LibraryOfSouls
 
@@ -16,17 +15,15 @@ from minecraft.world import World
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types import nbt
 
-def is_entity_in_spawner(entity_path: [nbt.TagCompound]) -> bool:
-    contains_spawner = False
-    last = False
-    for element in entity_path:
-        if element.has_path("SpawnPotentials"):
-            contains_spawner = True
-            last = True
-        else:
-            last = False
+def is_entity_in_spawner(entity) -> bool:
+    # Start at the node above this one and iterate upwards
+    node = entity.parent
+    while node is not None:
+        if node.nbt.has_path("SpawnPotentials"):
+            return True
+        node = node.parent
 
-    return contains_spawner and not last
+    return False
 
 def match_id(target_id: str, chain=lambda mob: True):
     return lambda mob : chain(mob) and mob.at_path("id").value == target_id
@@ -198,36 +195,35 @@ replacements_log = {}
 num_replacements = 0
 try:
     # This is handy here because it has direct access to previously defined globals
-    def process_entity(entity: nbt.TagCompound, source_pos, entity_path: [nbt.TagCompound], debug_path_prefix="") -> None:
-        if entity.has_path("Delay"):
-            entity.at_path("Delay").value = 0
+    def process_entity(entity, debug_path_prefix="") -> None:
+        nbt = entity.nbt
+        if nbt.has_path("Delay"):
+            nbt.at_path("Delay").value = 0
 
             # Remove pigs
-            if entity.has_path('SpawnPotentials'):
+            if nbt.has_path('SpawnPotentials'):
                 new_potentials = []
-                for nested_entity in entity.iter_multipath('SpawnPotentials[]'):
-                    if nested_entity.has_path('Entity.id') and nested_entity.at_path('Entity.id').value == "minecraft:pig":
+                for nested_entity in nbt.iter_multipath('SpawnPotentials[]'):
+                    if nested_entity.has_path('nbt.id') and nested_entity.at_path('nbt.id').value == "minecraft:pig":
                         if log_handle is not None:
-                            log_handle.write("Removing pig from SpawnPotentials at {}\n".format(get_debug_string_from_entity_path(entity_path)))
+                            log_handle.write(f"Removing pig from SpawnPotentials at {entity.get_path_str()}\n")
                     else:
                         new_potentials.append(nested_entity)
-                entity.at_path('SpawnPotentials').value = new_potentials
-            if entity.has_path("SpawnData.id") and entity.at_path("SpawnData.id").value == "minecraft:pig":
+                nbt.at_path('SpawnPotentials').value = new_potentials
+            if nbt.has_path("SpawnData.id") and nbt.at_path("SpawnData.id").value == "minecraft:pig":
                 if log_handle is not None:
-                    log_handle.write("Removing pig Spawndata at {}\n".format(get_debug_string_from_entity_path(entity_path)))
-                entity.value.pop("SpawnData")
+                    log_handle.write(f"Removing pig Spawndata at {entity.get_path_str()}\n")
+                nbt.value.pop("SpawnData")
 
-
-        if is_entity_in_spawner(entity_path):
-            remove_unwanted_spawner_tags(entity)
-            return replace_mgr.replace_mob(entity, replacements_log, debug_path_prefix + get_debug_string_from_entity_path(entity_path))
-
+        if is_entity_in_spawner(entity):
+            remove_unwanted_spawner_tags(nbt)
+            return replace_mgr.replace_mob(nbt, replacements_log, f"{debug_path_prefix} -> {entity.get_path_str()}")
 
     if world_path:
         world = World(world_path)
         for chunk in world.iter_chunks(autosave=(not dry_run)):
             for entity in chunk.recursive_iter_entities():
-                if process_entity(entity.nbt, entity.pos, entity.get_legacy_debug(), os.path.basename(world_path) + " -> "):
+                if process_entity(entity, os.path.basename(world_path)):
                     num_replacements += 1
 
     if schematics_path:
@@ -237,7 +233,7 @@ try:
                     schem = Schematic(os.path.join(root, fname))
                     num_replacements_this_schem = 0
                     for entity in schem.recursive_iter_entities():
-                        if process_entity(entity.nbt, entity.pos, entity.get_legacy_debug(), fname + " -> "):
+                        if process_entity(entity, fname):
                             num_replacements += 1
                             num_replacements_this_schem += 1
 

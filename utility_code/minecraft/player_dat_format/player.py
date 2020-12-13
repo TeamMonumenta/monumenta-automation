@@ -22,24 +22,23 @@ class Player(Entity):
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 
-    def __init__(self, nbt, path_debug=None, root=None):
+    def __init__(self, nbt):
         """Load a player from an NBT tag.
 
-        Must be saved from wherever the tag was loaded from to apply.
-        path_debug is the new NbtPathDebug object for this object, missing its references to this.
-        root is the base Entity, BlockEntity, or Item of this Entity, which may be itself.
+        Must be saved from wherever the tag was loaded from for changes to apply.
         """
         if type(self).__CLASS_UNINITIALIZED:
             self._init_multipaths(type(self).__MULTIPATHS)
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
+        ##############
+        # Required setup for NbtPathDebug
         self.nbt = nbt
-        self.path_debug = path_debug
-        if self.path_debug is not None:
-            self.path_debug.obj = self
-        self.root = root if root is not None else self
-        self.root_entity = self
+        self.parent = None
+        self.root = self
+        self.data_version = self.nbt.at_path('DataVersion').value
+        #############
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
@@ -208,10 +207,7 @@ class PlayerFile():
         self.path = path
         with open(self.path, 'rb') as fp:
             self.player_dat_file = nbt.NBTFile.load(self.path)
-            self.nbt = self.player_dat_file.root_tag.body
-        self.data_version = self.nbt.at_path('DataVersion').value
-        self.path_debug = NbtPathDebug(f'file://{os.path.realpath(self.path)}', self.nbt, self, self.data_version)
-        self.player = Player(self.nbt, self.path_debug)
+            self.player = Player(self.player_dat_file.root_tag.body)
 
     def save(self):
         """Save the player file to its original location."""

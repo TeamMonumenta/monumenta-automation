@@ -9,7 +9,7 @@ from minecraft.util.debug_util import NbtPathDebug
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
 
-class Schematic(RecursiveMinecraftIterator):
+class Schematic(RecursiveMinecraftIterator, NbtPathDebug):
     """A schematic, loaded from an nbt file."""
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
@@ -25,9 +25,15 @@ class Schematic(RecursiveMinecraftIterator):
         self._schematic_name = os.path.splitext(name)[0]
 
         self._nbtfile = nbt.NBTFile.load(path)
-        self.nbt = self._nbtfile.root_tag
 
-        self.path_debug = NbtPathDebug(f'file://{os.path.realpath(self.path)}', self.nbt, self, "Schematic")
+        ##############
+        # Required setup for NbtPathDebug
+        self.nbt = self._nbtfile.root_tag
+        self.parent = None
+        self.root = self
+        # TODO Probably can set this version to something?
+        self.data_version = None
+        #############
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
@@ -46,6 +52,11 @@ class Schematic(RecursiveMinecraftIterator):
     @property
     def root_tag(self):
         return self.nbt
+
+    @property
+    def pos(self):
+        """Schematics have no inherent position"""
+        return None
 
     def __str__(self):
         return f'Schematic({self._schematic_name})'

@@ -3,17 +3,18 @@
 import os
 import sys
 
+from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
 
-class BlockEntity(RecursiveMinecraftIterator):
+class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
     """An object for editing a block entity (1.13+)."""
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 
-    def __init__(self, nbt, path_debug=None, root=None):
+    def __init__(self, nbt, parent=None, data_version=None):
         """Load a block entity from an NBT tag.
 
         Must be saved from wherever the tag was loaded from to apply.
@@ -25,15 +26,13 @@ class BlockEntity(RecursiveMinecraftIterator):
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
+        ##############
+        # Required setup for NbtPathDebug
         self.nbt = nbt
-        self.path_debug = path_debug
-        if self.path_debug is not None:
-            self.path_debug.obj = self
-        self.root = root if root is not None else self
-        self.root_entity = self
-        parent = self.path_debug.parent.obj
-        if isinstance(parent, (BlockEntity, Entity, Item)):
-            self.root_entity = parent.root_entity
+        self.parent = parent
+        self.root = parent.root if parent is not None and parent.root is not None else self
+        self.data_version = data_version
+        #############
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
@@ -48,13 +47,6 @@ class BlockEntity(RecursiveMinecraftIterator):
             'RecordItem',
         })
 
-    def get_legacy_debug(self):
-        result = [self.nbt]
-        parent = self.path_debug.parent.obj
-        if isinstance(parent, (BlockEntity, Entity, Item)):
-            result = parent.get_legacy_debug() + result
-        return result
-
     @property
     def pos(self):
         """Returns the block entity's coordinates as (x, y, z).
@@ -62,8 +54,8 @@ class BlockEntity(RecursiveMinecraftIterator):
         >>> print(self.pos)
         (2, 63, 3)
         """
-        if self.root_entity is not self:
-            return self.root_entity.pos
+        if self.parent is not None and self.parent.pos is not None:
+            return self.parent.pos
 
         elif self.nbt.has_path('x') and self.nbt.has_path('y') and self.nbt.has_path('z'):
             x = self.nbt.at_path('x').value
@@ -83,7 +75,7 @@ class BlockEntity(RecursiveMinecraftIterator):
 
         >>> self.pos = [2, 63, 3]
         """
-        if self.root_entity is not self:
+        if self.root is not self:
             return
         elif len(pos) != 3:
             raise IndexError('pos must have 3 entries; x, y, z')

@@ -9,7 +9,6 @@ import math
 from minecraft.level_dat import LevelDat
 from minecraft.region import Region
 from minecraft.player_dat_format.player import PlayerFile
-from minecraft.util.debug_util import NbtPathDebug
 
 class World():
     """A Minecraft world folder."""
@@ -20,7 +19,6 @@ class World():
         self.name = name
         if self.name is None:
             self.name = os.path.basename(os.path.realpath(self.path))
-        self.path_debug = NbtPathDebug(f'file://{os.path.realpath(self.path)}', self, self, f'"World {self.name}"')
         if os.path.exists(os.path.join(self.path, 'level.dat')):
             self.level_dat = LevelDat(os.path.join(self.path, 'level.dat'))
         else:

@@ -49,7 +49,6 @@ class RecursiveMinecraftIterator():
             min_x == -math.inf and max_x == math.inf and
             min_y == -math.inf and max_y == math.inf and
             min_z == -math.inf and max_z == math.inf)
-        root = self.root if hasattr(self, 'root') else None
 
         for superclass_, multipaths in self._multipaths.items():
             if issubclass(class_, superclass_):
@@ -57,8 +56,7 @@ class RecursiveMinecraftIterator():
                     for path, tag in self.nbt.iter_multipath_pair(multipath):
                         if not issubclass(class_, Item):
                             # Items never have a position, so position only needs to be checked for non-items.
-                            item_path_debug = self.path_debug.get_child_debug(path, tag, tag)
-                            obj = class_(tag, item_path_debug, root)
+                            obj = class_(tag, self, self.root)
                             x, y, z = obj.pos if obj.pos is not None else (None, None, None)
                             if not check_coords or (
                                 min_x <= x and x < max_x and
@@ -68,8 +66,7 @@ class RecursiveMinecraftIterator():
                                 yield obj
                         elif tag.has_path('id'):
                             # Items without an ID tag are just empty slots, and can be ignored.
-                            item_path_debug = self.path_debug.get_child_debug(path, tag, tag)
-                            yield class_(tag, item_path_debug, root)
+                            yield class_(tag, self, self.root)
 
     def iter_all_types(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
         """Iterates over all objects directly in this object."""
@@ -86,8 +83,7 @@ class RecursiveMinecraftIterator():
                 for path, tag in self.nbt.iter_multipath_pair(multipath):
                     if not issubclass(class_, Item):
                         # Items never have a position, so position only needs to be checked for non-items.
-                        item_path_debug = self.path_debug.get_child_debug(path, tag, tag)
-                        obj = class_(tag, item_path_debug, root)
+                        obj = class_(tag, self, self.root)
                         x, y, z = obj.pos if obj.pos is not None else (None, None, None)
                         if not check_coords or (
                             min_x <= x and x < max_x and
@@ -97,8 +93,7 @@ class RecursiveMinecraftIterator():
                             yield obj
                     elif tag.has_path('id'):
                         # Items without an ID tag are just empty slots, and can be ignored.
-                        item_path_debug = self.path_debug.get_child_debug(path, tag, tag)
-                        yield class_(tag, item_path_debug, root)
+                        yield class_(tag, self, self.root)
 
     def iter_block_entities(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
         """Iterates over block entities directly in this object."""

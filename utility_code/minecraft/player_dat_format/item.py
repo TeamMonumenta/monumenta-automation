@@ -3,6 +3,7 @@
 import os
 import sys
 
+from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
@@ -11,36 +12,28 @@ from quarry.types import nbt
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry/brigadier.py"))
 from brigadier.string_reader import StringReader
 
-class Item(RecursiveMinecraftIterator):
+class Item(RecursiveMinecraftIterator, NbtPathDebug):
     """An item slot with optional slot ID."""
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 
-    def __init__(self, nbt_=None, path_debug=None, root=None):
+    def __init__(self, nbt=None, parent=None, data_version=None):
         """Load an item from an NBT tag.
 
-        Must be saved from wherever the tag was loaded from to apply.
-        path_debug is the new NbtPathDebug object for this object, missing its references to this.
-        root is the base Entity, BlockEntity, or Item of this Entity, which may be itself.
+        Must be saved from wherever the tag was loaded from for changes to apply.
         """
         if type(self).__CLASS_UNINITIALIZED:
             self._init_multipaths(type(self).__MULTIPATHS)
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
-        if nbt_ is None:
-            nbt_ = nbt.TagCompound({})
-        self.nbt = nbt_
-        self.path_debug = path_debug
-        self.root = root if root is not None else self
-        self.root_entity = self
-        if self.path_debug is not None:
-            self.path_debug.obj = self
-            parent = self.path_debug.parent.obj
-            if isinstance(parent, (BlockEntity, Entity, Item)):
-                self.root_entity = parent.root_entity
-        else:
-            self.root_entity = self
+        ##############
+        # Required setup for NbtPathDebug
+        self.nbt = nbt if nbt is not None else nbt.TagCompound({})
+        self.parent = parent
+        self.root = parent.root if parent is not None and parent.root is not None else self
+        self.data_version = data_version
+        #############
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
@@ -54,13 +47,6 @@ class Item(RecursiveMinecraftIterator):
             # Crossbows
             'tag.ChargedProjectiles[]',
         })
-
-    def get_legacy_debug(self):
-        result = [self.nbt]
-        parent = self.path_debug.parent.obj
-        if isinstance(parent, (BlockEntity, Entity, Item)):
-            result = parent.get_legacy_debug() + result
-        return result
 
     @classmethod
     def from_command_format(cls, command, check_count=True):
@@ -217,6 +203,16 @@ class Item(RecursiveMinecraftIterator):
         if include_count:
             result["count"] = self.count
         return result
+
+    @property
+    def pos(self):
+        """Returns the items's coordinates as (x, y, z).
+
+        Always the coordinates of the parent or None, items don't have a position themselves
+        """
+        if self.parent is not None:
+            return self.parent.pos
+        return None
 
     @property
     def id(self):

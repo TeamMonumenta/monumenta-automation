@@ -5,37 +5,34 @@ import sys
 
 from lib_py3.common import eprint
 
+from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
 
-class Entity(RecursiveMinecraftIterator):
+class Entity(RecursiveMinecraftIterator, NbtPathDebug):
     """An object for editing an entity (1.13+)."""
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 
-    def __init__(self, nbt, path_debug=None, root=None):
+    def __init__(self, nbt, parent=None, data_version=None):
         """Load an entity from an NBT tag.
 
-        Must be saved from wherever the tag was loaded from to apply.
-        path_debug is the new NbtPathDebug object for this object, missing its references to this.
-        root is the base Entity, BlockEntity, or Item of this Entity, which may be itself.
+        Must be saved from wherever the tag was loaded from for changes to apply.
         """
         if type(self).__CLASS_UNINITIALIZED:
             self._init_multipaths(type(self).__MULTIPATHS)
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
+        ##############
+        # Required setup for NbtPathDebug
         self.nbt = nbt
-        self.path_debug = path_debug
-        if self.path_debug is not None:
-            self.path_debug.obj = self
-        self.root = root if root is not None else self
-        self.root_entity = self
-        parent = self.path_debug.parent.obj
-        if isinstance(parent, (BlockEntity, Entity, Item)):
-            self.root_entity = parent.root_entity
+        self.parent = parent
+        self.root = parent.root if parent is not None and parent.root is not None else self
+        self.data_version = data_version
+        #############
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
@@ -71,15 +68,6 @@ class Entity(RecursiveMinecraftIterator):
             'Trident',
             'FireworksItem',
         })
-
-    def get_legacy_debug(self):
-        result = [self.nbt]
-        if self.path_debug.parent is not None:
-            parent = self.path_debug.parent.obj
-            if isinstance(parent, (BlockEntity, Entity, Item)):
-                result = parent.get_legacy_debug() + result
-
-        return result
 
     @property
     def uuid(self):
@@ -135,8 +123,8 @@ class Entity(RecursiveMinecraftIterator):
         >>> print(self.pos)
         (2.71817181, 63.5, 3.1415)
         """
-        if self.root_entity is not self:
-            return self.root_entity.pos
+        if self.parent is not None and self.parent.pos is not None:
+            return self.parent.pos
 
         elif self.nbt.has_path('Pos'):
             x = self.nbt.at_path('Pos[0]').value
@@ -156,7 +144,7 @@ class Entity(RecursiveMinecraftIterator):
 
         >>> self.pos = [2.71817181, 63.5, 3.1415]
         """
-        if self.root_entity is not self:
+        if self.root is not self:
             return
         elif len(pos) != 3:
             raise IndexError('pos must have 3 entries; x, y, z')
