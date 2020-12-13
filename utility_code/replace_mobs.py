@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 
-# For interactive shell
-import readline
-import code
-import math
-
 import sys
 import os
 import getopt
+import yaml
 
 from lib_py3.mob_replacement_manager import MobReplacementManager, remove_unwanted_spawner_tags
 from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
 from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items, get_named_armor_items
-from lib_py3.world import World
 from lib_py3.library_of_souls import LibraryOfSouls
-from lib_py3.schematic import Schematic
+
+from minecraft.chunk_format.schematic import Schematic
+from minecraft.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types import nbt
@@ -198,12 +195,10 @@ elif logfile is not None:
 
 replacements_log = {}
 
-mobs_replaced = 0
+num_replacements = 0
 try:
     # This is handy here because it has direct access to previously defined globals
-    def process_entity(entity: nbt.TagCompound, source_pos, entity_path: [nbt.TagCompound], debug_path="") -> None:
-        global mobs_replaced
-
+    def process_entity(entity: nbt.TagCompound, source_pos, entity_path: [nbt.TagCompound], debug_path_prefix="") -> None:
         if entity.has_path("Delay"):
             entity.at_path("Delay").value = 0
 
@@ -225,47 +220,35 @@ try:
 
         if is_entity_in_spawner(entity_path):
             remove_unwanted_spawner_tags(entity)
-            if replace_mgr.replace_mob(entity, replacements_log, debug_path + get_debug_string_from_entity_path(entity_path)):
-                mobs_replaced += 1
+            return replace_mgr.replace_mob(entity, replacements_log, debug_path_prefix + get_debug_string_from_entity_path(entity_path))
+
 
     if world_path:
         world = World(world_path)
-        debug_path = os.path.basename(world_path) + " -> "
-        for entity, source_pos, entity_path in world.entity_iterator(readonly=dry_run, pos1=pos1, pos2=pos2):
-            process_entity(entity, source_pos, entity_path, debug_path=debug_path)
+        for chunk in world.iter_chunks(autosave=(not dry_run)):
+            for entity in chunk.recursive_iter_entities():
+                if process_entity(entity.nbt, entity.pos, entity.get_legacy_debug(), os.path.basename(world_path) + " -> "):
+                    num_replacements += 1
 
     if schematics_path:
         for root, subdirs, files in os.walk(schematics_path):
             for fname in files:
                 if fname.endswith(".schematic"):
-                    debug_path = fname + " -> "
                     schem = Schematic(os.path.join(root, fname))
-                    for obj in schem.recursive_iter_entities():
-                        entity = obj.nbt
-                        source_pos = obj.pos
-                        entity_path = obj.get_legacy_debug()
-                        process_entity(entity, source_pos, entity_path, debug_path=debug_path)
+                    num_replacements_this_schem = 0
+                    for entity in schem.recursive_iter_entities():
+                        if process_entity(entity.nbt, entity.pos, entity.get_legacy_debug(), fname + " -> "):
+                            num_replacements += 1
+                            num_replacements_this_schem += 1
 
-                    if not dry_run:
+                    if not dry_run and num_replacements_this_schem > 0:
                         schem.save()
 
-    print("{} mobs replaced".format(mobs_replaced))
+    print("{} mobs replaced".format(num_replacements))
 
 finally:
     if log_handle is not None:
-        for to_mob in replacements_log:
-            log_handle.write("{}\n".format(to_mob))
-            log_handle.write("    TO:\n")
-            log_handle.write("        {}\n".format(replacements_log[to_mob]["TO"]))
-            log_handle.write("    FROM:\n")
-
-            for from_mob in replacements_log[to_mob]["FROM"]:
-                log_handle.write("        {}\n".format(from_mob))
-
-                for from_location in sorted(replacements_log[to_mob]["FROM"][from_mob]):
-                    log_handle.write("            {}\n".format(from_location))
-
-            log_handle.write("\n")
+        yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
 
     if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
         log_handle.close()

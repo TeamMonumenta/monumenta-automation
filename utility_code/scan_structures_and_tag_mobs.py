@@ -4,7 +4,7 @@ import sys
 import os
 from pprint import pprint
 from lib_py3.common import parse_name_possibly_json
-from lib_py3.schematic import Schematic
+from minecraft.chunk_format.schematic import Schematic
 from lib_py3.library_of_souls import LibraryOfSouls
 from lib_py3.world import World
 

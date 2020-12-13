@@ -67,12 +67,13 @@ def get_debug_string_from_entity_path(entity_path, ansii_colors=False):
                 name = get_name(location.at_path("CustomName").value, ansii_colors)
 
                 # Don't print names of things that are just "@" (commands do this a lot apparently)
-                if name != "@":
+                if name != "@" and name:
                     debug_string += "  " + name
 
             if location.has_path("tag.display.Name"):
                 name = get_name(location.at_path("tag.display.Name").value, ansii_colors)
-                debug_string += "  " + name
+                if name:
+                    debug_string += "  " + name
 
 
     return debug_string

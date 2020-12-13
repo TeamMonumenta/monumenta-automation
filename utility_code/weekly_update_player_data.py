@@ -3,6 +3,7 @@
 import os
 import sys
 import getopt
+import yaml
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
@@ -77,19 +78,7 @@ for item, _, entity_path in world.items(readonly=dry_run):
         num_replacements += 1
 
 if log_handle is not None:
-    for to_item in replacements_log:
-        log_handle.write("{}\n".format(to_item))
-        log_handle.write("    TO:\n")
-        log_handle.write("        {}\n".format(replacements_log[to_item]["TO"]))
-        log_handle.write("    FROM:\n")
-
-        for from_item in replacements_log[to_item]["FROM"]:
-            log_handle.write("        {}\n".format(from_item))
-
-            for from_location in replacements_log[to_item]["FROM"][from_item]:
-                log_handle.write("            {}\n".format(from_location))
-
-        log_handle.write("\n")
+    yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
 
 if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
     log_handle.close()

@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from quarry.types import nbt
 
 class Schematic(RecursiveMinecraftIterator):
-    """A chunk, loaded from a tag."""
+    """A schematic, loaded from an nbt file."""
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 

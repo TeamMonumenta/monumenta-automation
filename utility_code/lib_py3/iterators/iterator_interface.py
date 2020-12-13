@@ -6,30 +6,6 @@ from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.chunk_format.entity import Entity
 from minecraft.world import World
 
-def _new_chunk_iterator(world, min_x, min_y, min_z, max_x, max_y, max_z, autosave=False):
-    for region in world.iter_regions():
-        if (
-            512*region.rx + 512 <= min_x or
-            512*region.rx       >  max_x or
-            512*region.rz + 512 <= min_z or
-            512*region.rz       >  max_z
-        ):
-            continue
-
-        for chunk in region.iter_chunks():
-            if (
-                16*chunk.cx + 16 <= min_x or
-                16*chunk.cx      >  max_x or
-                16*chunk.cz + 16 <= min_z or
-                16*chunk.cz      >  max_z
-            ):
-                continue
-
-            yield chunk
-
-            if autosave:
-                region.save_chunk(chunk)
-
 def base_chunk_entity_iterator(world, pos1=None, pos2=None, readonly=True):
     if pos1 is not None and pos2 is not None:
         min_x = min(pos1[0],pos2[0])
@@ -53,7 +29,7 @@ def base_chunk_entity_iterator(world, pos1=None, pos2=None, readonly=True):
     elif not isinstance(world, World):
         world = World(world.path)
 
-    for chunk in _new_chunk_iterator(world, min_x, min_y, min_z, max_x, max_y, max_z, autosave=(not readonly)):
+    for chunk in world.iter_chunks(min_x, min_y, min_z, max_x, max_y, max_z, autosave=(not readonly)):
         for block_entity in chunk.iter_block_entities(min_x, min_y, min_z, max_x, max_y, max_z):
             yield block_entity.nbt
         for entity in chunk.iter_entities(min_x, min_y, min_z, max_x, max_y, max_z):
@@ -88,7 +64,7 @@ def item_iterator(world, pos1=None, pos2=None, readonly=True, no_players=False, 
                 yield item.nbt, item.root_entity.pos, item.get_legacy_debug()
 
     if not players_only:
-        for chunk in _new_chunk_iterator(world, min_x, min_y, min_z, max_x, max_y, max_z, autosave=(not readonly)):
+        for chunk in world.iter_chunks(min_x, min_y, min_z, max_x, max_y, max_z, autosave=(not readonly)):
             for item in chunk.recursive_iter_items(min_x, min_y, min_z, max_x, max_y, max_z):
                 yield item.nbt, item.root_entity.pos, item.get_legacy_debug()
 
@@ -122,7 +98,7 @@ def recursive_entity_iterator(world, pos1=None, pos2=None, readonly=True, no_pla
                     yield obj.nbt, obj.pos, obj.get_legacy_debug()
 
     if not players_only:
-        for chunk in _new_chunk_iterator(world, min_x, min_y, min_z, max_x, max_y, max_z, autosave=(not readonly)):
+        for chunk in world.iter_chunks(min_x, min_y, min_z, max_x, max_y, max_z, autosave=(not readonly)):
             for obj in chunk.recursive_iter_all_types():
                 if isinstance(obj, (BlockEntity, Entity)):
                     yield obj.nbt, obj.pos, obj.get_legacy_debug()

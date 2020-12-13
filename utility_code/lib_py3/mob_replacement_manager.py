@@ -175,9 +175,9 @@ class MobReplacementManager(object):
                 orig_mojangson = mob.to_mojangson()
 
                 if orig_mojangson not in log_dict[log_key]["FROM"]:
-                    log_dict[log_key]["FROM"][orig_mojangson] = set()
+                    log_dict[log_key]["FROM"][orig_mojangson] = []
 
-                log_dict[log_key]["FROM"][orig_mojangson].add(debug_path)
+                log_dict[log_key]["FROM"][orig_mojangson].append(debug_path)
 
             mob.value = new_nbt.deep_copy().value
 

@@ -639,7 +639,7 @@ Must be run before starting terrain reset on the play server'''
 
                 await self.display("Running replacements on copied version of {shard}...".format(shard=shard))
                 args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard}".format(shard=shard)
-                await self.run(os.path.join(_top_level, "utility_code/replace_items_in_world.py") + args, displayOutput=True)
+                await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
                 # TODO: Update LoS path from mobs dir
                 args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard} --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json".format(shard=shard)
                 await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
@@ -658,7 +658,7 @@ Must be run before starting terrain reset on the play server'''
 
             await self.display("Running replacements on copied dungeon masters...")
             args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon"
-            await self.run(os.path.join(_top_level, "utility_code/replace_items_in_world.py") + args, displayOutput=True)
+            await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
             # TODO: Update LoS path from mobs dir
             args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json"
             await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
@@ -992,7 +992,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 13:
             await self.display("Running item replacements for players...")
-            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --redisworld /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.log")
+            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --redisworld /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.yml")
 
         if min_phase <= 14:
             await self.display("Loading player data back into redis...")
@@ -1200,9 +1200,10 @@ Syntax:
                 await self.display("Running replacements on structures")
                 await self.cd("/home/epic/project_epic/server_config/data")
                 await self.run("tar czf {}.tgz structures".format(base_backup_name))
-                await self.display("WARNING: Item replacements does not currently run on structures!")
                 await self.cd("/home/epic/project_epic/server_config/data")
-                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py --schematics structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {}_mobs.txt".format(base_backup_name)), displayOutput=True)
+                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py --schematics structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {}_mobs.yml".format(base_backup_name)), displayOutput=True)
+                await self.cd("/home/epic/project_epic/server_config/data")
+                await self.run(os.path.join(_top_level, "utility_code/replace_items.py --schematics structures --logfile {}_items.yml".format(base_backup_name)), displayOutput=True)
 
             else:
                 base_backup_name = "/home/epic/0_OLD_BACKUPS/Project_Epic-{}_pre_entity_loot_updates_{}".format(shard, datestr())
@@ -1212,9 +1213,9 @@ Syntax:
                 await self.cd(self._shards[shard])
                 await self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard))
                 await self.cd(self._shards[shard])
-                await self.run(os.path.join(_top_level, "utility_code/replace_items_in_world.py --world Project_Epic-{} --logfile {}_items.txt".format(shard, base_backup_name)), displayOutput=True)
+                await self.run(os.path.join(_top_level, "utility_code/replace_items.py --world Project_Epic-{} --logfile {}_items.yml".format(shard, base_backup_name)), displayOutput=True)
                 await self.cd(self._shards[shard])
-                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py --world Project_Epic-{} --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {}_mobs.txt".format(shard, base_backup_name)), displayOutput=True)
+                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py --world Project_Epic-{} --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {}_mobs.yml".format(shard, base_backup_name)), displayOutput=True)
                 await self.start(shard)
 
         await self.display(message.author.mention)

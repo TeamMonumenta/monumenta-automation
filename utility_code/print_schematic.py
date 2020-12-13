@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
-from lib_py3.schematic import Schematic
+from minecraft.chunk_format.schematic import Schematic
 
 args = sys.argv
 

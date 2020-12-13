@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import zlib
+import math
 
 from minecraft.level_dat import LevelDat
 from minecraft.region import Region
@@ -44,6 +45,30 @@ class World():
 
             full_path = os.path.join(region_folder, filename)
             yield Region(full_path, rx, rz)
+
+    def iter_chunks(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, autosave: bool=False):
+        for region in self.iter_regions():
+            if (
+                512*region.rx + 512 <= min_x or
+                512*region.rx       >  max_x or
+                512*region.rz + 512 <= min_z or
+                512*region.rz       >  max_z
+            ):
+                continue
+
+            for chunk in region.iter_chunks():
+                if (
+                    16*chunk.cx + 16 <= min_x or
+                    16*chunk.cx      >  max_x or
+                    16*chunk.cz + 16 <= min_z or
+                    16*chunk.cz      >  max_z
+                ):
+                    continue
+
+                yield chunk
+
+                if autosave:
+                    region.save_chunk(chunk)
 
     def get_region(self, rx, rz):
         rx = int(rx)
