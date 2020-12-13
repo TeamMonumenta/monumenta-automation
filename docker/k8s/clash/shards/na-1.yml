@@ -3,16 +3,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: rivals2
-  namespace: external
+  name: na-1
+  namespace: clash
   labels:
-    app: rivals2
+    app: na-1
     k8s-app: monumenta-metrics-fast
 
 spec:
   type: ClusterIP
   selector:
-    app: rivals2
+    app: na-1
   ports:
   - name: metrics
     port: 9225
@@ -25,19 +25,19 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rivals2-nodeport
-  namespace: external
+  name: na-1-nodeport
+  namespace: clash
   labels:
-    app: rivals2
+    app: na-1
 spec:
   type: NodePort
   externalTrafficPolicy: Local
   selector:
-    app: rivals2
+    app: na-1
   ports:
   - name: minecraft
-    port: 7002
-    nodePort: 7002
+    port: 7001
+    nodePort: 7001
     targetPort: 25566
 
 ---
@@ -47,20 +47,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rivals2
-  namespace: external
+  name: na-1
+  namespace: clash
   labels:
-    app: rivals2
+    app: na-1
 spec:
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: rivals2
+      app: na-1
   template:
     metadata:
       labels:
-        app: rivals2
+        app: na-1
     spec:
       affinity:
         nodeAffinity:
@@ -70,14 +70,14 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-10
+                - monumenta-9
       volumes:
-        - name: nfs-external
+        - name: nfs-clash
           hostPath:
             type: Directory
-            path: /nfs/external
+            path: /nfs/clash
       containers:
-      - name: rivals2
+      - name: na-1
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
         tty: true
         stdin: true
@@ -95,7 +95,7 @@ spec:
         - name: "JAVA_JAR"
           value: "server.jar"
         - name: "SERVER_DIR"
-          value: "/external/rivals/rivals2"
+          value: "/clash/na/na-1"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -113,8 +113,8 @@ spec:
           timeoutSeconds: 5
           periodSeconds: 10
         volumeMounts:
-        - name: nfs-external
-          mountPath: /external
+        - name: nfs-clash
+          mountPath: /clash
         resources:
           limits:
             # Set this to 1Gi

@@ -3,16 +3,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: rivals1
-  namespace: external
+  name: na-2
+  namespace: clash
   labels:
-    app: rivals1
+    app: na-2
     k8s-app: monumenta-metrics-fast
 
 spec:
   type: ClusterIP
   selector:
-    app: rivals1
+    app: na-2
   ports:
   - name: metrics
     port: 9225
@@ -25,19 +25,19 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rivals1-nodeport
-  namespace: external
+  name: na-2-nodeport
+  namespace: clash
   labels:
-    app: rivals1
+    app: na-2
 spec:
   type: NodePort
   externalTrafficPolicy: Local
   selector:
-    app: rivals1
+    app: na-2
   ports:
   - name: minecraft
-    port: 7001
-    nodePort: 7001
+    port: 7002
+    nodePort: 7002
     targetPort: 25566
 
 ---
@@ -47,20 +47,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rivals1
-  namespace: external
+  name: na-2
+  namespace: clash
   labels:
-    app: rivals1
+    app: na-2
 spec:
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: rivals1
+      app: na-2
   template:
     metadata:
       labels:
-        app: rivals1
+        app: na-2
     spec:
       affinity:
         nodeAffinity:
@@ -72,12 +72,12 @@ spec:
                 values:
                 - monumenta-9
       volumes:
-        - name: nfs-external
+        - name: nfs-clash
           hostPath:
             type: Directory
-            path: /nfs/external
+            path: /nfs/clash
       containers:
-      - name: rivals1
+      - name: na-2
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
         tty: true
         stdin: true
@@ -95,7 +95,7 @@ spec:
         - name: "JAVA_JAR"
           value: "server.jar"
         - name: "SERVER_DIR"
-          value: "/external/rivals/rivals1"
+          value: "/clash/na/na-2"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -113,8 +113,8 @@ spec:
           timeoutSeconds: 5
           periodSeconds: 10
         volumeMounts:
-        - name: nfs-external
-          mountPath: /external
+        - name: nfs-clash
+          mountPath: /clash
         resources:
           limits:
             # Set this to 1Gi
