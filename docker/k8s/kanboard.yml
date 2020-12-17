@@ -38,6 +38,18 @@ spec:
 
 ---
 
+# PHP increase memory
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kanboard-php-config
+data:
+  kanboard-memory.ini: |
+    memory_limit = 256M
+
+---
+
 # Main config file
 
 apiVersion: v1
@@ -102,6 +114,9 @@ spec:
                 values:
                 - monumenta-8
       volumes:
+        - name: kanboard-php-config
+          configMap:
+            name: kanboard-php-config
         - name: kanboard-config
           configMap:
             name: kanboard-config
@@ -126,6 +141,9 @@ spec:
         - name: kanboard-config
           mountPath: /var/www/app/config.php
           subPath: config.php
+        - name: kanboard-php-config
+          mountPath: /etc/php7/conf.d/kanboard-memory.ini
+          subPath: kanboard-memory.ini
         - name: kanboard-data
           mountPath: /var/www/app/data
         - name: kanboard-plugins
