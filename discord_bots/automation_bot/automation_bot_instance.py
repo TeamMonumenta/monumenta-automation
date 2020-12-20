@@ -142,13 +142,13 @@ class AutomationBotInstance(object):
                     loop = asyncio.get_event_loop()
 
                     def socket_callback(message):
-                        if "op" in message:
-                            if "Heartbeat" in message["op"]:
+                        if "channel" in message:
+                            if "Heartbeat" in message["channel"]:
                                 return;
 
                             logger.info("Got socket message: {}".format(pformat(message)))
                             if self._audit_channel:
-                                if (message["op"] == "Monumenta.Automation.AuditLog"):
+                                if (message["channel"] == "Monumenta.Automation.AuditLog"):
                                     # Schedule the display coroutine back on the main event loop
                                     asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                            channel=self._audit_channel),

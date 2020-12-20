@@ -76,7 +76,7 @@ class SocketManager(object):
         packet = {}
         packet["source"] = self._queue_name
         packet["dest"] = destination
-        packet["op"] = operation
+        packet["channel"] = operation
         packet["data"] = data
 
         encoded = json.dumps(packet, ensure_ascii=False).encode("utf-8")
