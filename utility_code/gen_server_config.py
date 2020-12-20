@@ -52,6 +52,7 @@ server_config_to_copy = [
         ('plugins/ChestSort/config.yml',),
         ('plugins/dynmap/custom-lightings.txt',),
         ('plugins/MonumentaRedisSync/config.yml',),
+        ('plugins/MonumentaNetworkRelay/config.yml',),
     ]
 
 purgatory_min = [
@@ -78,6 +79,7 @@ server_config = server_config_min + [
     ]
 
 monumenta = [
+        ('plugins/NetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
         ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
         ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
@@ -268,6 +270,7 @@ config = {
             ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
             ('server.properties', 'difficulty', 'difficulty=peaceful'),
             ('server.properties', 'gamemode', 'gamemode=creative'),
+            ('plugins/MonumentaNetworkRelay/config.yml', 'broadcast-command-sending-enabled', 'broadcast-command-sending-enabled: true'),
             ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
         ],
         'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect + gobrush,
