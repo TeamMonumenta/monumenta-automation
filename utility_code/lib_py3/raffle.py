@@ -21,6 +21,7 @@ def normalized( a_list ):
 
 def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, num_winners, dry_run=False):
     logfp = open( log_path, "w" )
+    no_vote_penalty = 1
 
     # All the raw JSON data gets dumped here. key = 'uuid' val = { vote data }
     raw_data = {}
@@ -70,12 +71,23 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, num_winners, dry
     # Sort this week's votes
     votes = OrderedDict(sorted(votes.items(), key=lambda kv: kv[1], reverse=True))
 
-    logfp.write( " Votes Since Win | Votes This Week | Name\n" )
+    logfp.write( " Raffle Entries | Votes This Week | Name\n" )
     logfp.write( "-----------------------------------------------------\n" )
     for voter in votes:
         logfp.write( " {} | {} | {}\n".format( str( votes[voter][0] ).rjust( 15 ), str( votes[voter][1] ).rjust( 15 ), get_name(voter) ) )
     logfp.write( "-----------------------------------------------------\n" )
     logfp.write( " {} | {} | Total\n\n".format( str( total_raffle_entries ).rjust( 15 ), str( total_votes_this_week ).rjust( 15 )) )
+
+    # Decrement votes for anyone who hasn't voted this week, minimum of 0.
+    someone_lost_raffle_entries = False
+    for uuid, voter_data in raw_data.items():
+        if voter_data["votesThisWeek"] != 0:
+            continue
+        if voter_data["raffleEntries"] > 0:
+            someone_lost_raffle_entries = True
+            voter_data["raffleEntries"] = max(0, ["raffleEntries"] - no_vote_penalty)
+    if someone_lost_raffle_entries:
+        logfp.write(f"Players who did not vote this week lost {no_vote_penalty} raffle entries. Vote every week to keep all your raffle entries!\n\n")
 
     if total_raffle_entries == 0:
         logfp.close()
@@ -86,6 +98,7 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, num_winners, dry
     for voter in votes:
         if voter in uuids_that_voted_this_week:
             simple_votes[get_name(voter)] = votes[voter][0]
+
     votes = simple_votes
     logfp.write('''
 Run this code with python 3 (requires python3-numpy) to verify the results of the raffle:
@@ -148,9 +161,10 @@ print("This week's winners: " + ", ".join(sorted(winners)))
 
     # Set the winner's raffle scores, set their votes since win to 0
     for winner in winners:
-        raw_data[get_uuid(winner)]["raffleWinsTotal"] += 1
-        raw_data[get_uuid(winner)]["raffleWinsUnclaimed"] += 1
-        raw_data[get_uuid(winner)]["raffleEntries"] = 0
+        winner_uuid = get_uuid(winner)
+        raw_data[winner_uuid]["raffleWinsTotal"] += 1
+        raw_data[winner_uuid]["raffleWinsUnclaimed"] += 1
+        raw_data[winner_uuid]["raffleEntries"] = 0
 
     for uuid in raw_data:
         raw_data[uuid]["votesThisWeek"] = 0
