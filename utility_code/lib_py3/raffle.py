@@ -21,7 +21,7 @@ def normalized( a_list ):
 
 def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, num_winners, dry_run=False):
     logfp = open( log_path, "w" )
-    no_vote_penalty = 1
+    no_vote_penalty = 3
 
     # All the raw JSON data gets dumped here. key = 'uuid' val = { vote data }
     raw_data = {}
