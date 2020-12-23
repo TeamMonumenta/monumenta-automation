@@ -95,10 +95,10 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
         return
 
     # Reduce votes down to just the current list of votes
-    simple_votes = OrderedDict()
+    simple_votes = []
     for voter in votes:
         if voter in uuids_that_voted_this_week:
-            simple_votes[get_name(voter)] = votes[voter][0]
+            simple_votes.append((get_name(voter), votes[voter][0], votes[voter][1]))
 
     votes = simple_votes
     logfp.write(f'''
@@ -107,7 +107,6 @@ Run this code with python 3 (requires python3-numpy) to verify the results of th
 
 from numpy import random
 import hashlib
-from collections import OrderedDict
 
 seed = {seed!r}
 winner_every_n_points = {winner_every_n_points}
@@ -117,14 +116,16 @@ votes = {pformat(votes)}
 vote_names = []
 vote_scores = []
 total_votes = 0
-for voter in votes:
+total_weekly_votes = 0
+for voter, raffle_entries, weekly_votes in votes:
     vote_names.append(voter)
-    vote_scores.append(votes[voter])
-    total_votes += votes[voter]
+    vote_scores.append(raffle_entries)
+    total_votes += raffle_entries
+    total_weekly_votes += weekly_votes
 
 # Require at least one vote to proceed
-if total_votes >= 1:
-    num_winners = total_votes // winner_every_n_points + 1
+if total_weekly_votes >= 1:
+    num_winners = total_weekly_votes // winner_every_n_points + 1
 
     # Convert string seed into a number, set the random number generator to start with that
     random.seed(int(hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8], 16))
@@ -155,14 +156,16 @@ else:
     vote_names = []
     vote_scores = []
     total_votes = 0
-    for voter in votes:
-        vote_names.append(get_name(voter))
-        vote_scores.append(votes[voter])
-        total_votes += votes[voter]
+    total_weekly_votes = 0
+    for voter, raffle_entries, weekly_votes in votes:
+        vote_names.append(voter)
+        vote_scores.append(raffle_entries)
+        total_votes += raffle_entries
+        total_weekly_votes += weekly_votes
 
     # Require at least one vote to proceed
-    if total_votes >= 1:
-        num_winners = total_votes // winner_every_n_points + 1
+    if total_weekly_votes >= 1:
+        num_winners = total_weekly_votes // winner_every_n_points + 1
 
         # Convert string seed into a number, set the random number generator to start with that
         random.seed(int(hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8], 16))
