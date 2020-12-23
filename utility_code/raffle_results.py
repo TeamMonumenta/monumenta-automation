@@ -11,7 +11,7 @@ from lib_py3.raffle import vote_raffle
 
 raffle_results = tempfile.mktemp()
 meme_seed = '''Cursed Raffle Seed:TM:'''
-vote_raffle(meme_seed, '/home/epic/play/project_epic/bungee/uuid2name.yml', '/home/epic/play/project_epic/bungee/plugins/Monumenta-Bungee/votes', raffle_results, 2, dry_run=True)
+vote_raffle(meme_seed, '/home/epic/play/project_epic/bungee/uuid2name.yml', '/home/epic/play/project_epic/bungee/plugins/Monumenta-Bungee/votes', raffle_results, dry_run=True)
 
 rafflefp = open( raffle_results, "r" )
 print( rafflefp.read() )

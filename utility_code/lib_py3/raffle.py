@@ -19,8 +19,9 @@ def normalized( a_list ):
         new_list.append( a_val / total )
     return new_list
 
-def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, num_winners, dry_run=False):
+def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
     logfp = open( log_path, "w" )
+    winner_every_n_points = 300
     no_vote_penalty = 3
 
     # All the raw JSON data gets dumped here. key = 'uuid' val = { vote data }
@@ -100,7 +101,7 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, num_winners, dry
             simple_votes[get_name(voter)] = votes[voter][0]
 
     votes = simple_votes
-    logfp.write('''
+    logfp.write(f'''
 Run this code with python 3 (requires python3-numpy) to verify the results of the raffle:
 ################################################################################
 
@@ -108,9 +109,9 @@ from numpy import random
 import hashlib
 from collections import OrderedDict
 
-seed = {!r}
-num_winners = {}
-votes = {}
+seed = {seed!r}
+winner_every_n_points = {winner_every_n_points}
+votes = {pformat(votes)}
 
 # Split up into lists, count number of votes
 vote_names = []
@@ -121,16 +122,26 @@ for voter in votes:
     vote_scores.append(votes[voter])
     total_votes += votes[voter]
 
-# Convert string seed into a number, set the random number generator to start with that
-random.seed(int(hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8], 16))
+# Require at least one vote to proceed
+if total_votes >= 1:
+    num_winners = total_votes // winner_every_n_points + 1
 
-# Pick winners
-winners = list(random.choice(vote_names, replace=False, size=num_winners, p=[vote/total_votes for vote in vote_scores]))
-print("This week's winners: " + ", ".join(sorted(winners)))
+    # Convert string seed into a number, set the random number generator to start with that
+    random.seed(int(hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8], 16))
+
+    # Pick winners
+    winners = list(random.choice(vote_names, replace=False, size=num_winners, p=[vote/total_votes for vote in vote_scores]))
+    if num_winners == 1:
+        print("This week's winner: " + winners[0])
+    else:
+        print("This week's winners: " + ", ".join(sorted(winners)))
+
+else:
+    print("No winners this week")
 
 ################################################################################
 
-'''.format(seed, num_winners, pformat(votes)))
+''')
 
     # Run exactly the same code in the printed snippet (print -> logfp.write)
     #####################################################################################################
@@ -149,12 +160,22 @@ print("This week's winners: " + ", ".join(sorted(winners)))
         vote_scores.append(votes[voter])
         total_votes += votes[voter]
 
-    # Convert string seed into a number, set the random number generator to start with that
-    random.seed(int(hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8], 16))
+    # Require at least one vote to proceed
+    if total_votes >= 1:
+        num_winners = total_votes // winner_every_n_points + 1
 
-    # Pick winners
-    winners = list(random.choice(vote_names, replace=False, size=num_winners, p=[vote/total_votes for vote in vote_scores]))
-    logfp.write("This week's winners: " + ", ".join(sorted(winners)))
+        # Convert string seed into a number, set the random number generator to start with that
+        random.seed(int(hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8], 16))
+
+        # Pick winners
+        winners = list(random.choice(vote_names, replace=False, size=num_winners, p=[vote/total_votes for vote in vote_scores]))
+        if num_winners == 1:
+            print("This week's winner: " + winners[0])
+        else:
+            print("This week's winners: " + ", ".join(sorted(winners)))
+
+    else:
+        print("No winners this week")
 
     #
     #####################################################################################################
