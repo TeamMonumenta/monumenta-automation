@@ -4,7 +4,7 @@ type BoxResult<T> = Result<T,Box<dyn Error>>;
 use std::fs;
 use std::fmt;
 use std::path::Path;
-use std::io::{Read};
+use std::io::Read;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -19,18 +19,20 @@ pub struct Player {
     pub playerdata: Option<nbt::Blob>,
     pub advancements: Option<Advancements>,
     pub scores: Option<HashMap<String, i32>>,
+    pub plugindata: Option<HashMap<String, serde_json::Value>>,
     pub sharddata: Option<HashMap<String, String>>,
     pub history: Option<String>,
 }
 
 impl fmt::Display for Player {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}: name={}, data={}, advancements={}, scores={}, sharddata={}, history={}",
+        write!(f, "{}: name={}, data={}, advancements={}, scores={}, plugindata={}, sharddata={}, history={}",
                self.uuid,
                if let Some(name) = &self.name { name } else { "?" },
                if let Some(_) = self.playerdata { "Some" } else { "None" },
                if let Some(_) = self.advancements { "Some" } else { "None" },
                if let Some(_) = self.scores { "Some" } else { "None" },
+               if let Some(_) = self.plugindata { "Some" } else { "None" },
                if let Some(_) = self.sharddata { "Some" } else { "None" },
                if let Some(history) = &self.history { history } else { "None" })
     }
@@ -38,20 +40,21 @@ impl fmt::Display for Player {
 
 impl fmt::Debug for Player {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}: history={}\n  name={},\n  data={},\n  advancements={},\n  scores={},\n  sharddata={}",
+        write!(f, "{}: history={}\n  name={},\n  data={},\n  advancements={},\n  scores={},\n  plugindata={},\n  sharddata={}",
                self.uuid,
                if let Some(history) = &self.history { history } else { "None" },
                if let Some(name) = &self.name { name } else { "?" },
                if let Some(data) = &self.playerdata { format!("{:?}", data) } else { "None".to_string() },
                if let Some(advancements) = &self.advancements { advancements.to_string_pretty() } else { "None".to_string() },
                if let Some(scores) = &self.scores { format!("{:?}", scores) } else { "None".to_string() },
+               if let Some(plugindata) = &self.plugindata { format!("{:?}", plugindata) } else { "None".to_string() },
                if let Some(sharddata) = &self.sharddata { format!("{:?}", sharddata) } else { "None".to_string() })
     }
 }
 
 impl Player {
     pub fn new(uuid: Uuid) -> Player {
-        Player{uuid: uuid, name: None, playerdata: None, advancements: None, scores: None, sharddata: None, history: None}
+        Player{uuid: uuid, name: None, playerdata: None, advancements: None, scores: None, plugindata: None, sharddata: None, history: None}
     }
 
     pub fn get_redis_players(domain: &str, con: &mut redis::Connection) -> BoxResult<HashMap<Uuid, Player>> {
@@ -74,6 +77,7 @@ impl Player {
         self.load_world_player_data(world)?;
         self.load_world_advancements(world)?;
         self.load_world_scores(world)?;
+        self.plugindata = Some(HashMap::new());
         self.update_history(&world.get_name());
         Ok(())
     }
@@ -99,11 +103,24 @@ impl Player {
     }
 
     pub fn load_redis(&mut self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
-        self.load_redis_player_data(domain, con)?;
-        self.load_redis_advancements(domain, con)?;
-        self.load_redis_scores(domain, con)?;
-        self.load_redis_history(domain, con)?;
-        self.load_redis_sharddata(domain, con)?;
+        if let Err(err) = self.load_redis_player_data(domain, con) {
+            bail!("Failed to load player data: {}", err);
+        }
+        if let Err(err) = self.load_redis_advancements(domain, con) {
+            bail!("Failed to load advancements: {}", err);
+        }
+        if let Err(err) = self.load_redis_scores(domain, con) {
+            bail!("Failed to load scores: {}", err);
+        }
+        if let Err(err) = self.load_redis_plugindata(domain, con) {
+            bail!("Failed to load plugindata: {}", err);
+        }
+        if let Err(err) = self.load_redis_history(domain, con) {
+            bail!("Failed to load history: {}", err);
+        }
+        if let Err(err) = self.load_redis_sharddata(domain, con) {
+            bail!("Failed to load sharddata: {}", err);
+        }
         Ok(())
     }
 
@@ -122,6 +139,18 @@ impl Player {
         let scores: String = con.lindex(format!("{}:playerdata:{}:scores", domain, self.uuid.to_hyphenated().to_string()), 0)?;
         let scores: HashMap<String, i32> = serde_json::from_str(&scores)?;
         self.scores = Some(scores);
+        Ok(())
+    }
+
+    pub fn load_redis_plugindata(&mut self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
+        let plugindata: String = con.lindex(format!("{}:playerdata:{}:plugins", domain, self.uuid.to_hyphenated().to_string()), 0)?;
+        let result = serde_json::from_str(&plugindata);
+        if let Err(err) = result {
+            bail!("Failed to parse json data: {}\nData: {}", err, plugindata);
+        } else if let Ok(result) = result {
+            let plugindata: HashMap<String, serde_json::Value> = result;
+            self.plugindata = Some(plugindata);
+        }
         Ok(())
     }
 
@@ -149,6 +178,7 @@ impl Player {
         self.save_redis_player_data(domain, con)?;
         self.save_redis_advancements(domain, con)?;
         self.save_redis_scores(domain, con)?;
+        self.save_redis_plugindata(domain, con)?;
         self.save_redis_sharddata(domain, con)?;
         self.save_redis_history(domain, con)?;
         Ok(())
@@ -157,6 +187,7 @@ impl Player {
     pub fn trim_redis_history(&mut self, domain: &str, con: &mut redis::Connection, count: isize) -> BoxResult<()> {
         con.ltrim(format!("{}:playerdata:{}:history", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
         con.ltrim(format!("{}:playerdata:{}:scores", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
+        con.ltrim(format!("{}:playerdata:{}:plugins", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
         con.ltrim(format!("{}:playerdata:{}:advancements", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
         con.ltrim(format!("{}:playerdata:{}:data", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
         Ok(())
@@ -169,6 +200,7 @@ impl Player {
         self.save_file_player_data(basepath.join(format!("playerdata/{}.dat", uuidstr)).to_str().unwrap())?;
         self.save_file_advancements(basepath.join(format!("advancements/{}.json", uuidstr)).to_str().unwrap())?;
         self.save_file_scores(basepath.join(format!("scores/{}.json", uuidstr)).to_str().unwrap())?;
+        self.save_file_plugindata(basepath.join(format!("plugindata/{}.json", uuidstr)).to_str().unwrap())?;
         self.save_file_sharddata(basepath.join(format!("sharddata/{}.json", uuidstr)).to_str().unwrap())?;
         self.save_file_history(basepath.join(format!("history/{}.txt", uuidstr)).to_str().unwrap())?;
         Ok(())
@@ -207,6 +239,17 @@ impl Player {
         Ok(())
     }
 
+    pub fn save_file_plugindata(&self, filepath: &str) -> BoxResult<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(plugindata) = &self.plugindata {
+            let plugindata: String = serde_json::to_string_pretty(plugindata)?;
+            fs::write(filepath, plugindata)?;
+        }
+        Ok(())
+    }
+
     pub fn save_file_sharddata(&self, filepath: &str) -> BoxResult<()> {
         let path = Path::new(filepath);
         fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
@@ -236,6 +279,7 @@ impl Player {
         self.load_file_player_data(&basepath.join(format!("playerdata/{}.dat", uuidstr)))?;
         self.load_file_advancements(&basepath.join(format!("advancements/{}.json", uuidstr)))?;
         self.load_file_scores(&basepath.join(format!("scores/{}.json", uuidstr)))?;
+        self.load_file_plugindata(&basepath.join(format!("plugindata/{}.json", uuidstr)))?;
         self.load_file_sharddata(&basepath.join(format!("sharddata/{}.json", uuidstr)))?;
         self.load_file_history(&basepath.join(format!("history/{}.txt", uuidstr)))?;
         Ok(())
@@ -267,6 +311,15 @@ impl Player {
         if let Some(scores) = &self.scores {
             let scores: String = serde_json::to_string(scores)?;
             con.lpush(format!("{}:playerdata:{}:scores", domain, self.uuid.to_hyphenated().to_string()), scores)?;
+        }
+        Ok(())
+    }
+
+    /* This one needs to be public at least for now to migrate data */
+    pub fn save_redis_plugindata(&self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
+        if let Some(plugindata) = &self.plugindata {
+            let plugindata: String = serde_json::to_string(plugindata)?;
+            con.lpush(format!("{}:playerdata:{}:plugins", domain, self.uuid.to_hyphenated().to_string()), plugindata)?;
         }
         Ok(())
     }
@@ -304,6 +357,13 @@ impl Player {
         let contents = fs::read_to_string(path)?;
         let scores: HashMap<String, i32> = serde_json::from_str(&contents)?;
         self.scores = Some(scores);
+        Ok(())
+    }
+
+    fn load_file_plugindata(&mut self, path: &Path) -> BoxResult<()> {
+        let contents = fs::read_to_string(path)?;
+        let plugindata: HashMap<String, serde_json::Value> = serde_json::from_str(&contents)?;
+        self.plugindata = Some(plugindata);
         Ok(())
     }
 
