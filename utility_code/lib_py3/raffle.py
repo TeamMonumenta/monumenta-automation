@@ -19,8 +19,10 @@ def normalized( a_list ):
         new_list.append( a_val / total )
     return new_list
 
-def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, num_winners, dry_run=False):
+def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
     logfp = open( log_path, "w" )
+    winner_every_n_points = 300
+    no_vote_penalty = 3
 
     # All the raw JSON data gets dumped here. key = 'uuid' val = { vote data }
     raw_data = {}
@@ -70,54 +72,77 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, num_winners, dry
     # Sort this week's votes
     votes = OrderedDict(sorted(votes.items(), key=lambda kv: kv[1], reverse=True))
 
-    logfp.write( " Votes Since Win | Votes This Week | Name\n" )
+    logfp.write( " Raffle Entries | Votes This Week | Name\n" )
     logfp.write( "-----------------------------------------------------\n" )
     for voter in votes:
         logfp.write( " {} | {} | {}\n".format( str( votes[voter][0] ).rjust( 15 ), str( votes[voter][1] ).rjust( 15 ), get_name(voter) ) )
     logfp.write( "-----------------------------------------------------\n" )
     logfp.write( " {} | {} | Total\n\n".format( str( total_raffle_entries ).rjust( 15 ), str( total_votes_this_week ).rjust( 15 )) )
 
+    # Decrement votes for anyone who hasn't voted this week, minimum of 0.
+    someone_lost_raffle_entries = False
+    for uuid, voter_data in raw_data.items():
+        if voter_data["votesThisWeek"] != 0:
+            continue
+        if voter_data["raffleEntries"] > 0:
+            someone_lost_raffle_entries = True
+            voter_data["raffleEntries"] = max(0, ["raffleEntries"] - no_vote_penalty)
+    if someone_lost_raffle_entries:
+        logfp.write(f"Players who did not vote this week lost {no_vote_penalty} raffle entries. Vote every week to keep all your raffle entries!\n\n")
+
     if total_raffle_entries == 0:
         logfp.close()
         return
 
     # Reduce votes down to just the current list of votes
-    simple_votes = OrderedDict()
+    simple_votes = []
     for voter in votes:
         if voter in uuids_that_voted_this_week:
-            simple_votes[get_name(voter)] = votes[voter][0]
+            simple_votes.append((get_name(voter), votes[voter][0], votes[voter][1]))
+
     votes = simple_votes
-    logfp.write('''
+    logfp.write(f'''
 Run this code with python 3 (requires python3-numpy) to verify the results of the raffle:
 ################################################################################
 
 from numpy import random
 import hashlib
-from collections import OrderedDict
 
-seed = {!r}
-num_winners = {}
-votes = {}
+seed = {seed!r}
+winner_every_n_points = {winner_every_n_points}
+votes = {pformat(votes)}
 
 # Split up into lists, count number of votes
 vote_names = []
 vote_scores = []
 total_votes = 0
-for voter in votes:
+total_weekly_votes = 0
+for voter, raffle_entries, weekly_votes in votes:
     vote_names.append(voter)
-    vote_scores.append(votes[voter])
-    total_votes += votes[voter]
+    vote_scores.append(raffle_entries)
+    total_votes += raffle_entries
+    total_weekly_votes += weekly_votes
 
-# Convert string seed into a number, set the random number generator to start with that
-random.seed(int(hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8], 16))
+# Require at least one vote to proceed
+if total_weekly_votes >= 1:
+    num_winners = total_weekly_votes // winner_every_n_points + 1
 
-# Pick winners
-winners = list(random.choice(vote_names, replace=False, size=num_winners, p=[vote/total_votes for vote in vote_scores]))
-print("This week's winners: " + ", ".join(sorted(winners)))
+    # Convert string seed into a number, set the random number generator to start with that
+    random.seed(int(hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8], 16))
+
+    # Pick winners
+    winners = list(random.choice(vote_names, replace=False, size=num_winners, p=[vote/total_votes for vote in vote_scores]))
+    if num_winners == 1:
+        print("This week's winner: " + winners[0])
+    else:
+        print("This week's winners: " + ", ".join(sorted(winners)))
+
+else:
+    print("No winners this week")
 
 ################################################################################
 
-'''.format(seed, num_winners, pformat(votes)))
+''')
 
     # Run exactly the same code in the printed snippet (print -> logfp.write)
     #####################################################################################################
@@ -131,26 +156,39 @@ print("This week's winners: " + ", ".join(sorted(winners)))
     vote_names = []
     vote_scores = []
     total_votes = 0
-    for voter in votes:
-        vote_names.append(get_name(voter))
-        vote_scores.append(votes[voter])
-        total_votes += votes[voter]
+    total_weekly_votes = 0
+    for voter, raffle_entries, weekly_votes in votes:
+        vote_names.append(voter)
+        vote_scores.append(raffle_entries)
+        total_votes += raffle_entries
+        total_weekly_votes += weekly_votes
 
-    # Convert string seed into a number, set the random number generator to start with that
-    random.seed(int(hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8], 16))
+    # Require at least one vote to proceed
+    if total_weekly_votes >= 1:
+        num_winners = total_weekly_votes // winner_every_n_points + 1
 
-    # Pick winners
-    winners = list(random.choice(vote_names, replace=False, size=num_winners, p=[vote/total_votes for vote in vote_scores]))
-    logfp.write("This week's winners: " + ", ".join(sorted(winners)))
+        # Convert string seed into a number, set the random number generator to start with that
+        random.seed(int(hashlib.sha1(seed.encode('utf-8')).hexdigest()[:8], 16))
+
+        # Pick winners
+        winners = list(random.choice(vote_names, replace=False, size=num_winners, p=[vote/total_votes for vote in vote_scores]))
+        if num_winners == 1:
+            print("This week's winner: " + winners[0])
+        else:
+            print("This week's winners: " + ", ".join(sorted(winners)))
+
+    else:
+        print("No winners this week")
 
     #
     #####################################################################################################
 
     # Set the winner's raffle scores, set their votes since win to 0
     for winner in winners:
-        raw_data[get_uuid(winner)]["raffleWinsTotal"] += 1
-        raw_data[get_uuid(winner)]["raffleWinsUnclaimed"] += 1
-        raw_data[get_uuid(winner)]["raffleEntries"] = 0
+        winner_uuid = get_uuid(winner)
+        raw_data[winner_uuid]["raffleWinsTotal"] += 1
+        raw_data[winner_uuid]["raffleWinsUnclaimed"] += 1
+        raw_data[winner_uuid]["raffleEntries"] = 0
 
     for uuid in raw_data:
         raw_data[uuid]["votesThisWeek"] = 0
