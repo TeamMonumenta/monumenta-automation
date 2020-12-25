@@ -522,22 +522,30 @@ Deletes previous terrain reset data
 Temporarily brings down the dungeon shard to generate dungeon instances.
 Must be run before preparing the build server reset bundle'''
 
+        debug = False
+        if message.content[len(self._prefix + cmd) + 1:].strip() == "--debug":
+            debug = True
+            await self.display("Debug mode enabled! Will only generate 5 of each dungeon, and will not cleanly copy the dungeon shard")
+
         await self.display("Cleaning up old terrain reset data...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
 
-        await self.display("Stopping the dungeon shard...")
-        await self.stop("dungeon")
+        if not debug:
+            await self.display("Stopping the dungeon shard...")
+            await self.stop("dungeon")
 
         await self.display("Copying the dungeon master copies...")
         await self.run("cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
 
-        await self.display("Restarting the dungeon shard...")
-        await self.cd("/home/epic/project_epic/dungeon")
-        await self.start("dungeon")
+        if not debug:
+            await self.display("Restarting the dungeon shard...")
+            await self.start("dungeon")
 
         await self.display("Generating dungeon instances (this may take a while)...")
         instance_gen_arg = " --master-world /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon/ --out-folder /home/epic/5_SCRATCH/tmpreset/dungeons-out/"
+        if debug:
+            instance_gen_arg += " --count 5"
         await self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py") + instance_gen_arg)
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE")
 
@@ -552,22 +560,30 @@ Temporarily brings down the region_1 and region_2 shards to prepare for terrain 
 Packages up all of the pre-reset server components needed by the play server for reset
 Must be run before starting terrain reset on the play server'''
 
-        await self.display("Stopping region_1 and region_2...")
-        await self.stop(["region_1", "region_2"])
+        debug = False
+        if message.content[len(self._prefix + cmd) + 1:].strip() == "--debug":
+            debug = True
+            await self.display("Debug mode enabled! Will not stop shards before copying")
+
+        if not debug:
+            await self.display("Stopping region_1 and region_2...")
+            await self.stop(["region_1", "region_2"])
 
         await self.display("Copying region_1...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1")
         await self.run("cp -a /home/epic/project_epic/region_1/Project_Epic-region_1 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/")
 
-        await self.display("Restarting the region_1 shard...")
-        await self.start("region_1")
+        if not debug:
+            await self.display("Restarting the region_1 shard...")
+            await self.start("region_1")
 
         await self.display("Copying region_2...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2")
         await self.run("cp -a /home/epic/project_epic/region_2/Project_Epic-region_2 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/")
 
-        await self.display("Restarting the region_2 shard...")
-        await self.start("region_2")
+        if not debug:
+            await self.display("Restarting the region_2 shard...")
+            await self.start("region_2")
 
         await self.display("Copying bungee...")
         await self.run("cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
