@@ -86,7 +86,7 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
             continue
         if voter_data["raffleEntries"] > 0:
             someone_lost_raffle_entries = True
-            voter_data["raffleEntries"] = max(0, ["raffleEntries"] - no_vote_penalty)
+            voter_data["raffleEntries"] = max(0, voter_data["raffleEntries"] - no_vote_penalty)
     if someone_lost_raffle_entries:
         logfp.write(f"Players who did not vote this week lost {no_vote_penalty} raffle entries. Vote every week to keep all your raffle entries!\n\n")
 
@@ -173,12 +173,12 @@ else:
         # Pick winners
         winners = list(random.choice(vote_names, replace=False, size=num_winners, p=[vote/total_votes for vote in vote_scores]))
         if num_winners == 1:
-            print("This week's winner: " + winners[0])
+            logfp.write("This week's winner: " + winners[0])
         else:
-            print("This week's winners: " + ", ".join(sorted(winners)))
+            logfp.write("This week's winners: " + ", ".join(sorted(winners)))
 
     else:
-        print("No winners this week")
+        logfp.write("No winners this week")
 
     #
     #####################################################################################################
