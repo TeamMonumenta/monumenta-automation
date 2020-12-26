@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# For interactive shell
-import readline
-import code
-
 import sys
 import getopt
 import json
@@ -13,11 +9,11 @@ from lib_py3.common import eprint
 from lib_py3.world import World
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world> <--output file.json> [--pos1 x,y,z --pos2 x,y,z] [--interactive] [--dry-run]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world> <--output file.json> [--pos1 x,y,z --pos2 x,y,z] [--dry-run]".format(sys.argv[0]))
 
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "", ["world=", "output=", "pos1=", "pos2=", "interactive", "dry-run"])
+    opts, args = getopt.getopt(sys.argv[1:], "", ["world=", "output=", "pos1=", "pos2=", "dry-run"])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
@@ -26,7 +22,6 @@ world_path = None
 output_path = None
 pos1 = None
 pos2 = None
-interactive = False
 dry_run = False
 
 for o, a in opts:
@@ -48,8 +43,6 @@ for o, a in opts:
         except:
             eprint("Invalid --pos2 argument")
             usage()
-    elif o in ("--interactive"):
-        interactive = True
     elif o in ("--dry-run"):
         dry_run = True
     else:
@@ -87,11 +80,3 @@ for entity, source_pos, entity_path in world.entity_iterator(pos1=pos1, pos2=pos
 
 with open(output_path, 'w') as outfile:
     json.dump(out, outfile, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
-
-if interactive:
-    print("Starting interactive mode")
-    print("output dataset is 'out'")
-    variables = globals().copy()
-    variables.update(locals())
-    shell = code.InteractiveConsole(variables)
-    shell.interact()

@@ -22,8 +22,6 @@ _file_depth = 3
 _file = os.path.abspath(__file__)
 _top_level = os.path.abspath( os.path.join( _file, '../'*_file_depth ) )
 
-BYTES_PER_GB = 1<<30
-
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from lib_py3.raffle import vote_raffle
@@ -107,7 +105,6 @@ class AutomationBotInstance(object):
             "stop": self.action_stop,
             "restart": self.action_restart,
 
-            #"address to english": self.action_address_to_english, # Not working yet
             "plot get": self.action_plot_get,
             "view scores": self.action_view_scores,
 
@@ -1221,13 +1218,6 @@ Syntax:
                 await self.start(shard)
 
         await self.display(message.author.mention)
-
-    async def action_address_to_english(self, cmd, message):
-        '''Translates R1Address scores into a readable street address.'''
-        commandArgs = message.content[len(self._prefix + cmd)+1:]
-        await self.display("Please wait...")
-        await self.run(os.path.join(_top_level, "utility_code/address_to_english.py {}".format(commandArgs)), 0, displayOutput=True)
-        await self.display("Done.")
 
     async def action_plot_get(self, cmd, message):
         '''Gets information on the plots shard. Run without arguements for options.'''

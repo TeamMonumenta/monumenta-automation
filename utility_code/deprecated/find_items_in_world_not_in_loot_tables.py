@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# For interactive shell
-import readline
-import code
-
 import sys
 import getopt
 from pprint import pprint
@@ -14,26 +10,23 @@ from lib_py3.common import eprint, get_item_name_from_nbt
 from lib_py3.world import World
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world> [--logfile <stdout|stderr|path>] [--interactive]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world> [--logfile <stdout|stderr|path>]".format(sys.argv[0]))
 
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:l:di", ["world=", "logfile=", "interactive"])
+    opts, args = getopt.getopt(sys.argv[1:], "w:l:d", ["world=", "logfile="])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
 
 world_path = None
 logfile = 'stdout'
-interactive = False
 
 for o, a in opts:
     if o in ("-w", "--world"):
         world_path = a
     elif o in ("-l", "--logfile"):
         logfile = a
-    elif o in ("-i", "--interactive"):
-        interactive = True
     else:
         eprint("Unknown argument: {}".format(o))
         usage()
@@ -83,12 +76,6 @@ for item, source_pos, entity_path in world.items(readonly=True):
             num_missing_items += 1
         else:
             missing_items[log_key] = missing_items[log_key] + 1
-
-if interactive:
-    variables = globals().copy()
-    variables.update(locals())
-    shell = code.InteractiveConsole(variables)
-    shell.interact()
 
 if log_handle is not None:
     for item in sorted(missing_items.items(), key=lambda kv: kv[1]):

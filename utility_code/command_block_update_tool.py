@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# For interactive shell
-import readline
-import code
-
 import sys
 import getopt
 import json
@@ -13,11 +9,11 @@ from lib_py3.common import eprint
 from lib_py3.world import World
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world> <--output file.json | --input file.json> [--pos1 x,y,z --pos2 x,y,z] [--interactive]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world> <--output file.json | --input file.json> [--pos1 x,y,z --pos2 x,y,z]".format(sys.argv[0]))
 
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "", ["world=", "output=", "input=", "pos1=", "pos2=", "interactive"])
+    opts, args = getopt.getopt(sys.argv[1:], "", ["world=", "output=", "input=", "pos1=", "pos2="])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
@@ -27,7 +23,6 @@ output_path = None
 input_path = None
 pos1 = None
 pos2 = None
-interactive = False
 
 for o, a in opts:
     if o in ("--world"):
@@ -50,8 +45,6 @@ for o, a in opts:
         except:
             eprint("Invalid --pos2 argument")
             usage()
-    elif o in ("--interactive"):
-        interactive = True
     else:
         eprint("Unknown argument: {}".format(o))
         usage()
@@ -96,16 +89,7 @@ if output_mode:
     with open(output_path, 'w') as outfile:
         json.dump(out, outfile, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
 
-    if interactive:
-        print("Starting interactive mode")
-        print("output dataset is 'out'")
-        variables = globals().copy()
-        variables.update(locals())
-        shell = code.InteractiveConsole(variables)
-        shell.interact()
 else:
-    if interactive:
-        sys.exit("--interactive only makes sense with output mode")
     elif (pos1 is not None) or (pos2 is not None):
         sys.exit("--pos1 and --pos2 only make sense with output mode")
 

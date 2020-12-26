@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# For interactive shell
-import readline
-import code
-
 import os
 import sys
 import getopt
@@ -21,26 +17,23 @@ from quarry.types import nbt
 
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world> [--world /second/world ...] [--logfile <stdout|stderr|path>] [--interactive]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world> [--world /second/world ...] [--logfile <stdout|stderr|path>]".format(sys.argv[0]))
 
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:li", ["world=", "logfile=", "interactive"])
+    opts, args = getopt.getopt(sys.argv[1:], "w:li", ["world=", "logfile="])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
 
 world_paths = []
 logfile = None
-interactive = False
 
 for o, a in opts:
     if o in ("-w", "--world"):
         world_paths.append(a)
     elif o in ("-l", "--logfile"):
         logfile = a
-    elif o in ("-i", "--interactive"):
-        interactive = True
     else:
         eprint("Unknown argument: {}".format(o))
         usage()
@@ -84,13 +77,6 @@ for world_path in world_paths:
                     items[item_id][item_name] = []
 
                 items[item_id][item_name].append((pos, count))
-
-if interactive:
-    print('''Try: pprint(items['minecraft:golden_chestplate']["King's Warden"])''')
-    variables = globals().copy()
-    variables.update(locals())
-    shell = code.InteractiveConsole(variables)
-    shell.interact()
 
 log_handle = None
 if logfile == "stdout":

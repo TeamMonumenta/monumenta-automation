@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# For interactive shell
-import readline
-import code
-
 import sys
 import os
 import getopt
@@ -29,10 +25,10 @@ spawners_to_replace = [
 
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world> [--logfile <stdout|stderr|path>] [--pos1 x,y,z --pos2 x,y,z] [--dry-run] [--interactive]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world> [--logfile <stdout|stderr|path>] [--pos1 x,y,z --pos2 x,y,z] [--dry-run]".format(sys.argv[0]))
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:l:di", ["world=", "logfile=", "pos1=", "pos2=", "dry-run", "interactive"])
+    opts, args = getopt.getopt(sys.argv[1:], "w:l:d", ["world=", "logfile=", "pos1=", "pos2=", "dry-run"])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
@@ -40,7 +36,6 @@ except getopt.GetoptError as err:
 world_path = None
 logfile = 'stdout'
 dry_run = False
-interactive = False
 pos1 = None
 pos2 = None
 
@@ -65,8 +60,6 @@ for o, a in opts:
             usage()
     elif o in ("-d", "--dry-run"):
         dry_run = True
-    elif o in ("-i", "--interactive"):
-        interactive = True
     else:
         eprint("Unknown argument: {}".format(o))
         usage()
@@ -142,12 +135,6 @@ for entity, source_pos, entity_path in world.entity_iterator(pos1=pos1, pos2=pos
 
         # The spawner doesn't match if there are no mobs
         matches = False
-
-        if interactive:
-            variables = globals().copy()
-            variables.update(locals())
-            shell = code.InteractiveConsole(variables)
-            shell.interact()
 
         for mob in spawner_mobs.value:
             if not mob.has_path('id'):
