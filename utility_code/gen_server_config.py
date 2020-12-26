@@ -177,6 +177,8 @@ gobrush = [
         ('plugins/goBrush', '../../server_config/data/plugins/all/goBrush'),
         ('plugins/goPaint.jar', '../../server_config/plugins/goPaint.jar'),
         ('plugins/goPaint', '../../server_config/data/plugins/all/goPaint'),
+        ('plugins/HeadDatabase.jar', '../../server_config/plugins/HeadDatabase.jar'),
+        ('plugins/HeadDatabase', '../../server_config/data/plugins/all/HeadDatabase'),
     ]
 
 # Index of nodes:
