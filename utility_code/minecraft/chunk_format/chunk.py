@@ -29,13 +29,7 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
-        ##############
-        # Required setup for NbtPathDebug
-        self.nbt = nbt
-        self.parent = None
-        self.root = self
-        self.data_version = self.nbt.at_path('DataVersion')
-        #############
+        self.__init__(nbt, None, self, self.nbt.at_path('DataVersion').value)
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
@@ -57,7 +51,7 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
     @property
     def pos(self):
         """Chunks don't return a position, even though they have one,
-        because everything inside a chunk should have a positioni
+        because everything inside a chunk should have a position
         """
         return None
 

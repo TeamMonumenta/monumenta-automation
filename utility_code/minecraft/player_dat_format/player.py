@@ -32,13 +32,7 @@ class Player(Entity):
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
-        ##############
-        # Required setup for NbtPathDebug
-        self.nbt = nbt
-        self.parent = None
-        self.root = self
-        self.data_version = self.nbt.at_path('DataVersion').value
-        #############
+        self.__init__(nbt, None, self, self.nbt.at_path('DataVersion').value)
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)

@@ -30,18 +30,14 @@ class NbtPathDebug():
         A subclass of entities to help understand where they are and
         their relationship to other entities they are stored inside of.
 
-        Subclasses that extend this class must have the following data:
-
-        ##############
-        # Required setup for NbtPathDebug
-
-        self.nbt =
-        self.parent =
-        self.root =
-        self.data_version =
-
-        #############
+        Subclasses that extend this should call __init__() with appropriate data
     """
+
+    def __init__(self, nbt, parent, root, data_version):
+        self.nbt = nbt
+        self.parent = parent
+        self.root = root
+        self.data_version = data_version
 
     @property
     def full_nbt_path(self):
