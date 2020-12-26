@@ -792,7 +792,7 @@ Downloads the terrain reset bundle from the build server and unpacks it'''
 Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data'''
 
         async def send_broadcast_msg(time_left):
-            self._socket.send_packet("*", "Monumenta.Broadcast.Command",
+            self._socket.send_packet("*", "monumentanetworkrelay.command",
                     {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta's weekly update will begin in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". The server will be down for approximately 30 minutes while we patch new content into the game."}]'''}
             )
             await self.display("{} to weekly update".format(time_left)),
@@ -802,8 +802,8 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await send_broadcast_msg("7 minutes")
         await asyncio.sleep(2 * 60)
         await send_broadcast_msg("5 minutes")
-        self._socket.send_packet("region_1", "Monumenta.Broadcast.Command", {"command": 'co purge t:30d'})
-        self._socket.send_packet("plots", "Monumenta.Broadcast.Command", {"command": 'co purge t:30d'})
+        self._socket.send_packet("region_1", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
+        self._socket.send_packet("plots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
         await asyncio.sleep(2 * 60)
         await send_broadcast_msg("3 minutes")
         await asyncio.sleep(60)
@@ -814,7 +814,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await send_broadcast_msg("30 seconds")
         await asyncio.sleep(15)
         await send_broadcast_msg("15 seconds")
-        self._socket.send_packet("*", "Monumenta.Broadcast.Command", {"command": 'save-all'})
+        self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": 'save-all'})
         await asyncio.sleep(10)
         await send_broadcast_msg("5 seconds")
         await asyncio.sleep(5)
@@ -1308,4 +1308,4 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display("Broadcasting command {!r} to all shards".format(commandArgs))
-        self._socket.send_packet("*", "Monumenta.Broadcast.Command", {"command": commandArgs})
+        self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": commandArgs})

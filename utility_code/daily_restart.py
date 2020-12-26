@@ -51,7 +51,7 @@ os.umask(0o022)
 ################################################################################
 
 def send_broadcast_msg(time_left):
-    socket.send_packet("*", "Monumenta.Broadcast.Command",
+    socket.send_packet("*", "monumentanetworkrelay.command",
             {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". This helps reduce lag! The server will be down for ~90 seconds."}]'''}
     )
 
@@ -62,7 +62,7 @@ async def main():
     try:
         # Set all shards to restart the next time they are empty (many will restart immediately)
         print("Broadcasting restart-empty command to all shards...")
-        socket.send_packet("*", "Monumenta.Broadcast.Command",
+        socket.send_packet("*", "monumentanetworkrelay.command",
                 {"command": 'restart-empty'}
         )
 
