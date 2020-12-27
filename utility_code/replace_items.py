@@ -8,8 +8,8 @@ from pprint import pprint
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
 from lib_py3.common import eprint
+from lib_py3.timing import Timings
 
 from minecraft.chunk_format.schematic import Schematic
 from minecraft.world import World
@@ -18,11 +18,11 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../qu
 from quarry.types import nbt
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> [--logfile <stdout|stderr|path>] [--dry-run]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
 
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:s:l:d", ["world=", "schematics=", "logfile=", "dry-run"])
+    opts, args = getopt.getopt(sys.argv[1:], "w:s:l:j:d", ["world=", "schematics=", "logfile=", "num-threads=", "dry-run"])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
@@ -30,6 +30,7 @@ except getopt.GetoptError as err:
 world_path = None
 schematics_path = None
 logfile = None
+num_threads = 3
 dry_run = False
 
 for o, a in opts:
@@ -39,6 +40,8 @@ for o, a in opts:
         schematics_path = a
     elif o in ("-l", "--logfile"):
         logfile = a
+    elif o in ("-j", "--num-threads"):
+        num_threads = int(a)
     elif o in ("-d", "--dry-run"):
         dry_run = True
     else:
@@ -62,14 +65,31 @@ elif logfile is not None:
     log_handle = open(logfile, 'w')
 
 num_replacements = 0
-replacements_log = {}
+
+def process_region(region):
+    replacements_log = {}
+    num_replacements = 0
+    for chunk in region.iter_chunks(autosave=(not dry_run)):
+        for item in chunk.recursive_iter_items():
+            if item_replace_manager.replace_item(item.nbt, log_dict=replacements_log, debug_path=item.get_path_str()):
+                num_replacements += 1
+
+    return (num_replacements, replacements_log)
 
 if world_path:
+    timings = Timings(enabled=False)
     world = World(world_path)
-    for chunk in world.iter_chunks(autosave=(not dry_run)):
-        for item in chunk.recursive_iter_items():
-            if item_replace_manager.replace_item(item.nbt, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(item.get_legacy_debug())):
-                num_replacements += 1
+
+    region_results = world.iter_regions_parallel(process_region, num_processes=num_threads)
+    timings.nextStep("Replacements done")
+
+    replacements_to_merge = []
+    for region_result in region_results:
+        num_replacements += region_result[0]
+        replacements_to_merge.append(region_result[1])
+
+    replacements_log = item_replace_manager.merge_logs(replacements_to_merge)
+    timings.nextStep("Logs merged")
 
 if schematics_path:
     for root, subdirs, files in os.walk(schematics_path):

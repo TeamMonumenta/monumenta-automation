@@ -81,7 +81,7 @@ class World():
         for full_path, rx, rz in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z):
             yield Region(full_path, rx, rz)
 
-    def iter_regions_parallel(self, func, num_processes=4):
+    def iter_regions_parallel(self, func, num_processes=3):
         """
         Iterates regions in parallel using multiple processes.
 
