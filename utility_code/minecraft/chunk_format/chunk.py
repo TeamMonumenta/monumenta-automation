@@ -7,12 +7,14 @@ from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.chunk_format.entity import Entity
 from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
+# TODO: This needs to get moved into this library
+from lib_py3.block_map import block_map
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
+from quarry.types.chunk import BlockArray
 # TODO Add methods for dealing with blocks, lighting, etc.
 #from quarry.types.buffer import BufferUnderrun
-#from quarry.types.chunk import BlockArray
 
 class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
     """A chunk, loaded from a tag."""
@@ -60,3 +62,35 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
 
     def __repr__(self):
         return f'Chunk(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
+
+    def get_block(self, pos: [int, int, int]):
+        """
+        Get the block at position (x, y, z).
+        Example block:
+        {
+            'facing': 'north',
+            'waterlogged': 'false',
+            'name': 'minecraft:wall_sign'
+        }
+
+        Liquids are not yet supported
+        """
+        x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
+        # bx, by, bz are block coordinates within the chunk section
+        rx, bx = divmod(x, 512)
+        by = y
+        rz, bz = divmod(z, 512)
+        cx, bx = divmod(bx, 16)
+        cy, by = divmod(by, 16)
+        cz, bz = divmod(bz, 16)
+
+        section_not_found = True
+        for section in self.nbt.iter_multipath('Level.Sections[]'):
+            if section.at_path('Y').value == cy:
+                section_not_found = False
+                blocks = BlockArray.from_nbt(section, block_map)
+                return blocks[256 * by + 16 * bz + bx]
+
+        if section_not_found:
+            raise Exception("Chunk section not found")
+

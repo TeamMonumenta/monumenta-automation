@@ -81,7 +81,7 @@ class World():
         for full_path, rx, rz in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z):
             yield Region(full_path, rx, rz)
 
-    def iter_regions_parallel(self, func, num_processes=3):
+    def iter_regions_parallel(self, func, num_processes=3, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
         """
         Iterates regions in parallel using multiple processes.
 
@@ -94,15 +94,25 @@ class World():
 
         Processes are pooled such that only at most num_processes will run
         simultaneously
+
+        Set num_processes to 1 for debugging to invoke the function without creating a new process
         """
 
-        region_list = []
-        for full_path, rx, rz in self.enumerate_regions():
-            region_list.append((full_path, rx, rz, func))
+        if num_processes == 1:
+            # Don't bother with processes if only going to use one
+            # This makes debugging much easier
+            retval = []
+            for region in self.iter_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z):
+                retval.append(func(region))
+            return retval
+        else:
+            region_list = []
+            for full_path, rx, rz in self.enumerate_regions():
+                region_list.append((full_path, rx, rz, func))
 
-        if len(region_list) > 0:
-            with multiprocessing.Pool(num_processes) as pool:
-                return pool.map(_parallel_region_wrapper, region_list)
+            if len(region_list) > 0:
+                with multiprocessing.Pool(num_processes) as pool:
+                    return pool.map(_parallel_region_wrapper, region_list)
 
     def get_region(self, rx, rz):
         rx = int(rx)
