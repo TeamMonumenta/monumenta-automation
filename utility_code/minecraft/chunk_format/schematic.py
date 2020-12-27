@@ -39,6 +39,9 @@ class Schematic(RecursiveMinecraftIterator, NbtPathDebug):
             'Schematic.Entities[]',
         })
 
+    def get_debug_str(self):
+        return f"schematic {self.path}"
+
     @property
     def name(self):
         return self._schematic_name

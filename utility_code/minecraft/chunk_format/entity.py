@@ -3,7 +3,7 @@
 import os
 import sys
 
-from lib_py3.common import eprint
+from lib_py3.common import eprint, parse_name_possibly_json
 
 from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
@@ -62,6 +62,15 @@ class Entity(RecursiveMinecraftIterator, NbtPathDebug):
             'Trident',
             'FireworksItem',
         })
+
+    def get_debug_str(self):
+        if self.nbt.has_path("id"):
+            name = None
+            if self.nbt.has_path("CustomName"):
+                name = parse_name_possibly_json(self.nbt.at_path("CustomName").value, remove_color=True)
+
+            return f"""{self.nbt.at_path("id").value.replace("minecraft:","")}{" " + " ".join(str(x) for x in self.pos) if self.pos is not None else ""}{" " + name if name is not None else ""}"""
+        return str(self)
 
     @property
     def uuid(self):

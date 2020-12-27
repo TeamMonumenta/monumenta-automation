@@ -7,16 +7,16 @@ import yaml
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
 from lib_py3.common import eprint
 from lib_py3.upgrade import upgrade_entity
-from lib_py3.fake_redis_world import FakeRedisWorld
+from lib_py3.timing import Timings
+from minecraft.world import World
 
 def usage():
-    sys.exit("Usage: {} <--redisworld /path/to/world> <--datapacks /path/to/datapacks> [--logfile <stdout|stderr|path>] [--dry-run]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world> <--datapacks /path/to/datapacks> [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:p:l:d", ["redisworld=", "datapacks=", "logfile=", "dry-run"])
+    opts, args = getopt.getopt(sys.argv[1:], "w:p:l:j:d", ["world=", "datapacks=", "logfile=", "num-threads=", "dry-run"])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
@@ -25,14 +25,17 @@ world_path = None
 datapacks = None
 logfile = None
 dry_run = False
+num_threads = 3
 
 for o, a in opts:
-    if o in ("-w", "--redisworld"):
+    if o in ("-w", "--world"):
         world_path = a
     elif o in ("-p", "--datapacks"):
         datapacks = a
     elif o in ("-l", "--logfile"):
         logfile = a
+    elif o in ("-j", "--num-threads"):
+        num_threads = int(a)
     elif o in ("-d", "--dry-run"):
         dry_run = True
     else:
@@ -40,16 +43,20 @@ for o, a in opts:
         usage()
 
 if world_path is None:
-    eprint("--redisworld must be specified!")
+    eprint("--world must be specified!")
     usage()
 if datapacks is None:
     eprint("--datapacks must be specified!")
     usage()
 
+timings = Timings(enabled=dry_run)
 loot_table_manager = LootTableManager()
 loot_table_manager.load_loot_tables_subdirectories(datapacks)
+timings.nextStep("Loaded loot tables")
 item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map(show_errors=False))
-world = FakeRedisWorld(world_path)
+timings.nextStep("Loaded item replacement manager")
+world = World(world_path)
+timings.nextStep("Loaded world")
 
 log_handle = None
 if logfile == "stdout":
@@ -59,26 +66,38 @@ elif logfile == "stderr":
 elif logfile is not None:
     log_handle = open(logfile, 'w')
 
-num_replacements = 0
-replacements_log = {}
 
-for player in world.players():
+def process_player(player):
+    num_replacements = 0
+    replacements_log = {}
+
     player.full_heal()
     tags = set(player.tags)
     tags.add("resetMessage")
-    if "MidTransfer" in tags:
-        tags.remove("MidTransfer")
     player.tags = tags
-    upgrade_entity(player.player_tag)
-    if not dry_run:
-        player.save()
+    upgrade_entity(player.nbt)
 
-for item, _, entity_path in world.items(readonly=dry_run):
-    if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=get_debug_string_from_entity_path(entity_path)):
-        num_replacements += 1
+    for item in player.recursive_iter_items():
+        if item_replace_manager.replace_item(item.nbt, log_dict=replacements_log, debug_path=item.get_path_str()):
+            num_replacements += 1
+
+    return (num_replacements, replacements_log)
+
+player_results = world.iter_players_parallel(process_player, num_processes=num_threads, autosave=(not dry_run))
+timings.nextStep("Replacements done")
+
+num_replacements = 0
+replacements_to_merge = []
+for player_result in player_results:
+    num_replacements += player_result[0]
+    replacements_to_merge.append(player_result[1])
+
+replacements_log = item_replace_manager.merge_logs(replacements_to_merge)
+timings.nextStep("Logs merged")
 
 if log_handle is not None:
     yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
+    timings.nextStep("Logs written")
 
 if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
     log_handle.close()

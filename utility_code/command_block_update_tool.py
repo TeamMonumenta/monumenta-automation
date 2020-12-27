@@ -24,7 +24,7 @@ output_path = None
 input_path = None
 pos1 = (-math.inf, -math.inf, -math.inf)
 pos2 = (math.inf, math.inf, math.inf)
-num_threads = 4
+num_threads = 3
 
 for o, a in opts:
     if o in ("--world"):

@@ -17,8 +17,21 @@ from minecraft.player_dat_format.player import PlayerFile
 # the region files, and it isn't possible to copy a loaded Region file across
 # processes so it has to be loaded afterwards
 def _parallel_region_wrapper(arg):
-    full_path, rx, rz, callback = arg
-    return callback(Region(full_path, rx, rz))
+    full_path, rx, rz, func = arg
+    return func(Region(full_path, rx, rz))
+
+# This wraps the callback for iter_players_parallel so that the player
+# files themselves are loaded by the process that will work on them.
+# Calling the callback directly would force the caller to handle instantiating
+# the player files, and it isn't possible to copy a loaded player file across
+# processes so it has to be loaded afterwards
+def _parallel_player_wrapper(arg):
+    full_path, autosave, func = arg
+    player_file = PlayerFile(full_path)
+    result = func(player_file.player)
+    if autosave:
+        player_file.save()
+    return result
 
 class World():
     """A Minecraft world folder."""
@@ -120,13 +133,10 @@ class World():
         full_path = os.path.join(self.path, 'region', f'r.{rx}.{rz}.mca')
         return Region(full_path, rx, rz)
 
-    def iter_players(self, autosave=False):
-        if self.level_dat is not None:
-            yield self.level_dat.player
-
-            if autosave:
-                self.level_dat.save()
-
+    def enumerate_players(self):
+        """
+        Note: Does not return the level.dat player
+        """
         for filename in os.listdir(os.path.join(self.path, 'playerdata')):
             if not filename.endswith('.dat'):
                 continue
@@ -134,10 +144,54 @@ class World():
             full_path = os.path.join(self.path, 'playerdata', filename)
             if os.path.getsize(full_path) <= 0:
                 continue
+            yield full_path
+
+    def iter_players(self, autosave=False):
+        if self.level_dat is not None:
+            yield self.level_dat.player
+
+            if autosave:
+                self.level_dat.save()
+
+        for full_path in self.enumerate_players():
             player_file = PlayerFile(full_path)
             yield player_file.player
             if autosave:
                 player_file.save()
+
+    def iter_players_parallel(self, func, num_processes=3, autosave=False):
+        """
+        Iterates players in parallel using multiple processes.
+
+        Does **NOT** include the level.dat player
+
+        func will be called with each Player object that this world contains.
+
+        Any value returned by that function will be collected into a list and
+        returned to the caller. For example, if there are three players, func
+        will be called three times. If each one returns a dict, the return value
+        from this function will be: [{}, {}, {}]
+
+        Processes are pooled such that only at most num_processes will run
+        simultaneously
+
+        Set num_processes to 1 for debugging to invoke the function without creating a new process
+        """
+        if num_processes == 1:
+            # Don't bother with processes if only going to use one
+            # This makes debugging much easier
+            retval = []
+            for player in self.iter_players(autosave=autosave):
+                retval.append(func(player))
+            return retval
+        else:
+            player_list = []
+            for full_path in self.enumerate_players():
+                player_list.append((full_path, autosave, func))
+
+            if len(player_list) > 0:
+                with multiprocessing.Pool(num_processes) as pool:
+                    return pool.map(_parallel_player_wrapper, player_list)
 
     def __repr__(self):
         return f'World({self.path!r}, {self.name!r})'

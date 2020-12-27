@@ -7,6 +7,7 @@ import sys
 import uuid
 from urllib.request import urlopen
 
+from lib_py3.common import get_entity_uuid
 from minecraft.chunk_format.entity import Entity
 from minecraft.player_dat_format.item import Item
 from minecraft.util.changelog_map import ChangelogMap
@@ -43,6 +44,9 @@ class Player(Entity):
             #'SelectedItem', # Not actually saved to disk
             'EnderItems[]',
         })
+
+    def get_debug_str(self):
+        return f"player {get_entity_uuid(self.nbt)}"
 
     @property
     def dimension(self):
@@ -139,14 +143,44 @@ class Player(Entity):
 
         >>> self.full_heal()
         """
-        self.player_tag.at_path('Health').value = 20.0
-        self.player_tag.at_path('Fire').value = -20
-        self.player_tag.at_path('Air').value = 300
-        self.player_tag.at_path('foodLevel').value = 20
-        self.player_tag.at_path('foodSaturationLevel').value = 5.0
-        self.player_tag.at_path('foodExhaustionLevel').value = 0.0
-        self.player_tag.at_path('foodTickTimer').value = 0
-        self.player_tag.at_path('DeathTime').value = 0
+        self.nbt.at_path('Health').value = 20.0
+        self.nbt.at_path('Fire').value = -20
+        self.nbt.at_path('Air').value = 300
+        self.nbt.at_path('foodLevel').value = 20
+        self.nbt.at_path('foodSaturationLevel').value = 5.0
+        self.nbt.at_path('foodExhaustionLevel').value = 0.0
+        self.nbt.at_path('foodTickTimer').value = 0
+        self.nbt.at_path('DeathTime').value = 0
+
+    @property
+    def tags(self):
+        """
+        Returns the player's tags as a list of strings
+
+        >>> print(self.tags)
+        ["TagA", "TagB"]
+        """
+        result = []
+        if self.nbt.has_path('Tags'):
+            for tag in self.nbt.iter_multipath('Tags[]'):
+                result.append(tag.value)
+
+        return result
+
+    @tags.setter
+    def tags(self, tags):
+        """
+        Replace the player's tags with a list of strings
+
+        >>> self.tags = ["TagA", "TagB"]
+        """
+        if not self.nbt.has_path('Tags'):
+            self.nbt.value['Tags'] = nbt.TagList([])
+
+        result = []
+        for tag in tags:
+            result.append(nbt.TagString(tag))
+        self.nbt.at_path('Tags').value = result
 
     @staticmethod
     def get_uuid_by_name(name, when=datetime.datetime.now()):

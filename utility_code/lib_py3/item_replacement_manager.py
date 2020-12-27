@@ -117,7 +117,10 @@ class ItemReplacementManager(object):
                     log_dict[log_key]["TO"] = updated_tag_copy.to_mojangson()
                     log_dict[log_key]["FROM"] = {}
 
-                orig_tag_mojangson = orig_tag_copy.to_mojangson()
+                if orig_tag_copy == updated_tag_copy:
+                    orig_tag_mojangson = "<equivalent permutation>"
+                else:
+                    orig_tag_mojangson = orig_tag_copy.to_mojangson()
 
                 if orig_tag_mojangson not in log_dict[log_key]["FROM"]:
                     log_dict[log_key]["FROM"][orig_tag_mojangson] = []

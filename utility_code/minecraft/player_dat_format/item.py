@@ -3,6 +3,7 @@
 import os
 import sys
 
+from lib_py3.common import parse_name_possibly_json
 from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
 
@@ -41,6 +42,16 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
             # Crossbows
             'tag.ChargedProjectiles[]',
         })
+
+    def get_debug_str(self):
+        if self.nbt.has_path("id"):
+            name = None
+            if self.nbt.has_path("tag.display.Name"):
+                name = parse_name_possibly_json(self.nbt.at_path("tag.display.Name").value, remove_color=True)
+
+            return f"""{self.nbt.at_path("id").value.replace("minecraft:","")}{" " + " ".join(str(x) for x in self.pos) if self.pos is not None else ""}{" " + name if name is not None else ""}"""
+        return str(self)
+
 
     @classmethod
     def from_command_format(cls, command, check_count=True):

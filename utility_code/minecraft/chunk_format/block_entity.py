@@ -3,6 +3,7 @@
 import os
 import sys
 
+from lib_py3.common import parse_name_possibly_json
 from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
 
@@ -40,6 +41,17 @@ class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
             'Items[]',
             'RecordItem',
         })
+
+    def get_debug_str(self):
+        name = None
+        if self.nbt.has_path("CustomName"):
+            name = parse_name_possibly_json(self.nbt.at_path("CustomName").value, remove_color=True)
+
+            # Don't print names of things that are just "@" (commands do this a lot apparently)
+            if name == "@":
+                name = None
+
+        return f"""{self.nbt.at_path("id").value.replace("minecraft:","") if self.nbt.has_path("id") else "nested_BlockEntity"}{" " + " ".join(str(x) for x in self.pos) if self.pos is not None else ""}{" " + name if name is not None else ""}"""
 
     @property
     def pos(self):

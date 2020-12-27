@@ -4,6 +4,7 @@ import os
 import sys
 import getopt
 import yaml
+import multiprocessing
 from pprint import pprint
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
@@ -52,9 +53,12 @@ if world_path is None and schematics_path is None:
     eprint("--world or --schematics must be specified!")
     usage()
 
+timings = Timings(enabled=dry_run)
 loot_table_manager = LootTableManager()
 loot_table_manager.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
+timings.nextStep("Loaded loot tables")
 item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map(show_errors=True))
+timings.nextStep("Loaded item replacement manager")
 
 log_handle = None
 if logfile == "stdout":
@@ -76,37 +80,57 @@ def process_region(region):
 
     return (num_replacements, replacements_log)
 
+def process_schematic(schem_path):
+    replacements_log = {}
+    num_replacements = 0
+
+    schem = Schematic(schem_path)
+    for item in schem.recursive_iter_items():
+        if item_replace_manager.replace_item(item.nbt, log_dict=replacements_log, debug_path=item.get_path_str()):
+            num_replacements += 1
+
+    if not dry_run and num_replacements > 0:
+        schem.save()
+
+    return (num_replacements, replacements_log)
+
 if world_path:
-    timings = Timings(enabled=False)
     world = World(world_path)
+    timings.nextStep("Loaded world")
 
-    region_results = world.iter_regions_parallel(process_region, num_processes=num_threads)
-    timings.nextStep("Replacements done")
-
-    replacements_to_merge = []
-    for region_result in region_results:
-        num_replacements += region_result[0]
-        replacements_to_merge.append(region_result[1])
-
-    replacements_log = item_replace_manager.merge_logs(replacements_to_merge)
-    timings.nextStep("Logs merged")
+    parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads)
+    timings.nextStep("World replacements done")
 
 if schematics_path:
+    schem_paths = []
     for root, subdirs, files in os.walk(schematics_path):
         for fname in files:
             if fname.endswith(".schematic"):
-                schem = Schematic(os.path.join(root, fname))
-                num_replacements_this_schem = 0
-                for item in schem.recursive_iter_items():
-                    if item_replace_manager.replace_item(item.nbt, log_dict=replacements_log, debug_path=(fname + " -> " + get_debug_string_from_entity_path(item.get_legacy_debug()))):
-                        num_replacements += 1
-                        num_replacements_this_schem += 1
+                schem_paths.append(os.path.join(root, fname))
 
-                if not dry_run and num_replacements_this_schem > 0:
-                    schem.save()
+    if num_threads == 1:
+        # Don't bother with processes if only going to use one
+        # This makes debugging much easier
+        parallel_results = []
+        for schem_path in schem_paths:
+            parallel_results.append(process_schematic(schem_path))
+    else:
+        with multiprocessing.Pool(num_threads) as pool:
+            parallel_results = pool.map(process_schematic, schem_paths)
+    timings.nextStep("Schematics replacements done")
+
+replacements_to_merge = []
+for region_result in parallel_results:
+    num_replacements += region_result[0]
+    replacements_to_merge.append(region_result[1])
+
+replacements_log = item_replace_manager.merge_logs(replacements_to_merge)
+timings.nextStep("Logs merged")
+
 
 if log_handle is not None:
     yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
+    timings.nextStep("Logs written")
 
 if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
     log_handle.close()
