@@ -33,7 +33,7 @@ class NbtPathDebug():
         Subclasses that extend this should call __init__() with appropriate data
     """
 
-    def __init__(self, nbt, parent, root, data_version):
+    def nbt_path_init(self, nbt, parent, root, data_version):
         self.nbt = nbt
         self.parent = parent
         self.root = root

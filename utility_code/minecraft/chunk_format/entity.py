@@ -26,7 +26,7 @@ class Entity(RecursiveMinecraftIterator, NbtPathDebug):
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
-        self.__init__(nbt, parent, parent.root if parent is not None and parent.root is not None else self, data_version)
+        self.nbt_path_init(nbt, parent, parent.root if parent is not None and parent.root is not None else self, data_version)
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)

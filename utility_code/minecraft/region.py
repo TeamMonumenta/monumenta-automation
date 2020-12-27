@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import zlib
+import math
 
 from collections.abc import MutableMapping
 
@@ -179,9 +180,22 @@ class Region(MutableMapping):
         """Iterate over chunk coordinates `tuple(cx, cz)` in this region file."""
         yield from iter(self)
 
-    def iter_chunks(self):
+    def iter_chunks(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, autosave: bool=False):
         for cx, cz in self.iter_chunk_coordinates():
-            yield self.load_chunk(cx, cz)
+            if (
+                16*cx + 16 <= min_x or
+                16*cx      >  max_x or
+                16*cz + 16 <= min_z or
+                16*cz      >  max_z
+            ):
+                continue
+
+            chunk = self.load_chunk(cx, cz)
+
+            yield chunk
+
+            if autosave:
+                region.save_chunk(chunk)
 
     def _get_entry(self, cx, cz):
         local_cx = cx - 32 * self.rx

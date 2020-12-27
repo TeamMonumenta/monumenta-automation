@@ -27,7 +27,7 @@ class Schematic(RecursiveMinecraftIterator, NbtPathDebug):
         self._nbtfile = nbt.NBTFile.load(path)
 
         # TODO Probably can set the DataVersion version to something?
-        self.__init__(self._nbtfile.root_tag, None, self, None)
+        self.nbt_path_init(self._nbtfile.root_tag, None, self, None)
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)

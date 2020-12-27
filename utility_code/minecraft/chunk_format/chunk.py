@@ -29,7 +29,7 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
-        self.__init__(nbt, None, self, self.nbt.at_path('DataVersion').value)
+        self.nbt_path_init(nbt, None, self, nbt.at_path('DataVersion').value)
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
