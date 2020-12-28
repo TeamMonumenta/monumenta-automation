@@ -195,3 +195,29 @@ class World():
 
     def __repr__(self):
         return f'World({self.path!r}, {self.name!r})'
+
+    def get_block(self, pos: [int, int, int]):
+        """
+        Get the block at position (x, y, z).
+        Example block:
+        {'facing': 'north', 'waterlogged': 'false', 'name': 'minecraft:wall_sign'}
+
+        Liquids are not yet supported
+        """
+        x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
+        return self.get_region(x // 512, z // 512).get_block(pos)
+
+    def set_block(self, pos: [int, int, int], block):
+        """
+        Set a block at position (x, y, z).
+        Example block:
+        {'snowy': 'false', 'name': 'minecraft:grass_block'}
+
+        In this version:
+        - All block properties are mandatory (no defaults are filled in for you)
+        - Block NBT cannot be set, but can be read.
+        - Existing block NBT for the specified coordinate is cleared.
+        - Liquids are not yet supported
+        """
+        x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
+        return self.get_region(x // 512, z // 512).set_block(pos, block)

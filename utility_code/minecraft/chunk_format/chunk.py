@@ -67,11 +67,7 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
         """
         Get the block at position (x, y, z).
         Example block:
-        {
-            'facing': 'north',
-            'waterlogged': 'false',
-            'name': 'minecraft:wall_sign'
-        }
+        {'facing': 'north', 'waterlogged': 'false', 'name': 'minecraft:wall_sign'}
 
         Liquids are not yet supported
         """
@@ -84,12 +80,50 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
         cy, by = divmod(by, 16)
         cz, bz = divmod(bz, 16)
 
+        if self.cx != x // 16 or self.cz != z // 16:
+            raise Exception("Coordinates don't match this chunk!")
+
         section_not_found = True
         for section in self.nbt.iter_multipath('Level.Sections[]'):
             if section.at_path('Y').value == cy:
                 section_not_found = False
                 blocks = BlockArray.from_nbt(section, block_map)
                 return blocks[256 * by + 16 * bz + bx]
+
+        if section_not_found:
+            raise Exception("Chunk section not found")
+
+    def set_block(self, pos: [int, int, int], block):
+        """
+        Set a block at position (x, y, z).
+        Example block:
+        {'snowy': 'false', 'name': 'minecraft:grass_block'}
+
+        In this version:
+        - All block properties are mandatory (no defaults are filled in for you)
+        - Block NBT cannot be set, but can be read.
+        - Existing block NBT for the specified coordinate is cleared.
+        - Liquids are not yet supported
+        """
+        x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
+        # bx, by, bz are block coordinates within the chunk section
+        rx, bx = divmod(x, 512)
+        by = y
+        rz, bz = divmod(z, 512)
+        cx, bx = divmod(bx, 16)
+        cy, by = divmod(by, 16)
+        cz, bz = divmod(bz, 16)
+
+        if self.cx != x // 16 or self.cz != z // 16:
+            raise Exception("Coordinates don't match this chunk!")
+
+        section_not_found = True
+        for section in self.nbt.iter_multipath('Level.Sections[]'):
+            if section.at_path('Y').value == cy:
+                section_not_found = False
+                blocks = BlockArray.from_nbt(section, block_map)
+                blocks[256 * by + 16 * bz + bx] = block
+                break
 
         if section_not_found:
             raise Exception("Chunk section not found")

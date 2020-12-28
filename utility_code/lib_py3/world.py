@@ -243,54 +243,6 @@ class World(object):
             self._scoreboard = Scoreboard(os.path.join(self.path, "data", "scoreboard.dat"))
         return self._scoreboard
 
-    def set_block(self, pos, block):
-        """
-        Set a block at position (x, y, z).
-        Example block:
-        {'block': {'snowy': 'false', 'name': 'minecraft:grass_block'} }
-
-        In this version:
-        - All block properties are mandatory (no defaults are filled in for you)
-        - Block NBT cannot be set, but can be read.
-        - Existing block NBT for the specified coordinate is cleared.
-        - Liquids are not yet supported
-        """
-        x, y, z = pos
-        # bx, by, bz are block coordinates within the chunk section
-        rx, bx = divmod(x, 512)
-        by = y
-        rz, bz = divmod(z, 512)
-        cx, bx = divmod(bx, 16)
-        cy, by = divmod(by, 16)
-        cz, bz = divmod(bz, 16)
-
-        region_path = os.path.join(self.path, "region", f"r.{rx}.{rz}.mca")
-
-        with nbt.RegionFile(region_path) as region:
-            chunk = region.load_chunk(cx, cz)
-            for section in chunk.body.iter_multipath('Level.Sections[]'):
-                if section.at_path('Y').value == cy:
-                    blocks = BlockArray.from_nbt(section, block_map)
-                    blocks[256 * by + 16 * bz + bx] = block['block']
-
-                    if chunk.body.has_path('Level.TileEntities'):
-                        NewTileEntities = []
-                        for tile_entity in chunk.body.iter_multipath('Level.TileEntities[]'):
-                            if (
-                                tile_entity.at_path('x').value != x or
-                                tile_entity.at_path('y').value != y or
-                                tile_entity.at_path('z').value != z
-                            ):
-                                NewTileEntities.append(tile_entity)
-                        if len(NewTileEntities) == 0:
-                            chunk.body.at_path('Level').value.pop('TileEntities')
-                        else:
-                            chunk.body.at_path('Level.TileEntities').value = NewTileEntities
-
-                    region.save_chunk(chunk)
-                    break
-            else:
-                raise Exception("Chunk section not found")
 
     # TODO: This should be one less level of container - i.e. should just be {'snowy'...}
     def fill_blocks(self, pos1, pos2, block):

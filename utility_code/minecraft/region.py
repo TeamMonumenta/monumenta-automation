@@ -5,15 +5,70 @@ import sys
 import time
 import zlib
 import math
+import uuid
 
 from collections.abc import MutableMapping
 
+from lib_py3.common import copy_file, uuid_to_mc_uuid_tag_int_array
 from minecraft.chunk_format.chunk import Chunk
 from minecraft.util.debug_util import NbtPathDebug
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
 from quarry.types.buffer import Buffer, BufferUnderrun
+
+def _fixEntity(dx, dz, entity):
+    nbtPaths = (
+        ('x', 'z'),
+        ('AX', 'AZ'),
+        ('APX', 'APZ'),
+        ('BeamTarget.X', 'BeamTarget.Z'),
+        ('BoundX', 'BoundZ'),
+        ('Brain.memories.{}.value.pos[0]', 'Brain.memories.{}.value.pos[-1]'),
+        ('enteredNetherPosition.x', 'enteredNetherPosition.z'),
+        ('ExitPortal.X', 'ExitPortal.Z'),
+        ('HomePosX', 'HomePosZ'),
+        ('Leash.X', 'Leash.Z'),
+        ('Pos[0]', 'Pos[2]'),
+        ('SleepingX', 'SleepingZ'),
+        ('SpawnX', 'SpawnZ'),
+        ('TileX', 'TileZ'), # Painting/item frame
+        ('TreasurePosX', 'TreasurePosZ'),
+        ('TravelPosX', 'TravelPosZ'),
+        ('xTile', 'zTile'),
+    )
+
+    for nbtPath in nbtPaths:
+        if (
+            bool(entity.count_multipath(nbtPath[0])) and
+            bool(entity.count_multipath(nbtPath[1]))
+        ):
+            for xTag in entity.iter_multipath(nbtPath[0]):
+                xTag.value += dx
+            for zTag in entity.iter_multipath(nbtPath[1]):
+                zTag.value += dz
+
+    # Generate new UUIDs
+    if (entity.has_path("UUIDMost") or entity.has_path("UUIDLeast") or entity.has_path("UUID")):
+        entity.value.pop("UUIDMost", None)
+        entity.value.pop("UUIDLeast", None)
+        entity.value["UUID"] = uuid_to_mc_uuid_tag_int_array(uuid.uuid4())
+
+    # Update grave coordinates
+    if entity.has_path("Tags"):
+        for tag in entity.iter_multipath("Tags[]"):
+            if tag.value.startswith("PlayerDeathLocation;"):
+                death_loc_strs = tag.value.split(";")
+                if len(death_loc_strs) != 4:
+                    continue
+                try:
+                    death_loc_strs[1] = str(int(death_loc_strs[1]) + dx)
+                    death_loc_strs[3] = str(int(death_loc_strs[3]) + dz)
+                    tag.value = ";".join(death_loc_strs)
+                except:
+                    pass
+
+
 
 class Region(MutableMapping):
     """A region file."""
@@ -176,6 +231,43 @@ class Region(MutableMapping):
         self._region.fd.seek(4096 * extents[-1][0])
         self._region.fd.truncate()
 
+    def copy_to(self, world, rx, rz, overwrite=False):
+        """
+        Copies this region file to a new location and returns that new Region
+
+        Also fixes entity positions after copying.
+
+        Throws an exception and does nothing if overwrite is False but the destination file exists
+        """
+        rx = int(rx)
+        rz = int(rz)
+        dx = (rx - self.rx) * 512
+        dz = (rz - self.rz) * 512
+        new_path = os.path.join(world.path, 'region', f'r.{rx}.{rz}.mca')
+
+        if os.path.exists(new_path) and not overwrite:
+            raise Exception(f"Destination region already exists: {new_path}")
+
+        copy_file(self.path, new_path)
+
+        region = Region(new_path, rx, rz)
+
+        for chunk in region.iter_chunks(autosave=True):
+            chunk.nbt.at_path('Level.xPos').value = rx * 32 + (chunk.nbt.at_path('Level.xPos').value & 0x1f)
+            chunk.nbt.at_path('Level.zPos').value = rz * 32 + (chunk.nbt.at_path('Level.zPos').value & 0x1f)
+
+            for path in ['Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
+                if chunk.nbt.has_path(path):
+                    for entity in chunk.nbt.iter_multipath(path + '[]'):
+                        _fixEntity(dx, dz, entity)
+        return region
+
+    def move_to(self, world, rx, rz, overwrite=False):
+        region = self.copy_to(world, rx, rz, overwrite=overwrite)
+        self._region.close()
+        os.remove(self.path)
+        return region
+
     def iter_chunk_coordinates(self):
         """Iterate over chunk coordinates `tuple(cx, cz)` in this region file."""
         yield from iter(self)
@@ -195,7 +287,7 @@ class Region(MutableMapping):
             yield chunk
 
             if autosave:
-                region.save_chunk(chunk)
+                self.save_chunk(chunk)
 
     def _get_entry(self, cx, cz):
         local_cx = cx - 32 * self.rx
@@ -268,3 +360,35 @@ class Region(MutableMapping):
 
     def __repr__(self):
         return f'Region({self.path!r}, {self.rx!r}, {self.rz!r})'
+
+    def get_block(self, pos: [int, int, int]):
+        """
+        Get the block at position (x, y, z).
+        Example block:
+        {'facing': 'north', 'waterlogged': 'false', 'name': 'minecraft:wall_sign'}
+
+        Liquids are not yet supported
+        """
+        x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
+        if self.rx != x // 512 or self.rz != z // 512:
+            raise Exception("Coordinates don't match this region!")
+
+        return self.load_chunk(x // 16, z // 16).get_block(pos)
+
+    def set_block(self, pos: [int, int, int], block):
+        """
+        Set a block at position (x, y, z).
+        Example block:
+        {'snowy': 'false', 'name': 'minecraft:grass_block'}
+
+        In this version:
+        - All block properties are mandatory (no defaults are filled in for you)
+        - Block NBT cannot be set, but can be read.
+        - Existing block NBT for the specified coordinate is cleared.
+        - Liquids are not yet supported
+        """
+        x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
+        if self.rx != x // 512 or self.rz != z // 512:
+            raise Exception("Coordinates don't match this region!")
+
+        return self.load_chunk(x // 16, z // 16).set_block(pos, block)

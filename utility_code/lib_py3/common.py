@@ -187,8 +187,7 @@ def move_file(old, new):
 
 def copy_file(old, new):
     if not os.path.exists(old):
-        print("*** {!r} does not exist, preserving original.".format(old))
-        return False
+        raise Exception("Source file {old} does not exist!")
     if not os.path.isdir(os.path.dirname(new)):
         os.makedirs(os.path.dirname(new), mode=0o775)
     if os.path.exists(new):
@@ -198,7 +197,6 @@ def copy_file(old, new):
         os.symlink(linkto, new)
     else:
         shutil.copy2(old, new)
-    return True
 
 def copy_folder(old, new):
     # This does not check if it's a path or a file, but there's another function for that case.
