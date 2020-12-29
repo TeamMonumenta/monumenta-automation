@@ -17,7 +17,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from quarry.types import nbt
 from quarry.types.buffer import Buffer, BufferUnderrun
 
-def _fixEntity(dx, dz, entity):
+def _fixEntity(dx, dz, entity, regenerate_uuids):
     nbtPaths = (
         ('x', 'z'),
         ('AX', 'AZ'),
@@ -49,7 +49,7 @@ def _fixEntity(dx, dz, entity):
                 zTag.value += dz
 
     # Generate new UUIDs
-    if (entity.has_path("UUIDMost") or entity.has_path("UUIDLeast") or entity.has_path("UUID")):
+    if regenerate_uuids and (entity.has_path("UUIDMost") or entity.has_path("UUIDLeast") or entity.has_path("UUID")):
         entity.value.pop("UUIDMost", None)
         entity.value.pop("UUIDLeast", None)
         entity.value["UUID"] = uuid_to_mc_uuid_tag_int_array(uuid.uuid4())
@@ -231,7 +231,7 @@ class Region(MutableMapping):
         self._region.fd.seek(4096 * extents[-1][0])
         self._region.fd.truncate()
 
-    def copy_to(self, world, rx, rz, overwrite=False):
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True):
         """
         Copies this region file to a new location and returns that new Region
 
@@ -259,11 +259,11 @@ class Region(MutableMapping):
             for path in ['Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
                 if chunk.nbt.has_path(path):
                     for entity in chunk.nbt.iter_multipath(path + '[]'):
-                        _fixEntity(dx, dz, entity)
+                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids)
         return region
 
     def move_to(self, world, rx, rz, overwrite=False):
-        region = self.copy_to(world, rx, rz, overwrite=overwrite)
+        region = self.copy_to(world, rx, rz, overwrite=overwrite, regenerate_uuids=False)
         self._region.close()
         os.remove(self.path)
         return region
