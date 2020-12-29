@@ -593,7 +593,7 @@ Must be run before starting weekly update on the play server'''
 
         await self.display("Packaging up update bundle...")
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
-        await self.run("tar czf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz TEMPLATE")
+        await self.run(["tar", "-I", "pigz --best", "-cf", f"/home/epic/4_SHARED/project_epic_build_template_pre_reset_{datestr()}.tgz", "TEMPLATE"])
 
         await self.display("Update bundle ready!")
         await self.display(message.author.mention)
@@ -690,7 +690,7 @@ Must be run before starting weekly update on the play server'''
         await self.cd("/home/epic/5_SCRATCH/tmpstage")
 
         await self.run("rm -f /home/epic/4_SHARED/stage_bundle.tgz", None)
-        await self.run("tar czf /home/epic/4_SHARED/stage_bundle.tgz TEMPLATE")
+        await self.run(["tar", "-I", "pigz --best", "-cf", "/home/epic/4_SHARED/stage_bundle.tgz", "TEMPLATE"])
 
         await self.display("Cleaning up stage temp files...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpstage")
@@ -876,7 +876,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         await self.display("Performing backup...")
         await self.cd("/home/epic")
         await self.run("mkdir -p /home/epic/1_ARCHIVE")
-        await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_pre_reset_" + datestr() + ".tgz project_epic")
+        await self.run(["tar", "--exclude=project_epic/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/project_epic_pre_reset_{datestr()}.tgz", "project_epic"])
 
         await self.display("Backups complete! Ready for update.")
         await self.display(message.author.mention)
@@ -1041,7 +1041,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         await self.cd("/home/epic")
         if min_phase <= 19:
             await self.display("Backing up post-update artifacts...")
-            await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic")
+            await self.run(["tar", "--exclude=project_epic/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/project_epic_post_reset_{datestr()}.tgz", "project_epic"])
 
         await self.display("Done.")
         await self.display(message.author.mention)
@@ -1198,31 +1198,31 @@ Syntax:
             await self.display("Nothing to do")
             return
 
-        await self.display("Replacing both mobs AND items on [{}]".format(" ".join(replace_shards)))
+        await self.display(f"Replacing both mobs AND items on [{' '.join(replace_shards)}]")
 
         for shard in replace_shards:
             if shard == "structures":
-                base_backup_name = "/home/epic/0_OLD_BACKUPS/structures_pre_entity_loot_updates_{}".format(shard, datestr())
+                base_backup_name = f"/home/epic/0_OLD_BACKUPS/structures_pre_entity_loot_updates_{datestr()}"
 
                 await self.display("Running replacements on structures")
                 await self.cd("/home/epic/project_epic/server_config/data")
-                await self.run("tar czf {}.tgz structures".format(base_backup_name))
+                await self.run(["tar", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", "structures"])
                 await self.cd("/home/epic/project_epic/server_config/data")
-                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py --schematics structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {}_mobs.yml".format(base_backup_name)), displayOutput=True)
+                await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
                 await self.cd("/home/epic/project_epic/server_config/data")
-                await self.run(os.path.join(_top_level, "utility_code/replace_items.py --schematics structures --logfile {}_items.yml".format(base_backup_name)), displayOutput=True)
+                await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --schematics structures --logfile {base_backup_name}_items.yml"), displayOutput=True)
 
             else:
-                base_backup_name = "/home/epic/0_OLD_BACKUPS/Project_Epic-{}_pre_entity_loot_updates_{}".format(shard, datestr())
+                base_backup_name = f"/home/epic/0_OLD_BACKUPS/Project_Epic-{shard}_pre_entity_loot_updates_{datestr()}"
 
                 await self.display("Running replacements on shard {}".format(shard))
                 await self.stop(shard)
                 await self.cd(self._shards[shard])
-                await self.run("tar czf {}.tgz Project_Epic-{}".format(base_backup_name, shard))
+                await self.run(["tar", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", f"Project_Epic-{shard}"])
                 await self.cd(self._shards[shard])
-                await self.run(os.path.join(_top_level, "utility_code/replace_items.py --world Project_Epic-{} --logfile {}_items.yml".format(shard, base_backup_name)), displayOutput=True)
+                await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --world Project_Epic-{shard} --logfile {base_backup_name}_items.yml"), displayOutput=True)
                 await self.cd(self._shards[shard])
-                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py --world Project_Epic-{} --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {}_mobs.yml".format(shard, base_backup_name)), displayOutput=True)
+                await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --world Project_Epic-{shard} --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
                 await self.start(shard)
 
         await self.display(message.author.mention)
