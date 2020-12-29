@@ -68,8 +68,6 @@ elif logfile == "stderr":
 elif logfile is not None:
     log_handle = open(logfile, 'w')
 
-num_replacements = 0
-
 def process_region(region):
     replacements_log = {}
     num_replacements = 0
@@ -119,6 +117,7 @@ if schematics_path:
             parallel_results = pool.map(process_schematic, schem_paths)
     timings.nextStep("Schematics replacements done")
 
+num_replacements = 0
 replacements_to_merge = []
 for region_result in parallel_results:
     num_replacements += region_result[0]

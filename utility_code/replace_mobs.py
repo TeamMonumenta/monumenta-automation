@@ -4,10 +4,12 @@ import sys
 import os
 import getopt
 import yaml
+import multiprocessing
 
 from lib_py3.mob_replacement_manager import MobReplacementManager, remove_unwanted_spawner_tags
 from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items, get_named_armor_items
 from lib_py3.library_of_souls import LibraryOfSouls
+from lib_py3.timing import Timings
 
 from minecraft.chunk_format.schematic import Schematic
 from minecraft.world import World
@@ -121,7 +123,7 @@ def usage():
     sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--dry-run]".format(sys.argv[0]))
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:s:b:l:di", ["world=", "schematics=", "library-of-souls=", "logfile=", "dry-run", "pos1=", "pos2="])
+    opts, args = getopt.getopt(sys.argv[1:], "w:s:b:l:j:di", ["world=", "schematics=", "library-of-souls=", "logfile=", "num-threads=", "dry-run", "pos1=", "pos2="])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
@@ -132,6 +134,7 @@ library_of_souls_path = None
 pos1 = None
 pos2 = None
 logfile = None
+num_threads = 3
 dry_run = False
 
 for o, a in opts:
@@ -157,6 +160,8 @@ for o, a in opts:
             usage()
     elif o in ("-l", "--logfile"):
         logfile = a
+    elif o in ("-j", "--num-threads"):
+        num_threads = int(a)
     elif o in ("-d", "--dry-run"):
         dry_run = True
     else:
@@ -177,10 +182,13 @@ elif (pos1 is not None) and (schematics_path is not None):
     usage()
 
 
+timings = Timings(enabled=dry_run)
 los = LibraryOfSouls(library_of_souls_path, readonly=True)
+timings.nextStep("Loaded Library of Souls")
 replace_mgr = MobReplacementManager()
 los.load_replacements(replace_mgr)
 replace_mgr.add_substitutions(sub)
+timings.nextStep("Loaded mob replacement manager")
 
 log_handle = None
 if logfile == "stdout":
@@ -190,61 +198,97 @@ elif logfile == "stderr":
 elif logfile is not None:
     log_handle = open(logfile, 'w')
 
+# This is handy here because it has direct access to previously defined globals
+def process_entity(entity, replacements_log) -> None:
+    nbt = entity.nbt
+    if nbt.has_path("Delay"):
+        nbt.at_path("Delay").value = 0
+
+        # Remove pigs
+        if nbt.has_path('SpawnPotentials'):
+            new_potentials = []
+            for nested_entity in nbt.iter_multipath('SpawnPotentials[]'):
+                if nested_entity.has_path('nbt.id') and nested_entity.at_path('nbt.id').value == "minecraft:pig":
+                    if log_handle is not None:
+                        log_handle.write(f"Removing pig from SpawnPotentials at {entity.get_path_str()}\n")
+                else:
+                    new_potentials.append(nested_entity)
+            nbt.at_path('SpawnPotentials').value = new_potentials
+        if nbt.has_path("SpawnData.id") and nbt.at_path("SpawnData.id").value == "minecraft:pig":
+            if log_handle is not None:
+                log_handle.write(f"Removing pig Spawndata at {entity.get_path_str()}\n")
+            nbt.value.pop("SpawnData")
+
+    if is_entity_in_spawner(entity):
+        remove_unwanted_spawner_tags(nbt)
+        return replace_mgr.replace_mob(nbt, replacements_log, entity.get_path_str())
+
+def process_region(region):
+    replacements_log = {}
+    num_replacements = 0
+    for chunk in region.iter_chunks(autosave=(not dry_run)):
+        for entity in chunk.recursive_iter_entities():
+            if process_entity(entity, replacements_log):
+                num_replacements += 1
+
+    return (num_replacements, replacements_log)
+
+def process_schematic(schem_path):
+    replacements_log = {}
+    num_replacements = 0
+
+    schem = Schematic(schem_path)
+    for entity in schem.recursive_iter_entities():
+        if process_entity(entity, replacements_log):
+            num_replacements += 1
+
+    if not dry_run and num_replacements > 0:
+        schem.save()
+
+    return (num_replacements, replacements_log)
+
+if world_path:
+    world = World(world_path)
+    timings.nextStep("Loaded world")
+
+    parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads)
+    timings.nextStep("World replacements done")
+
+if schematics_path:
+    schem_paths = []
+    for root, subdirs, files in os.walk(schematics_path):
+        for fname in files:
+            if fname.endswith(".schematic"):
+                schem_paths.append(os.path.join(root, fname))
+
+    if num_threads == 1:
+        # Don't bother with processes if only going to use one
+        # This makes debugging much easier
+        parallel_results = []
+        for schem_path in schem_paths:
+            parallel_results.append(process_schematic(schem_path))
+    else:
+        with multiprocessing.Pool(num_threads) as pool:
+            parallel_results = pool.map(process_schematic, schem_paths)
+    timings.nextStep("Schematics replacements done")
+
 replacements_log = {}
-
 num_replacements = 0
-try:
-    # This is handy here because it has direct access to previously defined globals
-    def process_entity(entity, debug_path_prefix="") -> None:
-        nbt = entity.nbt
-        if nbt.has_path("Delay"):
-            nbt.at_path("Delay").value = 0
 
-            # Remove pigs
-            if nbt.has_path('SpawnPotentials'):
-                new_potentials = []
-                for nested_entity in nbt.iter_multipath('SpawnPotentials[]'):
-                    if nested_entity.has_path('nbt.id') and nested_entity.at_path('nbt.id').value == "minecraft:pig":
-                        if log_handle is not None:
-                            log_handle.write(f"Removing pig from SpawnPotentials at {entity.get_path_str()}\n")
-                    else:
-                        new_potentials.append(nested_entity)
-                nbt.at_path('SpawnPotentials').value = new_potentials
-            if nbt.has_path("SpawnData.id") and nbt.at_path("SpawnData.id").value == "minecraft:pig":
-                if log_handle is not None:
-                    log_handle.write(f"Removing pig Spawndata at {entity.get_path_str()}\n")
-                nbt.value.pop("SpawnData")
+replacements_to_merge = []
+for region_result in parallel_results:
+    num_replacements += region_result[0]
+    replacements_to_merge.append(region_result[1])
 
-        if is_entity_in_spawner(entity):
-            remove_unwanted_spawner_tags(nbt)
-            return replace_mgr.replace_mob(nbt, replacements_log, f"{debug_path_prefix} -> {entity.get_path_str()}")
+replacements_log = replace_mgr.merge_logs(replacements_to_merge)
+timings.nextStep("Logs merged")
 
-    if world_path:
-        world = World(world_path)
-        for chunk in world.iter_chunks(autosave=(not dry_run)):
-            for entity in chunk.recursive_iter_entities():
-                if process_entity(entity, os.path.basename(world_path)):
-                    num_replacements += 1
+if log_handle is not None:
+    yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
+    timings.nextStep("Logs written")
 
-    if schematics_path:
-        for root, subdirs, files in os.walk(schematics_path):
-            for fname in files:
-                if fname.endswith(".schematic"):
-                    schem = Schematic(os.path.join(root, fname))
-                    num_replacements_this_schem = 0
-                    for entity in schem.recursive_iter_entities():
-                        if process_entity(entity, fname):
-                            num_replacements += 1
-                            num_replacements_this_schem += 1
+if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
+    log_handle.close()
 
-                    if not dry_run and num_replacements_this_schem > 0:
-                        schem.save()
+print("{} mobs replaced".format(num_replacements))
 
-    print("{} mobs replaced".format(num_replacements))
-
-finally:
-    if log_handle is not None:
-        yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
-
-    if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
-        log_handle.close()
