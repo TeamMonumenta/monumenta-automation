@@ -7,6 +7,8 @@ import zlib
 import math
 import multiprocessing
 
+from lib_py3.common import bounded_range
+
 from minecraft.level_dat import LevelDat
 from minecraft.region import Region
 from minecraft.player_dat_format.player import PlayerFile
@@ -127,11 +129,11 @@ class World():
                 with multiprocessing.Pool(num_processes) as pool:
                     return pool.map(_parallel_region_wrapper, region_list)
 
-    def get_region(self, rx, rz):
+    def get_region(self, rx, rz, read_only=False):
         rx = int(rx)
         rz = int(rz)
         full_path = os.path.join(self.path, 'region', f'r.{rx}.{rz}.mca')
-        return Region(full_path, rx, rz)
+        return Region(full_path, rx, rz, read_only=read_only)
 
     def enumerate_players(self):
         """
@@ -221,3 +223,25 @@ class World():
         """
         x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
         return self.get_region(x // 512, z // 512).set_block(pos, block)
+
+    def fill_blocks(self, pos1, pos2, block):
+        """
+        Fill the blocks from pos1 to pos2 (x, y, z).
+        Example block:
+        {'snowy': 'false', 'name': 'minecraft:grass_block'}
+
+        In this version:
+        - All block properties are mandatory (no defaults are filled in for you)
+        - Block NBT cannot be set, but can be read.
+        - Similar to the vanilla /fill command, entities are ignored.
+        - Existing block NBT for the specified coordinate is cleared.
+        - Liquids are not yet supported
+        """
+        min_x = min(pos1[0], pos2[0])
+        min_z = min(pos1[2], pos2[2])
+        max_x = max(pos1[0], pos2[0])
+        max_z = max(pos1[2], pos2[2])
+
+        for rz in range(min_z//512, (max_z - 1)//512 + 1):
+            for rx in range(min_x//512, (max_x - 1)//512 + 1):
+                self.get_region(rx, rz).fill_blocks(pos1, pos2, block)

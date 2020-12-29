@@ -113,13 +113,13 @@ class AutomationBotInstance(object):
             "find loot problems": self.action_find_loot_problems,
 
             "generate instances": self.action_generate_instances,
-            "prepare reset bundle": self.action_prepare_reset_bundle,
+            "prepare update bundle": self.action_prepare_update_bundle,
             "prepare stage bundle": self.action_prepare_stage_bundle,
             "apply stage bundle": self.action_apply_stage_bundle,
-            "fetch reset bundle": self.action_fetch_reset_bundle,
+            "fetch update bundle": self.action_fetch_update_bundle,
             "stop in 10 minutes": self.action_stop_in_10_minutes,
             "stop and backup": self.action_stop_and_backup,
-            "terrain reset": self.action_terrain_reset,
+            "weekly update": self.action_weekly_update,
             "get raffle seed": self.action_get_raffle_seed,
             "run test raffle": self.action_run_test_raffle,
 
@@ -515,16 +515,16 @@ Do not use for debugging quests or other scores that are likely to change often.
 
     async def action_generate_instances(self, cmd, message):
         '''Dangerous!
-Deletes previous terrain reset data
+Deletes previous weekly update data
 Temporarily brings down the dungeon shard to generate dungeon instances.
-Must be run before preparing the build server reset bundle'''
+Must be run before preparing the build server update bundle'''
 
         debug = False
         if message.content[len(self._prefix + cmd) + 1:].strip() == "--debug":
             debug = True
             await self.display("Debug mode enabled! Will only generate 5 of each dungeon, and will not cleanly copy the dungeon shard")
 
-        await self.display("Cleaning up old terrain reset data...")
+        await self.display("Cleaning up old weekly update data...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
 
@@ -551,11 +551,11 @@ Must be run before preparing the build server reset bundle'''
         await self.display("Dungeon instance generation complete!")
         await self.display(message.author.mention)
 
-    async def action_prepare_reset_bundle(self, cmd, message):
+    async def action_prepare_update_bundle(self, cmd, message):
         '''Dangerous!
-Temporarily brings down the region_1 and region_2 shards to prepare for terrain reset
-Packages up all of the pre-reset server components needed by the play server for reset
-Must be run before starting terrain reset on the play server'''
+Temporarily brings down the region_1 and region_2 shards to prepare for weekly update
+Packages up all of the pre-update server components needed by the play server for update
+Must be run before starting weekly update on the play server'''
 
         debug = False
         if message.content[len(self._prefix + cmd) + 1:].strip() == "--debug":
@@ -591,11 +591,11 @@ Must be run before starting terrain reset on the play server'''
         await self.display("Copying server_config...")
         await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
-        await self.display("Packaging up reset bundle...")
+        await self.display("Packaging up update bundle...")
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
         await self.run("tar czf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz TEMPLATE")
 
-        await self.display("Reset bundle ready!")
+        await self.display("Update bundle ready!")
         await self.display(message.author.mention)
 
     async def action_prepare_stage_bundle(self, cmd, message):
@@ -608,8 +608,12 @@ Must be run before starting terrain reset on the play server'''
 
         instance_gen_required = []
         main_shards = []
+        debug = False
         for shard in shards:
-            if shard == "region_1" or shard == "region_2":
+            if shard == "--debug":
+                debug = True
+                await self.display("Debug mode enabled! Will not stop shards prior to copying")
+            elif shard == "region_1" or shard == "region_2":
                 main_shards.append(shard)
             elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "tutorial", "reverie", "rush", "willows", "sanctum", "shiftingcity", "labs"]:
                 instance_gen_required.append(shard)
@@ -627,15 +631,17 @@ Must be run before starting terrain reset on the play server'''
             # Need to copy primary shards
 
             for shard in main_shards:
-                await self.display("Stopping {shard}...".format(shard=shard))
-                await self.stop(shard)
+                if not debug:
+                    await self.display("Stopping {shard}...".format(shard=shard))
+                    await self.stop(shard)
 
                 await self.display("Copying {shard}...".format(shard=shard))
                 await self.run("mkdir -p /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}".format(shard=shard))
                 await self.run("cp -a /home/epic/project_epic/{shard}/Project_Epic-{shard} /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/".format(shard=shard))
 
-                await self.display("Restarting {shard}...".format(shard=shard))
-                await self.start(shard)
+                if not debug:
+                    await self.display("Restarting {shard}...".format(shard=shard))
+                    await self.start(shard)
 
                 await self.display("Running replacements on copied version of {shard}...".format(shard=shard))
                 args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard}".format(shard=shard)
@@ -646,15 +652,16 @@ Must be run before starting terrain reset on the play server'''
 
         if len(instance_gen_required) > 0:
             # Need to generate instances
-            await self.display("Stopping the dungeon shard...")
-            await self.stop("dungeon")
+            if not debug:
+                await self.display("Stopping the dungeon shard...")
+                await self.stop("dungeon")
 
             await self.display("Copying the dungeon master copies...")
             await self.run("cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon")
 
-            await self.display("Restarting the dungeon shard...")
-            await self.cd("/home/epic/project_epic/dungeon")
-            await self.start("dungeon")
+            if not debug:
+                await self.display("Restarting the dungeon shard...")
+                await self.start("dungeon")
 
             await self.display("Running replacements on copied dungeon masters...")
             args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon"
@@ -675,8 +682,8 @@ Must be run before starting terrain reset on the play server'''
         await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpstage/TEMPLATE/")
 
         await self.display("Running replacements on copied structures...")
-        # TODO: Needs item replacements support for schematics
         args = " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json"
+        await self.run(os.path.join(_top_level, "utility_code/replace_items.py --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"), displayOutput=True)
         await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         await self.display("Packaging up stage bundle...")
@@ -717,7 +724,7 @@ Must be run before starting terrain reset on the play server'''
         await self.run("cp -a /home/epic/project_epic/region_1/banned-players.json /home/epic/4_SHARED/op-ban-sync/stage/")
         await self.run("cp -a /home/epic/project_epic/region_1/ops.json /home/epic/4_SHARED/op-ban-sync/stage/")
 
-        await self.display("Deleting previous reset data...")
+        await self.display("Deleting previous update data...")
         await self.cd("/home/epic/project_epic")
         await self.run("rm -rf 0_PREVIOUS")
         await self.run("mkdir 0_PREVIOUS")
@@ -739,8 +746,8 @@ Must be run before starting terrain reset on the play server'''
             await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play tutorial"))
             folders_to_update.pop("tutorial")
 
-        await self.display("Running actual terrain reset (this will take a while!)...")
-        await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(folders_to_update)))
+        await self.display("Running actual weekly update (this will take a while!)...")
+        await self.run(os.path.join(_top_level, "utility_code/weekly_update.py --last_week_dir /home/epic/project_epic/0_PREVIOUS/ --output_dir /home/epic/project_epic/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 6 " + " ".join(folders_to_update)))
 
         for shard in ["plots", "region_1", "region_2"]:
             if shard in folders_to_update:
@@ -771,17 +778,17 @@ Must be run before starting terrain reset on the play server'''
         await self.display(message.author.mention)
 
 
-    async def action_fetch_reset_bundle(self, cmd, message):
+    async def action_fetch_update_bundle(self, cmd, message):
         '''Dangerous!
-Deletes in-progress terrain reset info on the play server
-Downloads the terrain reset bundle from the build server and unpacks it'''
+Deletes in-progress weekly update info on the play server
+Downloads the weekly update bundle from the build server and unpacks it'''
 
-        await self.display("Unpacking reset bundle...")
+        await self.display("Unpacking update bundle...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
         await self.run("tar xzf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz")
-        await self.display("Build server template data retrieved and ready for reset.")
+        await self.display("Build server template data retrieved and ready for update.")
         await self.display(message.author.mention)
 
     async def action_stop_in_10_minutes(self, cmd, message):
@@ -824,7 +831,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
 
     async def action_stop_and_backup(self, cmd, message):
         '''Dangerous!
-Brings down all play server shards and backs them up in preparation for terrain reset.
+Brings down all play server shards and backs them up in preparation for weekly update.
 DELETES DUNGEON CORE PROTECT DATA'''
 
         allShards = self._shards.keys()
@@ -871,7 +878,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         await self.run("mkdir -p /home/epic/1_ARCHIVE")
         await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_pre_reset_" + datestr() + ".tgz project_epic")
 
-        await self.display("Backups complete! Ready for reset.")
+        await self.display("Backups complete! Ready for update.")
         await self.display(message.author.mention)
 
     async def action_get_raffle_seed(self, cmd, message):
@@ -894,9 +901,9 @@ DELETES DUNGEON CORE PROTECT DATA'''
         vote_raffle(raffle_seed, '/home/epic/project_epic/bungee/uuid2name.yml', '/home/epic/project_epic/bungee/plugins/Monumenta-Bungee/votes', raffle_results, dry_run=True)
         await self.run("cat {}".format(raffle_results), displayOutput=True)
 
-    async def action_terrain_reset(self, cmd, message):
+    async def action_weekly_update(self, cmd, message):
         '''Dangerous!
-Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
+Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         # Check for any arguments
         commandArgs = message.content[len(self._prefix):].strip()
@@ -930,10 +937,10 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
                     await self.display(message.author.mention)
                     return
 
-        # Delete previous reset data and move current data to 0_PREVIOUS
+        # Delete previous update data and move current data to 0_PREVIOUS
         await self.cd("/home/epic/project_epic")
         if min_phase <= 3:
-            await self.display("Deleting previous reset data...")
+            await self.display("Deleting previous update data...")
             await self.run("rm -rf 0_PREVIOUS")
             await self.run("mkdir 0_PREVIOUS")
 
@@ -999,8 +1006,8 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
             await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial 1")
 
         if min_phase <= 15:
-            await self.display("Running actual terrain reset (this will take a while!)...")
-            await self.run(os.path.join(_top_level, "utility_code/terrain_reset.py " + " ".join(allShards)))
+            await self.display("Running actual weekly update (this will take a while!)...")
+            await self.run(os.path.join(_top_level, "utility_code/weekly_update.py --last_week_dir /home/epic/project_epic/0_PREVIOUS/ --output_dir /home/epic/project_epic/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 16 " + " ".join(folders_to_update)))
 
         if min_phase <= 16:
             for shard in ["plots", "region_1"]:
@@ -1033,7 +1040,7 @@ Performs the terrain reset on the play server. Requires StopAndBackupAction.'''
 
         await self.cd("/home/epic")
         if min_phase <= 19:
-            await self.display("Backing up post-reset artifacts...")
+            await self.display("Backing up post-update artifacts...")
             await self.run("tar --exclude=project_epic/0_PREVIOUS -czf /home/epic/1_ARCHIVE/project_epic_post_reset_" + datestr() + ".tgz project_epic")
 
         await self.display("Done.")

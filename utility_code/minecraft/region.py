@@ -10,6 +10,7 @@ import uuid
 from collections.abc import MutableMapping
 
 from lib_py3.common import copy_file, uuid_to_mc_uuid_tag_int_array
+
 from minecraft.chunk_format.chunk import Chunk
 from minecraft.util.debug_util import NbtPathDebug
 
@@ -73,12 +74,12 @@ def _fixEntity(dx, dz, entity, regenerate_uuids):
 class Region(MutableMapping):
     """A region file."""
 
-    def __init__(self, path, rx, rz):
+    def __init__(self, path, rx, rz, read_only=False):
         """Load a region file from the path provided, and allow saving."""
         self.path = path
         self.rx = rx
         self.rz = rz
-        self._region = nbt.RegionFile(self.path)
+        self._region = nbt.RegionFile(self.path, read_only=read_only)
 
     def has_chunk(self, cx, cz):
         """Return True if this region contains chunk cx, cz (global coordinates)."""
@@ -392,3 +393,29 @@ class Region(MutableMapping):
             raise Exception("Coordinates don't match this region!")
 
         return self.load_chunk(x // 16, z // 16).set_block(pos, block)
+
+    def fill_blocks(self, pos1, pos2, block):
+        """
+        Set a block at position (x, y, z).
+        Example block:
+        {'snowy': 'false', 'name': 'minecraft:grass_block'}
+
+        In this version:
+        - All block properties are mandatory (no defaults are filled in for you)
+        - Block NBT cannot be set, but can be read.
+        - Existing block NBT for the specified coordinate is cleared.
+        - Liquids are not yet supported
+
+        Note that if pos1 / pos2 can exceed the bounds of this region for simplicity;
+        out-of-bounds blocks will not be filled
+        """
+        min_x = min(pos1[0], pos2[0])
+        min_z = min(pos1[2], pos2[2])
+        max_x = max(pos1[0], pos2[0])
+        max_z = max(pos1[2], pos2[2])
+
+        for cz in range(min(max(min_z//16, self.rz*32), (self.rz + 1)*32 - 1), min(max(max_z//16, self.rz*32), (self.rz + 1)*32 - 1) + 1):
+            for cx in range(min(max(min_x//16, self.rx*32), (self.rx + 1)*32 - 1), min(max(max_x//16, self.rx*32), (self.rx + 1)*32 - 1) + 1):
+                chunk = self.load_chunk(cx, cz)
+                chunk.fill_blocks(pos1, pos2, block)
+                self.save_chunk(chunk)

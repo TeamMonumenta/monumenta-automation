@@ -3,18 +3,18 @@
 import os
 import sys
 
+# TODO: This needs to get moved into this library
+from lib_py3.block_map import block_map
+from lib_py3.common import bounded_range
+
 from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.chunk_format.entity import Entity
 from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
-# TODO: This needs to get moved into this library
-from lib_py3.block_map import block_map
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
 from quarry.types.chunk import BlockArray
-# TODO Add methods for dealing with blocks, lighting, etc.
-#from quarry.types.buffer import BufferUnderrun
 
 class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
     """A chunk, loaded from a tag."""
@@ -41,6 +41,9 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
         multipaths[Entity] |= frozenset({
             'Level.Entities[]',
         })
+
+    def get_debug_str(self):
+        return str(self)
 
     @property
     def cx(self):
@@ -128,3 +131,43 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
         if section_not_found:
             raise Exception("Chunk section not found")
 
+    def fill_blocks(self, pos1, pos2, block):
+        """
+        Set a block at position (x, y, z).
+        Example block:
+        {'snowy': 'false', 'name': 'minecraft:grass_block'}
+
+        In this version:
+        - All block properties are mandatory (no defaults are filled in for you)
+        - Block NBT cannot be set, but can be read.
+        - Existing block NBT for the specified coordinate is cleared.
+        - Liquids are not yet supported
+
+        Note that if pos1 / pos2 can exceed the bounds of this chunk for simplicity;
+        out-of-bounds blocks will not be filled
+        """
+        min_x = min(pos1[0], pos2[0])
+        min_y = min(pos1[1], pos2[1])
+        min_z = min(pos1[2], pos2[2])
+        max_x = max(pos1[0], pos2[0])
+        max_y = max(pos1[1], pos2[1])
+        max_z = max(pos1[2], pos2[2])
+
+        required_cy_sections = tuple(bounded_range(min_y, max_y, 0, 256, 16))
+        required_sections_left = set(required_cy_sections)
+
+        # Handle blocks - eventually liquids, lighting, etc will be handled here too
+        for section in self.nbt.iter_multipath('Level.Sections[]'):
+            cy = section.at_path("Y").value
+            if cy not in required_sections_left:
+                continue
+            required_sections_left.remove(cy)
+            blocks = BlockArray.from_nbt(section, block_map)
+
+            for by in bounded_range(min_y, max_y, cy, 16):
+                for bz in bounded_range(min_z, max_z, self.cz, 16):
+                    for bx in bounded_range(min_x, max_x, self.cx, 16):
+                        blocks[256 * by + 16 * bz + bx] = block
+
+        if len(required_sections_left) != 0:
+            raise KeyError(f'Could not find cy={required_sections_left} in chunk {self.cx},{self.cz} of region file {rx},{rz} in world {self.path}')
