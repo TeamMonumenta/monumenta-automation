@@ -999,7 +999,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 13:
             await self.display("Running item replacements for players...")
-            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --redisworld /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.yml")
+            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --world /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.yml -j 16")
 
         if min_phase <= 14:
             await self.display("Loading player data back into redis...")
@@ -1007,7 +1007,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 15:
             await self.display("Running actual weekly update (this will take a while!)...")
-            await self.run(os.path.join(_top_level, "utility_code/weekly_update.py --last_week_dir /home/epic/project_epic/0_PREVIOUS/ --output_dir /home/epic/project_epic/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 16 " + " ".join(folders_to_update)))
+            await self.run(os.path.join(_top_level, "utility_code/weekly_update.py --last_week_dir /home/epic/project_epic/0_PREVIOUS/ --output_dir /home/epic/project_epic/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 16 " + " ".join(allShards)))
 
         if min_phase <= 16:
             for shard in ["plots", "region_1"]:
