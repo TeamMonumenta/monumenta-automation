@@ -198,8 +198,9 @@ def create_instance(arg):
 
 timings = Timings(enabled=True)
 for dungeon in config["dungeons"]:
+    print(f"Generating {dungeon['name']} instances...")
     # Compute where the new world will be
-    new_world_path = os.path.join(out_folder, f"Project_Epic-{dungeon['name']}")
+    new_world_path = os.path.join(out_folder, f"{dungeon['name']}", f"Project_Epic-{dungeon['name']}")
 
     # Create target directories
     if not os.path.isdir(os.path.join(new_world_path, "region")):
@@ -217,13 +218,13 @@ for dungeon in config["dungeons"]:
 
     # Copy spawn chunks
     spawn_region = config["spawn_region"]
-    ref_world.get_region(spawn_region["x"], spawn_region["z"]).copy_to(new_world, spawn_region["x"], spawn_region["z"])
+    ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True).copy_to(new_world, spawn_region["x"], spawn_region["z"])
 
     ###############
     # Create the new instances
 
     # Open the source region as a global variable
-    ref_region = ref_world.get_region(dungeon["region"]["x"], dungeon["region"]["z"])
+    ref_region = ref_world.get_region(dungeon["region"]["x"], dungeon["region"]["z"], read_only=True)
 
     # Create a list of all the region files that need copying to
     args = []
@@ -236,8 +237,12 @@ for dungeon in config["dungeons"]:
         for arg in args:
             create_instance(arg)
     else:
+        done_count = 0
         with multiprocessing.Pool(num_threads) as pool:
-            parallel_results = pool.map(create_instance, args)
+            for _ in pool.imap_unordered(create_instance, args):
+                done_count += 1
+
+                print(f"  {done_count} / {dungeon['count']} instances generated")
 
     # /Create the new instances
     ###############
