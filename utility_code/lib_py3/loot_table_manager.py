@@ -485,15 +485,13 @@ class LootTableManager(object):
     #
 
     def load_command(self, command, source_label, ref_obj):
+
         if "giveloottable" in command:
-            line = command.strip()
-            if line[-1] != '"':
-                raise ValueError('giveloottable command in {} does not end with a "'.format(ref_obj))
-            line = line[:-1]
-            if not line.rfind('"'):
-                raise ValueError('giveloottable command in {} missing first "'.format(ref_obj))
-            line = line[line.rfind('"') + 1:]
-            self.add_loot_table_reference(line, source_label, ref_obj)
+            #pat = re.compile(r'giveloottable (.*) "([^"]+)" *[0-9]*')
+            match = re.match(r'.*giveloottable.*"(.*)" *[0-9]*', command)
+            if not match:
+                raise ValueError("Can't identify loot table in command: {}".format(command))
+            self.add_loot_table_reference(match.group(1), source_label, ref_obj)
 
         # This handles both mob DeathLootTable and chest/container LootTable
         line = command
@@ -575,32 +573,28 @@ class LootTableManager(object):
     # World Loading
     #
 
-    def load_entity(self, entity, source_pos):
+    def load_entity(self, entity):
         """
         Loads a single entity into the manager looking for references to loot tables
         If this was from a spawner, set ref_dict to the blockdata that will actually be the record entry
         """
 
-        if not entity.has_path("id"):
-            eprint("WARNING: Entity has no id!")
-            return
-
         ref_dict = {
-            "id":entity.at_path("id").value,
-            "pos": source_pos,
+            "path":entity.get_debug_str(),
+            "pos": entity.pos,
         }
 
-        if entity.has_path("CustomName"):
-            ref_dict["entity_name"] = entity.at_path("CustomName").value
+        if entity.nbt.has_path("CustomName"):
+            ref_dict["entity_name"] = entity.nbt.at_path("CustomName").value
 
-        if entity.has_path("DeathLootTable"):
-            self.add_loot_table_reference(entity.at_path("DeathLootTable").value, "world", ref_dict)
+        if entity.nbt.has_path("DeathLootTable"):
+            self.add_loot_table_reference(entity.nbt.at_path("DeathLootTable").value, "world", ref_dict)
 
-        if entity.has_path("LootTable"):
-            self.add_loot_table_reference(entity.at_path("LootTable").value, "world", ref_dict)
+        if entity.nbt.has_path("LootTable"):
+            self.add_loot_table_reference(entity.nbt.at_path("LootTable").value, "world", ref_dict)
 
-        if entity.has_path("Command"):
-            self.load_command(entity.at_path("Command").value, "world", ref_dict)
+        if entity.nbt.has_path("Command"):
+            self.load_command(entity.nbt.at_path("Command").value, "world", ref_dict)
 
     def load_world(self, world):
         """
@@ -613,8 +607,10 @@ class LootTableManager(object):
             raise Exception("Only one world can be loaded into a loot table manager at a time")
 
         self._world = world
-        for entity, source_pos, _ in world.entity_iterator(readonly=True):
-            self.load_entity(entity, source_pos)
+        for region in world.iter_regions(read_only=True):
+            for chunk in region.iter_chunks(autosave=False):
+                for entity in chunk.recursive_iter_all_types():
+                    self.load_entity(entity)
 
 
     def update_table_link_in_world_entry(self, tile_entity_ref, old_namespaced_path, new_namespaced_path):

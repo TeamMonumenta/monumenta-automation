@@ -7,7 +7,8 @@ from pprint import pprint
 
 from lib_py3.common import eprint
 from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.world import World
+
+from minecraft.world import World
 
 
 def usage():
