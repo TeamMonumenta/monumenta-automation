@@ -4,26 +4,26 @@ import sys
 import os
 from pprint import pprint
 from lib_py3.common import parse_name_possibly_json
-from minecraft.chunk_format.schematic import Schematic
 from lib_py3.library_of_souls import LibraryOfSouls
-from lib_py3.world import World
+
+from minecraft.chunk_format.schematic import Schematic
+from minecraft.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 
-# This ugly function references tons of global variables...
-def process_entity(entity, source_pos, entity_path, source_name):
-    if entity.has_path("CustomName"):
-        if not entity.has_path("id"):
+def process_entity(entity, source_name):
+    if entity.nbt.has_path("CustomName"):
+        if not entity.nbt.has_path("id"):
             return
         # Don't add tile entities!
-        if entity.has_path("LootTable") or entity.has_path("Items") or entity.has_path("Command"):
+        if entity.nbt.has_path("LootTable") or entity.nbt.has_path("Items") or entity.nbt.has_path("Command"):
             return
         # Don't add non-mob entities
         for forbidden in forbidden_ids:
-            if forbidden in entity.at_path("id").value:
+            if forbidden in entity.nbt.at_path("id").value:
                 return
 
-        name = parse_name_possibly_json(entity.at_path("CustomName").value, remove_color=True)
+        name = parse_name_possibly_json(entity.nbt.at_path("CustomName").value, remove_color=True)
 
         # Keep track of how many times each mob is seen
         if name not in mob_counts:
@@ -42,14 +42,14 @@ def process_entity(entity, source_pos, entity_path, source_name):
             # Not in the library - check if its NBT is unique
             if name not in not_found_different_mobs:
                 if name in not_found_unique_mobs:
-                    if not_found_unique_mobs[name] != entity:
+                    if not_found_unique_mobs[name] != entity.nbt:
                         #print("Diff at mob {}".format(name))
-                        #not_found_unique_mobs[name].diff(entity, order_matters=False, show_values=True)
+                        #not_found_unique_mobs[name].diff(entity.nbt, order_matters=False, show_values=True)
                         not_found_different_mobs.add(name)
                         not_found_unique_mobs.pop(name)
                 else:
-                    not_found_unique_mobs[name] = entity
-                mob_pos[name] = (source_pos, source_name)
+                    not_found_unique_mobs[name] = entity.nbt
+                mob_pos[name] = (entity.pos, source_name)
 
 
 mob_pos = {}
@@ -73,7 +73,7 @@ for basedir in ["/home/epic/project_epic/server_config/data/structures/region_1"
                 print("Processing schematic: {}".format(schem.name))
 
                 for entity in schem.recursive_iter_entities():
-                    process_entity(entity.nbt, entity.pos, entity.get_legacy_debug(), schem.name)
+                    process_entity(entity, schem.name)
 
 print("Processing shiftingcity schematics...")
 for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/roguelite"):
@@ -81,7 +81,7 @@ for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/
         if fname.endswith(".schematic"):
             schem = Schematic(os.path.join(root, fname))
             for entity in schem.recursive_iter_entities():
-                process_entity(entity.nbt, entity.pos, entity.get_legacy_debug(), "shiftingcity")
+                process_entity(entity, "shiftingcity")
 
 print("Processing roguelike schematics...")
 for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/dungeon/rogue"):
@@ -89,7 +89,7 @@ for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/
         if fname.endswith(".schematic"):
             schem = Schematic(os.path.join(root, fname))
             for entity in schem.recursive_iter_entities():
-                process_entity(entity.nbt, entity.pos, entity.get_legacy_debug(), "roguelike")
+                process_entity(entity, "roguelike")
 
 dungeons = {
     "white":{"x":-3, "z":-2},
@@ -119,11 +119,9 @@ for dungeon in dungeons:
     print("Processing dungeon: {}".format(dungeon))
     rx = dungeons[dungeon]["x"]
     rz = dungeons[dungeon]["z"]
-    pos1 = (512*rx      ,   0, 512*rz      )
-    pos2 = (512*rx + 511, 255, 512*rz + 511)
-    for entity, source_pos, entity_path in dungeonWorld.entity_iterator(pos1=pos1, pos2=pos2, readonly=True):
-        process_entity(entity, source_pos, entity_path, dungeon)
-
+    for chunk in dungeonWorld.get_region(rx, rz, read_only = True).iter_chunks(autosave=False):
+        for entity in chunk.recursive_iter_entities():
+            process_entity(entity, dungeon)
 
 print("\n\n\n\n\n\nNot found unique mobs:")
 for name in not_found_unique_mobs:
