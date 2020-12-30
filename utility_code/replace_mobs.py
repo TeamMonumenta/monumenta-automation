@@ -134,7 +134,7 @@ library_of_souls_path = None
 pos1 = None
 pos2 = None
 logfile = None
-num_threads = 3
+num_threads = 4
 dry_run = False
 
 for o, a in opts:

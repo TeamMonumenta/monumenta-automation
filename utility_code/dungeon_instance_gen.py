@@ -132,7 +132,7 @@ except getopt.GetoptError as err:
 world_path = None
 out_folder = None
 force_count = None
-num_threads = 3
+num_threads = 4
 specific_worlds = []
 
 for o, a in opts:

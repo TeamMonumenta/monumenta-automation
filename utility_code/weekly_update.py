@@ -34,7 +34,7 @@ except getopt.GetoptError as err:
 last_week_dir = None
 build_template_dir = None
 output_dir = None
-num_threads = 3
+num_threads = 4
 redis_host = 'redis'
 
 for o, a in opts:

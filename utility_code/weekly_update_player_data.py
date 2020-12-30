@@ -25,7 +25,7 @@ world_path = None
 datapacks = None
 logfile = None
 dry_run = False
-num_threads = 3
+num_threads = 4
 
 for o, a in opts:
     if o in ("-w", "--world"):

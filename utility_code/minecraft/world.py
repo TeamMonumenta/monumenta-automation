@@ -96,7 +96,7 @@ class World():
         for full_path, rx, rz in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z):
             yield Region(full_path, rx, rz)
 
-    def iter_regions_parallel(self, func, num_processes=3, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
+    def iter_regions_parallel(self, func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
         """
         Iterates regions in parallel using multiple processes.
 
@@ -161,7 +161,7 @@ class World():
             if autosave:
                 player_file.save()
 
-    def iter_players_parallel(self, func, num_processes=3, autosave=False):
+    def iter_players_parallel(self, func, num_processes=4, autosave=False):
         """
         Iterates players in parallel using multiple processes.
 
