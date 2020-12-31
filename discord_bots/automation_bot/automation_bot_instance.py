@@ -278,50 +278,54 @@ class AutomationBotInstance(object):
             # For complicated stuff, the caller must split appropriately
             splitCmd = cmd
         await self.debug("Executing: ```" + str(splitCmd) + "```")
-        process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = await process.communicate()
-        rc = process.returncode
+        async with self._channel.typing():
+            process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = await process.communicate()
+            rc = process.returncode
 
-        await self.debug("Result: {}".format(rc))
+            await self.debug("Result: {}".format(rc))
 
-        stdout = stdout.decode('utf-8')
-        if stdout:
-            await self.debug("stdout from command {!r}:".format(cmd))
-            logger.debug(stdout)
+            stdout = stdout.decode('utf-8')
+            if stdout:
+                await self.debug("stdout from command {!r}:".format(cmd))
+                logger.debug(stdout)
 
-            if self._debug or displayOutput:
-                await self.display_verbatim(stdout)
+                if self._debug or displayOutput:
+                    await self.display_verbatim(stdout)
 
-        stderr = stderr.decode('utf-8')
-        if stderr:
-            await self._channel.send("stderr from command {!r}:".format(cmd))
-            await self.display_verbatim(stderr)
+            stderr = stderr.decode('utf-8')
+            if stderr:
+                await self._channel.send("stderr from command {!r}:".format(cmd))
+                await self.display_verbatim(stderr)
 
-        if ret != None and rc != ret:
-            raise ValueError("Expected result {}, got result {} while processing {!r}".format(ret, rc, cmd))
+            if ret != None and rc != ret:
+                raise ValueError("Expected result {}, got result {} while processing {!r}".format(ret, rc, cmd))
 
         return stdout
 
     async def stop(self, shards):
         if not type(shards) is list:
             shards=[shards,]
-        await self.debug("Stopping shards [{}]...".format(",".join(shards)))
-        await self._k8s.stop(shards)
-        await self.debug("Stopped shards [{}]".format(",".join(shards)))
+        async with self._channel.typing():
+            await self.debug("Stopping shards [{}]...".format(",".join(shards)))
+            await self._k8s.stop(shards)
+            await self.debug("Stopped shards [{}]".format(",".join(shards)))
 
     async def start(self, shards):
         if not type(shards) is list:
             shards=[shards,]
-        await self.debug("Starting shards [{}]...".format(",".join(shards)))
-        await self._k8s.start(shards)
-        await self.debug("Started shards [{}]".format(",".join(shards)))
+        async with self._channel.typing():
+            await self.debug("Starting shards [{}]...".format(",".join(shards)))
+            await self._k8s.start(shards)
+            await self.debug("Started shards [{}]".format(",".join(shards)))
 
     async def restart(self, shards):
         if not type(shards) is list:
             shards=[shards,]
-        await self.debug("Restarting shards [{}]...".format(",".join(shards)))
-        await self._k8s.restart(shards)
-        await self.debug("Restarted shards [{}]".format(",".join(shards)))
+        async with self._channel.typing():
+            await self.debug("Restarting shards [{}]...".format(",".join(shards)))
+            await self._k8s.restart(shards)
+            await self.debug("Restarted shards [{}]".format(",".join(shards)))
 
     # Infrastructure
     ################################################################################
