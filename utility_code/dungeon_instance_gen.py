@@ -4,6 +4,7 @@ import os
 import sys
 import multiprocessing
 import getopt
+import yaml
 
 from lib_py3.common import copy_paths, copy_maps, eprint
 from lib_py3.timing import Timings
@@ -19,89 +20,108 @@ config = {
     #
     # All dungeons fit in a region file; even corrupted sierhaven is only 30x24 chunks
 
-    "dungeons":(
-        {
-            "name":"white",
-            "region":{"x":-3, "z":-2},
-            "count":150,
-        },{
-            "name":"orange",
-            "region":{"x":-3, "z":-1},
-            "count":40,
-        },{
-            "name":"magenta",
-            "region":{"x":-3, "z":0},
-            "count":40,
-        },{
-            "name":"lightblue",
-            "region":{"x":-3, "z":1},
-            "count":40,
-        },{
-            "name":"yellow",
-            "region":{"x":-3, "z":2},
-            "count":40,
-        },{
-            "name":"willows",
-            "region":{"x":-3, "z":3},
-            "count":40,
-        },{
-            "name":"roguelike",
-            "region":{"x":-2, "z":-1},
-            "count":100,
-        },{
-            "name":"reverie",
-            "region":{"x":-3, "z":4},
-            "count":40,
-        },{
-            "name":"tutorial",
-            "region":{"x":-2, "z":0},
-            "count":700,
-        },{
-            "name":"sanctum",
-            "region":{"x":-3, "z":12},
-            "count":40,
-        },{
-            "name":"labs",
+    "dungeons":{
+        "labs":{
             "region":{"x":-2, "z":2},
             "count":500,
-        },{
-            "name":"lime",
+            "objective":"D0Access"
+        },
+        "white":{
+            "region":{"x":-3, "z":-2},
+            "count":150,
+            "objective":"D1Access"
+        },
+        "orange":{
+            "region":{"x":-3, "z":-1},
+            "count":40,
+            "objective":"D2Access"
+        },
+        "magenta":{
+            "region":{"x":-3, "z":0},
+            "count":40,
+            "objective":"D3Access"
+        },
+        "lightblue":{
+            "region":{"x":-3, "z":1},
+            "count":40,
+            "objective":"D4Access"
+        },
+        "yellow":{
+            "region":{"x":-3, "z":2},
+            "count":40,
+            "objective":"D5Access"
+        },
+        "lime":{
             "region":{"x":-3, "z":5},
             "count":40,
-        },{
-            "name":"pink",
+            "objective":"D6Access"
+        },
+        "pink":{
             "region":{"x":-3, "z":7},
             "count":40,
-        },{
-            "name":"gray",
+            "objective":"D7Access"
+        },
+        "gray":{
             "region":{"x":-3, "z":6},
             "count":40,
-        },{
-            "name":"cyan",
-            "region":{"x":-3, "z":9},
-            "count":40,
-        },{
-            "name":"lightgray",
+            "objective":"D8Access"
+        },
+        "lightgray":{
             "region":{"x":-3, "z":8},
             "count":40,
-        },{
-            "name":"purple",
+            "objective":"D9Access"
+        },
+        "cyan":{
+            "region":{"x":-3, "z":9},
+            "count":40,
+            "objective":"D10Access"
+        },
+        "purple":{
             "region":{"x":-3, "z":13},
             "count":40,
-        },{
-            "name":"shiftingcity",
+            "objective":"D11Access"
+        },
+        "willows":{
+            "region":{"x":-3, "z":3},
+            "count":40,
+            "objective":"DB1Access"
+        },
+        "roguelike":{
+            "region":{"x":-2, "z":-1},
+            "count":100,
+            "objective":"DRAccess"
+        },
+        "reverie":{
+            "region":{"x":-3, "z":4},
+            "count":40,
+            "objective":"DCAccess"
+        },
+        "tutorial":{
+            "region":{"x":-2, "z":0},
+            "count":700,
+            "objective":"DTAccess"
+        },
+        "sanctum":{
+            "region":{"x":-3, "z":12},
+            "count":40,
+            "objective":"DS1Access"
+        },
+        "shiftingcity":{
             "region":{"x":-2, "z":9},
             "count":50,
-        },{
-            "name":"teal",
+            "objective":"DRL2Access"
+        },
+        "teal":{
             "region":{"x":-2, "z":12},
             "count":50,
-        },{
-            "name":"rush",
+            "objective":"DTLAccess"
+        },
+        "rush":{
             "region":{"x":-3, "z":15},
             "count":50,
+            "objective":"DRDAccess"
         },
-    ),
+    },
 
     # Chunk to copy directly from the reference folder
     "spawn_region":{"x":-3, "z":-3},
@@ -158,15 +178,11 @@ for o, a in opts:
 # Parse additional non-option arguments
 for arg in args:
     match = None
-    for dungeon in config["dungeons"]:
-        if arg == dungeon["name"]:
-            match = arg
-
-    if not match:
+    if arg not in config["dungeons"]:
         eprint("Unknown dungeon: {}".format(arg))
         usage()
-
-    specific_worlds.append(match)
+    else:
+        specific_worlds.append(arg)
 
 if world_path is None:
     eprint("--master-world must be specified!")
@@ -177,16 +193,14 @@ if out_folder is None:
 
 if force_count is not None:
     # Override all dungeon counts
-    for dungeon in config["dungeons"]:
-        dungeon["count"] = force_count
+    for name in config["dungeons"]:
+        config["dungeons"][name]["count"] = force_count
 
 if len(specific_worlds) > 0:
     # Only generate the specified worlds
-    new_dungeons = []
+    new_dungeons = {}
     for specified in specific_worlds:
-        for dungeon in config["dungeons"]:
-            if specified == dungeon["name"]:
-                new_dungeons.append(dungeon)
+        new_dungeons[specified] = config["dungeons"][specified]
     config["dungeons"] = new_dungeons
 
 # Decrease the priority for this work so it doesn't slow down other things
@@ -197,10 +211,11 @@ def create_instance(arg):
     ref_region.copy_to(new_world, rx, rz)
 
 timings = Timings(enabled=True)
-for dungeon in config["dungeons"]:
-    print(f"Generating {dungeon['name']} instances...")
+for name in config["dungeons"]:
+    print(f"Generating {name} instances...")
+    dungeon = config["dungeons"][name]
     # Compute where the new world will be
-    new_world_path = os.path.join(out_folder, f"{dungeon['name']}", f"Project_Epic-{dungeon['name']}")
+    new_world_path = os.path.join(out_folder, f"{name}", f"Project_Epic-{name}")
 
     # Create target directories
     if not os.path.isdir(os.path.join(new_world_path, "region")):
@@ -253,6 +268,9 @@ for dungeon in config["dungeons"]:
             from pprint import pprint
             new_world.set_block(block["pos"], block["block"])
 
-    timings.nextStep(f"{dungeon['name']}: {dungeon['count']} instances generated")
+    timings.nextStep(f"{name}: {dungeon['count']} instances generated")
+
+with open(os.path.join(out_folder, "dungeon_info.yml"), "w") as fp:
+    yaml.dump(config, fp, width=2147483647, allow_unicode=True)
 
 print("Dungeon instance generation complete")
