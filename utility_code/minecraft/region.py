@@ -392,7 +392,10 @@ class Region(MutableMapping):
         if self.rx != x // 512 or self.rz != z // 512:
             raise Exception("Coordinates don't match this region!")
 
-        return self.load_chunk(x // 16, z // 16).set_block(pos, block)
+        chunk = self.load_chunk(x // 16, z // 16)
+        chunk.set_block(pos, block)
+        self.save_chunk(chunk)
+
 
     def fill_blocks(self, pos1, pos2, block):
         """
