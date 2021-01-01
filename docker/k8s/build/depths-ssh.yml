@@ -63,7 +63,7 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/build/project_epic/server_config/data/depths
-        - name: authorized-keys-config-depths
+        - name: authorized-keys-config
           secret:
             secretName: authorized-keys-config-depths
             defaultMode: 292
@@ -81,7 +81,7 @@ spec:
           mountPath: /home/epic/logs
         - name: nfs-scriptedquests
           mountPath: /home/epic/scriptedquests
-        - name: authorized-keys-config-depths
+        - name: authorized-keys-config
           mountPath: /home/epic/.ssh/authorized_keys
           subPath: authorized_keys
       imagePullSecrets:
