@@ -5,6 +5,7 @@ import os
 import getopt
 import yaml
 import multiprocessing
+import traceback
 
 from lib_py3.mob_replacement_manager import MobReplacementManager, remove_unwanted_spawner_tags
 from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items, get_named_armor_items
@@ -237,13 +238,18 @@ def process_schematic(schem_path):
     replacements_log = {}
     num_replacements = 0
 
-    schem = Schematic(schem_path)
-    for entity in schem.recursive_iter_entities():
-        if process_entity(entity, replacements_log):
-            num_replacements += 1
+    try:
+        schem = Schematic(schem_path)
+        for entity in schem.recursive_iter_entities():
+            if process_entity(entity, replacements_log):
+                num_replacements += 1
 
-    if not dry_run and num_replacements > 0:
-        schem.save()
+        if not dry_run and num_replacements > 0:
+            schem.save()
+    except Exception as ex:
+        eprint(f"Failed to process schematic '{schem_path}': {ex}\n{str(traceback.format_exc())}")
+        replacements_log = {}
+        num_replacements = 0
 
     return (num_replacements, replacements_log)
 

@@ -5,7 +5,7 @@ import sys
 import getopt
 import yaml
 import multiprocessing
-from pprint import pprint
+import traceback
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
@@ -82,13 +82,18 @@ def process_schematic(schem_path):
     replacements_log = {}
     num_replacements = 0
 
-    schem = Schematic(schem_path)
-    for item in schem.recursive_iter_items():
-        if item_replace_manager.replace_item(item.nbt, log_dict=replacements_log, debug_path=item.get_path_str()):
-            num_replacements += 1
+    try:
+        schem = Schematic(schem_path)
+        for item in schem.recursive_iter_items():
+            if item_replace_manager.replace_item(item.nbt, log_dict=replacements_log, debug_path=item.get_path_str()):
+                num_replacements += 1
 
-    if not dry_run and num_replacements > 0:
-        schem.save()
+        if not dry_run and num_replacements > 0:
+            schem.save()
+    except Exception as ex:
+        eprint(f"Failed to process schematic '{schem_path}': {ex}\n{str(traceback.format_exc())}")
+        replacements_log = {}
+        num_replacements = 0
 
     return (num_replacements, replacements_log)
 
