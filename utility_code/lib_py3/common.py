@@ -211,13 +211,12 @@ def copy_folder(old, new):
 def copy_maps(old, new):
     copy_file(os.path.join(old, "data", "idcounts.dat"),
               os.path.join(new, "data", "idcounts.dat"))
-    map_id = 0
-    while True:
-        old_map = os.path.join(old, "data", "map_{}.dat".format(map_id))
-        new_map = os.path.join(new, "data", "map_{}.dat".format(map_id))
-        if not os.path.exists(old_map) or not copy_file(old_map, new_map):
-            break
-        map_id += 1
+    for fname in os.listdir(os.path.join(old, "data")):
+        if fname.startswith("map_") and fname.endswith(".dat"):
+            old_map = os.path.join(old, "data", fname)
+            new_map = os.path.join(new, "data", fname)
+            if os.path.exists(old_map):
+                copy_file(old_map, new_map)
 
 def copy_path(old, new, path):
     if os.path.isdir(os.path.join(old, path)):
