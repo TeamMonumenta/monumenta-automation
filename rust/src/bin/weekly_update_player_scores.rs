@@ -58,21 +58,21 @@ fn update_player_scores(player: &mut Player) {
          * the additional objectives listed at the end
          */
         update_instance_scores(scores, "D0Access", 3 * INSTANCE_WEEK_OFFSET, &["D0Finished"]);
-        update_instance_scores(scores, "D1Access", 3 * INSTANCE_WEEK_OFFSET, &["D1Finished", "Delve1Challenge"]);
-        update_instance_scores(scores, "D2Access", 3 * INSTANCE_WEEK_OFFSET, &["D2Finished", "Delve2Challenge"]);
-        update_instance_scores(scores, "D3Access", 3 * INSTANCE_WEEK_OFFSET, &["D3Finished", "Delve3Challenge"]);
-        update_instance_scores(scores, "D4Access", 3 * INSTANCE_WEEK_OFFSET, &["D4Finished", "Delve4Challenge"]);
-        update_instance_scores(scores, "D5Access", 3 * INSTANCE_WEEK_OFFSET, &["D5Finished", "Delve5Challenge"]);
-        update_instance_scores(scores, "D6Access", 3 * INSTANCE_WEEK_OFFSET, &["D6Finished", "Delve6Challenge"]);
-        update_instance_scores(scores, "D7Access", 3 * INSTANCE_WEEK_OFFSET, &["D7Finished", "Delve7Challenge"]);
-        update_instance_scores(scores, "D8Access", 3 * INSTANCE_WEEK_OFFSET, &["D8Finished", "Delve8Challenge"]);
-        update_instance_scores(scores, "D9Access", 3 * INSTANCE_WEEK_OFFSET, &["D9Finished", "Delve9Challenge"]);
-        update_instance_scores(scores, "D10Access", 3 * INSTANCE_WEEK_OFFSET, &["D10Finished", "Delve10Challenge"]);
-        update_instance_scores(scores, "D11Access", 3 * INSTANCE_WEEK_OFFSET, &["D11Finished", "Delve11Challenge"]);
-        update_instance_scores(scores, "DTLAccess", 3 * INSTANCE_WEEK_OFFSET, &["DTLFinished", "DelveTLChallenge"]);
-        update_instance_scores(scores, "DCAccess", 3 * INSTANCE_WEEK_OFFSET, &["DCFinished", "DelveMRChallenge"]);
-        update_instance_scores(scores, "DB1Access", 3 * INSTANCE_WEEK_OFFSET, &["DB1Finished", "DelveWChallenge"]);
-        update_instance_scores(scores, "DRL2Access", 3 * INSTANCE_WEEK_OFFSET, &["DRL2Finished", "DelveSCChallenge"]);
+        update_instance_scores(scores, "D1Access", 3 * INSTANCE_WEEK_OFFSET, &["D1Finished", "D1Delve1", "D1Delve2"]);
+        update_instance_scores(scores, "D2Access", 3 * INSTANCE_WEEK_OFFSET, &["D2Finished", "D2Delve1", "D2Delve2"]);
+        update_instance_scores(scores, "D3Access", 3 * INSTANCE_WEEK_OFFSET, &["D3Finished", "D3Delve1", "D3Delve2"]);
+        update_instance_scores(scores, "D4Access", 3 * INSTANCE_WEEK_OFFSET, &["D4Finished", "D4Delve1", "D4Delve2"]);
+        update_instance_scores(scores, "D5Access", 3 * INSTANCE_WEEK_OFFSET, &["D5Finished", "D5Delve1", "D5Delve2"]);
+        update_instance_scores(scores, "D6Access", 3 * INSTANCE_WEEK_OFFSET, &["D6Finished", "D6Delve1", "D6Delve2"]);
+        update_instance_scores(scores, "D7Access", 3 * INSTANCE_WEEK_OFFSET, &["D7Finished", "D7Delve1", "D7Delve2"]);
+        update_instance_scores(scores, "D8Access", 3 * INSTANCE_WEEK_OFFSET, &["D8Finished", "D8Delve1", "D8Delve2"]);
+        update_instance_scores(scores, "D9Access", 3 * INSTANCE_WEEK_OFFSET, &["D9Finished", "D9Delve1", "D9Delve2"]);
+        update_instance_scores(scores, "D10Access", 3 * INSTANCE_WEEK_OFFSET, &["D10Finished", "D10Delve1", "D10Delve2"]);
+        update_instance_scores(scores, "D11Access", 3 * INSTANCE_WEEK_OFFSET, &["D11Finished", "D11Delve1", "D11Delve2"]);
+        update_instance_scores(scores, "DTLAccess", 3 * INSTANCE_WEEK_OFFSET, &["DTLFinished", "DTLDelve1", "DTLDelve2"]);
+        update_instance_scores(scores, "DCAccess", 3 * INSTANCE_WEEK_OFFSET, &["DCFinished", "DMRDelve1", "DMRDelve2"]);
+        update_instance_scores(scores, "DB1Access", 3 * INSTANCE_WEEK_OFFSET, &["DB1Finished", "DWDelve1", "DWDelve2"]);
+        update_instance_scores(scores, "DRL2Access", 3 * INSTANCE_WEEK_OFFSET, &["DRL2Finished", "DSDelve1", "DSDelve2"]);
         update_instance_scores(scores, "DS1Access", 3 * INSTANCE_WEEK_OFFSET, &["DS1Finished"]);
         update_instance_scores(scores, "DS1Finished", 1, &["DS1Access"]);
 
