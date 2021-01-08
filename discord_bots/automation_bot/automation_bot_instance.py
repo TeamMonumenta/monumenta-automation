@@ -503,8 +503,8 @@ Syntax:
 
 
     async def action_view_scores(self, cmd, message):
-        '''View player scores on Region 1. Run without arguements for syntax.
-Note: the values from this command could be 15 minutes behind the play server.
+        '''View player scores game-wide, not tied to a specific shard. Run without arguements for syntax.
+Note: the values from this command could be at most 5 minutes behind the play server if the player is online.
 Do not use for debugging quests or other scores that are likely to change often.'''
 
         commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
