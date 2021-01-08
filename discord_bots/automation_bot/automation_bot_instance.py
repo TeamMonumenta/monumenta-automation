@@ -709,7 +709,13 @@ Must be run before starting weekly update on the play server'''
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
         await self.run("tar xzf /home/epic/4_SHARED/stage_bundle.tgz")
 
-        folders_to_update = filter(os.path.isdir, os.listdir("/home/epic/5_SCRATCH/tmpreset/TEMPLATE"))
+        await self.cd("/home/epic/5_SCRATCH/tmpreset/TEMPLATE")
+        folders_to_update = [d for d in os.listdir(os.getcwd()) if os.path.isdir(d)]
+        if len(folders_to_update) < 1:
+            await self.display("Error: No stage folders to process?")
+            await self.display(message.author.mention)
+            return
+
         await self.display("Loading from stage bundle: [{}]".format(" ".join(folders_to_update)))
 
         # Stop all shards
