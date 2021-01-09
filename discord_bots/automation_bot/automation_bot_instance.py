@@ -595,6 +595,11 @@ Must be run before starting weekly update on the play server'''
         await self.display("Copying server_config...")
         await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
+        await self.display("Sanitizing R1's items area...")
+        await self.run(os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/Project_Epic-region_1 --pos1 1140,0,2564 --pos2 1275,123,2811")
+        await self.display("Sanitizing R2's items area...")
+        await self.run(os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/Project_Epic-region_2 --pos1 1140,0,2564 --pos2 1275,123,2811")
+
         await self.display("Packaging up update bundle...")
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
         await self.run(["tar", "-I", "pigz --best", "-cf", f"/home/epic/4_SHARED/project_epic_build_template_pre_reset_{datestr()}.tgz", "TEMPLATE"])
