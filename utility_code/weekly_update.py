@@ -10,7 +10,7 @@ from pprint import pprint, pformat
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import eprint, copy_folder, copy_paths, copy_maps
-from lib_py3.redis_scoreboard import RedisScoreboard
+from lib_py3.redis_scoreboard import RedisScoreboard, RedisRBoard
 from lib_py3.timing import Timings
 
 from minecraft.world import World
@@ -229,6 +229,26 @@ for config in config_list:
         dungeon_scores = sorted(list(dungeon_scores))
         preserve_instances["dungeon_scores"] = dungeon_scores
 timings.nextStep("Loaded dungeon scores")
+
+##################################################################################
+# Update number of instances
+
+print("Updating number of instances...")
+
+rboard = RedisRBoard("play", redis_host=redis_host)
+with open(os.path.join(build_template_dir, "dungeon_info.yml")) as f:
+    dungeon_info = yaml.load(f)["dungeons"]
+
+for config in config_list:
+    server = config['server']
+    objective = dungeon_info[server]['objective']
+    instances = dungeon_info[server]['count']
+    print(f"$Last.{objective} = 0")
+    print(f"$Instances.{objective} = {instances}")
+    rboard.set("$Last", objective, 0)
+    rboard.set("$Instances", objective, instances)
+
+timings.nextStep("Updated number of instances")
 
 ##################################################################################
 # Copy base world files

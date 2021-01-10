@@ -362,3 +362,23 @@ class RedisScoreboard(object):
                         Objective = to_change["Objective"]
                         Score = to_change["Score"]
                         self.add_score(Name, Objective, Score, Cache=rule_cache)
+
+class RedisRBoard(object):
+    """
+    An API for reading and writing from the Monumenta redis RBoard
+    """
+
+    def __init__(self, domain: str, redis_host="redis", redis_port=6379):
+        self._domain = domain
+        self._redis_host = redis_host
+        self._redis_port = redis_port
+        self._r = redis.Redis(host=self._redis_host, port=self._redis_port)
+
+    def get(self, name: str, objective: str) -> int:
+        val = self._r.hget(f"{self._domain}:rboard:{name}", objective)
+        if val is None:
+            return None
+        return int(val)
+
+    def set(self, name: str, objective: str, value: int) -> str:
+        return self._r.hset(f"{self._domain}:rboard:{name}", objective, value)
