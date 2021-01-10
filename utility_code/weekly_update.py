@@ -241,12 +241,14 @@ with open(os.path.join(build_template_dir, "dungeon_info.yml")) as f:
 
 for config in config_list:
     server = config['server']
-    objective = dungeon_info[server]['objective']
-    instances = dungeon_info[server]['count']
-    print(f"$Last.{objective} = 0")
-    print(f"$Instances.{objective} = {instances}")
-    rboard.set("$Last", objective, 0)
-    rboard.set("$Instances", objective, instances)
+    # Some shards don't have instances to update
+    if server in dungeon_info:
+        objective = dungeon_info[server]['objective']
+        instances = dungeon_info[server]['count']
+        print(f"$Last.{objective} = 0")
+        print(f"$Instances.{objective} = {instances}")
+        rboard.set("$Last", objective, 0)
+        rboard.set("$Instances", objective, instances)
 
 timings.nextStep("Updated number of instances")
 
