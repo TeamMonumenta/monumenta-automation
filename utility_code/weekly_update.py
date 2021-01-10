@@ -196,9 +196,13 @@ os.nice(20)
 ##################################################################################
 # Set up global state
 loot_table_manager = LootTableManager()
-loot_table_manager.load_loot_tables_subdirectories(f"{build_template_dir}/server_config/data/datapacks")
+loot_table_manager.load_loot_tables_subdirectories(f"{output_dir}/server_config/data/datapacks")
 timings.nextStep("Loaded loot tables")
-item_replace_manager = ItemReplacementManager(loot_table_manager.get_unique_item_map(show_errors=False))
+unique_item_map = loot_table_manager.get_unique_item_map(show_errors=False)
+if len(unique_item_map) == 0:
+    sys.exit("ERROR: No loot tables were loaded for replacements")
+
+item_replace_manager = ItemReplacementManager(unique_item_map)
 timings.nextStep("Loaded item replacement manager")
 
 redis_scoreboard = RedisScoreboard("play", redis_host=redis_host)
