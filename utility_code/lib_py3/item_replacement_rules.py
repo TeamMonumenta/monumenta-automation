@@ -7,6 +7,7 @@ import sys
 
 import traceback
 
+from lib_py3.common import eprint
 from lib_py3.common import jsonify_text
 from lib_py3.common import parse_name_possibly_json
 
@@ -422,6 +423,11 @@ class PreserveBlockEntityTag(GlobalRule):
         self.block_entity_tag = None
         if item.has_path('tag.BlockEntityTag'):
             self.block_entity_tag = item.at_path('tag.BlockEntityTag')
+
+            if type(self.block_entity_tag) is not nbt.TagCompound:
+                self.block_entity_tag = None
+                eprint("Skipping invalid BlockEntityTag: " + item.to_mojangson(highlight=False))
+                return
 
             # Some legacy items have this invalid tag.BlockEntityTag.id field
             if self.block_entity_tag.has_path('id'):
