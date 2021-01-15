@@ -104,7 +104,7 @@ class LootTableManager(object):
                             if "tag" not in function:
                                 raise KeyError('set_nbt function is missing nbt field!')
                             item_nbt = nbt.TagCompound.from_mojangson(function["tag"])
-                            upgrade_entity(item_nbt, False, [])
+                            upgrade_entity(item_nbt, regenerateUUIDs=False, tagsToRemove=[])
                             function["tag"] = item_nbt.to_mojangson()
 
                             ################################################################################

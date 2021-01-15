@@ -169,9 +169,9 @@ def upgrade_attributes(attributes_nbt: TagCompound, regenerateUUIDs = False) -> 
             mod.value = translate_attribute_name(mod.value)
 
         if attribute.has_path("Modifiers"):
-            upgrade_attributes(attribute.at_path("Modifiers"))
+            upgrade_attributes(attribute.at_path("Modifiers"), regenerateUUIDs=regenerateUUIDs)
 
-        upgrade_uuid_if_present(attribute, regenerateUUIDs)
+        upgrade_uuid_if_present(attribute, regenerateUUIDs=regenerateUUIDs)
 
 enchant_id_map = {
     0:"minecraft:protection",
@@ -230,13 +230,13 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
             nbt.at_path("Potion").value = nbt.at_path("Potion").value.replace("empty", "mundane").replace("awkward", "mundane")
 
     # Upgrade UUIDMost/UUIDLeast -> UUID
-    upgrade_uuid_if_present(nbt, regenerateUUIDs)
+    upgrade_uuid_if_present(nbt, regenerateUUIDs=regenerateUUIDs)
 
     # Upgrade AttributeModifiers (value name change & UUID)
     if nbt.has_path("AttributeModifiers"):
-        upgrade_attributes(nbt.at_path("AttributeModifiers"))
+        upgrade_attributes(nbt.at_path("AttributeModifiers"), regenerateUUIDs=regenerateUUIDs)
     if nbt.has_path("Attributes"):
-        upgrade_attributes(nbt.at_path("Attributes"))
+        upgrade_attributes(nbt.at_path("Attributes"), regenerateUUIDs=regenerateUUIDs)
 
     # Rename "ench" -> "Enchantments"
     if nbt.has_path("ench"):
