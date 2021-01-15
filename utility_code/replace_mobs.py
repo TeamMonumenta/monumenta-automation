@@ -121,7 +121,7 @@ sub = [
 ]
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--dry-run]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
 
 try:
     opts, args = getopt.getopt(sys.argv[1:], "w:s:b:l:j:di", ["world=", "schematics=", "library-of-souls=", "logfile=", "num-threads=", "dry-run", "pos1=", "pos2="])
