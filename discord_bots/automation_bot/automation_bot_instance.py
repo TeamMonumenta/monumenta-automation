@@ -1223,9 +1223,9 @@ Syntax:
                 await self.cd("/home/epic/project_epic/server_config/data")
                 await self.run(["tar", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", "structures"])
                 await self.cd("/home/epic/project_epic/server_config/data")
-                await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
-                await self.cd("/home/epic/project_epic/server_config/data")
                 await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --schematics structures --logfile {base_backup_name}_items.yml"), displayOutput=True)
+                await self.cd("/home/epic/project_epic/server_config/data")
+                await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
 
             else:
                 base_backup_name = f"/home/epic/0_OLD_BACKUPS/Project_Epic-{shard}_pre_entity_loot_updates_{datestr()}"
