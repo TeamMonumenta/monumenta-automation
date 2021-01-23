@@ -415,6 +415,7 @@ simple_view_distance_config = {
     'cyan': 8,
     'purple': 10,
     'teal': 9,
+    'forum': 8,
 
     'tutorial': 9,
     'labs': 9,

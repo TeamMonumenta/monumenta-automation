@@ -110,6 +110,7 @@ dungeons = {
     "lightgray":{"x":-3, "z":8},
     "purple":{"x":-3, "z":13},
     "teal":{"x":-2, "z":12},
+    "forum":{"x":-3, "z":16},
     "rush":{"x":-3, "z":15},
 }
 

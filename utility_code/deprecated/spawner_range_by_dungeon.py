@@ -44,6 +44,9 @@ dungeons = (
             "name":"teal",
             "region":{"x":-2, "z":12},
         },{
+            "name":"forum",
+            "region":{"x":-3, "z":16},
+        },{
             "name":"willows",
             "region":{"x":-3, "z":3},
         },{

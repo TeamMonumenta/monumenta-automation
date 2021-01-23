@@ -154,6 +154,10 @@ dungeons = (
         "name":"teal",
         "region":{"x":-2, "z":12},
         "whitelisted_lore_lines":("Monument Block",),
+    },{
+        "name":"forum",
+        "region":{"x":-3, "z":16},
+        "whitelisted_lore_lines":("Monument Block",),
     },
 )
 

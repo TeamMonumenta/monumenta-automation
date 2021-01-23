@@ -29,6 +29,7 @@ shards = [
     'shiftingcity',
     'tutorial',
     'teal',
+    'forum',
     'white',
     'willows',
     'yellow',

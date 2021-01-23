@@ -168,6 +168,7 @@ available_configs = {
     "sanctum": get_dungeon_config("sanctum", "DS1Access"),
     "labs": get_dungeon_config("labs", "D0Access"),
     "teal": get_dungeon_config("teal", "DTLAccess"),
+    "forum": get_dungeon_config("forum", "DFAccess"),
     "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
     "roguelike": roguelike,
     "rush": rush,

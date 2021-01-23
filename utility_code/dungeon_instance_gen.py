@@ -116,6 +116,11 @@ config = {
             "count":50,
             "objective":"DTLAccess"
         },
+        "forum":{
+            "region":{"x":-3, "z":16},
+            "count":50,
+            "objective":"DFAccess"
+        },
         "rush":{
             "region":{"x":-3, "z":15},
             "count":50,
