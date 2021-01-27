@@ -100,7 +100,7 @@ dungeons = {
     "willows":{"x":-3, "z":3},
     "roguelike":{"x":-2, "z":-1},
     "reverie":{"x":-3, "z":4},
-    "tutorial":{"x":-2, "z":0},
+    "tutorial":{"x":-2, "z":1},
     "sanctum":{"x":-3, "z":12},
     "labs":{"x":-2, "z":2},
     "lime":{"x":-3, "z":5},

@@ -41,7 +41,7 @@ dungeons = (
         "region":{"x":-3, "z":4},
     },{
         "name":"tutorial",
-        "region":{"x":-2, "z":0},
+        "region":{"x":-2, "z":1},
     },{
         "name":"sanctum",
         "region":{"x":-3, "z":12},

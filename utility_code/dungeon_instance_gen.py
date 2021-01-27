@@ -97,7 +97,7 @@ config = {
             "objective":"DCAccess"
         },
         "tutorial":{
-            "region":{"x":-2, "z":0},
+            "region":{"x":-2, "z":1},
             "count":700,
             "objective":"DTAccess"
         },

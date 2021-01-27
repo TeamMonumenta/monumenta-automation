@@ -102,8 +102,9 @@ dungeons = (
         ),
     },{
         "name":"tutorial",
-        "region":{"x":-2, "z":0},
+        "region":{"x":-2, "z":1},
         "container_whitelist":(
+            # TODO: These are out of date!
             "-972 43 35",
             "-1010 48 27",
             "-986 20 71",
