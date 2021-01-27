@@ -759,7 +759,7 @@ Must be run before starting weekly update on the play server'''
             await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
             await self.cd("/home/epic/project_epic")
             await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play tutorial"))
-            folders_to_update.pop("tutorial")
+            folders_to_update.remove("tutorial")
 
         await self.display("Running actual weekly update (this will take a while!)...")
         await self.run(os.path.join(_top_level, "utility_code/weekly_update.py --last_week_dir /home/epic/project_epic/0_PREVIOUS/ --output_dir /home/epic/project_epic/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 6 " + " ".join(folders_to_update)))
