@@ -28,15 +28,6 @@ class NbtPathDebug():
 
         return nbt.nbt_path_join(self.parent.full_nbt_path, self.nbt_path_from_parent)
 
-    def get_legacy_debug(self):
-        result = [self.nbt]
-        node = self
-        while node.parent is not None:
-            result.append(node.parent.nbt)
-            node = node.parent
-
-        return result
-
     def print(self):
         """Print the debug path from file root to here."""
         if self.parent is None:
