@@ -53,6 +53,8 @@ server_config_to_copy = [
         ('plugins/dynmap/custom-lightings.txt',),
         ('plugins/MonumentaRedisSync/config.yml',),
         ('plugins/MonumentaNetworkRelay/config.yml',),
+        ('plugins/HolographicDisplays/config.yml',),
+        ('plugins/HolographicDisplays/symbols.yml',),
     ]
 
 purgatory_min = [
@@ -88,6 +90,7 @@ monumenta = [
         ('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
         ('plugins/nbt-api.jar', '../../server_config/plugins/nbt-api.jar'),
         ('plugins/HolographicDisplays.jar', '../../server_config/plugins/HolographicDisplays.jar'),
+        ('plugins/HolographicDisplays/database.yml', '../../../server_config/data/plugins/{servername}/HolographicDisplays/database.yml'),
         ('plugins/spark.jar', '../../server_config/plugins/spark.jar'),
         ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
