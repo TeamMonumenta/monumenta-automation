@@ -108,7 +108,7 @@ class AutomationBotInstance(object):
             "plot get": self.action_plot_get,
             "view scores": self.action_view_scores,
 
-            "update item": self.action_update_item,
+            "update item": self.action_update_items,
             "run replacements": self.action_run_replacements,
             "find loot problems": self.action_find_loot_problems,
 
@@ -1112,85 +1112,39 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         await self.display("Stage server loaded with current play server data")
         await self.display(message.author.mention)
 
-    async def action_update_item(self, cmd, message):
+    async def action_update_items(self, cmd, message):
         '''
-Updates an item in all loot tables
+Updates one or more items in all loot tables
 
 Usage:
-    update item minecraft:leather_leggings{Enchantments:[{lvl:3s,id:"minecraft:fire_protection"}],display:{Lore:["§bLeather Armor","§8King's Valley : Tier III"],color:7352328,Name:"{\"text\":\"§fBurnt Leggings\"}"},Damage:0}
+    ~update items /setblock 1217 3 2720 minecraft:chest{Items:[...]}
 
-Easiest way to get this info is holding an item in your hand and using /nbti tocommand on a command block
-
-For convenience, leading 'give @p' is ignored, along with any data after the last } (usually the quantity of item from /nbti tocommand)
+Easiest way to get this is putting an item in a chest, and looking at that chest and pressing f3+i
     '''
 
-        # Check for any arguments
         commandArgs = message.content[len(self._prefix):].strip()
-        if len(commandArgs) < len(cmd) + 5:
-            await self.display("Item argument required")
-            return
-        if '{' not in commandArgs:
-            await self.display("Item must be of the form minecraft:id{nbt}")
-            return
+        temppath = tempfile.mktemp()
+        if message.attachments:
+            # Save first attachment as text file at the temppath
+            attachment = message.attachments[0]
+            if not attachment.url.endswith(".txt"):
+                await self.display("setblock chest argument must be a .txt file")
+                return
 
-        # Parse id / nbt arguments
-        commandArgs = message.content[len(self._prefix) + len(cmd) + 1:]
+            await attachment.save(temppath)
+        else:
+            # Save any text arguments to the text file at the temppath
+            if len(commandArgs) < len(cmd) + 5:
+                await self.display("setblock chest argument required")
+                return
+            if '{' not in commandArgs:
+                await self.display("Arguments should be of the form /setblock ~ ~ ~ minecraft:chest{Items:[...]}")
+                return
+            with open(temppath, "w") as fp:
+                fp.write(commandArgs)
 
-        partitioned = commandArgs.strip().partition("{")
-        item_id = partitioned[0].strip()
-        item_nbt_str = partitioned[1] + partitioned[2].strip()
-
-        if item_id.startswith("/"):
-            item_id = item_id[1:]
-        if item_id.startswith("give @p "):
-            item_id = item_id[len("give @p "):]
-
-        if item_nbt_str[-1] != '}':
-            item_nbt_str = item_nbt_str[:item_nbt_str.rfind("}") + 1]
-
-        mgr = LootTableManager()
-        mgr.load_loot_tables_subdirectories(os.path.join(self._project_epic_dir, "server_config/data/datapacks"))
-        try:
-            locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
-            await self.display("Updated item in loot tables:```" + "\n".join(locations) + "```")
-        except Exception as e:
-            await message.channel.send(message.author.mention)
-            await message.channel.send("**ERROR**: ```" + str(e) + "```")
-
-            item_nbt = nbt.TagCompound.from_mojangson(item_nbt_str)
-            if not item_nbt.has_path("display.Name"):
-                ValueError("ERROR: Item has no display name")
-
-            item_name = unformat_text(parse_name_possibly_json(item_nbt.at_path("display.Name").value))
-            filename = item_name.lower()
-            filename = re.sub(" +", "_", filename)
-            filename = "".join([i if re.match('[a-z0-9-_]', i) else '' for i in filename])
-            filename = filename + ".json"
-
-            entry_json = OrderedDict()
-            entry_json["type"] = "item"
-            entry_json["weight"] = 10
-            entry_json["name"] = item_id
-            entry_json["functions"] = []
-
-            func = OrderedDict()
-            func["function"] = "set_nbt"
-            func["tag"] = item_nbt_str
-            entry_json["functions"].append(func)
-
-            pool = OrderedDict()
-            pool["rolls"] = 1
-            pool["entries"] = [entry_json, ]
-
-            table_dict = OrderedDict()
-            table_dict["pools"] = [pool,]
-
-            loot_table_string = json.dumps(table_dict, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
-
-            await self.display("Here is a basic loot table for this item:\n\n" +
-                           "You must put this somewhere **sensible** in the loot tables \n\n" +
-                           "Use this filename:```{}```\nContents:```{}```".format(filename, loot_table_string))
-            await self.display(message.author.mention)
+        await self.run(os.path.join(_top_level, f"utility_code/bulk_update_loottables.py {temppath}"), displayOutput=True)
+        await self.display(message.author.mention)
 
     async def action_run_replacements(self, cmd, message):
         '''Runs item and mob replacements on a given shard
