@@ -1029,11 +1029,16 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                 await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/CoreProtect".format(shard))
                 await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/CoreProtect/database.db"))
 
+            for shard in ["plots",]:
+                await self.display("Preserving plot access for {0}...".format(shard))
+                await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/Monumenta".format(shard))
+                await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/Monumenta/plot_access.json"))
+
             for shard in ["plots", "region_1", "region_2"]:
                 await self.display("Preserving warps for {0}...".format(shard))
                 os.makedirs("/home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
                 if os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml".format(shard)):
-                    await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
+                    await self.run("cp /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
 
             for shard in allShards:
                 if shard in ["build","bungee"]:
