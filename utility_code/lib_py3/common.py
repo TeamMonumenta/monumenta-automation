@@ -28,6 +28,11 @@ def get_item_name_from_nbt(item_nbt: nbt.TagCompound, remove_color=True):
     Parses a color-removed name out of an item's NBT. Returns a string or None if no name exists
     """
     if not item_nbt.has_path("display.Name"):
+        if item_nbt.has_path("title"):
+            title = item_nbt.at_path("title").value
+            if remove_color:
+                title = unformat_text(title)
+            return title
         return None
 
     return parse_name_possibly_json(item_nbt.at_path("display.Name").value, remove_color)
@@ -139,9 +144,9 @@ def get_named_items(entity: nbt.TagCompound, path: str, expected_len: int) -> [s
                 items.append(None)
         else:
             for item in items_nbt.value:
-                if item.has_path("tag.display.Name"):
-                    item_name = parse_name_possibly_json(item.at_path("tag.display.Name").value, remove_color=True)
-                    items.append("{}".format(item_name))
+                if item.has_path("tag"):
+                    item_name = get_item_name_from_nbt(item.at_path("tag"), remove_color=True)
+                    items.append(item_name)
                 else:
                     items.append(None)
 
