@@ -23,7 +23,7 @@ config = {
     "dungeons":{
         "labs":{
             "region":{"x":-2, "z":2},
-            "count":500,
+            "count":700,
             "objective":"D0Access"
         },
         "white":{
@@ -98,7 +98,7 @@ config = {
         },
         "tutorial":{
             "region":{"x":-2, "z":1},
-            "count":700,
+            "count":999,
             "objective":"DTAccess"
         },
         "sanctum":{
