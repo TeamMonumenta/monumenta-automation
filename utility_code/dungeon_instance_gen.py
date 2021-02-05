@@ -33,12 +33,12 @@ config = {
         },
         "orange":{
             "region":{"x":-3, "z":-1},
-            "count":40,
+            "count":60,
             "objective":"D2Access"
         },
         "magenta":{
             "region":{"x":-3, "z":0},
-            "count":40,
+            "count":50,
             "objective":"D3Access"
         },
         "lightblue":{
