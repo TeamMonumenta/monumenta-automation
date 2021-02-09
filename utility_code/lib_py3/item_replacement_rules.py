@@ -231,6 +231,16 @@ class PreserveArmorColor(GlobalRule):
             self.color = item.at_path('tag.display.color').value
 
     def postprocess(self, item):
+        if not item.has_path('id') or item.at_path('id').value not in (
+            'minecraft:leather_helmet',
+            'minecraft:leather_chestplate',
+            'minecraft:leather_leggings',
+            'minecraft:leather_boots',
+            'minecraft:leather_horse_armor',
+        ):
+            # Don't preserve armor color if it's no longer leather
+            return
+
         if self.color is None:
             if item.has_path('tag.display.color'):
                 item.at_path('tag.display').value.pop('color')
