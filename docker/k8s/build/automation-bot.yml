@@ -116,6 +116,6 @@ spec:
           mountPath: /home/epic/.monumenta_bot
         resources:
           limits:
-            cpu: "3"
+            cpu: "2"
       imagePullSecrets:
       - name: githubcred
