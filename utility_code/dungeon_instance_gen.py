@@ -33,7 +33,7 @@ config = {
         },
         "orange":{
             "region":{"x":-3, "z":-1},
-            "count":60,
+            "count":75,
             "objective":"D2Access"
         },
         "magenta":{
