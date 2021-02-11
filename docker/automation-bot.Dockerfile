@@ -1,7 +1,8 @@
 FROM debian:stable
 
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip pigz && \
+	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip pigz python3-dev libtool && \
+	pip3 install wheel && \
 	pip3 install discord.py kubernetes pika redis bitstring kanboard flask
 
 # Check for mandatory build arguments
