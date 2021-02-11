@@ -34,6 +34,15 @@ whitelist_ignore = [
     "Wrong location! (",
     "com.djrapitops.plan.storage.database.MySQLDB",
     "Bukkit will attempt to fix this, but there may be additional damage that we cannot recover",
+    " Unknown or incomplete command, see below for error at",
+    "command denied to user 'lp_readonly'",
+    "com.boydti.fawe.bukkit.util.JavaVersionCheck",
+    "io.papermc.paper.util.PaperJvmChecker",
+    "mineverse.Aust1n46.chat.MineverseChat.onPluginMessageReceived",
+    "SERVER IS RUNNING IN OFFLINE/INSECURE MODE",
+    "if they are not new, this is a serious error",
+    "POI data mismatch: never registered at BlockPosition",
+    " does not specify an api-version",
 ]
 
 def translate(s):
