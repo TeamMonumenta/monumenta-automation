@@ -11,16 +11,20 @@ from minecraft.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 
+from quarry.types import nbt
+
 def process_entity(entity, source_name):
     if entity.nbt.has_path("CustomName"):
         if not entity.nbt.has_path("id"):
             return
+        entity_id = entity.nbt.at_path("id").value
+
         # Don't add tile entities!
         if entity.nbt.has_path("LootTable") or entity.nbt.has_path("Items") or entity.nbt.has_path("Command"):
             return
         # Don't add non-mob entities
         for forbidden in forbidden_ids:
-            if forbidden in entity.nbt.at_path("id").value:
+            if forbidden in entity_id:
                 return
 
         name = parse_name_possibly_json(entity.nbt.at_path("CustomName").value, remove_color=True)
@@ -32,7 +36,11 @@ def process_entity(entity, source_name):
 
         # Check if this mob is already in the library of souls
         soul = los.get_soul(name)
+        soul_id = None
         if soul is not None:
+            soul_nbt = nbt.TagCompound.from_mojangson(soul["history"][0]["mojangson"])
+            soul_id = soul_nbt.at_path("id").value
+        if soul is not None and soul_id == entity_id:
             # Already in the library - tag it with the name of the structure for searching
             if "location_names" not in soul:
                 soul["location_names"] = []
@@ -45,11 +53,11 @@ def process_entity(entity, source_name):
                     if not_found_unique_mobs[name] != entity.nbt:
                         #print("Diff at mob {}".format(name))
                         #not_found_unique_mobs[name].diff(entity.nbt, order_matters=False, show_values=True)
-                        not_found_different_mobs.add(name)
-                        not_found_unique_mobs.pop(name)
+                        not_found_different_mobs.add(f"{name}  {entity_id}")
+                        not_found_unique_mobs.pop(f"{name}  {entity_id}")
                 else:
-                    not_found_unique_mobs[name] = entity.nbt
-                mob_pos[name] = (entity.pos, source_name)
+                    not_found_unique_mobs[f"{name}  {entity_id}"] = entity.nbt
+                mob_pos[f"{name}  {entity_id}"] = (entity.pos, source_name)
 
 
 mob_pos = {}
