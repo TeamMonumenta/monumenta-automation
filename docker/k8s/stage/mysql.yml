@@ -20,7 +20,7 @@ metadata:
 data:
   mysql.cnf: |
     [mysqld]
-    max_connections = 200
+    max_connections = 1000
     # Helpful: https://tech.labelleassiette.com/how-to-reduce-the-memory-usage-of-mysql-61ea7d1a9bd
     innodb_buffer_pool_size = 64M
     tmp_table_size          = 8M
@@ -60,7 +60,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-8
+                - monumenta-11
       containers:
       - image: mysql:5.6
         name: mysql

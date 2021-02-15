@@ -76,7 +76,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-9
+                - monumenta-11
       serviceAccountName: automation-bot-service-account
       volumes:
         - name: nfs-play-data
