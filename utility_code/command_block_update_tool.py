@@ -105,6 +105,7 @@ else:
     # key = "x y z"
     # value = { pos/command/name/auto/powered }
     commands = {}
+    num_to_replace = 0
     with open(input_path, 'r') as outfile:
         data = json.load(outfile)
         for element in data:
@@ -112,14 +113,23 @@ else:
                 eprint("Warning: Refusing to update command block contained within an item: ", json.dumps(element))
             else:
                 commands[f"{element['pos'][0]} {element['pos'][1]} {element['pos'][2]}"] = element
+                num_to_replace += 1
 
     # Iterate the world and update things from the map
     # Not much reason to do this in parallel, but could be done with a little work
+    num_replaced = 0
     for region in world.iter_regions(min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2]):
         for chunk in region.iter_chunks(min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2], autosave=False):
+            changed = False
             for block_entity in chunk.recursive_iter_block_entities():
                 if block_entity.nbt.has_path('Command'):
                     command_to_load = commands.get(f"{block_entity.pos[0]} {block_entity.pos[1]} {block_entity.pos[2]}", None)
                     if command_to_load is not None:
                         # Only update the command itself, none of the other stats
                         block_entity.nbt.at_path('Command').value = command_to_load["command"]
+                        num_replaced += 1
+                        changed = True
+            if changed:
+                region.save_chunk(chunk)
+
+    print(f"{num_replaced} / {num_to_replace} command blocks updated")
