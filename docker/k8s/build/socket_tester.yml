@@ -46,7 +46,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-8
+                - monumenta-11
       containers:
       - name: sockettest
         image: subfuzion/netcat

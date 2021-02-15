@@ -26,7 +26,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-8
+                - monumenta-11
       serviceAccountName: automation-bot-service-account
       volumes:
         - name: nfs-data

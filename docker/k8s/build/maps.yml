@@ -76,7 +76,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-8
+                - monumenta-11
       volumes:
         - name: nfs-maps
           hostPath:
