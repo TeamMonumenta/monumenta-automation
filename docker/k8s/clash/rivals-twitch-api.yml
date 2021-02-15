@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: rivals-api-test-nodeport
+  name: rivals-twitch-api-nodeport
   namespace: clash
   labels:
-    app: rivals-api-test
+    app: rivals-twitch-api
 spec:
   type: NodePort
   externalTrafficPolicy: Local
   selector:
-    app: rivals-api-test
+    app: rivals-twitch-api
   ports:
   - name: http
     port: 28880
@@ -22,19 +22,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rivals-api-test
+  name: rivals-twitch-api
   namespace: clash
   labels:
-    app: rivals-api-test
+    app: rivals-twitch-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: rivals-api-test
+      app: rivals-twitch-api
   template:
     metadata:
       labels:
-        app: rivals-api-test
+        app: rivals-twitch-api
     spec:
       affinity:
         nodeAffinity:
@@ -44,14 +44,14 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-9
+                - monumenta-10
       volumes:
         - name: nfs-relay
           hostPath:
             path: /nfs/clash/na/na-1/plugins/MonumentaRelay/
             type: Directory
       containers:
-      - name: rivals-api-test
+      - name: rivals-twitch-api
         image: nginx:stable
         ports:
         - containerPort: 80
