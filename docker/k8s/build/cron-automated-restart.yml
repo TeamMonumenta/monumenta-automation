@@ -18,6 +18,15 @@ spec:
           labels:
             app: cron-automated-restart
         spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                    - monumenta-11
           serviceAccountName: automation-bot-service-account
           volumes:
           - name: secret-config
