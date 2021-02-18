@@ -739,7 +739,12 @@ For example:```
             if len(part) < 3:
                 raise ValueError("You need to actually supply a new description")
 
-            entry["description"] = part[2].strip()
+            description = part[2].strip()
+            if len(description) > 1600:
+                raise ValueError('Please limit your {single} to 1600 characters to allow for formatting and close info (currently {} characters)'
+                        .format(len(description), single=self._descriptor_single))
+
+            entry["description"] = description
 
         elif operation == 'label':
             if len(part) < 3:
@@ -838,7 +843,11 @@ __Available Priorities:__
         if not self.has_privilege(1, message.author, index=index):
             raise ValueError("You do not have permission to append to #{}".format(index))
 
-        entry["description"] = "{}\n{}".format(entry["description"], part[1].strip())
+        description = f'{entry["description"]}\n{part[1].strip()}'
+        if len(description) > 1600:
+            raise ValueError(f'Appending this message brings the length to {len(description)} which exceeds the 1600 character maximum to allow for formatting and close info')
+
+        entry["description"] = description
 
         if entry["author"] == message.author.id:
             entry["pending_notification"] = False
