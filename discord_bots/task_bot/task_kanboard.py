@@ -175,6 +175,7 @@ class TaskKanboard(object):
             author = json_msg["event_author"]
 
         msg = None
+        complexity_changed = False
         if json_msg["event_name"] == "task.close":
             if "close_reason" not in entry:
                 msg = f"User {author} closed {self._task_database._descriptor_single} #{index}"
@@ -205,8 +206,6 @@ class TaskKanboard(object):
             if priority is None:
                 print(f"Warning: Could not determine priority for task: {json_msg}", flush=True)
                 return False
-
-            complexity_changed = False
 
             if priority != entry["priority"] and complexity == entry["complexity"]:
                 msg = f"User {author} set priority of {index} to {priority}"
