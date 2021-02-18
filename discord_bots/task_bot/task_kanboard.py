@@ -56,6 +56,14 @@ class TaskKanboard(object):
         self._kanboard_client = kanboard_client
         self._cached_tags = None
 
+        # Map of priorities to scores - not saved anywhere, currently hardcoded
+        self._scores = {
+            "easy":     1,
+            "moderate": 2,
+            "hard":     4,
+            "unknown":  2,
+        }
+
     @classmethod
     async def create_kanboard(cls, task_database, kb: kanboard.Client, title: str):
         """
@@ -154,6 +162,7 @@ class TaskKanboard(object):
                 return False
 
         # A str, which is the same as the key for entries
+        kanboard_id = task["id"]
         index = task["reference"]
         if not index in self._task_database._entries:
             print(f"Warning: task references nonexistent entry: {json_msg}", flush=True)
@@ -197,20 +206,36 @@ class TaskKanboard(object):
                 print(f"Warning: Could not determine priority for task: {json_msg}", flush=True)
                 return False
 
+            complexity_changed = False
+
             if priority != entry["priority"] and complexity == entry["complexity"]:
                 msg = f"User {author} set priority of {index} to {priority}"
                 entry["priority"] = priority
             if priority == entry["priority"] and complexity != entry["complexity"]:
                 msg = f"User {author} set complexity of {index} to {complexity}"
                 entry["complexity"] = complexity
+                complexity_changed = True
             if priority != entry["priority"] and complexity != entry["complexity"]:
                 msg = f"User {author} set priority of {index} to {priority} and complexity to {complexity}"
                 entry["priority"] = priority
                 entry["complexity"] = complexity
+                complexity_changed = True
 
         if msg is None:
             # Nothing changed
             return False
+
+        if complexity_changed:
+            # Update score
+            result = await self._kanboard_client.updateTask_async(
+                id=kanboard_id,
+                score=self._scores[entry["complexity"]]
+            )
+
+            if not result:
+                # Don't fail here - either way, we want to update Discord at this point
+                print(f"Warning: Failed to update kanboard_id: {kanboard_id}", flush=True)
+                raise ValueError(f"Failed to modify kanboard task id: {kanboard_id}")
 
         print(msg, flush=True)
 
@@ -247,6 +272,7 @@ class TaskKanboard(object):
             id=kanboard_id,
             title=entry["description"],
             color_id=self.get_color(entry["labels"]),
+            score=self._scores[entry["complexity"]],
             reference=str(entry_id)
         )
 
@@ -304,6 +330,10 @@ class TaskKanboard(object):
         needs_save = False
         # Iterate a shallow copy of the entries table so new reports don't break it
         for item_id in self._task_database._entries.copy():
-            if await self.update_entry(int(item_id), self._task_database._entries[item_id]):
-                needs_save = True
+            try:
+                if await self.update_entry(int(item_id), self._task_database._entries[item_id]):
+                    needs_save = True
+            except Exception as ex:
+                print(f"Got error, continuing anyway: {str(ex)}")
+
         return needs_save
