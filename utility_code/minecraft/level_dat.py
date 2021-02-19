@@ -12,11 +12,13 @@ class LevelDat():
     def __init__(self, path):
         """Load a level.dat file from the path provided, and allow saving."""
 
+        self.world_name = os.path.basename(os.path.dirname(os.path.realpath(path)))
         self.path = path
-        with open(self.path, 'rb') as fp:
-            self.level_dat_file = nbt.NBTFile.load(self.path)
-            self.nbt = self.level_dat_file.root_tag.body
+        self.level_dat_file = nbt.NBTFile.load(self.path)
+        self.nbt = self.level_dat_file.root_tag.body
         self.data_version = self.nbt.at_path('Data.DataVersion').value
+        if self.nbt.has_path('Data.LevelName'):
+            self.nbt.at_path('Data.LevelName').value = str(self.world_name)
 
     def save(self):
         """Save the level.dat file to its original location."""
@@ -44,6 +46,7 @@ class LevelDat():
         datapack_tag = nbt.TagString(datapack)
         if datapack_tag in disabled_tags:
             disabled_tags.remove(datapack_tag)
+            self.sort_disabled()
         if datapack_tag not in enabled_tags:
             enabled_tags.append(datapack_tag)
 
@@ -59,6 +62,7 @@ class LevelDat():
             enabled_tags.remove(datapack_tag)
         if datapack_tag not in disabled_tags:
             disabled_tags.append(datapack_tag)
+            self.sort_disabled()
 
     @property
     def enabled_datapacks(self):
@@ -79,6 +83,7 @@ class LevelDat():
 
         # Disable all datapacks
         disabled_tags += enabled_tags
+        self.sort_disabled()
         enabled_tags.clear()
 
         # Enable specified datapacks
@@ -99,6 +104,11 @@ class LevelDat():
         # Disable specified datapacks
         for datapack in datapacks:
             self.disable_datapack(datapack)
+        self.sort_disabled()
+
+    def sort_disabled(self):
+        disabled = self.nbt.at_path('Data.DataPacks.Disabled').value
+        disabled.sort(key=lambda tag: tag.value)
 
     def __repr__(self):
         return f'LevelDat({self.path!r})'
