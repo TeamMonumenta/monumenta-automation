@@ -106,7 +106,7 @@ roguelike = {
     "build_world_path":f"{build_template_dir}/roguelike/Project_Epic-roguelike/",
     "output_world_path":f"{output_dir}/roguelike/Project_Epic-roguelike/",
     "copy_base_from":"build",
-    "copy_previous_paths":["stats",],
+    "copy_previous_paths":["stats", "data/scoreboard.dat"],
     "datapacks":datapacks_dungeon + ['file/roguelike'],
 }
 
