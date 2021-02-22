@@ -33,18 +33,18 @@ class ItemReplacementManager(object):
         Replace an item per provided rules and master copy
         """
         # Abort replacement if the item has no ID (empty/invalid item)
-        if not item.has_path('id'):
+        if not item.id:
             return False
 
         # Parse the item ID and name for later use.
         item_meta = {
-            'id': item.at_path('id').value,
+            'id': item.id,
             'name': None,
         }
 
-        if item.has_path('tag.display.Name'):
+        if item.nbt.has_path('tag.display.Name'):
             # If a name isn't found, it can still be replaced with a named item.
-            item_meta['name'] = get_item_name_from_nbt(item.at_path('tag'))
+            item_meta['name'] = get_item_name_from_nbt(item.tag)
 
         # Substitute name/id values in case an item changed ID.
         orig_id = item_meta['id']
@@ -52,7 +52,7 @@ class ItemReplacementManager(object):
             rule.process(item_meta, item)
         # If the id changed, update the base item
         if orig_id != item_meta['id']:
-            item.at_path('id').value = item_meta['id']
+            item.id = item_meta['id']
 
         # Abort replacement if the item has no name (no valid replacement)
         if not item_meta['name']:
@@ -62,15 +62,15 @@ class ItemReplacementManager(object):
         item_id = item_meta['id']
         item_name = item_meta['name']
 
-        new_item_tag = self.item_map.get(item_id,{}).get(item_name,None)
+        new_item_tag = self.item_map.get(item_id, {}).get(item_name, None)
         if not new_item_tag:
             return False
 
         # Remember the original tag (without damage)
-        if not item.has_path('tag'):
-            item.value['tag'] = nbt.TagCompound({})
+        if not item.has_tag():
+            item.tag = nbt.TagCompound({})
 
-        orig_tag_copy = item.at_path('tag').deep_copy()
+        orig_tag_copy = item.tag.deep_copy()
         if "Damage" in orig_tag_copy.value:
             orig_tag_copy.value.pop("Damage")
 
@@ -81,11 +81,11 @@ class ItemReplacementManager(object):
                     return False
             except:
                 eprint("Error preprocessing " + repr(rule.name) + ":")
-                eprint("Item being preprocessed: " + item.to_mojangson(highlight=True))
+                eprint("Item being preprocessed: " + item.nbt.to_mojangson(highlight=True))
                 eprint(str(traceback.format_exc()))
 
         # Replace the item tag
-        item.at_path('tag').value = new_item_tag['nbt'].deep_copy().value
+        item.tag = new_item_tag['nbt'].deep_copy()
 
         # Run postprocess rules
         for rule in self.global_rules:
@@ -93,17 +93,17 @@ class ItemReplacementManager(object):
                 rule.postprocess(item)
             except:
                 eprint("Error postprocessing " + repr(rule.name) + ":")
-                eprint("Item being postprocessed: " + item.to_mojangson(highlight=True))
+                eprint("Item being postprocessed: " + item.nbt.to_mojangson(highlight=True))
                 eprint("This may be a CRITICAL ERROR!")
                 eprint(str(traceback.format_exc()))
 
         # Get a copy of the newly updated item to compare with (without damage)
-        updated_tag_copy = item.at_path('tag').deep_copy()
+        updated_tag_copy = item.tag.deep_copy()
         if "Damage" in updated_tag_copy.value:
             updated_tag_copy.value.pop("Damage")
 
-        if item.has_path('tag') and len(item.at_path('tag').value) == 0:
-            item.value.pop('tag')
+        if item.has_tag() and len(item.tag.value) == 0:
+            item.tag = None
 
         if not orig_tag_copy.equals_exact(updated_tag_copy):
             # Item changed

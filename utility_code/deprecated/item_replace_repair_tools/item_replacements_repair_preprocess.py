@@ -7,7 +7,6 @@ import sys
 import getopt
 from pprint import pprint
 
-from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path
 from lib_py3.common import eprint, get_item_name_from_nbt

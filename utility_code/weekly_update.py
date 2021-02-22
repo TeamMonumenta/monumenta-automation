@@ -404,7 +404,7 @@ def process_region(region_config):
         num_replacements = 0
         for chunk in region.iter_chunks(autosave=True):
             for item in chunk.recursive_iter_items():
-                if item_replace_manager.replace_item(item.nbt, log_dict=replacements_log, debug_path=item.get_path_str()):
+                if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
                     num_replacements += 1
 
         return (region_config["world"], num_replacements, replacements_log)

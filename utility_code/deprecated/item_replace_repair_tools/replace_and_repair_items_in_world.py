@@ -6,6 +6,7 @@ import getopt
 import json
 from pprint import pprint
 
+# TODO ItemReplacementManager now takes type Item instead of an NBT tag. Update before using this.
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.iterators.recursive_entity_iterator import get_debug_string_from_entity_path

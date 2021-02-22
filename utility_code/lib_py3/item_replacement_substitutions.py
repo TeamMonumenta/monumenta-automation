@@ -64,9 +64,9 @@ class FixBookTitles(SubstitutionRule):
     name = "Fix book titles"
 
     def process(self, item_meta, item):
-        if item.has_path('tag.display.Name') or not item.has_path('tag.title'):
+        if item.nbt.has_path('tag.display.Name') or not item.nbt.has_path('tag.title'):
             return
-        title = item.at_path('tag.title').value
+        title = item.tag.at_path('title').value
         item_meta['name'] = unformat_text(parse_name_possibly_json(title))
 
 class FixBrokenSectionSymbols(SubstitutionRule):
@@ -77,44 +77,43 @@ class FixBrokenSectionSymbols(SubstitutionRule):
 
     def process(self, item_meta, item):
         # Name
-        if not item.has_path('tag.display.Name'):
+        if not item.nbt.has_path('tag.display.Name'):
             return
-        name = item.at_path('tag.display.Name').value
+        name = item.tag.at_path('display.Name').value
         new_name = self._fix(name)
-        item.at_path('tag.display.Name').value = new_name
+        item.tag.at_path('display.Name').value = new_name
         item_meta['name'] = unformat_text(parse_name_possibly_json(new_name))
 
         # Lore lines
-        if item.has_path('tag.display.Lore'):
-            for lore_line in item.iter_multipath('tag.display.Lore[]'):
-                lore = lore_line.value
-                new_lore = self._fix(lore)
-                lore_line.value = new_lore
+        for lore_line in item.tag.iter_multipath('display.Lore[]'):
+            lore = lore_line.value
+            new_lore = self._fix(lore)
+            lore_line.value = new_lore
 
 class FixDoubleJsonNames(SubstitutionRule):
     name = "Fixed json in json names"
 
     def process(self, item_meta, item):
-        if not item.has_path('tag.display.Name'):
+        if not item.nbt.has_path('tag.display.Name'):
             return
-        name = item.at_path('tag.display.Name').value
+        name = item.tag.at_path('display.Name').value
         name_json = parse_name_possibly_json(name)
         name_json_json = parse_name_possibly_json(name_json)
         if name_json != name_json_json:
-            item.at_path('tag.display.Name').value = name_json
+            item.tag.at_path('display.Name').value = name_json
             item_meta['name'] = unformat_text(name_json_json)
 
 class FixEscapedNames(SubstitutionRule):
     name = "Fixed escaped characters in json names"
 
     def process(self, item_meta, item):
-        if not item.has_path('tag.display.Name'):
+        if not item.nbt.has_path('tag.display.Name'):
             return
-        name = item.at_path('tag.display.Name').value
+        name = item.tag.at_path('display.Name').value
         name = name.replace(r"\\u0027", "'")
         name = name.replace(r"\\u00a7", "§")
         name_json = parse_name_possibly_json(name)
-        item.at_path('tag.display.Name').value = name
+        item.tag.at_path('display.Name').value = name
         item_meta['name'] = unformat_text(name_json)
 
 class SubtituteItems(SubstitutionRule):

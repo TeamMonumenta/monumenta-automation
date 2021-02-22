@@ -11,6 +11,10 @@ from lib_py3.common import eprint
 from lib_py3.common import jsonify_text
 from lib_py3.common import parse_name_possibly_json
 
+from minecraft.chunk_format.block_entity import BlockEntity
+from minecraft.chunk_format.entity import Entity
+from minecraft.player_dat_format.item import Item
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 from quarry.types.text_format import unformat_text, TextFormats, TextStyles
@@ -112,9 +116,9 @@ def enchantify(item, player, enchantment, owner_prefix=None):
     sender, who/what is sending the command
     duplicateItem, whether to make an unedited copy
     """
-    if not item.has_path('tag.display.Lore'):
+    if not item.nbt.has_path('tag.display.Lore'):
         return
-    lore = item.at_path('tag.display.Lore').value
+    lore = item.tag.at_path('display.Lore').value
 
     if len(lore) == 0:
         return
@@ -152,16 +156,16 @@ def enchantify(item, player, enchantment, owner_prefix=None):
         owner_json = jsonify_text_hack(owner_prefix + " " + player)
         newLore.append(nbt.TagString(owner_json))
 
-    item.at_path('tag.display.Lore').value = newLore
+    item.tag.at_path('display.Lore').value = newLore
 
-def freeInfusion(player: str, item: nbt.TagCompound, selection: str, level: str):
+def freeInfusion(player: str, item: Item, selection: str, level: str):
     """Infuse an item with <selection> infusion at level <level>"""
     newLore = []
-    if item.has_path('tag.display.Lore'):
-        for line in item.iter_multipath('tag.display.Lore[]'):
+    if item.nbt.has_path('tag.display.Lore'):
+        for line in item.tag.iter_multipath('display.Lore[]'):
             if not line.value.contains("PRE COST ADJUST"):
-                newLore.append(line)
-        item.at_path('tag.display.Lore').value = newLore
+                newLore.append(line.deep_copy())
+        item.tag.at_path('display.Lore').value = newLore
 
     numeral = level
     if isinstance(level, int):
@@ -183,17 +187,17 @@ def shatter_item(item):
     be called if the item definitely should be
     shattered.
 
-    item is an item stack, including id and Count.
+    item is type Item.
     """
 
-    if not item.has_path('tag'):
-        item.value['tag'] = nbt.TagCompound({})
-    if not item.has_path('tag.display'):
-        item.at_path('tag').value['display'] = nbt.TagCompound({})
-    if not item.has_path('tag.display.Lore'):
-        item.at_path('tag.display').value['Lore'] = nbt.TagList([])
+    if not item.has_tag():
+        item.tag = nbt.TagCompound({})
+    if not item.tag.has_path('display'):
+        item.tag.value['display'] = nbt.TagCompound({})
+    if not item.tag.has_path('display.Lore'):
+        item.tag.at_path('display').value['Lore'] = nbt.TagList([])
 
-    lore = item.at_path('tag.display.Lore').value
+    lore = item.tag.at_path('display.Lore').value
 
     lore.append(nbt.TagString(jsonify_text_hack("§4§l* SHATTERED *")))
     lore.append(nbt.TagString(jsonify_text_hack("§4Maybe a Master Repairman")))
@@ -206,32 +210,33 @@ class AbortNoLore(GlobalRule):
     name = "Abort if there's no lore text"
 
     def preprocess(self, template, item):
-        if item.has_path('tag.display.Name'):
-            name_text = parse_name_possibly_json(item.at_path('tag.display.Name').value)
-            name_plain = unformat_text(name_text)
-        else:
-            name_plain = None
+        # Items with lore are always replaced
+        if item.nbt.has_path('tag.display.Lore'):
+            return
 
-        if item.at_path('id').value in ('minecraft:written_book', 'minecraft:experience_bottle'):
-            # Allow replacing written books
-            return
-        elif (item.at_path('id').value == 'minecraft:prismarine_shard'
-              and name_plain == 'Crystalline Shard'):
-            return
-        elif not item.has_path('tag.display.Lore'):
-            # Abort!
-            return True
+        # Items without lore in spawners never get replaced
+        parent = item.parent
+        while parent:
+            if isinstance(parent, (BlockEntity, Entity)):
+                if parent.nbt.has_path("id") and parent.nbt.at_path("id").value.contains("spawner"):
+                    # Not replaced
+                    return True
+            # Remember to go up a level, or infinite recursion issues occur
+            parent = parent.parent
+
+        # Anything at this point is probably fine.
+        return
 
 class PreserveArmorColor(GlobalRule):
     name = 'Preserve armor color'
 
     def preprocess(self, template, item):
         self.color = None
-        if item.has_path('tag.display.color'):
-            self.color = item.at_path('tag.display.color').value
+        if item.nbt.has_path('tag.display.color'):
+            self.color = item.tag.at_path('display.color').value
 
     def postprocess(self, item):
-        if not item.has_path('id') or item.at_path('id').value not in (
+        if item.id not in (
             'minecraft:leather_helmet',
             'minecraft:leather_chestplate',
             'minecraft:leather_leggings',
@@ -242,43 +247,46 @@ class PreserveArmorColor(GlobalRule):
             return
 
         if self.color is None:
-            if item.has_path('tag.display.color'):
-                item.at_path('tag.display').value.pop('color')
+            if item.nbt.has_path('tag.display.color'):
+                item.tag.at_path('display').value.pop('color')
             return
 
         # Make sure tag exists first
-        if not item.has_path('tag'):
-            item.value['tag'] = nbt.TagCompound({})
-        if not item.has_path('tag.display'):
-            item.at_path('tag').value['display'] = nbt.TagCompound({})
-        if not item.has_path('tag.display.color'):
-            item.at_path('tag.display').value['color'] = nbt.TagInt(0)
+        if not item.has_tag():
+            item.tag = nbt.TagCompound({})
+        if not item.tag.has_path('display'):
+            item.tag.value['display'] = nbt.TagCompound({})
+        if not item.tag.has_path('display.color'):
+            item.tag.at_path('display').value['color'] = nbt.TagInt(0)
 
         # Apply color
-        item.at_path('tag.display.color').value = self.color
+        item.tag.at_path('display.color').value = self.color
 
 class PreserveDamage(GlobalRule):
     name = 'Preserve damage'
 
     def preprocess(self, template, item):
         self.damage = None
-        if item.has_path('tag.Damage'):
-            self.damage = item.at_path('tag.Damage').value
+        if item.nbt.has_path('tag.Damage'):
+            self.damage = item.tag.at_path('Damage').value
 
     def postprocess(self, item):
+        if not item.is_damageable():
+            return
+
         if self.damage is None:
-            if item.has_path('tag.Damage'):
-                item.at_path('tag').value.pop('Damage')
+            if item.nbt.has_path('tag.Damage'):
+                item.tag.value.pop('Damage')
             return
 
         # Make sure tag exists first
-        if not item.has_path('tag'):
-            item.value['tag'] = nbt.TagCompound({})
-        if not item.has_path('tag.Damage'):
-            item.at_path('tag').value['Damage'] = nbt.TagInt(0)
+        if not item.has_tag():
+            item.tag = nbt.TagCompound({})
+        if not item.tag.has_path('Damage'):
+            item.tag.value['Damage'] = nbt.TagInt(0)
 
         # Apply damage
-        item.at_path('tag.Damage').value = self.damage
+        item.tag.at_path('Damage').value = self.damage
 
 class PreserveCrossbowItem(GlobalRule):
     name = 'Preserve crossbow item'
@@ -286,28 +294,32 @@ class PreserveCrossbowItem(GlobalRule):
     def preprocess(self, template, item):
         self.Charged = None
         self.ChargedProjectiles = None
-        if item.has_path('tag.Charged'):
-            self.Charged = item.at_path('tag.Charged').deep_copy()
-        if item.has_path('tag.ChargedProjectiles'):
-            self.ChargedProjectiles = item.at_path('tag.ChargedProjectiles').deep_copy()
+        if item.nbt.has_path('tag.Charged'):
+            self.Charged = item.tag.at_path('Charged').deep_copy()
+        if item.nbt.has_path('tag.ChargedProjectiles'):
+            self.ChargedProjectiles = item.tag.at_path('ChargedProjectiles').deep_copy()
 
     def postprocess(self, item):
+        if item.id != 'minecraft:crossbow':
+            # Don't preserve crossbow item if it's no longer a crossbow
+            return
+
         if self.Charged is None:
-            if item.has_path('tag.Charged'):
-                item.at_path('tag').value.pop('Charged')
+            if item.nbt.has_path('tag.Charged'):
+                item.tag.value.pop('Charged')
         if self.ChargedProjectiles is None:
-            if item.has_path('tag.ChargedProjectiles'):
-                item.at_path('tag').value.pop('ChargedProjectiles')
+            if item.nbt.has_path('tag.ChargedProjectiles'):
+                item.tag.value.pop('ChargedProjectiles')
         if self.Charged is None and self.ChargedProjectiles is None:
             return
 
         # Make sure tag exists first
-        if not item.has_path('tag'):
-            item.value['tag'] = nbt.TagCompound({})
+        if not item.has_tag():
+            item.tag = nbt.TagCompound({})
         if self.Charged is not None:
-            item.at_path('tag').value['Charged'] = self.Charged
+            item.tag.value['Charged'] = self.Charged
         if self.ChargedProjectiles is not None:
-            item.at_path('tag').value['ChargedProjectiles'] = self.ChargedProjectiles
+            item.tag.value['ChargedProjectiles'] = self.ChargedProjectiles
 
 class PreserveEnchantments(GlobalRule):
     name = 'Preserve Enchantments'
@@ -348,20 +360,19 @@ class PreserveEnchantments(GlobalRule):
                     if unformat_text(lore_text).startswith(enchantment['enchantment']):
                         enchantment['enchant_on_template'] = True
 
-        if item.has_path('tag.display.Lore'):
-            for lore in item.iter_multipath('tag.display.Lore[]'):
-                for enchantment in self.enchantment_state:
-                    owner_prefix = enchantment['owner_prefix']
-                    lore_text = unformat_text(parse_name_possibly_json(lore.value))
-                    if lore_text.startswith(enchantment['enchantment']):
-                        enchantment['enchant_found'] = True
-                        if not enchantment["enchantment"].startswith("Gilded"):
-                            enchantment['enchant_line'] = lore_text
-                        else:
-                            enchantment['enchant_line'] = 'Gilded'
-                    if owner_prefix is not None and lore_text.startswith(owner_prefix):
-                        if not enchantment["enchantment"].startswith("Gilded") or len(enchantment['players']) <= 0:
-                            enchantment['players'].append(lore_text[len(owner_prefix)+1:])
+        for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
+            for enchantment in self.enchantment_state:
+                owner_prefix = enchantment['owner_prefix']
+                lore_text = unformat_text(parse_name_possibly_json(lore.value))
+                if lore_text.startswith(enchantment['enchantment']):
+                    enchantment['enchant_found'] = True
+                    if not enchantment["enchantment"].startswith("Gilded"):
+                        enchantment['enchant_line'] = lore_text
+                    else:
+                        enchantment['enchant_line'] = 'Gilded'
+                if owner_prefix is not None and lore_text.startswith(owner_prefix):
+                    if not enchantment["enchantment"].startswith("Gilded") or len(enchantment['players']) <= 0:
+                        enchantment['players'].append(lore_text[len(owner_prefix)+1:])
 
     def postprocess(self, item):
         for enchantment in self.enchantment_state:
@@ -387,10 +398,7 @@ class PreserveShattered(GlobalRule):
     def preprocess(self, template, item):
         self.shattered = False
 
-        if not item.has_path('tag.display.Lore'):
-            return
-
-        for lore in item.iter_multipath('tag.display.Lore[]'):
+        for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
             if unformat_text(parse_name_possibly_json(lore.value)) == unformat_text(self.enchantment):
                 self.shattered = True
                 return
@@ -404,39 +412,38 @@ class PreserveSoulbound(GlobalRule):
 
     def preprocess(self, template, item):
         self.player_line = None
-        if item.has_path('tag.display.Lore'):
-            for lore in item.iter_multipath('tag.display.Lore[]'):
-                lore_text = parse_name_possibly_json(lore.value)
-                if unformat_text(lore_text).startswith("* Soulbound to "):
-                    self.player_line = lore
-                    return
+        for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
+            lore_text = parse_name_possibly_json(lore.value)
+            if unformat_text(lore_text).startswith("* Soulbound to "):
+                self.player_line = lore
+                return
 
     def postprocess(self, item):
         if self.player_line is None:
             return
 
         # Make sure tag exists first
-        if not item.has_path('tag'):
-            item.value['tag'] = nbt.TagCompound({})
-        if not item.has_path('tag.display'):
-            item.at_path('tag').value['display'] = nbt.TagCompound({})
-        if not item.has_path('tag.display.Lore'):
-            item.at_path('tag.display').value['Lore'] = nbt.TagList([])
+        if not item.has_tag():
+            item.tag = nbt.TagCompound({})
+        if not item.tag.has_path('display'):
+            item.tag.value['display'] = nbt.TagCompound({})
+        if not item.tag.has_path('display.Lore'):
+            item.tag.at_path('display').value['Lore'] = nbt.TagList([])
 
         # Apply soulbound lore
-        item.at_path('tag.display.Lore').value.append(self.player_line)
+        item.tag.at_path('display.Lore').value.append(self.player_line)
 
 class PreserveBlockEntityTag(GlobalRule):
-    name = 'Preserve shield banner'
+    name = 'Preserve block entity tag'
 
     def preprocess(self, template, item):
         self.block_entity_tag = None
-        if item.has_path('tag.BlockEntityTag'):
-            self.block_entity_tag = item.at_path('tag.BlockEntityTag')
+        if item.nbt.has_path('tag.BlockEntityTag'):
+            self.block_entity_tag = item.tag.at_path('BlockEntityTag')
 
             if type(self.block_entity_tag) is not nbt.TagCompound:
                 self.block_entity_tag = None
-                eprint("Skipping invalid BlockEntityTag: " + item.to_mojangson(highlight=False))
+                eprint("Skipping invalid BlockEntityTag: " + item.nbt.to_mojangson(highlight=False))
                 return
 
             # Some legacy items have this invalid tag.BlockEntityTag.id field
@@ -444,13 +451,13 @@ class PreserveBlockEntityTag(GlobalRule):
                 self.block_entity_tag.value.pop('id')
 
     def postprocess(self, item):
-        if item.has_path('tag.BlockEntityTag'):
-            item.at_path('tag').value.pop('BlockEntityTag')
+        if item.nbt.has_path('tag.BlockEntityTag'):
+            item.tag.value.pop('BlockEntityTag')
 
         if self.block_entity_tag is not None:
-            if not item.has_path('tag'):
-                item.value['tag'] = nbt.TagCompound({})
-            item.at_path('tag').value['BlockEntityTag'] = self.block_entity_tag
+            if not item.has_tag():
+                item.tag = nbt.TagCompound({})
+            item.tag.value['BlockEntityTag'] = self.block_entity_tag
 
 ################################################################################
 # Global rules end

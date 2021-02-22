@@ -307,6 +307,37 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
 
         self.nbt.value['Slot'] = nbt.TagByte(value)
 
+    def is_damageable(self):
+        if self.id in (
+            "minecraft:shears",
+            "minecraft:fishing_rod",
+            "minecraft:carrot_on_a_stick",
+            "minecraft:flint_and_steel",
+            "minecraft:bow",
+            "minecraft:trident",
+            "minecraft:elytra",
+            "minecraft:shield",
+            "minecraft:crossbow",
+            "minecraft:warped_fungus_on_a_stick",
+        ):
+            return True
+
+        for item_type in (
+            "_helmet",
+            "_chestplate",
+            "_leggings",
+            "_boots",
+            "_axe",
+            "_pickaxe",
+            "_shovel",
+            "_hoe",
+            "_sword",
+        ):
+            if self.id.endswith(item_type):
+                return True
+
+        return False
+
     def __repr__(self):
         return f'Item(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
 
