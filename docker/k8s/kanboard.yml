@@ -46,7 +46,7 @@ metadata:
   name: kanboard-php-config
 data:
   kanboard-memory.ini: |
-    memory_limit = 256M
+    memory_limit = 512M
 
 ---
 
@@ -134,7 +134,7 @@ spec:
             path: /nfs/kanboard/ssl
       containers:
       - name: kanboard
-        image: kanboard/kanboard:v1.2.16
+        image: kanboard/kanboard:v1.2.18
         tty: false
         stdin: false
         volumeMounts:
