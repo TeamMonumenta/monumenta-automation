@@ -20,6 +20,21 @@ class NbtPathDebug():
         self.root = root
         self.data_version = data_version
 
+    def is_in_spawner(self):
+        parent = self.parent
+        while parent:
+            if parent.nbt.has_path("id"):
+                if parent.nbt.at_path("id").value.contains("spawner"):
+                    return True
+
+                if parent.nbt.at_path("id").value.contains("spawn_egg"):
+                    return True
+
+            # Remember to go up a level, or infinite recursion issues occur
+            parent = parent.parent
+
+        return False
+
     @property
     def full_nbt_path(self):
         """Get the full NBT path from the original file."""

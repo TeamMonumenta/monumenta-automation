@@ -215,14 +215,8 @@ class AbortNoLore(GlobalRule):
             return
 
         # Items without lore in spawners never get replaced
-        parent = item.parent
-        while parent:
-            if isinstance(parent, (BlockEntity, Entity)):
-                if parent.nbt.has_path("id") and parent.nbt.at_path("id").value.contains("spawner"):
-                    # Not replaced
-                    return True
-            # Remember to go up a level, or infinite recursion issues occur
-            parent = parent.parent
+        if item.is_in_spawner():
+            return True
 
         # Anything at this point is probably fine.
         return
