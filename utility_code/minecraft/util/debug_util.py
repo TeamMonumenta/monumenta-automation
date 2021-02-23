@@ -24,10 +24,10 @@ class NbtPathDebug():
         parent = self.parent
         while parent:
             if parent.nbt.has_path("id"):
-                if parent.nbt.at_path("id").value.contains("spawner"):
+                if "spawner" in parent.nbt.at_path("id").value:
                     return True
 
-                if parent.nbt.at_path("id").value.contains("spawn_egg"):
+                if "spawn_egg" in parent.nbt.at_path("id").value:
                     return True
 
             # Remember to go up a level, or infinite recursion issues occur

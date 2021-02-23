@@ -163,7 +163,7 @@ def freeInfusion(player: str, item: Item, selection: str, level: str):
     newLore = []
     if item.nbt.has_path('tag.display.Lore'):
         for line in item.tag.iter_multipath('display.Lore[]'):
-            if not line.value.contains("PRE COST ADJUST"):
+            if "PRE COST ADJUST" not in line.value:
                 newLore.append(line.deep_copy())
         item.tag.at_path('display.Lore').value = newLore
 
