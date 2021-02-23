@@ -127,6 +127,7 @@ result += '\n'
 
 # Table contents
 score = ['','','','']
+matching_scores = 0
 for keyA in sorted(scoreMap.keys()):
     strFormat = '{:' + alignment[0] + str( maxCharCounts[0] ) + '},'
     score[0] = strFormat.format(keyA)
@@ -144,6 +145,9 @@ for keyA in sorted(scoreMap.keys()):
             score[3] = strFormat.format(keyD)
 
             result += ''.join(score) + '\n'
+            matching_scores += 1
+
+result += f'matches,{matching_scores}\n'
 
 print( result )
 
