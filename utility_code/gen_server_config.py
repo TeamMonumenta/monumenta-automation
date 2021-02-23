@@ -292,6 +292,14 @@ config = {
         'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect + gobrush,
     },
 
+    'event':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=8'),
+            ('spigot.yml', 'view-distance', '    view-distance: 8'),
+        ],
+        'linked':server_config + base_plugins + dynmap,
+    },
+
     'depths':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
