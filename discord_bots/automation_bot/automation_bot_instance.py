@@ -848,6 +848,11 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
 Brings down all play server shards and backs them up in preparation for weekly update.
 DELETES DUNGEON CORE PROTECT DATA'''
 
+        debug = False
+        if message.content[len(self._prefix + cmd) + 1:].strip() == "--debug":
+            debug = True
+            await self.display("Debug mode enabled! Will not actually make backups")
+
         allShards = self._shards.keys()
 
         await self.display("Stopping all shards...")
@@ -887,10 +892,13 @@ DELETES DUNGEON CORE PROTECT DATA'''
         await self.display("Copying player data from redis")
         await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --output /home/epic/project_epic/server_config/redis_data_final")
 
-        await self.display("Performing backup...")
-        await self.cd("/home/epic")
-        await self.run("mkdir -p /home/epic/1_ARCHIVE")
-        await self.run(["tar", "--exclude=project_epic/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/project_epic_pre_reset_{datestr()}.tgz", "project_epic"])
+        if debug:
+            await self.display("WARNING! Skipping backup!")
+        else:
+            await self.display("Performing backup...")
+            await self.cd("/home/epic")
+            await self.run("mkdir -p /home/epic/1_ARCHIVE")
+            await self.run(["tar", "--exclude=project_epic/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/project_epic_pre_reset_{datestr()}.tgz", "project_epic"])
 
         await self.display("Backups complete! Ready for update.")
         await self.display(message.author.mention)
