@@ -51,7 +51,17 @@ class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
             if name == "@":
                 name = None
 
-        return f"""{self.nbt.at_path("id").value.replace("minecraft:","") if self.nbt.has_path("id") else "nested_BlockEntity"}{" " + " ".join(str(x) for x in self.pos) if self.pos is not None else ""}{" " + name if name is not None else ""}"""
+        return self.id.replace("minecraft:","")}
+
+    @property
+    def id(self):
+        if self.nbt.has_path("id"):
+            return self.nbt.at_path("id").value
+        elif self.nbt.has_path("Id"):
+            return self.nbt.at_path("Id").value
+        else:
+            # TODO Try getting ID from parent
+            return "unknown_check_parent"
 
     @property
     def pos(self):

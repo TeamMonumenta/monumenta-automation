@@ -44,13 +44,11 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
         })
 
     def get_debug_str(self):
-        if self.nbt.has_path("id"):
-            name = None
-            if self.nbt.has_path("tag.display.Name"):
-                name = parse_name_possibly_json(self.nbt.at_path("tag.display.Name").value, remove_color=True)
+        name = None
+        if self.nbt.has_path("tag.display.Name"):
+            name = parse_name_possibly_json(self.nbt.at_path("tag.display.Name").value, remove_color=True)
 
-            return f"""{self.nbt.at_path("id").value.replace("minecraft:","")}{" " + " ".join(str(x) for x in self.pos) if self.pos is not None else ""}{" " + name if name is not None else ""}"""
-        return str(self)
+        return f"""{self.id.replace("minecraft:","")}{" " + " ".join(str(x) for x in self.pos) if self.pos is not None else ""}{" " + name if name is not None else ""}"""
 
 
     @classmethod

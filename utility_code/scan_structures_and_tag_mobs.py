@@ -15,9 +15,12 @@ from quarry.types import nbt
 
 def process_entity(entity, source_name):
     if entity.nbt.has_path("CustomName"):
-        if not entity.nbt.has_path("id"):
+        if entity.nbt.has_path("id"):
+            entity_id = entity.nbt.at_path("id").value
+        elif entity.nbt.has_path("Id"):
+            entity_id = entity.nbt.at_path("Id").value
+        else:
             return
-        entity_id = entity.nbt.at_path("id").value
 
         # Don't add tile entities!
         if entity.nbt.has_path("LootTable") or entity.nbt.has_path("Items") or entity.nbt.has_path("Command"):
@@ -39,7 +42,10 @@ def process_entity(entity, source_name):
         soul_id = None
         if soul is not None:
             soul_nbt = nbt.TagCompound.from_mojangson(soul["history"][0]["mojangson"])
-            soul_id = soul_nbt.at_path("id").value
+            if soul_nbt.has_path("id"):
+                soul_id = soul_nbt.at_path("id").value
+            else:
+                soul_id = soul_nbt.at_path("Id").value
         if soul is not None and soul_id == entity_id:
             # Already in the library - tag it with the name of the structure for searching
             if "location_names" not in soul:

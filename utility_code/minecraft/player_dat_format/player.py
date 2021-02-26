@@ -49,6 +49,10 @@ class Player(Entity):
         return f"player {get_entity_uuid(self.nbt)}"
 
     @property
+    def id(self):
+        return "minecraft:player"
+
+    @property
     def dimension(self):
         """Returns the player's dimension as an integer
 

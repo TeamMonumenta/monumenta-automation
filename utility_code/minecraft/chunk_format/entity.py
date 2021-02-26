@@ -64,13 +64,28 @@ class Entity(RecursiveMinecraftIterator, NbtPathDebug):
         })
 
     def get_debug_str(self):
-        if self.nbt.has_path("id"):
-            name = None
-            if self.nbt.has_path("CustomName"):
-                name = parse_name_possibly_json(self.nbt.at_path("CustomName").value, remove_color=True)
+        name = None
+        name_part = ""
+        if self.nbt.has_path("CustomName"):
+            name = parse_name_possibly_json(self.nbt.at_path("CustomName").value, remove_color=True)
+            name_part = " " + name
 
-            return f"""{self.nbt.at_path("id").value.replace("minecraft:","")}{" " + " ".join(str(x) for x in self.pos) if self.pos is not None else ""}{" " + name if name is not None else ""}"""
-        return str(self)
+        id_part = self.id.replace("minecraft:","")
+        pos_part = ""
+        if self.pos is not None:
+            pos_part = " " + " ".join(str(x) for x in self.pos)
+
+        return id_part + pos_part + name_part
+
+    @property
+    def id(self):
+        if self.nbt.has_path("id"):
+            return self.nbt.at_path("id").value
+        elif self.nbt.has_path("Id"):
+            return self.nbt.at_path("Id").value
+        else:
+            # TODO Try getting ID from parent
+            return "unknown_check_parent"
 
     @property
     def uuid(self):

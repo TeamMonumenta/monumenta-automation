@@ -68,9 +68,12 @@ class MobReplacementManager(object):
         """
 
         for mob in replacements:
-            if not mob.has_path('id'):
+            if mob.has_path('id'):
+                mob_id = mob.at_path('id').value
+            elif mob.has_path('Id'):
+                mob_id = mob.at_path('Id').value
+            else:
                 raise Exception("Replacements mob missing 'id': {}".format(mob.to_mojangson()))
-            mob_id = mob.at_path('id').value
 
             mob_name = get_entity_name_from_nbt(mob)
             if not mob_name:
@@ -132,9 +135,12 @@ class MobReplacementManager(object):
         """
         Replace a mob with the version from the map (if any)
         """
-        if not mob.has_path('id'):
+        if mob.has_path('id'):
+            mob_id = mob.at_path('id').value
+        elif mob.has_path('Id'):
+            mob_id = mob.at_path('Id').value
+        else:
             return False
-        mob_id = mob.at_path('id').value
 
         new_nbt = None
 

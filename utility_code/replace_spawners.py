@@ -120,8 +120,16 @@ for entity, source_pos, entity_path in world.entity_iterator(pos1=pos1, pos2=pos
     ### Update entities
     for replacement in spawners_to_replace:
         if not (
-            entity.has_path('id')
-            and entity.at_path('id').value == "minecraft:mob_spawner"
+            (
+                (
+                    entity.has_path('id')
+                    and entity.at_path('id').value == "minecraft:mob_spawner"
+                )
+                or (
+                    entity.has_path('Id')
+                    and entity.at_path('Id').value == "minecraft:mob_spawner"
+                )
+            )
             and (
                 entity.has_path('SpawnPotentials[0]')
                 or entity.has_path('SpawnData')
@@ -137,7 +145,7 @@ for entity, source_pos, entity_path in world.entity_iterator(pos1=pos1, pos2=pos
         matches = False
 
         for mob in spawner_mobs.value:
-            if not mob.has_path('id'):
+            if not (mob.has_path('id') or mob.has_path('Id')):
                 continue
 
             # Assume a mob matches until proven otherwise
@@ -146,7 +154,16 @@ for entity, source_pos, entity_path in world.entity_iterator(pos1=pos1, pos2=pos
             if (
                 replacement['rules'].get('mob_id', None) is not None
                 # Already checked that mob has an ID
-                and mob.at_path('id').value != replacement['rules']['mob_id']
+                and (
+                    (
+                        mob.has_path('id')
+                        and mob.at_path('id').value != replacement['rules']['mob_id']
+                    )
+                    or (
+                        mob.has_path('Id')
+                        and mob.at_path('Id').value != replacement['rules']['mob_id']
+                    )
+                )
             ):
                 # This mob doesn't match; matches = False in case this was the last mob
                 matches = False
