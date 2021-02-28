@@ -29,7 +29,7 @@ def is_entity_in_spawner(entity) -> bool:
     return False
 
 def match_id(target_id: str, chain=lambda mob: True):
-    return lambda mob : chain(mob) and mob.at_path("id").value == target_id
+    return lambda mob : chain(mob) and ((mob.has_path("id") and mob.at_path("id").value == target_id) or (mob.has_path("Id") and mob.at_path("Id").value == target_id))
 
 def match_armor(armor: [str], chain=lambda mob: True):
     return lambda mob : chain(mob) and get_named_armor_items(mob) == armor
@@ -210,13 +210,13 @@ def process_entity(entity, replacements_log) -> None:
         if nbt.has_path('SpawnPotentials'):
             new_potentials = []
             for nested_entity in nbt.iter_multipath('SpawnPotentials[]'):
-                if nested_entity.has_path('nbt.id') and nested_entity.at_path('nbt.id').value == "minecraft:pig":
+                if (nested_entity.has_path('nbt.id') and nested_entity.at_path('nbt.id').value == "minecraft:pig") or (nested_entity.has_path('nbt.Id') and nested_entity.at_path('nbt.Id').value == "minecraft:pig"):
                     if log_handle is not None:
                         log_handle.write(f"Removing pig from SpawnPotentials at {entity.get_path_str()}\n")
                 else:
                     new_potentials.append(nested_entity)
             nbt.at_path('SpawnPotentials').value = new_potentials
-        if nbt.has_path("SpawnData.id") and nbt.at_path("SpawnData.id").value == "minecraft:pig":
+        if (nbt.has_path("SpawnData.id") and nbt.at_path("SpawnData.id").value == "minecraft:pig") or (nbt.has_path("SpawnData.Id") and nbt.at_path("SpawnData.Id").value == "minecraft:pig"):
             if log_handle is not None:
                 log_handle.write(f"Removing pig Spawndata at {entity.get_path_str()}\n")
             nbt.value.pop("SpawnData")

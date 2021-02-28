@@ -51,7 +51,7 @@ class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
             if name == "@":
                 name = None
 
-        return self.id.replace("minecraft:","")}
+        return f"""{self.id.replace("minecraft:","")}{" " + " ".join(str(x) for x in self.pos) if self.pos is not None else ""}{" " + name if name is not None else ""}"""
 
     @property
     def id(self):
