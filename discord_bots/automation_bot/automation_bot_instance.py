@@ -9,6 +9,7 @@ import json
 import re
 import tempfile
 import numpy
+import discord
 
 from collections import OrderedDict
 from pprint import pformat
@@ -111,6 +112,7 @@ class AutomationBotInstance(object):
             "update item": self.action_update_items,
             "run replacements": self.action_run_replacements,
             "find loot problems": self.action_find_loot_problems,
+            "get commands": self.action_get_commands,
 
             "generate instances": self.action_generate_instances,
             "prepare update bundle": self.action_prepare_update_bundle,
@@ -1226,6 +1228,35 @@ Syntax:
         await self.display("Checking for loot table problems...")
         await self.display("Checking for missing dungeon loot tables...")
         await self.run(os.path.join(_top_level, "utility_code/dungeon_find_lootless.py"), 0, displayOutput=True)
+
+    async def action_get_commands(self, cmd, message):
+        '''Scans all command blocks in one or more worlds and returns a JSON file with their information
+Syntax:
+`{cmdPrefix}get commands region_1 region_2 orange ...`'''
+
+        commandArgs = message.content[len(self._prefix + cmd)+1:].split()
+
+        scan_shards = []
+        for shard in self._shards.keys():
+            if shard in commandArgs:
+                scan_shards.append(shard)
+
+        if not scan_shards:
+            await self.display("Nothing to do")
+            return
+
+        await self.display(f"Getting command blocks on [{' '.join(scan_shards)}]")
+
+        for shard in scan_shards:
+
+            await self.display("Scanning for command blocks on shard {}".format(shard))
+            scan_results = tempfile.mktemp()
+            await self.cd(self._shards[shard])
+            await self.run(os.path.join(_top_level, f"utility_code/command_block_update_tool.py --world Project_Epic-{shard} --output {scan_results}"), displayOutput=True)
+            await self.run(f"mv -f {scan_results} /tmp/{shard}.json")
+            await self._channel.send(f"{shard} commands:", file=discord.File(f'/tmp/{shard}.json'))
+
+        await self.display(message.author.mention)
 
     async def action_gen_demo_release(self, cmd, message):
         '''Generates a demo release zip with the specified version
