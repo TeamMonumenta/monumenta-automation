@@ -23,10 +23,7 @@ class NbtPathDebug():
     def is_in_spawner(self):
         parent = self.parent
         while parent is not None:
-            if not hasattr(parent, 'id'):
-                continue
-
-            if parent.id:
+            if hasattr(parent, 'id') and parent.id:
                 if "spawner" in parent.id:
                     return True
 
