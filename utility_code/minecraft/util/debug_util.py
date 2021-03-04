@@ -23,11 +23,8 @@ class NbtPathDebug():
     def is_in_spawner(self):
         parent = self.parent
         while parent is not None:
-            if hasattr(parent, 'id') and parent.id:
-                if "spawner" in parent.id:
-                    return True
-
-                if "spawn_egg" in parent.id:
+            if hasattr(parent, 'nbt') and parent.nbt:
+                if parent.nbt.has_path('MaxSpawnDelay'):
                     return True
 
             # Remember to go up a level, or infinite recursion issues occur
