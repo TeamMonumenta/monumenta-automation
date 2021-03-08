@@ -116,9 +116,9 @@ monumenta = [
         ('plugins/ScriptedQuests/zone_layers/{servername}', '../../../../server_config/data/scriptedquests/zone_layers/{servername}'),
         ('plugins/ScriptedQuests/zone_properties/common', '../../../../server_config/data/scriptedquests/zone_properties/common'),
         ('plugins/ScriptedQuests/zone_properties/{servername}', '../../../../server_config/data/scriptedquests/zone_properties/{servername}'),
-        ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
-        ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
-        ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
+        ('plugins/StructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
+        ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
+        ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
         ('plugins/Monumenta/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
     ]
 
@@ -339,9 +339,9 @@ config = {
             ('plugins/ScriptedQuests/zone_layers/{servername}', '../../../../server_config/data/depths/zone_layers'),
             ('plugins/ScriptedQuests/zone_properties/common', '../../../../server_config/data/scriptedquests/zone_properties/common'),
             ('plugins/ScriptedQuests/zone_properties/{servername}', '../../../../server_config/data/depths/zone_properties'),
-            ('plugins/EpicStructureManagement.jar', '../../server_config/plugins/EpicStructureManagement.jar'),
-            ('plugins/EpicStructureManagement/structures', '../../../server_config/data/structures'),
-            ('plugins/EpicStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/EpicStructureManagement/config.yml'),
+            ('plugins/StructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
+            ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
+            ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
             ('plugins/Monumenta/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
         ]
     },
