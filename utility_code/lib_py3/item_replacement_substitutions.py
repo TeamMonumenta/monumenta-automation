@@ -146,6 +146,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:iron_hoe", "Demon's Scar", "minecraft:stone_hoe", "Demon's Scar"],
             ["minecraft:spider_spawn_egg", "Amalgamated Dissonant Energy", "nether_wart_block", "Amalgamated Dissonant Energy"],
             ["minecraft:iron_sword", "Blade of Destiny", "minecraft:stone_sword", "Blade of Destiny"],
+            ["minecraft:potion", "Angry Fruit Juice", "minecraft:splash_potion", "Extinguisher"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
