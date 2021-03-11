@@ -15,7 +15,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../qu
 from quarry.types import nbt
 from quarry.types.text_format import unformat_text
 
-def update_items(container_nbt_list):
+def update_items(container_nbt_list, output_dir=None):
     mgr = LootTableManager()
     mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
 
@@ -28,14 +28,20 @@ def update_items(container_nbt_list):
                 raise KeyError("Item does not contain id!")
             if not item_nbt.has_path("tag"):
                 raise KeyError("Item does not contain tag!")
-            if not item_nbt.has_path("tag.display.Name"):
-                raise KeyError("Item does not contain tag.display.Name!")
+            if not item_nbt.has_path("tag.display.Name") and not item_nbt.has_path("tag.title"):
+                raise KeyError("Item does not contain tag.display.Name or tag.title!")
 
             upgrade_entity(item_nbt)
 
             item_id = item_nbt.at_path("id").value
             item_nbt_str = item_nbt.at_path("tag").to_mojangson()
-            item_name = parse_name_possibly_json(item_nbt.at_path('tag.display.Name').value)
+            if item_nbt.has_path("tag.display.Name"):
+                item_name = parse_name_possibly_json(item_nbt.at_path('tag.display.Name').value)
+            else:
+                item_name = parse_name_possibly_json(item_nbt.at_path('tag.title').value)
+
+            if "Book of Souls" in item_name:
+                raise KeyError("No books of souls!")
 
             try:
                 locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
@@ -71,13 +77,22 @@ def update_items(container_nbt_list):
                 print(f"Here is a basic loot table for this item:\n\n" +
                       f"Name: {filename}\n" +
                       f"{loot_table_string}\n")
+                if output_dir is not None:
+                    with open(os.path.join(output_dir, filename), "w") as fp:
+                        fp.write(loot_table_string)
+                        fp.write("\n")
 
 
 def usage():
-    sys.exit("Usage: " + sys.argv[0] + " <text_file_with_setblock_chest.txt>")
+    sys.exit("Usage: " + sys.argv[0] + " [--output-dir dir] <text_file_with_setblock_chest.txt>")
 
+output_dir = None
 filename = None
-for arg in sys.argv[1:]:
+args = sys.argv[1:]
+if args[0] == "--output-dir":
+    output_dir = args[1]
+    args = args[2:]
+for arg in args:
     if filename is None:
         filename = arg
     else:
@@ -105,4 +120,4 @@ with open(filename,'r') if filename != "-" else sys.stdin as f:
         item_nbt = nbt.TagCompound.from_mojangson(nbt_str)
         container_nbt_list.append(item_nbt)
 
-    update_items(container_nbt_list)
+    update_items(container_nbt_list, output_dir=output_dir)
