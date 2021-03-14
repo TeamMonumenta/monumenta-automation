@@ -306,7 +306,7 @@ config = {
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ('server.properties', 'difficulty', 'difficulty=normal'),
         ],
-        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + coreprotect + gobrush + [
+        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + coreprotect + gobrush + voxelsniper + [
             ('plugins/NetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
             ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
             ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
