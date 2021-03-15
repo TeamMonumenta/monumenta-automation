@@ -10,6 +10,7 @@ import re
 import tempfile
 import numpy
 import discord
+import yaml
 
 from collections import OrderedDict
 from pprint import pformat
@@ -1123,6 +1124,18 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         await self.display("Disabling Plan and PremiumVanish...")
         await self.run("mv -f /home/epic/project_epic/server_config/plugins/Plan.jar /home/epic/project_epic/server_config/plugins/Plan.jar.disabled")
         await self.run("mv -f /home/epic/project_epic/server_config/plugins/PremiumVanish.jar /home/epic/project_epic/server_config/plugins/PremiumVanish.jar.disabled")
+
+        await self.display("Adjusting bungee config...")
+        with open("/home/epic/project_epic/bungee/config.yml", "r") as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        config["listeners"][0]["priorities"] = [
+            "purgatory",
+            "region_1",
+            "region_2",
+            "plots",
+        ]
+        with open("/home/epic/project_epic/bungee/config.yml", "w") as f:
+            yaml.dump(config, f, width=2147483647, allow_unicode=True)
 
         await self.display("Stage server loaded with current play server data")
         await self.display(message.author.mention)
