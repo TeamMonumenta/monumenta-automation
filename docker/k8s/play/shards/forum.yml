@@ -55,15 +55,15 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-8
+                - monumenta-11
       volumes:
-        - name: nfs-maps
-          hostPath:
-            path: /nfs/play/maps
-            type: Directory
-        - name: nfs-project-epic
+        - name: nfs-play-project-epic
           hostPath:
             path: /nfs/play/project_epic
+            type: Directory
+        - name: nfs-play-m11
+          hostPath:
+            path: /nfs/play/m11
             type: Directory
         - name: nfs-shared
           hostPath:
@@ -83,14 +83,14 @@ spec:
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
-          value: "3G"
+          value: "4G"
         # Set this to 256M regardless of JAVA_MEM
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/forum"
+          value: "/play/m11/forum"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -108,10 +108,10 @@ spec:
           timeoutSeconds: 5
           periodSeconds: 10
         volumeMounts:
-        - name: nfs-project-epic
-          mountPath: /project_epic
-        - name: nfs-maps
-          mountPath: /home/epic/maps/dynmap/play
+        - name: nfs-play-project-epic
+          mountPath: /play/project_epic
+        - name: nfs-play-m11
+          mountPath: /play/m11
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         resources:
@@ -121,12 +121,12 @@ spec:
             # It should not need much/any...
             memory: 1Gi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 3520Mi
+            hugepages-2Mi: 4608Mi
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 3520Mi
+            hugepages-2Mi: 4608Mi
       imagePullSecrets:
       - name: githubcred
