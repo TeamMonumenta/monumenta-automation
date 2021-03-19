@@ -23,8 +23,8 @@ Objective Name Score Locked
 
 Examples:
 
-  Show duplicate apartment scores:
-view scores -d {"Objective":"Apartment","Score":{"min":1}} Objective Score Name
+  Show apartment scores:
+view scores {"Objective":"Apartment","Score":{"min":1}} Objective Score Name
 '''
 
 import sys
