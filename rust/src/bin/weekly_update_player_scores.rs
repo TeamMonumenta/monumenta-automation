@@ -73,6 +73,7 @@ fn update_player_scores(player: &mut Player) {
         update_instance_scores(scores, "DCAccess", 3 * INSTANCE_WEEK_OFFSET, &["DCFinished", "DMRDelve1", "DMRDelve2"]);
         update_instance_scores(scores, "DB1Access", 3 * INSTANCE_WEEK_OFFSET, &["DB1Finished", "DWDelve1", "DWDelve2"]);
         update_instance_scores(scores, "DRL2Access", 3 * INSTANCE_WEEK_OFFSET, &["DRL2Finished", "DSCDelve1", "DSCDelve2"]);
+        update_instance_scores(scores, "DFFAccess", 3 * INSTANCE_WEEK_OFFSET, &["DFFFinished", "DFFDelve1", "DFFDelve2"]);
         update_instance_scores(scores, "DS1Access", 3 * INSTANCE_WEEK_OFFSET, &["DS1Finished"]);
         update_instance_scores(scores, "DS1Finished", 1, &["DS1Access"]);
 
