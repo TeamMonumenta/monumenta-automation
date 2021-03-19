@@ -271,7 +271,8 @@ class AutomationBotInstance(object):
         os.chdir(path)
 
     async def display(self, msg):
-        await self._channel.send(msg)
+        for chunk in split_string(msg):
+            await self._channel.send(chunk)
 
     async def run(self, cmd, ret=0, displayOutput=False):
         if not type(cmd) is list:
