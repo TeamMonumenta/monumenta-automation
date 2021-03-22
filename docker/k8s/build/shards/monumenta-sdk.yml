@@ -62,11 +62,20 @@ spec:
       labels:
         app: monumenta-sdk
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-11
       volumes:
         - name: nfs-project-epic
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/
+            path: /nfs/build/project_epic
       terminationGracePeriodSeconds: 90
       containers:
       - name: monumenta-sdk
