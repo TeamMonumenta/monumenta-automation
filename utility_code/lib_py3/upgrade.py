@@ -310,18 +310,16 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
         if type(nbt.at_path("SkullOwner.Id")) is TagString:
             nbt.at_path("SkullOwner").value["Id"] = uuid_to_mc_uuid_tag_int_array(uuid.UUID(nbt.at_path("SkullOwner.Id").value))
 
-    # Recurse over passengers
-    if nbt.has_path("Passengers"):
-        for passenger in nbt.at_path("Passengers").value:
-            upgrade_entity(passenger, regenerateUUIDs, tagsToRemove, remove_non_plain_display)
+    # Recurse over list tags
+    for recurse_tag in ["Passengers", "SpawnPotentials"]:
+        if nbt.has_path(recurse_tag):
+            for entry in nbt.at_path(recurse_tag).value:
+                upgrade_entity(entry, regenerateUUIDs, tagsToRemove, remove_non_plain_display)
 
-    # Recurse over item tags
-    if nbt.has_path("SelectedItem"):
-        upgrade_entity(nbt.at_path("SelectedItem"), regenerateUUIDs, tagsToRemove, remove_non_plain_display)
-
-    # Recurse over item tags
-    if nbt.has_path("tag"):
-        upgrade_entity(nbt.at_path("tag"), regenerateUUIDs, tagsToRemove, remove_non_plain_display)
+    # Recurse over non-list tags
+    for recurse_tag in ["SelectedItem", "tag", "SpawnData", "Entity"]:
+        if nbt.has_path(recurse_tag):
+            upgrade_entity(nbt.at_path(recurse_tag), regenerateUUIDs, tagsToRemove, remove_non_plain_display)
 
     # Recurse over Command block contents
     if nbt.has_path("Command"):
