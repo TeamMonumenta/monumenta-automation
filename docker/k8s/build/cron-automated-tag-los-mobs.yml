@@ -1,0 +1,45 @@
+# Run the LoS scan-and-tag script every day
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cron-automated-tag-los-mobs
+  namespace: build
+  labels:
+    app: cron-automated-restart
+spec:
+  schedule: "55 10 * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: cron-automated-tag-los-mobs
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                    - monumenta-11
+          volumes:
+          - name: nfs-data
+            hostPath:
+              type: Directory
+              path: /nfs/build/project_epic
+          containers:
+          - name: cron-automated-tag-los-mobs
+            image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
+            tty: false
+            stdin: false
+            args:
+            - /home/epic/MCEdit-And-Automation/utility_code/scan_structures_and_tag_mobs.py
+            volumeMounts:
+            - name: nfs-data
+              mountPath: /home/epic/project_epic
+          restartPolicy: Never
+          imagePullSecrets:
+          - name: githubcred
