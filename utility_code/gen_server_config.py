@@ -431,7 +431,7 @@ simple_view_distance_config = {
     'forum': 8,
 
     'tutorial': 9,
-    'labs': 9,
+    'labs': 10,
     'willows': 8,
     'roguelike': 8,
     'sanctum': 10,
