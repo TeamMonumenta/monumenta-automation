@@ -119,7 +119,7 @@ config = {
         "forum":{
             "region":{"x":-3, "z":16},
             "count":125,
-            "objective":"DFAccess"
+            "objective":"DFFAccess"
         },
         "rush":{
             "region":{"x":-3, "z":15},
