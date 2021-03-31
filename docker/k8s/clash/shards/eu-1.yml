@@ -99,16 +99,14 @@ spec:
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8000
+          tcpSocket:
+            port: 25566
           initialDelaySeconds: 10
           timeoutSeconds: 5
           periodSeconds: 5
         livenessProbe:
-          httpGet:
-            path: /alive
-            port: 8000
+          tcpSocket:
+            port: 25566
           initialDelaySeconds: 240
           timeoutSeconds: 5
           periodSeconds: 10

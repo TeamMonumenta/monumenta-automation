@@ -48,7 +48,7 @@ spec:
       volumes:
         - name: nfs-relay
           hostPath:
-            path: /nfs/clash/na/na-1/plugins/MonumentaRelay/
+            path: /nfs/clash/na/na-1/plugins/MonumentaAdvancementSync/
             type: Directory
       containers:
       - name: rivals-twitch-api
