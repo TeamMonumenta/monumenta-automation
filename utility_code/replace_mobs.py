@@ -74,6 +74,9 @@ sub = [
     ('Twilight Gryphon', match_passenger(match_id('minecraft:vex'), match_passenger(match_id('minecraft:phantom'), match_id('minecraft:zombie_villager', match_name('Twilight Rider'))))),
     ('Sky Screecher', match_passenger(match_id('minecraft:vex'), match_noname(match_id('minecraft:phantom', match_armor(["Generic phantom 1", None, None, None]))))),
 
+    # Rename mobs
+    ('Jaguar Berserker', match_id('minecraft:zombie', match_name('Jaguar Berzerker'))),
+
     # Mobs on insta-die trash
     ("Rusted Gear", match_passenger(match_id('minecraft:guardian'), match_name('Rusted Gear', match_id('minecraft:drowned')))),
     ("Frost Wisp", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Wisp', match_id('minecraft:stray')))),
