@@ -129,6 +129,28 @@ def parse_name_possibly_json(name, remove_color=False):
 def jsonify_text(text):
     return json.dumps({"text":text}, ensure_ascii=False, separators=(',', ':'))
 
+def get_item_ids(entity: nbt.TagCompound, path: str, expected_len: int) -> [str]:
+    items = []
+
+    if not entity.has_path(path):
+        for x in range(expected_len):
+            items.append(None)
+    else:
+        items_nbt = entity.at_path(path)
+
+        if len(items_nbt.value) != expected_len:
+            eprint("Entity has weird {} length! Got {}, expected {}: {}".format(path, len(items_nbt.value), expected_len, entity.to_mojangson()))
+            for x in range(expected_len):
+                items.append(None)
+        else:
+            for item in items_nbt.value:
+                if item.has_path("id"):
+                    items.append(item.at_path("id").value.lower())
+                else:
+                    items.append(None)
+
+    return items
+
 def get_named_items(entity: nbt.TagCompound, path: str, expected_len: int) -> [str]:
     items = []
 
@@ -151,6 +173,12 @@ def get_named_items(entity: nbt.TagCompound, path: str, expected_len: int) -> [s
                     items.append(None)
 
     return items
+
+def get_named_hand_item_ids(entity):
+    return get_item_ids(entity, "HandItems", 2)
+
+def get_named_armor_item_ids(entity):
+    return get_item_ids(entity, "ArmorItems", 4)
 
 def get_named_hand_items(entity):
     return get_named_items(entity, "HandItems", 2)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import math
 import sys
 import os
 import getopt
@@ -8,7 +9,7 @@ import multiprocessing
 import traceback
 
 from lib_py3.mob_replacement_manager import MobReplacementManager, remove_unwanted_spawner_tags
-from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items, get_named_armor_items
+from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items, get_named_armor_items, get_named_hand_item_ids, get_named_armor_item_ids
 from lib_py3.library_of_souls import LibraryOfSouls
 from lib_py3.timing import Timings
 
@@ -34,11 +35,17 @@ def match_id(target_id: str, chain=lambda mob: True):
 def match_armor(armor: [str], chain=lambda mob: True):
     return lambda mob : chain(mob) and get_named_armor_items(mob) == armor
 
+def match_armor_ids(armor_ids: [str], chain=lambda mob: True):
+    return lambda mob : chain(mob) and get_named_armor_item_ids(mob) == armor_ids
+
 def match_noarmor(chain=lambda mob: True):
     return lambda mob : chain(mob) and (not mob.has_path('ArmorItems'))
 
 def match_hand(hand: [str], chain=lambda mob: True):
     return lambda mob : chain(mob) and get_named_hand_items(mob) == hand
+
+def match_hand_ids(hand_ids: [str], chain=lambda mob: True):
+    return lambda mob : chain(mob) and get_named_hand_item_ids(mob) == hand_ids
 
 def match_nohand(chain=lambda mob: True):
     return lambda mob : chain(mob) and (not mob.has_path('HandItems'))
@@ -61,77 +68,49 @@ def match_passenger(host_chain, passenger_chain):
 
 # Note that these will be evaluated last to first - so put more broad checks first for performance
 sub = [
-    ("Lighthouse Defender", match_hand(["Enraged Captain's Axe", "Hawk's Talon"], match_id('minecraft:skeleton'))),
-    ("Frost Moon Archer", match_name('Frost Moon Brute', match_id('minecraft:skeleton'))),
-    ("Frost Moon Archer", match_name('Frost Moon Knight', match_id('minecraft:skeleton'))),
-    ("Desiccated Ghast", match_name('Dessicated Ghast', match_id('minecraft:ghast'))),
-    ("Mercenary Bowman", match_name('Mercenery Bowman', match_id('minecraft:skeleton'))),
-    ("Flame Imp", match_name('Fire Imp', match_id('minecraft:zombie'))),
-    ("Earth Spectre", match_name('Earth Shade', match_id('minecraft:skeleton'))),
-    ("Phaser Guardian", match_name('Phaser Assassin', match_id('minecraft:guardian'))),
-    ("Jungle Flyer", match_hand(["Druidic Stick", None], match_noname(match_id('minecraft:vex')))),
+    # Unnamed R2 mobs
+    ('Departed Seafarer', match_passenger(match_id('minecraft:guardian'), match_noname(match_id('minecraft:drowned', match_armor_ids(["minecraft:chainmail_boots", "minecraft:string", "minecraft:chainmail_chestplate", None]))))),
+    ('Departed Seafarer', match_noname(match_id('minecraft:drowned', match_armor_ids(["minecraft:chainmail_boots", "minecraft:string", "minecraft:chainmail_chestplate", None])))),
+    ('Twilight Gryphon', match_passenger(match_id('minecraft:vex'), match_passenger(match_id('minecraft:phantom'), match_id('minecraft:zombie_villager', match_name('Twilight Rider'))))),
+    ('Sky Screecher', match_passenger(match_id('minecraft:vex'), match_noname(match_id('minecraft:phantom', match_armor(["Generic phantom 1", None, None, None]))))),
+
+    # Mobs on insta-die trash
+    ("Rusted Gear", match_passenger(match_id('minecraft:guardian'), match_name('Rusted Gear', match_id('minecraft:drowned')))),
+    ("Frost Wisp", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Wisp', match_id('minecraft:stray')))),
+    ("Ice Archer", match_passenger(match_id('minecraft:silverfish'), match_name('Ice Archer', match_id('minecraft:stray')))),
+    ("Guardian Brawler", match_passenger(match_id('minecraft:silverfish'), match_name('Guardian Brawler', match_id('minecraft:drowned')))),
+    ("Spirit of the Drowned", match_passenger(match_id('minecraft:silverfish'), match_name('Spirit of the Drowned', match_id('minecraft:drowned')))),
+    ("Flame Imp", match_passenger(match_id('minecraft:silverfish'), match_name('Flame Imp', match_id('minecraft:zombie')))),
+    ("Flaming Archer", match_passenger(match_id('minecraft:silverfish'), match_name('Flaming Archer', match_id('minecraft:skeleton')))),
+    ("Scorchguard", match_passenger(match_id('minecraft:silverfish'), match_name('Scorchguard', match_id('minecraft:wither_skeleton')))),
+    ("Petrified Archer", match_passenger(match_id('minecraft:silverfish'), match_name('Petrified Archer', match_id('minecraft:skeleton')))),
+    ("Mutated Dolphin", match_passenger(match_id('minecraft:guardian'), match_name('Mutated Dolphin', match_id('minecraft:dolphin')))),
+    ("Delphinus Guardian", match_passenger(match_id('minecraft:guardian'), match_name('Delphinus Guardian', match_id('minecraft:dolphin')))),
+    ("Frost Moon Retiarius", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Moon Retiarius', match_id('minecraft:drowned')))),
+    ("Ghoul", match_passenger(match_id('minecraft:silverfish'), match_name('Ghoul', match_id('minecraft:drowned')))),
+    ("Raging Minotaur", match_passenger(match_id('minecraft:silverfish'), match_name('Raging Minotaur', match_id('minecraft:drowned')))),
+    ("Bloodraven", match_passenger(match_id('minecraft:vex'), match_name('Bloodraven', match_id('minecraft:phantom')))),
+    ("Hungry Dolphin", match_passenger(match_id('minecraft:guardian'), match_name('Hungry Dolphin', match_id('minecraft:dolphin')))),
+    ("Rosebud Golem", match_passenger(match_id('minecraft:endermite'), match_name('Rosebud Golem', match_id('minecraft:iron_golem')))),
+    ("Twilight Construct", match_passenger(match_id('minecraft:silverfish'), match_name('Twilight Construct', match_id('minecraft:iron_golem')))),
+    ("Frost Golem", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Golem', match_id('minecraft:iron_golem')))),
+
     # TODO: Re-enable when stacked mobs are fixed
     #("Cherry Boomsom", match_name('Cheery Boomsome', match_id('minecraft:creeper'))),
-    ("Blast Miner", match_name('Pyro Miner', match_id('minecraft:zombie'))),
-    ("Viridian Juggernaut", match_name('Viridian Juggernaught', match_id('minecraft:wither_skeleton'))),
-    ("Frozen Grunt", match_name('Frost Knight', match_id('minecraft:zombie_villager'))),
-    ("Frozen Sniper", match_name('Frost Knight Archer', match_id('minecraft:stray'))),
     ("Monstrous Arachnid", match_name('Monsterous Arachnid', match_id('minecraft:spider'))),
     ("Archaic Guardian", match_name('Ancient Guardian', match_id('minecraft:wither_skeleton'))),
-
-    # Generic, un-named R2 mobs
-    ("Celsian Sniper", match_hp(30, match_hand(["Composite Bow", None], match_noarmor(match_noname(match_id('minecraft:skeleton')))))),
-    ("Celsian Ghast", match_hand(["Generic blaze1", None], match_noname(match_id('minecraft:ghast')))),
-    ("Molten Citizen", match_hp(30, match_nohand(match_noname(match_id('minecraft:zombie_pigman'))))),
-    ("Theraphosidae", match_armor(["Generic spider5", None, None, None],match_nohand(match_noname(match_id('minecraft:spider'))))),
-    ("Hungry Dolphin", match_armor([None, None, None, "Generic Fang"],match_nohand(match_noname(match_id('minecraft:dolphin'))))),
-    ("Drowned Pirate", match_armor([None,"generic drowned",None,None],match_nohand(match_noname(match_id('minecraft:drowned'))))),
-    ("Drowned Pirate", match_passenger(match_id('minecraft:guardian'), match_name('Drowned Pirate', match_id('minecraft:drowned')))),
-
-    ("Gear Gremlin", match_passenger(match_id('minecraft:endermite'), match_name('Gear Gremlin', match_id('minecraft:drowned')))),
-    ("Rusted Gear", match_passenger(match_id('minecraft:guardian'), match_name('Rusted Gear', match_id('minecraft:drowned')))),
-    ("Silver Theurge", match_passenger(match_id('minecraft:silverfish'), match_name('Silver Theurge', match_id('minecraft:drowned')))),
-    ("Inundated Draugr", match_passenger(match_id('minecraft:silverfish'), match_name('Inundated Draugr', match_id('minecraft:drowned')))),
-    ("Drowned Lancer", match_passenger(match_id('minecraft:silverfish'), match_name('Drowned Lancer', match_id('minecraft:drowned')))),
-    ("Water Wisp", match_passenger(match_id('minecraft:silverfish'), match_name('Water Wisp', match_id('minecraft:drowned')))),
-    ("Sodden Corpse", match_passenger(match_id('minecraft:silverfish'), match_name('Sodden Corpse', match_id('minecraft:drowned')))),
-    ("Camouflaged Swarmer", match_passenger(match_id('minecraft:silverfish'), match_name('Camouflaged Swarmer', match_id('minecraft:drowned')))),
-    ("Gillman Fighter", match_passenger(match_id('minecraft:silverfish'), match_name('Gillman Fighter', match_id('minecraft:drowned')))),
-    ("Elder Gillman", match_passenger(match_id('minecraft:silverfish'), match_name('Elder Gillman', match_id('minecraft:drowned')))),
-    ('Viridian Defender', match_passenger(match_id('minecraft:silverfish'), match_name('Viridian Defender', match_id('minecraft:drowned')))),
-    ('Viridian Wizard', match_passenger(match_id('minecraft:silverfish'), match_name('Viridian Wizard', match_id('minecraft:drowned')))),
-    ('Viridian Royal Guard', match_passenger(match_id('minecraft:guardian'), match_name('Viridian Royal Guard', match_id('minecraft:drowned')))),
-    ('Viridian Royal Harpooner', match_passenger(match_id('minecraft:guardian'), match_name('Viridian Royal Harpooner', match_id('minecraft:drowned')))),
-    ('Mutated Royal Guard', match_passenger(match_id('minecraft:guardian'), match_name('Mutated Royal Guard', match_id('minecraft:drowned')))),
 
     # Orange
     ("Savage Jaguar", match_name('Fern Warrior', match_id('minecraft:zombie'))),
     ("Serpentsia Corpse", match_name('Fungal Abomination', match_id('minecraft:zombie'))),
     ("Savage Hawk", match_name('Fern Archer', match_id('minecraft:skeleton'))),
-
-    # Purple
-    ("Pirate Buccaneer", match_name('Pirate Buckaneer', match_id('minecraft:husk'))),
-    ("Pirate Oarsman", match_name('Pirate Oarman', match_id('minecraft:vindicator'))),
-
-    # Cyan
-    ("Cursed Demolitionist", match_name('Cursed Demolitionist', match_id('minecraft:zombie_villager'))),
-
-    # Pink same-named mobs
-    ("Fall Citizen", match_hand(["Earthbound Runeblade", None], match_name("Tempered Citizen", match_id('minecraft:zombie_villager')))),
-    ("Summer Citizen", match_hand(["Lingering Flame", None], match_name("Tempered Citizen", match_id('minecraft:zombie_villager')))),
-    ("Spring Citizen", match_hand(["Rosethorn Blade", "Talaya's Blossom"], match_name("Tempered Citizen", match_id('minecraft:zombie_villager')))),
-    ("Winter Citizen", match_hand(["Iceborn Runeblade", None], match_name("Tempered Citizen", match_id('minecraft:zombie_villager')))),
-    ("Fall Watcher", match_hand(["Soulvenom Bow", None], match_name("Tempered Watcher", match_id('minecraft:skeleton')))),
-    ("Summer Watcher", match_hand(["Ishkarian Longbow", None], match_name("Tempered Watcher", match_id('minecraft:skeleton')))),
-    ("Spring Watcher", match_hand(["Steelsiege", None], match_name("Tempered Watcher", match_id('minecraft:skeleton')))),
-    ("Winter Watcher", match_hand(["Icicle Greatbow", None], match_name("Tempered Watcher", match_id('minecraft:skeleton')))),
 ]
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run] [--force]".format(sys.argv[0]))
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:s:b:l:j:di", ["world=", "schematics=", "library-of-souls=", "logfile=", "num-threads=", "dry-run", "pos1=", "pos2="])
+    opts, args = getopt.getopt(sys.argv[1:], "w:s:b:l:j:dif", ["world=", "schematics=", "library-of-souls=", "logfile=", "num-threads=", "dry-run", "pos1=", "pos2=", "force"])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
@@ -139,11 +118,12 @@ except getopt.GetoptError as err:
 world_path = None
 schematics_path = None
 library_of_souls_path = None
-pos1 = None
-pos2 = None
+pos1 = [-math.inf, -math.inf, -math.inf]
+pos2 = [math.inf, math.inf, math.inf]
 logfile = None
 num_threads = 4
 dry_run = False
+force = False
 
 for o, a in opts:
     if o in ("-w", "--world"):
@@ -172,6 +152,8 @@ for o, a in opts:
         num_threads = int(a)
     elif o in ("-d", "--dry-run"):
         dry_run = True
+    elif o in ("-f", "--force"):
+        force = True
     else:
         eprint("Unknown argument: {}".format(o))
         usage()
@@ -182,20 +164,13 @@ if world_path is None and schematics_path is None:
 elif library_of_souls_path is None:
     eprint("--library-of-souls must be specified!")
     usage()
-elif ((pos1 is not None) and (pos2 is None)) or ((pos1 is None) and (pos2 is not None)):
-    eprint("--pos1 and --pos2 must be specified (or neither specified)!")
-    usage()
-elif (pos1 is not None) and (schematics_path is not None):
-    eprint("--pos1 and --pos2 do not currently work for schematics")
-    usage()
-
 
 timings = Timings(enabled=dry_run)
 los = LibraryOfSouls(library_of_souls_path, readonly=True)
 timings.nextStep("Loaded Library of Souls")
 replace_mgr = MobReplacementManager()
 los.load_replacements(replace_mgr)
-replace_mgr.add_substitutions(sub)
+replace_mgr.add_substitutions(sub, force_add_ignoring_conflicts=force)
 timings.nextStep("Loaded mob replacement manager")
 
 log_handle = None
@@ -264,7 +239,7 @@ if world_path:
     world = World(world_path)
     timings.nextStep("Loaded world")
 
-    parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads)
+    parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads, min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2])
     timings.nextStep("World replacements done")
 
 if schematics_path:

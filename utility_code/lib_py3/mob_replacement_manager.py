@@ -5,7 +5,7 @@ import sys
 
 import traceback
 
-from lib_py3.common import get_item_name_from_nbt, get_entity_name_from_nbt, parse_name_possibly_json
+from lib_py3.common import get_item_name_from_nbt, get_entity_name_from_nbt, parse_name_possibly_json, eprint
 from lib_py3.item_replacement_rules import global_rules
 from lib_py3.item_replacement_substitutions import substitution_rules
 
@@ -101,7 +101,7 @@ class MobReplacementManager(object):
 
             self._mob_map[mob_id][mob_name] = mob
 
-    def add_substitutions(self, substitutions: [dict]) -> None:
+    def add_substitutions(self, substitutions: [dict], force_add_ignoring_conflicts=False) -> None:
         """
         Add a substitution rule.
         The format should be:
@@ -121,6 +121,8 @@ class MobReplacementManager(object):
                 for mob_name in self._mob_map[mob_id]:
                     if mob_name == sub[0]:
                         replacement = self._mob_map[mob_id][mob_name]
+                    elif force_add_ignoring_conflicts and sub[1](self._mob_map[mob_id][mob_name]):
+                        eprint("WARNING: Substitution for {!r} also matches mob {!r}".format(sub[0], mob_name))
                     elif sub[1](self._mob_map[mob_id][mob_name]):
                         # This substitution matches a different named mob in the replacements - critical error!
                         raise Exception("Substitution for {!r} also matches mob {!r}".format(sub[0], mob_name))

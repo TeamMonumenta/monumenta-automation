@@ -57,6 +57,19 @@ class World():
 
         yiels tuples of (full_path, rx, rz) which is what is needed to load the region file
         """
+        if min_x > max_x:
+            temp = min_x;
+            min_x = max_x
+            max_x = temp
+        if min_y > max_y:
+            temp = min_y;
+            min_y = max_y
+            max_y = temp
+        if min_z > max_z:
+            temp = min_z;
+            min_z = max_z
+            max_z = temp
+
         region_folder = os.path.join(self.path, 'region')
         for filename in os.listdir(region_folder):
             filename_parts = filename.split('.')
