@@ -104,6 +104,12 @@ sub = [
     ('Viridian Royal Harpooner', match_passenger(match_id('minecraft:guardian'), match_name('Viridian Royal Harpooner', match_id('minecraft:drowned')))),
     ('Mutated Royal Guard', match_passenger(match_id('minecraft:guardian'), match_name('Mutated Royal Guard', match_id('minecraft:drowned')))),
 
+    # Orange
+    ("Savage Jaguar", match_name('Fern Warrior', match_id('minecraft:zombie'))),
+    ("Serpentsia Corpse", match_name('Fungal Abomination', match_id('minecraft:zombie'))),
+    ("Savage Hawk", match_name('Fern Archer', match_id('minecraft:skeleton'))),
+
+    # Purple
     ("Pirate Buccaneer", match_name('Pirate Buckaneer', match_id('minecraft:husk'))),
     ("Pirate Oarsman", match_name('Pirate Oarman', match_id('minecraft:vindicator'))),
 
