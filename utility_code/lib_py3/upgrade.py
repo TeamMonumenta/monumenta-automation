@@ -5,7 +5,7 @@ import json
 import traceback
 import re
 from typing import Union
-from lib_py3.common import parse_name_possibly_json, get_entity_uuid, uuid_to_mc_uuid_tag_int_array
+from lib_py3.common import get_entity_uuid, uuid_to_mc_uuid_tag_int_array, update_plain_tag
 from lib_py3.json_file import jsonFile
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
@@ -32,48 +32,6 @@ _list_item_locations = (
     "Inventory",
     "Items",
 )
-
-# https://catonmat.net/my-favorite-regex
-# Matches all printable ascii characters, from ' ' to '~'
-non_plain_regex=re.compile('[^ -~]')
-
-def update_plain_tag(item_nbt: TagCompound) -> None:
-    """Given a Minecraft item's tag, (re)generate tag.plain.
-
-    tag.plain stores the unformatted version of formatted text on items.
-    """
-    for formatted_path, plain_subpath_parts, is_multipath in (
-        ('display.Name', ['display', 'Name'], False),
-        ('display.Lore[]', ['display', 'Lore'], True),
-        #('pages[]', ['pages'], True),
-    ):
-        if item_nbt.count_multipath(formatted_path) > 0:
-            if item_nbt.has_path("id") and "command_block" in item_nbt.at_path("id").value:
-                # Don't store plain names for command blocks
-                continue
-
-            plain_subpath_parts = ['plain'] + plain_subpath_parts
-            plain_subtag = item_nbt
-            for plain_subpath in plain_subpath_parts[:-1]:
-                if not plain_subtag.has_path(plain_subpath):
-                    plain_subtag.value[plain_subpath] = nbt.TagCompound({})
-                plain_subtag = plain_subtag.at_path(plain_subpath)
-            plain_subpath = plain_subpath_parts[-1]
-
-            if is_multipath:
-                plain_subtag.value[plain_subpath] = nbt.TagList([])
-                for formatted in item_nbt.iter_multipath(formatted_path):
-                    formatted_str = formatted.value
-                    plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
-                    plain_str = non_plain_regex.sub('', plain_str).strip()
-                    plain_subtag.at_path(plain_subpath).value.append(nbt.TagString(plain_str))
-
-            else: # Single path, not multipath
-                formatted = item_nbt.at_path(formatted_path)
-                formatted_str = formatted.value
-                plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
-                plain_str = non_plain_regex.sub('', plain_str).strip()
-                plain_subtag.value[plain_subpath] = nbt.TagString(plain_str)
 
 def translate_lore(lore: str) -> str:
     lore = lore.replace(r"\\u0027", "'")

@@ -10,6 +10,7 @@ import traceback
 from lib_py3.common import eprint
 from lib_py3.common import jsonify_text
 from lib_py3.common import parse_name_possibly_json
+from lib_py3.common import update_plain_tag
 
 from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.chunk_format.entity import Entity
@@ -452,6 +453,12 @@ class PreserveBlockEntityTag(GlobalRule):
             if not item.has_tag():
                 item.tag = nbt.TagCompound({})
             item.tag.value['BlockEntityTag'] = self.block_entity_tag
+
+class UpdatePlainTag(GlobalRule):
+    name = 'Update plain tag'
+
+    def postprocess(self, item):
+        update_plain_tag(item.nbt.at_path("tag"))
 
 ################################################################################
 # Global rules end

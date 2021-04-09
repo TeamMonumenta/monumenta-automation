@@ -3,6 +3,7 @@
 import copy
 import json
 import os
+import re
 import shutil
 import sys
 import uuid
@@ -92,7 +93,7 @@ def json_text_to_plain_text(json_text):
         elif "score" in json_text:
             result = ""
             if "value" in json_text["score"]:
-                result = str(json_text["score"]["score"])
+                result = str(json_text["score"]["value"])
         elif "selector" in json_text:
             result = ""
         elif "keybind" in json_text:
@@ -299,3 +300,44 @@ class DictWithDefault(dict):
     def __missing__(self, key):
         return copy.deepcopy(self._default)
 
+# https://catonmat.net/my-favorite-regex
+# Matches all printable ascii characters, from ' ' to '~'
+NON_PLAIN_REGEX=re.compile('[^ -~]')
+
+def update_plain_tag(item_nbt: nbt.TagCompound) -> None:
+    """Given a Minecraft item's tag, (re)generate tag.plain.
+
+    tag.plain stores the unformatted version of formatted text on items.
+    """
+    for formatted_path, plain_subpath_parts, is_multipath in (
+        ('display.Name', ['display', 'Name'], False),
+        ('display.Lore[]', ['display', 'Lore'], True),
+        #('pages[]', ['pages'], True),
+    ):
+        if item_nbt.count_multipath(formatted_path) > 0:
+            if item_nbt.has_path("id") and "command_block" in item_nbt.at_path("id").value:
+                # Don't store plain names for command blocks
+                continue
+
+            plain_subpath_parts = ['plain'] + plain_subpath_parts
+            plain_subtag = item_nbt
+            for plain_subpath in plain_subpath_parts[:-1]:
+                if not plain_subtag.has_path(plain_subpath):
+                    plain_subtag.value[plain_subpath] = nbt.TagCompound({})
+                plain_subtag = plain_subtag.at_path(plain_subpath)
+            plain_subpath = plain_subpath_parts[-1]
+
+            if is_multipath:
+                plain_subtag.value[plain_subpath] = nbt.TagList([])
+                for formatted in item_nbt.iter_multipath(formatted_path):
+                    formatted_str = formatted.value
+                    plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
+                    plain_str = NON_PLAIN_REGEX.sub('', plain_str).strip()
+                    plain_subtag.at_path(plain_subpath).value.append(nbt.TagString(plain_str))
+
+            else: # Single path, not multipath
+                formatted = item_nbt.at_path(formatted_path)
+                formatted_str = formatted.value
+                plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
+                plain_str = NON_PLAIN_REGEX.sub('', plain_str).strip()
+                plain_subtag.value[plain_subpath] = nbt.TagString(plain_str)

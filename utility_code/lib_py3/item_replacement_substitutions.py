@@ -11,6 +11,7 @@ from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
 from lib_py3.common import parse_name_possibly_json
 from lib_py3.common import unformat_text
+from lib_py3.common import update_plain_tag
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
@@ -115,6 +116,13 @@ class FixEscapedNames(SubstitutionRule):
         name_json = parse_name_possibly_json(name)
         item.tag.at_path('display.Name').value = name
         item_meta['name'] = unformat_text(name_json)
+
+class FixPlainTag(SubstitutionRule):
+    name = "Fix the plain tag"
+
+    def process(self, item_meta, item):
+        """Note: This is only useful for items that aren't in the loot tables."""
+        update_plain_tag(item.nbt.at_path("tag"))
 
 class SubtituteItems(SubstitutionRule):
     name = "Substitute the ID and name of items, ignoring other NBT"
