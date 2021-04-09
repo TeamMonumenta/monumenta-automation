@@ -291,19 +291,19 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
     # Upgrade items the entity is carrying
     for location in _single_item_locations:
         if nbt.has_path(location):
-            upgrade_entity(nbt.at_path(location), regenerateUUIDs, tagsToRemove, remove_non_plain_display)
+            upgrade_entity(nbt.at_path(location), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
     for location in _list_item_locations:
         if nbt.has_path(location):
             for item in nbt.at_path(location).value:
-                upgrade_entity(item, regenerateUUIDs, tagsToRemove, remove_non_plain_display)
+                upgrade_entity(item, regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
     if nbt.has_path("Offers.Recipes"):
         for item in nbt.at_path("Offers.Recipes").value:
             if item.has_path("buy"):
-                upgrade_entity(item.at_path("buy"), regenerateUUIDs, tagsToRemove, remove_non_plain_display)
+                upgrade_entity(item.at_path("buy"), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
             if item.has_path("buyB"):
-                upgrade_entity(item.at_path("buyB"), regenerateUUIDs, tagsToRemove, remove_non_plain_display)
+                upgrade_entity(item.at_path("buyB"), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
             if item.has_path("sell"):
-                upgrade_entity(item.at_path("sell"), regenerateUUIDs, tagsToRemove, remove_non_plain_display)
+                upgrade_entity(item.at_path("sell"), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
 
     # Upgrade skull items
     if nbt.has_path("SkullOwner.Id"):
@@ -314,12 +314,12 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
     for recurse_tag in ["Passengers", "SpawnPotentials"]:
         if nbt.has_path(recurse_tag):
             for entry in nbt.at_path(recurse_tag).value:
-                upgrade_entity(entry, regenerateUUIDs, tagsToRemove, remove_non_plain_display)
+                upgrade_entity(entry, regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
 
     # Recurse over non-list tags
     for recurse_tag in ["SelectedItem", "tag", "SpawnData", "Entity"]:
         if nbt.has_path(recurse_tag):
-            upgrade_entity(nbt.at_path(recurse_tag), regenerateUUIDs, tagsToRemove, remove_non_plain_display)
+            upgrade_entity(nbt.at_path(recurse_tag), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
 
     # Recurse over Command block contents
     if nbt.has_path("Command"):
@@ -339,7 +339,7 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
             if len(display.value) <= 0:
                 nbt.value.pop("display")
 
-def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = "never") -> str:
+def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = "never", regenerateUUIDs = False) -> str:
     """
     Takes in a line and parses/upgrades all the NBT contained in that line
     """
@@ -375,7 +375,7 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
                 if embedded_json is not None:
                     # This is actually a JSON string!
                     # Even more annoyingly, sometimes we have mojangson embedded within the JSON...
-                    embedded_json = upgrade_json_walk(embedded_json, convert_checks_to_plain=convert_checks_to_plain)
+                    embedded_json = upgrade_json_walk(embedded_json, convert_checks_to_plain=convert_checks_to_plain, regenerateUUIDs=regenerateUUIDs)
                     result_line += json.dumps(embedded_json, ensure_ascii=False, sort_keys=False, separators=(',', ':'))
                     # Conveniently, the string reader is already pointed at the ending } in the original string
                 else:
@@ -391,7 +391,7 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
                         if re.match(".*fill .* replace [^{]+$", result_line):
                             remove_non_plain_display = True
 
-                    upgrade_entity(data, remove_non_plain_display=remove_non_plain_display)
+                    upgrade_entity(data, remove_non_plain_display=remove_non_plain_display, regenerateUUIDs=regenerateUUIDs)
 
                     result_line += data.to_mojangson()
             except Exception as e:
@@ -405,37 +405,37 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
 
     return result_line
 
-def upgrade_json_walk(obj: Union[str, dict, list, int, bool], convert_checks_to_plain: str = "never") -> Union[str, dict, list, int, bool]:
+def upgrade_json_walk(obj: Union[str, dict, list, int, bool], convert_checks_to_plain: str = "never", regenerateUUIDs = False) -> Union[str, dict, list, int, bool]:
     if isinstance(obj, str):
-        return upgrade_text_containing_mojangson(obj, convert_checks_to_plain)
+        return upgrade_text_containing_mojangson(obj, convert_checks_to_plain, regenerateUUIDs=regenerateUUIDs)
     elif isinstance(obj, dict):
         new_obj = {}
         for k, v in obj.items():
             if k == "conditions" and convert_checks_to_plain == "auto":
                 # If we're recursing into a conditions block, do convert any checks it finds to plain checks
-                new_obj[k] = upgrade_json_walk(v, convert_checks_to_plain="always")
+                new_obj[k] = upgrade_json_walk(v, convert_checks_to_plain="always", regenerateUUIDs=regenerateUUIDs)
             else:
-                new_obj[k] = upgrade_json_walk(v, convert_checks_to_plain)
+                new_obj[k] = upgrade_json_walk(v, convert_checks_to_plain, regenerateUUIDs=regenerateUUIDs)
         return new_obj
     elif isinstance(obj, list):
         new_obj = []
         for v in obj:
-            new_obj.append(upgrade_json_walk(v, convert_checks_to_plain))
+            new_obj.append(upgrade_json_walk(v, convert_checks_to_plain, regenerateUUIDs=regenerateUUIDs))
         return new_obj
     else:
         return obj
 
-def upgrade_json_file(path: str, convert_checks_to_plain: str = "never"):
+def upgrade_json_file(path: str, convert_checks_to_plain: str = "never", regenerateUUIDs = False):
     json_file = jsonFile(path)
-    json_file.dict = upgrade_json_walk(json_file.dict, convert_checks_to_plain)
+    json_file.dict = upgrade_json_walk(json_file.dict, convert_checks_to_plain, regenerateUUIDs=regenerateUUIDs)
     json_file.save()
 
-def upgrade_mcfunction_file(path: str, convert_checks_to_plain: str = "never"):
+def upgrade_mcfunction_file(path: str, convert_checks_to_plain: str = "never", regenerateUUIDs = False):
     lines = []
     with open(path, 'r') as fp:
         lines = fp.readlines()
     newlines = []
     for line in lines:
-        newlines.append(upgrade_text_containing_mojangson(line, convert_checks_to_plain))
+        newlines.append(upgrade_text_containing_mojangson(line, convert_checks_to_plain, regenerateUUIDs=regenerateUUIDs))
     with open(path, 'w') as fp:
         fp.writelines(newlines)
