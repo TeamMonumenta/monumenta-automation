@@ -1124,7 +1124,8 @@ Available complexities: {complexities}'''.format(prefix=self._prefix, labels=sel
 
         # Will be a list with entries of the form (reaction count, (index, entry))
         raw_entries = []
-        for index in self._entries:
+        # Iterate a shallow copy of the entries table so new reports don't break it
+        for index in self._entries.copy():
             # Exit early if shutting down
             if self._stopping:
                 return
