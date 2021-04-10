@@ -159,6 +159,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:nether_star", "Aurora Shard", "minecraft:quartz", "Aurora Shard"],
             ["minecraft:stone_pickaxe", "Skyfeller", "minecraft:golden_pickaxe", "Skyfeller"],
             ["minecraft:crossbow", "Crimson Chicken", "minecraft:crossbow", "Red Rooster"],
+            ["minecraft:sunflower", "Whirpool Coin", "minecraft:sunflower", "Whirlpool Coin"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
