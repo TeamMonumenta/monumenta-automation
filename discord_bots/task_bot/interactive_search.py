@@ -149,10 +149,11 @@ class InteractiveSearch(object):
                 if len(part) > 1:
                     args = part[1].strip()
 
-                try:
-                    await commands[match](message, (str(self._current_index) + " " + args).strip())
-                except ValueError as e:
-                    await self.reply(message, str(e))
+                async with message.channel.typing():
+                    try:
+                        await commands[match](message, (str(self._current_index) + " " + args).strip())
+                    except ValueError as e:
+                        await self.reply(message, str(e))
 
 
             self._last_active_time = datetime.datetime.now()

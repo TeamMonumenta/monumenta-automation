@@ -507,10 +507,11 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         if len(part) > 2:
             args = part[2].strip()
 
-        try:
-            await commands[match](message, args)
-        except ValueError as e:
-            await self.reply(message, str(e))
+        async with message.channel.typing():
+            try:
+                await commands[match](message, args)
+            except ValueError as e:
+                await self.reply(message, str(e))
 
     ################################################################################
     # Usage
@@ -556,7 +557,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 `{prefix} reject <number> <reason why>`
     Closes the specified {single} with the given reason
 
-`{prefix} edit <number> <description | label | image | priority | complexity> [argument]`
+`{prefix} edit <number> <description | label | image> [argument]`
     Edits the specified field of the entry
 
 `{prefix} append <number> text`
@@ -566,7 +567,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         if self.has_privilege(2, message.author):
             usage += '''
 **Commands team members can use:**
-`{prefix} edit <number> [author | priority] [argument]`
+`{prefix} edit <number> [author | priority | complexity ] [argument]`
     Edits the specified field of the entry
 
 `{prefix} fix number [optional explanation]`
