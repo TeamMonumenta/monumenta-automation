@@ -95,3 +95,7 @@ class KubernetesManager(object):
         #        logger.info(pformat(client.CoreV1Api().read_namespaced_pod_log(pod_name, self._namespace)))
 
         return result
+
+    @property
+    def namespace(self):
+        return self._namespace

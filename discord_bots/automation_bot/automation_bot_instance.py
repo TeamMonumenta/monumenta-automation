@@ -109,6 +109,7 @@ class AutomationBotInstance(object):
 
             "plot get": self.action_plot_get,
             "view scores": self.action_view_scores,
+            "set score": self.action_set_player_scores,
 
             "update item": self.action_update_items,
             "run replacements": self.action_run_replacements,
@@ -518,6 +519,30 @@ Do not use for debugging quests or other scores that are likely to change often.
             cmd_str = cmd_str + " " + commandArgs.pop(0)
 
         await self.run(cmd_str, displayOutput=True),
+        await self.display("Done"),
+
+
+    async def action_set_player_scores(self, cmd, message):
+        '''Set score for a player. This will work for offline and online players (scores are set in both redis and by broadcastcommand)
+        '''
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+
+        if len(commandArgs) != 3:
+            await self.display(f'Usage: {self._prefix + cmd} <playername> <objective> <value>')
+            return
+
+        name = commandArgs[0]
+        objective = commandArgs[1]
+        value = commandArgs[2]
+        message = f'Set score {objective}={value} via bot'
+
+        await self.display("Setting score in redis in case player is offline..."),
+        await self.run([os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", self._k8s.namespace, name, objective, value, message], displayOutput=True)
+
+        await self.display("Setting score via broadcast in case player is online...")
+        self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": f"execute if entity {name} run scoreboard players set {name} {objective} {value}"})
+
         await self.display("Done"),
 
 
