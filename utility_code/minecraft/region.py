@@ -55,22 +55,6 @@ def _fixEntity(dx, dz, entity, regenerate_uuids):
         entity.value.pop("UUIDLeast", None)
         entity.value["UUID"] = uuid_to_mc_uuid_tag_int_array(uuid.uuid4())
 
-    # Update grave coordinates
-    if entity.has_path("Tags"):
-        for tag in entity.iter_multipath("Tags[]"):
-            if tag.value.startswith("PlayerDeathLocation;"):
-                death_loc_strs = tag.value.split(";")
-                if len(death_loc_strs) != 4:
-                    continue
-                try:
-                    death_loc_strs[1] = str(int(death_loc_strs[1]) + dx)
-                    death_loc_strs[3] = str(int(death_loc_strs[3]) + dz)
-                    tag.value = ";".join(death_loc_strs)
-                except:
-                    pass
-
-
-
 class Region(MutableMapping):
     """A region file."""
 
