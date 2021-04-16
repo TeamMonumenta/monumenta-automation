@@ -458,7 +458,8 @@ class UpdatePlainTag(GlobalRule):
     name = 'Update plain tag'
 
     def postprocess(self, item):
-        update_plain_tag(item.nbt.at_path("tag"))
+        if item.nbt.has_path("tag"):
+            update_plain_tag(item.nbt.at_path("tag"))
 
 ################################################################################
 # Global rules end

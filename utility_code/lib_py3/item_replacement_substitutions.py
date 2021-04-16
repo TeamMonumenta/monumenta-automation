@@ -122,7 +122,8 @@ class FixPlainTag(SubstitutionRule):
 
     def process(self, item_meta, item):
         """Note: This is only useful for items that aren't in the loot tables."""
-        update_plain_tag(item.nbt.at_path("tag"))
+        if item.nbt.has_path("tag"):
+            update_plain_tag(item.nbt.at_path("tag"))
 
 class SubtituteItems(SubstitutionRule):
     name = "Substitute the ID and name of items, ignoring other NBT"
