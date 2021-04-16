@@ -240,16 +240,23 @@ rboard = RedisRBoard("play", redis_host=redis_host)
 with open(os.path.join(build_template_dir, "dungeon_info.yml")) as f:
     dungeon_info = yaml.load(f)["dungeons"]
 
+last_dict = {}
+instances_dict = {}
 for config in config_list:
     server = config['server']
     # Some shards don't have instances to update
     if server in dungeon_info:
         objective = dungeon_info[server]['objective']
         instances = dungeon_info[server]['count']
-        print(f"$Last.{objective} = 0")
-        print(f"$Instances.{objective} = {instances}")
-        rboard.set("$Last", objective, 0)
-        rboard.set("$Instances", objective, instances)
+        last_dict[objective] = 0
+        instances_dict[objective] = instances
+print("Setting rboard scores for $Last:")
+pprint(last_dict)
+print("Setting rboard scores for $Instances:")
+pprint(instances_dict)
+print(f"$Instances.{objective} = {instances}")
+rboard.setmulti("$Last", last_dict)
+rboard.setmulti("$Instances", instances_dict)
 
 timings.nextStep("Updated number of instances")
 

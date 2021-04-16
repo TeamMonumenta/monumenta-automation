@@ -7,6 +7,7 @@ import os
 import sys
 import redis
 import json
+from pprint import pformat
 from lib_py3.common import eprint
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
@@ -382,3 +383,13 @@ class RedisRBoard(object):
 
     def set(self, name: str, objective: str, value: int) -> str:
         return self._r.hset(f"{self._domain}:rboard:{name}", objective, value)
+
+    def setmulti(self, name: str, mapping: dict) -> str:
+        key = f"{self._domain}:rboard:{name}"
+        num_set = self._r.hset(key, mapping=mapping)
+        if num_set != len(mapping):
+            eprint(f"WARNING: When setting {key}, expected to set {len(mapping)} keys, but only {num_set} were set")
+            eprint(f"Tried to set these values:")
+            eprint(pformat(mapping))
+        return num_set
+
