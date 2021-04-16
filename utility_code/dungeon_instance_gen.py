@@ -83,7 +83,7 @@ config = {
         },
         "willows":{
             "region":{"x":-3, "z":3},
-            "count":40,
+            "count":50,
             "objective":"DB1Access"
         },
         "roguelike":{
