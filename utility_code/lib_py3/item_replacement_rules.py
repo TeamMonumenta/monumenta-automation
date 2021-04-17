@@ -97,7 +97,7 @@ class GlobalRule(object):
     def __repr__(self):
         return f'{type(self).__name__}()'
 
-def enchantify(item, player, enchantment, owner_prefix=None):
+def enchantify(item, player, enchantment, owner_prefix=None, enchantment_color="§7"):
     """Applies a lore-text enchantment to item (full item nbt, including id and Count).
 
     Must be kept in sync with the plugin version!
@@ -138,7 +138,7 @@ def enchantify(item, player, enchantment, owner_prefix=None):
             any(x in loreStripped for x in HEADER_LORE) or
             len(loreStripped) == 0
         ):
-            enchantment_json = jsonify_text_hack("§7" + enchantment)
+            enchantment_json = jsonify_text_hack(enchantment_color + enchantment)
             newLore.append(nbt.TagString(enchantment_json))
             enchantmentFound = True
 
@@ -331,6 +331,12 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Vitality', "owner_prefix": None},
         {"enchantment": 'Barking', "owner_prefix": None},
         {"enchantment": 'Debarking', "owner_prefix": None},
+
+        # Stat tracking
+        {"enchantment": 'Stat Track', "owner_prefix": 'Tracked by', "enchantment_color": "§7"},
+        {"enchantment": 'Mob Kills', "owner_prefix": None, "enchantment_color": "§c"},
+        {"enchantment": 'Spawners Broken', "owner_prefix": None, "enchantment_color": "§c"},
+        {"enchantment": 'Times Consumed', "owner_prefix": None, "enchantment_color": "§c"},
     )
 
     def __init__(self):
@@ -340,13 +346,16 @@ class PreserveEnchantments(GlobalRule):
         self.enchantment_state = []
 
         for enchantment in self.enchantments:
-            self.enchantment_state.append({
+            newstate = {
                 'enchantment': enchantment['enchantment'],
                 'owner_prefix': enchantment['owner_prefix'],
                 'enchant_found': False,
                 'enchant_line': None,
                 'players': []
-            })
+            }
+            newstate["enchantment_color"] = enchantment.get("enchantment_color", "§7")
+
+            self.enchantment_state.append(newstate)
 
         if template.has_path('display.Lore'):
             for lore in template.iter_multipath('display.Lore[]'):
@@ -375,16 +384,17 @@ class PreserveEnchantments(GlobalRule):
             players = enchantment['players']
             enchant_line = enchantment['enchant_line']
             owner_prefix = enchantment['owner_prefix']
+            enchantment_color = enchantment['enchantment_color']
 
             if not enchant_found:
                 continue
 
             if players:
                 for player in players:
-                   enchantify(item, player, enchant_line, owner_prefix=owner_prefix)
+                   enchantify(item, player, enchant_line, owner_prefix=owner_prefix, enchantment_color=enchantment_color)
             else:
                 # Apply the enchantment without saying who added it (workaround for past bug)
-                enchantify(item, None, enchant_line, owner_prefix=None)
+                enchantify(item, None, enchant_line, owner_prefix=None, enchantment_color=enchantment_color)
 
 class PreserveShattered(GlobalRule):
     name = 'Preserve Shattered'
