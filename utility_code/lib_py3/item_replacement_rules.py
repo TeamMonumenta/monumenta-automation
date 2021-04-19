@@ -337,6 +337,9 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Mob Kills', "owner_prefix": None, "enchantment_color": "§c"},
         {"enchantment": 'Spawners Broken', "owner_prefix": None, "enchantment_color": "§c"},
         {"enchantment": 'Times Consumed', "owner_prefix": None, "enchantment_color": "§c"},
+        {"enchantment": 'Blocks Placed', "owner_prefix": None, "enchantment_color": "§c"},
+        {"enchantment": 'Melee Damage Dealt', "owner_prefix": None, "enchantment_color": "§c"},
+        {"enchantment": 'Boss Damage Dealt', "owner_prefix": None, "enchantment_color": "§c"},
     )
 
     def __init__(self):
