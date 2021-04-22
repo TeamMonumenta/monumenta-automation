@@ -11,9 +11,6 @@ from quarry.types.buffer import BufferUnderrun
 
 from lib_py3.block_map import block_map
 from lib_py3.common import bounded_range, get_entity_uuid
-from lib_py3.iterators.item_iterator import ItemIterator
-from lib_py3.iterators.recursive_entity_iterator import RecursiveEntityIterator
-from lib_py3.iterators.base_chunk_entity_iterator import BaseChunkEntityIterator
 from lib_py3.player import Player
 from lib_py3.scoreboard import Scoreboard
 
