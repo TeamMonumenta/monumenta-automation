@@ -93,6 +93,7 @@ monumenta = [
         ('plugins/HolographicDisplays/database.yml', '../../../server_config/data/plugins/{servername}/HolographicDisplays/database.yml'),
         ('plugins/spark.jar', '../../server_config/plugins/spark.jar'),
         ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
+        (f'plugins/ScriptedQuests/translations/{SERVER_TYPE}', f'/home/epic/4_SHARED/translations/{SERVER_TYPE}'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
         ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
         ('plugins/ScriptedQuests/clickables/{servername}', '../../../../server_config/data/scriptedquests/clickables/{servername}'),
