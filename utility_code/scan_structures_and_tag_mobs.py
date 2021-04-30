@@ -7,7 +7,6 @@ from lib_py3.common import parse_name_possibly_json
 from lib_py3.library_of_souls import LibraryOfSouls
 
 from minecraft.chunk_format.schematic import Schematic
-from minecraft.chunk_format.structure import Structure
 from minecraft.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
@@ -75,17 +74,6 @@ forbidden_ids = ["minecraft:armor_stand", "minecraft:painting", "minecraft:villa
 
 los = LibraryOfSouls("/home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json")
 los.clear_tags()
-
-for basedir in ["/home/epic/project_epic/server_config/data/generated"]:
-    for root, subdirs, files in os.walk(basedir):
-        for fname in files:
-            if fname.endswith(".nbt"):
-                struct = Structure(os.path.join(root, fname))
-
-                print("Processing structure: {}".format(struct.name))
-
-                for entity in struct.recursive_iter_entities():
-                    process_entity(entity, struct.name)
 
 for basedir in ["/home/epic/project_epic/server_config/data/structures/region_1", "/home/epic/project_epic/server_config/data/structures/region_2"]:
     for root, subdirs, files in os.walk(basedir):

@@ -13,4 +13,4 @@ if len(args) != 2:
 else:
     schematic = Schematic(args[1])
 
-    schematic.root_tag.body.tree()
+    schematic.root_tag.tree()
