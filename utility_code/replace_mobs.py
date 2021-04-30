@@ -290,7 +290,7 @@ if schematics_path:
     timings.nextStep("Schematics replacements done")
 
 if structures_path:
-    structure_paths = []
+    struct_paths = []
     for root, subdirs, files in os.walk(structures_path):
         for fname in files:
             if fname.endswith(".nbt"):
