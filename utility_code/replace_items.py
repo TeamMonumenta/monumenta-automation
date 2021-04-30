@@ -147,7 +147,7 @@ if schematics_path:
 
 if structures_path:
     struct_paths = []
-    for root, subdirs, files in os.walk(struct_path):
+    for root, subdirs, files in os.walk(structures_path):
         for fname in files:
             if fname.endswith(".nbt"):
                 struct_paths.append(os.path.join(root, fname))
