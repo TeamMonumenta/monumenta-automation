@@ -720,9 +720,9 @@ Must be run before starting weekly update on the play server'''
         await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpstage/TEMPLATE/")
 
         await self.display("Running replacements on copied structures...")
-        args = " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
+        args = (" --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
             + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
-            + " --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json"
+            + " --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json")
         await self.run(os.path.join(_top_level, "utility_code/replace_items.py"
             + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
             + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
