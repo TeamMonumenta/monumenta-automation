@@ -77,10 +77,12 @@ fn update_player_scores(player: &mut Player) {
         update_instance_scores(scores, "DS1Access", 3 * INSTANCE_WEEK_OFFSET, &["DS1Finished"]);
         update_instance_scores(scores, "DS1Finished", 1, &["DS1Access"]);
 
+        /* DelveDungeon score also increments as if it was a dungeon score */
+        update_instance_scores(scores, "DelveDungeon", 3 * INSTANCE_WEEK_OFFSET, &[]);
+
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
         scores.insert("DRDAccess".to_string(), 0);
-        scores.insert("DelveDungeon".to_string(), 0);
 
         fix_total_level(scores);
     }
