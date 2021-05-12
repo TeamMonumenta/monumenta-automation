@@ -13,23 +13,25 @@ from lib_py3.common import eprint
 from lib_py3.timing import Timings
 
 from minecraft.chunk_format.schematic import Schematic
+from minecraft.chunk_format.structure import Structure
 from minecraft.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types import nbt
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> | --structures /path/to/structures [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
 
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:s:l:j:d", ["world=", "schematics=", "logfile=", "num-threads=", "dry-run"])
+    opts, args = getopt.getopt(sys.argv[1:], "w:s:g:l:j:d", ["world=", "schematics=", "structures=", "logfile=", "num-threads=", "dry-run"])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
 
 world_path = None
 schematics_path = None
+structures_path = None
 logfile = None
 num_threads = 4
 dry_run = False
@@ -39,6 +41,8 @@ for o, a in opts:
         world_path = a
     elif o in ("-s", "--schematics"):
         schematics_path = a
+    elif o in ("-s", "--structures"):
+        structures_path = a
     elif o in ("-l", "--logfile"):
         logfile = a
     elif o in ("-j", "--num-threads"):
@@ -49,8 +53,8 @@ for o, a in opts:
         eprint("Unknown argument: {}".format(o))
         usage()
 
-if world_path is None and schematics_path is None:
-    eprint("--world or --schematics must be specified!")
+if world_path is None and schematics_path is None and structures_path is None:
+    eprint("--world, --schematics, or --structures must be specified!")
     usage()
 
 timings = Timings(enabled=dry_run)
@@ -97,6 +101,25 @@ def process_schematic(schem_path):
 
     return (num_replacements, replacements_log)
 
+def process_structure(struct_path):
+    replacements_log = {}
+    num_replacements = 0
+
+    try:
+        struct = Structure(struct_path)
+        for item in struct.recursive_iter_items():
+            if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+                num_replacements += 1
+
+        if not dry_run and num_replacements > 0:
+            struct.save()
+    except Exception as ex:
+        eprint(f"Failed to process structatic '{struct_path}': {ex}\n{str(traceback.format_exc())}")
+        replacements_log = {}
+        num_replacements = 0
+
+    return (num_replacements, replacements_log)
+
 if world_path:
     world = World(world_path)
     timings.nextStep("Loaded world")
@@ -121,6 +144,24 @@ if schematics_path:
         with multiprocessing.Pool(num_threads) as pool:
             parallel_results = pool.map(process_schematic, schem_paths)
     timings.nextStep("Schematics replacements done")
+
+if structures_path:
+    struct_paths = []
+    for root, subdirs, files in os.walk(structures_path):
+        for fname in files:
+            if fname.endswith(".nbt"):
+                struct_paths.append(os.path.join(root, fname))
+
+    if num_threads == 1:
+        # Don't bother with processes if only going to use one
+        # This makes debugging much easier
+        parallel_results = []
+        for struct_path in struct_paths:
+            parallel_results.append(process_structure(struct_path))
+    else:
+        with multiprocessing.Pool(num_threads) as pool:
+            parallel_results = pool.map(process_structure, struct_paths)
+    timings.nextStep("Structures replacements done")
 
 num_replacements = 0
 replacements_to_merge = []

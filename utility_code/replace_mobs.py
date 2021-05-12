@@ -14,6 +14,7 @@ from lib_py3.library_of_souls import LibraryOfSouls
 from lib_py3.timing import Timings
 
 from minecraft.chunk_format.schematic import Schematic
+from minecraft.chunk_format.structure import Structure
 from minecraft.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
@@ -113,16 +114,17 @@ sub = [
 ]
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run] [--force]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics | --structures /path/to/structures> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run] [--force]".format(sys.argv[0]))
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:s:b:l:j:dif", ["world=", "schematics=", "library-of-souls=", "logfile=", "num-threads=", "dry-run", "pos1=", "pos2=", "force"])
+    opts, args = getopt.getopt(sys.argv[1:], "w:s:g:b:l:j:dif", ["world=", "schematics=", "structures=", "library-of-souls=", "logfile=", "num-threads=", "dry-run", "pos1=", "pos2=", "force"])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
 
 world_path = None
 schematics_path = None
+structures_path = None
 library_of_souls_path = None
 pos1 = [-math.inf, -math.inf, -math.inf]
 pos2 = [math.inf, math.inf, math.inf]
@@ -136,6 +138,8 @@ for o, a in opts:
         world_path = a
     elif o in ("-s", "--schematics"):
         schematics_path = a
+    elif o in ("-s", "--structures"):
+        structures_path = a
     elif o in ("-b", "--library-of-souls"):
         library_of_souls_path = a
     elif o in ("--pos1"):
@@ -164,8 +168,8 @@ for o, a in opts:
         eprint("Unknown argument: {}".format(o))
         usage()
 
-if world_path is None and schematics_path is None:
-    eprint("--world or --schematics must be specified!")
+if world_path is None and schematics_path is None and structures_path is None:
+    eprint("--world, --schematics, or --structures must be specified!")
     usage()
 elif library_of_souls_path is None:
     eprint("--library-of-souls must be specified!")
@@ -241,6 +245,25 @@ def process_schematic(schem_path):
 
     return (num_replacements, replacements_log)
 
+def process_structure(struct_path):
+    replacements_log = {}
+    num_replacements = 0
+
+    try:
+        struct = Structure(struct_path)
+        for entity in struct.recursive_iter_entities():
+            if process_entity(entity, replacements_log):
+                num_replacements += 1
+
+        if not dry_run and num_replacements > 0:
+            struct.save()
+    except Exception as ex:
+        eprint(f"Failed to process structure '{struct_path}': {ex}\n{str(traceback.format_exc())}")
+        replacements_log = {}
+        num_replacements = 0
+
+    return (num_replacements, replacements_log)
+
 if world_path:
     world = World(world_path)
     timings.nextStep("Loaded world")
@@ -265,6 +288,24 @@ if schematics_path:
         with multiprocessing.Pool(num_threads) as pool:
             parallel_results = pool.map(process_schematic, schem_paths)
     timings.nextStep("Schematics replacements done")
+
+if structures_path:
+    struct_paths = []
+    for root, subdirs, files in os.walk(structures_path):
+        for fname in files:
+            if fname.endswith(".nbt"):
+                struct_paths.append(os.path.join(root, fname))
+
+    if num_threads == 1:
+        # Don't bother with processes if only going to use one
+        # This makes debugging much easier
+        parallel_results = []
+        for struct_path in struct_paths:
+            parallel_results.append(process_structure(struct_path))
+    else:
+        with multiprocessing.Pool(num_threads) as pool:
+            parallel_results = pool.map(process_structure, struct_paths)
+    timings.nextStep("Structures replacements done")
 
 replacements_log = {}
 num_replacements = 0
