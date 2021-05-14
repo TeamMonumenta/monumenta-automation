@@ -31,6 +31,7 @@ from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import parse_name_possibly_json
 from lib_py3.lib_k8s import KubernetesManager
 from lib_py3.lib_sockets import SocketManager
+from lib_py3.redis_scoreboard import RedisRBoard
 
 from automation_bot_lib import get_list_match, get_available_storage, datestr, split_string
 from quarry.types.text_format import unformat_text
@@ -103,6 +104,7 @@ class AutomationBotInstance(object):
             "testunpriv": self.action_test_unpriv,
 
             "list shards": self.action_list_shards,
+            "instances": self.action_list_instances,
             "start": self.action_start,
             "stop": self.action_stop,
             "restart": self.action_restart,
@@ -129,6 +131,30 @@ class AutomationBotInstance(object):
 
             "stage": self.action_stage,
             "generate demo release": self.action_gen_demo_release,
+        }
+
+        self._dungeons = {
+            "labs": "D0Access",
+            "white": "D1Access",
+            "orange": "D2Access",
+            "magenta": "D3Access",
+            "lightblue": "D4Access",
+            "yellow": "D5Access",
+            "lime": "D6Access",
+            "pink": "D7Access",
+            "gray": "D8Access",
+            "lightgray": "D9Access",
+            "cyan": "D10Access",
+            "purple": "D11Access",
+            "willows": "DB1Access",
+            "roguelike": "DRAccess",
+            "reverie": "DCAccess",
+            "tutorial": "DTAccess",
+            "sanctum": "DS1Access",
+            "shiftingcity": "DRL2Access",
+            "teal": "DTLAccess",
+            "forum": "DFFAccess",
+            "rush": "DRDAccess"
         }
 
         try:
@@ -440,6 +466,20 @@ Examples:
         #  'test': {'available_replicas': 0, 'replicas': 0}}
 
         await message.channel.send("Shard list: \n{}".format(pformat(shards)))
+
+    async def action_list_instances(self, cmd, message):
+        rboard = RedisRBoard("play", redis_host="redis")
+        inst_str = '```'
+        inst_str += f"{'Dungeons' : <15}{'Used' : <15}{'Remaining' : <15}{'Total' : <15}"
+        inst_str += "\n"
+        for dungeon in self._dungeons:
+            used = rboard.get("$Last", self._dungeons[dungeon])
+            instances = rboard.get("$Instances", self._dungeons[dungeon])
+            remaining = instances - used
+            inst_str += f"{dungeon : <15}{used : <15}{remaining : <15}{instances : <15}"
+            inst_str += "\n"
+        inst_str += "```"
+        await self.display(inst_str)
 
     async def _start_stop_restart_common(self, cmd, message, action):
         arg_str = message.content[len(self._prefix + cmd)+1:].strip()
