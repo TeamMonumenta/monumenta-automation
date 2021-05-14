@@ -15,6 +15,7 @@ from task_kanboard import TaskKanboard
 
 # Data Schema
 
+# noinspection PyInterpreter
 '''
 {
     "entries" = {
@@ -895,8 +896,13 @@ __Available Priorities:__
     # stats
     async def cmd_stats(self, message, args):
         stats = {}
+        total = {}
         for priority in self._priorities:
-            stats[priority] = 0
+            stats[priority] = {}
+            for complexity in self._complexities:
+                stats[priority][complexity] = 0
+            total[priority] = 0
+
 
         total_open = 0
         total_closed = 0
@@ -905,19 +911,26 @@ __Available Priorities:__
             if "close_reason" in entry:
                 total_closed += 1
             else:
-                stats[entry["priority"]] += 1
+                total[entry["priority"]] += 1
+                stats[entry["priority"]][entry["complexity"]] += 1
                 total_open += 1
 
         stats_text = '''Current {single} stats:```'''.format(single=self._descriptor_single)
-        for item in stats:
+        stats_text += f"{'' : <13}"
+        for comp in self._complexities:
+            stats_text += f"{comp.capitalize() : <10}"
+        stats_text += f"{'Total' : <10}"
+        for item in total:
             stats_text += '''
-{} : {}'''.format(item.ljust(10), stats[item])
+{} | '''.format(item.ljust(10))
+            for comp in stats[item]:
+                stats_text += f"{stats[item][comp] : <10}"
+            stats_text += f"{total[item] : <10}"
         stats_text += '''
 ----------------
 Total Open : {}
 Closed     : {}```'''.format(total_open, total_closed)
-
-        await message.channel.send(stats_text)
+        await self.reply(message, stats_text)
 
     ################################################################################
     # astats
