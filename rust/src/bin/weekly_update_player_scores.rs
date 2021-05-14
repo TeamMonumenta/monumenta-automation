@@ -53,6 +53,13 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
 
 fn update_player_scores(player: &mut Player) {
     if let Some(scores) = &mut player.scores {
+        /* TODO REVERT: Only for initial week resetting delve scores correctly */
+        if let Some(access) = scores.get("DelveDungeon") {
+            if *access == 1000 {
+                scores.insert("DelveDungeon".to_string(), 0);
+            }
+        }
+
         /*
          * These scores increment by 1000 or if >= max are reset to 0, along with resetting
          * the additional objectives listed at the end
