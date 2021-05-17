@@ -48,6 +48,7 @@ fn main() -> BoxResult<()> {
         let uuidstr = uuid.to_hyphenated().to_string();
         player.load_redis_advancements(&domain, &mut con)?;
         player.save_file_advancements(basedir.join(format!("{}.json", uuidstr)).to_str().unwrap())?;
+        drop(player);
     }
     println!("Done");
 
