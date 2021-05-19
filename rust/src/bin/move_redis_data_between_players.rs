@@ -20,8 +20,8 @@ fn main() -> BoxResult<()> {
 
     let mut args: Vec<String> = env::args().collect();
 
-    if args.len() != 4 {
-        println!("Usage: {} <domain> <from_player_name> <to_player_name>", args.remove(0));
+    if args.len() != 5 {
+        println!("Usage: {} <domain> <from_player_name> <to_player_name> <backup_dir>", args.remove(0));
         return Ok(());
     }
 
@@ -40,18 +40,34 @@ fn main() -> BoxResult<()> {
     let outputuuid: String = con.hget("name2uuid", &outputname)?;
     let outputuuid: Uuid = Uuid::parse_str(&outputuuid)?;
 
+    let backupdir = args.remove(0);
+
     let mut inputplayer = Player::new(inputuuid);
     inputplayer.load_redis(&domain, &mut con)?;
-    inputplayer.update_history(&format!("Import from {}", &inputname));
 
-    inputplayer.uuid = outputuuid;
-    let outputplayer = inputplayer;
+    if let Err(err) = inputplayer.save_dir(&backupdir) {
+        warn!("Failed to save player {} domain {} to backup directory {}: {}", outputuuid, domain, backupdir, err);
+        return Err(err);
+    }
+
+    let mut outputplayer = inputplayer.clone();
+    outputplayer.uuid = outputuuid;
+    outputplayer.update_history(&format!("Import from {}", &inputname));
 
     if let Err(err) = outputplayer.save_redis(&domain, &mut con) {
         warn!("Failed to save player {} domain {} to redis: {}", outputuuid, domain, err);
+        return Err(err);
     }
 
     info!("Successfully copied player data from {} to {} for domain {}", &inputname, &outputname, &domain);
+
+    if let Err(err) = inputplayer.del(&domain, &mut con) {
+        warn!("Failed to delete original player {} domain {}: {}", inputuuid, domain, err);
+        return Err(err);
+    }
+
+    info!("Successfully deleted original player data for user {} domain {}", &inputname, &domain);
+
 
     Ok(())
 }

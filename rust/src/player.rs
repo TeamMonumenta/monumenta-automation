@@ -13,6 +13,7 @@ use redis::Commands;
 use crate::world::World;
 use crate::advancements::Advancements;
 
+#[derive(Clone)]
 pub struct Player {
     pub uuid: Uuid,
     pub name: Option<String>,
@@ -190,6 +191,16 @@ impl Player {
         con.ltrim(format!("{}:playerdata:{}:plugins", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
         con.ltrim(format!("{}:playerdata:{}:advancements", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
         con.ltrim(format!("{}:playerdata:{}:data", domain, self.uuid.to_hyphenated().to_string()), 0, count - 1)?;
+        Ok(())
+    }
+
+    pub fn del(&mut self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
+        con.del(format!("{}:playerdata:{}:history", domain, self.uuid.to_hyphenated().to_string()))?;
+        con.del(format!("{}:playerdata:{}:scores", domain, self.uuid.to_hyphenated().to_string()))?;
+        con.del(format!("{}:playerdata:{}:plugins", domain, self.uuid.to_hyphenated().to_string()))?;
+        con.del(format!("{}:playerdata:{}:advancements", domain, self.uuid.to_hyphenated().to_string()))?;
+        con.del(format!("{}:playerdata:{}:data", domain, self.uuid.to_hyphenated().to_string()))?;
+        con.del(format!("{}:playerdata:{}:sharddata", domain, self.uuid.to_hyphenated().to_string()))?;
         Ok(())
     }
 
