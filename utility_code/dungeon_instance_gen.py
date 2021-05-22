@@ -126,6 +126,11 @@ config = {
             "count":50,
             "objective":"DRDAccess"
         },
+        "mist":{
+            "region":{"x":-2, "z":3},
+            "count":100,
+            "objective":"DBMAccess"
+        },
     },
 
     # Chunk to copy directly from the reference folder

@@ -90,6 +90,7 @@ fn update_player_scores(player: &mut Player) {
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
         scores.insert("DRDAccess".to_string(), 0);
+        scores.insert("DBMAccess".to_string(), 0);
 
         fix_total_level(scores);
     }
