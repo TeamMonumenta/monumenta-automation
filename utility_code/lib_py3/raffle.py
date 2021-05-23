@@ -56,7 +56,7 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
                                 uuids_that_voted_this_week.append(uuid)
 
     with open(uuid2name_path, "r") as fp:
-        uuid2name = yaml.load(fp)
+        uuid2name = yaml.load(fp, Loader=yaml.FullLoader)
         name2uuid = {value: key for key, value in uuid2name.items()}
 
     def get_name(uuid):

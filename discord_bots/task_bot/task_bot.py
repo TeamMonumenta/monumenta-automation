@@ -28,7 +28,7 @@ config_path = os.path.join(config_dir, "config.yml")
 
 # Read the bot's config file
 with open(config_path, 'r') as ymlfile:
-    bot_config = yaml.load(ymlfile)
+    bot_config = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
 logging.info("\nBot Configuration: {}\n".format(pformat(bot_config)))
 

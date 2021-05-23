@@ -24,7 +24,7 @@ else:
 
 # Read the bot's config files
 with open(config_path, 'r') as ymlfile:
-    config = yaml.load(ymlfile)
+    config = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
 pprint("Config: \n{}".format(config))
 
@@ -85,7 +85,7 @@ async def main():
 
     # Read the BungeeDisplay config file
     with open('/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml', 'r') as ymlfile:
-        bungee_display_yml = yaml.load(ymlfile)
+        bungee_display_yml = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
     # Modify the file to set maintenance mode - this kicks everyone
     bungee_display_yml["maintenance"]["enabled"] = True

@@ -250,7 +250,7 @@ print("Updating number of instances...")
 try:
     rboard = RedisRBoard("play", redis_host=redis_host)
     with open(os.path.join(build_template_dir, "dungeon_info.yml")) as f:
-        dungeon_info = yaml.load(f)["dungeons"]
+        dungeon_info = yaml.load(f, Loader=yaml.FullLoader)["dungeons"]
 
     last_dict = {}
     instances_dict = {}

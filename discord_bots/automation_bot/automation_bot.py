@@ -29,7 +29,7 @@ else:
 
 # Read the bot's config files
 with open(config_path, 'r') as ymlfile:
-    config = yaml.load(ymlfile)
+    config = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
 logging.info("Config: \n{}".format(pformat(config)))
 
