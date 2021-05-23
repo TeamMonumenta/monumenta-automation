@@ -120,6 +120,16 @@ rush = {
     "datapacks":datapacks_dungeon + ['file/rush'],
 }
 
+mist = {
+    "server":"mist",
+    "previous_world_path":f"{last_week_dir}/mist/Project_Epic-mist/",
+    "build_world_path":f"{build_template_dir}/mist/Project_Epic-mist/",
+    "output_world_path":f"{output_dir}/mist/Project_Epic-mist/",
+    "copy_base_from":"build",
+    "copy_previous_paths":["stats", "data/scoreboard.dat"],
+    "datapacks":datapacks_dungeon + ['file/mist'],
+}
+
 region_1 = {
     "server":"region_1",
     "previous_world_path":f"{last_week_dir}/region_1/Project_Epic-region_1/",
@@ -172,6 +182,7 @@ available_configs = {
     "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
     "roguelike": roguelike,
     "rush": rush,
+    "mist": mist,
     "tutorial": tutorial,
     "build": None,
     "bungee": None,

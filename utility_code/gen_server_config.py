@@ -447,6 +447,7 @@ simple_view_distance_config = {
     'sanctum': 10,
     'reverie': 10,
     'rush': 5,
+    'mist': 8,
     'test': 8,
 }
 
