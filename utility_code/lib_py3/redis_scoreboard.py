@@ -384,12 +384,22 @@ class RedisRBoard(object):
     def set(self, name: str, objective: str, value: int) -> str:
         return self._r.hset(f"{self._domain}:rboard:{name}", objective, value)
 
-    def setmulti(self, name: str, mapping: dict) -> str:
+    def setmulti(self, name: str, mapping: dict, validate=True) -> None:
         key = f"{self._domain}:rboard:{name}"
-        num_set = self._r.hset(key, mapping=mapping)
-        if num_set != len(mapping):
-            eprint(f"WARNING: When setting {key}, expected to set {len(mapping)} keys, but only {num_set} were set")
-            eprint(f"Tried to set these values:")
-            eprint(pformat(mapping))
-        return num_set
+        self._r.hset(key, mapping=mapping)
+
+        if validate:
+            hash_keys = []
+            expected_values = []
+            for hash_key in mapping:
+                hash_keys.append(hash_key)
+                expected_values.append(mapping[hash_key])
+            values = self._r.hmget(key, hash_keys)
+
+            if expected_values != values:
+                eprint(f"WARNING: Failed to set redis data at {key}: values read after set did not match set values")
+                eprint(f"Expected to get these values:")
+                eprint(pformat(expected_values))
+                eprint(f"Got these values:")
+                eprint(pformat(values))
 

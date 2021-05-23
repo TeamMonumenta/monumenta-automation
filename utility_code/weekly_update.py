@@ -247,27 +247,30 @@ timings.nextStep("Loaded dungeon scores")
 
 print("Updating number of instances...")
 
-rboard = RedisRBoard("play", redis_host=redis_host)
-with open(os.path.join(build_template_dir, "dungeon_info.yml")) as f:
-    dungeon_info = yaml.load(f)["dungeons"]
+try:
+    rboard = RedisRBoard("play", redis_host=redis_host)
+    with open(os.path.join(build_template_dir, "dungeon_info.yml")) as f:
+        dungeon_info = yaml.load(f)["dungeons"]
 
-last_dict = {}
-instances_dict = {}
-for config in config_list:
-    server = config['server']
-    # Some shards don't have instances to update
-    if server in dungeon_info:
-        objective = dungeon_info[server]['objective']
-        instances = dungeon_info[server]['count']
-        last_dict[objective] = 0
-        instances_dict[objective] = instances
-print("Setting rboard scores for $Last:")
-pprint(last_dict)
-print("Setting rboard scores for $Instances:")
-pprint(instances_dict)
-print(f"$Instances.{objective} = {instances}")
-rboard.setmulti("$Last", last_dict)
-rboard.setmulti("$Instances", instances_dict)
+    last_dict = {}
+    instances_dict = {}
+    for config in config_list:
+        server = config['server']
+        # Some shards don't have instances to update
+        if server in dungeon_info:
+            objective = dungeon_info[server]['objective']
+            instances = dungeon_info[server]['count']
+            last_dict[objective] = 0
+            instances_dict[objective] = instances
+    print("Setting rboard scores for $Last:")
+    pprint(last_dict)
+    print("Setting rboard scores for $Instances:")
+    pprint(instances_dict)
+    print(f"$Instances.{objective} = {instances}")
+    rboard.setmulti("$Last", last_dict)
+    rboard.setmulti("$Instances", instances_dict)
+except Exception as ex:
+    eprint(f"!!!!!! WARNING: Failed to set redis instance count/used values: {ex}")
 
 timings.nextStep("Updated number of instances")
 
