@@ -128,7 +128,7 @@ config = {
         },
         "mist":{
             "region":{"x":-2, "z":3},
-            "count":100,
+            "count":200,
             "objective":"DBMAccess"
         },
     },
