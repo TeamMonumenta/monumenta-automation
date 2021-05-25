@@ -109,7 +109,7 @@ sub = [
 
     # Orange
     ("Savage Jaguar", match_name('Fern Warrior', match_id('minecraft:zombie'))),
-    ("Serpentsia Corpse", match_name('Fungal Abomination', match_id('minecraft:zombie'))),
+    ("Serpensia Corpse", match_name('Serpentsia Corpse', match_id('minecraft:wither_skeleton'))),
     ("Savage Hawk", match_name('Fern Archer', match_id('minecraft:skeleton'))),
 ]
 
