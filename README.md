@@ -1,4 +1,4 @@
-# MCEdit-And-Automation
+# Monumenta-Automation
 
 This is a collection of Monumenta's server operations tools, including weekly update, the discord bots, and various tools to investigate and update the world.
 
