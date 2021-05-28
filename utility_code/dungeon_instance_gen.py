@@ -131,6 +131,11 @@ config = {
             "count":200,
             "objective":"DBMAccess"
         },
+        "depths":{
+            "region":{"x":-2, "z":4},
+            "count":200,
+            "objective":"DDAccess"
+        },
     },
 
     # Chunk to copy directly from the reference folder

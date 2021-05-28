@@ -449,6 +449,7 @@ simple_view_distance_config = {
     'reverie': 10,
     'rush': 5,
     'mist': 8,
+    'depths': 5,
     'test': 8,
 }
 
