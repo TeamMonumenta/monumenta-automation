@@ -130,6 +130,16 @@ mist = {
     "datapacks":datapacks_dungeon + ['file/mist'],
 }
 
+depths = {
+    "server":"depths",
+    "previous_world_path":f"{last_week_dir}/depths/Project_Epic-depths/",
+    "build_world_path":f"{build_template_dir}/depths/Project_Epic-depths/",
+    "output_world_path":f"{output_dir}/depths/Project_Epic-depths/",
+    "copy_base_from":"build",
+    "copy_previous_paths":["stats", "data/scoreboard.dat"],
+    "datapacks":datapacks_dungeon + ['file/depths'],
+}
+
 region_1 = {
     "server":"region_1",
     "previous_world_path":f"{last_week_dir}/region_1/Project_Epic-region_1/",
@@ -183,6 +193,7 @@ available_configs = {
     "roguelike": roguelike,
     "rush": rush,
     "mist": mist,
+    "depths": depths,
     "tutorial": tutorial,
     "build": None,
     "bungee": None,

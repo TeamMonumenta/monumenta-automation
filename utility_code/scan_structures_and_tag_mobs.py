@@ -136,6 +136,7 @@ dungeons = {
     "forum":{"x":-3, "z":16},
     "rush":{"x":-3, "z":15},
     "mist":{"x":-2, "z":3},
+    "depths":{"x":-2, "z":4},
 }
 
 dungeonWorld = World('/home/epic/project_epic/dungeon/Project_Epic-dungeon')

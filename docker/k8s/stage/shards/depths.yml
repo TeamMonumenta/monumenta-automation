@@ -1,0 +1,132 @@
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: depths
+  namespace: stage
+  labels:
+    app: depths
+    k8s-app: monumenta-metrics
+spec:
+  type: ClusterIP
+  selector:
+    app: depths
+  ports:
+  # Main minecraft port
+  - name: "25566"
+    port: 25566
+    targetPort: 25566
+  - name: plan
+    port: 8804
+    targetPort: 8804
+  - name: metrics
+    port: 9225
+    targetPort: 9225
+
+---
+
+# Deployment / the actual running application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: depths
+  namespace: stage
+  labels:
+    app: depths
+spec:
+  strategy:
+    type: Recreate
+  replicas: 0
+  selector:
+    matchLabels:
+      app: depths
+  template:
+    metadata:
+      labels:
+        app: depths
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-11
+      volumes:
+        - name: nfs-maps
+          hostPath:
+            path: /nfs/stage/maps
+            type: Directory
+        - name: nfs-project-epic
+          hostPath:
+            path: /nfs/stage/project_epic
+            type: Directory
+        - name: nfs-shared
+          hostPath:
+            path: /nfs/4_SHARED
+            type: Directory
+      terminationGracePeriodSeconds: 90
+      containers:
+      - name: depths
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 25566
+        - containerPort: 8804
+        - containerPort: 8000
+        - containerPort: 9225
+        env:
+        # Set this to however much RAM the shard needs
+        - name: "JAVA_MEM"
+          value: "3G"
+        # Set this to 256M regardless of JAVA_MEM
+        - name: "JAVA_META_MEM"
+          value: "256M"
+        - name: "JAVA_JAR"
+          value: "paperclip.jar"
+        - name: "SERVER_DIR"
+          value: "/project_epic/depths"
+        - name: "JAVA_LARGE_PAGES"
+          value: "yes"
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /alive
+            port: 8000
+          initialDelaySeconds: 240
+          timeoutSeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: nfs-project-epic
+          mountPath: /project_epic
+        - name: nfs-maps
+          mountPath: /home/epic/maps/dynmap/play
+        - name: nfs-shared
+          mountPath: /home/epic/4_SHARED
+        resources:
+          limits:
+            # Set this to 1Gi
+            # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
+            # It should not need much/any...
+            memory: 1Gi
+            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: 3520Mi
+          requests:
+            # Set this to 64Mi
+            # The shard should not need non-hugepage RAM by default
+            memory: 64Mi
+            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: 3520Mi
+      imagePullSecrets:
+      - name: githubcred
