@@ -101,6 +101,7 @@ sub = [
     ("Rosebud Golem", match_passenger(match_id('minecraft:endermite'), match_name('Rosebud Golem', match_id('minecraft:iron_golem')))),
     ("Twilight Construct", match_passenger(match_id('minecraft:silverfish'), match_name('Twilight Construct', match_id('minecraft:iron_golem')))),
     ("Frost Golem", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Golem', match_id('minecraft:iron_golem')))),
+    ("Rabid Wolf", match_passenger(match_id('minecraft:silverfish'), match_name('Rabid Wolf', match_id('minecraft:wolf')))),
 
     # TODO: Re-enable when stacked mobs are fixed
     #("Cherry Boomsom", match_name('Cheery Boomsome', match_id('minecraft:creeper'))),
@@ -111,6 +112,9 @@ sub = [
     ("Savage Jaguar", match_name('Fern Warrior', match_id('minecraft:zombie'))),
     ("Serpensia Corpse", match_name('Serpentsia Corpse', match_id('minecraft:wither_skeleton'))),
     ("Savage Hawk", match_name('Fern Archer', match_id('minecraft:skeleton'))),
+
+    # Misc
+    ("Animated Algae", match_name('Animated Algae', match_id('minecraft:creeper'))),
 ]
 
 def usage():
