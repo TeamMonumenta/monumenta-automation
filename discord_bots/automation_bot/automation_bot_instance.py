@@ -162,7 +162,6 @@ class AutomationBotInstance(object):
             self._name = config["name"]
             self._shards = config["shards"]
             self._prefix = config["prefix"]
-            self._project_epic_dir = config["project_epic_dir"]
 
             if "rabbitmq" in config:
                 try:
