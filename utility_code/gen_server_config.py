@@ -66,6 +66,7 @@ purgatory_min = [
         ('plugins/VentureChat/config.yml', '../../../server_config/data/plugins/all/VentureChat/config.yml'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
+        ('plugins/MobSpawnerFPSLagFix.jar', '../../server_config/plugins/MobSpawnerFPSLagFix.jar'),
     ]
 
 server_config_min = purgatory_min + [
