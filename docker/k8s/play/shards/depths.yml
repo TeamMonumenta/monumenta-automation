@@ -55,15 +55,15 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-8
+                - monumenta-11
       volumes:
-        - name: nfs-maps
-          hostPath:
-            path: /nfs/play/maps
-            type: Directory
-        - name: nfs-project-epic
+        - name: nfs-play-project-epic
           hostPath:
             path: /nfs/play/project_epic
+            type: Directory
+        - name: nfs-play-m11
+          hostPath:
+            path: /nfs/play/m11
             type: Directory
         - name: nfs-shared
           hostPath:
@@ -90,7 +90,7 @@ spec:
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/depths"
+          value: "/play/m11/forum"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -110,8 +110,8 @@ spec:
         volumeMounts:
         - name: nfs-project-epic
           mountPath: /project_epic
-        - name: nfs-maps
-          mountPath: /home/epic/maps/dynmap/play
+        - name: nfs-play-m11
+          mountPath: /play/m11
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         resources:
