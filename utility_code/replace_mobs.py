@@ -80,6 +80,8 @@ sub = [
 
     # Rename mobs
     ('Jaguar Berserker', match_id('minecraft:zombie', match_name('Jaguar Berzerker'))),
+    ('Aurian Priest', match_id('minecraft:evoker', match_name('Priest of The Moon'))),
+    ('Soaked Ghoul', match_id('minecraft:drowned', match_name('Ghoul'))),
 
     # Mobs on insta-die trash
     ("Rusted Gear", match_passenger(match_id('minecraft:guardian'), match_name('Rusted Gear', match_id('minecraft:drowned')))),
