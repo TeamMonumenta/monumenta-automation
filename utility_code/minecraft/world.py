@@ -135,7 +135,7 @@ class World():
             return retval
         else:
             region_list = []
-            for full_path, rx, rz in self.enumerate_regions():
+            for full_path, rx, rz in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z):
                 region_list.append((full_path, rx, rz, func))
 
             if len(region_list) > 0:
