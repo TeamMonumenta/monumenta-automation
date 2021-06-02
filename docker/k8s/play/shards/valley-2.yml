@@ -57,6 +57,10 @@ spec:
                 values:
                 - monumenta-8
       volumes:
+        - name: gsheet-credentials
+          secret:
+            secretName: gsheet-credentials
+            defaultMode: 0444
         - name: nfs-maps
           hostPath:
             path: /nfs/play/maps
@@ -108,6 +112,9 @@ spec:
           timeoutSeconds: 5
           periodSeconds: 10
         volumeMounts:
+        - name: gsheet-credentials
+          mountPath: /project_epic/valley-2/plugins/ScriptedQuests/gsheet_credentials.json
+          subPath: gsheet_credentials.json
         - name: nfs-project-epic
           mountPath: /project_epic
         - name: nfs-maps
