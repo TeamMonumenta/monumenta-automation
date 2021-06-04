@@ -375,6 +375,15 @@ config = {
         'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect + gobrush,
     },
 
+    'dev3':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=6'),
+            ('spigot.yml', 'view-distance', '    view-distance: 6'),
+            ('server.properties', 'difficulty', 'difficulty=normal'),
+        ],
+        'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect + gobrush,
+    },
+
     'plots':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=6'),

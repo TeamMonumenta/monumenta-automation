@@ -71,6 +71,14 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/build/project_epic/dev2/plugins
+        - name: nfs-dev3-logs
+          hostPath:
+            type: Directory
+            path: /nfs/build/project_epic/dev3/logs
+        - name: nfs-dev3-plugins
+          hostPath:
+            type: Directory
+            path: /nfs/build/project_epic/dev3/plugins
         - name: nfs-mobs-logs
           hostPath:
             type: Directory
@@ -117,6 +125,10 @@ spec:
           mountPath: /home/epic/dev2_shard_logs
         - name: nfs-dev2-plugins
           mountPath: /home/epic/dev2_shard_plugins
+        - name: nfs-dev3-logs
+          mountPath: /home/epic/dev3_shard_logs
+        - name: nfs-dev3-plugins
+          mountPath: /home/epic/dev3_shard_plugins
         - name: nfs-mobs-logs
           mountPath: /home/epic/mob_shard_logs
         - name: nfs-mobs-plugins
