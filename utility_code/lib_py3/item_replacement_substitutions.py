@@ -162,6 +162,8 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:crossbow", "Crimson Chicken", "minecraft:crossbow", "Red Rooster"],
             ["minecraft:sunflower", "Whirpool Coin", "minecraft:sunflower", "Whirlpool Coin"],
             ["minecraft:iron_axe", "Saving Grace", "minecraft:stone_axe", "Saving Grace"],
+            ["minecraft:golden_shovel", "Myriad's Rapier", "minecraft:golden_sword", "Myriad's Rapier"],
+            ["minecraft:turtle_helmet", "Seadiver's Shell", "minecraft:golden_chestplate", "Seadiver's Shell"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
