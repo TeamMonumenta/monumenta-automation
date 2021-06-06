@@ -113,7 +113,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: gsheet-credentials
-          mountPath: /project_epic/region1/plugins/ScriptedQuests/gsheet_credentials.json
+          mountPath: /project_epic/region_1/plugins/ScriptedQuests/gsheet_credentials.json
           subPath: gsheet_credentials.json
         - name: nfs-project-epic
           mountPath: /project_epic
