@@ -323,6 +323,7 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Gilded', "owner_prefix": 'Gilded by'},
         {"enchantment": 'Festive', "owner_prefix": 'Decorated by'},
         {"enchantment": 'Colossal', "owner_prefix": 'Reinforced by'},
+        {"enchantment": 'Locked', "owner_prefix": None},
         {"enchantment": 'Acumen', "owner_prefix": None},
         {"enchantment": 'Focus', "owner_prefix": None},
         {"enchantment": 'Perspicacity', "owner_prefix": None},
