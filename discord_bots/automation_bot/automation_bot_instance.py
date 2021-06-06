@@ -157,6 +157,7 @@ class AutomationBotInstance(object):
             "rush": "DRDAccess",
             "mist": "DBMAccess",
             "depths": "DDAccess",
+            "remorse": "DSRAccess",
         }
 
         try:
@@ -694,7 +695,7 @@ Must be run before starting weekly update on the play server'''
                 await self.display("Debug mode enabled! Will not stop shards prior to copying")
             elif shard == "region_1" or shard == "region_2":
                 main_shards.append(shard)
-            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "mist", "willows", "sanctum", "shiftingcity", "labs", "depths"]:
+            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "mist", "willows", "sanctum", "shiftingcity", "labs", "depths", "remorse"]:
                 instance_gen_required.append(shard)
             else:
                 await self.display("Unknown shard specified: {}".format(shard))

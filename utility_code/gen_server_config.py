@@ -448,6 +448,7 @@ simple_view_distance_config = {
     'purple': 10,
     'teal': 9,
     'forum': 8,
+    'remorse': 8,
 
     'tutorial': 9,
     'labs': 10,

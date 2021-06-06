@@ -121,6 +121,11 @@ config = {
             "count":50,
             "objective":"DFFAccess"
         },
+        "remorse":{
+            "region":{"x":-3, "z":10},
+            "count":50,
+            "objective":"DSRAccess"
+        },
         "rush":{
             "region":{"x":-3, "z":15},
             "count":50,

@@ -91,6 +91,7 @@ fn update_player_scores(player: &mut Player) {
         scores.insert("DRAccess".to_string(), 0);
         scores.insert("DRDAccess".to_string(), 0);
         scores.insert("DBMAccess".to_string(), 0);
+        scores.insert("DSRAccess".to_string(), 0);
         scores.insert("DDAccess".to_string(), 0);
 
         fix_total_level(scores);

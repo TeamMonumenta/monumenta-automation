@@ -130,6 +130,16 @@ mist = {
     "datapacks":datapacks_dungeon + ['file/mist'],
 }
 
+remorse = {
+    "server":"remorse",
+    "previous_world_path":f"{last_week_dir}/remorse/Project_Epic-remorse/",
+    "build_world_path":f"{build_template_dir}/remorse/Project_Epic-remorse/",
+    "output_world_path":f"{output_dir}/remorse/Project_Epic-remorse/",
+    "copy_base_from":"build",
+    "copy_previous_paths":["stats", "data/scoreboard.dat"],
+    "datapacks":datapacks_dungeon + ['file/remorse'],
+}
+
 depths = {
     "server":"depths",
     "previous_world_path":f"{last_week_dir}/depths/Project_Epic-depths/",
@@ -193,6 +203,7 @@ available_configs = {
     "roguelike": roguelike,
     "rush": rush,
     "mist": mist,
+    "remorse": remorse,
     "depths": depths,
     "tutorial": tutorial,
     "build": None,
