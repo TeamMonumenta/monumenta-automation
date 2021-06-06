@@ -146,10 +146,12 @@ dynmap = [
 
 luckperms_standalone = [
         ('plugins/LuckPerms-Bukkit.jar', '../../server_config/plugins/LuckPerms-Bukkit.jar'),
+        ('plugins/LuckPermsMVdWHook.jar', '../../server_config/plugins/LuckPermsMVdWHook.jar'),
         ('plugins/LuckPerms/lib', '../../../server_config/plugins/LuckPerms/{}/lib'.format(SERVER_TYPE)),
     ]
 luckperms = [
         ('plugins/LuckPerms-Bukkit.jar', '../../server_config/plugins/LuckPerms-Bukkit.jar'),
+        ('plugins/LuckPermsMVdWHook.jar', '../../server_config/plugins/LuckPermsMVdWHook.jar'),
         ('plugins/LuckPerms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
     ]
 
