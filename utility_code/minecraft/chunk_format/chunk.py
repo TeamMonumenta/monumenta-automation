@@ -153,13 +153,14 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
         max_y = max(pos1[1], pos2[1])
         max_z = max(pos1[2], pos2[2])
 
-        required_cy_sections = tuple(bounded_range(min_y, max_y, 0, 256, 16))
-        required_sections_left = set(required_cy_sections)
+        min_cy = min_y // 16
+        max_cy = max_y // 16
+        required_sections_left = set(range(min_cy, max_cy + 1))
 
         # Handle blocks - eventually liquids, lighting, etc will be handled here too
         for section in self.nbt.iter_multipath('Level.Sections[]'):
             cy = section.at_path("Y").value
-            if cy not in required_sections_left:
+            if min_cy > cy or cy > max_cy:
                 continue
             required_sections_left.remove(cy)
             blocks = BlockArray.from_nbt(section, block_map)

@@ -41,6 +41,8 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
         multipaths[Item] |= frozenset({
             # Crossbows
             'tag.ChargedProjectiles[]',
+            # Bundles
+            'tag.Items[]',
         })
 
     def get_debug_str(self):

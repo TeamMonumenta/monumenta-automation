@@ -61,6 +61,7 @@ class Region(MutableMapping):
     def __init__(self, path, rx, rz, read_only=False):
         """Load a region file from the path provided, and allow saving."""
         self.path = path
+        self.region_type = os.path.basename(os.path.dirname(path))
         self.rx = rx
         self.rz = rz
         self._region = nbt.RegionFile(self.path, read_only=read_only)
@@ -233,7 +234,7 @@ class Region(MutableMapping):
         rz = int(rz)
         dx = (rx - self.rx) * 512
         dz = (rz - self.rz) * 512
-        new_path = os.path.join(world.path, 'region', f'r.{rx}.{rz}.mca')
+        new_path = os.path.join(world.path, self.region_type, f'r.{rx}.{rz}.mca')
 
         if os.path.exists(new_path) and not overwrite:
             raise Exception(f"Destination region already exists: {new_path}")

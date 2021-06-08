@@ -267,8 +267,9 @@ for name in config["dungeons"]:
     new_world_path = os.path.join(out_folder, f"{name}", f"Project_Epic-{name}")
 
     # Create target directories
-    if not os.path.isdir(os.path.join(new_world_path, "region")):
-        os.makedirs(os.path.join(new_world_path, "region"), mode=0o775)
+    for region_type in ('entities', 'poi', 'region'):
+        if not os.path.isdir(os.path.join(new_world_path, region_type)):
+            os.makedirs(os.path.join(new_world_path, region_type), mode=0o775)
 
     # Copy files/directories
     copy_paths(world_path, new_world_path, config["copy_paths"])

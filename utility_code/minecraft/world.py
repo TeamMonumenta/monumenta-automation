@@ -81,32 +81,35 @@ class World():
             min_z = max_z
             max_z = temp
 
-        region_folder = os.path.join(self.path, 'region')
-        for filename in os.listdir(region_folder):
-            filename_parts = filename.split('.')
-            if (
-                len(filename_parts) != 4 or
-                filename_parts[0] != 'r' or
-                filename_parts[3] != 'mca'
-            ):
+        for subfolder in ('entities', 'poi', 'region'):
+            region_folder = os.path.join(self.path, subfolder)
+            if not os.path.isdir(region_folder):
                 continue
+            for filename in os.listdir(region_folder):
+                filename_parts = filename.split('.')
+                if (
+                    len(filename_parts) != 4 or
+                    filename_parts[0] != 'r' or
+                    filename_parts[3] != 'mca'
+                ):
+                    continue
 
-            try:
-                rx = int(filename_parts[1])
-                rz = int(filename_parts[2])
-            except ValueError:
-                continue
+                try:
+                    rx = int(filename_parts[1])
+                    rz = int(filename_parts[2])
+                except ValueError:
+                    continue
 
-            if (
-                512*rx + 512 <= min_x or
-                512*rx       >  max_x or
-                512*rz + 512 <= min_z or
-                512*rz       >  max_z
-            ):
-                continue
+                if (
+                    512*rx + 512 <= min_x or
+                    512*rx       >  max_x or
+                    512*rz + 512 <= min_z or
+                    512*rz       >  max_z
+                ):
+                    continue
 
-            full_path = os.path.join(region_folder, filename)
-            yield full_path, rx, rz
+                full_path = os.path.join(region_folder, filename)
+                yield full_path, rx, rz
 
     def iter_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, read_only=False):
         """
