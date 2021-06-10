@@ -183,6 +183,13 @@ elif library_of_souls_path is None:
     eprint("--library-of-souls must be specified!")
     usage()
 
+min_x = min(pos1[0], pos2[0])
+min_y = min(pos1[1], pos2[1])
+min_z = min(pos1[2], pos2[2])
+max_x = max(pos1[0], pos2[0])
+max_y = max(pos1[1], pos2[1])
+max_z = max(pos1[2], pos2[2])
+
 timings = Timings(enabled=dry_run)
 los = LibraryOfSouls(library_of_souls_path, readonly=True)
 timings.nextStep("Loaded Library of Souls")
@@ -201,6 +208,19 @@ elif logfile is not None:
 
 # This is handy here because it has direct access to previously defined globals
 def process_entity(entity, replacements_log) -> None:
+    if entity.pos is None:
+        eprint(f"Warning: Entity position is empty for entity {entity} - skipping!")
+        return
+
+    # Skip entities outside the specified area
+    if (entity.pos[0] < min_x or
+        entity.pos[1] < min_y or
+        entity.pos[2] < min_z or
+        entity.pos[0] > max_x or
+        entity.pos[1] > max_y or
+        entity.pos[2] > max_z):
+        return
+
     nbt = entity.nbt
     if nbt.has_path("Delay"):
         nbt.at_path("Delay").value = 0
@@ -276,7 +296,7 @@ if world_path:
     world = World(world_path)
     timings.nextStep("Loaded world")
 
-    parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads, min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2])
+    parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads, min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z)
     timings.nextStep("World replacements done")
 
 if schematics_path:
