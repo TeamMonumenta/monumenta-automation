@@ -88,7 +88,7 @@ config = {
         },
         "roguelike":{
             "region":{"x":-2, "z":-1},
-            "count":100,
+            "count":150,
             "objective":"DRAccess"
         },
         "reverie":{
@@ -108,7 +108,7 @@ config = {
         },
         "shiftingcity":{
             "region":{"x":-2, "z":9},
-            "count":50,
+            "count":70,
             "objective":"DRL2Access"
         },
         "teal":{
