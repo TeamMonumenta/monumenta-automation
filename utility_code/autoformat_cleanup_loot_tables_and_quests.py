@@ -20,9 +20,9 @@ for root, subdirs, files in os.walk(upgrade_path):
         path = os.path.join(root, fname)
         if fname.endswith(".json"):
             if not "loot_tables" in path: # Loot tables are upgraded by the loot table manager
-                upgrade_json_file(path, convert_checks_to_plain="auto", regenerateUUIDs=regenerateUUIDs)
-                pass
+                try:
+                    upgrade_json_file(path, convert_checks_to_plain="auto", regenerateUUIDs=regenerateUUIDs)
+                except Exception as ex:
+                    print(f"Failed to upgrade file '{path}': {ex}")
         elif fname.endswith(".mcfunction"):
             upgrade_mcfunction_file(path, convert_checks_to_plain="auto", regenerateUUIDs=regenerateUUIDs)
-            pass
-
