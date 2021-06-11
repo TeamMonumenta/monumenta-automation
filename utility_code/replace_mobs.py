@@ -208,17 +208,16 @@ elif logfile is not None:
 
 # This is handy here because it has direct access to previously defined globals
 def process_entity(entity, replacements_log) -> None:
-    if entity.pos is None:
-        eprint(f"Warning: Entity position is empty for entity {entity} - skipping!")
-        return
-
     # Skip entities outside the specified area
-    if (entity.pos[0] < min_x or
-        entity.pos[1] < min_y or
-        entity.pos[2] < min_z or
-        entity.pos[0] > max_x or
-        entity.pos[1] > max_y or
-        entity.pos[2] > max_z):
+    if (entity.pos is not None and
+        (
+         entity.pos[0] < min_x or
+         entity.pos[1] < min_y or
+         entity.pos[2] < min_z or
+         entity.pos[0] > max_x or
+         entity.pos[1] > max_y or
+         entity.pos[2] > max_z
+        )):
         return
 
     nbt = entity.nbt
