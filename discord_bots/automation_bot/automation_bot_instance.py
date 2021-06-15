@@ -76,6 +76,7 @@ class PermissionsError(Exception):
    """Raised when a user does not have permission to run a command"""
    pass
 
+
 class AutomationBotInstance(object):
 
     ################################################################################
@@ -164,6 +165,7 @@ class AutomationBotInstance(object):
             self._name = config["name"]
             self._shards = config["shards"]
             self._prefix = config["prefix"]
+            self._common_weekly_update_tasks = config.get("common_weekly_update_tasks", True)
 
             if "rabbitmq" in config:
                 try:
@@ -1052,16 +1054,16 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.display("Getting new server config...")
             await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/epic/project_epic/")
 
-        if min_phase <= 6:
+        if min_phase <= 6 and self._common_weekly_update_tasks:
             await self.display("Copying playerdata...")
             await self.run("cp -a /home/epic/project_epic/0_PREVIOUS/server_config/redis_data_final /home/epic/project_epic/server_config/redis_data_initial")
 
-        if min_phase <= 7:
+        if min_phase <= 7 and "purgatory" in allShards:
             await self.display("Copying purgatory...")
             await self.run("rm -rf /home/epic/project_epic/purgatory/")
             await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory /home/epic/project_epic/")
 
-        if min_phase <= 8:
+        if min_phase <= 8 and "tutorial" in allShards:
             await self.display("Copying tutorial...")
             await self.run("rm -rf /home/epic/project_epic/tutorial/")
             await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
@@ -1069,7 +1071,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         ########################################
         # Raffle
 
-        if min_phase <= 9:
+        if min_phase <= 9 and self._common_weekly_update_tasks:
             await self.display("Raffle results:")
             raffle_seed = "Default raffle seed"
             if self._rreact["msg_contents"] is not None:
@@ -1082,23 +1084,23 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         # Raffle
         ########################################
 
-        if min_phase <= 10:
+        if min_phase <= 10 and self._common_weekly_update_tasks:
             await self.display("Refreshing leaderboards")
             await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
 
-        if min_phase <= 11:
+        if min_phase <= 11 and self._common_weekly_update_tasks:
             await self.display("Removing tutorial data")
             await self.run(os.path.join(_top_level, "rust/bin/redis_remove_data") + " redis://redis/ tutorial:* --confirm")
 
-        if min_phase <= 12:
+        if min_phase <= 12 and self._common_weekly_update_tasks:
             await self.display("Running score changes for players and moving them to spawn...")
             await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + " /home/epic/project_epic/server_config/redis_data_initial")
 
-        if min_phase <= 13:
+        if min_phase <= 13 and self._common_weekly_update_tasks:
             await self.display("Running item replacements for players...")
             await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --world /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.yml -j 16")
 
-        if min_phase <= 14:
+        if min_phase <= 14 and self._common_weekly_update_tasks:
             await self.display("Loading player data back into redis...")
             await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial 1")
 
@@ -1124,7 +1126,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run("cp /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
 
             for shard in allShards:
-                if shard in ["build","bungee"]:
+                if shard in ["build", "bungee"]:
                     continue
 
                 await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-ips.json /home/epic/project_epic/{}/".format(shard))
