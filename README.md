@@ -2,6 +2,23 @@
 
 This is a collection of Monumenta's server operations tools, including weekly update, the discord bots, and various tools to investigate and update the world.
 
+# License & Usage
+
+The code in this repository is our own original work, developed for the
+Monumenta minecraft server project.
+
+You are free to adapt code here for your own purposes under the terms of the
+GNU Affero Public License - which among other things means that you are free to
+create derivative works based on things in this repository for any purpose, but
+if you do you must also release that derived work under an AGPL compatible
+license and make its source code available (preferably via GitHub fork).
+
+Note that many of the things here build on various external APIs including
+Quarry, Kubernetes, Docker, Discord, etc. These dependencies have their own
+licenses.
+
+# Overview of this repository
+
 ## discord_bots
 
 Here you can find the automation bot and the task bot.
