@@ -29,7 +29,7 @@ class KubernetesManager(object):
         for deployment_name in deployment_map:
             replicas = deployment_map[deployment_name]
             if replicas != 0 and replicas != 1:
-                raise Exception("Replicas for {} must be either 0 or 1, not {}".format(name, replicas))
+                raise Exception(f"Replicas for {name} must be either 0 or 1, not {replicas}")
             try:
                 client.AppsV1Api().patch_namespaced_deployment(deployment_name, self._namespace, {'spec': {'replicas': replicas}})
             except client.rest.ApiException as e:
@@ -41,16 +41,37 @@ class KubernetesManager(object):
                     raise e
 
         if wait:
-            # TODO Better wait! - on stop needs to wait for terminated pod, on start needs to wait for readiness
-            await asyncio.sleep(15)
+            sleep_count = 0
+            while True:
+                shards = await self.list()
+
+                all_done = True
+                for shard in deployment_map:
+                    if deployment_map[shard] == 0:
+                        # Stopping - check replicas
+                        if shards[shard]['replicas'] != 0:
+                            all_done = False
+                    else:
+                        # Starting - check available replicas
+                        if shards[shard]['available_replicas'] != 1:
+                            all_done = False
+
+                if all_done:
+                    break
+
+                if sleep_count >= timeout_seconds:
+                    raise Exception(f"Exceeded {timeout_seconds}s waiting for shards to start or stop")
+                sleep_count += 1
+                await asyncio.sleep(1)
+
 
     async def _start_stop_common(self, names, replicas, wait, timeout_seconds):
         deployment_map = {}
-        if type(names) is list:
-            for name in names:
-                deployment_map[name.replace("_", "")] = replicas
-        else:
-            deployment_map[names] = replicas
+        if type(names) is not list:
+            names = [names,]
+        for name in names:
+            deployment_map[name.replace("_", "")] = replicas
+
         await self._set_replicas(deployment_map, wait, timeout_seconds)
 
     async def start(self, names, wait=True, timeout_seconds=60):

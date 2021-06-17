@@ -531,9 +531,6 @@ Examples:
             elif action == self.restart:
                 await self.display("Restarted shards [{}]".format(",".join(shards_changed)))
 
-            # TODO
-            await self.display("Note: This script is not yet smart enough to wait for the shard to come back up :(")
-
             await self.display(message.author.mention)
 
     async def action_start(self, cmd, message):
