@@ -924,52 +924,56 @@ DELETES DUNGEON CORE PROTECT DATA'''
             debug = True
             await self.display("Debug mode enabled! Will not actually make backups")
 
-        allShards = self._shards.keys()
-
         await self.display("Stopping all shards...")
 
         shards = await self._k8s.list()
 
         # Stop all shards
-        await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
+        await self.stop([shard for shard in self._shards if shard.replace('_', '') in shards])
 
         # Fail if any shards are still running
         await self.display("Checking that all shards are stopped...")
         shards = await self._k8s.list()
         await self.display(pformat(shards))
-        for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
+        for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
                 await self.display("ERROR: shard {!r} is still running!".format(shard))
                 await self.display(message.author.mention)
                 return
 
         await self.display("Deleting cache and select FAWE and CoreProtect data...")
-        for shard in allShards:
-            await self.run("rm -rf /home/epic/project_epic/{}/cache".format(shard))
+        for shard in self._shards:
+            dirs_to_del = []
+            dirs_to_del.append(f"{self._shards[shard]}/cache")
 
             if shard not in ["build",]:
-                await self.run("rm -rf /home/epic/project_epic/{}/plugins/FastAsyncWorldEdit/clipboard".format(shard))
-                await self.run("rm -rf /home/epic/project_epic/{}/plugins/FastAsyncWorldEdit/history".format(shard))
-                await self.run("rm -rf /home/epic/project_epic/{}/plugins/FastAsyncWorldEdit/sessions".format(shard))
+                dirs_to_del.append(f"{self._shards[shard]}/plugins/FastAsyncWorldEdit/clipboard")
+                dirs_to_del.append(f"{self._shards[shard]}/plugins/FastAsyncWorldEdit/history")
+                dirs_to_del.append(f"{self._shards[shard]}/plugins/FastAsyncWorldEdit/sessions")
 
             if shard not in ["build", "region_1", "plots"]:
-                await self.run("rm -rf /home/epic/project_epic/{}/plugins/CoreProtect".format(shard))
+                dirs_to_del.append(f"{self._shards[shard]}/plugins/CoreProtect")
 
-        await self.display("Saving ops and banned players")
-        await self.run("cp -a /home/epic/project_epic/region_1/banned-ips.json /home/epic/4_SHARED/op-ban-sync/region_1/")
-        await self.run("cp -a /home/epic/project_epic/region_1/banned-players.json /home/epic/4_SHARED/op-ban-sync/region_1/")
-        await self.run("cp -a /home/epic/project_epic/region_1/ops.json /home/epic/4_SHARED/op-ban-sync/region_1/")
+            await self.run(f"rm -rf {' '.join(dirs_to_del)}")
 
-        await self.display("Copying player data from redis")
-        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --output /home/epic/project_epic/server_config/redis_data_final")
+        if "region_1" in self._shards:
+            await self.display("Saving ops and banned players")
+            await self.run(f"cp -a {self._shards['region_1']}/banned-ips.json /home/epic/4_SHARED/op-ban-sync/region_1/")
+            await self.run(f"cp -a {self._shards['region_1']}/banned-players.json /home/epic/4_SHARED/op-ban-sync/region_1/")
+            await self.run(f"cp -a {self._shards['region_1']}/ops.json /home/epic/4_SHARED/op-ban-sync/region_1/")
+
+        if self._common_weekly_update_tasks:
+            await self.display("Copying player data from redis")
+            await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --output {self._server_dir}/server_config/redis_data_final")
 
         if debug:
             await self.display("WARNING! Skipping backup!")
         else:
             await self.display("Performing backup...")
-            await self.cd("/home/epic")
+            await self.cd(f"{self._server_dir}/..")
             await self.run("mkdir -p /home/epic/1_ARCHIVE")
-            await self.run(["tar", "--exclude=project_epic/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/project_epic_pre_reset_{self._name}_{datestr()}.tgz", "project_epic"])
+            folder_name = self._server_dir.strip("/").split("/")[-1]
+            await self.run(["tar", f"--exclude={folder_name}/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/{folder_name}_pre_reset_{datestr()}.tgz", folder_name])
 
         await self.display("Backups complete! Ready for update.")
         await self.display(message.author.mention)
