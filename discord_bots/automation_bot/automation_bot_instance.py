@@ -975,7 +975,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
             await self.display("Performing backup...")
             await self.cd("/home/epic")
             await self.run("mkdir -p /home/epic/1_ARCHIVE")
-            await self.run(["tar", "--exclude=project_epic/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/project_epic_pre_reset_{datestr()}.tgz", "project_epic"])
+            await self.run(["tar", "--exclude=project_epic/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/project_epic_pre_reset_{self._name}_{datestr()}.tgz", "project_epic"])
 
         await self.display("Backups complete! Ready for update.")
         await self.display(message.author.mention)
@@ -1145,7 +1145,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         await self.cd("/home/epic")
         if min_phase <= 19:
             await self.display("Backing up post-update artifacts...")
-            await self.run(["tar", "--exclude=project_epic/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/project_epic_post_reset_{datestr()}.tgz", "project_epic"])
+            await self.run(["tar", "--exclude=project_epic/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/project_epic_post_reset_{self._name}_{datestr()}.tgz", "project_epic"])
 
         await self.display("Done.")
         await self.display(message.author.mention)
