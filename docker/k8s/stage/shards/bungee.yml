@@ -77,7 +77,7 @@ spec:
         - name: nfs-volume
           hostPath:
             type: Directory
-            path: /nfs/stage/project_epic
+            path: /nfs/stage/m11
         - name: nfs-plan
           hostPath:
             type: Directory
@@ -100,7 +100,7 @@ spec:
         - name: "JAVA_JAR"
           value: "BungeeCord.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/bungee"
+          value: "/home/epic/stage/m11/bungee"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -117,7 +117,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /project_epic
+          mountPath: /home/epic/stage/m11
         - name: nfs-plan
           mountPath: /plan
         resources:

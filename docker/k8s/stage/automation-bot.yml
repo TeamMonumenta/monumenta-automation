@@ -79,14 +79,18 @@ spec:
                 - monumenta-11
       serviceAccountName: automation-bot-service-account
       volumes:
-        - name: nfs-play-data
+        - name: nfs-play-m11
+          hostPath:
+            type: Directory
+            path: /nfs/play/m11
+        - name: nfs-play-m8
           hostPath:
             type: Directory
             path: /nfs/play/project_epic
         - name: nfs-data
           hostPath:
             type: Directory
-            path: /nfs/stage/project_epic
+            path: /nfs/stage/m11
         - name: nfs-shared
           hostPath:
             type: Directory
@@ -100,10 +104,12 @@ spec:
         tty: false
         stdin: false
         volumeMounts:
-        - name: nfs-play-data
-          mountPath: /home/epic/play/project_epic
+        - name: nfs-play-m8
+          mountPath: /home/epic/play/m8
+        - name: nfs-play-m11
+          mountPath: /home/epic/play/m11
         - name: nfs-data
-          mountPath: /home/epic/project_epic
+          mountPath: /home/epic/stage/m11
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         - name: secret-config

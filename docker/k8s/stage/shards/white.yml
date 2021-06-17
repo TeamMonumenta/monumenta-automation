@@ -63,7 +63,7 @@ spec:
             type: Directory
         - name: nfs-project-epic
           hostPath:
-            path: /nfs/stage/project_epic
+            path: /nfs/stage/m11
             type: Directory
         - name: nfs-shared
           hostPath:
@@ -90,7 +90,7 @@ spec:
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/white"
+          value: "/home/epic/stage/m11/white"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -109,7 +109,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-project-epic
-          mountPath: /project_epic
+          mountPath: /home/epic/stage/m11
         - name: nfs-maps
           mountPath: /home/epic/maps/dynmap/play
         - name: nfs-shared
