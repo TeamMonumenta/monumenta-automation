@@ -165,10 +165,12 @@ class AutomationBotInstance(object):
             self._name = config["name"]
             self._shards = config["shards"]
             self._stage_source = None
+            self._server_dir = config["server_dir"]
             if "stage_source" in config:
                 self._stage_source = config["stage_source"]
                 self._stage_server_config_source = config["stage_server_config_source"]
                 self._stage_server_config_dir = config["stage_server_config_dir"]
+
             self._prefix = config["prefix"]
             self._common_weekly_update_tasks = config.get("common_weekly_update_tasks", True)
 
@@ -817,58 +819,48 @@ Must be run before starting weekly update on the play server'''
 
         await self.display("Saving ops and banned players")
         await self.run("mkdir -p /home/epic/4_SHARED/op-ban-sync/stage/")
-        await self.run("cp -a /home/epic/project_epic/region_1/banned-ips.json /home/epic/4_SHARED/op-ban-sync/stage/")
-        await self.run("cp -a /home/epic/project_epic/region_1/banned-players.json /home/epic/4_SHARED/op-ban-sync/stage/")
-        await self.run("cp -a /home/epic/project_epic/region_1/ops.json /home/epic/4_SHARED/op-ban-sync/stage/")
+        await self.run(f"cp -a {self._shards['region_1']}/banned-ips.json /home/epic/4_SHARED/op-ban-sync/stage/")
+        await self.run(f"cp -a {self._shards['region_1']}/banned-players.json /home/epic/4_SHARED/op-ban-sync/stage/")
+        await self.run(f"cp -a {self._shards['region_1']}/ops.json /home/epic/4_SHARED/op-ban-sync/stage/")
 
         await self.display("Deleting previous update data...")
-        await self.cd("/home/epic/project_epic")
+        await self.cd(self._server_dir)
         await self.run("rm -rf 0_PREVIOUS")
         await self.run("mkdir 0_PREVIOUS")
 
-        await self.display("Moving [{}] to 0_PREVIOUS...".format(" ".join(folders_to_update)))
+        await self.display(f"Moving [{' '.join(folders_to_update)}] to 0_PREVIOUS...")
         for f in folders_to_update:
             await self.run("mv {} 0_PREVIOUS/".format(f), None)
 
         if "server_config" in folders_to_update:
             await self.display("Getting new server config...")
-            await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/epic/project_epic/")
+            await self.run(f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config {self._server_dir}/")
             folders_to_update.remove("server_config")
 
-        if "tutorial" in folders_to_update:
-            await self.display("Copying tutorial...")
-            await self.run("rm -rf /home/epic/project_epic/tutorial/")
-            await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
-            await self.cd("/home/epic/project_epic")
-            await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play tutorial"))
-
         await self.display("Running actual weekly update (this will take a while!)...")
-        await self.run(os.path.join(_top_level, "utility_code/weekly_update.py --last_week_dir /home/epic/project_epic/0_PREVIOUS/ --output_dir /home/epic/project_epic/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 6 " + " ".join(folders_to_update)))
+        await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 6 " + " ".join(folders_to_update)))
 
         for shard in ["plots", "region_1", "region_2"]:
             if shard in folders_to_update:
                 await self.display("Preserving warps for {0}...".format(shard))
-                os.makedirs("/home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
-                if os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml".format(shard)):
-                    await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
-                # TODO Upgrade from old version - remove this eventually
-                elif os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/EpicWarps/warps.yml".format(shard)):
-                    await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/plugins/EpicWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
+                os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
+                if os.path.exists(f"{self._shards[shard]}/../0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml"):
+                    await self.run(f"mv {self._shards[shard]}/../0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml {self._shards[shard]}/plugins/MonumentaWarps/warps.yml")
 
         for shard in folders_to_update:
             if shard in ["build","bungee"]:
                 continue
 
-            await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/stage/banned-ips.json /home/epic/project_epic/{}/".format(shard))
-            await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/stage/banned-players.json /home/epic/project_epic/{}/".format(shard))
-            await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/stage/ops.json /home/epic/project_epic/{}/".format(shard))
+            await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/stage/banned-ips.json {self._shards[shard]}/")
+            await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/stage/banned-players.json {self._shards[shard]}/")
+            await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/stage/ops.json {self._shards[shard]}/")
 
         await self.display("Generating per-shard config...")
-        await self.cd("/home/epic/project_epic")
+        await self.cd(self._server_dir)
         await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(folders_to_update)))
 
         await self.display("Checking for broken symbolic links...")
-        await self.run("find /home/epic/project_epic -xtype l", displayOutput=True)
+        await self.run("find . -xtype l", displayOutput=True)
 
         await self.display("Done.")
         await self.display(message.author.mention)
@@ -1183,7 +1175,6 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         await self.display("Removing previous 0_PREVIOUS directories")
         for shard in self._shards:
             await self.run(f"rm -rf {self._shards[shard]}/../0_PREVIOUS")
-
         for shard in self._shards:
             await self.run(f"mkdir -p {self._shards[shard]}/../0_PREVIOUS")
 
