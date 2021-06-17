@@ -164,6 +164,11 @@ class AutomationBotInstance(object):
         try:
             self._name = config["name"]
             self._shards = config["shards"]
+            self._stage_source = None
+            if "stage_source" in config:
+                self._stage_source = config["stage_source"]
+                self._stage_server_config_source = config["stage_server_config_source"]
+                self._stage_server_config_dir = config["stage_server_config_dir"]
             self._prefix = config["prefix"]
             self._common_weekly_update_tasks = config.get("common_weekly_update_tasks", True)
 
@@ -1156,8 +1161,8 @@ Copies the current play server over to the stage server.
 Archives the previous stage server project_epic contents under project_epic/0_PREVIOUS '''
 
         # Just in case...
-        if "stage" not in self._name:
-            raise Exception("WARNING: bot name does not contain 'stage', aborting to avoid mangling real data")
+        if not self._stage_source:
+            raise Exception("WARNING: bot doesn't have stage source, aborting")
 
         await self.display("Stopping all stage server shards...")
 
@@ -1165,24 +1170,44 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
 
         # Stop all shards
         await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
+        await self.display("Checking that all shards are stopped...")
+        shards = await self._k8s.list()
+        await self.display(pformat(shards))
+        for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
+            if shards[shard.replace('_', '')]['replicas'] != 0:
+                await self.display("ERROR: shard {!r} is still running!".format(shard))
+                await self.display(message.author.mention)
+                return
 
-        await self.action_list_shards("~list shards", message)
+        # Delete and re-create all the 0_PREVIOUS directories, wherever they might be at one level above the shard folders
+        await self.display("Removing previous 0_PREVIOUS directories")
+        for shard in self._shards:
+            await self.run(f"rm -rf {self._shards[shard]}/../0_PREVIOUS")
 
-        await self.cd("/home/epic/project_epic")
-        await self.run("rm -rf 0_PREVIOUS")
-        await self.run("mkdir 0_PREVIOUS")
+        for shard in self._shards:
+            await self.run(f"mkdir -p {self._shards[shard]}/../0_PREVIOUS")
 
-        await self.display("Moving existing stage data to 0_PREVIOUS")
-        files = os.listdir(".")
-        for f in files:
-            if "0_PREVIOUS" not in f:
-                await self.run("mv {} 0_PREVIOUS/".format(f))
+        # Move the server_config directory
+        await self.run(f"mv {self._stage_server_config_dir} {self._stage_server_config_dir}/../0_PREVIOUS/")
 
-        await self.display("Loading world data from the play server. Will ping when done, this might take a while...")
-        files = os.listdir("/home/epic/play/project_epic/")
-        for f in files:
-            if '0_PREVIOUS' not in f:
-                await self.run("cp -a /home/epic/play/project_epic/{} /home/epic/project_epic/".format(f))
+        # Move the shard folders into those folders
+        await self.display("Moving previous data to 0_PREVIOUS directories")
+        for shard in self._shards:
+            await self.run(f"mv {self._shards[shard]} {self._shards[shard]}/../0_PREVIOUS/")
+
+        await self.display("Loading world data from the play server. Will ping when done, this will take a while...")
+
+        # Load worlds from the play server
+        for shard in self._stage_source:
+            if shard in self._shards:
+                await self.display(f"Copying {shard} from {self._stage_source[shard]} => {self._shards[shard]}")
+                await self.run(f"cp -a {self._stage_source[shard]} {self._shards[shard]}")
+            else:
+                await self.display(f"Warning: skipping stage_source shard {shard} with no matching stage shard")
+
+        # Load the server_config directory
+        await self.display(f"Copying server_config from {self._stage_server_config_source} => {self._stage_server_config_dir}")
+        await self.run(f"cp -a {self._stage_server_config_source} {self._stage_server_config_dir}")
 
         await self.display("Loading player data from the play server...")
         await self.run("rm -rf /home/epic/temp_player_data")
@@ -1196,11 +1221,11 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         await self.run(os.path.join(_top_level, "rust/bin/update_redis_uuid2name_name2uuid") + " redis://redis/ play")
 
         await self.display("Disabling Plan and PremiumVanish...")
-        await self.run("mv -f /home/epic/project_epic/server_config/plugins/Plan.jar /home/epic/project_epic/server_config/plugins/Plan.jar.disabled")
-        await self.run("mv -f /home/epic/project_epic/server_config/plugins/PremiumVanish.jar /home/epic/project_epic/server_config/plugins/PremiumVanish.jar.disabled")
+        await self.run(f"mv -f {self._stage_server_config_dir}/plugins/Plan.jar {self._stage_server_config_dir}/plugins/Plan.jar.disabled")
+        await self.run(f"mv -f {self._stage_server_config_dir}/plugins/PremiumVanish.jar {self._stage_server_config_dir}/plugins/PremiumVanish.jar.disabled")
 
         await self.display("Adjusting bungee config...")
-        with open("/home/epic/project_epic/bungee/config.yml", "r") as f:
+        with open(f"{self._shards['bungee']}/config.yml", "r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
         config["listeners"][0]["priorities"] = [
             "purgatory",
@@ -1208,7 +1233,7 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
             "region_2",
             "plots",
         ]
-        with open("/home/epic/project_epic/bungee/config.yml", "w") as f:
+        with open(f"{self._shards['bungee']}/config.yml", "w") as f:
             yaml.dump(config, f, width=2147483647, allow_unicode=True)
 
         await self.display("Stage server loaded with current play server data")
