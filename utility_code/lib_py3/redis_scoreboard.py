@@ -386,7 +386,7 @@ class RedisRBoard(object):
 
     def setmulti(self, name: str, mapping: dict, validate=True) -> None:
         key = f"{self._domain}:rboard:{name}"
-        self._r.hset(key, mapping=mapping)
+        self._r.hmset(key, mapping=mapping)
 
         if validate:
             hash_keys = []
@@ -394,7 +394,12 @@ class RedisRBoard(object):
             for hash_key in mapping:
                 hash_keys.append(hash_key)
                 expected_values.append(mapping[hash_key])
-            values = self._r.hmget(key, hash_keys)
+            values = []
+            for e in self._r.hmget(key, hash_keys):
+                try:
+                    values.append(int(e.decode()))
+                except:
+                    values.append(e)
 
             if expected_values != values:
                 eprint(f"WARNING: Failed to set redis data at {key}: values read after set did not match set values")
