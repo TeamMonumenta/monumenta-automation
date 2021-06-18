@@ -5,21 +5,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: automation-bot2
+  name: automation-bot-m11
   namespace: play
   labels:
-    app: automation-bot2
+    app: automation-bot-m11
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: automation-bot2
+      app: automation-bot-m11
   template:
     metadata:
       labels:
-        app: automation-bot2
+        app: automation-bot-m11
     spec:
       affinity:
         nodeAffinity:
@@ -32,10 +32,10 @@ spec:
                 - monumenta-11
       serviceAccountName: automation-bot-service-account
       volumes:
-        - name: nfs-play
+        - name: nfs-play-m11
           hostPath:
             type: Directory
-            path: /nfs/play
+            path: /nfs/play/m11
         - name: nfs-old-backups
           hostPath:
             type: Directory
@@ -50,15 +50,15 @@ spec:
             path: /nfs/4_SHARED
         - name: secret-config
           secret:
-            secretName: automation-bot2-config
+            secretName: automation-bot-m11-config
       containers:
       - name: automation-bot
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
         tty: false
         stdin: false
         volumeMounts:
-        - name: nfs-play
-          mountPath: /home/epic/play
+        - name: nfs-play-m11
+          mountPath: /home/epic/play/m11
         - name: nfs-old-backups
           mountPath: /home/epic/0_OLD_BACKUPS
         - name: nfs-archive

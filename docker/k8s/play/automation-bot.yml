@@ -79,7 +79,7 @@ spec:
                 - monumenta-8
       serviceAccountName: automation-bot-service-account
       volumes:
-        - name: nfs-data
+        - name: nfs-play-m8
           hostPath:
             type: Directory
             path: /nfs/play/project_epic
@@ -104,8 +104,8 @@ spec:
         tty: false
         stdin: false
         volumeMounts:
-        - name: nfs-data
-          mountPath: /home/epic/project_epic
+        - name: nfs-play-m8
+          mountPath: /home/epic/play/m8
         - name: nfs-old-backups
           mountPath: /home/epic/0_OLD_BACKUPS
         - name: nfs-archive
