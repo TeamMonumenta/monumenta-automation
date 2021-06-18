@@ -1106,20 +1106,23 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 16:
             for shard in ["plots", "region_1"]:
-                await self.display(f"Preserving coreprotect for {shard}...")
-                await self.run(f"mkdir -p {self._shards[shard]}/plugins/CoreProtect")
-                await self.run(f"mv {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/CoreProtect/database.db"))
+                if shard in self._shards:
+                    await self.display(f"Preserving coreprotect for {shard}...")
+                    await self.run(f"mkdir -p {self._shards[shard]}/plugins/CoreProtect")
+                    await self.run("mv {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/CoreProtect/database.db"))
 
             for shard in ["plots",]:
-                await self.display(f"Preserving plot access for {shard}...")
-                await self.run(f"mkdir -p {self._shards[shard]}/plugins/Monumenta")
-                await self.run(f"cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/Monumenta/plot_access.json"))
+                if shard in self._shards:
+                    await self.display(f"Preserving plot access for {shard}...")
+                    await self.run(f"mkdir -p {self._shards[shard]}/plugins/Monumenta")
+                    await self.run("cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/Monumenta/plot_access.json"))
 
             for shard in ["plots", "region_1", "region_2"]:
-                await self.display(f"Preserving warps for {shard}...")
-                os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
-                if os.path.exists(f"{self._server_dir}/0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml"):
-                    await self.run(f"cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/MonumentaWarps/warps.yml"))
+                if shard in self._shards:
+                    await self.display(f"Preserving warps for {shard}...")
+                    os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
+                    if os.path.exists(f"{self._server_dir}/0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml"):
+                        await self.run("cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/MonumentaWarps/warps.yml"))
 
             for shard in self._shards:
                 if shard in ["build", "bungee"]:
