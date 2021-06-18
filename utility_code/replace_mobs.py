@@ -119,6 +119,11 @@ sub = [
 
     # Misc
     ("Animated Algae", match_name('Animated Algae', match_id('minecraft:creeper'))),
+
+	# RIP Lich + yellow stuff
+    ("Wraith of the Jungle", match_name('Lich of the Forest', match_id('minecraft:evoker'))),
+    ("Brute of the Jungle", match_name('Brute of the Forest', match_id('minecraft:zombie_villager'))),
+    ("Archer of the Jungle", match_name('Archer of the Forest', match_id('minecraft:skeleton'))),
 ]
 
 def usage():
