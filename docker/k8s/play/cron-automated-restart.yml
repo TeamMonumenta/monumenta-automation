@@ -35,7 +35,7 @@ spec:
           - name: nfs-data
             hostPath:
               type: Directory
-              path: /nfs/play/project_epic/bungee/plugins/BungeeDisplay
+              path: /nfs/play/m8/bungee/plugins/BungeeDisplay
           containers:
           - name: cron-automated-restart
             image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
@@ -47,7 +47,7 @@ spec:
             - name: secret-config
               mountPath: /home/epic/.monumenta_bot
             - name: nfs-data
-              mountPath: /home/epic/project_epic/bungee/plugins/BungeeDisplay
+              mountPath: /home/epic/m8/bungee/plugins/BungeeDisplay
           restartPolicy: Never
           imagePullSecrets:
           - name: githubcred

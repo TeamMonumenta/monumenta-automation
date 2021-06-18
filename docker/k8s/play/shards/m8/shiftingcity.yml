@@ -3,15 +3,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: forum
+  name: shiftingcity
   namespace: play
   labels:
-    app: forum
+    app: shiftingcity
     k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
-    app: forum
+    app: shiftingcity
   ports:
   # Main minecraft port
   - name: "25566"
@@ -31,21 +31,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: forum
+  name: shiftingcity
   namespace: play
   labels:
-    app: forum
+    app: shiftingcity
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: forum
+      app: shiftingcity
   template:
     metadata:
       labels:
-        app: forum
+        app: shiftingcity
     spec:
       affinity:
         nodeAffinity:
@@ -55,19 +55,19 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-11
+                - monumenta-8
       volumes:
         - name: gsheet-credentials
           secret:
             secretName: gsheet-credentials
             defaultMode: 0444
-        - name: nfs-play-project-epic
+        - name: nfs-maps
           hostPath:
-            path: /nfs/play/project_epic
+            path: /nfs/play/maps
             type: Directory
-        - name: nfs-play-m11
+        - name: nfs-play-m8
           hostPath:
-            path: /nfs/play/m11
+            path: /nfs/play/m8
             type: Directory
         - name: nfs-shared
           hostPath:
@@ -75,7 +75,7 @@ spec:
             type: Directory
       terminationGracePeriodSeconds: 90
       containers:
-      - name: forum
+      - name: shiftingcity
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
         tty: true
         stdin: true
@@ -87,14 +87,14 @@ spec:
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
-          value: "4G"
+          value: "3G"
         # Set this to 256M regardless of JAVA_MEM
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/play/m11/forum"
+          value: "/home/epic/play/m8/shiftingcity"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -113,12 +113,12 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: gsheet-credentials
-          mountPath: /project_epic/forum/plugins/ScriptedQuests/gsheet_credentials.json
+          mountPath: /home/epic/play/m8/shiftingcity/plugins/ScriptedQuests/gsheet_credentials.json
           subPath: gsheet_credentials.json
-        - name: nfs-play-project-epic
-          mountPath: /play/project_epic
-        - name: nfs-play-m11
-          mountPath: /play/m11
+        - name: nfs-play-m8
+          mountPath: /home/epic/play/m8
+        - name: nfs-maps
+          mountPath: /home/epic/maps/dynmap/play
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         resources:
@@ -128,12 +128,12 @@ spec:
             # It should not need much/any...
             memory: 1Gi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 4608Mi
+            hugepages-2Mi: 3520Mi
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 4608Mi
+            hugepages-2Mi: 3520Mi
       imagePullSecrets:
       - name: githubcred

@@ -80,7 +80,7 @@ spec:
       volumes:
         - name: nfs-volume
           hostPath:
-            path: /nfs/play/project_epic
+            path: /nfs/play/m8
             type: Directory
         - name: nfs-plan
           hostPath:
@@ -105,7 +105,7 @@ spec:
         - name: "JAVA_JAR"
           value: "BungeeCord.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/bungee"
+          value: "/home/epic/play/m8/bungee"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -122,7 +122,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /project_epic
+          mountPath: /home/epic/play/m8
         - name: nfs-plan
           mountPath: /plan
         resources:

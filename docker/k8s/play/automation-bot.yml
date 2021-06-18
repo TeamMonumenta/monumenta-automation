@@ -82,7 +82,7 @@ spec:
         - name: nfs-play-m8
           hostPath:
             type: Directory
-            path: /nfs/play/project_epic
+            path: /nfs/play/m8
         - name: nfs-old-backups
           hostPath:
             type: Directory
