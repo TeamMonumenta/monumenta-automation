@@ -505,10 +505,10 @@ Examples:
 
         shards_changed = []
         if '*' in commandArgs:
-            for shard in self._shards.keys():
+            for shard in self._shards:
                 shards_changed.append(shard)
         else:
-            for shard in self._shards.keys():
+            for shard in self._shards:
                 if shard in commandArgs:
                     shards_changed.append(shard)
 
@@ -807,8 +807,8 @@ Must be run before starting weekly update on the play server'''
         # Stop all shards
         await self.display("Stopping all shards...")
         shards = await self._k8s.list()
-        await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
-        for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
+        await self.stop([shard for shard in self._shards if shard.replace('_', '') in shards])
+        for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
                 await self.display("ERROR: shard {!r} is still running!".format(shard))
                 await self.display(message.author.mention)
@@ -1009,8 +1009,6 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             min_phase = int(commandArgs[len(cmd) + 1:].strip())
         await self.display(f"Starting from phase {min_phase}")
 
-        allShards = self._shards.keys()
-
         await self.run("mkdir -p /home/epic/1_ARCHIVE")
         await self.run("mkdir -p /home/epic/0_OLD_BACKUPS")
 
@@ -1019,7 +1017,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.display("Checking that all shards are stopped...")
             shards = await self._k8s.list()
             await self.display(pformat(shards))
-            for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
+            for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
                 if shards[shard.replace('_', '')]['replicas'] != 0:
                     await self.display("ERROR: shard {!r} is still running!".format(shard))
                     await self.display(message.author.mention)
@@ -1027,15 +1025,15 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         # Sanity check to make sure this script is going to process everything that it needs to
         if min_phase <= 2:
-            files = os.listdir("/home/epic/project_epic")
+            files = os.listdir(self._server_dir)
             for f in files:
-                if f not in ["server_config", "0_PREVIOUS"] and f not in allShards:
-                    await self.display("ERROR: project_epic directory contains file {!r} which will not be processed!".format(f))
+                if f not in ["server_config", "0_PREVIOUS"] and f not in self._shards:
+                    await self.display(f"ERROR: {self._server_dir} directory contains file {f} which will not be processed!")
                     await self.display(message.author.mention)
                     return
 
         # Delete previous update data and move current data to 0_PREVIOUS
-        await self.cd("/home/epic/project_epic")
+        await self.cd(self._server_dir)
         if min_phase <= 3:
             await self.display("Deleting previous update data...")
             await self.run("rm -rf 0_PREVIOUS")
@@ -1050,33 +1048,33 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 5:
             await self.display("Getting new server config...")
-            await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config /home/epic/project_epic/")
+            await self.run(f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config {self._server_dir}/")
 
         if min_phase <= 6 and self._common_weekly_update_tasks:
             await self.display("Copying playerdata...")
-            await self.run("cp -a /home/epic/project_epic/0_PREVIOUS/server_config/redis_data_final /home/epic/project_epic/server_config/redis_data_initial")
+            await self.run(f"mv {self._server_dir}/0_PREVIOUS/server_config/redis_data_final {self._server_dir}/server_config/redis_data_initial")
 
-        if min_phase <= 7 and "purgatory" in allShards:
+        if min_phase <= 7 and "purgatory" in self._shards:
             await self.display("Copying purgatory...")
-            await self.run("rm -rf /home/epic/project_epic/purgatory/")
-            await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory /home/epic/project_epic/")
+            await self.run(f"rm -rf {self._shards['purgatory']}")
+            await self.run(f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory {self._shards['purgatory']}")
 
-        if min_phase <= 8 and "tutorial" in allShards:
+        if min_phase <= 8 and "tutorial" in self._shards:
             await self.display("Copying tutorial...")
-            await self.run("rm -rf /home/epic/project_epic/tutorial/")
-            await self.run("mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial /home/epic/project_epic/")
+            await self.run(f"rm -rf {self._shards['tutorial']}")
+            await self.run(f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial {self._shards['tutorial']}")
 
         ########################################
         # Raffle
 
-        if min_phase <= 9 and self._common_weekly_update_tasks:
+        if min_phase <= 9 and "bungee" in self._shards:
             await self.display("Raffle results:")
             raffle_seed = "Default raffle seed"
             if self._rreact["msg_contents"] is not None:
                 raffle_seed = self._rreact["msg_contents"]
 
             raffle_results = tempfile.mktemp()
-            vote_raffle(raffle_seed, '/home/epic/project_epic/bungee/uuid2name.yml', '/home/epic/project_epic/bungee/plugins/Monumenta-Bungee/votes', raffle_results)
+            vote_raffle(raffle_seed, f"{self._shards['bungee']}/uuid2name.yml", f"{self._shards['bungee']}/plugins/Monumenta-Bungee/votes", raffle_results)
             await self.run("cat {}".format(raffle_results), displayOutput=True)
 
         # Raffle
@@ -1092,58 +1090,60 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 12 and self._common_weekly_update_tasks:
             await self.display("Running score changes for players and moving them to spawn...")
-            await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + " /home/epic/project_epic/server_config/redis_data_initial")
+            await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + f" {self._server_dir}/server_config/redis_data_initial")
 
         if min_phase <= 13 and self._common_weekly_update_tasks:
             await self.display("Running item replacements for players...")
-            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + " --world /home/epic/project_epic/server_config/redis_data_initial --datapacks /home/epic/project_epic/server_config/data/datapacks --logfile /home/epic/project_epic/server_config/redis_data_initial/replacements.yml -j 16")
+            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks --logfile {self._server_dir}/server_config/redis_data_initial/replacements.yml -j 16")
 
         if min_phase <= 14 and self._common_weekly_update_tasks:
             await self.display("Loading player data back into redis...")
-            await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis/ play --input /home/epic/project_epic/server_config/redis_data_initial 1")
+            await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --input {self._server_dir}/server_config/redis_data_initial 1")
 
         if min_phase <= 15:
             await self.display("Running actual weekly update (this will take a while!)...")
-            await self.run(os.path.join(_top_level, "utility_code/weekly_update.py --last_week_dir /home/epic/project_epic/0_PREVIOUS/ --output_dir /home/epic/project_epic/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 16 " + " ".join(allShards)))
+            await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 16 " + " ".join(self._shards)))
 
         if min_phase <= 16:
             for shard in ["plots", "region_1"]:
-                await self.display("Preserving coreprotect for {0}...".format(shard))
-                await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/CoreProtect".format(shard))
-                await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/CoreProtect/database.db"))
+                await self.display(f"Preserving coreprotect for {shard}...")
+                await self.run(f"mkdir -p {self._shards[shard]}/plugins/CoreProtect")
+                await self.run(f"mv {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/CoreProtect/database.db"))
 
             for shard in ["plots",]:
-                await self.display("Preserving plot access for {0}...".format(shard))
-                await self.run("mkdir -p /home/epic/project_epic/{0}/plugins/Monumenta".format(shard))
-                await self.run("mv /home/epic/project_epic/0_PREVIOUS/{0}/{1} /home/epic/project_epic/{0}/{1}".format(shard, "plugins/Monumenta/plot_access.json"))
+                await self.display(f"Preserving plot access for {shard}...")
+                await self.run(f"mkdir -p {self._shards[shard]}/plugins/Monumenta")
+                await self.run(f"cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/Monumenta/plot_access.json"))
 
             for shard in ["plots", "region_1", "region_2"]:
-                await self.display("Preserving warps for {0}...".format(shard))
-                os.makedirs("/home/epic/project_epic/{0}/plugins/MonumentaWarps".format(shard))
-                if os.path.exists("/home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml".format(shard)):
-                    await self.run("cp /home/epic/project_epic/0_PREVIOUS/{0}/plugins/MonumentaWarps/warps.yml /home/epic/project_epic/{0}/plugins/MonumentaWarps/warps.yml".format(shard))
+                await self.display(f"Preserving warps for {shard}...")
+                os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
+                if os.path.exists(f"{self._server_dir}/0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml"):
+                    await self.run(f"cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/MonumentaWarps/warps.yml"))
 
-            for shard in allShards:
+            for shard in self._shards:
                 if shard in ["build", "bungee"]:
                     continue
 
-                await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-ips.json /home/epic/project_epic/{}/".format(shard))
-                await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-players.json /home/epic/project_epic/{}/".format(shard))
-                await self.run("cp -af /home/epic/4_SHARED/op-ban-sync/region_1/ops.json /home/epic/project_epic/{}/".format(shard))
+                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-ips.json {self._shards[shard]}/")
+                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-players.json {self._shards[shard]}/")
+                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/region_1/ops.json {self._shards[shard]}/")
 
-        await self.cd("/home/epic/project_epic")
+        await self.cd(self._server_dir)
         if min_phase <= 17:
             await self.display("Generating per-shard config...")
-            await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(allShards)))
+            await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(self._shards.keys())))
 
         if min_phase <= 18:
             await self.display("Checking for broken symbolic links...")
-            await self.run("find /home/epic/project_epic -xtype l", displayOutput=True)
+            await self.run(f"find {self._server_dir} -xtype l", displayOutput=True)
 
         await self.cd("/home/epic")
         if min_phase <= 19:
             await self.display("Backing up post-update artifacts...")
-            await self.run(["tar", "--exclude=project_epic/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/project_epic_post_reset_{self._name}_{datestr()}.tgz", "project_epic"])
+            await self.cd(f"{self._server_dir}/..")
+            folder_name = self._server_dir.strip("/").split("/")[-1]
+            await self.run(["tar", f"--exclude={folder_name}/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/{folder_name}_post_reset_{datestr()}.tgz", folder_name])
 
         await self.display("Done.")
         await self.display(message.author.mention)
@@ -1151,7 +1151,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
     async def action_stage(self, cmd, message):
         ''' Stops all stage server shards
 Copies the current play server over to the stage server.
-Archives the previous stage server project_epic contents under project_epic/0_PREVIOUS '''
+Archives the previous stage server contents under 0_PREVIOUS '''
 
         # Just in case...
         if not self._stage_source:
@@ -1162,11 +1162,11 @@ Archives the previous stage server project_epic contents under project_epic/0_PR
         shards = await self._k8s.list()
 
         # Stop all shards
-        await self.stop([shard for shard in self._shards.keys() if shard.replace('_', '') in shards])
+        await self.stop([shard for shard in self._shards if shard.replace('_', '') in shards])
         await self.display("Checking that all shards are stopped...")
         shards = await self._k8s.list()
         await self.display(pformat(shards))
-        for shard in [shard for shard in self._shards.keys() if shard.replace('_', '') in shards]:
+        for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
                 await self.display("ERROR: shard {!r} is still running!".format(shard))
                 await self.display(message.author.mention)
@@ -1285,7 +1285,7 @@ Syntax:
         commandArgs = message.content[len(self._prefix + cmd)+1:].split()
 
         replace_shards = []
-        for shard in self._shards.keys():
+        for shard in self._shards:
             if shard in commandArgs:
                 replace_shards.append(shard)
 
@@ -1353,7 +1353,7 @@ Syntax:
         commandArgs = message.content[len(self._prefix + cmd)+1:].split()
 
         scan_shards = []
-        for shard in self._shards.keys():
+        for shard in self._shards:
             if shard in commandArgs:
                 scan_shards.append(shard)
 
