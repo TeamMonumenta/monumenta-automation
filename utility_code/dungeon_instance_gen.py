@@ -98,7 +98,7 @@ config = {
         },
         "tutorial":{
             "region":{"x":-2, "z":1},
-            "count":999,
+            "count":1500,
             "objective":"DTAccess"
         },
         "sanctum":{
