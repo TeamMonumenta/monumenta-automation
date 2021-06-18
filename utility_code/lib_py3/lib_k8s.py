@@ -74,13 +74,14 @@ class KubernetesManager(object):
 
         await self._set_replicas(deployment_map, wait, timeout_seconds)
 
-    async def start(self, names, wait=True, timeout_seconds=60):
+    async def start(self, names, wait=True, timeout_seconds=240):
         await self._start_stop_common(names, 1, wait, timeout_seconds)
 
     async def stop(self, names, wait=True, timeout_seconds=60):
         await self._start_stop_common(names, 0, wait, timeout_seconds)
+        await asyncio.sleep(15)
 
-    async def restart(self, names, wait=True, timeout_seconds=60):
+    async def restart(self, names, wait=True, timeout_seconds=240):
         await self.stop(names, wait, timeout_seconds)
         await self.start(names, wait, timeout_seconds)
 
