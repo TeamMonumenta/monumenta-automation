@@ -180,6 +180,7 @@ plan = [
 
 gobrush = [
         ('plugins/Arceon.jar', '../../server_config/plugins/Arceon.jar'),
+        ('plugins/Arceon', '../../server_config/plugins/Arceon'),
         ('plugins/goBrush.jar', '../../server_config/plugins/goBrush.jar'),
         ('plugins/goBrush', '../../server_config/data/plugins/all/goBrush'),
         ('plugins/goPaint.jar', '../../server_config/plugins/goPaint.jar'),
