@@ -398,7 +398,7 @@ class RedisRBoard(object):
             for e in self._r.hmget(key, hash_keys):
                 try:
                     values.append(int(e.decode()))
-                except:
+                except Exception:
                     values.append(e)
 
             if expected_values != values:
