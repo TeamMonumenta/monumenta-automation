@@ -486,9 +486,12 @@ Examples:
         for dungeon in self._dungeons:
             used = rboard.get("$Last", self._dungeons[dungeon])
             instances = rboard.get("$Instances", self._dungeons[dungeon])
-            remaining = instances - used
-            inst_str += f"{dungeon : <15}{used : <15}{remaining : <15}{instances : <15}"
-            inst_str += "\n"
+            if used is not None and instances is not None:
+                remaining = instances - used
+                inst_str += f"{dungeon : <15}{used : <15}{remaining : <15}{instances : <15}"
+                inst_str += "\n"
+            else:
+                self.display(f"Warning: Failed to load rboard values for {dungeon}")
         inst_str += "```"
         await self.display(inst_str)
 
