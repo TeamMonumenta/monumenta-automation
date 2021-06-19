@@ -161,10 +161,25 @@ config = {
 }
 
 def usage():
-    sys.exit("Usage: {} <--master-world /path/to/world> <--out-folder /path/to/out> [--count #] [--num-threads #] [dungeon1 dungeon2 dungeon3 ...]".format(sys.argv[0]))
+    sys.exit(f"""
+Usage: {sys.argv[0]} <--master-world /path/to/world> <--out-folder /path/to/out> [--count #] [--skip #] [--num-threads #] [dungeon1 dungeon2 ...]
+
+Arguments:
+    --master-world world
+        The path to the Project_Epic-dungeon folder used as a template to generate instances
+    --out-folder out
+        Output folder where instances will be generated
+    --count #
+        Number of instances to generate of each dungeon
+    --skip #
+        Skip the first # instances. This is useful when generating new instances to add to the already existing ones on the play server
+        If --skip is specified, will also skip copying the spawn region
+    dungeon1 dungeon2 ...
+        The names of dungeons to generate
+""")
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:o:c:j:", ["master-world=", "out-folder=", "count=", "num-threads="])
+    opts, args = getopt.getopt(sys.argv[1:], "w:o:c:s:j:", ["master-world=", "out-folder=", "count=", "skip=", "num-threads="])
 except getopt.GetoptError as err:
     eprint(str(err))
     usage()
@@ -172,6 +187,7 @@ except getopt.GetoptError as err:
 world_path = None
 out_folder = None
 force_count = None
+skip_count = None
 num_threads = 4
 specific_worlds = []
 
@@ -189,8 +205,18 @@ for o, a in opts:
         if force_count < 1 or force_count > 1000:
             eprint("--count must be between 1 and 1000")
             usage()
+    elif o in ("-s", "--skip"):
+        skip_count = int(a)
+        if skip_count < 1 or skip_count > 1000:
+            eprint("--skip must be between 1 and 1000")
+            usage()
     elif o in ("-j", "--num-threads"):
         num_threads = int(a)
+        if num_threads < 1 or num_threads > 16:
+            eprint("--num-threads must be between 1 and 16")
+            usage()
+        if num_threads > 4:
+            eprint(f"WARNING: --num-threads={num_threads} is unusually high. Unless you know what you are doing, suggest using a value <= 4 to avoid significant performance problems for the play server.")
     else:
         eprint("Unknown argument: {}".format(o))
         usage()
@@ -252,8 +278,9 @@ for name in config["dungeons"]:
     # TODO: Change level.dat uuid and name
 
     # Copy spawn chunks
-    spawn_region = config["spawn_region"]
-    ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True).copy_to(new_world, spawn_region["x"], spawn_region["z"])
+    if skip_count is not None:
+        spawn_region = config["spawn_region"]
+        ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True).copy_to(new_world, spawn_region["x"], spawn_region["z"])
 
     ###############
     # Create the new instances
@@ -264,6 +291,8 @@ for name in config["dungeons"]:
     # Create a list of all the region files that need copying to
     args = []
     for i in range(dungeon["count"]):
+        if skip_count is not None and i <= skip_count:
+            continue
         args.append((config["target_region"]["x"], config["target_region"]["z"] + i))
 
     if num_threads == 1:
