@@ -291,7 +291,7 @@ for name in config["dungeons"]:
     # Create a list of all the region files that need copying to
     args = []
     for i in range(dungeon["count"]):
-        if skip_count is not None and i <= skip_count:
+        if skip_count is not None and i < skip_count:
             continue
         args.append((config["target_region"]["x"], config["target_region"]["z"] + i))
 
