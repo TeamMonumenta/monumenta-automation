@@ -84,7 +84,7 @@ async def main():
         print("Failed to notify players about pending restart: {}".format(traceback.format_exc()))
 
     # Read the BungeeDisplay config file
-    with open('/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml', 'r') as ymlfile:
+    with open('/home/epic/play/m8/bungee/plugins/BungeeDisplay/config.yml', 'r') as ymlfile:
         bungee_display_yml = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
     # Modify the file to set maintenance mode - this kicks everyone
@@ -93,7 +93,7 @@ async def main():
     bungee_display_yml["maintenance"]["kick_message"] = '&cMonumenta is going down for daily restart - join again in 5 minutes'
     bungee_display_yml["maintenance"]["information"] = '&6Please try again in a few minutes'
     bungee_display_yml["motd"]["maintenance"]["line2"] = '              &c&lDown for Daily Restart'
-    with open('/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
+    with open('/home/epic/play/m8/bungee/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
         yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
 
     # Just a bit of time to process config and kick players
@@ -110,7 +110,7 @@ async def main():
 
     # Turn maintenance mode back off
     bungee_display_yml["maintenance"]["enabled"] = False
-    with open('/home/epic/project_epic/bungee/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
+    with open('/home/epic/play/m8/bungee/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
         yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
 
 loop = asyncio.get_event_loop()
