@@ -75,10 +75,6 @@ spec:
                 - monumenta-11
       serviceAccountName: automation-bot-service-account
       volumes:
-        - name: nfs-data
-          hostPath:
-            type: Directory
-            path: /nfs/build/project_epic
         - name: secret-config
           secret:
             secretName: automation-bot-config
@@ -88,8 +84,6 @@ spec:
         tty: false
         stdin: false
         volumeMounts:
-        - name: nfs-data
-          mountPath: /home/epic/external
         - name: secret-config
           mountPath: /home/epic/.monumenta_bot
         resources:

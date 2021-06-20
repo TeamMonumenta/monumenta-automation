@@ -47,7 +47,7 @@ spec:
             - name: secret-config
               mountPath: /home/epic/.monumenta_bot
             - name: nfs-data
-              mountPath: /home/epic/m8/bungee/plugins/BungeeDisplay
+              mountPath: /home/epic/play/m8/bungee/plugins/BungeeDisplay
           restartPolicy: Never
           imagePullSecrets:
           - name: githubcred
