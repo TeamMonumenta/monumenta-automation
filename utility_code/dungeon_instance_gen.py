@@ -202,13 +202,13 @@ for o, a in opts:
             out_folder += "/"
     elif o in ("-c", "--count"):
         force_count = int(a)
-        if force_count < 1 or force_count > 1000:
-            eprint("--count must be between 1 and 1000")
+        if force_count < 1 or force_count > 10000:
+            eprint("--count must be between 1 and 10000")
             usage()
     elif o in ("-s", "--skip"):
         skip_count = int(a)
-        if skip_count < 1 or skip_count > 1000:
-            eprint("--skip must be between 1 and 1000")
+        if skip_count < 1 or skip_count > 10000:
+            eprint("--skip must be between 1 and 10000")
             usage()
     elif o in ("-j", "--num-threads"):
         num_threads = int(a)
