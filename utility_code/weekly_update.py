@@ -254,12 +254,12 @@ for config in config_list:
         inval_scores = set()
         for score in score_objects:
             val = score.at_path("Score").value
-            if val < 1000:
+            if val < 10000:
                 inval_scores.add(val)
             else:
                 dungeon_scores.add(val)
         if inval_scores:
-            eprint(f"WARNING: Found dungeon scores [{','.join([str(x) for x in inval_scores])}] for {config['server']} that are less than 1000! This indicates score changes didn't run correctly. This is fine on stage, but a serious problem on the play server")
+            eprint(f"WARNING: Found dungeon scores [{','.join([str(x) for x in inval_scores])}] for {config['server']} that are less than 10000! This indicates score changes didn't run correctly. This is fine on stage, but a serious problem on the play server")
         dungeon_scores = sorted(list(dungeon_scores))
         preserve_instances["dungeon_scores"] = dungeon_scores
 timings.nextStep("Loaded dungeon scores")
@@ -391,7 +391,7 @@ for config in config_list:
         start_rx = preserve_instances["start_rx"]
         start_rz = preserve_instances["start_rz"]
 
-        instances_per_week = 1000
+        instances_per_week = 10000
 
         print(f"  {config['server']} - Instances preserved this week: [{','.join(str(x) for x in preserve_instances['dungeon_scores'])}]")
         for instance in preserve_instances["dungeon_scores"]:

@@ -16,7 +16,7 @@ fn usage() {
     println!("Usage: weekly_update_players path/to/directory");
 }
 
-const INSTANCE_WEEK_OFFSET: i32 = 1000;
+const INSTANCE_WEEK_OFFSET: i32 = 10000;
 
 fn update_instance_scores(scores: &mut HashMap<String, i32>, objective: &str, max: i32, additional_objectives_to_reset: &[&str]) {
     if let Some(access) = scores.get(objective) {
@@ -54,7 +54,7 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
 fn update_player_scores(player: &mut Player) {
     if let Some(scores) = &mut player.scores {
         /*
-         * These scores increment by 1000 or if >= max are reset to 0, along with resetting
+         * These scores increment by 10000 or if >= max are reset to 0, along with resetting
          * the additional objectives listed at the end
          */
         update_instance_scores(scores, "D0Access", 3 * INSTANCE_WEEK_OFFSET, &["D0Finished"]);
