@@ -28,22 +28,22 @@ config = {
         },
         "white":{
             "region":{"x":-3, "z":-2},
-            "count":150,
+            "count":250,
             "objective":"D1Access"
         },
         "orange":{
             "region":{"x":-3, "z":-1},
-            "count":75,
+            "count":100,
             "objective":"D2Access"
         },
         "magenta":{
             "region":{"x":-3, "z":0},
-            "count":50,
+            "count":60,
             "objective":"D3Access"
         },
         "lightblue":{
             "region":{"x":-3, "z":1},
-            "count":40,
+            "count":50,
             "objective":"D4Access"
         },
         "yellow":{
@@ -123,7 +123,7 @@ config = {
         },
         "remorse":{
             "region":{"x":-3, "z":10},
-            "count":50,
+            "count":500,
             "objective":"DSRAccess"
         },
         "rush":{
@@ -138,7 +138,7 @@ config = {
         },
         "depths":{
             "region":{"x":-2, "z":4},
-            "count":200,
+            "count":10,
             "objective":"DDAccess"
         },
     },
@@ -155,8 +155,11 @@ config = {
     ],
 
     # Blocks to set
-    "set_blocks":[
+    "set_blocks_in_spawn":[
         {'pos': [-1441, 2, -1441], 'block': {'name': 'minecraft:air'} },
+    ],
+
+    "set_blocks":[
     ],
 }
 
@@ -278,7 +281,7 @@ for name in config["dungeons"]:
     # TODO: Change level.dat uuid and name
 
     # Copy spawn chunks
-    if skip_count is not None:
+    if skip_count is None:
         spawn_region = config["spawn_region"]
         ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True).copy_to(new_world, spawn_region["x"], spawn_region["z"])
 
@@ -311,11 +314,18 @@ for name in config["dungeons"]:
     # /Create the new instances
     ###############
 
-    # Set blocks
+    # Set blocks in sorting box if one was made
+    if skip_count is None:
+        if "set_blocks_in_spawn" in config:
+            for block in config["set_blocks_in_spawn"]:
+                from pprint import pprint
+                new_world.set_block(block["pos"], block["block"])
+
+    # Set other blocks
     if "set_blocks" in config:
-        for block in config["set_blocks"]:
-            from pprint import pprint
-            new_world.set_block(block["pos"], block["block"])
+            for block in config["set_blocks"]:
+                from pprint import pprint
+                new_world.set_block(block["pos"], block["block"])
 
     timings.nextStep(f"{name}: {dungeon['count']} instances generated")
 
