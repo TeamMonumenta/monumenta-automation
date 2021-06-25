@@ -62,11 +62,18 @@ purgatory_min = [
         ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
-        ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
-        ('plugins/VentureChat/config.yml', '../../../server_config/data/plugins/all/VentureChat/config.yml'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
     ]
+if SERVER_TYPE == 'build':
+    purgatory_min += [
+            ('plugins/MonumentaNetworkChat.jar', '../../server_config/plugins/MonumentaNetworkChat.jar'),
+        ]
+else:
+    purgatory_min += [
+            ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
+            ('plugins/VentureChat/config.yml', '../../../server_config/data/plugins/all/VentureChat/config.yml'),
+        ]
 
 server_config_min = purgatory_min + [
         ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
