@@ -84,7 +84,7 @@ async def main():
         print("Failed to notify players about pending restart: {}".format(traceback.format_exc()))
 
     # Read the BungeeDisplay config file
-    with open(f'{config["shards"]["bungee"]}/bungee/plugins/BungeeDisplay/config.yml', 'r') as ymlfile:
+    with open(f'{config["shards"]["bungee"]}/plugins/BungeeDisplay/config.yml', 'r') as ymlfile:
         bungee_display_yml = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
     # Modify the file to set maintenance mode - this kicks everyone
