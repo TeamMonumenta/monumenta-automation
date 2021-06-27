@@ -24,12 +24,12 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                    - monumenta-11
+                    - monumenta-12
           volumes:
           - name: nfs-data
             hostPath:
               type: Directory
-              path: /nfs/build/project_epic
+              path: /nfs/build/m12
           containers:
           - name: cron-automated-tag-los-mobs
             image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot

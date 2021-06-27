@@ -49,20 +49,20 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-11
+                - monumenta-12
       volumes:
         - name: nfs-datapack
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/server_config/data/datapacks/depths
+            path: /nfs/build/m12/server_config/data/datapacks/depths
         - name: nfs-logs
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/depths/logs
+            path: /nfs/build/m12/depths/logs
         - name: nfs-scriptedquests
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/server_config/data/depths
+            path: /nfs/build/m12/server_config/data/depths
         - name: authorized-keys-config
           secret:
             secretName: authorized-keys-config-depths

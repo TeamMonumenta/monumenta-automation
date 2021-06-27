@@ -66,7 +66,7 @@ spec:
         - name: nfs-project-epic
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/
+            path: /nfs/build/m12/
       terminationGracePeriodSeconds: 90
       containers:
       - name: white-demo
@@ -85,12 +85,12 @@ spec:
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/project_epic/Monumenta Demo - The Halls of Wind and Blood"
+          value: "/home/epic/build/m12/Monumenta Demo - The Halls of Wind and Blood"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         volumeMounts:
         - name: nfs-project-epic
-          mountPath: /project_epic
+          mountPath: /home/epic/build/m12
         resources:
           limits:
             # Set this to 1Gi

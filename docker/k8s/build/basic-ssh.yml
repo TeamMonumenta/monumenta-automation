@@ -49,44 +49,44 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-11
+                - monumenta-12
       volumes:
         - name: nfs-data
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/server_config/data
+            path: /nfs/build/m12/server_config/data
         - name: nfs-dev1-logs
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/dev1/logs
+            path: /nfs/build/m12/dev1/logs
         - name: nfs-dev1-plugins
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/dev1/plugins
+            path: /nfs/build/m12/dev1/plugins
         - name: nfs-dev2-logs
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/dev2/logs
+            path: /nfs/build/m12/dev2/logs
         - name: nfs-dev2-plugins
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/dev2/plugins
+            path: /nfs/build/m12/dev2/plugins
         - name: nfs-dev3-logs
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/dev3/logs
+            path: /nfs/build/m12/dev3/logs
         - name: nfs-dev3-plugins
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/dev3/plugins
+            path: /nfs/build/m12/dev3/plugins
         - name: nfs-mobs-logs
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/mobs/logs
+            path: /nfs/build/m12/mobs/logs
         - name: nfs-mobs-plugins
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/mobs/plugins
+            path: /nfs/build/m12/mobs/plugins
         - name: nfs-sound-pack
           hostPath:
             type: Directory
@@ -94,11 +94,11 @@ spec:
         - name: nfs-stage
           hostPath:
             type: Directory
-            path: /nfs/stage/m11
+            path: /nfs/stage/m12
         - name: nfs-r1
           hostPath:
             type: Directory
-            path: /nfs/build/project_epic/region_1
+            path: /nfs/build/m12/region_1
         - name: nfs-resource-packs
           hostPath:
             type: Directory
@@ -136,7 +136,7 @@ spec:
         - name: nfs-sound-pack
           mountPath: /home/epic/sound_pack
         - name: nfs-stage
-          mountPath: /home/epic/stage/m11
+          mountPath: /home/epic/stage/m12
         - name: nfs-r1
           mountPath: /home/epic/region_1
         - name: nfs-resource-packs
