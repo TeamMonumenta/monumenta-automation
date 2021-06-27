@@ -844,8 +844,8 @@ Must be run before starting weekly update on the play server'''
             if shard in folders_to_update:
                 await self.display("Preserving warps for {0}...".format(shard))
                 os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
-                if os.path.exists(f"{self._shards[shard]}/../0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml"):
-                    await self.run(f"mv {self._shards[shard]}/../0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml {self._shards[shard]}/plugins/MonumentaWarps/warps.yml")
+                if os.path.exists(f"{self._server_dir}/0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml"):
+                    await self.run(f"cp {self._server_dir}/0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml {self._shards[shard]}/plugins/MonumentaWarps/warps.yml")
 
         for shard in folders_to_update:
             if shard in ["build","bungee"]:
@@ -1181,31 +1181,38 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         # Delete and re-create all the 0_PREVIOUS directories, wherever they might be at one level above the shard folders
         await self.display("Removing previous 0_PREVIOUS directories")
         for shard in self._shards:
-            await self.run(f"rm -rf {self._shards[shard]}/../0_PREVIOUS")
+            await self.run(f"rm -rf {self._server_dir}/0_PREVIOUS")
         for shard in self._shards:
-            await self.run(f"mkdir -p {self._shards[shard]}/../0_PREVIOUS")
+            await self.run(f"mkdir -p {self._server_dir}/0_PREVIOUS")
 
         # Move the server_config directory
-        await self.run(f"mv {self._stage_server_config_dir} {self._stage_server_config_dir}/../0_PREVIOUS/")
+        await self.run(f"mv {self._stage_server_config_dir} {self._server_dir}/0_PREVIOUS/", None)
 
         # Move the shard folders into those folders
         await self.display("Moving previous data to 0_PREVIOUS directories")
+        tasks = []
         for shard in self._shards:
-            await self.run(f"mv {self._shards[shard]} {self._shards[shard]}/../0_PREVIOUS/")
+            tasks.append(asyncio.create_task(self.run(f"mv {self._shards[shard]} {self._server_dir}/0_PREVIOUS/", None)))
+        for task in tasks:
+            await task
 
         await self.display("Loading world data from the play server. Will ping when done, this will take a while...")
 
+        tasks = []
         # Load worlds from the play server
         for shard in self._stage_source:
             if shard in self._shards:
-                await self.display(f"Copying {shard} from {self._stage_source[shard]} => {self._shards[shard]}")
-                await self.run(f"cp -a {self._stage_source[shard]} {self._shards[shard]}")
+                tasks.append(asyncio.create_task(self.display(f"Copying {shard} from {self._stage_source[shard]} => {self._shards[shard]}")))
+                tasks.append(asyncio.create_task(self.run(f"cp -a {self._stage_source[shard]} {self._shards[shard]}")))
             else:
-                await self.display(f"Warning: skipping stage_source shard {shard} with no matching stage shard")
+                tasks.append(asyncio.create_task(self.display(f"Warning: skipping stage_source shard {shard} with no matching stage shard")))
 
         # Load the server_config directory
-        await self.display(f"Copying server_config from {self._stage_server_config_source} => {self._stage_server_config_dir}")
-        await self.run(f"cp -a {self._stage_server_config_source} {self._stage_server_config_dir}")
+        tasks.append(asyncio.create_task(self.display(f"Copying server_config from {self._stage_server_config_source} => {self._stage_server_config_dir}")))
+        tasks.append(asyncio.create_task(self.run(f"cp -a {self._stage_server_config_source} {self._stage_server_config_dir}")))
+
+        for task in tasks:
+            await task
 
         await self.display("Loading player data from the play server...")
         await self.run("rm -rf /home/epic/temp_player_data")
