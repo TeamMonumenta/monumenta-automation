@@ -48,7 +48,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-11
+                - monumenta-12
       hostAliases:
       - ip: "127.0.0.1"
         hostnames:

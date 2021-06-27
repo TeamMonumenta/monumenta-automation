@@ -76,7 +76,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-11
+                - monumenta-12
       serviceAccountName: automation-bot-service-account
       volumes:
         - name: nfs-play-m11
@@ -90,7 +90,7 @@ spec:
         - name: nfs-data
           hostPath:
             type: Directory
-            path: /nfs/stage/m11
+            path: /nfs/stage/m12
         - name: nfs-shared
           hostPath:
             type: Directory
@@ -109,7 +109,7 @@ spec:
         - name: nfs-play-m11
           mountPath: /home/epic/play/m11
         - name: nfs-data
-          mountPath: /home/epic/stage/m11
+          mountPath: /home/epic/stage/m12
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         - name: secret-config

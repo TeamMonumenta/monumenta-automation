@@ -55,7 +55,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-11
+                - monumenta-12
       volumes:
         - name: nfs-maps
           hostPath:
@@ -63,7 +63,7 @@ spec:
             type: Directory
         - name: nfs-project-epic
           hostPath:
-            path: /nfs/stage/m11
+            path: /nfs/stage/m12
             type: Directory
         - name: nfs-shared
           hostPath:
@@ -90,7 +90,7 @@ spec:
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/stage/m11/region_2"
+          value: "/home/epic/stage/m12/region_2"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -109,7 +109,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-project-epic
-          mountPath: /home/epic/stage/m11
+          mountPath: /home/epic/stage/m12
         - name: nfs-maps
           mountPath: /home/epic/maps/dynmap/play
         - name: nfs-shared

@@ -48,12 +48,12 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-11
+                - monumenta-12
       volumes:
         - name: nfs-volume
           hostPath:
             type: Directory
-            path: /nfs/stage/m11
+            path: /nfs/stage/m12
       terminationGracePeriodSeconds: 90
       containers:
       - name: purgatory
@@ -72,7 +72,7 @@ spec:
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/stage/m11/purgatory"
+          value: "/home/epic/stage/m12/purgatory"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -89,7 +89,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/stage/m11
+          mountPath: /home/epic/stage/m12
         resources:
           limits:
             # Set this to 1Gi

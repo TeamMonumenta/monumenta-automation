@@ -72,12 +72,12 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-11
+                - monumenta-12
       volumes:
         - name: nfs-volume
           hostPath:
             type: Directory
-            path: /nfs/stage/m11
+            path: /nfs/stage/m12
         - name: nfs-plan
           hostPath:
             type: Directory
@@ -100,7 +100,7 @@ spec:
         - name: "JAVA_JAR"
           value: "BungeeCord.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/stage/m11/bungee"
+          value: "/home/epic/stage/m12/bungee"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -117,7 +117,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/stage/m11
+          mountPath: /home/epic/stage/m12
         - name: nfs-plan
           mountPath: /plan
         resources:
