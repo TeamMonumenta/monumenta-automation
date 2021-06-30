@@ -44,7 +44,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-10
+                - monumenta-12
       volumes:
         - name: nfs-relay
           hostPath:
