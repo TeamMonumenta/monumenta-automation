@@ -33,57 +33,57 @@ config = {
         },
         "orange":{
             "region":{"x":-3, "z":-1},
-            "count":100,
+            "count":125,
             "objective":"D2Access"
         },
         "magenta":{
             "region":{"x":-3, "z":0},
-            "count":60,
+            "count":75,
             "objective":"D3Access"
         },
         "lightblue":{
             "region":{"x":-3, "z":1},
-            "count":50,
+            "count":75,
             "objective":"D4Access"
         },
         "yellow":{
             "region":{"x":-3, "z":2},
-            "count":40,
+            "count":60,
             "objective":"D5Access"
         },
         "lime":{
             "region":{"x":-3, "z":5},
-            "count":40,
+            "count":80,
             "objective":"D6Access"
         },
         "pink":{
             "region":{"x":-3, "z":7},
-            "count":40,
+            "count":60,
             "objective":"D7Access"
         },
         "gray":{
             "region":{"x":-3, "z":6},
-            "count":40,
+            "count":60,
             "objective":"D8Access"
         },
         "lightgray":{
             "region":{"x":-3, "z":8},
-            "count":40,
+            "count":60,
             "objective":"D9Access"
         },
         "cyan":{
             "region":{"x":-3, "z":9},
-            "count":40,
+            "count":60,
             "objective":"D10Access"
         },
         "purple":{
             "region":{"x":-3, "z":13},
-            "count":40,
+            "count":60,
             "objective":"D11Access"
         },
         "willows":{
             "region":{"x":-3, "z":3},
-            "count":70,
+            "count":100,
             "objective":"DB1Access"
         },
         "roguelike":{
@@ -93,7 +93,7 @@ config = {
         },
         "reverie":{
             "region":{"x":-3, "z":4},
-            "count":40,
+            "count":60,
             "objective":"DCAccess"
         },
         "tutorial":{
@@ -108,27 +108,27 @@ config = {
         },
         "shiftingcity":{
             "region":{"x":-2, "z":9},
-            "count":70,
+            "count":75,
             "objective":"DRL2Access"
         },
         "teal":{
             "region":{"x":-2, "z":12},
-            "count":50,
+            "count":60,
             "objective":"DTLAccess"
         },
         "forum":{
             "region":{"x":-3, "z":16},
-            "count":50,
+            "count":60,
             "objective":"DFFAccess"
         },
         "remorse":{
             "region":{"x":-3, "z":10},
-            "count":500,
+            "count":700,
             "objective":"DSRAccess"
         },
         "rush":{
             "region":{"x":-3, "z":15},
-            "count":50,
+            "count":75,
             "objective":"DRDAccess"
         },
         "mist":{
