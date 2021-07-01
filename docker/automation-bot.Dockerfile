@@ -1,10 +1,19 @@
 FROM debian:stable
 
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip pigz python3-dev libtool && \
+	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip unzip pigz python3-dev libtool curl && \
 	pip3 install wheel && \
 	pip3 install discord.py kubernetes pika redis bitstring kanboard flask && \
 	pip3 install -U pyyaml
+
+# Install rclone
+RUN curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && \
+	unzip rclone-current-linux-amd64.zip && \
+	cd rclone-*-linux-amd64 && \
+	cp rclone /usr/bin/ && \
+	chown root:root /usr/bin/rclone && \
+	chmod 755 /usr/bin/rclone && \
+	rclone --version
 
 # Check for mandatory build arguments
 ARG USERNAME
