@@ -67,7 +67,7 @@ purgatory_min = [
     ]
 if SERVER_TYPE == 'build':
     purgatory_min += [
-            ('plugins/MonumentaNetworkChat.jar', '../../server_config/plugins/MonumentaNetworkChat.jar'),
+            ('plugins/NetworkChat.jar', '../../server_config/plugins/MonumentaNetworkChat.jar'),
         ]
 else:
     purgatory_min += [
@@ -127,6 +127,7 @@ monumenta = [
         ('plugins/StructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
         ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
+        ('plugins/Monumenta/CommonProperties.json', '../../../server_config/data/plugins/all/Monumenta/CommonProperties.json'),
         ('plugins/Monumenta/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
     ]
 
