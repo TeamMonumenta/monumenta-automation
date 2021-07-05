@@ -15,6 +15,8 @@ from lib_py3.timing import Timings
 
 from minecraft.chunk_format.schematic import Schematic
 from minecraft.chunk_format.structure import Structure
+from minecraft.chunk_format.entity import Entity
+from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
@@ -213,6 +215,9 @@ elif logfile is not None:
 
 # This is handy here because it has direct access to previously defined globals
 def process_entity(entity, replacements_log) -> None:
+    if not isinstance(entity, Entity) and not isinstance(entity, BlockEntity):
+        return
+
     # Skip entities outside the specified area
     if (entity.pos is not None and
         (
@@ -227,24 +232,31 @@ def process_entity(entity, replacements_log) -> None:
 
     nbt = entity.nbt
     if nbt.has_path("Delay"):
-        nbt.at_path("Delay").value = 0
+        changed_something = False
+        if nbt.at_path("Delay").value != 0:
+            nbt.at_path("Delay").value = 0
+            changed_something = True
 
         # Remove pigs
         if nbt.has_path('SpawnPotentials'):
             new_potentials = []
             for nested_entity in nbt.iter_multipath('SpawnPotentials[]'):
                 if (nested_entity.has_path('nbt.id') and nested_entity.at_path('nbt.id').value == "minecraft:pig") or (nested_entity.has_path('nbt.Id') and nested_entity.at_path('nbt.Id').value == "minecraft:pig"):
+                    changed_something = True
                     if log_handle is not None:
                         log_handle.write(f"Removing pig from SpawnPotentials at {entity.get_path_str()}\n")
                 else:
                     new_potentials.append(nested_entity)
             nbt.at_path('SpawnPotentials').value = new_potentials
         if (nbt.has_path("SpawnData.id") and nbt.at_path("SpawnData.id").value == "minecraft:pig") or (nbt.has_path("SpawnData.Id") and nbt.at_path("SpawnData.Id").value == "minecraft:pig"):
+            changed_something = True
             if log_handle is not None:
                 log_handle.write(f"Removing pig Spawndata at {entity.get_path_str()}\n")
             nbt.value.pop("SpawnData")
 
-    if is_entity_in_spawner(entity):
+        return changed_something
+
+    elif is_entity_in_spawner(entity):
         remove_unwanted_spawner_tags(nbt)
         return replace_mgr.replace_mob(nbt, replacements_log, entity.get_path_str())
 
@@ -252,7 +264,7 @@ def process_region(region):
     replacements_log = {}
     num_replacements = 0
     for chunk in region.iter_chunks(autosave=(not dry_run)):
-        for entity in chunk.recursive_iter_entities():
+        for entity in chunk.recursive_iter_all_types():
             if process_entity(entity, replacements_log):
                 num_replacements += 1
 
@@ -264,7 +276,7 @@ def process_schematic(schem_path):
 
     try:
         schem = Schematic(schem_path)
-        for entity in schem.recursive_iter_entities():
+        for entity in schem.recursive_iter_all_types():
             if process_entity(entity, replacements_log):
                 num_replacements += 1
 
@@ -283,7 +295,7 @@ def process_structure(struct_path):
 
     try:
         struct = Structure(struct_path)
-        for entity in struct.recursive_iter_entities():
+        for entity in struct.recursive_iter_all_types():
             if process_entity(entity, replacements_log):
                 num_replacements += 1
 
@@ -296,6 +308,7 @@ def process_structure(struct_path):
 
     return (num_replacements, replacements_log)
 
+parallel_results = []
 if world_path:
     world = World(world_path)
     timings.nextStep("Loaded world")
@@ -313,12 +326,11 @@ if schematics_path:
     if num_threads == 1:
         # Don't bother with processes if only going to use one
         # This makes debugging much easier
-        parallel_results = []
         for schem_path in schem_paths:
             parallel_results.append(process_schematic(schem_path))
     else:
         with multiprocessing.Pool(num_threads) as pool:
-            parallel_results = pool.map(process_schematic, schem_paths)
+            parallel_results += pool.map(process_schematic, schem_paths)
     timings.nextStep("Schematics replacements done")
 
 if structures_path:
@@ -331,12 +343,11 @@ if structures_path:
     if num_threads == 1:
         # Don't bother with processes if only going to use one
         # This makes debugging much easier
-        parallel_results = []
         for struct_path in struct_paths:
             parallel_results.append(process_structure(struct_path))
     else:
         with multiprocessing.Pool(num_threads) as pool:
-            parallel_results = pool.map(process_structure, struct_paths)
+            parallel_results += pool.map(process_structure, struct_paths)
     timings.nextStep("Structures replacements done")
 
 replacements_log = {}
