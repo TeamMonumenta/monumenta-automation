@@ -290,6 +290,10 @@ for name in config["dungeons"]:
 
     # Open the source region as a global variable
     ref_region = ref_world.get_region(dungeon["region"]["x"], dungeon["region"]["z"], read_only=True)
+    for chunk in ref_region.iter_chunks(autosave=True):
+        for block_entity in chunk.iter_block_entities():
+            if block_entity.nbt.has_path("Delay"):
+                block_entity.nbt.at_path("Delay").value = 0
 
     # Create a list of all the region files that need copying to
     args = []
