@@ -7,6 +7,7 @@ metadata:
   namespace: build
   labels:
     app: bungee
+    k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
@@ -15,6 +16,9 @@ spec:
   - name: monumenta-socket
     port: 9576
     targetPort: 9576
+  - name: metrics
+    port: 9225
+    targetPort: 9225
 
 ---
 
@@ -83,6 +87,7 @@ spec:
         stdin: true
         ports:
         - containerPort: 25566
+        - containerPort: 9225
         env:
         - name: "JAVA_MEM"
           value: "512M"
