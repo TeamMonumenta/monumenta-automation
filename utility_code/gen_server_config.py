@@ -89,6 +89,7 @@ server_config = server_config_min + [
 
 monumenta = [
         ('plugins/NetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
+        ('plugins/WorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
         ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
         ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
