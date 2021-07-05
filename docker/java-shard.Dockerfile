@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk-buster
+FROM openjdk:16-jdk-buster
 
 # Check for mandatory build arguments
 ARG USERNAME
