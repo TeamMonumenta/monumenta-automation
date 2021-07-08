@@ -28,7 +28,7 @@ config = {
         },
         "white":{
             "region":{"x":-3, "z":-2},
-            "count":250,
+            "count":200,
             "objective":"D1Access"
         },
         "orange":{
@@ -123,7 +123,7 @@ config = {
         },
         "remorse":{
             "region":{"x":-3, "z":10},
-            "count":700,
+            "count":500,
             "objective":"DSRAccess"
         },
         "rush":{
