@@ -126,6 +126,9 @@ sub = [
     ("Wraith of the Jungle", match_name('Lich of the Forest', match_id('minecraft:evoker'))),
     ("Brute of the Jungle", match_name('Brute of the Forest', match_id('minecraft:zombie_villager'))),
     ("Archer of the Jungle", match_name('Archer of the Forest', match_id('minecraft:skeleton'))),
+
+	# Typo
+	("Permafrost Construct", match_name('Permafrost Constuct', match_id('minecraft:iron_golem'))),
 ]
 
 def usage():

@@ -166,6 +166,8 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:turtle_helmet", "Seadiver's Shell", "minecraft:golden_chestplate", "Seadiver's Shell"],
             ["minecraft:quartz", "Fragment of Remorse", "minecraft:quartz", "Shard of Remorse"],
             ["minecraft:gold_ingot", "Blackflame Hoard", "minecraft:gold_ingot", "Blackflame Emblem"],
+            ["minecraft:leather_chestplate", "Bound Spirit's Tunic", "minecraft:leather_chestplate", "Ghost Costume"],
+            ["minecraft:skeleton_skull", "Valgus' Skull", "minecraft:player_head", "Valgus' Skull"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
