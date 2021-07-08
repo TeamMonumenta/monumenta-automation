@@ -23,7 +23,7 @@ args="-Xmx$JAVA_MEM -Xms$JAVA_MEM -XX:MaxMetaspaceSize=$JAVA_META_MEM"
 
 # If JAVA_LARGE_PAGES variable is not empty, use hugepages
 if [[ "$JAVA_LARGE_PAGES " != " " ]]; then
-	args="$args -XX:LargePageSizeInBytes=2M -XX:+UseLargePages -XX:+UseLargePagesInMetaspace"
+	args="$args -XX:LargePageSizeInBytes=2M -XX:+UseLargePages"
 fi
 
 # Remaining standard arguments
