@@ -101,7 +101,7 @@ async def main():
 
     # Restart bungee
     print("Restarting bungee...")
-    socket.send_packet("bungee", "Monumenta.Bungee.Command", {"command": "end"})
+    socket.send_packet("bungee", "monumentanetworkrelay.command", {"command": "end"})
 
     # At this point shards that didn't already restart will do so
 
