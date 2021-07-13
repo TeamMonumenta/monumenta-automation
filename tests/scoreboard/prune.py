@@ -24,7 +24,7 @@ if loadedWorldClass:
             """
             Run the test, raising an exception on error
             """
-            self.world = World(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-region_1"))
+            self.world = World(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-valley"))
             self.living_uuids = self.world.entity_uuids()
             self.scoreboard = self.world.scoreboard
 

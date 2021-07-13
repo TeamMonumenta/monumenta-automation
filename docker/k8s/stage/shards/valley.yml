@@ -3,16 +3,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: region2
-  namespace: build
+  name: valley
+  namespace: stage
   labels:
-    app: region2
-    k8s-app: monumenta-metrics
-
+    app: valley
+    k8s-app: monumenta-metrics-fast
 spec:
   type: ClusterIP
   selector:
-    app: region2
+    app: valley
   ports:
   # Main minecraft port
   - name: "25566"
@@ -32,21 +31,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: region2
-  namespace: build
+  name: valley
+  namespace: stage
   labels:
-    app: region2
+    app: valley
 spec:
   strategy:
     type: Recreate
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
-      app: region2
+      app: valley
   template:
     metadata:
       labels:
-        app: region2
+        app: valley
     spec:
       affinity:
         nodeAffinity:
@@ -60,37 +59,38 @@ spec:
       volumes:
         - name: nfs-maps
           hostPath:
+            path: /nfs/stage/maps
             type: Directory
-            path: /nfs/build/maps
         - name: nfs-project-epic
           hostPath:
+            path: /nfs/stage/m12
             type: Directory
-            path: /nfs/build/m12
         - name: nfs-shared
           hostPath:
-            type: Directory
             path: /nfs/4_SHARED
+            type: Directory
       terminationGracePeriodSeconds: 90
       containers:
-      - name: region2
+      - name: valley
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
         tty: true
         stdin: true
         ports:
         - containerPort: 25566
+        - containerPort: 8804
         - containerPort: 8000
         - containerPort: 9225
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
-          value: "3G"
+          value: "6G"
         # Set this to 256M regardless of JAVA_MEM
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/build/m12/region_2"
+          value: "/home/epic/stage/m12/valley"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
@@ -109,9 +109,9 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-project-epic
-          mountPath: /home/epic/build/m12
+          mountPath: /home/epic/stage/m12
         - name: nfs-maps
-          mountPath: /home/epic/maps/dynmap/build
+          mountPath: /home/epic/maps/dynmap/play
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         resources:
@@ -121,12 +121,12 @@ spec:
             # It should not need much/any...
             memory: 1Gi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 3520Mi
+            hugepages-2Mi: 6784Mi
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 3520Mi
+            hugepages-2Mi: 6784Mi
       imagePullSecrets:
       - name: githubcred

@@ -98,7 +98,7 @@ spec:
         - name: nfs-r1
           hostPath:
             type: Directory
-            path: /nfs/build/m12/region_1
+            path: /nfs/build/m12/valley
         - name: nfs-resource-packs
           hostPath:
             type: Directory
@@ -138,7 +138,7 @@ spec:
         - name: nfs-stage
           mountPath: /home/epic/stage/m12
         - name: nfs-r1
-          mountPath: /home/epic/region_1
+          mountPath: /home/epic/valley
         - name: nfs-resource-packs
           mountPath: /home/epic/resource-packs
         - name: authorized-keys-config

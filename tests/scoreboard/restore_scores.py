@@ -24,7 +24,7 @@ class ScoreboardTest(BaseTest):
 
 
         # Make an "old" copy of the scoreboard (the scores to restore are good here)
-        self.old_scoreboard = Scoreboard(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-region_1/data/scoreboard.dat"))
+        self.old_scoreboard = Scoreboard(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-valley/data/scoreboard.dat"))
         self.cache_damage_old = self.old_scoreboard.get_cache(Conditions=self.restore_conditions)
         self.cache_control_old = self.old_scoreboard.get_cache(Name=self.control_name)
 
@@ -57,7 +57,7 @@ class ScoreboardTest(BaseTest):
 
 
         # Make a new copy of the scoreboard (the scores to not restore are good here)
-        self.new_scoreboard = Scoreboard(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-region_1_respec/data/scoreboard.dat"))
+        self.new_scoreboard = Scoreboard(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-valley_respec/data/scoreboard.dat"))
         self.cache_damage_new = self.new_scoreboard.get_cache(Conditions=self.restore_conditions)
         self.cache_control_new = self.new_scoreboard.get_cache(Name=self.control_name)
 

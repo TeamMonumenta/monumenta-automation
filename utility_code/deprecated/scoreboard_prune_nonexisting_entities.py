@@ -20,8 +20,8 @@ shards = [
     'plots',
     #'purgatory', # NO! Bad!
     'purple',
-    'region_1',
-    'region_2',
+    'valley',
+    'isles',
     'reverie',
     'rush',
     'roguelike',

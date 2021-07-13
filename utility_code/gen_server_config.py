@@ -226,7 +226,7 @@ config = {
     #   Difficulty
     #   Tab complete=9999 in spigot.yml
 
-    'region_1':{
+    'valley':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),
@@ -234,7 +234,7 @@ config = {
         'linked':server_config + base_plugins + dynmap,
     },
 
-    'region_2':{
+    'isles':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=8'),
             ('spigot.yml', 'view-distance', '    view-distance: 8'),

@@ -150,29 +150,29 @@ depths = {
     "datapacks":datapacks_dungeon + ['file/depths'],
 }
 
-region_1 = {
-    "server":"region_1",
-    "previous_world_path":f"{last_week_dir}/region_1/Project_Epic-region_1/",
-    "build_world_path":f"{build_template_dir}/region_1/Project_Epic-region_1/",
-    "output_world_path":f"{output_dir}/region_1/Project_Epic-region_1/",
+valley = {
+    "server":"valley",
+    "previous_world_path":f"{last_week_dir}/valley/Project_Epic-valley/",
+    "build_world_path":f"{build_template_dir}/valley/Project_Epic-valley/",
+    "output_world_path":f"{output_dir}/valley/Project_Epic-valley/",
     "copy_base_from":"build",
     "copy_previous_paths":["stats", "data"],
     "copy_maps": "build",
-    "datapacks":datapacks_base + ['file/region_1'],
+    "datapacks":datapacks_base + ['file/valley'],
     "coordinates_to_fill":(
         {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
     ),
 }
 
-region_2 = {
-    "server":"region_2",
-    "previous_world_path":f"{last_week_dir}/region_2/Project_Epic-region_2/",
-    "build_world_path":f"{build_template_dir}/region_2/Project_Epic-region_2/",
-    "output_world_path":f"{output_dir}/region_2/Project_Epic-region_2/",
+isles = {
+    "server":"isles",
+    "previous_world_path":f"{last_week_dir}/isles/Project_Epic-isles/",
+    "build_world_path":f"{build_template_dir}/isles/Project_Epic-isles/",
+    "output_world_path":f"{output_dir}/isles/Project_Epic-isles/",
     "copy_base_from":"build",
     "copy_previous_paths":["stats", "data/scoreboard.dat"],
     "copy_maps": "build",
-    "datapacks":datapacks_base + ['file/region_2'],
+    "datapacks":datapacks_base + ['file/isles'],
     "coordinates_to_fill":(
         {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
     ),
@@ -180,8 +180,8 @@ region_2 = {
 
 available_configs = {
     "plots": plots,
-    "region_1": region_1,
-    "region_2": region_2,
+    "valley": valley,
+    "isles": isles,
     "white": get_dungeon_config("white", "D1Access"),
     "orange": get_dungeon_config("orange", "D2Access"),
     "magenta": get_dungeon_config("magenta", "D3Access"),

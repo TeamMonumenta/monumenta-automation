@@ -540,21 +540,21 @@ Examples:
         '''Start specified shards.
 Syntax:
 `{cmdPrefix}start shard *`
-`{cmdPrefix}start shard region_1 region_2 orange'''
+`{cmdPrefix}start shard valley isles orange'''
         await self._start_stop_restart_common(cmd, message, self.start)
 
     async def action_stop(self, cmd, message):
         '''Stop specified shards.
 Syntax:
 `{cmdPrefix}stop shard *`
-`{cmdPrefix}stop shard region_1 region_2 orange'''
+`{cmdPrefix}stop shard valley isles orange'''
         await self._start_stop_restart_common(cmd, message, self.stop)
 
     async def action_restart(self, cmd, message):
         '''Restart specified shards.
 Syntax:
 `{cmdPrefix}restart shard *`
-`{cmdPrefix}restart shard region_1 region_2 orange'''
+`{cmdPrefix}restart shard valley isles orange'''
         await self._start_stop_restart_common(cmd, message, self.restart)
 
 
@@ -637,7 +637,7 @@ Must be run before preparing the build server update bundle'''
 
     async def action_prepare_update_bundle(self, cmd, message):
         '''Dangerous!
-Temporarily brings down the region_1 and region_2 shards to prepare for weekly update
+Temporarily brings down the valley and isles shards to prepare for weekly update
 Packages up all of the pre-update server components needed by the play server for update
 Must be run before starting weekly update on the play server'''
 
@@ -647,24 +647,24 @@ Must be run before starting weekly update on the play server'''
             await self.display("Debug mode enabled! Will not stop shards before copying")
 
         if not debug:
-            await self.display("Stopping region_1 and region_2...")
-            await self.stop(["region_1", "region_2"])
+            await self.display("Stopping valley and isles...")
+            await self.stop(["valley", "isles"])
 
-        await self.display("Copying region_1...")
-        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1")
-        await self.run("cp -a /home/epic/project_epic/region_1/Project_Epic-region_1 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/")
-
-        if not debug:
-            await self.display("Restarting the region_1 shard...")
-            await self.start("region_1")
-
-        await self.display("Copying region_2...")
-        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2")
-        await self.run("cp -a /home/epic/project_epic/region_2/Project_Epic-region_2 /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/")
+        await self.display("Copying valley...")
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley")
+        await self.run("cp -a /home/epic/project_epic/valley/Project_Epic-valley /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
 
         if not debug:
-            await self.display("Restarting the region_2 shard...")
-            await self.start("region_2")
+            await self.display("Restarting the valley shard...")
+            await self.start("valley")
+
+        await self.display("Copying isles...")
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles")
+        await self.run("cp -a /home/epic/project_epic/isles/Project_Epic-isles /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
+
+        if not debug:
+            await self.display("Restarting the isles shard...")
+            await self.start("isles")
 
         await self.display("Copying bungee...")
         await self.run("cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
@@ -676,9 +676,9 @@ Must be run before starting weekly update on the play server'''
         await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
         await self.display("Sanitizing R1's items area...")
-        await self.run(os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_1/Project_Epic-region_1 --pos1 1140,0,2564 --pos2 1275,123,2811")
+        await self.run(os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/Project_Epic-valley --pos1 1140,0,2564 --pos2 1275,123,2811")
         await self.display("Sanitizing R2's items area...")
-        await self.run(os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/region_2/Project_Epic-region_2 --pos1 1140,0,2564 --pos2 1275,123,2811")
+        await self.run(os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/Project_Epic-isles --pos1 1140,0,2564 --pos2 1275,123,2811")
 
         await self.display("Packaging up update bundle...")
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
@@ -702,7 +702,7 @@ Must be run before starting weekly update on the play server'''
             if shard == "--debug":
                 debug = True
                 await self.display("Debug mode enabled! Will not stop shards prior to copying")
-            elif shard == "region_1" or shard == "region_2":
+            elif shard == "valley" or shard == "isles":
                 main_shards.append(shard)
             elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "mist", "willows", "sanctum", "shiftingcity", "labs", "depths", "remorse"]:
                 instance_gen_required.append(shard)
@@ -819,9 +819,9 @@ Must be run before starting weekly update on the play server'''
 
         await self.display("Saving ops and banned players")
         await self.run("mkdir -p /home/epic/4_SHARED/op-ban-sync/stage/")
-        await self.run(f"cp -a {self._shards['region_1']}/banned-ips.json /home/epic/4_SHARED/op-ban-sync/stage/")
-        await self.run(f"cp -a {self._shards['region_1']}/banned-players.json /home/epic/4_SHARED/op-ban-sync/stage/")
-        await self.run(f"cp -a {self._shards['region_1']}/ops.json /home/epic/4_SHARED/op-ban-sync/stage/")
+        await self.run(f"cp -a {self._shards['valley']}/banned-ips.json /home/epic/4_SHARED/op-ban-sync/stage/")
+        await self.run(f"cp -a {self._shards['valley']}/banned-players.json /home/epic/4_SHARED/op-ban-sync/stage/")
+        await self.run(f"cp -a {self._shards['valley']}/ops.json /home/epic/4_SHARED/op-ban-sync/stage/")
 
         await self.display("Deleting previous update data...")
         await self.cd(self._server_dir)
@@ -840,7 +840,7 @@ Must be run before starting weekly update on the play server'''
         await self.display("Running actual weekly update (this will take a while!)...")
         await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 6 " + " ".join(folders_to_update)))
 
-        for shard in ["plots", "region_1", "region_2"]:
+        for shard in ["plots", "valley", "isles"]:
             if shard in folders_to_update:
                 await self.display("Preserving warps for {0}...".format(shard))
                 os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
@@ -894,7 +894,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await send_broadcast_msg("7 minutes")
         await asyncio.sleep(2 * 60)
         await send_broadcast_msg("5 minutes")
-        self._socket.send_packet("region_1", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
+        self._socket.send_packet("valley", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
         self._socket.send_packet("plots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
         await asyncio.sleep(2 * 60)
         await send_broadcast_msg("3 minutes")
@@ -954,16 +954,16 @@ DELETES DUNGEON CORE PROTECT DATA'''
                 dirs_to_del.append(f"{self._shards[shard]}/plugins/FastAsyncWorldEdit/history")
                 dirs_to_del.append(f"{self._shards[shard]}/plugins/FastAsyncWorldEdit/sessions")
 
-            if shard not in ["build", "region_1", "plots"]:
+            if shard not in ["build", "valley", "plots"]:
                 dirs_to_del.append(f"{self._shards[shard]}/plugins/CoreProtect")
 
             await self.run(f"rm -rf {' '.join(dirs_to_del)}")
 
-        if "region_1" in self._shards:
+        if "valley" in self._shards:
             await self.display("Saving ops and banned players")
-            await self.run(f"cp -a {self._shards['region_1']}/banned-ips.json /home/epic/4_SHARED/op-ban-sync/region_1/")
-            await self.run(f"cp -a {self._shards['region_1']}/banned-players.json /home/epic/4_SHARED/op-ban-sync/region_1/")
-            await self.run(f"cp -a {self._shards['region_1']}/ops.json /home/epic/4_SHARED/op-ban-sync/region_1/")
+            await self.run(f"cp -a {self._shards['valley']}/banned-ips.json /home/epic/4_SHARED/op-ban-sync/valley/")
+            await self.run(f"cp -a {self._shards['valley']}/banned-players.json /home/epic/4_SHARED/op-ban-sync/valley/")
+            await self.run(f"cp -a {self._shards['valley']}/ops.json /home/epic/4_SHARED/op-ban-sync/valley/")
 
         if self._common_weekly_update_tasks:
             await self.display("Copying player data from redis")
@@ -1108,7 +1108,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 16 " + " ".join(self._shards)))
 
         if min_phase <= 16:
-            for shard in ["plots", "region_1"]:
+            for shard in ["plots", "valley"]:
                 if shard in self._shards:
                     await self.display(f"Preserving coreprotect for {shard}...")
                     await self.run(f"mkdir -p {self._shards[shard]}/plugins/CoreProtect")
@@ -1120,7 +1120,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run(f"mkdir -p {self._shards[shard]}/plugins/Monumenta")
                     await self.run("cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/Monumenta/plot_access.json"))
 
-            for shard in ["plots", "region_1", "region_2"]:
+            for shard in ["plots", "valley", "isles"]:
                 if shard in self._shards:
                     await self.display(f"Preserving warps for {shard}...")
                     os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
@@ -1131,9 +1131,9 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                 if shard in ["build", "bungee"]:
                     continue
 
-                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-ips.json {self._shards[shard]}/")
-                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/region_1/banned-players.json {self._shards[shard]}/")
-                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/region_1/ops.json {self._shards[shard]}/")
+                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
+                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-players.json {self._shards[shard]}/")
+                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/ops.json {self._shards[shard]}/")
 
         await self.cd(self._server_dir)
         if min_phase <= 17:
@@ -1234,8 +1234,8 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             config = yaml.load(f, Loader=yaml.FullLoader)
         config["listeners"][0]["priorities"] = [
             "purgatory",
-            "region_1",
-            "region_2",
+            "valley",
+            "isles",
             "plots",
         ]
         with open(f"{self._shards['bungee']}/config.yml", "w") as f:
@@ -1293,7 +1293,7 @@ Easiest way to get this is putting an item in a chest, and looking at that chest
     async def action_run_replacements(self, cmd, message):
         '''Runs item and mob replacements on a given shard
 Syntax:
-`{cmdPrefix}run replacements shard region_1 region_2 orange`'''
+`{cmdPrefix}run replacements shard valley isles orange`'''
 
         commandArgs = message.content[len(self._prefix + cmd)+1:].split()
 
@@ -1361,7 +1361,7 @@ Syntax:
     async def action_get_commands(self, cmd, message):
         '''Scans all command blocks in one or more worlds and returns a JSON file with their information
 Syntax:
-`{cmdPrefix}get commands region_1 region_2 orange ...`'''
+`{cmdPrefix}get commands valley isles orange ...`'''
 
         commandArgs = message.content[len(self._prefix + cmd)+1:].split()
 

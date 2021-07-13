@@ -18,7 +18,7 @@ class ScoreboardTest(BaseTest):
         Run the test, raising an exception on error
         """
         self.deletion_conditions = {"Name": "NickNackGus"}
-        self.scoreboard = Scoreboard(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-region_1/data/scoreboard.dat"))
+        self.scoreboard = Scoreboard(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-valley/data/scoreboard.dat"))
 
         self.cache_to_delete = self.scoreboard.get_cache(Conditions=self.deletion_conditions)
         self.scores_to_delete = self.scoreboard.search_scores(Conditions=self.deletion_conditions)

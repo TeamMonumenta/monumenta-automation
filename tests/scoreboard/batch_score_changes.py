@@ -43,7 +43,7 @@ class ScoreboardTest(BaseTest):
         ]
 
 
-        self.scoreboard = Scoreboard(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-region_1/data/scoreboard.dat"))
+        self.scoreboard = Scoreboard(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-valley/data/scoreboard.dat"))
         self.cache = self.scoreboard.get_cache(
             Name=[
                 self.name_instance_last,
