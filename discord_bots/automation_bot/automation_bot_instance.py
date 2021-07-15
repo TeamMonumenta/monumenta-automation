@@ -8,6 +8,7 @@ import subprocess
 import json
 import re
 import tempfile
+import time
 import numpy
 import discord
 import yaml
@@ -894,7 +895,6 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await send_broadcast_msg("7 minutes")
         await asyncio.sleep(2 * 60)
         await send_broadcast_msg("5 minutes")
-        self._socket.send_packet("valley", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
         self._socket.send_packet("plots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
         await asyncio.sleep(2 * 60)
         await send_broadcast_msg("3 minutes")
@@ -1010,7 +1010,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         min_phase = 0
         if len(commandArgs) > len(cmd) + 1:
             min_phase = int(commandArgs[len(cmd) + 1:].strip())
-        await self.display(f"Starting from phase {min_phase}")
+        await self.display(f"Starting from phase {min_phase} at <t:{int(time.time())}:F>")
 
         await self.run("mkdir -p /home/epic/1_ARCHIVE")
         await self.run("mkdir -p /home/epic/0_OLD_BACKUPS")
@@ -1108,7 +1108,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 16 " + " ".join(self._shards)))
 
         if min_phase <= 16:
-            for shard in ["plots", "valley"]:
+            for shard in ["plots",]:
                 if shard in self._shards:
                     await self.display(f"Preserving coreprotect for {shard}...")
                     await self.run(f"mkdir -p {self._shards[shard]}/plugins/CoreProtect")
@@ -1151,7 +1151,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             folder_name = self._server_dir.strip("/").split("/")[-1]
             await self.run(["tar", f"--exclude={folder_name}/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/{folder_name}_post_reset_{datestr()}.tgz", folder_name])
 
-        await self.display("Done.")
+        await self.display("Done at <t:{int(time.time())}:F>.")
         await self.display(message.author.mention)
 
     async def action_stage(self, cmd, message):
