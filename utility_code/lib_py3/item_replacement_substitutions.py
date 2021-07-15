@@ -166,8 +166,17 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:turtle_helmet", "Seadiver's Shell", "minecraft:golden_chestplate", "Seadiver's Shell"],
             ["minecraft:quartz", "Fragment of Remorse", "minecraft:quartz", "Shard of Remorse"],
             ["minecraft:gold_ingot", "Blackflame Hoard", "minecraft:gold_ingot", "Blackflame Emblem"],
-            ["minecraft:leather_chestplate", "Bound Spirit's Tunic", "minecraft:leather_chestplate", "Ghost Costume"],
             ["minecraft:skeleton_skull", "Valgus' Skull", "minecraft:player_head", "Valgus' Skull"],
+            ["minecraft:wooden_sword", "Requiem", "minecraft:jungle_sapling", "Deepdream Roots"],
+            ["minecraft:leather_helmet", "Dragon Scale Helm", "minecraft:leather_helmet", "Crimstonian Helm"],
+            ["minecraft:leather_chestplate", "Dragon Scale Chestpiece", "minecraft:leather_chestplate", "Crimstonian Chestpiece"],
+            ["minecraft:leather_leggings", "Dragon Scale Leggings", "minecraft:leather_leggings", "Crimstonian Leggings"],
+            ["minecraft:leather_boots", "Dragon Scale Boots", "minecraft:leather_boots", "Crimstonian Boots"],
+            ["minecraft:potion", "Dragon Brew", "minecraft:potion", "Crimstonian Brew"],
+            ["minecraft:player_head", "Ender Eyes", "minecraft:player_head", "Gaze of Judgement"],
+            ["minecraft:stone_hoe", "Enderwrath", "minecraft:stone_hoe", "Sleepwalker's Sickle"],
+            ["minecraft:leather_chestplate", "Bluescale Torso", "minecraft:leather_chestplate", "Warden's Ruin"],
+            ["minecraft:stone_sword", "Frostbite", "minecraft:stone_sword", "Cascade"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
