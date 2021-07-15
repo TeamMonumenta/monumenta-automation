@@ -122,13 +122,21 @@ sub = [
     # Misc
     ("Animated Algae", match_name('Animated Algae', match_id('minecraft:creeper'))),
 
-	# RIP Lich + yellow stuff
+        # RIP Lich + yellow stuff
     ("Wraith of the Jungle", match_name('Lich of the Forest', match_id('minecraft:evoker'))),
     ("Brute of the Jungle", match_name('Brute of the Forest', match_id('minecraft:zombie_villager'))),
     ("Archer of the Jungle", match_name('Archer of the Forest', match_id('minecraft:skeleton'))),
 
-	# Typo
-	("Permafrost Construct", match_name('Permafrost Constuct', match_id('minecraft:iron_golem'))),
+    # Typo
+    ("Permafrost Construct", match_name('Permafrost Constuct', match_id('minecraft:iron_golem'))),
+
+    #Yellow renames
+    ("Wrath Particulate", match_name('Malevolent Dragon', match_id('minecraft:vex'))),
+    ("Corrupted Cultist", match_name('Nightmare Cultist', match_id('minecraft:zombie'))),
+    ("Corrupted Warlord", match_name('Nightmare Warlord', match_id('minecraft:skeleton'))),
+    ("Hateful Titan", match_name('Dragongheist', match_id('minecraft:wither_skeleton'))),
+    ("River's Will", match_name('Son of the River', match_id('minecraft:zombie_villager'))),
+    ("Tuathan", match_name('Corrupted Leprechaun', match_id('minecraft:zombie'))),
 ]
 
 def usage():
