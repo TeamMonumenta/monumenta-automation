@@ -3,12 +3,16 @@
 use std::error::Error;
 type BoxResult<T> = Result<T,Box<dyn Error>>;
 
+use chrono::prelude::*;
+use rayon::prelude::*;
 use std::env;
 use std::path::Path;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use simplelog::*;
 use uuid::Uuid;
 use std::fs;
+use serde_json::json;
 
 use monumenta::player::Player;
 
@@ -91,6 +95,15 @@ fn update_player_scores(player: &mut Player) {
     }
 }
 
+fn update_world(world: &str) -> &str {
+    if world == "Project_Epic-region_1" {
+        return "Project_Epic-valley"
+    } else if world == "Project_Epic-region_2" {
+        return "Project_Epic-isles"
+    }
+    return world
+}
+
 fn main() -> BoxResult<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
@@ -114,31 +127,112 @@ fn main() -> BoxResult<()> {
     if !basedir.is_dir() {
         bail!("Supplied input directory does not exist");
     }
+    let basedirpath = basedir.to_str().unwrap();
 
-    /* Need to do more work to figure out what uuids are being loaded */
-    for entry in fs::read_dir(Path::new(&basedir).join("playerdata"))? {
-        if let Ok(file) = entry {
-            let path = file.path();
-            if path.extension().unwrap() == "dat" {
-                let uuid = Uuid::parse_str(path.file_stem().unwrap().to_str().unwrap()).unwrap();
+    let start = Utc::now().time(); // START
 
-                /* Now that we have a UUID, load it from the base path and push it to redis */
+    // TODO: Argument for num threads
+    rayon::ThreadPoolBuilder::new().num_threads(0).build_global()?;
 
-                let mut player = Player::new(uuid);
-                player.load_dir(basedir.to_str().unwrap())?;
+    let end = Utc::now().time(); // STOP
+    println!("Created thread pool in {} milliseconds", (end - start).num_milliseconds());
 
-                player.update_history("Weekly update");
-                update_player_scores(&mut player);
+    let start = Utc::now().time(); // START
 
-                /* Remove all the per-shard data except plots */
-                if let Some(sharddata) = &mut player.sharddata {
-                    sharddata.retain(|key, _| key == "plots");
-                }
+    /* Enumerate all the UUIDs by looking at the core playerdata folder */
+    let uuids : HashSet<Uuid> = fs::read_dir(Path::new(&basedir).join("playerdata"))?
+        .into_iter()
+        .filter_map(|entry| entry.ok())
+        .filter(|path| path.path().extension().unwrap() == "dat")
+        .map(|path| Uuid::parse_str(path.path().file_stem().unwrap().to_str().unwrap()).unwrap())
+        .collect();
 
-                player.save_dir(basedir.to_str().unwrap())?;
-            }
+    let end = Utc::now().time(); // STOP
+    println!("Loaded {} uuids in {} milliseconds", uuids.len(), (end - start).num_milliseconds());
+
+    let start = Utc::now().time(); // START
+
+    uuids.par_iter().for_each(|uuid| {
+        let mut player = Player::new(*uuid);
+        player.load_dir(basedirpath).unwrap();
+
+        player.update_history("Weekly update");
+        update_player_scores(&mut player);
+
+        /* Remove all the per-shard data except plots */
+        if let Some(sharddata) = &mut player.sharddata {
+            sharddata.retain(|key, _| key == "plots");
         }
-    }
+
+        /* Update plugin data */
+        if let Some(mut plugindata) = player.plugindata {
+            for (key, value) in plugindata.iter_mut() {
+                /* Update graves with the R1/R2 rename */
+                if key == "MonumentaGravesV2" {
+                    if let serde_json::value::Value::Object(obj) = value {
+                        for (key, value) in obj.iter_mut() {
+                            if key == "graves" {
+                                for entry in value.as_array_mut().unwrap() {
+                                    let entry = entry.as_object_mut().unwrap();
+                                    entry.insert("world".to_owned(), json!(update_world(entry.get("world").unwrap().as_str().unwrap())));
+                                }
+                            } else if key == "thrown_items" {
+                                for entry in value.as_array_mut().unwrap() {
+                                    let entry = entry.as_object_mut().unwrap();
+                                    entry.insert("world".to_owned(), json!(update_world(entry.get("world").unwrap().as_str().unwrap())));
+                                }
+                                /*
+                                 * TODO: Maybe someday this will be worth fixing to automatically
+                                 * remove compass graves...
+                                 */
+                                /*
+                                let value : Vec<serde_json::value::Value> = value.as_array_mut().unwrap().iter_mut().filter_map(|entry| {
+                                    if let Some(obj) = entry.as_object_mut() {
+                                        // Upgrade world if needed
+                                        if let Some(world) = obj.get("world") {
+                                            if let Some(worldstr) = world.as_str() {
+                                                obj.insert("world".to_owned(), json!(update_world(worldstr)));
+                                            }
+                                        } else {
+                                            println!("WARNING: Found thrown_items entry missing world");
+                                            return None;
+                                        }
+
+                                        if let Some(nbt) = obj.get("nbt") {
+                                            if let Some(nbtstr) = nbt.as_str() {
+                                                if nbtstr.contains("Quest Compass") {
+                                                    println!("Compass!");
+                                                    return None;
+                                                }
+                                            }
+                                            return Some(json!(obj));
+                                        } else {
+                                            println!("WARNING: Found thrown_items entry missing nbt");
+                                            return None;
+                                        }
+                                    } else {
+                                        println!("WARNING: Found thrown_items entry that is not an object");
+                                        return None;
+                                    }
+                                }).collect();
+                                */
+                            } else {
+                                println!("GOT UNKNOWN MonumentaGravesV2 KEY: {:?}", key);
+                            }
+                        }
+                    }
+                }
+            }
+            player.plugindata = Some(plugindata);
+        }
+
+
+        player.save_dir(basedirpath).unwrap();
+        ()
+    });
+
+    let end = Utc::now().time(); // STOP
+    println!("Updated {} players in {} milliseconds", uuids.len(), (end - start).num_milliseconds());
 
     Ok(())
 }
