@@ -1151,7 +1151,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             folder_name = self._server_dir.strip("/").split("/")[-1]
             await self.run(["tar", f"--exclude={folder_name}/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/{folder_name}_post_reset_{datestr()}.tgz", folder_name])
 
-        await self.display("Done at <t:{int(time.time())}:F>.")
+        await self.display(f"Done at <t:{int(time.time())}:F>.")
         await self.display(message.author.mention)
 
     async def action_stage(self, cmd, message):
