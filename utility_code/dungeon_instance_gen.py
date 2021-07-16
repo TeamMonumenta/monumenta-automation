@@ -138,7 +138,7 @@ config = {
         },
         "depths":{
             "region":{"x":-2, "z":4},
-            "count":10,
+            "count":700,
             "objective":"DDAccess"
         },
     },
