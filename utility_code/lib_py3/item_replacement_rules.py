@@ -324,14 +324,31 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Festive', "owner_prefix": 'Decorated by'},
         {"enchantment": 'Colossal', "owner_prefix": 'Reinforced by'},
         {"enchantment": 'Locked', "owner_prefix": None},
+        {"enchantment": 'Barking', "owner_prefix": None},
+        {"enchantment": 'Debarking', "owner_prefix": None},
+
+        # Infusions
         {"enchantment": 'Acumen', "owner_prefix": None},
         {"enchantment": 'Focus', "owner_prefix": None},
         {"enchantment": 'Perspicacity', "owner_prefix": None},
         {"enchantment": 'Tenacity', "owner_prefix": None},
         {"enchantment": 'Vigor', "owner_prefix": None},
         {"enchantment": 'Vitality', "owner_prefix": None},
-        {"enchantment": 'Barking', "owner_prefix": None},
-        {"enchantment": 'Debarking', "owner_prefix": None},
+
+        {"enchantment": 'Pennate', "owner_prefix": None},
+        {"enchantment": 'Carapace', "owner_prefix": None},
+        {"enchantment": 'Aura', "owner_prefix": None},
+        {"enchantment": 'Expedite', "owner_prefix": None},
+        {"enchantment": 'Choler', "owner_prefix": None},
+        {"enchantment": 'Usurper', "owner_prefix": None},
+        {"enchantment": 'Empowered', "owner_prefix": None},
+        {"enchantment": 'Nutriment', "owner_prefix": None},
+        {"enchantment": 'Execution', "owner_prefix": None},
+        {"enchantment": 'Reflection', "owner_prefix": None},
+        {"enchantment": 'Mitosis', "owner_prefix": None},
+        {"enchantment": 'Ardor', "owner_prefix": None},
+        {"enchantment": 'Epoch', "owner_prefix": None},
+        {"enchantment": 'Natant', "owner_prefix": None},
 
         # Stat tracking
         {"enchantment": 'Stat Track', "owner_prefix": 'Tracked by', "enchantment_color": "§7"},
