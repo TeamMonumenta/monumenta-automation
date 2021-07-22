@@ -97,7 +97,7 @@ class GlobalRule(object):
     def __repr__(self):
         return f'{type(self).__name__}()'
 
-def enchantify(item, player, enchantment, owner_prefix=None, enchantment_color="§7"):
+def enchantify(item, player, enchantment, owner_prefix=None, enchantment_color="§7", add_pre_cost_adjust=False):
     """Applies a lore-text enchantment to item (full item nbt, including id and Count).
 
     Must be kept in sync with the plugin version!
@@ -130,6 +130,8 @@ def enchantify(item, player, enchantment, owner_prefix=None, enchantment_color="
     for loreEntry in lore:
         loreText = parse_name_possibly_json(loreEntry.value)
         if enchantment in loreText:
+            if add_pre_cost_adjust:
+                newLore.append(nbt.TagString("PRE COST ADJUST"))
             enchantmentFound = True
 
         loreStripped = unformat_text(loreText).strip()
@@ -140,6 +142,8 @@ def enchantify(item, player, enchantment, owner_prefix=None, enchantment_color="
         ):
             enchantment_json = jsonify_text_hack(enchantment_color + enchantment)
             newLore.append(nbt.TagString(enchantment_json))
+            if add_pre_cost_adjust:
+                newLore.append(nbt.TagString("PRE COST ADJUST"))
             enchantmentFound = True
 
         if (not nameAdded and len(loreStripped.strip()) == 0):
@@ -323,41 +327,41 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Gilded', "owner_prefix": 'Gilded by'},
         {"enchantment": 'Festive', "owner_prefix": 'Decorated by'},
         {"enchantment": 'Colossal', "owner_prefix": 'Reinforced by'},
-        {"enchantment": 'Locked', "owner_prefix": None},
-        {"enchantment": 'Barking', "owner_prefix": None},
-        {"enchantment": 'Debarking', "owner_prefix": None},
+        {"enchantment": 'Locked'},
+        {"enchantment": 'Barking'},
+        {"enchantment": 'Debarking'},
 
         # Infusions
-        {"enchantment": 'Acumen', "owner_prefix": None},
-        {"enchantment": 'Focus', "owner_prefix": None},
-        {"enchantment": 'Perspicacity', "owner_prefix": None},
-        {"enchantment": 'Tenacity', "owner_prefix": None},
-        {"enchantment": 'Vigor', "owner_prefix": None},
-        {"enchantment": 'Vitality', "owner_prefix": None},
+        {"enchantment": 'Acumen'},
+        {"enchantment": 'Focus'},
+        {"enchantment": 'Perspicacity'},
+        {"enchantment": 'Tenacity'},
+        {"enchantment": 'Vigor'},
+        {"enchantment": 'Vitality'},
 
-        {"enchantment": 'Pennate', "owner_prefix": None},
-        {"enchantment": 'Carapace', "owner_prefix": None},
-        {"enchantment": 'Aura', "owner_prefix": None},
-        {"enchantment": 'Expedite', "owner_prefix": None},
-        {"enchantment": 'Choler', "owner_prefix": None},
-        {"enchantment": 'Usurper', "owner_prefix": None},
-        {"enchantment": 'Empowered', "owner_prefix": None},
-        {"enchantment": 'Nutriment', "owner_prefix": None},
-        {"enchantment": 'Execution', "owner_prefix": None},
-        {"enchantment": 'Reflection', "owner_prefix": None},
-        {"enchantment": 'Mitosis', "owner_prefix": None},
-        {"enchantment": 'Ardor', "owner_prefix": None},
-        {"enchantment": 'Epoch', "owner_prefix": None},
-        {"enchantment": 'Natant', "owner_prefix": None},
+        {"enchantment": 'Pennate', "PRE COST ADJUST": True},
+        {"enchantment": 'Carapace', "PRE COST ADJUST": True},
+        {"enchantment": 'Aura', "PRE COST ADJUST": True},
+        {"enchantment": 'Expedite', "PRE COST ADJUST": True},
+        {"enchantment": 'Choler', "PRE COST ADJUST": True},
+        {"enchantment": 'Usurper', "PRE COST ADJUST": True},
+        {"enchantment": 'Empowered', "PRE COST ADJUST": True},
+        {"enchantment": 'Nutriment', "PRE COST ADJUST": True},
+        {"enchantment": 'Execution', "PRE COST ADJUST": True},
+        {"enchantment": 'Reflection', "PRE COST ADJUST": True},
+        {"enchantment": 'Mitosis', "PRE COST ADJUST": True},
+        {"enchantment": 'Ardor', "PRE COST ADJUST": True},
+        {"enchantment": 'Epoch', "PRE COST ADJUST": True},
+        {"enchantment": 'Natant', "PRE COST ADJUST": True},
 
         # Stat tracking
         {"enchantment": 'Stat Track', "owner_prefix": 'Tracked by', "enchantment_color": "§7"},
-        {"enchantment": 'Mob Kills', "owner_prefix": None, "enchantment_color": "§c"},
-        {"enchantment": 'Spawners Broken', "owner_prefix": None, "enchantment_color": "§c"},
-        {"enchantment": 'Times Consumed', "owner_prefix": None, "enchantment_color": "§c"},
-        {"enchantment": 'Blocks Placed', "owner_prefix": None, "enchantment_color": "§c"},
-        {"enchantment": 'Melee Damage Dealt', "owner_prefix": None, "enchantment_color": "§c"},
-        {"enchantment": 'Boss Damage Dealt', "owner_prefix": None, "enchantment_color": "§c"},
+        {"enchantment": 'Mob Kills', "enchantment_color": "§c"},
+        {"enchantment": 'Spawners Broken', "enchantment_color": "§c"},
+        {"enchantment": 'Times Consumed', "enchantment_color": "§c"},
+        {"enchantment": 'Blocks Placed', "enchantment_color": "§c"},
+        {"enchantment": 'Melee Damage Dealt', "enchantment_color": "§c"},
+        {"enchantment": 'Boss Damage Dealt', "enchantment_color": "§c"},
     )
 
     def __init__(self):
@@ -369,21 +373,15 @@ class PreserveEnchantments(GlobalRule):
         for enchantment in self.enchantments:
             newstate = {
                 'enchantment': enchantment['enchantment'],
-                'owner_prefix': enchantment['owner_prefix'],
+                'owner_prefix': enchantment.get('owner_prefix', None),
+                'enchantment_color': enchantment.get("enchantment_color", "§7"),
+                'PRE COST ADJUST': enchantment.get('PRE COST ADJUST', False),
                 'enchant_found': False,
                 'enchant_line': None,
                 'players': []
             }
-            newstate["enchantment_color"] = enchantment.get("enchantment_color", "§7")
 
             self.enchantment_state.append(newstate)
-
-        if template.has_path('display.Lore'):
-            for lore in template.iter_multipath('display.Lore[]'):
-                for enchantment in self.enchantment_state:
-                    lore_text = parse_name_possibly_json(lore.value)
-                    if unformat_text(lore_text).startswith(enchantment['enchantment']):
-                        enchantment['enchant_on_template'] = True
 
         for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
             for enchantment in self.enchantment_state:
@@ -412,10 +410,10 @@ class PreserveEnchantments(GlobalRule):
 
             if players:
                 for player in players:
-                   enchantify(item, player, enchant_line, owner_prefix=owner_prefix, enchantment_color=enchantment_color)
+                   enchantify(item, player, enchant_line, owner_prefix=owner_prefix, enchantment_color=enchantment_color, add_pre_cost_adjust=enchantment["PRE COST ADJUST"])
             else:
                 # Apply the enchantment without saying who added it (workaround for past bug)
-                enchantify(item, None, enchant_line, owner_prefix=None, enchantment_color=enchantment_color)
+                enchantify(item, None, enchant_line, owner_prefix=None, enchantment_color=enchantment_color, add_pre_cost_adjust=enchantment["PRE COST ADJUST"])
 
 class PreserveShattered(GlobalRule):
     name = 'Preserve Shattered'
