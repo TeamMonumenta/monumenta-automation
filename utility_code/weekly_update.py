@@ -359,7 +359,7 @@ for config in config_list:
 
     if "previous_world_path" in config:
         if not os.path.exists(config["previous_world_path"]):
-            eprint("!!!!!! WARNING: Missing previous week previous folder {!r}!".format(config["build_world_path"]))
+            eprint("!!!!!! WARNING: Missing previous week previous folder {!r}!".format(config["previous_world_path"]))
             eprint("If you are not adding a shard, this is a critical problem!")
         else:
             prev_worlds[config['server']] = World(config["previous_world_path"])
