@@ -131,7 +131,7 @@ def enchantify(item, player, enchantment, owner_prefix=None, enchantment_color="
         loreText = parse_name_possibly_json(loreEntry.value)
         if enchantment in loreText:
             if add_pre_cost_adjust:
-                newLore.append(nbt.TagString("PRE COST ADJUST"))
+                newLore.append(nbt.TagString(jsonify_text_hack("PRE COST ADJUST")))
             enchantmentFound = True
 
         loreStripped = unformat_text(loreText).strip()
@@ -143,7 +143,7 @@ def enchantify(item, player, enchantment, owner_prefix=None, enchantment_color="
             enchantment_json = jsonify_text_hack(enchantment_color + enchantment)
             newLore.append(nbt.TagString(enchantment_json))
             if add_pre_cost_adjust:
-                newLore.append(nbt.TagString("PRE COST ADJUST"))
+                newLore.append(nbt.TagString(jsonify_text_hack("PRE COST ADJUST")))
             enchantmentFound = True
 
         if (not nameAdded and len(loreStripped.strip()) == 0):
