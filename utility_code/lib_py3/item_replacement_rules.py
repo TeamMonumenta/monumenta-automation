@@ -353,6 +353,7 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Ardor', "PRE COST ADJUST": True},
         {"enchantment": 'Epoch', "PRE COST ADJUST": True},
         {"enchantment": 'Natant', "PRE COST ADJUST": True},
+        {"enchantment": 'Understanding', "PRE COST ADJUST": True},
 
         # Stat tracking
         {"enchantment": 'Stat Track', "owner_prefix": 'Tracked by', "enchantment_color": "§7"},
