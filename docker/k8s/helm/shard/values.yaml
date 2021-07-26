@@ -1,0 +1,31 @@
+# Default values for shard.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# "valley", etc. No underscores!
+name: "valley"
+
+# "build", "play", "stage"
+namespace: "play"
+
+# "m8", "m11", etc.
+node: "m8"
+
+# "monumenta-8", "monumenta-11", etc.
+nodeFull: "monumenta-8"
+
+# Amount of base memory (hugepages allocated will be a bit more than this)
+memMB: 6144
+
+# Whether performance metrics will be scraped every few seconds or tens of seconds
+fastMetrics: false
+
+# Whether google sheets credentials should be mounted
+gsheetCredentials: false
+
+# Which method to use to check liveness
+useHTTPForProbes: true
+useSocketForProbes: false
+
+# If non-zero, expose the server via a NodePort on that given port
+nodePort: 0

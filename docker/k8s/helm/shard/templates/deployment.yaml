@@ -3,27 +3,51 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mobs
-  namespace: build
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
   labels:
-    app: mobs
+    app: {{ .Values.name }}
+{{- if .Values.fastMetrics }}
+    k8s-app: monumenta-metrics-fast
+{{- else }}
     k8s-app: monumenta-metrics
-
+{{- end }}
 spec:
   type: ClusterIP
   selector:
-    app: mobs
+    app: {{ .Values.name }}
   ports:
   # Main minecraft port
   - name: "25566"
     port: 25566
     targetPort: 25566
-  - name: plan
-    port: 8804
-    targetPort: 8804
   - name: metrics
     port: 9225
     targetPort: 9225
+
+{{- if .Values.nodePort }}
+---
+
+# Service / external network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}-nodeport
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+spec:
+  type: NodePort
+  selector:
+    app: {{ .Values.name }}
+  ports:
+  # Main minecraft port
+  - name: "25566"
+    port: {{ .Values.nodePort }}
+    nodePort: {{ .Values.nodePort }}
+    targetPort: 25566
+{{- end }}
 
 ---
 
@@ -32,21 +56,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mobs
-  namespace: build
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
   labels:
-    app: mobs
+    app: {{ .Values.name }}
 spec:
   strategy:
     type: Recreate
-  replicas: 1
   selector:
     matchLabels:
-      app: mobs
+      app: {{ .Values.name }}
   template:
     metadata:
       labels:
-        app: mobs
+        app: {{ .Values.name }}
     spec:
       affinity:
         nodeAffinity:
@@ -56,23 +79,29 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - {{ .Values.nodeFull }}
       volumes:
+{{- if .Values.gsheetCredentials }}
+        - name: gsheet-credentials
+          secret:
+            secretName: gsheet-credentials
+            defaultMode: 0444
+{{- end }}
         - name: nfs-maps
           hostPath:
+            path: /nfs/{{ .Values.namespace }}/maps
             type: Directory
-            path: /nfs/build/maps
         - name: nfs-project-epic
           hostPath:
+            path: /nfs/{{ .Values.namespace }}/{{ .Values.node }}
             type: Directory
-            path: /nfs/build/m12
         - name: nfs-shared
           hostPath:
-            type: Directory
             path: /nfs/4_SHARED
+            type: Directory
       terminationGracePeriodSeconds: 90
       containers:
-      - name: mobs
+      - name: {{ .Values.name }}
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
         tty: true
         stdin: true
@@ -83,16 +112,17 @@ spec:
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
-          value: "1536M"
+          value: "{{ .Values.memMB }}M"
         # Set this to 256M regardless of JAVA_MEM
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/build/m12/mobs"
+          value: "/home/epic/{{ .Values.namespace }}/{{ .Values.node }}/{{ .Values.name }}"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+{{- if .Values.useHTTPForProbes }}
         readinessProbe:
           httpGet:
             path: /ready
@@ -107,11 +137,30 @@ spec:
           initialDelaySeconds: 240
           timeoutSeconds: 5
           periodSeconds: 10
+{{- else if .Values.useSocketForProbes }}
+        readinessProbe:
+          tcpSocket:
+            port: 25566
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 25566
+          initialDelaySeconds: 240
+          timeoutSeconds: 5
+          periodSeconds: 10
+{{- end }}
         volumeMounts:
         - name: nfs-project-epic
-          mountPath: /home/epic/build/m12
+          mountPath: /home/epic/{{ .Values.namespace }}/{{ .Values.node }}
+{{- if .Values.gsheetCredentials }}
+        - name: gsheet-credentials
+          mountPath: /home/epic/{{ .Values.namespace }}/{{ .Values.node }}/{{ .Values.name }}/plugins/ScriptedQuests/gsheet_credentials.json
+          subPath: gsheet_credentials.json
+{{- end }}
         - name: nfs-maps
-          mountPath: /home/epic/maps/dynmap/build
+          mountPath: /home/epic/maps/dynmap/{{ .Values.namespace }}
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         resources:
@@ -120,13 +169,13 @@ spec:
             # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
             # It should not need much/any...
             memory: 1Gi
-            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 1888Mi
+            # Set this to JAVA_MEM + 32 + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 32 }}Mi
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
-            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 1888Mi
+            # Set this to JAVA_MEM + 32 + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 32 }}Mi
       imagePullSecrets:
       - name: githubcred

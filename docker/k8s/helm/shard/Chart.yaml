@@ -1,0 +1,4 @@
+apiVersion: v2
+name: Monumenta Java Shard
+version: 1.0.0
+type: application
