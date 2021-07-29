@@ -99,6 +99,8 @@ spec:
           value: "/home/epic/build/m12/bungee"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        - name: "NETWORK_RELAY_NAME"
+          value: bungee
         readinessProbe:
           tcpSocket:
             port: 25566

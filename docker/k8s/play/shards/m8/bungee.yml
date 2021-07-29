@@ -113,6 +113,8 @@ spec:
           value: "/home/epic/play/m8/bungee"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        - name: "NETWORK_RELAY_NAME"
+          value: bungee
         readinessProbe:
           tcpSocket:
             port: 25566
