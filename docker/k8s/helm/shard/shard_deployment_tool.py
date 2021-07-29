@@ -25,17 +25,23 @@ shard_config = {
     "dungeon"            : { "build": { "node": "m12", "memGB": 3   , }, },
     "ring"               : { "build": { "node": "m12", "memGB": 3   , }, },
     "depths"             : { "build": { "node": "m12", "memMB": 1536, }, },
-    "purgatory"          : { "build": { "node": "m12", "memGB": 1   , "useSocketForProbes": "true", "useHTTPForProbes": "false" }, },
     "test"               : { "build": { "node": "m12", "memGB": 3   , }, },
     "test2"              : { "build": { "node": "m12", "memGB": 3   , }, },
     "event"              : { "build": { "node": "m12", "memGB": 3   , }, },
     "monumenta-sdk"      : { "build": { "node": "m12", "memGB": 3   , "nodePort": 22221, }, },
 
+    # Purgatory
+    "purgatory": {
+        "play" : { "node": "m8" , "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+        "build": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+        "stage": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+    },
+
     # R1
     "valley": {
         "play" : { "node": "m8" , "memGB": 6, },
         "build": { "node": "m12", "memGB": 3, },
-        "stage": { "node": "m12", "memGB": 4, },
+        "stage": { "node": "m12", "memGB": 3, },
     },
     "valley-2": {
         "play" : { "node": "m8" , "memGB": 6, },
@@ -61,6 +67,116 @@ shard_config = {
     "plots": {
         "play" : { "node": "m11", "memGB": 8, },
         "stage": { "node": "m12", "memGB": 4, },
+    },
+
+    # Player build shard
+    "build": {
+        "play" : { "node": "m8" , "memGB": 2   , "gsheetCredentials": "false" },
+        "stage": { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
+    },
+
+    # Dungeons
+    "cyan": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "depths": {
+        "play" : { "node": "m11", "memGB": 3   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "depths-2": {
+        "play" : { "node": "m11", "memGB": 3   , },
+    },
+    "depths-3": {
+        "play" : { "node": "m11", "memGB": 3   , },
+    },
+    "forum": {
+        "play" : { "node": "m11", "memGB": 3   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "gray": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "labs": {
+        "play" : { "node": "m11", "memGB": 6   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "lightblue": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "lightgray": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "lime": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "magenta": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "mist": {
+        "play" : { "node": "m11", "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "orange": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "pink": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "purple": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "remorse": {
+        "play" : { "node": "m11", "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "reverie": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "roguelike": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "rush": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "sanctum": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "shiftingcity": {
+        "play" : { "node": "m8" , "memGB": 3   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "teal": {
+        "play" : { "node": "m8" , "memGB": 3   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "tutorial": {
+        "play" : { "node": "m8" , "memGB": 5   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "white": {
+        "play" : { "node": "m8" , "memGB": 3   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "willows": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "yellow": {
+        "play" : { "node": "m8" , "memGB": 2   , },
+        "stage": { "node": "m12", "memMB": 1536, },
     },
 }
 
