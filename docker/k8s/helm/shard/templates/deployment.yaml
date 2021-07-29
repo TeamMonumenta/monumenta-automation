@@ -171,13 +171,13 @@ spec:
             # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
             # It should not need much/any...
             memory: 1Gi
-            # Set this to JAVA_MEM + 32 + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 32 }}Mi
+            # Set this to JAVA_MEM + 64 + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 64 }}Mi
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
-            # Set this to JAVA_MEM + 32 + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 32 }}Mi
+            # Set this to JAVA_MEM + 64 + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 64 }}Mi
       imagePullSecrets:
       - name: githubcred
