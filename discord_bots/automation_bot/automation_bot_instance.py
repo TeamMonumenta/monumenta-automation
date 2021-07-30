@@ -99,6 +99,7 @@ class AutomationBotInstance(object):
             "help": self.action_help,
             "list bots": self.action_list_bots,
             "select": self.action_select_bot,
+            "batch": self.action_batch,
 
             "verbose": self.action_verbose,
             "test": self.action_test,
@@ -454,6 +455,25 @@ Examples:
 
     # Always listening actions
     ################################################################################
+
+    async def action_batch(self, cmd, message):
+        '''Run multiple commands at once'''
+        orig_content = message.content
+        commands = message.content.split("\n")
+        for command in commands:
+            if command.startswith("batch"):
+                command = command[5:]
+            elif command.startswith("~batch"):
+                command = command[6:]
+
+            if not command:
+                continue
+            command = command.strip()
+            if not command.startswith("~"):
+                command = "~" + command
+            message.content = command
+            await self.handle_message(message)
+        message.content = orig_content
 
     async def action_verbose(self, cmd, message):
         '''Toggle verbosity of discord messages'''
