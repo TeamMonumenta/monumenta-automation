@@ -205,11 +205,11 @@ class AutomationBotInstance(object):
                                     chat_channel_type = chat_message.get("channelClassId", "future")
                                     if chat_channel_type not in ("announcement", "global"):
                                         return
-                                    chat_channel = chat_message.get("channelClassName", "Unknown")
+                                    chat_channel_name = chat_message.get("channelClassName", "Unknown")
                                     chat_sender_name = chat_message.get("senderName", "Unknown Sender")
                                     chat_raw_json_text = chat_message.get("message", "<<<<MESSAGE NOT FOUND>>>>")
                                     chat_message_text = json_text_to_plain_text(chat_raw_json_text)
-                                    formatted_chat_message = f'<{} (a {chat_channel_type} channel)> {chat_sender_name} » {chat_message_text}'
+                                    formatted_chat_message = f'<{chat_channel_name} (a {chat_channel_type} channel)> {chat_sender_name} » {chat_message_text}'
                                     asyncio.run_coroutine_threadsafe(self.display_verbatim(formatted_chat_message,
                                                                                            channel=self._chat_channel),
                                                                      loop)
