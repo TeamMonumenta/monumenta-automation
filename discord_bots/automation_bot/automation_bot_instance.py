@@ -29,7 +29,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from lib_py3.raffle import vote_raffle
 from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.common import parse_name_possibly_json
+from lib_py3.common import json_text_to_plain_text
 from lib_py3.lib_k8s import KubernetesManager
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.redis_scoreboard import RedisRBoard
@@ -192,9 +192,26 @@ class AutomationBotInstance(object):
                                     asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                            channel=self._audit_channel),
                                                                      loop)
-                                elif (message["channel"] == "Monumenta.Automation.AdminNotification"):
+
+                            if self._admin_channel:
+                                if (message["channel"] == "Monumenta.Automation.AdminNotification"):
                                     asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                            channel=self._admin_channel),
+                                                                     loop)
+
+                            if self._chat_channel:
+                                if (message["channel"] == "com.playmonumenta.networkchat.Message"):
+                                    chat_message = message["data"]
+                                    chat_channel_type = chat_message.get("channelClassId", "future")
+                                    if chat_channel_type not in ("announcement", "global"):
+                                        return
+                                    chat_channel = chat_message.get("channelClassName", "Unknown")
+                                    chat_sender_name = chat_message.get("senderName", "Unknown Sender")
+                                    chat_raw_json_text = chat_message.get("message", "<<<<MESSAGE NOT FOUND>>>>")
+                                    chat_message_text = json_text_to_plain_text(chat_raw_json_text)
+                                    formatted_chat_message = f'<{} (a {chat_channel_type} channel)> {chat_sender_name} » {chat_message_text}'
+                                    asyncio.run_coroutine_threadsafe(self.display_verbatim(formatted_chat_message,
+                                                                                           channel=self._chat_channel),
                                                                      loop)
 
                     conf = config["rabbitmq"]
@@ -214,12 +231,21 @@ class AutomationBotInstance(object):
                             self._audit_channel = client.get_channel(conf["audit_channel"])
                         except:
                             logging.error( "Cannot connect to audit channel: " + conf["audit_channel"] )
+
                     self._admin_channel = None
                     if "admin_channel" in conf:
                         try:
                             self._admin_channel = client.get_channel(conf["admin_channel"])
                         except:
                             logging.error("Cannot connect to admin channel: " + conf["admin_channel"])
+
+                    self._chat_channel = None
+                    if "chat_channel" in conf:
+                        try:
+                            self._chat_channel = client.get_channel(conf["chat_channel"])
+                        except:
+                            logging.error("Cannot connect to chat channel: " + conf["chat_channel"])
+
                 except Exception as e:
                     logger.warn('Failed to connect to rabbitmq: {}'.format(e))
 
