@@ -24,7 +24,6 @@ shard_config = {
     "mobs"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "dungeon"            : { "build": { "node": "m12", "memGB": 3   , }, },
     "ring"               : { "build": { "node": "m12", "memGB": 3   , }, },
-    "depths"             : { "build": { "node": "m12", "memMB": 1536, }, },
     "test"               : { "build": { "node": "m12", "memGB": 3   , }, },
     "test2"              : { "build": { "node": "m12", "memGB": 3   , }, },
     "event"              : { "build": { "node": "m12", "memGB": 3   , }, },
@@ -82,6 +81,7 @@ shard_config = {
     },
     "depths": {
         "play" : { "node": "m11", "memGB": 3   , },
+        "build": { "node": "m12", "memMB": 1536, },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "depths-2": {
@@ -91,8 +91,8 @@ shard_config = {
         "play" : { "node": "m11", "memGB": 3   , },
     },
     "forum": {
-        "play" : { "node": "m11", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "play" : { "node": "m11", "memGB": 4   , },
+        "stage": { "node": "m12", "memMB": 2048, },
     },
     "gray": {
         "play" : { "node": "m8" , "memGB": 2   , },
