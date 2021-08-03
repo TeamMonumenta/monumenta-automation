@@ -161,8 +161,13 @@ spec:
           mountPath: /home/epic/{{ .Values.namespace }}/{{ .Values.node }}/{{ .Values.name }}/plugins/ScriptedQuests/gsheet_credentials.json
           subPath: gsheet_credentials.json
 {{- end }}
+{{- if eq .Values.namespace "stage" }}
+        - name: nfs-maps
+          mountPath: /home/epic/maps/dynmap/play
+{{- else }}
         - name: nfs-maps
           mountPath: /home/epic/maps/dynmap/{{ .Values.namespace }}
+{{- end }}
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         resources:
@@ -171,13 +176,15 @@ spec:
             # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
             # It should not need much/any...
             memory: 1Gi
-            # Set this to JAVA_MEM + 64 + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 64 }}Mi
+            # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
+            # Tried making this 64 extra, low-memory shards still crash with this
+            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 192 }}Mi
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
             memory: 64Mi
-            # Set this to JAVA_MEM + 64 + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 64 }}Mi
+            # Tried making this 64 extra, low-memory shards still crash with this
+            # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 192 }}Mi
       imagePullSecrets:
       - name: githubcred
