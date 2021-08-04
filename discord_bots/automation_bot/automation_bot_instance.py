@@ -185,9 +185,10 @@ class AutomationBotInstance(object):
                             if "Heartbeat" in message["channel"]:
                                 return;
 
-                            logger.info("Got socket message: {}".format(pformat(message)))
+                            logger.debug("Got socket message: {}".format(pformat(message)))
                             if self._audit_channel:
                                 if (message["channel"] == "Monumenta.Automation.AuditLog"):
+                                    logger.info("Got socket message: {}".format(pformat(message)))
                                     # Schedule the display coroutine back on the main event loop
                                     asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                            channel=self._audit_channel),
@@ -195,12 +196,14 @@ class AutomationBotInstance(object):
 
                             if self._admin_channel:
                                 if (message["channel"] == "Monumenta.Automation.AdminNotification"):
+                                    logger.info("Got socket message: {}".format(pformat(message)))
                                     asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                            channel=self._admin_channel),
                                                                      loop)
 
                             if self._chat_channel:
                                 if (message["channel"] == "com.playmonumenta.networkchat.Message"):
+                                    logger.info("Got socket message: {}".format(pformat(message)))
                                     chat_message = message["data"]
                                     chat_channel_type = chat_message.get("channelClassId", "future")
                                     if chat_channel_type not in ("announcement", "global"):

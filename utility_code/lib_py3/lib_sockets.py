@@ -14,6 +14,7 @@ class SocketManager(object):
     # Default log level is INFO
     def __init__(self, rabbit_host, queue_name, durable=False, callback=None, log_level=20):
         self._queue_name = queue_name
+        self._exchange_name = "broadcast"
         self._callback = callback
         self._rabbit_host = rabbit_host
         self._durable_queue = durable
@@ -47,9 +48,12 @@ class SocketManager(object):
                 channel = connection.channel()
                 logger.debug("Declaring queue {}".format(self._queue_name))
                 channel.queue_declare(queue=self._queue_name, durable=self._durable_queue)
+                logger.debug("Declaring queue {}".format(self._exchange_name))
+                channel.exchange_declare(exchange=self._exchange_name, exchange_type="fanout")
 
                 ## Start consuming messages
                 logger.info("Started rabbitmq message consumer for queue {}".format(self._queue_name))
+                channel.queue_bind(queue=self._queue_name, exchange=self._exchange_name)
                 channel.basic_consume(queue=self._queue_name, on_message_callback=callback)
                 channel.start_consuming()
             except Exception as e:
