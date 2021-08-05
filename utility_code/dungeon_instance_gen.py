@@ -7,9 +7,11 @@ import getopt
 import yaml
 
 from lib_py3.common import copy_paths, copy_maps, eprint
+from lib_py3.config_manager import shards_config
 from lib_py3.timing import Timings
 from minecraft.world import World
 
+instance_gen_config = shards_config["dungeon_instance_gen"]
 config = {
     # Dungeons are placed one per MC region file (32x32 chunks)
     # Each dungeon starts in the most-negative corner of the region
@@ -20,147 +22,21 @@ config = {
     #
     # All dungeons fit in a region file; even corrupted sierhaven is only 30x24 chunks
 
-    "dungeons":{
-        "labs":{
-            "region":{"x":-2, "z":2},
-            "count":700,
-            "objective":"D0Access"
-        },
-        "white":{
-            "region":{"x":-3, "z":-2},
-            "count":200,
-            "objective":"D1Access"
-        },
-        "orange":{
-            "region":{"x":-3, "z":-1},
-            "count":125,
-            "objective":"D2Access"
-        },
-        "magenta":{
-            "region":{"x":-3, "z":0},
-            "count":75,
-            "objective":"D3Access"
-        },
-        "lightblue":{
-            "region":{"x":-3, "z":1},
-            "count":75,
-            "objective":"D4Access"
-        },
-        "yellow":{
-            "region":{"x":-3, "z":2},
-            "count":60,
-            "objective":"D5Access"
-        },
-        "lime":{
-            "region":{"x":-3, "z":5},
-            "count":80,
-            "objective":"D6Access"
-        },
-        "pink":{
-            "region":{"x":-3, "z":7},
-            "count":60,
-            "objective":"D7Access"
-        },
-        "gray":{
-            "region":{"x":-3, "z":6},
-            "count":60,
-            "objective":"D8Access"
-        },
-        "lightgray":{
-            "region":{"x":-3, "z":8},
-            "count":60,
-            "objective":"D9Access"
-        },
-        "cyan":{
-            "region":{"x":-3, "z":9},
-            "count":60,
-            "objective":"D10Access"
-        },
-        "purple":{
-            "region":{"x":-3, "z":13},
-            "count":60,
-            "objective":"D11Access"
-        },
-        "willows":{
-            "region":{"x":-3, "z":3},
-            "count":100,
-            "objective":"DB1Access"
-        },
-        "roguelike":{
-            "region":{"x":-2, "z":-1},
-            "count":150,
-            "objective":"DRAccess"
-        },
-        "reverie":{
-            "region":{"x":-3, "z":4},
-            "count":60,
-            "objective":"DCAccess"
-        },
-        "tutorial":{
-            "region":{"x":-2, "z":1},
-            "count":1500,
-            "objective":"DTAccess"
-        },
-        "sanctum":{
-            "region":{"x":-3, "z":12},
-            "count":40,
-            "objective":"DS1Access"
-        },
-        "shiftingcity":{
-            "region":{"x":-2, "z":9},
-            "count":75,
-            "objective":"DRL2Access"
-        },
-        "teal":{
-            "region":{"x":-2, "z":12},
-            "count":60,
-            "objective":"DTLAccess"
-        },
-        "forum":{
-            "region":{"x":-3, "z":16},
-            "count":60,
-            "objective":"DFFAccess"
-        },
-        "remorse":{
-            "region":{"x":-3, "z":10},
-            "count":500,
-            "objective":"DSRAccess"
-        },
-        "rush":{
-            "region":{"x":-3, "z":15},
-            "count":75,
-            "objective":"DRDAccess"
-        },
-        "mist":{
-            "region":{"x":-2, "z":3},
-            "count":200,
-            "objective":"DBMAccess"
-        },
-        "depths":{
-            "region":{"x":-2, "z":4},
-            "count":800,
-            "objective":"DDAccess"
-        },
-    },
-
+    "dungeons": shards_config["shard_config"],
+    
     # Chunk to copy directly from the reference folder
-    "spawn_region":{"x":-3, "z":-3},
+    "spawn_region": instance_gen_config["spawn_region"],
 
     # Dungeon instances start nn region -3,-2 and move in +z - a region is 32x32 chunks
-    "target_region":{"x":-3, "z":-2},
+    "target_region": instance_gen_config["target_region"],
 
     # Files/directories to copy from reference
-    "copy_paths":[
-        "level.dat",
-    ],
+    "copy_paths": instance_gen_config["copy_paths"],
 
     # Blocks to set
-    "set_blocks_in_spawn":[
-        {'pos': [-1441, 2, -1441], 'block': {'name': 'minecraft:air'} },
-    ],
+    "set_blocks_in_spawn": instance_gen_config["set_blocks_in_spawn"],
 
-    "set_blocks":[
-    ],
+    "set_blocks": instance_gen_config["set_blocks"],
 }
 
 def usage():
@@ -243,7 +119,7 @@ if out_folder is None:
 if force_count is not None:
     # Override all dungeon counts
     for name in config["dungeons"]:
-        config["dungeons"][name]["count"] = force_count
+        config["dungeons"][name]["dungeon_instance_gen"]["count"] = force_count
 
 if len(specific_worlds) > 0:
     # Only generate the specified worlds
@@ -262,7 +138,7 @@ def create_instance(arg):
 timings = Timings(enabled=True)
 for name in config["dungeons"]:
     print(f"Generating {name} instances...")
-    dungeon = config["dungeons"][name]
+    dungeon = config["dungeons"][name]["dungeon_instance_gen"]
     # Compute where the new world will be
     new_world_path = os.path.join(out_folder, f"{name}", f"Project_Epic-{name}")
 

@@ -7,6 +7,9 @@ import tempfile
 import re
 from pprint import pprint
 
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../../utility_code/"))
+from lib_py3.config_manager import shards_config
+
 # Required arguments:
 #   node
 #   memGB OR memMB
@@ -16,6 +19,7 @@ from pprint import pprint
 #   useSocketForProbes
 #   useHTTPForProbes
 #   nodePort
+shard_config = shards_config["shard_config"]
 shard_config = {
     # Shards that only exist on build
     "dev1"               : { "build": { "node": "m12", "memMB": 1536, }, },
@@ -181,18 +185,10 @@ shard_config = {
 }
 
 # Defaults for each namespace
-namespace_defaults = {
-    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false" },
-    "build": { "gsheetCredentials": "false", "fastMetrics": "false" },
-    "stage": { "gsheetCredentials": "false", "fastMetrics": "false" },
-}
+namespace_defaults = shards_config["namespace_defaults"]
 
 # "node" uses abbreviated node names. This is the map back to full names:
-abbrev_node_to_full = {
-    "m8": "monumenta-8",
-    "m11": "monumenta-11",
-    "m12": "monumenta-12",
-}
+abbrev_node_to_full = shards_config["abbrev_node_to_full"]
 
 def usage():
     sys.exit(f'''Usage: {sys.argv[0]} <action> <namespace> <shard>
@@ -209,7 +205,7 @@ def perform_shard_action(action, namespace, shard):
     if shard not in shard_config:
         sys.exit(f"Unable to find shard {shard} in shard_config, must be one of [{','.join(shard_config.keys())}]")
 
-    shard_conf = shard_config[shard]
+    shard_conf = shard_config[shard]["k8"]
     if namespace not in shard_conf:
         sys.exit(f"Shard {shard} does not have config for namespace {namespace}")
 
@@ -263,7 +259,7 @@ if action in ["print", "apply", "delete"]:
     perform_shard_action(action, namespace, shard)
 elif action in ["applyall", "deleteall", "testall"]:
     # Shard is a regex for "all" operations
-    shards = [s for s in shard_config if ((namespace in shard_config[s]) and re.match(shard, s))]
+    shards = [s for s in shard_config if ((namespace in shard_config[s]["k8"]) and re.match(shard, s))]
     for s in shards:
         if action == "applyall":
             perform_shard_action("apply", namespace, s)
