@@ -48,7 +48,7 @@ config = {
         },
         "yellow":{
             "region":{"x":-3, "z":2},
-            "count":60,
+            "count":70,
             "objective":"D5Access"
         },
         "lime":{
@@ -58,17 +58,17 @@ config = {
         },
         "pink":{
             "region":{"x":-3, "z":7},
-            "count":60,
+            "count":70,
             "objective":"D7Access"
         },
         "gray":{
             "region":{"x":-3, "z":6},
-            "count":60,
+            "count":70,
             "objective":"D8Access"
         },
         "lightgray":{
             "region":{"x":-3, "z":8},
-            "count":60,
+            "count":70,
             "objective":"D9Access"
         },
         "cyan":{
@@ -123,7 +123,7 @@ config = {
         },
         "remorse":{
             "region":{"x":-3, "z":10},
-            "count":500,
+            "count":250,
             "objective":"DSRAccess"
         },
         "rush":{
@@ -133,12 +133,12 @@ config = {
         },
         "mist":{
             "region":{"x":-2, "z":3},
-            "count":200,
+            "count":250,
             "objective":"DBMAccess"
         },
         "depths":{
             "region":{"x":-2, "z":4},
-            "count":800,
+            "count":700,
             "objective":"DDAccess"
         },
     },
