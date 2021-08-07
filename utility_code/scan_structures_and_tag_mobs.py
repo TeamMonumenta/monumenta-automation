@@ -4,6 +4,7 @@ import sys
 import os
 from pprint import pprint
 from lib_py3.common import parse_name_possibly_json
+from lib_py3.config_manager import shards_config
 from lib_py3.library_of_souls import LibraryOfSouls
 
 from minecraft.chunk_format.schematic import Schematic
@@ -114,31 +115,10 @@ for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/
             for entity in schem.recursive_iter_entities():
                 process_entity(entity, "roguelike")
 
-dungeons = {
-    "white":{"x":-3, "z":-2},
-    "orange":{"x":-3, "z":-1},
-    "magenta":{"x":-3, "z":0},
-    "lightblue":{"x":-3, "z":1},
-    "yellow":{"x":-3, "z":2},
-    "willows":{"x":-3, "z":3},
-    "roguelike":{"x":-2, "z":-1},
-    "reverie":{"x":-3, "z":4},
-    "tutorial":{"x":-2, "z":1},
-    "sanctum":{"x":-3, "z":12},
-    "labs":{"x":-2, "z":2},
-    "lime":{"x":-3, "z":5},
-    "pink":{"x":-3, "z":7},
-    "gray":{"x":-3, "z":6},
-    "cyan":{"x":-3, "z":9},
-    "lightgray":{"x":-3, "z":8},
-    "purple":{"x":-3, "z":13},
-    "teal":{"x":-2, "z":12},
-    "forum":{"x":-3, "z":16},
-    "rush":{"x":-3, "z":15},
-    "mist":{"x":-2, "z":3},
-    "remorse":{"x":-3, "z":10},
-    "depths":{"x":-2, "z":4},
-}
+dungeons = {}
+for shard, shard_config in shards_config["shard_config"].items():
+    if "dungeon_instance_gen" in shard_config:
+        dungeons[shard] = shard_config["dungeon_instance_gen"]["region"]
 
 dungeonWorld = World('/home/epic/project_epic/dungeon/Project_Epic-dungeon')
 

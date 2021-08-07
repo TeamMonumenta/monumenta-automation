@@ -106,6 +106,9 @@ for arg in args:
     if arg not in config["dungeons"]:
         eprint("Unknown dungeon: {}".format(arg))
         usage()
+    elif "dungeon_instance_gen" not in config["dungeons"][arg]:
+        eprint("Shard is not a dungeon: {}".format(arg))
+        usage()
     else:
         specific_worlds.append(arg)
 
@@ -119,13 +122,15 @@ if out_folder is None:
 if force_count is not None:
     # Override all dungeon counts
     for name in config["dungeons"]:
-        config["dungeons"][name]["dungeon_instance_gen"]["count"] = force_count
+        if "dungeon_instance_gen" in config["dungeons"][name]:
+            config["dungeons"][name]["dungeon_instance_gen"]["count"] = force_count
 
 if len(specific_worlds) > 0:
     # Only generate the specified worlds
     new_dungeons = {}
     for specified in specific_worlds:
-        new_dungeons[specified] = config["dungeons"][specified]
+        if "dungeon_instance_gen" in config["dungeons"][specified]:
+            new_dungeons[specified] = config["dungeons"][specified]
     config["dungeons"] = new_dungeons
 
 # Decrease the priority for this work so it doesn't slow down other things
@@ -137,6 +142,8 @@ def create_instance(arg):
 
 timings = Timings(enabled=True)
 for name in config["dungeons"]:
+    if "dungeon_instance_gen" not in config["dungeons"][name]:
+        continue
     print(f"Generating {name} instances...")
     dungeon = config["dungeons"][name]["dungeon_instance_gen"]
     # Compute where the new world will be
