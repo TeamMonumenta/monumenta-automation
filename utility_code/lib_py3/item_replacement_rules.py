@@ -135,7 +135,14 @@ def enchantify(item, player, enchantment, owner_prefix=None, enchantment_color="
             enchantmentFound = True
 
         loreStripped = unformat_text(loreText).strip()
-        HEADER_LORE = ("King's Valley :", "Celsian Isles :", "Monumenta :", "Armor", "Magic Wand")
+        HEADER_LORE = (
+            "King's Valley :",
+            "Celsian Isles :",
+            "Monumenta :",
+            "Armor",
+            "Magic Wand",
+            "Alchemical Utensil"
+        )
         if not enchantmentFound and (
             any(x in loreStripped for x in HEADER_LORE) or
             len(loreStripped) == 0
