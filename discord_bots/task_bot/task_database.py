@@ -446,6 +446,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "report": self.cmd_add,
             "get": self.cmd_get,
             "roulette": self.cmd_roulette,
+            "iroulette": self.cmd_iroulette,
             "search": self.cmd_search,
             "dsearch": self.cmd_dsearch,
             "isearch": self.cmd_isearch,
@@ -547,6 +548,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} roulette [search terms]`
     Gets a random {single} matching search terms
+
+`{prefix} iroulette [search terms]`
+    Starts an interactive search for matching search terms but in random order
 
 `{prefix} stats`
     Gets current {single} statistics
@@ -891,6 +895,28 @@ __Available Priorities:__
             await self.reply(message, "No {plural} found matching those search terms".format(plural=self._descriptor_plural))
         else:
             await self.print_search_results(message.channel, [random.choice(match_entries)])
+
+    ################################################################################
+    # iroulette
+    async def cmd_iroulette(self, message, args):
+        if args:
+            # If args are provided, use them to narrow the list
+            match_entries, _, __, ___, ____ = await self.search_helper(args, max_count=10)
+        else:
+            # If no args, random from any open item
+            match_entries = []
+            for index in self._entries:
+                entry = self._entries[index]
+                if "close_reason" not in entry:
+                    match_entries.append((index, entry))
+
+        if not match_entries:
+            await self.reply(message, "No {plural} found matching those search terms".format(plural=self._descriptor_plural))
+        else:
+            random.shuffle(match_entries)
+            inter = InteractiveSearch(self, message.author, match_entries)
+            self._interactive_sessions.append(inter)
+            await inter.send_first_message(message)
 
     ################################################################################
     # stats
