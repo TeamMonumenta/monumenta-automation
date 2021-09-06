@@ -18,6 +18,7 @@ from minecraft.world import World
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types import nbt
 
+datapack_isles_ext = 'file/isles_extension'
 datapacks_default = ['file/vanilla','file/bukkit']
 datapacks_base = datapacks_default + ['file/base']
 datapacks_dungeon = datapacks_base + ['file/dungeon']
@@ -68,7 +69,12 @@ if output_dir is None:
     eprint("--output_dir must be specified!")
     usage()
 
-def get_dungeon_config(name, objective):
+def get_dungeon_config(name, objective, region=1):
+    datapacks = list(datapacks_dungeon)
+    if region >= 2:
+        datapacks.append(datapack_isles_ext)
+    datapacks.append(f'file/{name}')
+
     return {
         "server":f"{name}",
         "previous_world_path":f"{last_week_dir}/{name}/Project_Epic-{name}/",
@@ -77,7 +83,7 @@ def get_dungeon_config(name, objective):
         "copy_base_from":"build",
         "copy_previous_paths":["stats", "data/scoreboard.dat"],
         "copy_maps": "build",
-        "datapacks":datapacks_dungeon + [f'file/{name}'],
+        "datapacks":datapacks,
         "preserve_instances":{
             "dungeon_objective":f"{objective}",
             "start_rx":-3,
@@ -117,7 +123,7 @@ rush = {
     "output_world_path":f"{output_dir}/rush/Project_Epic-rush/",
     "copy_base_from":"build",
     "copy_previous_paths":["stats", "data/scoreboard.dat"],
-    "datapacks":datapacks_dungeon + ['file/rush'],
+    "datapacks":datapacks_dungeon + [datapack_isles_ext, 'file/rush'],
 }
 
 mist = {
@@ -127,7 +133,7 @@ mist = {
     "output_world_path":f"{output_dir}/mist/Project_Epic-mist/",
     "copy_base_from":"build",
     "copy_previous_paths":["stats", "data/scoreboard.dat"],
-    "datapacks":datapacks_dungeon + ['file/mist'],
+    "datapacks":datapacks_dungeon + [datapack_isles_ext, 'file/mist'],
 }
 
 remorse = {
@@ -137,7 +143,7 @@ remorse = {
     "output_world_path":f"{output_dir}/remorse/Project_Epic-remorse/",
     "copy_base_from":"build",
     "copy_previous_paths":["stats", "data/scoreboard.dat"],
-    "datapacks":datapacks_dungeon + ['file/remorse'],
+    "datapacks":datapacks_dungeon + [datapack_isles_ext, 'file/remorse'],
 }
 
 depths = {
@@ -147,7 +153,7 @@ depths = {
     "output_world_path":f"{output_dir}/depths/Project_Epic-depths/",
     "copy_base_from":"build",
     "copy_previous_paths":["stats", "data/scoreboard.dat"],
-    "datapacks":datapacks_dungeon + ['file/depths'],
+    "datapacks":datapacks_dungeon + [datapack_isles_ext, 'file/depths'],
 }
 
 valley = {
@@ -172,7 +178,7 @@ isles = {
     "copy_base_from":"build",
     "copy_previous_paths":["stats", "data/scoreboard.dat"],
     "copy_maps": "build",
-    "datapacks":datapacks_base + ['file/isles'],
+    "datapacks":datapacks_base + [datapack_isles_ext, 'file/isles'],
     "coordinates_to_fill":(
         {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
     ),
@@ -182,30 +188,38 @@ available_configs = {
     "plots": plots,
     "valley": valley,
     "isles": isles,
+
+
     "white": get_dungeon_config("white", "D1Access"),
     "orange": get_dungeon_config("orange", "D2Access"),
     "magenta": get_dungeon_config("magenta", "D3Access"),
     "lightblue": get_dungeon_config("lightblue", "D4Access"),
     "yellow": get_dungeon_config("yellow", "D5Access"),
-    "lime": get_dungeon_config("lime", "D6Access"),
-    "pink": get_dungeon_config("pink", "D7Access"),
-    "gray": get_dungeon_config("gray", "D8Access"),
-    "lightgray": get_dungeon_config("lightgray", "D9Access"),
-    "cyan": get_dungeon_config("cyan", "D10Access"),
-    "purple": get_dungeon_config("purple", "D11Access"),
-    "willows": get_dungeon_config("willows", "DB1Access"),
-    "reverie": get_dungeon_config("reverie", "DCAccess"),
-    "sanctum": get_dungeon_config("sanctum", "DS1Access"),
+
     "labs": get_dungeon_config("labs", "D0Access"),
-    "teal": get_dungeon_config("teal", "DTLAccess"),
-    "forum": get_dungeon_config("forum", "DFFAccess"),
-    "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
+    "reverie": get_dungeon_config("reverie", "DCAccess"),
     "roguelike": roguelike,
-    "rush": rush,
-    "mist": mist,
-    "remorse": remorse,
-    "depths": depths,
+    "sanctum": get_dungeon_config("sanctum", "DS1Access"),
     "tutorial": tutorial,
+    "willows": get_dungeon_config("willows", "DB1Access"),
+
+
+    "lime": get_dungeon_config("lime", "D6Access", region=2),
+    "pink": get_dungeon_config("pink", "D7Access", region=2),
+    "gray": get_dungeon_config("gray", "D8Access", region=2),
+    "lightgray": get_dungeon_config("lightgray", "D9Access", region=2),
+    "cyan": get_dungeon_config("cyan", "D10Access", region=2),
+    "purple": get_dungeon_config("purple", "D11Access", region=2),
+
+    "depths": depths,
+    "forum": get_dungeon_config("forum", "DFFAccess", region=2),
+    "mist": mist,
+    "rush": rush,
+    "remorse": remorse,
+    "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access", region=2),
+    "teal": get_dungeon_config("teal", "DTLAccess", region=2),
+
+
     "build": None,
     "bungee": None,
     "purgatory": None,
