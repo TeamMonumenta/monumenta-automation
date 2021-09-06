@@ -69,6 +69,7 @@ if output_dir is None:
     eprint("--output_dir must be specified!")
     usage()
 
+
 def get_dungeon_config(name, objective, region=1):
     datapacks = list(datapacks_dungeon)
     if region >= 2:
@@ -76,111 +77,111 @@ def get_dungeon_config(name, objective, region=1):
     datapacks.append(f'file/{name}')
 
     return {
-        "server":f"{name}",
-        "previous_world_path":f"{last_week_dir}/{name}/Project_Epic-{name}/",
-        "build_world_path":f"{build_template_dir}/{name}/Project_Epic-{name}/",
-        "output_world_path":f"{output_dir}/{name}/Project_Epic-{name}/",
-        "copy_base_from":"build",
-        "copy_previous_paths":["stats", "data/scoreboard.dat"],
+        "server": f"{name}",
+        "previous_world_path": f"{last_week_dir}/{name}/Project_Epic-{name}/",
+        "build_world_path": f"{build_template_dir}/{name}/Project_Epic-{name}/",
+        "output_world_path": f"{output_dir}/{name}/Project_Epic-{name}/",
+        "copy_base_from": "build",
+        "copy_previous_paths": ["stats", "data/scoreboard.dat"],
         "copy_maps": "build",
-        "datapacks":datapacks,
-        "preserve_instances":{
-            "dungeon_objective":f"{objective}",
-            "start_rx":-3,
-            "start_rz":-2,
+        "datapacks": datapacks,
+        "preserve_instances": {
+            "dungeon_objective": f"{objective}",
+            "start_rx": -3,
+            "start_rz": -2,
         },
     }
 
 plots = {
-    "server":"plots",
-    "previous_world_path":f"{last_week_dir}/plots/Project_Epic-plots/",
-    "output_world_path":f"{output_dir}/plots/Project_Epic-plots/",
-    "copy_base_from":"previous",
-    "datapacks":datapacks_base + ['file/plots'],
+    "server": "plots",
+    "previous_world_path": f"{last_week_dir}/plots/Project_Epic-plots/",
+    "output_world_path": f"{output_dir}/plots/Project_Epic-plots/",
+    "copy_base_from": "previous",
+    "datapacks": datapacks_base + ['file/plots'],
     "replace_items_globally": True,
 }
 
 tutorial = {
-    "server":"tutorial",
-    "output_world_path":f"{output_dir}/tutorial/Project_Epic-tutorial/",
-    "datapacks":datapacks_dungeon + ['file/tutorial'],
+    "server": "tutorial",
+    "output_world_path": f"{output_dir}/tutorial/Project_Epic-tutorial/",
+    "datapacks": datapacks_dungeon + ['file/tutorial'],
 }
 
 roguelike = {
-    "server":"roguelike",
-    "previous_world_path":f"{last_week_dir}/roguelike/Project_Epic-roguelike/",
-    "build_world_path":f"{build_template_dir}/roguelike/Project_Epic-roguelike/",
-    "output_world_path":f"{output_dir}/roguelike/Project_Epic-roguelike/",
-    "copy_base_from":"build",
-    "copy_previous_paths":["stats", "data/scoreboard.dat"],
-    "datapacks":datapacks_dungeon + ['file/roguelike'],
+    "server": "roguelike",
+    "previous_world_path": f"{last_week_dir}/roguelike/Project_Epic-roguelike/",
+    "build_world_path": f"{build_template_dir}/roguelike/Project_Epic-roguelike/",
+    "output_world_path": f"{output_dir}/roguelike/Project_Epic-roguelike/",
+    "copy_base_from": "build",
+    "copy_previous_paths": ["stats", "data/scoreboard.dat"],
+    "datapacks": datapacks_dungeon + ['file/roguelike'],
 }
 
 rush = {
-    "server":"rush",
-    "previous_world_path":f"{last_week_dir}/rush/Project_Epic-rush/",
-    "build_world_path":f"{build_template_dir}/rush/Project_Epic-rush/",
-    "output_world_path":f"{output_dir}/rush/Project_Epic-rush/",
-    "copy_base_from":"build",
-    "copy_previous_paths":["stats", "data/scoreboard.dat"],
-    "datapacks":datapacks_dungeon + [datapack_isles_ext, 'file/rush'],
+    "server": "rush",
+    "previous_world_path": f"{last_week_dir}/rush/Project_Epic-rush/",
+    "build_world_path": f"{build_template_dir}/rush/Project_Epic-rush/",
+    "output_world_path": f"{output_dir}/rush/Project_Epic-rush/",
+    "copy_base_from": "build",
+    "copy_previous_paths": ["stats", "data/scoreboard.dat"],
+    "datapacks": datapacks_dungeon + [datapack_isles_ext, 'file/rush'],
 }
 
 mist = {
-    "server":"mist",
-    "previous_world_path":f"{last_week_dir}/mist/Project_Epic-mist/",
-    "build_world_path":f"{build_template_dir}/mist/Project_Epic-mist/",
-    "output_world_path":f"{output_dir}/mist/Project_Epic-mist/",
-    "copy_base_from":"build",
-    "copy_previous_paths":["stats", "data/scoreboard.dat"],
-    "datapacks":datapacks_dungeon + [datapack_isles_ext, 'file/mist'],
+    "server": "mist",
+    "previous_world_path": f"{last_week_dir}/mist/Project_Epic-mist/",
+    "build_world_path": f"{build_template_dir}/mist/Project_Epic-mist/",
+    "output_world_path": f"{output_dir}/mist/Project_Epic-mist/",
+    "copy_base_from": "build",
+    "copy_previous_paths": ["stats", "data/scoreboard.dat"],
+    "datapacks": datapacks_dungeon + [datapack_isles_ext, 'file/mist'],
 }
 
 remorse = {
-    "server":"remorse",
-    "previous_world_path":f"{last_week_dir}/remorse/Project_Epic-remorse/",
-    "build_world_path":f"{build_template_dir}/remorse/Project_Epic-remorse/",
-    "output_world_path":f"{output_dir}/remorse/Project_Epic-remorse/",
-    "copy_base_from":"build",
-    "copy_previous_paths":["stats", "data/scoreboard.dat"],
-    "datapacks":datapacks_dungeon + [datapack_isles_ext, 'file/remorse'],
+    "server": "remorse",
+    "previous_world_path": f"{last_week_dir}/remorse/Project_Epic-remorse/",
+    "build_world_path": f"{build_template_dir}/remorse/Project_Epic-remorse/",
+    "output_world_path": f"{output_dir}/remorse/Project_Epic-remorse/",
+    "copy_base_from": "build",
+    "copy_previous_paths": ["stats", "data/scoreboard.dat"],
+    "datapacks": datapacks_dungeon + [datapack_isles_ext, 'file/remorse'],
 }
 
 depths = {
-    "server":"depths",
-    "previous_world_path":f"{last_week_dir}/depths/Project_Epic-depths/",
-    "build_world_path":f"{build_template_dir}/depths/Project_Epic-depths/",
-    "output_world_path":f"{output_dir}/depths/Project_Epic-depths/",
-    "copy_base_from":"build",
-    "copy_previous_paths":["stats", "data/scoreboard.dat"],
-    "datapacks":datapacks_dungeon + [datapack_isles_ext, 'file/depths'],
+    "server": "depths",
+    "previous_world_path": f"{last_week_dir}/depths/Project_Epic-depths/",
+    "build_world_path": f"{build_template_dir}/depths/Project_Epic-depths/",
+    "output_world_path": f"{output_dir}/depths/Project_Epic-depths/",
+    "copy_base_from": "build",
+    "copy_previous_paths": ["stats", "data/scoreboard.dat"],
+    "datapacks": datapacks_dungeon + [datapack_isles_ext, 'file/depths'],
 }
 
 valley = {
-    "server":"valley",
-    "previous_world_path":f"{last_week_dir}/valley/Project_Epic-valley/",
-    "build_world_path":f"{build_template_dir}/valley/Project_Epic-valley/",
-    "output_world_path":f"{output_dir}/valley/Project_Epic-valley/",
-    "copy_base_from":"build",
-    "copy_previous_paths":["stats", "data"],
+    "server": "valley",
+    "previous_world_path": f"{last_week_dir}/valley/Project_Epic-valley/",
+    "build_world_path": f"{build_template_dir}/valley/Project_Epic-valley/",
+    "output_world_path": f"{output_dir}/valley/Project_Epic-valley/",
+    "copy_base_from": "build",
+    "copy_previous_paths": ["stats", "data"],
     "copy_maps": "build",
-    "datapacks":datapacks_base + ['file/valley'],
-    "coordinates_to_fill":(
-        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
+    "datapacks": datapacks_base + ['file/valley'],
+    "coordinates_to_fill": (
+        {"name": "Magic Block", "pos1": (-1441, 2,-1441), "pos2": (-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
     ),
 }
 
 isles = {
-    "server":"isles",
-    "previous_world_path":f"{last_week_dir}/isles/Project_Epic-isles/",
-    "build_world_path":f"{build_template_dir}/isles/Project_Epic-isles/",
-    "output_world_path":f"{output_dir}/isles/Project_Epic-isles/",
-    "copy_base_from":"build",
-    "copy_previous_paths":["stats", "data/scoreboard.dat"],
+    "server": "isles",
+    "previous_world_path": f"{last_week_dir}/isles/Project_Epic-isles/",
+    "build_world_path": f"{build_template_dir}/isles/Project_Epic-isles/",
+    "output_world_path": f"{output_dir}/isles/Project_Epic-isles/",
+    "copy_base_from": "build",
+    "copy_previous_paths": ["stats", "data/scoreboard.dat"],
     "copy_maps": "build",
-    "datapacks":datapacks_base + [datapack_isles_ext, 'file/isles'],
-    "coordinates_to_fill":(
-        {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
+    "datapacks": datapacks_base + [datapack_isles_ext, 'file/isles'],
+    "coordinates_to_fill": (
+        {"name": "Magic Block", "pos1": (-1441, 2,-1441), "pos2": (-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
     ),
 }
 
@@ -263,7 +264,7 @@ print("Loading dungeon scores...")
 for config in config_list:
     if "preserve_instances" in config:
         preserve_instances = config["preserve_instances"]
-        score_objects = redis_scoreboard.search_scores(Objective=preserve_instances["dungeon_objective"],Score={"min":1})
+        score_objects = redis_scoreboard.search_scores(Objective=preserve_instances["dungeon_objective"], Score={"min":1})
         dungeon_scores = set()
         inval_scores = set()
         for score in score_objects:
@@ -274,7 +275,7 @@ for config in config_list:
                 dungeon_scores.add(val)
         if inval_scores:
             eprint(f"WARNING: Found dungeon scores [{','.join([str(x) for x in inval_scores])}] for {config['server']} that are less than 10000! This indicates score changes didn't run correctly. This is fine on stage, but a serious problem on the play server")
-        dungeon_scores = sorted(list(dungeon_scores))
+        dungeon_scores = sorted(dungeon_scores)
         preserve_instances["dungeon_scores"] = dungeon_scores
 timings.nextStep("Loaded dungeon scores")
 
@@ -305,6 +306,7 @@ try:
     print(f"$Instances.{objective} = {instances}")
     rboard.setmulti("$Last", last_dict)
     rboard.setmulti("$Instances", instances_dict)
+
 except Exception as ex:
     eprint(f"!!!!!! WARNING: Failed to set redis instance count/used values: {ex}")
 
@@ -426,6 +428,7 @@ for config in config_list:
                     "rz": new_rz,
                 }
             })
+
     elif "replace_items_globally" in config and config["replace_items_globally"]:
         for _, rx, rz in worlds[config["server"]].enumerate_regions():
             regions.append({
@@ -465,6 +468,7 @@ def process_region(region_config):
                     num_replacements += 1
 
         return (region_config["world"], num_replacements, replacements_log)
+
     except Exception as ex:
         eprint("WARNING: Failed to process region:", pformat(region_config))
         eprint("  Error was:", ex)
@@ -483,6 +487,7 @@ with multiprocessing.Pool(num_threads) as pool:
         replacements_to_merge[world_name].append(replacements_log)
 
         print(f"  {done_count} / {num_regions} regions processed, {num_global_replacements} replacements so far")
+
 timings.nextStep("Processed regions")
 
 ##################################################################################
@@ -493,6 +498,7 @@ print(f"Merging replacements logs...")
 replacements_log = {}
 for world_name in replacements_to_merge:
     replacements_log[world_name] = item_replace_manager.merge_logs(replacements_to_merge[world_name])
+
 timings.nextStep("Replacements logs merged")
 
 ##################################################################################
