@@ -362,6 +362,8 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Natant'},
         {"enchantment": 'Understanding'},
 
+        {"enchantment": 'Phylactery', "owner_prefix": 'Embalmed by'},
+
         # Stat tracking
         {"enchantment": 'Stat Track', "owner_prefix": 'Tracked by', "enchantment_color": "§7"},
         {"enchantment": 'Mob Kills', "enchantment_color": "§c"},
