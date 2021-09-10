@@ -48,9 +48,6 @@ shard_config = {
     "valley-3": {
         "play" : { "node": "m8" , "memGB": 6, },
     },
-    "valley-4": {
-        "play" : { "node": "m11", "memGB": 6, },
-    },
 
     # R2
     "isles": {
@@ -59,6 +56,9 @@ shard_config = {
         "stage": { "node": "m12", "memGB": 4, },
     },
     "isles-2": {
+        "play" : { "node": "m11", "memGB": 5, },
+    },
+    "isles-3": {
         "play" : { "node": "m11", "memGB": 5, },
     },
 
