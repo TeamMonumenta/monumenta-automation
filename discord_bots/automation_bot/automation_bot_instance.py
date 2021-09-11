@@ -1278,7 +1278,10 @@ Archives the previous stage server contents under 0_PREVIOUS '''
 Updates one or more items in all loot tables
 
 Usage:
-    ~update items /setblock 1217 3 2720 minecraft:chest{Items:[...]}
+    ~update item /setblock 1217 3 2720 minecraft:chest{Items:[...]}
+    Or if too long for a discord message:
+    ~update item
+    <.txt file attachment starting with /setblock ...>
 
 Easiest way to get this is putting an item in a chest, and looking at that chest and pressing f3+i
     '''
