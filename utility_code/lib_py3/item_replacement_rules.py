@@ -406,6 +406,9 @@ class PreserveEnchantments(GlobalRule):
                 if owner_prefix is not None and lore_text.startswith(owner_prefix):
                     if not enchantment["enchantment"].startswith("Gilded") or len(enchantment['players']) <= 0:
                         enchantment['players'].append(lore_text[len(owner_prefix)+1:])
+                elif owner_prefix == 'Embalmed by' and lore_text.startswith('Enbalmed by'):
+                    if not enchantment["enchantment"].startswith("Gilded") or len(enchantment['players']) <= 0:
+                        enchantment['players'].append(lore_text[len(owner_prefix)+1:])
 
     def postprocess(self, item):
         for enchantment in self.enchantment_state:
