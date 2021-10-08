@@ -67,7 +67,7 @@ purgatory_min = [
     ]
 if SERVER_TYPE == 'build':
     purgatory_min += [
-            ('plugins/NetworkChat.jar', '../../server_config/plugins/MonumentaNetworkChat.jar'),
+            ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
         ]
 else:
     purgatory_min += [
