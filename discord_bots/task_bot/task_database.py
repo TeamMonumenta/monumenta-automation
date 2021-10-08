@@ -513,7 +513,8 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             try:
                 await commands[match](message, args)
             except ValueError as e:
-                await self.reply(message, str(e))
+                for chunk in split_string(str(e)):
+                    await self.reply(message, chunk)
 
     ################################################################################
     # Usage
@@ -1486,8 +1487,9 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         def predicate(iter_msg):
             return iter_msg.author.bot and iter_msg.id not in valid
 
+        deleted = await self._channel.purge(limit=9999, check=predicate)
         count = 0
-        async for iter_msg in self._channel.history().filter(predicate):
+        for iter_msg in deleted:
             # Exit early if shutting down
             if self._stopping:
                 return
@@ -1497,7 +1499,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
             if iter_msg.embeds is not None and len(iter_msg.embeds) > 0:
                 embed = iter_msg.embeds[0]
             await message.channel.send(iter_msg.content, embed=embed)
-            await iter_msg.delete()
+            count += 1
 
         await(self.reply(message, "{} untracked messages removed successfully".format(count)))
 

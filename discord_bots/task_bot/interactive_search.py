@@ -9,7 +9,7 @@ import random
 from collections import OrderedDict
 from pprint import pprint
 
-from common import get_list_match
+from common import get_list_match, split_string
 
 class InteractiveSearch(object):
     def __init__(self, db, author, entries):
@@ -153,7 +153,8 @@ class InteractiveSearch(object):
                     try:
                         await commands[match](message, (str(self._current_index) + " " + args).strip())
                     except ValueError as e:
-                        await self.reply(message, str(e))
+                        for chunk in split_string(str(e)):
+                            await self.reply(message, chunk)
 
 
             self._last_active_time = datetime.datetime.now()
