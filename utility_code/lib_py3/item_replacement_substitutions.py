@@ -197,6 +197,8 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:flower_banner_pattern", "Alchemist's Bag (15)", "minecraft:splash_potion", "Alchemist's Bag (15)"],
             ["minecraft:flower_banner_pattern", "Alchemist's Bag (16)", "minecraft:splash_potion", "Alchemist's Bag (16)"],
             ["minecraft:wooden_shovel", "Stick Of Beating", "minecraft:wooden_shovel", "Stick of Beating"],
+            ["minecraft:leather_chestplate", "Eternal Shroud", "minecraft:leather_chestplate", "Phoenix Shroud"],
+            ["minecraft:nether_star", "Ancestral Sigil", "minecraft:firework_star", "Ancestral Sigil"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
