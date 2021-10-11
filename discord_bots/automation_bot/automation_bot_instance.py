@@ -607,25 +607,32 @@ Do not use for debugging quests or other scores that are likely to change often.
         '''Set score for a player. This will work for offline and online players (scores are set in both redis and by broadcastcommand)
         '''
 
-        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+        commandArgs = message.content[len(self._prefix + cmd) + 1:]
+        lines = commandArgs.split("\n")
+        output = ""
+        setscores = 0
+        for line in lines:
+            line = line.strip()
+            if len(line) == 0:
+                # Skip blank lines
+                continue
 
-        if len(commandArgs) != 3:
-            await self.display(f'Usage: {self._prefix + cmd} <playername> <objective> <value>')
-            return
+            commandArgs = line.split()
 
-        name = commandArgs[0]
-        objective = commandArgs[1]
-        value = commandArgs[2]
-        message = f'Set score {objective}={value} via bot'
+            if len(commandArgs) != 3:
+                await self.display(f'Usage: {self._prefix + cmd} <playername> <objective> <value>')
+                return
 
-        await self.display("Setting score in redis in case player is offline..."),
-        await self.run([os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", self._k8s.namespace, name, objective, value, message], displayOutput=True)
+            name = commandArgs[0]
+            objective = commandArgs[1]
+            value = commandArgs[2]
+            message = f'Set score {objective}={value} via bot'
 
-        await self.display("Setting score via broadcast in case player is online...")
-        self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": f"execute if entity {name} run scoreboard players set {name} {objective} {value}"})
+            await self.run([os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", self._k8s.namespace, name, objective, value, message], displayOutput=(len(lines) < 5))
+            self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": f"execute if entity {name} run scoreboard players set {name} {objective} {value}"})
+            setscores += 1
 
-        await self.display("Done"),
-
+        await self.display(f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)"),
 
     async def action_generate_instances(self, cmd, message):
         '''Dangerous!
