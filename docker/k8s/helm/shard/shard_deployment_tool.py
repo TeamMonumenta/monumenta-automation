@@ -54,6 +54,7 @@ shard_config = {
         "play" : { "node": "m11", "memGB": 5, },
         "build": { "node": "m12", "memGB": 3, },
         "stage": { "node": "m12", "memGB": 4, },
+        "clash": { "node": "m12", "memGB": 4, },
     },
     "isles-2": {
         "play" : { "node": "m11", "memGB": 5, },
@@ -83,9 +84,11 @@ shard_config = {
         "play" : { "node": "m11", "memGB": 3   , },
         "build": { "node": "m12", "memMB": 1536, },
         "stage": { "node": "m12", "memMB": 1536, },
+        "clash": { "node": "m12", "memMB": 1536, },
     },
     "depths-2": {
         "play" : { "node": "m11", "memGB": 3   , },
+        "clash": { "node": "m11", "memMB": 1536, },
     },
     "depths-3": {
         "play" : { "node": "m11", "memGB": 3   , },
@@ -182,9 +185,10 @@ shard_config = {
 
 # Defaults for each namespace
 namespace_defaults = {
-    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false" },
-    "build": { "gsheetCredentials": "false", "fastMetrics": "false" },
-    "stage": { "gsheetCredentials": "false", "fastMetrics": "false" },
+    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true" },
+    "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
+    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
+    "clash": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "false" },
 }
 
 # "node" uses abbreviated node names. This is the map back to full names:

@@ -20,6 +20,9 @@ memMB: 6144
 # Whether performance metrics will be scraped every few seconds or tens of seconds
 fastMetrics: false
 
+# Whether the maps mountpoint will be generated/mounted
+maps: true
+
 # Whether google sheets credentials should be mounted
 gsheetCredentials: false
 

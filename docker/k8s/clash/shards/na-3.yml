@@ -95,7 +95,7 @@ spec:
         - name: "JAVA_JAR"
           value: "server.jar"
         - name: "SERVER_DIR"
-          value: "/clash/na/na-3"
+          value: "/clash/m11/na-3"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:

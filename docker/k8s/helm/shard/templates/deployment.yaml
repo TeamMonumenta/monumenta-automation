@@ -87,10 +87,12 @@ spec:
             secretName: gsheet-credentials
             defaultMode: 0444
 {{- end }}
+{{- if .Values.maps }}
         - name: nfs-maps
           hostPath:
             path: /nfs/{{ .Values.namespace }}/maps
             type: Directory
+{{- end }}
         - name: nfs-project-epic
           hostPath:
             path: /nfs/{{ .Values.namespace }}/{{ .Values.node }}
@@ -161,12 +163,14 @@ spec:
           mountPath: /home/epic/{{ .Values.namespace }}/{{ .Values.node }}/{{ .Values.name }}/plugins/ScriptedQuests/gsheet_credentials.json
           subPath: gsheet_credentials.json
 {{- end }}
+{{- if .Values.maps }}
 {{- if eq .Values.namespace "stage" }}
         - name: nfs-maps
           mountPath: /home/epic/maps/dynmap/play
 {{- else }}
         - name: nfs-maps
           mountPath: /home/epic/maps/dynmap/{{ .Values.namespace }}
+{{- end }}
 {{- end }}
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED

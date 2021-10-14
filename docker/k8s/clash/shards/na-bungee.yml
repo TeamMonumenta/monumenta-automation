@@ -94,7 +94,7 @@ spec:
         - name: "JAVA_JAR"
           value: "BungeeCord.jar"
         - name: "SERVER_DIR"
-          value: "/clash/na/na-bungee"
+          value: "/clash/m11/na-bungee"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         readinessProbe:
