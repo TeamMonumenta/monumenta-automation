@@ -199,6 +199,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:wooden_shovel", "Stick Of Beating", "minecraft:wooden_shovel", "Stick of Beating"],
             ["minecraft:leather_chestplate", "Eternal Shroud", "minecraft:leather_chestplate", "Phoenix Shroud"],
             ["minecraft:nether_star", "Ancestral Sigil", "minecraft:firework_star", "Ancestral Sigil"],
+            ["minecraft:gold_nugget", "Unlucky Horseshoe (Instant)", "minecraft:gold_nugget", "Unlucky Horseshoe"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
