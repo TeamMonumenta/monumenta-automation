@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+  namespace: creatorclash
+spec:
+  ports:
+  - port: 5672
+  selector:
+    app: rabbitmq
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-mgmt
+  namespace: creatorclash
+spec:
+  ports:
+  - port: 15672
+  selector:
+    app: rabbitmq-mgmt
+
+---
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: rabbitmq
+  namespace: creatorclash
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-12
+      hostAliases:
+      - ip: "127.0.0.1"
+        hostnames:
+        - "monumenta-rabbit"
+      containers:
+      - image: rabbitmq:3-management
+        name: rabbitmq
+        env:
+        - name: RABBITMQ_VM_MEMORY_HIGH_WATERMARK
+          value: "0.60"
+        - name: HOSTNAME
+          value: "monumenta-rabbit"
+        ports:
+        - containerPort: 5672
+          name: rabbitmq
+        - containerPort: 15672
+          name: rabbitmq-mgmt
+        resources:
+          limits:
+            memory: 1Gi
