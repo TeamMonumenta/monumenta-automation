@@ -178,8 +178,13 @@ class TaskKanboard(object):
         complexity_changed = False
         if json_msg["event_name"] == "task.close":
             if "close_reason" not in entry:
+                comments = await self._kanboard_client.getAllComments_async(task_id=kanboard_id)
+                if len(comments) > 0:
+                        last_comment = comments[len(comments) - 1]
+                        entry["close_reason"] = last_comment["comment"]
+                else:
+                        entry["close_reason"] = "Fixed"
                 msg = f"User {author} closed {self._task_database._descriptor_single} #{index}"
-                entry["close_reason"] = "Fixed"
 
         elif json_msg["event_name"] == "task.open":
             msg = f"User {author} reopened {self._task_database._descriptor_single} #{index}"
