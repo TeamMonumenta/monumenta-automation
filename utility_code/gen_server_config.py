@@ -167,6 +167,8 @@ nbteditor = [
         ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
         ('plugins/LibraryOfSouls.jar', '../../server_config/plugins/LibraryOfSouls.jar'),
         ('plugins/LibraryOfSouls/souls_database.json', '../../../server_config/data/plugins/all/LibraryOfSouls/souls_database.json'),
+        ('plugins/LibraryOfSouls/soul_parties_database.json', '../../../server_config/data/plugins/all/LibraryOfSouls/soul_parties_database.json'),
+        ('plugins/LibraryOfSouls/soul_pools_database.json', '../../../server_config/data/plugins/all/LibraryOfSouls/soul_pools_database.json'),
         ('plugins/LibraryOfSouls/bestiary_config.yml', '../../../server_config/data/plugins/all/LibraryOfSouls/bestiary_config.yml'),
     ]
 
