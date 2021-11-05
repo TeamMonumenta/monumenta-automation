@@ -100,14 +100,14 @@ tutorial = {
     "datapacks":datapacks_dungeon + ['file/tutorial'],
 }
 
-roguelike = {
-    "server":"roguelike",
-    "previous_world_path":f"{last_week_dir}/roguelike/Project_Epic-roguelike/",
-    "build_world_path":f"{build_template_dir}/roguelike/Project_Epic-roguelike/",
-    "output_world_path":f"{output_dir}/roguelike/Project_Epic-roguelike/",
+corridors = {
+    "server":"corridors",
+    "previous_world_path":f"{last_week_dir}/corridors/Project_Epic-corridors/",
+    "build_world_path":f"{build_template_dir}/corridors/Project_Epic-corridors/",
+    "output_world_path":f"{output_dir}/corridors/Project_Epic-corridors/",
     "copy_base_from":"build",
     "copy_previous_paths":["stats", "data/scoreboard.dat"],
-    "datapacks":datapacks_dungeon + ['file/roguelike'],
+    "datapacks":datapacks_dungeon + ['file/corridors'],
 }
 
 rush = {
@@ -200,7 +200,7 @@ available_configs = {
     "teal": get_dungeon_config("teal", "DTLAccess"),
     "forum": get_dungeon_config("forum", "DFFAccess"),
     "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
-    "roguelike": roguelike,
+    "corridors": corridors,
     "rush": rush,
     "mist": mist,
     "remorse": remorse,

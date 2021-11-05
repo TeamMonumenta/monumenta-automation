@@ -86,7 +86,7 @@ config = {
             "count":100,
             "objective":"DB1Access"
         },
-        "roguelike":{
+        "corridors":{
             "region":{"x":-2, "z":-1},
             "count":150,
             "objective":"DRAccess"

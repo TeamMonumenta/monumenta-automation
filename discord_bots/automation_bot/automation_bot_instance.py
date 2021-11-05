@@ -150,7 +150,7 @@ class AutomationBotInstance(object):
             "cyan": "D10Access",
             "purple": "D11Access",
             "willows": "DB1Access",
-            "roguelike": "DRAccess",
+            "corridors": "DRAccess",
             "reverie": "DCAccess",
             "tutorial": "DTAccess",
             "sanctum": "DS1Access",

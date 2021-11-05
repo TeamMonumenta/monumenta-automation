@@ -464,7 +464,7 @@ simple_view_distance_config = {
     'tutorial': 9,
     'labs': 10,
     'willows': 8,
-    'roguelike': 8,
+    'corridors': 8,
     'sanctum': 10,
     'reverie': 10,
     'rush': 5,

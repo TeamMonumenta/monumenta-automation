@@ -106,13 +106,13 @@ for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/
             for entity in schem.recursive_iter_entities():
                 process_entity(entity, "shiftingcity")
 
-print("Processing roguelike schematics...")
+print("Processing corridors schematics...")
 for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/dungeon/rogue"):
     for fname in files:
         if fname.endswith(".schematic"):
             schem = Schematic(os.path.join(root, fname))
             for entity in schem.recursive_iter_entities():
-                process_entity(entity, "roguelike")
+                process_entity(entity, "corridors")
 
 dungeons = {
     "white":{"x":-3, "z":-2},
@@ -121,7 +121,7 @@ dungeons = {
     "lightblue":{"x":-3, "z":1},
     "yellow":{"x":-3, "z":2},
     "willows":{"x":-3, "z":3},
-    "roguelike":{"x":-2, "z":-1},
+    "corridors":{"x":-2, "z":-1},
     "reverie":{"x":-3, "z":4},
     "tutorial":{"x":-2, "z":1},
     "sanctum":{"x":-3, "z":12},
