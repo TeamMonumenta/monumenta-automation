@@ -200,6 +200,17 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:leather_chestplate", "Eternal Shroud", "minecraft:leather_chestplate", "Phoenix Shroud"],
             ["minecraft:nether_star", "Ancestral Sigil", "minecraft:firework_star", "Ancestral Sigil"],
             ["minecraft:gold_nugget", "Unlucky Horseshoe (Instant)", "minecraft:gold_nugget", "Unlucky Horseshoe"],
+            ["minecraft:magma_block", "Roguelike Key Normal", "minecraft:magma_block", "Ephemeral Key Normal"],
+            ["minecraft:magma_block", "Roguelike Key Hardcore Tier I", "minecraft:magma_block", "Ephemeral Key Hardcore Tier I"],
+            ["minecraft:magma_block", "Roguelike Key Hardcore Tier II", "minecraft:magma_block", "Ephemeral Key Hardcore Tier II"],
+            ["minecraft:magma_block", "Roguelike Key Hardcore Tier III", "minecraft:magma_block", "Ephemeral Key Hardcore Tier III"],
+            ["minecraft:magma_block", "Roguelike Key Hardcore Tier IV", "minecraft:magma_block", "Ephemeral Key Hardcore Tier IV"],
+            ["minecraft:magma_block", "Roguelike Key Hardcore Tier V", "minecraft:magma_block", "Ephemeral Key Hardcore Tier V"],
+            ["minecraft:magma_block", "Roguelike Key Classic Tier I", "minecraft:magma_block", "Ephemeral Key Classic Tier I"],
+            ["minecraft:magma_block", "Roguelike Key Classic Tier II", "minecraft:magma_block", "Ephemeral Key Classic Tier II"],
+            ["minecraft:magma_block", "Roguelike Key Classic Tier III", "minecraft:magma_block", "Ephemeral Key Classic Tier III"],
+            ["minecraft:magma_block", "Roguelike Key Classic Tier IV", "minecraft:magma_block", "Ephemeral Key Classic Tier IV"],
+            ["minecraft:magma_block", "Roguelike Key Classic Tier V", "minecraft:magma_block", "Ephemeral Key Classic Tier V"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
