@@ -20,9 +20,11 @@ class LevelDat():
         if self.nbt.has_path('Data.LevelName'):
             self.nbt.at_path('Data.LevelName').value = str(self.world_name)
 
-    def save(self):
+    def save(self, path=None):
         """Save the level.dat file to its original location."""
-        self.level_dat_file.save(self.path)
+        if path is None:
+            path = self.path
+        self.level_dat_file.save(path)
 
     def _init_datapack_tags(self):
         if not self.nbt.has_path('Data'):

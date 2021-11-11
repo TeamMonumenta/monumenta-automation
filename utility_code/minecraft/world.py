@@ -49,6 +49,13 @@ class World():
         else:
             self.level_dat = None
 
+    def copy_to(self, path, regenerate_uuids=True):
+        os.makedirs(path)
+        self.level_dat.save(os.path.join(path, 'level.dat'))
+        new_world = World(path)
+        for region in self.iter_regions():
+            region.copy_to(new_world, region.rx, region.rz)
+
     def enumerate_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
         """
         Enumerates region files in this world without loading them
