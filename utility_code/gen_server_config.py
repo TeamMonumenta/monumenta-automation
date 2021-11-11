@@ -473,6 +473,8 @@ simple_view_distance_config = {
     'mist': 8,
     'depths': 5,
     'test': 8,
+
+    'playerplots': 6,
 }
 
 for key in simple_view_distance_config:
