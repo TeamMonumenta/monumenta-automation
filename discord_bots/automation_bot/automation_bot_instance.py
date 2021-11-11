@@ -197,6 +197,12 @@ class AutomationBotInstance(object):
                                     asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                            channel=self._admin_channel),
                                                                      loop)
+                            if self._audit_severe_channel :
+                                if (message["channel"] == "Monumenta.Automation.AuditLogSevere"):
+                                    # Schedule the display coroutine back on the main event loop
+                                    asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
+                                                                                           channel=self._audit_severe_channel),
+                                                                     loop)
 
                     conf = config["rabbitmq"]
                     if "log_level" in conf:
@@ -215,6 +221,12 @@ class AutomationBotInstance(object):
                             self._audit_channel = client.get_channel(conf["audit_channel"])
                         except:
                             logging.error( "Cannot connect to audit channel: " + conf["audit_channel"] )
+                    self._audit_severe_channel = None
+                    if "audit_severe_channel" in conf:
+                        try:
+                            self._audit_severe_channel = client.get_channel(conf["audit_severe_channel"])
+                        except:
+                            logging.error( "Cannot connect to audit severe channel: " + conf["audit_severe_channel"] )
                     self._admin_channel = None
                     if "admin_channel" in conf:
                         try:
