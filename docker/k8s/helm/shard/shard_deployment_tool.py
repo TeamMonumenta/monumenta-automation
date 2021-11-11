@@ -69,6 +69,10 @@ shard_config = {
         "stage": { "node": "m12", "memGB": 4, },
     },
 
+    "playerplots": {
+        "build" : { "node": "m12", "memMB": 1536, },
+    },
+
     # Player build shard
     "build": {
         "play" : { "node": "m8" , "memGB": 2   , "gsheetCredentials": "false" },
