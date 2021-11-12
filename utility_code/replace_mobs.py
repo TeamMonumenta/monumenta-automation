@@ -137,6 +137,9 @@ sub = [
     ("Hateful Titan", match_name('Dragongheist', match_id('minecraft:wither_skeleton'))),
     ("River's Will", match_name('Son of the River', match_id('minecraft:zombie_villager'))),
     ("Tuathan", match_name('Corrupted Leprechaun', match_id('minecraft:zombie'))),
+
+    # Depths
+    ("Ravenous Ooze", match_name('Abyssal Guardian', match_id('minecraft:guardian'))),
 ]
 
 def usage():
