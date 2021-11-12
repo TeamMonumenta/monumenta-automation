@@ -1,5 +1,14 @@
 FROM openjdk:16-jdk-buster
 
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy && \
+	pip3 install wheel && \
+	pip3 install bitstring && \
+	pip3 install -U pyyaml
+
+COPY quarry /automation/quarry
+COPY utility_code /automation/utility_code
+
 # Check for mandatory build arguments
 ARG USERNAME
 ARG UID
@@ -14,7 +23,7 @@ RUN groupadd --non-unique -g $GID $USERNAME && \
 	# NOTE! -l flag prevents creation of gigabytes of sparse log file for some reason
 	useradd -lmNs /bin/bash -u $UID -g $GID $USERNAME
 
-COPY monumenta.sh /
+COPY docker/monumenta.sh /
 RUN chmod +x /monumenta.sh
 
 USER $USERNAME
