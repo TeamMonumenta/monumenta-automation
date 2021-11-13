@@ -86,6 +86,7 @@ if output_mode:
                     entry['name'] = block_name
                     entry['auto'] = block_entity.nbt.at_path('auto').value
                     entry['powered'] = block_entity.nbt.at_path('powered').value
+                    entry['facing'] = block['facing']
 
                     out.append(entry)
 
