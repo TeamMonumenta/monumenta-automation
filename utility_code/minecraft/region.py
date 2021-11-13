@@ -89,9 +89,14 @@ class Region(MutableMapping):
         # Fix off-by-one error when reading chunk data
         compressed_size = min(compressed_size, len(buff))
 
-        chunk_tag = buff.read(compressed_size)
-        chunk_tag = zlib.decompress(chunk_tag)
-        chunk_tag = nbt.TagRoot.from_bytes(chunk_tag)
+        try:
+            chunk_tag = buff.read(compressed_size)
+            chunk_tag = zlib.decompress(chunk_tag)
+            chunk_tag = nbt.TagRoot.from_bytes(chunk_tag)
+        except Exception as ex:
+            print(f"Failed to load chunk {cx},{cz} in region {self.rx},{self.rz} global coords {cx*16},{cz*16}")
+            raise ex
+
         chunk_tag = chunk_tag.body
 
         chunk = Chunk(chunk_tag)
