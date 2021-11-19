@@ -23,17 +23,17 @@ config = {
     "dungeons":{
         "labs":{
             "region":{"x":-2, "z":2},
-            "count":700,
+            "count":400,
             "objective":"D0Access"
         },
         "white":{
             "region":{"x":-3, "z":-2},
-            "count":200,
+            "count":150,
             "objective":"D1Access"
         },
         "orange":{
             "region":{"x":-3, "z":-1},
-            "count":125,
+            "count":100,
             "objective":"D2Access"
         },
         "magenta":{
@@ -123,7 +123,7 @@ config = {
         },
         "remorse":{
             "region":{"x":-3, "z":10},
-            "count":250,
+            "count":150,
             "objective":"DSRAccess"
         },
         "rush":{
@@ -133,12 +133,12 @@ config = {
         },
         "mist":{
             "region":{"x":-2, "z":3},
-            "count":250,
+            "count":200,
             "objective":"DBMAccess"
         },
         "depths":{
             "region":{"x":-2, "z":4},
-            "count":700,
+            "count":600,
             "objective":"DDAccess"
         },
     },
