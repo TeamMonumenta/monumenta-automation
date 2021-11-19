@@ -83,7 +83,11 @@ def process_player(player):
 
     return (num_replacements, replacements_log)
 
-player_results = world.iter_players_parallel(process_player, num_processes=num_threads, autosave=(not dry_run))
+def err_func(ex):
+    eprint(f"Caught exception: {ex}")
+    return (0, {})
+
+player_results = world.iter_players_parallel(process_player, err_func, num_processes=num_threads, autosave=(not dry_run))
 timings.nextStep("Replacements done")
 
 num_replacements = 0

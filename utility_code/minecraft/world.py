@@ -28,11 +28,14 @@ def _parallel_region_wrapper(arg):
 # the player files, and it isn't possible to copy a loaded player file across
 # processes so it has to be loaded afterwards
 def _parallel_player_wrapper(arg):
-    full_path, autosave, func = arg
-    player_file = PlayerFile(full_path)
-    result = func(player_file.player)
-    if autosave:
-        player_file.save()
+    full_path, autosave, func, err_func = arg
+    try:
+        player_file = PlayerFile(full_path)
+        result = func(player_file.player)
+        if autosave:
+            player_file.save()
+    except Exception as ex:
+        result = err_func(ex)
     return result
 
 class World():
@@ -181,7 +184,7 @@ class World():
             if autosave:
                 player_file.save()
 
-    def iter_players_parallel(self, func, num_processes=4, autosave=False):
+    def iter_players_parallel(self, func, err_func, num_processes=4, autosave=False):
         """
         Iterates players in parallel using multiple processes.
 
@@ -209,7 +212,7 @@ class World():
         else:
             player_list = []
             for full_path in self.enumerate_players():
-                player_list.append((full_path, autosave, func))
+                player_list.append((full_path, autosave, func, err_func))
 
             if len(player_list) > 0:
                 with multiprocessing.Pool(num_processes) as pool:
