@@ -69,16 +69,16 @@ for uuid in scoreboard._players:
             sys.exit(1)
 
         if facing == "north":
-            slot["min"] = (plotx - 8, ploty - 17, plotz - 23)
+            slot["min"] = (plotx - 8, ploty - 16, plotz - 23)
             slot["max"] = (plotx + 8, ploty + 32, plotz - 1)
         elif facing == "east":
-            slot["min"] = (plotx + 1, ploty - 17, plotz - 8)
+            slot["min"] = (plotx + 1, ploty - 16, plotz - 8)
             slot["max"] = (plotx + 23, ploty + 32, plotz + 8)
         elif facing == "south":
-            slot["min"] = (plotx - 8, ploty - 17, plotz + 1)
+            slot["min"] = (plotx - 8, ploty - 16, plotz + 1)
             slot["max"] = (plotx + 8, ploty + 32, plotz + 23)
         elif facing == "west":
-            slot["min"] = (plotx - 23, ploty - 17, plotz - 8)
+            slot["min"] = (plotx - 23, ploty - 16, plotz - 8)
             slot["max"] = (plotx - 1, ploty + 32, plotz + 8)
         slot["facing"] = facing
 
