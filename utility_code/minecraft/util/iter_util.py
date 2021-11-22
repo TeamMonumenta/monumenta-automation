@@ -45,7 +45,7 @@ class RecursiveMinecraftIterator():
         """Iterates over class_ objects directly in this object."""
         from minecraft.player_dat_format.item import Item
 
-        check_coords = not (
+        skip_coords_check = (
             min_x == -math.inf and max_x == math.inf and
             min_y == -math.inf and max_y == math.inf and
             min_z == -math.inf and max_z == math.inf)
@@ -58,7 +58,7 @@ class RecursiveMinecraftIterator():
                             # Items never have a position, so position only needs to be checked for non-items.
                             obj = class_(tag, self, self.root)
                             x, y, z = obj.pos if obj.pos is not None else (None, None, None)
-                            if not check_coords or (
+                            if skip_coords_check or (
                                 min_x <= x and x < max_x and
                                 min_y <= y and y < max_y and
                                 min_z <= z and z < max_z
@@ -72,7 +72,7 @@ class RecursiveMinecraftIterator():
         """Iterates over all objects directly in this object."""
         from minecraft.player_dat_format.item import Item
 
-        check_coords = not (
+        skip_coords_check = (
             min_x == -math.inf and max_x == math.inf and
             min_y == -math.inf and max_y == math.inf and
             min_z == -math.inf and max_z == math.inf)
@@ -85,7 +85,7 @@ class RecursiveMinecraftIterator():
                         # Items never have a position, so position only needs to be checked for non-items.
                         obj = class_(tag, self, self.root)
                         x, y, z = obj.pos if obj.pos is not None else (None, None, None)
-                        if not check_coords or (
+                        if skip_coords_check or (
                             min_x <= x and x < max_x and
                             min_y <= y and y < max_y and
                             min_z <= z and z < max_z
