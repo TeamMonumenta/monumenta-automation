@@ -58,6 +58,7 @@ class World():
         new_world = World(path)
         for region in self.iter_regions():
             region.copy_to(new_world, region.rx, region.rz)
+        return new_world
 
     def enumerate_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
         """
