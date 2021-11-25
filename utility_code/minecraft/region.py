@@ -11,7 +11,7 @@ from collections.abc import MutableMapping
 
 from lib_py3.common import copy_file, uuid_to_mc_uuid_tag_int_array
 
-from minecraft.chunk_format.chunk import Chunk
+from minecraft.chunk_format.chunk import Chunk, EntitiesChunk, PoiChunk
 from minecraft.util.debug_util import NbtPathDebug
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
@@ -55,15 +55,12 @@ def _fixEntity(dx, dz, entity, regenerate_uuids):
         entity.value.pop("UUIDLeast", None)
         entity.value["UUID"] = uuid_to_mc_uuid_tag_int_array(uuid.uuid4())
 
-class Region(MutableMapping):
-    """A region file."""
+class BaseRegion(MutableMapping):
+    """A base region file that is common to all types"""
 
     def __init__(self, path, rx, rz, read_only=False):
         """Load a region file from the path provided, and allow saving."""
         self.path = path
-        self.region_type = os.path.basename(os.path.dirname(path))
-        if self.region_type not in ('entities', 'poi', 'region'):
-            raise Exception(f"region_type '{region_type}' must be one of ('entities', 'poi', 'region')")
         self.rx = rx
         self.rz = rz
         self._region = nbt.RegionFile(self.path, read_only=read_only)
@@ -102,8 +99,13 @@ class Region(MutableMapping):
 
         chunk_tag = chunk_tag.body
 
-        chunk = Chunk(chunk_tag, self)
-        return chunk
+        if type(self) is Region:
+            return Chunk(chunk_tag, self)
+        elif type(self) is EntitiesRegion:
+            return EntitiesChunk(chunk_tag, self)
+        elif type(self) is PoiRegion:
+            return PoiChunk(chunk_tag, self)
+        raise Exception(f"Unable to load chunk for region of type {type(self)}")
 
     def save_chunk(self, chunk, cx=None, cz=None):
         """Save the Chunk at cx, cz.
@@ -234,38 +236,15 @@ class Region(MutableMapping):
         """
         rx = int(rx)
         rz = int(rz)
-        dx = (rx - self.rx) * 512
-        dz = (rz - self.rz) * 512
-        new_path = os.path.join(world.path, self.region_type, f'r.{rx}.{rz}.mca')
+        new_path = os.path.join(world.path, self.folder_name(), f'r.{rx}.{rz}.mca')
 
         if os.path.exists(new_path) and not overwrite:
             raise Exception(f"Destination region already exists: {new_path}")
 
         copy_file(self.path, new_path)
 
-        region = Region(new_path, rx, rz)
-
-        if region.region_type == "entities":
-            for chunk in region.iter_chunks(autosave=True):
-                # 1.17+ entities chunk format already has relative cx/cz values, so don't need to update Position here
-                # Still need to fix the entities though
-                for path in ['Entities',]:
-                    if chunk.nbt.has_path(path):
-                        for entity in chunk.nbt.iter_multipath(path + '[]'):
-                            _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids)
-
-
-        else:
-            # TODO: 1.16 and before logic to eventually remove?
-            for chunk in region.iter_chunks(autosave=True):
-                chunk.nbt.at_path('Level.xPos').value = rx * 32 + (chunk.nbt.at_path('Level.xPos').value & 0x1f)
-                chunk.nbt.at_path('Level.zPos').value = rz * 32 + (chunk.nbt.at_path('Level.zPos').value & 0x1f)
-
-                for path in ['Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
-                    if chunk.nbt.has_path(path):
-                        for entity in chunk.nbt.iter_multipath(path + '[]'):
-                            _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids)
-        return region
+        # Create the same type region object as the calling class (Region, EntitiesRegion, etc.)
+        return type(self)(new_path, rx, rz)
 
     def move_to(self, world, rx, rz, overwrite=False):
         region = self.copy_to(world, rx, rz, overwrite=overwrite, regenerate_uuids=False)
@@ -363,8 +342,29 @@ class Region(MutableMapping):
         cx, cz = chunk_coord_pair
         return self.has_chunk(cx, cz)
 
-    def __repr__(self):
-        return f'Region({self.path!r}, {self.rx!r}, {self.rz!r})'
+class Region(BaseRegion):
+    """A 'region' type region file"""
+
+    @classmethod
+    def folder_name(self):
+        return "region"
+
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True):
+        # Copy the file itself which is common to all region types
+        region = super().copy_to(world, rx, rz, overwrite, regenerate_uuids)
+        dx = (rx - self.rx) * 512
+        dz = (rz - self.rz) * 512
+
+        for chunk in region.iter_chunks(autosave=True):
+            chunk.nbt.at_path('Level.xPos').value = rx * 32 + (chunk.nbt.at_path('Level.xPos').value & 0x1f)
+            chunk.nbt.at_path('Level.zPos').value = rz * 32 + (chunk.nbt.at_path('Level.zPos').value & 0x1f)
+
+            for path in ['Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
+                if chunk.nbt.has_path(path):
+                    for entity in chunk.nbt.iter_multipath(path + '[]'):
+                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids)
+
+        return region
 
     def get_block(self, pos: [int, int, int]):
         """
@@ -426,3 +426,44 @@ class Region(MutableMapping):
                 chunk = self.load_chunk(cx, cz)
                 chunk.fill_blocks(pos1, pos2, block)
                 self.save_chunk(chunk)
+
+    def __repr__(self):
+        return f'Region({self.path!r}, {self.rx!r}, {self.rz!r})'
+
+class EntitiesRegion(BaseRegion):
+    """An 'entities' type region file"""
+
+    @classmethod
+    def folder_name(self):
+        return "entities"
+
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True):
+        # Copy the file itself which is common to all region types
+        region = super().copy_to(world, rx, rz, overwrite, regenerate_uuids)
+        dx = (rx - self.rx) * 512
+        dz = (rz - self.rz) * 512
+
+        for chunk in region.iter_chunks(autosave=True):
+            # entities chunk format already has relative cx/cz values, so don't need to update Position here
+            # Still need to fix the entities though
+            for path in ['Entities',]:
+                if chunk.nbt.has_path(path):
+                    for entity in chunk.nbt.iter_multipath(path + '[]'):
+                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids)
+        return region
+
+    def __repr__(self):
+        return f'EntitiesRegion({self.path!r}, {self.rx!r}, {self.rz!r})'
+
+class PoiRegion(BaseRegion):
+    """An 'poi' type region file"""
+
+    @classmethod
+    def folder_name(self):
+        return "poi"
+
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True):
+        raise NotImplementedError
+
+    def __repr__(self):
+        return f'PoiRegion({self.path!r}, {self.rx!r}, {self.rz!r})'

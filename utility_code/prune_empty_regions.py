@@ -4,6 +4,7 @@ import os
 import sys
 from pprint import pprint
 from minecraft.world import World
+from minecraft.region import Region, EntitiesRegion
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types.chunk import BlockArray
@@ -17,12 +18,12 @@ def process_region(region):
         if confirmed_valid:
             break
 
-        if region.region_type == "entities":
+        if type(region) is EntitiesRegion:
             # Check if there are entities (fast check)
             if chunk.nbt.count_multipath('Entities[]') > 0:
                 confirmed_valid = True
                 break
-        else:
+        elif type(region) is Region:
             # Check if there are entities (fast check)
             if chunk.nbt.count_multipath('Level.Entities[]') > 0:
                 confirmed_valid = True
@@ -73,7 +74,7 @@ while len(args) >= 1:
 
     print("Deleting completely empty region files:")
 
-    results = world.iter_regions_parallel(process_region, num_processes=4)
+    results = world.iter_regions_parallel(process_region, num_processes=4, region_types=(Region, EntitiesRegion)) # TODO: PoiRegion ignored for now
     deleted = 0
     for region_result in results:
         if not region_result:

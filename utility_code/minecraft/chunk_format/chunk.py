@@ -16,8 +16,8 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from quarry.types import nbt
 from quarry.types.chunk import BlockArray
 
-class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
-    """A chunk, loaded from a tag."""
+class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
+    """A base chunk that is common to all types, loaded from a tag."""
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 
@@ -35,6 +35,7 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
         self._multipaths = type(self).__MULTIPATHS
 
         self.region = region
+
         self.nbt_path_init(nbt, None, self, nbt.at_path('DataVersion').value)
 
     def _init_multipaths(self, multipaths):
@@ -50,31 +51,28 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
         return str(self)
 
     @property
-    def cx(self):
-        if self.region.region_type == "entities":
-            return self.nbt.at_path('Position').value[0] + self.region.rx * 32
-        else:
-            return self.nbt.at_path('Level.xPos').value
-
-    @property
-    def cz(self):
-        if self.region.region_type == "entities":
-            return self.nbt.at_path('Position').value[1] + self.region.rz * 32
-        else:
-            return self.nbt.at_path('Level.zPos').value
-
-    @property
     def pos(self):
         """Chunks don't return a position, even though they have one,
         because everything inside a chunk should have a position
         """
         return None
 
+class Chunk(BaseChunk):
+    """A 'region' chunk"""
+
     def __str__(self):
         return f'Chunk ({self.cx}, {self.cz})'
 
     def __repr__(self):
         return f'Chunk(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
+
+    @property
+    def cx(self):
+        return self.nbt.at_path('Level.xPos').value
+
+    @property
+    def cz(self):
+        return self.nbt.at_path('Level.zPos').value
 
     def get_block(self, pos: [int, int, int]):
         """
@@ -182,3 +180,37 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
 
         if len(required_sections_left) != 0:
             raise KeyError(f'Could not find cy={required_sections_left} in chunk {self.cx},{self.cz} of region file {rx},{rz} in world {self.path}')
+
+class EntitiesChunk(BaseChunk):
+    """An 'entities' chunk"""
+
+    def __str__(self):
+        return f'EntitiesChunk ({self.cx}, {self.cz})'
+
+    def __repr__(self):
+        return f'EntitiesChunk(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
+
+    @property
+    def cx(self):
+        return self.nbt.at_path('Position').value[0] + self.region.rx * 32
+
+    @property
+    def cz(self):
+        return self.nbt.at_path('Position').value[1] + self.region.rz * 32
+
+class PoiChunk(BaseChunk):
+    """An 'entities' chunk"""
+
+    def __str__(self):
+        return f'PoiChunk ({self.cx}, {self.cz})'
+
+    def __repr__(self):
+        return f'PoiChunk(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
+
+    @property
+    def cx(self):
+        raise NotImplementedError
+
+    @property
+    def cz(self):
+        raise NotImplementedError

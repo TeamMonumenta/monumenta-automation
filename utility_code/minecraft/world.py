@@ -10,7 +10,7 @@ import multiprocessing
 from lib_py3.common import bounded_range
 
 from minecraft.level_dat import LevelDat
-from minecraft.region import Region
+from minecraft.region import Region, EntitiesRegion, PoiRegion
 from minecraft.player_dat_format.player import PlayerFile
 
 # This wraps the callback for iter_regions_parallel so that the region
@@ -19,8 +19,8 @@ from minecraft.player_dat_format.player import PlayerFile
 # the region files, and it isn't possible to copy a loaded Region file across
 # processes so it has to be loaded afterwards
 def _parallel_region_wrapper(arg):
-    full_path, rx, rz, func = arg
-    return func(Region(full_path, rx, rz))
+    full_path, rx, rz, func, region_type = arg
+    return func(region_type(full_path, rx, rz))
 
 # This wraps the callback for iter_players_parallel so that the player
 # files themselves are loaded by the process that will work on them.
@@ -60,13 +60,13 @@ class World():
             region.copy_to(new_world, region.rx, region.rz)
         return new_world
 
-    def enumerate_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
+    def enumerate_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion, PoiRegion)):
         """
         Enumerates region files in this world without loading them
 
         Only returns regions that are within the bounds specified by min/max coordinates
 
-        yiels tuples of (full_path, rx, rz) which is what is needed to load the region file
+        yields tuples of (full_path, rx, rz, region_type) which is what is needed to load the region file
         """
         if min_x > max_x:
             temp = min_x;
@@ -81,7 +81,8 @@ class World():
             min_z = max_z
             max_z = temp
 
-        for subfolder in ('entities', 'poi', 'region'):
+        for region_type in region_types:
+            subfolder = region_type.folder_name()
             region_folder = os.path.join(self.path, subfolder)
             if not os.path.isdir(region_folder):
                 continue
@@ -109,9 +110,9 @@ class World():
                     continue
 
                 full_path = os.path.join(region_folder, filename)
-                yield full_path, rx, rz
+                yield full_path, rx, rz, region_type
 
-    def iter_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, read_only=False):
+    def iter_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, read_only=False, region_types=(Region, EntitiesRegion, PoiRegion)):
         """
         Iterates region files in this world
 
@@ -120,10 +121,10 @@ class World():
         returns loaded Region objects
         """
 
-        for full_path, rx, rz in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z):
-            yield Region(full_path, rx, rz, read_only=read_only)
+        for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
+            yield region_type(full_path, rx, rz, read_only=read_only)
 
-    def iter_regions_parallel(self, func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
+    def iter_regions_parallel(self, func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion, PoiRegion)):
         """
         Iterates regions in parallel using multiple processes.
 
@@ -144,23 +145,23 @@ class World():
             # Don't bother with processes if only going to use one
             # This makes debugging much easier
             retval = []
-            for region in self.iter_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z):
+            for region in self.iter_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
                 retval.append(func(region))
             return retval
         else:
             region_list = []
-            for full_path, rx, rz in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z):
-                region_list.append((full_path, rx, rz, func))
+            for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
+                region_list.append((full_path, rx, rz, func, region_type))
 
             if len(region_list) > 0:
                 with multiprocessing.Pool(num_processes) as pool:
                     return pool.map(_parallel_region_wrapper, region_list)
 
-    def get_region(self, rx, rz, read_only=False):
+    def get_region(self, rx, rz, read_only=False, region_type=Region):
         rx = int(rx)
         rz = int(rz)
-        full_path = os.path.join(self.path, 'region', f'r.{rx}.{rz}.mca')
-        return Region(full_path, rx, rz, read_only=read_only)
+        full_path = os.path.join(self.path, region_type.folder_name, f'r.{rx}.{rz}.mca')
+        return region_type(full_path, rx, rz, read_only=read_only)
 
     def enumerate_players(self):
         """

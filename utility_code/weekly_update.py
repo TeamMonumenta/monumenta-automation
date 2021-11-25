@@ -413,7 +413,7 @@ for config in config_list:
                 }
             })
     elif "replace_items_globally" in config and config["replace_items_globally"]:
-        for _, rx, rz in worlds[config["server"]].enumerate_regions():
+        for _, rx, rz, __ in worlds[config["server"]].enumerate_regions():
             regions.append({
                 "world": config["server"],
                 "rx": rx,
