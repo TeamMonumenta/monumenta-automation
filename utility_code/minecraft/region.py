@@ -62,6 +62,8 @@ class Region(MutableMapping):
         """Load a region file from the path provided, and allow saving."""
         self.path = path
         self.region_type = os.path.basename(os.path.dirname(path))
+        if self.region_type not in ('entities', 'poi', 'region'):
+            raise Exception(f"region_type '{region_type}' must be one of ('entities', 'poi', 'region')")
         self.rx = rx
         self.rz = rz
         self._region = nbt.RegionFile(self.path, read_only=read_only)
@@ -100,7 +102,7 @@ class Region(MutableMapping):
 
         chunk_tag = chunk_tag.body
 
-        chunk = Chunk(chunk_tag)
+        chunk = Chunk(chunk_tag, self)
         return chunk
 
     def save_chunk(self, chunk, cx=None, cz=None):
@@ -140,7 +142,7 @@ class Region(MutableMapping):
             z, x = divmod(entry_index, 32)
             entry = buff.unpack('I') & 0xffffffff
             offset, length = entry >> 8, entry & 0xff
-            if self._entry_valid(entry) and not (x == cx and z == cz):
+            if self._entry_valid(entry) and not (x == local_cx and z == local_cz):
                 extents.append((offset, length))
         # Sort extents by starting offset
         extents.sort()
@@ -203,7 +205,7 @@ class Region(MutableMapping):
             z, x = divmod(entry_index, 32)
             entry = buff.unpack('I') & 0xffffffff
             offset, length = entry >> 8, entry & 0xff
-            if self._entry_valid(entry) and not (x == cx and z == cz):
+            if self._entry_valid(entry) and not (x == local_cx and z == local_cz):
                 extents.append((offset, length))
         # Sort extents by starting offset
         extents.sort()
@@ -243,14 +245,26 @@ class Region(MutableMapping):
 
         region = Region(new_path, rx, rz)
 
-        for chunk in region.iter_chunks(autosave=True):
-            chunk.nbt.at_path('Level.xPos').value = rx * 32 + (chunk.nbt.at_path('Level.xPos').value & 0x1f)
-            chunk.nbt.at_path('Level.zPos').value = rz * 32 + (chunk.nbt.at_path('Level.zPos').value & 0x1f)
+        if region.region_type == "entities":
+            for chunk in region.iter_chunks(autosave=True):
+                # 1.17+ entities chunk format already has relative cx/cz values, so don't need to update Position here
+                # Still need to fix the entities though
+                for path in ['Entities',]:
+                    if chunk.nbt.has_path(path):
+                        for entity in chunk.nbt.iter_multipath(path + '[]'):
+                            _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids)
 
-            for path in ['Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
-                if chunk.nbt.has_path(path):
-                    for entity in chunk.nbt.iter_multipath(path + '[]'):
-                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids)
+
+        else:
+            # TODO: 1.16 and before logic to eventually remove?
+            for chunk in region.iter_chunks(autosave=True):
+                chunk.nbt.at_path('Level.xPos').value = rx * 32 + (chunk.nbt.at_path('Level.xPos').value & 0x1f)
+                chunk.nbt.at_path('Level.zPos').value = rz * 32 + (chunk.nbt.at_path('Level.zPos').value & 0x1f)
+
+                for path in ['Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
+                    if chunk.nbt.has_path(path):
+                        for entity in chunk.nbt.iter_multipath(path + '[]'):
+                            _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids)
         return region
 
     def move_to(self, world, rx, rz, overwrite=False):

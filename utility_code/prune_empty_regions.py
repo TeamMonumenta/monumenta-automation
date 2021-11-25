@@ -17,34 +17,40 @@ def process_region(region):
         if confirmed_valid:
             break
 
-        # Check if there are entities (fast check)
-        if chunk.nbt.count_multipath('Level.Entities[]') > 0:
-            confirmed_valid = True
-            break
-
-        # Check if there are tile entities (fast check)
-        if chunk.nbt.count_multipath('Level.TileEntities[]') > 0:
-            confirmed_valid = True
-            break
-
-        # Check if there are block entities (fast check)
-        if chunk.nbt.count_multipath('Level.BlockEntities[]') > 0:
-            confirmed_valid = True
-            break
-
-        # Check for non-air blocks
-        # This is an expensive check, keep it low priority
-        for section in chunk.nbt.at_path('Level.Sections').value:
-            try:
-                blocks = BlockArray.from_nbt(section, block_map)
-                for block in blocks:
-                    if block['name'] != "minecraft:air":
-                        confirmed_valid = True
-                        break
-            except IndexError:
-                print("Warning: unable to iterate blocks. Assuming region is valid")
+        if region.region_type == "entities":
+            # Check if there are entities (fast check)
+            if chunk.nbt.count_multipath('Entities[]') > 0:
                 confirmed_valid = True
                 break
+        else:
+            # Check if there are entities (fast check)
+            if chunk.nbt.count_multipath('Level.Entities[]') > 0:
+                confirmed_valid = True
+                break
+
+            # Check if there are tile entities (fast check)
+            if chunk.nbt.count_multipath('Level.TileEntities[]') > 0:
+                confirmed_valid = True
+                break
+
+            # Check if there are block entities (fast check)
+            if chunk.nbt.count_multipath('Level.BlockEntities[]') > 0:
+                confirmed_valid = True
+                break
+
+            # Check for non-air blocks
+            # This is an expensive check, keep it low priority
+            for section in chunk.nbt.at_path('Level.Sections').value:
+                try:
+                    blocks = BlockArray.from_nbt(section, block_map)
+                    for block in blocks:
+                        if block['name'] != "minecraft:air":
+                            confirmed_valid = True
+                            break
+                except IndexError:
+                    print("Warning: unable to iterate blocks. Assuming region is valid")
+                    confirmed_valid = True
+                    break
 
     if not confirmed_valid:
         os.remove(region.path)

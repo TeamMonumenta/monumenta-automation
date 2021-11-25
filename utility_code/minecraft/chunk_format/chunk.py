@@ -21,16 +21,20 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 
-    def __init__(self, nbt):
+    def __init__(self, nbt, region):
         """Load an entity from an NBT tag.
 
         Must be saved from wherever the tag was loaded from for changes to apply.
+
+        region should be a reference to the parent region that contains this chunk
+            (which will further be of region_type region, entities, poi)
         """
         if type(self).__CLASS_UNINITIALIZED:
             self._init_multipaths(type(self).__MULTIPATHS)
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
+        self.region = region
         self.nbt_path_init(nbt, None, self, nbt.at_path('DataVersion').value)
 
     def _init_multipaths(self, multipaths):
@@ -47,11 +51,17 @@ class Chunk(RecursiveMinecraftIterator, NbtPathDebug):
 
     @property
     def cx(self):
-        return self.nbt.at_path('Level.xPos').value
+        if self.region.region_type == "entities":
+            return self.nbt.at_path('Position').value[0] + self.region.rx * 32
+        else:
+            return self.nbt.at_path('Level.xPos').value
 
     @property
     def cz(self):
-        return self.nbt.at_path('Level.zPos').value
+        if self.region.region_type == "entities":
+            return self.nbt.at_path('Position').value[1] + self.region.rz * 32
+        else:
+            return self.nbt.at_path('Level.zPos').value
 
     @property
     def pos(self):
