@@ -122,6 +122,7 @@ dungeons = {
     "yellow":{"x":-3, "z":2},
     "willows":{"x":-3, "z":3},
     "corridors":{"x":-2, "z":-1},
+    "verdant":{"x":-2, "z":5},
     "reverie":{"x":-3, "z":4},
     "tutorial":{"x":-2, "z":1},
     "sanctum":{"x":-3, "z":12},

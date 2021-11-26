@@ -110,6 +110,16 @@ corridors = {
     "datapacks":datapacks_dungeon + ['file/corridors'],
 }
 
+verdant = {
+    "server":"verdant",
+    "previous_world_path":f"{last_week_dir}/verdant/Project_Epic-verdant/",
+    "build_world_path":f"{build_template_dir}/verdant/Project_Epic-verdant/",
+    "output_world_path":f"{output_dir}/verdant/Project_Epic-verdant/",
+    "copy_base_from":"build",
+    "copy_previous_paths":["stats", "data/scoreboard.dat"],
+    "datapacks":datapacks_dungeon + ['file/verdant'],
+}
+
 rush = {
     "server":"rush",
     "previous_world_path":f"{last_week_dir}/rush/Project_Epic-rush/",
@@ -201,6 +211,7 @@ available_configs = {
     "forum": get_dungeon_config("forum", "DFFAccess"),
     "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
     "corridors": corridors,
+    "verdant": verdant,
     "rush": rush,
     "mist": mist,
     "remorse": remorse,

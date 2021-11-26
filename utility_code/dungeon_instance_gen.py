@@ -86,6 +86,11 @@ config = {
             "count":100,
             "objective":"DB1Access"
         },
+        "verdant":{
+            "region":{"x":-2, "z":5},
+            "count":150,
+            "objective":"DVAccess"
+        },
         "corridors":{
             "region":{"x":-2, "z":-1},
             "count":150,
