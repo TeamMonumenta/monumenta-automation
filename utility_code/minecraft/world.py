@@ -160,7 +160,7 @@ class World():
     def get_region(self, rx, rz, read_only=False, region_type=Region):
         rx = int(rx)
         rz = int(rz)
-        full_path = os.path.join(self.path, region_type.folder_name, f'r.{rx}.{rz}.mca')
+        full_path = os.path.join(self.path, region_type.folder_name(), f'r.{rx}.{rz}.mca')
         return region_type(full_path, rx, rz, read_only=read_only)
 
     def enumerate_players(self):
