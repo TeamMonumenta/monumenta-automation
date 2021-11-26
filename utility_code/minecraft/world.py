@@ -60,7 +60,7 @@ class World():
             region.copy_to(new_world, region.rx, region.rz)
         return new_world
 
-    def enumerate_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion, PoiRegion)):
+    def enumerate_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion)): # TODO: PoiRegion
         """
         Enumerates region files in this world without loading them
 
@@ -112,7 +112,7 @@ class World():
                 full_path = os.path.join(region_folder, filename)
                 yield full_path, rx, rz, region_type
 
-    def iter_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, read_only=False, region_types=(Region, EntitiesRegion, PoiRegion)):
+    def iter_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, read_only=False, region_types=(Region, EntitiesRegion)): # TODO: PoiRegion
         """
         Iterates region files in this world
 
@@ -124,7 +124,7 @@ class World():
         for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
             yield region_type(full_path, rx, rz, read_only=read_only)
 
-    def iter_regions_parallel(self, func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion, PoiRegion)):
+    def iter_regions_parallel(self, func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion)): # TODO: PoiRegion
         """
         Iterates regions in parallel using multiple processes.
 
