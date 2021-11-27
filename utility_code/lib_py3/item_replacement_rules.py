@@ -496,6 +496,26 @@ class PreserveBlockEntityTag(GlobalRule):
                 item.tag = nbt.TagCompound({})
             item.tag.value['BlockEntityTag'] = self.block_entity_tag
 
+class PreserveTotemOfTransposing(GlobalRule):
+    name = 'Preserve Totem of Transposing tags'
+
+    def preprocess(self, template, item):
+        self.channel = None
+        if item.nbt.has_path('tag.TransposingID') and isinstance(item.tag.at_path('TransposingID').value, int):
+            self.channel = item.tag.at_path('TransposingID').value
+
+    def postprocess(self, item):
+        if self.channel is not None:
+            if not item.nbt.has_path('tag.display.Lore[0]'):
+                return
+            for i, oldLoreTag in enumerate(item.tag.at_path('display.Lore').value):
+                if 'Transposing Channel:' in oldLoreTag.value:
+                    item.tag.value['TransposingID'] = nbt.TagInt(self.channel)
+                    item.tag.at_path('display.Lore').value[i].value = '{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","extra":[{"text":"Transposing Channel: "},{"text":"$TRANSPOSING_ID$"}],"text":""}'.replace('$TRANSPOSING_ID$', str(self.channel))
+                    plain_tag_path = 'plain.display.Lore[$INDEX$]'.replace('$INDEX$', str(i))
+                    if item.tag.has_path(plain_tag_path):
+                        item.tag.at_path(plain_tag_path).value = 'Transposing Channel: $TRANSPOSING_ID$'.replace('$TRANSPOSING_ID$', str(self.channel))
+
 class UpdatePlainTag(GlobalRule):
     name = 'Update plain tag'
 
