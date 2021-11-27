@@ -519,7 +519,7 @@ Examples:
         #  'dungeon': {'available_replicas': 1, 'replicas': 1}
         #  'test': {'available_replicas': 0, 'replicas': 0}}
 
-        await message.channel.send("Shard list: \n{}".format(pformat(shards)))
+        await self.display("Shard list: \n{}".format(pformat(shards)))
 
     async def action_list_instances(self, cmd, message):
         rboard = RedisRBoard("play", redis_host="redis")
