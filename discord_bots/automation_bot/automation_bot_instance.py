@@ -120,6 +120,7 @@ class AutomationBotInstance(object):
             "run replacements": self.action_run_replacements,
             "find loot problems": self.action_find_loot_problems,
             "get commands": self.action_get_commands,
+            "list world loot": self.action_list_world_loot,
 
             "generate instances": self.action_generate_instances,
             "prepare update bundle": self.action_prepare_update_bundle,
@@ -738,6 +739,14 @@ Must be run before starting weekly update on the play server'''
         await self.display(message.author.mention)
 
     async def action_prepare_stage_bundle(self, cmd, message):
+        '''Prepares a bundle of whichever shards you want to update on stage.
+
+`--debug` prepares the bundle without stopping shards.
+
+Examples:
+`{cmdPrefix}prepare stage bundle valley labs`
+`{cmdPrefix}prepare stage bundle --debug valley labs`'''
+
         arg_str = message.content[len(self._prefix + cmd)+1:].strip()
         shards = arg_str.split()
 
@@ -842,6 +851,9 @@ Must be run before starting weekly update on the play server'''
         await self.display(message.author.mention)
 
     async def action_apply_stage_bundle(self, cmd, message):
+        '''Applies a bundle of whichever shards you want to update on stage. This takes no arguments.
+You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
+
         await self.display("Unpacking stage bundle...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
@@ -1436,6 +1448,25 @@ Syntax:
             await self.run(os.path.join(_top_level, f"utility_code/command_block_update_tool.py --world Project_Epic-{shard} --output {scan_results}"), displayOutput=True)
             await self.run(f"mv -f {scan_results} /tmp/{shard}.json")
             await self._channel.send(f"{shard} commands:", file=discord.File(f'/tmp/{shard}.json'))
+
+        await self.display(message.author.mention)
+
+    async def action_list_world_loot(self, cmd, message):
+        '''Lists all loot tables and items in a world, with optional coordinates
+Syntax:
+`{cmdPrefix}list world loot dungeon`
+`{cmdPrefix}list world loot dungeon 512 0 0 1023 255 511`'''
+
+        commandArgs = message.content[len(self._prefix + cmd)+1:].split()
+
+        shard = commandArgs[0]
+        if shard not in commandArgs:
+            await self.display(f"The shard {shard} is not known by this bot.")
+            return
+
+        await self.display(f"Looking for loot...")
+
+        await self.run(os.path.join(_top_level, f"utility_code/list_world_loot.py {self._shards[shard]}/Project_Epic-{shard}" + "".join([" " + x for x in commandArgs[1:]])), displayOutput=True)
 
         await self.display(message.author.mention)
 

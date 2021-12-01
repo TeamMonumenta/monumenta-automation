@@ -115,13 +115,13 @@ class RecursiveMinecraftIterator():
         if isinstance(self, class_):
             yield self
 
-        for child in self.iter_all_types():
+        for child in self.iter_all_types(min_x, min_y, min_z, max_x, max_y, max_z):
             yield from child._recursive_iterator(class_, min_x, min_y, min_z, max_x, max_y, max_z)
 
     def recursive_iter_all_types(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
         """Recursively iterates all objects in this object."""
         yield self
-        for child in self.iter_all_types():
+        for child in self.iter_all_types(min_x, min_y, min_z, max_x, max_y, max_z):
             yield from child.recursive_iter_all_types(min_x, min_y, min_z, max_x, max_y, max_z)
 
     def recursive_iter_block_entities(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
