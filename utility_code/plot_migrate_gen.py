@@ -13,9 +13,9 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../qu
 from quarry.types import nbt
 
 def get_mailbox_chests(world, read_only=True):
-    for region in world.iter_regions(min_x = -1292, min_y = 101, min_z = -1292, max_x = -1292 + 1, max_y = 101 + 2, max_z = -1292 + 1, read_only=read_only):
-        for chunk in region.iter_chunks(min_x = -1292, min_y = 101, min_z = -1292, max_x = -1292 + 1, max_y = 101 + 2, max_z = -1292 + 1, autosave=not read_only):
-            for block_entity in chunk.iter_block_entities(min_x = -1292, min_y = 101, min_z = -1292, max_x = -1292 + 1, max_y = 101 + 2, max_z = -1292 + 1):
+    for region in world.iter_regions(min_x = -1292, min_y = 100, min_z = -1292, max_x = -1292 + 1, max_y = 100 + 2, max_z = -1292 + 1, read_only=read_only):
+        for chunk in region.iter_chunks(min_x = -1292, min_y = 100, min_z = -1292, max_x = -1292 + 1, max_y = 100 + 2, max_z = -1292 + 1, autosave=not read_only):
+            for block_entity in chunk.iter_block_entities(min_x = -1292, min_y = 100, min_z = -1292, max_x = -1292 + 1, max_y = 100 + 2, max_z = -1292 + 1):
                 yield block_entity
 
 def process(inq, outq):
