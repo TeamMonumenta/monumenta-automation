@@ -159,9 +159,9 @@ fn main() -> BoxResult<()> {
         player.update_history("Weekly update");
         update_player_scores(&mut player);
 
-        /* Remove all the per-shard data except plots */
+        /* Remove all the per-shard data */
         if let Some(sharddata) = &mut player.sharddata {
-            sharddata.retain(|key, _| key == "plots");
+            sharddata.clear();
         }
 
         /* Update plugin data */

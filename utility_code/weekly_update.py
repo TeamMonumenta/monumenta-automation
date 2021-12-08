@@ -94,6 +94,15 @@ plots = {
     "replace_items_globally": True,
 }
 
+playerplots = {
+    "server":"playerplots",
+    "previous_world_path":f"{last_week_dir}/playerplots/Project_Epic-playerplots/",
+    "output_world_path":f"{output_dir}/playerplots/Project_Epic-playerplots/",
+    "copy_base_from":"previous",
+    "datapacks":datapacks_base + ['file/playerplots'],
+    "replace_items_globally": True,
+}
+
 tutorial = {
     "server":"tutorial",
     "output_world_path":f"{output_dir}/tutorial/Project_Epic-tutorial/",
@@ -190,6 +199,7 @@ isles = {
 
 available_configs = {
     "plots": plots,
+    "playerplots": playerplots,
     "valley": valley,
     "isles": isles,
     "white": get_dungeon_config("white", "D1Access"),

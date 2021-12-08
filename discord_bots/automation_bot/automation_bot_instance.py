@@ -902,7 +902,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.display("Running actual weekly update (this will take a while!)...")
         await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 6 " + " ".join(folders_to_update)))
 
-        for shard in ["plots", "valley", "isles"]:
+        for shard in ["playerplots", "plots", "valley", "isles"]:
             if shard in folders_to_update:
                 await self.display("Preserving warps for {0}...".format(shard))
                 os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
@@ -956,6 +956,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await send_broadcast_msg("7 minutes")
         await asyncio.sleep(2 * 60)
         await send_broadcast_msg("5 minutes")
+        self._socket.send_packet("playerplots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
         self._socket.send_packet("plots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
         await asyncio.sleep(2 * 60)
         await send_broadcast_msg("3 minutes")
@@ -1015,7 +1016,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
                 dirs_to_del.append(f"{self._shards[shard]}/plugins/FastAsyncWorldEdit/history")
                 dirs_to_del.append(f"{self._shards[shard]}/plugins/FastAsyncWorldEdit/sessions")
 
-            if shard not in ["build", "valley", "plots"]:
+            if shard not in ["build", "valley", "plots", "playerplots"]:
                 dirs_to_del.append(f"{self._shards[shard]}/plugins/CoreProtect")
 
             await self.run(f"rm -rf {' '.join(dirs_to_del)}")
@@ -1169,7 +1170,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 16 " + " ".join(self._shards)))
 
         if min_phase <= 16:
-            for shard in ["plots",]:
+            for shard in ["plots", "playerplots"]:
                 if shard in self._shards:
                     await self.display(f"Preserving coreprotect for {shard}...")
                     await self.run(f"mkdir -p {self._shards[shard]}/plugins/CoreProtect")
@@ -1181,7 +1182,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run(f"mkdir -p {self._shards[shard]}/plugins/Monumenta")
                     await self.run("cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/Monumenta/plot_access.json"))
 
-            for shard in ["plots", "valley", "isles"]:
+            for shard in ["plots", "valley", "isles", "playerplots"]:
                 if shard in self._shards:
                     await self.display(f"Preserving warps for {shard}...")
                     os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
