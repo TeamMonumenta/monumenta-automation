@@ -43,6 +43,9 @@ entity_sizes = {}
 for plot_id in plots:
     plot = plots[plot_id]
 
+    if (int(plot["world_id"]) % 50) == 0:
+        print(plot["world_id"])
+
     min_x = plot["min"][0]
     min_y = plot["min"][1]
     min_z = plot["min"][2]

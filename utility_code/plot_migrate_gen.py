@@ -65,10 +65,10 @@ count = 0
 for plot in plots:
     inq.put(plots[plot])
     count += 1
-    if count > 0: # TODO: Remove this
+    if count > 9999: # TODO: Remove this
         break
 
-threads = 4
+threads = 6
 if threads > 1:
     procs = []
     for i in range(0, threads):
