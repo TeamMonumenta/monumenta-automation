@@ -404,6 +404,16 @@ config = {
         'linked':server_config + base_plugins + dynmap,
     },
 
+    'playerplots':{
+        'config':server_config_to_copy + [
+            ('server.properties', 'view-distance', 'view-distance=6'),
+            ('spigot.yml', 'view-distance', '    view-distance: 6'),
+        ],
+        'linked':server_config + base_plugins + [
+            ('plugins/MonumentaWorldManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaWorldManagement/config.yml'),
+        ]
+    },
+
     'shiftingcity':{
         'config':server_config_to_copy + [
             ('server.properties', 'view-distance', 'view-distance=15'),
@@ -474,8 +484,6 @@ simple_view_distance_config = {
     'mist': 8,
     'depths': 5,
     'test': 8,
-
-    'playerplots': 6,
 }
 
 for key in simple_view_distance_config:
