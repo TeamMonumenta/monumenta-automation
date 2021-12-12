@@ -35,7 +35,7 @@ def get_things(world, min_x, min_y, min_z, max_x, max_y, max_z):
 with open("all_plot_records.json", "r") as fp:
     plots = json.load(fp)
 
-world = World("/home/epic/stage/m12/plots/Project_Epic-plots")
+world = World("Project_Epic-plots")
 
 mailbox_sizes = {}
 entity_sizes = {}

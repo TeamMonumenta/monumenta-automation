@@ -26,8 +26,9 @@ def lock_things(world, min_x, min_y, min_z, max_x, max_y, max_z):
                 if block_entity.nbt.has_path("RecordItem"):
                     block_entity.nbt.value.pop("RecordItem")
                 block_entity.nbt.value["Lock"] = nbt.TagString("AdminEquipmentTool")
-                for item in block_entity.iter_items():
-                    print(f"Item {block_entity.id} should not exist at {block_entity.pos}")
+                if block_entity.id not in ["minecraft:lectern",]:
+                    for item in block_entity.iter_items():
+                        print(f"Item {block_entity.id} should not exist at {block_entity.pos}")
 
             # Remove all entities except item frames, armor stands, and villagers
             if chunk.nbt.has_path("Level.Entities"):
@@ -37,7 +38,7 @@ def lock_things(world, min_x, min_y, min_z, max_x, max_y, max_z):
                         print(f"Got entity entry in {chunk.pos} that doesn't have an id: {entityNbt.to_mojangson()}")
                     else:
                         idt = entityNbt.at_path("id").value
-                        if "minecraft:item_frame" in idt or "minecraft:armor_stand" in idt or "minecraft:villager" in idt or (entityNbt.has_path("CustomName") and entityNbt.at_path("CustomName").value):
+                        if "minecraft:item_frame" in idt or "minecraft:armor_stand" in idt or "minecraft:villager" in idt or (entityNbt.has_path("CustomName") and len(entityNbt.at_path("CustomName").value) > 0):
                             lst.append(entityNbt)
 
                 chunk.nbt.at_path("Level.Entities").value = lst
@@ -58,17 +59,19 @@ def lock_things(world, min_x, min_y, min_z, max_x, max_y, max_z):
                     if entity.nbt.has_path("Tags"):
                         entity.nbt.at_path("Tags").value.append(nbt.TagString("UNPUSHABLE"))
                     else:
-                        entity.nbt.value.at_path("Tags").value = nbt.TagList([nbt.TagString("UNPUSHABLE"),])
+                        entity.nbt.value["Tags"] = nbt.TagList([nbt.TagString("UNPUSHABLE"),])
                     entity.nbt.value["Invulnerable"] = nbt.TagByte(1)
-                elif entityNbt.has_path("CustomName") and entityNbt.at_path("CustomName").value:
+                elif entity.nbt.has_path("CustomName") and len(entity.nbt.at_path("CustomName").value) > 0:
                     if entity.nbt.has_path("Tags"):
                         entity.nbt.at_path("Tags").value.append(nbt.TagString("UNPUSHABLE"))
                     else:
-                        entity.nbt.value.at_path("Tags").value = nbt.TagList([nbt.TagString("UNPUSHABLE"),])
+                        entity.nbt.value["Tags"] = nbt.TagList([nbt.TagString("UNPUSHABLE"),])
                     entity.nbt.value["NoAI"] = nbt.TagByte(1)
                     entity.nbt.value["Invulnerable"] = nbt.TagByte(1)
                 else:
                     print(f"Found entity {entity.id} but should have already been removed at this point")
+                    entity.nbt.tree()
+                    die
 
 # TODO: Need to lock all plots, not just plots players own?
 
@@ -76,7 +79,7 @@ def lock_things(world, min_x, min_y, min_z, max_x, max_y, max_z):
 with open("all_plot_records_with_mail.json", "r") as fp:
     plots = json.load(fp)
 
-world = World("/home/epic/stage/m12/plots/Project_Epic-plots")
+world = World("Project_Epic-plots")
 
 mailbox_sizes = {}
 entity_sizes = {}
@@ -95,5 +98,3 @@ for plot_id in plots:
     max_z = plot["max"][2]
 
     lock_things(world, min_x - 4, 0, min_z - 4, max_x + 4, 255, max_z + 4)
-
-    break # TODO
