@@ -3,7 +3,7 @@ FROM openjdk:16-jdk-buster
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy && \
 	pip3 install wheel && \
-	pip3 install bitstring && \
+	pip3 install bitstring mutf8 && \
 	pip3 install -U pyyaml
 
 COPY quarry /automation/quarry
