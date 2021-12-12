@@ -38,7 +38,12 @@ def lock_things(world, min_x, min_y, min_z, max_x, max_y, max_z):
                         print(f"Got entity entry in {chunk.pos} that doesn't have an id: {entityNbt.to_mojangson()}")
                     else:
                         idt = entityNbt.at_path("id").value
-                        if "minecraft:item_frame" in idt or "minecraft:armor_stand" in idt or "minecraft:villager" in idt or (entityNbt.has_path("CustomName") and len(entityNbt.at_path("CustomName").value) > 0):
+                        if (
+                                ("minecraft:item_frame" in idt and entityNbt.has_path("Item.id") and "minecraft:air" not in entityNbt.at_path("Item.id").value)
+                                or "minecraft:armor_stand" in idt
+                                or "minecraft:villager" in idt
+                                or (entityNbt.has_path("CustomName") and len(entityNbt.at_path("CustomName").value) > 0)
+                            ):
                             lst.append(entityNbt)
 
                 chunk.nbt.at_path("Level.Entities").value = lst
@@ -73,22 +78,60 @@ def lock_things(world, min_x, min_y, min_z, max_x, max_y, max_z):
                     entity.nbt.tree()
                     die
 
-# TODO: Need to lock all plots, not just plots players own?
-
 # Get the plot command blocks and their orientations
-with open("all_plot_records_with_mail.json", "r") as fp:
-    plots = json.load(fp)
+with open("plots.json", "r") as fp:
+    plotCommands = json.load(fp)
 
+# Compute the plot coordinates for all plots, not just ones with owners
+offsets = {"north": (0, -2, 3), "east": (-3, -2, 0), "south": (0, -2, -3), "west": (3, -2, 0)}
+plots = {}
+for command in plotCommands:
+    if "function plot:plot/enter" not in command["command"]:
+        continue
+
+    facing = command["facing"]
+    if facing is None:
+        continue
+
+    x, y, z = command["pos"]
+    offx, offy, offz = offsets[facing]
+
+    plotx = x - offx
+    ploty = y - offy
+    plotz = z - offz
+
+    pos = f"{plotx} {ploty} {plotz}"
+    slot = {}
+    if facing == "north":
+        slot["min"] = (plotx - 8, ploty - 17, plotz - 23)
+        slot["max"] = (plotx + 8, ploty + 32, plotz - 1)
+    elif facing == "east":
+        slot["min"] = (plotx + 1, ploty - 17, plotz - 8)
+        slot["max"] = (plotx + 23, ploty + 32, plotz + 8)
+    elif facing == "south":
+        slot["min"] = (plotx - 8, ploty - 17, plotz + 1)
+        slot["max"] = (plotx + 8, ploty + 32, plotz + 23)
+    elif facing == "west":
+        slot["min"] = (plotx - 23, ploty - 17, plotz - 8)
+        slot["max"] = (plotx - 1, ploty + 32, plotz + 8)
+    slot["facing"] = facing
+
+    plots[pos] = slot
+
+#pprint(plots)
+
+# Lock everything
 world = World("Project_Epic-plots")
-
-mailbox_sizes = {}
-entity_sizes = {}
-
+step = 0
 for plot_id in plots:
+    step += 1
     plot = plots[plot_id]
 
-    if (int(plot["world_id"]) % 50) == 0:
-        print(plot["world_id"])
+    #if (step < 2140):
+        #continue
+    print(f"{step} / {len(plots)}")
+    pprint(plot)
+
 
     min_x = plot["min"][0]
     min_y = plot["min"][1]
@@ -97,4 +140,4 @@ for plot_id in plots:
     max_y = plot["max"][1]
     max_z = plot["max"][2]
 
-    lock_things(world, min_x - 4, 0, min_z - 4, max_x + 4, 255, max_z + 4)
+    lock_things(world, min_x - 6, 0, min_z - 6, max_x + 7, 255, max_z + 7)
