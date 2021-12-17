@@ -66,11 +66,11 @@ shard_config = {
     # Plots
     "plots": {
         "play" : { "node": "m11", "memGB": 8, },
-        "stage": { "node": "m12", "memGB": 12, },
+        "stage": { "node": "m12", "memGB": 6, },
     },
 
     "playerplots": {
-        "play":  { "node": "m12", "memGB": 6, },
+        "play":  { "node": "m11", "memGB": 8, },
         "build": { "node": "m12", "memMB": 1536, },
         "stage": { "node": "m12", "memGB": 4, },
     },
