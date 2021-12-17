@@ -77,9 +77,13 @@ fn main() -> BoxResult<()> {
     match mode {
         Mode::OUTPUT => {
             for (_, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {
-                player.load_redis(&domain, &mut con)?;
-                player.save_dir(basedir.to_str().unwrap())?;
-                println!("{}", player);
+                let result = player.load_redis(&domain, &mut con);
+                if let Ok(_) = result {
+                    player.save_dir(basedir.to_str().unwrap())?;
+                    println!("{}", player);
+                } else if let Err(err) = result {
+                    eprintln!("Failed to load player data for {}: {}", player, err);
+                }
             }
         }
         Mode::INPUT => {

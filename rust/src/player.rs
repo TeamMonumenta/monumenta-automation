@@ -105,22 +105,22 @@ impl Player {
 
     pub fn load_redis(&mut self, domain: &str, con: &mut redis::Connection) -> BoxResult<()> {
         if let Err(err) = self.load_redis_player_data(domain, con) {
-            bail!("Failed to load player data: {}", err);
+            bail!("Failed to load player data for {}: {}", self.uuid.to_hyphenated(), err);
         }
         if let Err(err) = self.load_redis_advancements(domain, con) {
-            bail!("Failed to load advancements: {}", err);
+            bail!("Failed to load advancements for {}: {}", self.uuid.to_hyphenated(), err);
         }
         if let Err(err) = self.load_redis_scores(domain, con) {
-            bail!("Failed to load scores: {}", err);
+            bail!("Failed to load scores for {}: {}", self.uuid.to_hyphenated(), err);
         }
         if let Err(err) = self.load_redis_plugindata(domain, con) {
-            bail!("Failed to load plugindata: {}", err);
+            bail!("Failed to load plugindata for {}: {}", self.uuid.to_hyphenated(), err);
         }
         if let Err(err) = self.load_redis_history(domain, con) {
-            bail!("Failed to load history: {}", err);
+            bail!("Failed to load history for {}: {}", self.uuid.to_hyphenated(), err);
         }
         if let Err(err) = self.load_redis_sharddata(domain, con) {
-            bail!("Failed to load sharddata: {}", err);
+            bail!("Failed to load sharddata for {}: {}", self.uuid.to_hyphenated(), err);
         }
         Ok(())
     }
