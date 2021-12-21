@@ -516,11 +516,26 @@ Examples:
 
         shards = await self._k8s.list()
         # Format of this is:
-        # {'bungee': {'available_replicas': 1, 'replicas': 1}
-        #  'dungeon': {'available_replicas': 1, 'replicas': 1}
+        # {'dungeon': {'available_replicas': 1, 'replicas': 1, 'pod_name': 'dungeon-xyz'}
         #  'test': {'available_replicas': 0, 'replicas': 0}}
 
-        await self.display("Shard list: \n{}".format(pformat(shards)))
+        msg = ""
+        for name in shards:
+            state = shards[name]
+            if state["replicas"] == 1 and state["available_replicas"] == 1:
+                msg += f"\n:white_check_mark: {name}"
+            elif state["replicas"] == 1 and state["available_replicas"] == 0:
+                msg += f"\n:arrow_up: {name}"
+            elif state["replicas"] == 0 and "pod_name" in state:
+                msg += f"\n:arrow_down: {name}"
+            elif state["replicas"] == 0 and "pod_name" not in state:
+                msg += f"\n:x: {name}"
+            else:
+                msg += f"\n:exclamation: {name}: {pformat(state)}"
+        if not msg:
+            msg = "No shards to list"
+
+        await self.display(msg)
 
     async def action_list_instances(self, cmd, message):
         rboard = RedisRBoard("play", redis_host="redis")

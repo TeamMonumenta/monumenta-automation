@@ -48,8 +48,8 @@ class KubernetesManager(object):
                 all_done = True
                 for shard in deployment_map:
                     if deployment_map[shard] == 0:
-                        # Stopping - check replicas
-                        if shards[shard]['replicas'] != 0:
+                        # Stopping - check for still alive pods
+                        if "pod_name" in shards[shard]:
                             all_done = False
                     else:
                         # Starting - check available replicas
@@ -77,9 +77,8 @@ class KubernetesManager(object):
     async def start(self, names, wait=True, timeout_seconds=240):
         await self._start_stop_common(names, 1, wait, timeout_seconds)
 
-    async def stop(self, names, wait=True, timeout_seconds=60):
+    async def stop(self, names, wait=True, timeout_seconds=90):
         await self._start_stop_common(names, 0, wait, timeout_seconds)
-        await asyncio.sleep(15)
 
     async def restart(self, names, wait=True, timeout_seconds=240):
         await self.stop(names, wait, timeout_seconds)
@@ -101,16 +100,16 @@ class KubernetesManager(object):
                 data["available_replicas"] = deployment.status.available_replicas
             result[name] = data
 
-        logger.debug("Deployment list: {}".format(pformat(result)))
+        query = client.CoreV1Api().list_namespaced_pod(self._namespace)
+        for pod in query.items:
 
-        # TODO: Use this elsewhere?
-        #query = client.CoreV1Api().list_namespaced_pod(self._namespace)
-        #for pod in query.items:
-        #    pod_name = pod.metadata.name
-        #    for deployment_name in result:
-        #        if deployment_name in pod_name:
-        #            result[deployment_name]["pod_name"] = pod_name
-        #            break
+            pod_name = pod.metadata.name
+            for deployment_name in result:
+                if deployment_name in pod_name:
+                    result[deployment_name]["pod_name"] = pod_name
+                    break
+
+        logger.debug("Deployment list: {}".format(pformat(result)))
 
         #for deployment_name in result:
         #    if "pod_name" in result[deployment_name]:
