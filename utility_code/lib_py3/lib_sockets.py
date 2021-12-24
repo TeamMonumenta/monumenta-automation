@@ -20,9 +20,10 @@ class SocketManager(object):
         logger.setLevel(log_level);
 
         # Create a thread to connect to the queue and block / consume messages
-        self.thread = threading.Thread(target=self._subscriber)
-        self.thread.daemon = True
-        self.thread.start()
+        if callback is not None:
+            self.thread = threading.Thread(target=self._subscriber)
+            self.thread.daemon = True
+            self.thread.start()
 
     def _subscriber(self):
         def callback(channel, method_frame, header_frame, body):

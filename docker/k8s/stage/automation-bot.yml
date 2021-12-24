@@ -48,6 +48,37 @@ subjects:
 
 ---
 
+# Service / internal network ports (for loading stage data)
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: automation-bot
+  namespace: stage
+  labels:
+    app: automation-bot
+spec:
+  selector:
+    app: automation-bot
+  ports:
+  - name: stage1
+    port: 1111
+    targetPort: 1111
+  - name: stage2
+    port: 1112
+    targetPort: 1112
+  - name: stage3
+    port: 1113
+    targetPort: 1113
+  - name: stage4
+    port: 1114
+    targetPort: 1114
+  - name: stage5
+    port: 1115
+    targetPort: 1115
+
+---
+
 # This is the actual bot's deployment, specifying what it should run
 apiVersion: apps/v1
 kind: Deployment
@@ -103,6 +134,12 @@ spec:
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-stage
         tty: false
         stdin: false
+        ports:
+        - containerPort: 1111
+        - containerPort: 1112
+        - containerPort: 1113
+        - containerPort: 1114
+        - containerPort: 1115
         volumeMounts:
         - name: nfs-play-m8
           mountPath: /home/epic/play/m8
