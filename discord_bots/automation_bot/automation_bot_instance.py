@@ -513,7 +513,9 @@ Examples:
 
     async def action_list_shards(self, cmd, message):
         '''Lists currently running shards on this server'''
+        await self.list_shards()
 
+    async def list_shards(self):
         shards = await self._k8s.list()
         # Format of this is:
         # {'dungeon': {'available_replicas': 1, 'replicas': 1, 'pod_name': 'dungeon-xyz'}
@@ -536,6 +538,8 @@ Examples:
             msg = "No shards to list"
 
         await self.display(msg)
+
+
 
     async def action_list_instances(self, cmd, message):
         rboard = RedisRBoard("play", redis_host="redis")
@@ -1014,7 +1018,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         # Fail if any shards are still running
         await self.display("Checking that all shards are stopped...")
         shards = await self._k8s.list()
-        await self.display(pformat(shards))
+        await self.list_shards()
         for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
                 await self.display("ERROR: shard {!r} is still running!".format(shard))
@@ -1096,7 +1100,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         if min_phase <= 1:
             await self.display("Checking that all shards are stopped...")
             shards = await self._k8s.list()
-            await self.display(pformat(shards))
+            await self.list_shards()
             for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
                 if shards[shard.replace('_', '')]['replicas'] != 0:
                     await self.display("ERROR: shard {!r} is still running!".format(shard))
@@ -1248,7 +1252,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         await self.stop([shard for shard in self._shards if shard.replace('_', '') in shards])
         await self.display("Checking that all shards are stopped...")
         shards = await self._k8s.list()
-        await self.display(pformat(shards))
+        await self.list_shards()
         for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
                 await self.display("ERROR: shard {!r} is still running!".format(shard))
