@@ -172,13 +172,13 @@ class AutomationBotInstance(object):
             self._server_dir = config["server_dir"]
             if "stage_source" in config:
                 self._stage_source = config["stage_source"]
-                self._stage_server_config_source = config["stage_server_config_source"]
-                self._stage_server_config_dir = config["stage_server_config_dir"]
 
             self._prefix = config["prefix"]
             self._common_weekly_update_tasks = config.get("common_weekly_update_tasks", True)
 
-            if "rabbitmq" in config:
+            # TODO: This is horrible - each bot has one instance (this class) for each channel. Only want one instance to listen to rabbitmq messages
+            # Should really be done via some much better mechanism...
+            if "rabbitmq" in config and self._channel.id != 486019840134610965:
                 try:
                     # Get the event loop on the main thread
                     loop = asyncio.get_event_loop()
@@ -205,6 +205,9 @@ class AutomationBotInstance(object):
                                     asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                            channel=self._audit_severe_channel),
                                                                      loop)
+                            if (message["channel"] == "Monumenta.Automation.stage"):
+                                # Schedule the display coroutine back on the main event loop
+                                asyncio.run_coroutine_threadsafe(self.stage_data_request(message["data"]), loop)
 
                     conf = config["rabbitmq"]
                     if "log_level" in conf:
@@ -1244,20 +1247,42 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         if not self._stage_source:
             raise Exception("WARNING: bot doesn't have stage source, aborting")
 
-        await self.display("Stopping all stage server shards...")
+        play_broker = SocketManager("rabbitmq.play", "stagebot", callback=None)
 
-        shards = await self._k8s.list()
+        await self.display("Removing previous 0_STAGE directories")
+        await self.run(f"rm -rf {self._server_dir}/0_STAGE")
+        await self.run(f"mkdir {self._server_dir}/0_STAGE")
+
+        tasks = []
+        port = 1111
+        for server_name in self._stage_source:
+            await self.display(f"Starting receive task on port {port}")
+            task = asyncio.get_event_loop().create_task(self.stage_receive_data_task(port))
+            tasks.append(task)
+            port += 1
+
+        await asyncio.sleep(15)
+
+        port = 1111
+        for server_name in self._stage_source:
+            server_section = self._stage_source[server_name]
+            message = {
+                "shards": server_section["shards"],
+                "address": "automation-bot.stage",
+                "port": port,
+            }
+            await self.display(f"Sending request to {server_section['queue_name']} with config {pformat(message)}")
+            play_broker.send_packet(server_section["queue_name"], "Monumenta.Automation.stage", message)
+            port += 1
+
+        await self.display("Finished launching copy tasks, waiting for them to complete. This will take a while...")
+        for task in tasks:
+            await task
 
         # Stop all shards
-        await self.stop([shard for shard in self._shards if shard.replace('_', '') in shards])
-        await self.display("Checking that all shards are stopped...")
+        await self.display("Stopping all stage server shards...")
         shards = await self._k8s.list()
-        await self.list_shards()
-        for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
-            if shards[shard.replace('_', '')]['replicas'] != 0:
-                await self.display("ERROR: shard {!r} is still running!".format(shard))
-                await self.display(message.author.mention)
-                return
+        await self.stop([shard for shard in self._shards if shard in shards])
 
         # Delete and re-create all the 0_PREVIOUS directories, wherever they might be at one level above the shard folders
         await self.display("Removing previous 0_PREVIOUS directories")
@@ -1267,7 +1292,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             await self.run(f"mkdir -p {self._server_dir}/0_PREVIOUS")
 
         # Move the server_config directory
-        await self.run(f"mv {self._stage_server_config_dir} {self._server_dir}/0_PREVIOUS/", None)
+        await self.run(f"mv {self._server_dir}/server_config {self._server_dir}/0_PREVIOUS/", None)
 
         # Move the shard folders into those folders
         await self.display("Moving previous data to 0_PREVIOUS directories")
@@ -1277,38 +1302,25 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         for task in tasks:
             await task
 
-        await self.display("Loading world data from the play server. Will ping when done, this will take a while...")
+        await self.display("Moving pulled stage data into live folder")
+        await self.run(["bash", "-c", f"mv {self._server_dir}/0_STAGE/* {self._server_dir}"])
+        await self.run(f"rmdir {self._server_dir}/0_STAGE")
 
-        tasks = []
-        # Load worlds from the play server
-        for shard in self._stage_source:
-            if shard in self._shards:
-                tasks.append(asyncio.create_task(self.display(f"Copying {shard} from {self._stage_source[shard]} => {self._shards[shard]}")))
-                tasks.append(asyncio.create_task(self.run(f"cp -a {self._stage_source[shard]} {self._shards[shard]}")))
-            else:
-                tasks.append(asyncio.create_task(self.display(f"Warning: skipping stage_source shard {shard} with no matching stage shard")))
-
-        # Load the server_config directory
-        tasks.append(asyncio.create_task(self.display(f"Copying server_config from {self._stage_server_config_source} => {self._stage_server_config_dir}")))
-        tasks.append(asyncio.create_task(self.run(f"cp -a {self._stage_server_config_source} {self._stage_server_config_dir}")))
-
-        for task in tasks:
-            await task
-
-        await self.display("Loading player data from the play server...")
-        await self.run("rm -rf /home/epic/temp_player_data")
-        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.play/ play --output /home/epic/temp_player_data")
-        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.stage/ play --input /home/epic/temp_player_data 2")
-
-        await self.display("Refreshing leaderboards")
-        await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis.stage/ play " + os.path.join(_top_level, "leaderboards.yaml"))
-
-        await self.display("Updating uuid2name and name2uuid indexes...")
-        await self.run(os.path.join(_top_level, "rust/bin/update_redis_uuid2name_name2uuid") + " redis://redis/ play")
+# TODO: Really need to find a nice way to load the redis databases directly and bypass this weirdness. Or make playerdata_save_load faster
+#        await self.display("Loading player data from the play server...")
+#        await self.run("rm -rf /home/epic/temp_player_data")
+#        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.play/ play --output /home/epic/temp_player_data")
+#        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.stage/ play --input /home/epic/temp_player_data 2")
+#
+#        await self.display("Refreshing leaderboards")
+#        await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis.stage/ play " + os.path.join(_top_level, "leaderboards.yaml"))
+#
+#        await self.display("Updating uuid2name and name2uuid indexes...")
+#        await self.run(os.path.join(_top_level, "rust/bin/update_redis_uuid2name_name2uuid") + " redis://redis.stage/ play")
 
         await self.display("Disabling Plan and PremiumVanish...")
-        await self.run(f"mv -f {self._stage_server_config_dir}/plugins/Plan.jar {self._stage_server_config_dir}/plugins/Plan.jar.disabled")
-        await self.run(f"mv -f {self._stage_server_config_dir}/plugins/PremiumVanish.jar {self._stage_server_config_dir}/plugins/PremiumVanish.jar.disabled")
+        await self.run(f"mv -f {self._server_dir}/server_config/plugins/Plan.jar {self._server_dir}/server_config/plugins/Plan.jar.disabled")
+        await self.run(f"mv -f {self._server_dir}/server_config/plugins/PremiumVanish.jar {self._server_dir}/server_config/plugins/PremiumVanish.jar.disabled")
 
         await self.display("Adjusting bungee config...")
         with open(f"{self._shards['bungee']}/config.yml", "r") as f:
@@ -1324,6 +1336,18 @@ Archives the previous stage server contents under 0_PREVIOUS '''
 
         await self.display("Stage server loaded with current play server data")
         await self.display(message.author.mention)
+
+    async def stage_receive_data_task(self, port):
+        await self.cd(f"{self._server_dir}/0_STAGE")
+        await self.run(["bash", "-c", f"nc -dl {port} | lz4 -d | tar xf -"])
+        await self.display(f"Completed receiving stage data on port {port}")
+
+    async def stage_data_request(self, message):
+        shards_str = " ".join(message["shards"])
+        await self.display(f"Got stage request for shards:\n> {shards_str}")
+        await self.cd(f"{self._server_dir}")
+        await self.run(["bash", "-c", f"tar cf - {shards_str} | lz4 | nc -N {message['address']} {message['port']}"])
+        await self.display("Completed sending stage data")
 
     async def action_update_items(self, cmd, message):
         '''
