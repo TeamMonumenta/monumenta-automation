@@ -6,6 +6,7 @@ import os
 import getopt
 import yaml
 import multiprocessing
+import concurrent.futures
 import traceback
 
 from lib_py3.mob_replacement_manager import MobReplacementManager, remove_unwanted_spawner_tags
@@ -69,163 +70,8 @@ def match_passenger(host_chain, passenger_chain):
             and mob.count_multipath('Passengers[]') >= 1
             and passenger_chain(mob.at_path('Passengers[0]')))
 
-# Note that these will be evaluated last to first - so put more broad checks first for performance
-sub = [
-    # Unnamed R2 mobs
-    ('Departed Seafarer', match_passenger(match_id('minecraft:guardian'), match_noname(match_id('minecraft:drowned', match_armor_ids(["minecraft:chainmail_boots", "minecraft:string", "minecraft:chainmail_chestplate", None]))))),
-    ('Departed Seafarer', match_noname(match_id('minecraft:drowned', match_armor_ids(["minecraft:chainmail_boots", "minecraft:string", "minecraft:chainmail_chestplate", None])))),
-    ('Twilight Gryphon', match_passenger(match_id('minecraft:vex'), match_passenger(match_id('minecraft:phantom'), match_id('minecraft:zombie_villager', match_name('Twilight Rider'))))),
-    ('Sky Screecher', match_passenger(match_id('minecraft:vex'), match_noname(match_id('minecraft:phantom', match_armor(["Generic phantom 1", None, None, None]))))),
-
-    # Piglin conversion
-    ('Molten Citizen', match_id('minecraft:zombified_piglin', match_name('Molten Citizen'))),
-
-    # Rename mobs
-    ('Jaguar Berserker', match_id('minecraft:zombie', match_name('Jaguar Berzerker'))),
-    ('Aurian Priest', match_id('minecraft:evoker', match_name('Priest of The Moon'))),
-    ('Soaked Ghoul', match_id('minecraft:drowned', match_name('Ghoul'))),
-    ('Ice Archer', match_id('minecraft:skeleton', match_name('Ice Archer'))),
-    ('Animated Archer', match_id('minecraft:skeleton', match_name('Animated Gear'))),
-
-    # Mobs on insta-die trash
-    ("Rusted Gear", match_passenger(match_id('minecraft:guardian'), match_name('Rusted Gear', match_id('minecraft:drowned')))),
-    ("Frost Wisp", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Wisp', match_id('minecraft:stray')))),
-    ("Ice Archer", match_passenger(match_id('minecraft:silverfish'), match_name('Ice Archer', match_id('minecraft:stray')))),
-    ("Guardian Brawler", match_passenger(match_id('minecraft:silverfish'), match_name('Guardian Brawler', match_id('minecraft:drowned')))),
-    ("Spirit of the Drowned", match_passenger(match_id('minecraft:silverfish'), match_name('Spirit of the Drowned', match_id('minecraft:drowned')))),
-    ("Flame Imp", match_passenger(match_id('minecraft:silverfish'), match_name('Flame Imp', match_id('minecraft:zombie')))),
-    ("Flaming Archer", match_passenger(match_id('minecraft:silverfish'), match_name('Flaming Archer', match_id('minecraft:skeleton')))),
-    ("Scorchguard", match_passenger(match_id('minecraft:silverfish'), match_name('Scorchguard', match_id('minecraft:wither_skeleton')))),
-    ("Petrified Archer", match_passenger(match_id('minecraft:silverfish'), match_name('Petrified Archer', match_id('minecraft:skeleton')))),
-    ("Mutated Dolphin", match_passenger(match_id('minecraft:guardian'), match_name('Mutated Dolphin', match_id('minecraft:dolphin')))),
-    ("Delphinus Guardian", match_passenger(match_id('minecraft:guardian'), match_name('Delphinus Guardian', match_id('minecraft:dolphin')))),
-    ("Frost Moon Retiarius", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Moon Retiarius', match_id('minecraft:drowned')))),
-    ("Ghoul", match_passenger(match_id('minecraft:silverfish'), match_name('Ghoul', match_id('minecraft:drowned')))),
-    ("Raging Minotaur", match_passenger(match_id('minecraft:silverfish'), match_name('Raging Minotaur', match_id('minecraft:drowned')))),
-    ("Bloodraven", match_passenger(match_id('minecraft:vex'), match_name('Bloodraven', match_id('minecraft:phantom')))),
-    ("Hungry Dolphin", match_passenger(match_id('minecraft:guardian'), match_name('Hungry Dolphin', match_id('minecraft:dolphin')))),
-    ("Rosebud Golem", match_passenger(match_id('minecraft:endermite'), match_name('Rosebud Golem', match_id('minecraft:iron_golem')))),
-    ("Twilight Construct", match_passenger(match_id('minecraft:silverfish'), match_name('Twilight Construct', match_id('minecraft:iron_golem')))),
-    ("Frost Golem", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Golem', match_id('minecraft:iron_golem')))),
-    ("Rabid Wolf", match_passenger(match_id('minecraft:silverfish'), match_name('Rabid Wolf', match_id('minecraft:wolf')))),
-
-    # TODO: Re-enable when stacked mobs are fixed
-    #("Cherry Boomsom", match_name('Cheery Boomsome', match_id('minecraft:creeper'))),
-    ("Monstrous Arachnid", match_name('Monsterous Arachnid', match_id('minecraft:spider'))),
-    ("Archaic Guardian", match_name('Ancient Guardian', match_id('minecraft:wither_skeleton'))),
-
-    # Orange
-    ("Savage Jaguar", match_name('Fern Warrior', match_id('minecraft:zombie'))),
-    ("Serpensia Corpse", match_name('Serpentsia Corpse', match_id('minecraft:wither_skeleton'))),
-    ("Savage Hawk", match_name('Fern Archer', match_id('minecraft:skeleton'))),
-
-    # Misc
-    ("Animated Algae", match_name('Animated Algae', match_id('minecraft:creeper'))),
-
-        # RIP Lich + yellow stuff
-    ("Wraith of the Jungle", match_name('Lich of the Forest', match_id('minecraft:evoker'))),
-    ("Brute of the Jungle", match_name('Brute of the Forest', match_id('minecraft:zombie_villager'))),
-    ("Archer of the Jungle", match_name('Archer of the Forest', match_id('minecraft:skeleton'))),
-
-    # Typo
-    ("Permafrost Construct", match_name('Permafrost Constuct', match_id('minecraft:iron_golem'))),
-
-    #Yellow renames
-    ("Wrath Particulate", match_name('Malevolent Dragon', match_id('minecraft:vex'))),
-    ("Corrupted Cultist", match_name('Nightmare Cultist', match_id('minecraft:zombie'))),
-    ("Corrupted Warlord", match_name('Nightmare Warlord', match_id('minecraft:skeleton'))),
-    ("Hateful Titan", match_name('Dragongheist', match_id('minecraft:wither_skeleton'))),
-    ("River's Will", match_name('Son of the River', match_id('minecraft:zombie_villager'))),
-    ("Tuathan", match_name('Corrupted Leprechaun', match_id('minecraft:zombie'))),
-
-    # Depths
-    ("Ravenous Ooze", match_name('Abyssal Guardian', match_id('minecraft:guardian'))),
-]
-
 def usage():
     sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics | --structures /path/to/structures> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run] [--force]".format(sys.argv[0]))
-
-try:
-    opts, args = getopt.getopt(sys.argv[1:], "w:s:g:b:l:j:dif", ["world=", "schematics=", "structures=", "library-of-souls=", "logfile=", "num-threads=", "dry-run", "pos1=", "pos2=", "force"])
-except getopt.GetoptError as err:
-    eprint(str(err))
-    usage()
-
-world_path = None
-schematics_path = None
-structures_path = None
-library_of_souls_path = None
-pos1 = [-math.inf, -math.inf, -math.inf]
-pos2 = [math.inf, math.inf, math.inf]
-logfile = None
-num_threads = 4
-dry_run = False
-force = False
-
-for o, a in opts:
-    if o in ("-w", "--world"):
-        world_path = a
-    elif o in ("-s", "--schematics"):
-        schematics_path = a
-    elif o in ("-s", "--structures"):
-        structures_path = a
-    elif o in ("-b", "--library-of-souls"):
-        library_of_souls_path = a
-    elif o in ("--pos1"):
-        try:
-            split = a.split(",")
-            pos1 = (int(split[0]), int(split[1]), int(split[2]))
-        except:
-            eprint("Invalid --pos1 argument")
-            usage()
-    elif o in ("--pos2"):
-        try:
-            split = a.split(",")
-            pos2 = (int(split[0]), int(split[1]), int(split[2]))
-        except:
-            eprint("Invalid --pos2 argument")
-            usage()
-    elif o in ("-l", "--logfile"):
-        logfile = a
-    elif o in ("-j", "--num-threads"):
-        num_threads = int(a)
-    elif o in ("-d", "--dry-run"):
-        dry_run = True
-    elif o in ("-f", "--force"):
-        force = True
-    else:
-        eprint("Unknown argument: {}".format(o))
-        usage()
-
-if world_path is None and schematics_path is None and structures_path is None:
-    eprint("--world, --schematics, or --structures must be specified!")
-    usage()
-elif library_of_souls_path is None:
-    eprint("--library-of-souls must be specified!")
-    usage()
-
-min_x = min(pos1[0], pos2[0])
-min_y = min(pos1[1], pos2[1])
-min_z = min(pos1[2], pos2[2])
-max_x = max(pos1[0], pos2[0])
-max_y = max(pos1[1], pos2[1])
-max_z = max(pos1[2], pos2[2])
-
-timings = Timings(enabled=dry_run)
-los = LibraryOfSouls(library_of_souls_path, readonly=True)
-timings.nextStep("Loaded Library of Souls")
-replace_mgr = MobReplacementManager()
-los.load_replacements(replace_mgr)
-replace_mgr.add_substitutions(sub, force_add_ignoring_conflicts=force)
-timings.nextStep("Loaded mob replacement manager")
-
-log_handle = None
-if logfile == "stdout":
-    log_handle = sys.stdout
-elif logfile == "stderr":
-    log_handle = sys.stderr
-elif logfile is not None:
-    log_handle = open(logfile, 'w')
 
 # This is handy here because it has direct access to previously defined globals
 def process_entity(entity, replacements_log) -> None:
@@ -274,7 +120,9 @@ def process_entity(entity, replacements_log) -> None:
         remove_unwanted_spawner_tags(nbt)
         return replace_mgr.replace_mob(nbt, replacements_log, entity.get_path_str())
 
-def process_region(region):
+def process_region(args):
+    region, arg = args
+    dry_run = arg
     replacements_log = {}
     num_replacements = 0
     for chunk in region.iter_chunks(autosave=(not dry_run)):
@@ -322,65 +170,223 @@ def process_structure(struct_path):
 
     return (num_replacements, replacements_log)
 
-parallel_results = []
-if world_path:
-    world = World(world_path)
-    timings.nextStep("Loaded world")
+if __name__ == '__main__':
+    multiprocessing.set_start_method("fork")
 
-    parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads, min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z)
-    timings.nextStep("World replacements done")
+    # Note that these will be evaluated last to first - so put more broad checks first for performance
+    sub = [
+        # Unnamed R2 mobs
+        ('Departed Seafarer', match_passenger(match_id('minecraft:guardian'), match_noname(match_id('minecraft:drowned', match_armor_ids(["minecraft:chainmail_boots", "minecraft:string", "minecraft:chainmail_chestplate", None]))))),
+        ('Departed Seafarer', match_noname(match_id('minecraft:drowned', match_armor_ids(["minecraft:chainmail_boots", "minecraft:string", "minecraft:chainmail_chestplate", None])))),
+        ('Twilight Gryphon', match_passenger(match_id('minecraft:vex'), match_passenger(match_id('minecraft:phantom'), match_id('minecraft:zombie_villager', match_name('Twilight Rider'))))),
+        ('Sky Screecher', match_passenger(match_id('minecraft:vex'), match_noname(match_id('minecraft:phantom', match_armor(["Generic phantom 1", None, None, None]))))),
 
-if schematics_path:
-    schem_paths = []
-    for root, subdirs, files in os.walk(schematics_path):
-        for fname in files:
-            if fname.endswith(".schematic"):
-                schem_paths.append(os.path.join(root, fname))
+        # Piglin conversion
+        ('Molten Citizen', match_id('minecraft:zombified_piglin', match_name('Molten Citizen'))),
 
-    if num_threads == 1:
-        # Don't bother with processes if only going to use one
-        # This makes debugging much easier
-        for schem_path in schem_paths:
-            parallel_results.append(process_schematic(schem_path))
-    else:
-        with multiprocessing.Pool(num_threads) as pool:
-            parallel_results += pool.map(process_schematic, schem_paths)
-    timings.nextStep("Schematics replacements done")
+        # Rename mobs
+        ('Jaguar Berserker', match_id('minecraft:zombie', match_name('Jaguar Berzerker'))),
+        ('Aurian Priest', match_id('minecraft:evoker', match_name('Priest of The Moon'))),
+        ('Soaked Ghoul', match_id('minecraft:drowned', match_name('Ghoul'))),
+        ('Ice Archer', match_id('minecraft:skeleton', match_name('Ice Archer'))),
+        ('Animated Archer', match_id('minecraft:skeleton', match_name('Animated Gear'))),
 
-if structures_path:
-    struct_paths = []
-    for root, subdirs, files in os.walk(structures_path):
-        for fname in files:
-            if fname.endswith(".nbt"):
-                struct_paths.append(os.path.join(root, fname))
+        # Mobs on insta-die trash
+        ("Rusted Gear", match_passenger(match_id('minecraft:guardian'), match_name('Rusted Gear', match_id('minecraft:drowned')))),
+        ("Frost Wisp", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Wisp', match_id('minecraft:stray')))),
+        ("Ice Archer", match_passenger(match_id('minecraft:silverfish'), match_name('Ice Archer', match_id('minecraft:stray')))),
+        ("Guardian Brawler", match_passenger(match_id('minecraft:silverfish'), match_name('Guardian Brawler', match_id('minecraft:drowned')))),
+        ("Spirit of the Drowned", match_passenger(match_id('minecraft:silverfish'), match_name('Spirit of the Drowned', match_id('minecraft:drowned')))),
+        ("Flame Imp", match_passenger(match_id('minecraft:silverfish'), match_name('Flame Imp', match_id('minecraft:zombie')))),
+        ("Flaming Archer", match_passenger(match_id('minecraft:silverfish'), match_name('Flaming Archer', match_id('minecraft:skeleton')))),
+        ("Scorchguard", match_passenger(match_id('minecraft:silverfish'), match_name('Scorchguard', match_id('minecraft:wither_skeleton')))),
+        ("Petrified Archer", match_passenger(match_id('minecraft:silverfish'), match_name('Petrified Archer', match_id('minecraft:skeleton')))),
+        ("Mutated Dolphin", match_passenger(match_id('minecraft:guardian'), match_name('Mutated Dolphin', match_id('minecraft:dolphin')))),
+        ("Delphinus Guardian", match_passenger(match_id('minecraft:guardian'), match_name('Delphinus Guardian', match_id('minecraft:dolphin')))),
+        ("Frost Moon Retiarius", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Moon Retiarius', match_id('minecraft:drowned')))),
+        ("Ghoul", match_passenger(match_id('minecraft:silverfish'), match_name('Ghoul', match_id('minecraft:drowned')))),
+        ("Raging Minotaur", match_passenger(match_id('minecraft:silverfish'), match_name('Raging Minotaur', match_id('minecraft:drowned')))),
+        ("Bloodraven", match_passenger(match_id('minecraft:vex'), match_name('Bloodraven', match_id('minecraft:phantom')))),
+        ("Hungry Dolphin", match_passenger(match_id('minecraft:guardian'), match_name('Hungry Dolphin', match_id('minecraft:dolphin')))),
+        ("Rosebud Golem", match_passenger(match_id('minecraft:endermite'), match_name('Rosebud Golem', match_id('minecraft:iron_golem')))),
+        ("Twilight Construct", match_passenger(match_id('minecraft:silverfish'), match_name('Twilight Construct', match_id('minecraft:iron_golem')))),
+        ("Frost Golem", match_passenger(match_id('minecraft:silverfish'), match_name('Frost Golem', match_id('minecraft:iron_golem')))),
+        ("Rabid Wolf", match_passenger(match_id('minecraft:silverfish'), match_name('Rabid Wolf', match_id('minecraft:wolf')))),
 
-    if num_threads == 1:
-        # Don't bother with processes if only going to use one
-        # This makes debugging much easier
-        for struct_path in struct_paths:
-            parallel_results.append(process_structure(struct_path))
-    else:
-        with multiprocessing.Pool(num_threads) as pool:
-            parallel_results += pool.map(process_structure, struct_paths)
-    timings.nextStep("Structures replacements done")
+        # TODO: Re-enable when stacked mobs are fixed
+        #("Cherry Boomsom", match_name('Cheery Boomsome', match_id('minecraft:creeper'))),
+        ("Monstrous Arachnid", match_name('Monsterous Arachnid', match_id('minecraft:spider'))),
+        ("Archaic Guardian", match_name('Ancient Guardian', match_id('minecraft:wither_skeleton'))),
 
-replacements_log = {}
-num_replacements = 0
+        # Orange
+        ("Savage Jaguar", match_name('Fern Warrior', match_id('minecraft:zombie'))),
+        ("Serpensia Corpse", match_name('Serpentsia Corpse', match_id('minecraft:wither_skeleton'))),
+        ("Savage Hawk", match_name('Fern Archer', match_id('minecraft:skeleton'))),
 
-replacements_to_merge = []
-for region_result in parallel_results:
-    num_replacements += region_result[0]
-    replacements_to_merge.append(region_result[1])
+        # Misc
+        ("Animated Algae", match_name('Animated Algae', match_id('minecraft:creeper'))),
 
-replacements_log = replace_mgr.merge_logs(replacements_to_merge)
-timings.nextStep("Logs merged")
+            # RIP Lich + yellow stuff
+        ("Wraith of the Jungle", match_name('Lich of the Forest', match_id('minecraft:evoker'))),
+        ("Brute of the Jungle", match_name('Brute of the Forest', match_id('minecraft:zombie_villager'))),
+        ("Archer of the Jungle", match_name('Archer of the Forest', match_id('minecraft:skeleton'))),
 
-if log_handle is not None:
-    yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
-    timings.nextStep("Logs written")
+        # Typo
+        ("Permafrost Construct", match_name('Permafrost Constuct', match_id('minecraft:iron_golem'))),
 
-if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
-    log_handle.close()
+        #Yellow renames
+        ("Wrath Particulate", match_name('Malevolent Dragon', match_id('minecraft:vex'))),
+        ("Corrupted Cultist", match_name('Nightmare Cultist', match_id('minecraft:zombie'))),
+        ("Corrupted Warlord", match_name('Nightmare Warlord', match_id('minecraft:skeleton'))),
+        ("Hateful Titan", match_name('Dragongheist', match_id('minecraft:wither_skeleton'))),
+        ("River's Will", match_name('Son of the River', match_id('minecraft:zombie_villager'))),
+        ("Tuathan", match_name('Corrupted Leprechaun', match_id('minecraft:zombie'))),
 
-print("{} mobs replaced".format(num_replacements))
+        # Depths
+        ("Ravenous Ooze", match_name('Abyssal Guardian', match_id('minecraft:guardian'))),
+    ]
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "w:s:g:b:l:j:dif", ["world=", "schematics=", "structures=", "library-of-souls=", "logfile=", "num-threads=", "dry-run", "pos1=", "pos2=", "force"])
+    except getopt.GetoptError as err:
+        eprint(str(err))
+        usage()
+
+    world_path = None
+    schematics_path = None
+    structures_path = None
+    library_of_souls_path = None
+    pos1 = [-math.inf, -math.inf, -math.inf]
+    pos2 = [math.inf, math.inf, math.inf]
+    logfile = None
+    num_threads = 4
+    dry_run = False
+    force = False
+
+    for o, a in opts:
+        if o in ("-w", "--world"):
+            world_path = a
+        elif o in ("-s", "--schematics"):
+            schematics_path = a
+        elif o in ("-s", "--structures"):
+            structures_path = a
+        elif o in ("-b", "--library-of-souls"):
+            library_of_souls_path = a
+        elif o in ("--pos1"):
+            try:
+                split = a.split(",")
+                pos1 = (int(split[0]), int(split[1]), int(split[2]))
+            except:
+                eprint("Invalid --pos1 argument")
+                usage()
+        elif o in ("--pos2"):
+            try:
+                split = a.split(",")
+                pos2 = (int(split[0]), int(split[1]), int(split[2]))
+            except:
+                eprint("Invalid --pos2 argument")
+                usage()
+        elif o in ("-l", "--logfile"):
+            logfile = a
+        elif o in ("-j", "--num-threads"):
+            num_threads = int(a)
+        elif o in ("-d", "--dry-run"):
+            dry_run = True
+        elif o in ("-f", "--force"):
+            force = True
+        else:
+            eprint("Unknown argument: {}".format(o))
+            usage()
+
+    if world_path is None and schematics_path is None and structures_path is None:
+        eprint("--world, --schematics, or --structures must be specified!")
+        usage()
+    elif library_of_souls_path is None:
+        eprint("--library-of-souls must be specified!")
+        usage()
+
+    min_x = min(pos1[0], pos2[0])
+    min_y = min(pos1[1], pos2[1])
+    min_z = min(pos1[2], pos2[2])
+    max_x = max(pos1[0], pos2[0])
+    max_y = max(pos1[1], pos2[1])
+    max_z = max(pos1[2], pos2[2])
+
+    timings = Timings(enabled=dry_run)
+    los = LibraryOfSouls(library_of_souls_path, readonly=True)
+    timings.nextStep("Loaded Library of Souls")
+    replace_mgr = MobReplacementManager()
+    los.load_replacements(replace_mgr)
+    replace_mgr.add_substitutions(sub, force_add_ignoring_conflicts=force)
+    timings.nextStep("Loaded mob replacement manager")
+
+    log_handle = None
+    if logfile == "stdout":
+        log_handle = sys.stdout
+    elif logfile == "stderr":
+        log_handle = sys.stderr
+    elif logfile is not None:
+        log_handle = open(logfile, 'w')
+
+    parallel_results = []
+    if world_path:
+        world = World(world_path)
+        timings.nextStep("Loaded world")
+
+        parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads, min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, arg=(dry_run))
+        timings.nextStep("World replacements done")
+
+    if schematics_path:
+        schem_paths = []
+        for root, subdirs, files in os.walk(schematics_path):
+            for fname in files:
+                if fname.endswith(".schematic"):
+                    schem_paths.append(os.path.join(root, fname))
+
+        if num_threads == 1:
+            # Don't bother with processes if only going to use one
+            # This makes debugging much easier
+            for schem_path in schem_paths:
+                parallel_results.append(process_schematic(schem_path))
+        else:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
+                parallel_results += pool.map(process_schematic, schem_paths)
+        timings.nextStep("Schematics replacements done")
+
+    if structures_path:
+        struct_paths = []
+        for root, subdirs, files in os.walk(structures_path):
+            for fname in files:
+                if fname.endswith(".nbt"):
+                    struct_paths.append(os.path.join(root, fname))
+
+        if num_threads == 1:
+            # Don't bother with processes if only going to use one
+            # This makes debugging much easier
+            for struct_path in struct_paths:
+                parallel_results.append(process_structure(struct_path))
+        else:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
+                parallel_results += pool.map(process_structure, struct_paths)
+        timings.nextStep("Structures replacements done")
+
+    replacements_log = {}
+    num_replacements = 0
+
+    replacements_to_merge = []
+    for region_result in parallel_results:
+        num_replacements += region_result[0]
+        replacements_to_merge.append(region_result[1])
+
+    replacements_log = replace_mgr.merge_logs(replacements_to_merge)
+    timings.nextStep("Logs merged")
+
+    if log_handle is not None:
+        yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
+        timings.nextStep("Logs written")
+
+    if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
+        log_handle.close()
+
+    print("{} mobs replaced".format(num_replacements))
 

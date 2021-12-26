@@ -152,7 +152,9 @@ spec:
         - name: secret-config
           mountPath: /home/epic/.monumenta_bot
         resources:
-          limits:
+          requests:
             cpu: "4"
+          limits:
+            cpu: "12"
       imagePullSecrets:
       - name: githubcred

@@ -11,45 +11,6 @@ from pprint import pprint
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.lib_k8s import KubernetesManager
 
-################################################################################
-# Config / Environment
-
-config = {}
-
-if "BOT_CONFIG" in os.environ and os.path.isfile(os.environ["BOT_CONFIG"]):
-    config_path = os.environ["BOT_CONFIG"]
-else:
-    config_dir = os.path.expanduser("~/.monumenta_bot/")
-    config_path = os.path.join(config_dir, "config.yml")
-
-# Read the bot's config files
-with open(config_path, 'r') as ymlfile:
-    config = yaml.load(ymlfile, Loader=yaml.FullLoader)
-
-pprint("Config: \n{}".format(config))
-
-socket = None
-k8s = None
-try:
-
-    if "rabbitmq" in config:
-        conf = config["rabbitmq"]
-        if "log_level" in conf:
-            log_level = conf["log_level"]
-        else:
-            log_level = 20
-
-        socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level)
-
-    k8s = KubernetesManager(config["k8s_namespace"])
-except KeyError as e:
-    sys.exit('Config missing key: {}'.format(e))
-
-os.umask(0o022)
-
-# Config / Environment
-################################################################################
-
 def send_broadcast_msg(time_left):
     socket.send_packet("*", "monumentanetworkrelay.command",
             {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". This helps reduce lag! The server will be down for ~90 seconds."}]'''}
@@ -113,5 +74,45 @@ async def main():
     with open(f'{config["shards"]["bungee"]}/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
         yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+if __name__ == '__main__':
+    ################################################################################
+    # Config / Environment
+
+    config = {}
+
+    if "BOT_CONFIG" in os.environ and os.path.isfile(os.environ["BOT_CONFIG"]):
+        config_path = os.environ["BOT_CONFIG"]
+    else:
+        config_dir = os.path.expanduser("~/.monumenta_bot/")
+        config_path = os.path.join(config_dir, "config.yml")
+
+    # Read the bot's config files
+    with open(config_path, 'r') as ymlfile:
+        config = yaml.load(ymlfile, Loader=yaml.FullLoader)
+
+    pprint("Config: \n{}".format(config))
+
+    socket = None
+    k8s = None
+    try:
+
+        if "rabbitmq" in config:
+            conf = config["rabbitmq"]
+            if "log_level" in conf:
+                log_level = conf["log_level"]
+            else:
+                log_level = 20
+
+            socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level)
+
+        k8s = KubernetesManager(config["k8s_namespace"])
+    except KeyError as e:
+        sys.exit('Config missing key: {}'.format(e))
+
+    os.umask(0o022)
+
+    # Config / Environment
+    ################################################################################
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())

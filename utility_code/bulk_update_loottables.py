@@ -82,42 +82,42 @@ def update_items(container_nbt_list, output_dir=None):
                         fp.write(loot_table_string)
                         fp.write("\n")
 
-
 def usage():
     sys.exit("Usage: " + sys.argv[0] + " [--output-dir dir] <text_file_with_setblock_chest.txt>")
 
-output_dir = None
-filename = None
-args = sys.argv[1:]
-if args[0] == "--output-dir":
-    output_dir = args[1]
-    args = args[2:]
-for arg in args:
+if __name__ == '__main__':
+    output_dir = None
+    filename = None
+    args = sys.argv[1:]
+    if args[0] == "--output-dir":
+        output_dir = args[1]
+        args = args[2:]
+    for arg in args:
+        if filename is None:
+            filename = arg
+        else:
+            usage()
+
     if filename is None:
-        filename = arg
-    else:
         usage()
 
-if filename is None:
-    usage()
+    with open(filename,'r') if filename != "-" else sys.stdin as f:
+        container_nbt_list = []
+        while True:
+            raw = f.readline().strip()
+            if not raw:
+                break
 
-with open(filename,'r') if filename != "-" else sys.stdin as f:
-    container_nbt_list = []
-    while True:
-        raw = f.readline().strip()
-        if not raw:
-            break
+            # Strip everything before the item/block type
+            raw = re.sub('^[^{]*( [^ {]*{)', r'\1', raw.strip())
 
-        # Strip everything before the item/block type
-        raw = re.sub('^[^{]*( [^ {]*{)', r'\1', raw.strip())
+            # Strip the count
+            raw = re.sub('}[^}]*$', '}', raw.strip())
 
-        # Strip the count
-        raw = re.sub('}[^}]*$', '}', raw.strip())
+            item_type = re.sub('{.*$', '', raw)
+            nbt_str = re.sub('^[^{]*{', '{', raw)
 
-        item_type = re.sub('{.*$', '', raw)
-        nbt_str = re.sub('^[^{]*{', '{', raw)
+            item_nbt = nbt.TagCompound.from_mojangson(nbt_str)
+            container_nbt_list.append(item_nbt)
 
-        item_nbt = nbt.TagCompound.from_mojangson(nbt_str)
-        container_nbt_list.append(item_nbt)
-
-    update_items(container_nbt_list, output_dir=output_dir)
+        update_items(container_nbt_list, output_dir=output_dir)
