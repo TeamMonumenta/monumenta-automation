@@ -478,7 +478,7 @@ if __name__ == '__main__':
     replacements_to_merge = {}
     done_count = 0
     with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
-        for world_name, num_replacements, replacements_log in pool.imap_unordered(process_region, regions):
+        for world_name, num_replacements, replacements_log in pool.map(process_region, regions):
             done_count += 1
             num_global_replacements += num_replacements
             if world_name not in replacements_to_merge:

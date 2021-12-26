@@ -316,7 +316,7 @@ if __name__ == '__main__':
         else:
             done_count = 0
             with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
-                for _ in pool.imap_unordered(create_instance, args):
+                for _ in pool.map(create_instance, args):
                     done_count += 1
 
                     print(f"  {done_count} / {dungeon['count']} instances generated")
