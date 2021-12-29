@@ -148,6 +148,10 @@ try:
                     rlogger.warn("Permission denied retrieving reaction message in channel {}".format(channel.name))
                     return
 
+                msg_contents = re.sub("''*", "'", msg.clean_content).replace('\\', '')
+                if len(msg_contents) < 1:
+                    return
+
                 rlogger.debug("time_cutoff={}      msg.created_at={}".format(time_cutoff, msg.created_at))
                 if msg.created_at > time_cutoff:
                     rlogger.debug("Reaction was new enough")
@@ -175,7 +179,7 @@ try:
 
                         rreact["message_id"] = payload.message_id
                         rreact["channel_id"] = payload.channel_id
-                        rreact["msg_contents"] = re.sub("''*", "'", msg.clean_content).replace('\\', '')
+                        rreact["msg_contents"] = msg_contents
                         rreact["count"] = highest_reaction_count
                         rreact["timestamp"] = msg.created_at
                         rreact["msg"] = msg

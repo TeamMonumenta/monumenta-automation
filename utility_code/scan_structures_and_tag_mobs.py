@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env pypy3
 
 import sys
 import os
@@ -63,100 +63,100 @@ def process_entity(entity, source_name):
                     not_found_unique_mobs[f"{name}  {entity_id}"] = entity.nbt
                 mob_pos[f"{name}  {entity_id}"] = (entity.pos, source_name)
 
+if __name__ == '__main__':
+    mob_pos = {}
+    not_found_different_mobs = set()
+    not_found_unique_mobs = {}
+    not_found_unique_low_count_mobs = set()
+    mob_counts = {}
+    forbidden_ids = ["minecraft:armor_stand", "minecraft:painting", "minecraft:villager", "minecraft:potion", "minecraft:trident", "minecraft:boat",
+                     "minecraft:minecart", "minecraft:falling_block", "minecraft:firework_rocket", "minecraft:item_frame", "minecraft:end_crystal",
+                     "minecraft:area_effect_cloud", "minecraft:command", "minecraft:command_block", "minecraft:chain_command_block", "minecraft:repeating_command_block"]
 
-mob_pos = {}
-not_found_different_mobs = set()
-not_found_unique_mobs = {}
-not_found_unique_low_count_mobs = set()
-mob_counts = {}
-forbidden_ids = ["minecraft:armor_stand", "minecraft:painting", "minecraft:villager", "minecraft:potion", "minecraft:trident", "minecraft:boat",
-                 "minecraft:minecart", "minecraft:falling_block", "minecraft:firework_rocket", "minecraft:item_frame", "minecraft:end_crystal",
-                 "minecraft:area_effect_cloud", "minecraft:command", "minecraft:command_block", "minecraft:chain_command_block", "minecraft:repeating_command_block"]
+    los = LibraryOfSouls("/home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json")
+    los.clear_tags()
 
-los = LibraryOfSouls("/home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json")
-los.clear_tags()
+    for basedir in ["/home/epic/project_epic/server_config/data/generated"]:
+        for root, subdirs, files in os.walk(basedir):
+            for fname in files:
+                if fname.endswith(".nbt"):
+                    struct = Structure(os.path.join(root, fname))
 
-for basedir in ["/home/epic/project_epic/server_config/data/generated"]:
-    for root, subdirs, files in os.walk(basedir):
-        for fname in files:
-            if fname.endswith(".nbt"):
-                struct = Structure(os.path.join(root, fname))
+                    print("Processing structure: {}".format(struct.name))
 
-                print("Processing structure: {}".format(struct.name))
+                    for entity in struct.recursive_iter_entities():
+                        process_entity(entity, struct.name)
 
-                for entity in struct.recursive_iter_entities():
-                    process_entity(entity, struct.name)
+    for basedir in ["/home/epic/project_epic/server_config/data/structures/valley", "/home/epic/project_epic/server_config/data/structures/isles"]:
+        for root, subdirs, files in os.walk(basedir):
+            for fname in files:
+                if fname.endswith(".schematic"):
+                    schem = Schematic(os.path.join(root, fname))
 
-for basedir in ["/home/epic/project_epic/server_config/data/structures/valley", "/home/epic/project_epic/server_config/data/structures/isles"]:
-    for root, subdirs, files in os.walk(basedir):
+                    print("Processing schematic: {}".format(schem.name))
+
+                    for entity in schem.recursive_iter_entities():
+                        process_entity(entity, schem.name)
+
+    print("Processing shiftingcity schematics...")
+    for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/roguelite"):
         for fname in files:
             if fname.endswith(".schematic"):
                 schem = Schematic(os.path.join(root, fname))
-
-                print("Processing schematic: {}".format(schem.name))
-
                 for entity in schem.recursive_iter_entities():
-                    process_entity(entity, schem.name)
+                    process_entity(entity, "shiftingcity")
 
-print("Processing shiftingcity schematics...")
-for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/roguelite"):
-    for fname in files:
-        if fname.endswith(".schematic"):
-            schem = Schematic(os.path.join(root, fname))
-            for entity in schem.recursive_iter_entities():
-                process_entity(entity, "shiftingcity")
+    print("Processing corridors schematics...")
+    for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/dungeon/rogue"):
+        for fname in files:
+            if fname.endswith(".schematic"):
+                schem = Schematic(os.path.join(root, fname))
+                for entity in schem.recursive_iter_entities():
+                    process_entity(entity, "corridors")
 
-print("Processing corridors schematics...")
-for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/dungeon/rogue"):
-    for fname in files:
-        if fname.endswith(".schematic"):
-            schem = Schematic(os.path.join(root, fname))
-            for entity in schem.recursive_iter_entities():
-                process_entity(entity, "corridors")
+    dungeons = {
+        "white":{"x":-3, "z":-2},
+        "orange":{"x":-3, "z":-1},
+        "magenta":{"x":-3, "z":0},
+        "lightblue":{"x":-3, "z":1},
+        "yellow":{"x":-3, "z":2},
+        "willows":{"x":-3, "z":3},
+        "corridors":{"x":-2, "z":-1},
+        "verdant":{"x":-2, "z":5},
+        "reverie":{"x":-3, "z":4},
+        "tutorial":{"x":-2, "z":1},
+        "sanctum":{"x":-3, "z":12},
+        "labs":{"x":-2, "z":2},
+        "lime":{"x":-3, "z":5},
+        "pink":{"x":-3, "z":7},
+        "gray":{"x":-3, "z":6},
+        "cyan":{"x":-3, "z":9},
+        "lightgray":{"x":-3, "z":8},
+        "purple":{"x":-3, "z":13},
+        "teal":{"x":-2, "z":12},
+        "forum":{"x":-3, "z":16},
+        "rush":{"x":-3, "z":15},
+        "mist":{"x":-2, "z":3},
+        "remorse":{"x":-3, "z":10},
+        "depths":{"x":-2, "z":4},
+    }
 
-dungeons = {
-    "white":{"x":-3, "z":-2},
-    "orange":{"x":-3, "z":-1},
-    "magenta":{"x":-3, "z":0},
-    "lightblue":{"x":-3, "z":1},
-    "yellow":{"x":-3, "z":2},
-    "willows":{"x":-3, "z":3},
-    "corridors":{"x":-2, "z":-1},
-    "verdant":{"x":-2, "z":5},
-    "reverie":{"x":-3, "z":4},
-    "tutorial":{"x":-2, "z":1},
-    "sanctum":{"x":-3, "z":12},
-    "labs":{"x":-2, "z":2},
-    "lime":{"x":-3, "z":5},
-    "pink":{"x":-3, "z":7},
-    "gray":{"x":-3, "z":6},
-    "cyan":{"x":-3, "z":9},
-    "lightgray":{"x":-3, "z":8},
-    "purple":{"x":-3, "z":13},
-    "teal":{"x":-2, "z":12},
-    "forum":{"x":-3, "z":16},
-    "rush":{"x":-3, "z":15},
-    "mist":{"x":-2, "z":3},
-    "remorse":{"x":-3, "z":10},
-    "depths":{"x":-2, "z":4},
-}
+    dungeonWorld = World('/home/epic/project_epic/dungeon/Project_Epic-dungeon')
 
-dungeonWorld = World('/home/epic/project_epic/dungeon/Project_Epic-dungeon')
+    for dungeon in dungeons:
+        print("Processing dungeon: {}".format(dungeon))
+        rx = dungeons[dungeon]["x"]
+        rz = dungeons[dungeon]["z"]
+        for chunk in dungeonWorld.get_region(rx, rz, read_only = True).iter_chunks(autosave=False):
+            for entity in chunk.recursive_iter_entities():
+                process_entity(entity, dungeon)
 
-for dungeon in dungeons:
-    print("Processing dungeon: {}".format(dungeon))
-    rx = dungeons[dungeon]["x"]
-    rz = dungeons[dungeon]["z"]
-    for chunk in dungeonWorld.get_region(rx, rz, read_only = True).iter_chunks(autosave=False):
-        for entity in chunk.recursive_iter_entities():
-            process_entity(entity, dungeon)
+    print("\n\n\n\n\n\nNot found unique mobs:")
+    for name in not_found_unique_mobs:
+        print("  {} - {}".format(name, mob_pos[name]))
 
-print("\n\n\n\n\n\nNot found unique mobs:")
-for name in not_found_unique_mobs:
-    print("  {} - {}".format(name, mob_pos[name]))
+    print("\n\n\n\n\n\nNot found different mobs:")
+    for name in not_found_different_mobs:
+        print("  {} - {}".format(name, mob_pos[name]))
 
-print("\n\n\n\n\n\nNot found different mobs:")
-for name in not_found_different_mobs:
-    print("  {} - {}".format(name, mob_pos[name]))
-
-los.save()
+    los.save()

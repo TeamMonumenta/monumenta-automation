@@ -6,8 +6,10 @@ type BoxResult<T> = Result<T,Box<dyn Error>>;
 use std::env;
 use std::path::Path;
 use simplelog::*;
+use rayon::prelude::*;
 use uuid::Uuid;
 use std::fs;
+use std::cell::RefCell;
 
 use monumenta::player::Player;
 
@@ -74,39 +76,87 @@ fn main() -> BoxResult<()> {
     let client = redis::Client::open(redis_uri)?;
     let mut con : redis::Connection = client.get_connection()?;
 
+    // Thread-local connection used by the inner loops
+    thread_local!(static THREAD_CONNECTIONS: RefCell<Option<redis::Connection>> = RefCell::new(None));
+
     match mode {
         Mode::OUTPUT => {
-            for (_, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {
-                let result = player.load_redis(&domain, &mut con);
-                if let Ok(_) = result {
-                    player.save_dir(basedir.to_str().unwrap())?;
-                    println!("{}", player);
-                } else if let Err(err) = result {
-                    eprintln!("Failed to load player data for {}: {}", player, err);
-                }
-            }
+            Player::get_redis_players(&domain, &mut con)?.par_iter_mut().for_each(|(_, player)| {
+                THREAD_CONNECTIONS.with(|cell| {
+                    let mut local_con = cell.borrow_mut();
+
+                    // Create a new connection once per thread if it is not initialized
+                    if local_con.is_none() {
+                        let con = client.get_connection();
+                        if let Err(err) = con {
+                            eprintln!("Failed to open threaded connection: {}", err);
+                            return;
+                        } else if let Ok(con) = con {
+                            *local_con = Some(con);
+                        }
+                    }
+                    let mut con = local_con.as_mut().unwrap();
+
+                    // Use the connection to load a player and save it to the output directory
+                    let result = player.load_redis(&domain, &mut con);
+                    if let Ok(_) = result {
+                        if let Err(err) = player.save_dir(basedir.to_str().unwrap()) {
+                            eprintln!("Failed to save player data for {}: {}", player, err);
+                        }
+                        println!("{}", player);
+                    } else if let Err(err) = result {
+                        eprintln!("Failed to load player data for {}: {}", player, err);
+                    }
+                });
+            });
         }
         Mode::INPUT => {
             /* Need to do more work to figure out what uuids are being loaded */
-            for entry in fs::read_dir(Path::new(&basedir).join("playerdata"))? {
+            let uuids: Vec<Uuid> = fs::read_dir(Path::new(&basedir).join("playerdata"))?.filter_map(|entry| {
                 if let Ok(file) = entry {
                     let path = file.path();
                     if path.extension().unwrap() == "dat" {
-                        let uuid = Uuid::parse_str(path.file_stem().unwrap().to_str().unwrap()).unwrap();
-
-                        /* Now that we have a UUID, load it from the base path and push it to redis */
-
-                        let mut player = Player::new(uuid);
-                        player.load_dir(basedir.to_str().unwrap())?;
-                        player.save_redis(&domain, &mut con)?;
-                        if to_keep < 999999 {
-                            player.trim_redis_history(&domain, &mut con, to_keep)?;
-                        }
-
-                        println!("{}", player);
+                        return Some(Uuid::parse_str(path.file_stem().unwrap().to_str().unwrap()).unwrap());
                     }
                 }
-            }
+                return None;
+            }).collect();
+
+            uuids.par_iter().for_each(|uuid| {
+                THREAD_CONNECTIONS.with(|cell| {
+                    let mut local_con = cell.borrow_mut();
+
+                    // Create a new connection once per thread if it is not initialized
+                    if local_con.is_none() {
+                        let con = client.get_connection();
+                        if let Err(err) = con {
+                            eprintln!("Failed to open threaded connection: {}", err);
+                            return;
+                        } else if let Ok(con) = con {
+                            *local_con = Some(con);
+                        }
+                    }
+                    let mut con = local_con.as_mut().unwrap();
+
+                    /* Now that we have a UUID, load it from the base path and push it to redis */
+                    let mut player = Player::new(uuid.to_owned());
+                    if let Err(err) = player.load_dir(basedir.to_str().unwrap()) {
+                        eprintln!("Failed to load player {} from dir {}: {}", player, basedir.to_str().unwrap(), err);
+                    } else {
+                        if let Err(err) = player.save_redis(&domain, &mut con) {
+                            eprintln!("Failed to save player {} to redis: {}", player, err);
+                        } else {
+                            if to_keep < 999999 {
+                                if let Err(err) = player.trim_redis_history(&domain, &mut con, to_keep) {
+                                eprintln!("Failed to trim player's redis history {}: {}", player, err);
+                                }
+                            }
+
+                            println!("{}", player);
+                        }
+                    }
+                });
+            });
         }
     }
 

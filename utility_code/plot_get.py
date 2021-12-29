@@ -4,8 +4,6 @@ import sys
 from lib_py3.redis_scoreboard import RedisScoreboard
 from r1plot_lookup import lut
 
-global_score_cache = None
-
 def from_player(cmd,global_score_cache):
     if len(args) == 0:
         print("\nPlayer name expected after 'player'.")
@@ -222,32 +220,35 @@ def from_invalid(cmd,global_score_cache):
     print("\nInvalid command {!r}. Please specify a 'player', 'plot', or 'address' - or 'free' for free plots.".format(cmd))
     sys.exit()
 
-commands = {
-    'player': from_player,
-    'plot': from_plot,
-    'address': from_address,
-    'free': find_free,
-}
+if __name__ == '__main__':
+    global_score_cache = None
 
-print('''========================
-Player Address Lookup
-========================
-In the event of conflict:
-- plotx, ploty, plotz are the  coordinates just inside the plots.
-  This is the only one that matters now.
-- Failing that, if R1Address says it's wrong, it's probably wrong.
-- R1Plot is usually trusted, but it's a pain to figure out where these are.
-''')
+    commands = {
+        'player': from_player,
+        'plot': from_plot,
+        'address': from_address,
+        'free': find_free,
+    }
 
-args = sys.argv
-args.pop(0)
-if len(sys.argv) == 0:
-    print("Please specify a 'player', 'plot', or 'address' - or 'free' for free plots.")
-    sys.exit()
+    print('''========================
+    Player Address Lookup
+    ========================
+    In the event of conflict:
+    - plotx, ploty, plotz are the  coordinates just inside the plots.
+      This is the only one that matters now.
+    - Failing that, if R1Address says it's wrong, it's probably wrong.
+    - R1Plot is usually trusted, but it's a pain to figure out where these are.
+    ''')
 
-print("Getting addresses and coordinates...")
+    args = sys.argv
+    args.pop(0)
+    if len(sys.argv) == 0:
+        print("Please specify a 'player', 'plot', or 'address' - or 'free' for free plots.")
+        sys.exit()
 
-while len(args) >= 1:
-    cmd = args.pop(0)
-    commands.get(cmd,from_invalid)(cmd,global_score_cache)
+    print("Getting addresses and coordinates...")
+
+    while len(args) >= 1:
+        cmd = args.pop(0)
+        commands.get(cmd,from_invalid)(cmd,global_score_cache)
 

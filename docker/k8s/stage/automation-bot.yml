@@ -122,6 +122,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/stage/m12
+        - name: nfs-redis
+          hostPath:
+            type: Directory
+            path: /nfs/stage/redis
         - name: nfs-shared
           hostPath:
             type: Directory
@@ -147,12 +151,16 @@ spec:
           mountPath: /home/epic/play/m11
         - name: nfs-data
           mountPath: /home/epic/stage/m12
+        - name: nfs-redis
+          mountPath: /home/epic/stage/redis
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         - name: secret-config
           mountPath: /home/epic/.monumenta_bot
         resources:
-          limits:
+          requests:
             cpu: "4"
+          limits:
+            cpu: "12"
       imagePullSecrets:
       - name: githubcred

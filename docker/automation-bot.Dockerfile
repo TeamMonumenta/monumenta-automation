@@ -1,10 +1,27 @@
-FROM debian:stable
+FROM ubuntu:20.04
 
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip unzip pigz python3-dev libtool curl liblz4-tool netcat && \
+	apt-get install -y build-essential curl
+
+# Install redis tools
+RUN cd /tmp && \
+	curl -O https://download.redis.io/releases/redis-5.0.14.tar.gz && \
+	tar xzf redis-5.0.14.tar.gz && \
+	cd redis-5.0.14 && \
+	make -j 4 && \
+	make install
+
+FROM ubuntu:20.04
+
+RUN apt-get update && \
+	apt-get install -y software-properties-common && \
+	add-apt-repository -y ppa:pypy/ppa && \
+	apt-get update && \
+	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip unzip pigz python3-dev libtool curl liblz4-tool netcat pypy3 && \
 	pip3 install wheel && \
 	pip3 install discord.py kubernetes pika redis bitstring kanboard flask mutf8 && \
-	pip3 install -U pyyaml
+	pip3 install -U pyyaml && \
+	rm -rf /var/lib/apt/lists/*
 
 # Install rclone
 RUN curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && \
@@ -14,6 +31,9 @@ RUN curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && \
 	chown root:root /usr/bin/rclone && \
 	chmod 755 /usr/bin/rclone && \
 	rclone --version
+
+# Install redis-cli from container 0
+COPY --from=0 /usr/local/bin/redis-cli /usr/local/bin/redis-cli
 
 # Check for mandatory build arguments
 ARG USERNAME
@@ -30,6 +50,12 @@ RUN groupadd --non-unique -g $GID $USERNAME && \
 	useradd -lmNs /bin/bash -u $UID -g $GID $USERNAME
 
 USER $USERNAME
+
+RUN cd /tmp && \
+	curl -O https://bootstrap.pypa.io/get-pip.py && \
+	pypy3 get-pip.py && \
+	rm get-pip.py && \
+	pypy3 -m pip install wheel pika redis bitstring kanboard flask mutf8 pyyaml
 
 COPY quarry $USERHOME/MCEdit-And-Automation/quarry
 COPY rust/bin $USERHOME/MCEdit-And-Automation/rust/bin

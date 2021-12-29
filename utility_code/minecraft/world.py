@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-
 import os
 import sys
 import time
 import zlib
 import math
-import multiprocessing
+import concurrent.futures
 
 from lib_py3.common import bounded_range
 
@@ -18,20 +16,20 @@ from minecraft.player_dat_format.player import PlayerFile
 # Calling the callback directly would force the caller to handle instantiating
 # the region files, and it isn't possible to copy a loaded Region file across
 # processes so it has to be loaded afterwards
-def _parallel_region_wrapper(arg):
-    full_path, rx, rz, func, region_type = arg
-    return func(region_type(full_path, rx, rz))
+def _parallel_region_wrapper(parallel_arg):
+    full_path, rx, rz, func, region_type, additional_args = parallel_arg
+    return func(*((region_type(full_path, rx, rz),) + additional_args))
 
 # This wraps the callback for iter_players_parallel so that the player
 # files themselves are loaded by the process that will work on them.
 # Calling the callback directly would force the caller to handle instantiating
 # the player files, and it isn't possible to copy a loaded player file across
 # processes so it has to be loaded afterwards
-def _parallel_player_wrapper(arg):
-    full_path, autosave, func, err_func = arg
+def _parallel_player_wrapper(parallel_arg):
+    full_path, autosave, func, err_func, additional_args = parallel_arg
     try:
         player_file = PlayerFile(full_path)
-        result = func(player_file.player)
+        result = func(*((player_file.player,) + additional_args))
         if autosave:
             player_file.save()
     except Exception as ex:
@@ -51,6 +49,14 @@ class World():
             self.level_dat = LevelDat(os.path.join(self.path, 'level.dat'))
         else:
             self.level_dat = None
+
+    @classmethod
+    def enumerate_worlds(cls, dir) -> [str]:
+        """Returns the folder/world names of all folders in the specified directory that contain a level.dat"""
+        if not os.path.isdir(dir):
+            return []
+        return [o for o in os.listdir(dir)
+                    if os.path.isdir(os.path.join(dir,o)) and os.path.isfile(os.path.join(dir, o, "level.dat"))]
 
     def copy_to(self, path, regenerate_uuids=True):
         os.makedirs(path)
@@ -124,7 +130,7 @@ class World():
         for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
             yield region_type(full_path, rx, rz, read_only=read_only)
 
-    def iter_regions_parallel(self, func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion)): # TODO: PoiRegion
+    def iter_regions_parallel(self, func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion), additional_args=(), initializer=None, initargs=()): # TODO: PoiRegion
         """
         Iterates regions in parallel using multiple processes.
 
@@ -146,15 +152,15 @@ class World():
             # This makes debugging much easier
             retval = []
             for region in self.iter_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
-                retval.append(func(region))
+                retval.append(func(*((region,) + additional_args)))
             return retval
         else:
             region_list = []
             for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
-                region_list.append((full_path, rx, rz, func, region_type))
+                region_list.append((full_path, rx, rz, func, region_type, additional_args))
 
             if len(region_list) > 0:
-                with multiprocessing.Pool(num_processes) as pool:
+                with concurrent.futures.ProcessPoolExecutor(max_workers=num_processes, initializer=initializer, initargs=initargs) as pool:
                     return pool.map(_parallel_region_wrapper, region_list)
 
     def get_region(self, rx, rz, read_only=False, region_type=Region):
@@ -189,7 +195,7 @@ class World():
             if autosave:
                 player_file.save()
 
-    def iter_players_parallel(self, func, err_func, num_processes=4, autosave=False):
+    def iter_players_parallel(self, func, err_func, num_processes=4, autosave=False, additional_args=(), initializer=None, initargs=()):
         """
         Iterates players in parallel using multiple processes.
 
@@ -212,15 +218,15 @@ class World():
             # This makes debugging much easier
             retval = []
             for player in self.iter_players(autosave=autosave):
-                retval.append(func(player))
+                retval.append(func(*((player,) + additional_args)))
             return retval
         else:
             player_list = []
             for full_path in self.enumerate_players():
-                player_list.append((full_path, autosave, func, err_func))
+                player_list.append((full_path, autosave, func, err_func, additional_args))
 
             if len(player_list) > 0:
-                with multiprocessing.Pool(num_processes) as pool:
+                with concurrent.futures.ProcessPoolExecutor(max_workers=num_processes, initializer=initializer, initargs=initargs) as pool:
                     return pool.map(_parallel_player_wrapper, player_list)
 
     def __repr__(self):

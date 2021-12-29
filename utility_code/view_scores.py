@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env pypy3
 '''view scores [-d] Conditions [Order]
 
   -d shows duplicate scores only (ie, same apartment)
@@ -31,123 +31,124 @@ import sys
 import ast
 from lib_py3.redis_scoreboard import RedisScoreboard
 
-sys.argv.pop(0)
-
-if len(sys.argv) == 0:
-    print( __doc__ )
-    exit()
-
-duplicatesOnly = False
-if sys.argv[0] == '-d':
-    duplicatesOnly = True
+if __name__ == '__main__':
     sys.argv.pop(0)
 
-if len(sys.argv) == 0:
-    print( __doc__ )
-    exit()
+    if len(sys.argv) == 0:
+        print( __doc__ )
+        exit()
 
-Conditions = ast.literal_eval(sys.argv[0])
-sys.argv.pop(0)
+    duplicatesOnly = False
+    if sys.argv[0] == '-d':
+        duplicatesOnly = True
+        sys.argv.pop(0)
 
-components = ("Objective","Name","Score","Locked")
+    if len(sys.argv) == 0:
+        print( __doc__ )
+        exit()
 
-# Order will contain all fields in the end
-Order = []
-if len(sys.argv) > 0:
-    Order = list(sys.argv[:4])
+    Conditions = ast.literal_eval(sys.argv[0])
+    sys.argv.pop(0)
 
-for i in range(len(Order)-1,-1,-1):
-    if Order[i] not in components:
-        Order.pop(i)
+    components = ("Objective","Name","Score","Locked")
 
-for i in components:
-    if i not in Order:
-        Order.append(i)
-# Order is finalized
+    # Order will contain all fields in the end
+    Order = []
+    if len(sys.argv) > 0:
+        Order = list(sys.argv[:4])
 
-scores = RedisScoreboard("play", redis_host="redis")
-unsorted = scores.search_scores(Conditions=Conditions)
+    for i in range(len(Order)-1,-1,-1):
+        if Order[i] not in components:
+            Order.pop(i)
 
-scoreMap = {}
-maxCharCounts = []
-alignment = ""
-for i in Order:
-    maxCharCounts.append(len(i))
-    if i in ("Score","Locked"):
-        alignment += ">"
-    else:
-        alignment += "<"
+    for i in components:
+        if i not in Order:
+            Order.append(i)
+    # Order is finalized
 
-if duplicatesOnly:
-    dupes = {}
-    for score in unsorted:
-        key = (
-            score.at_path("Objective").value,
-            score.at_path("Score").value
-        )
-        if key not in dupes:
-            dupes[key] = 1
+    scores = RedisScoreboard("play", redis_host="redis")
+    unsorted = scores.search_scores(Conditions=Conditions)
+
+    scoreMap = {}
+    maxCharCounts = []
+    alignment = ""
+    for i in Order:
+        maxCharCounts.append(len(i))
+        if i in ("Score","Locked"):
+            alignment += ">"
         else:
-            dupes[key] += 1
+            alignment += "<"
 
-    onlyDupes = []
+    if duplicatesOnly:
+        dupes = {}
+        for score in unsorted:
+            key = (
+                score.at_path("Objective").value,
+                score.at_path("Score").value
+            )
+            if key not in dupes:
+                dupes[key] = 1
+            else:
+                dupes[key] += 1
+
+        onlyDupes = []
+
+        for score in unsorted:
+            key = (
+                score.at_path("Objective").value,
+                score.at_path("Score").value
+            )
+            if dupes[key] > 1:
+                onlyDupes.append(score)
+
+        unsorted = onlyDupes
 
     for score in unsorted:
-        key = (
-            score.at_path("Objective").value,
-            score.at_path("Score").value
-        )
-        if dupes[key] > 1:
-            onlyDupes.append(score)
+        pointer = scoreMap
+        for i in range(2):
+            key = Order[i]
+            val = score.at_path(key).value
+            maxCharCounts[i] = max(maxCharCounts[i],len(str(val)))
+            if val not in pointer:
+                pointer[val] = {}
+            pointer = pointer[val]
+        key = score.at_path(Order[2]).value
+        maxCharCounts[2] = max(maxCharCounts[2],len(str(key)))
+        val = score.at_path(Order[3]).value
+        maxCharCounts[3] = max(maxCharCounts[3],len(str(val)))
+        pointer[key] = val
 
-    unsorted = onlyDupes
+    # Header
+    result = ""
+    for i in range(4):
+        strFormat = '{:^' + str( maxCharCounts[i] ) + '},'
+        result += strFormat.format(Order[i])
 
-for score in unsorted:
-    pointer = scoreMap
-    for i in range(2):
-        key = Order[i]
-        val = score.at_path(key).value
-        maxCharCounts[i] = max(maxCharCounts[i],len(str(val)))
-        if val not in pointer:
-            pointer[val] = {}
-        pointer = pointer[val]
-    key = score.at_path(Order[2]).value
-    maxCharCounts[2] = max(maxCharCounts[2],len(str(key)))
-    val = score.at_path(Order[3]).value
-    maxCharCounts[3] = max(maxCharCounts[3],len(str(val)))
-    pointer[key] = val
+    result += '\n'
 
-# Header
-result = ""
-for i in range(4):
-    strFormat = '{:^' + str( maxCharCounts[i] ) + '},'
-    result += strFormat.format(Order[i])
+    # Table contents
+    score = ['','','','']
+    matching_scores = 0
+    for keyA in sorted(scoreMap.keys()):
+        strFormat = '{:' + alignment[0] + str( maxCharCounts[0] ) + '},'
+        score[0] = strFormat.format(keyA)
+        mapA = scoreMap[keyA]
+        for keyB in sorted(mapA.keys()):
+            strFormat = '{:' + alignment[1] + str( maxCharCounts[1] ) + '},'
+            score[1] = strFormat.format(keyB)
+            mapB = mapA[keyB]
+            for keyC in sorted(mapB.keys()):
+                strFormat = '{:' + alignment[2] + str( maxCharCounts[2] ) + '},'
+                score[2] = strFormat.format(keyC)
+                keyD = mapB[keyC]
 
-result += '\n'
+                strFormat = '{:' + alignment[3] + str( maxCharCounts[3] ) + '},'
+                score[3] = strFormat.format(keyD)
 
-# Table contents
-score = ['','','','']
-matching_scores = 0
-for keyA in sorted(scoreMap.keys()):
-    strFormat = '{:' + alignment[0] + str( maxCharCounts[0] ) + '},'
-    score[0] = strFormat.format(keyA)
-    mapA = scoreMap[keyA]
-    for keyB in sorted(mapA.keys()):
-        strFormat = '{:' + alignment[1] + str( maxCharCounts[1] ) + '},'
-        score[1] = strFormat.format(keyB)
-        mapB = mapA[keyB]
-        for keyC in sorted(mapB.keys()):
-            strFormat = '{:' + alignment[2] + str( maxCharCounts[2] ) + '},'
-            score[2] = strFormat.format(keyC)
-            keyD = mapB[keyC]
+                result += ''.join(score) + '\n'
+                matching_scores += 1
 
-            strFormat = '{:' + alignment[3] + str( maxCharCounts[3] ) + '},'
-            score[3] = strFormat.format(keyD)
+    result += f'matches,{matching_scores}\n'
 
-            result += ''.join(score) + '\n'
-            matching_scores += 1
-
-result += f'matches,{matching_scores}\n'
-
-print( result )
+    print( result )
 

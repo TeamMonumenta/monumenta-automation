@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """A library for tracking changes over time or versions."""
 
 class ChangelogMap(dict):

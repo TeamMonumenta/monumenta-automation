@@ -6,11 +6,12 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))
 from minecraft.chunk_format.schematic import Schematic
 
-args = sys.argv
+if __name__ == '__main__':
+    args = sys.argv
 
-if len(args) != 2:
-    print("Usage: print_schematic </path/to/schematic>")
-else:
-    schematic = Schematic(args[1])
+    if len(args) != 2:
+        print("Usage: print_schematic </path/to/schematic>")
+    else:
+        schematic = Schematic(args[1])
 
-    schematic.root_tag.body.tree()
+        schematic.root_tag.body.tree()
