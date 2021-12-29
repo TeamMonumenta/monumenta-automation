@@ -67,6 +67,12 @@ def parallel_copy(config):
             print(f"  {server} - Copying maps from {from_world_path} to {output_world_path}")
             copy_maps(from_world_path, output_world_path)
 
+def process_init(worlds_in, prev_worlds_in, mgr):
+    global worlds, prev_worlds, item_replace_manager
+    worlds = worlds_in
+    prev_worlds = prev_worlds_in
+    item_replace_manager = mgr
+
 def process_region(region_config):
     try:
         world = worlds[region_config["world"]]
@@ -477,7 +483,7 @@ if __name__ == '__main__':
     num_global_replacements = 0
     replacements_to_merge = {}
     done_count = 0
-    with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
+    with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads, initializer=process_init, initargs=(worlds, prev_worlds, item_replace_manager)) as pool:
         for world_name, num_replacements, replacements_log in pool.map(process_region, regions):
             done_count += 1
             num_global_replacements += num_replacements
