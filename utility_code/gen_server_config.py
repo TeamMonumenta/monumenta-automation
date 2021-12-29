@@ -424,7 +424,10 @@ if __name__ == '__main__':
                 ('plugins/MonumentaNetworkRelay/config.yml', 'broadcast-command-sending-enabled', 'broadcast-command-sending-enabled: true'),
                 ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
             ],
-            'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + dynmap + coreprotect + gobrush,
+            'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + [
+                ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
+                ('plugins/LibraryOfSouls.jar', '../../server_config/plugins/LibraryOfSouls.jar'),
+            ],
         },
 
         'mobs':{
