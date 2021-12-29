@@ -1,4 +1,4 @@
-FROM debian:stable
+FROM ubuntu:20.04
 
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip unzip pigz python3-dev libtool curl liblz4-tool netcat && \
