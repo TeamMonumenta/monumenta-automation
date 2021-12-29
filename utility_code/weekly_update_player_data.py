@@ -16,8 +16,11 @@ from minecraft.world import World
 def usage():
     sys.exit("Usage: {} <--world /path/to/world> <--datapacks /path/to/datapacks> [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
 
-def process_player(args):
-    player, item_replace_manager = args
+def process_init(mgr):
+    global item_replace_manager
+    item_replace_manager = mgr
+
+def process_player(player):
     num_replacements = 0
     replacements_log = {}
 
@@ -91,8 +94,7 @@ if __name__ == '__main__':
     elif logfile is not None:
         log_handle = open(logfile, 'w')
 
-
-    player_results = world.iter_players_parallel(process_player, err_func, num_processes=num_threads, autosave=(not dry_run), arg=item_replace_manager)
+    player_results = world.iter_players_parallel(process_player, err_func, num_processes=num_threads, autosave=(not dry_run), initializer=process_init, initargs=(item_replace_manager,))
     timings.nextStep("Replacements done")
 
     num_replacements = 0

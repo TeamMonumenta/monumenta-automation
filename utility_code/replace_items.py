@@ -23,9 +23,12 @@ from quarry.types import nbt
 def usage():
     sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> | --structures /path/to/structures [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
 
-def process_region(arg):
-    region, custom_args = arg
-    item_replace_manager, dry_run = custom_args
+def process_init(mgr, dry):
+    global item_replace_manager, dry_run
+    item_replace_manager = mgr
+    dry_run = dry
+
+def process_region(region):
     replacements_log = {}
     num_replacements = 0
     for chunk in region.iter_chunks(autosave=(not dry_run)):
@@ -133,7 +136,7 @@ if __name__ == '__main__':
         world = World(world_path)
         timings.nextStep("Loaded world")
 
-        parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads, arg=(item_replace_manager, dry_run))
+        parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads, initializer=process_init, initargs=(item_replace_manager, dry_run))
         timings.nextStep("World replacements done")
 
     if schematics_path:
@@ -168,7 +171,7 @@ if __name__ == '__main__':
             for arg in args:
                 parallel_results.append(process_structure(arg))
         else:
-            with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads, initializer=process_init, initargs=(item_replace_manager, dry_run)) as pool:
                 parallel_results = pool.map(process_structure, args)
         timings.nextStep("Structures replacements done")
 

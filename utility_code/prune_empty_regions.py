@@ -12,8 +12,7 @@ from quarry.types.chunk import BlockArray
 from lib_py3.block_map import block_map
 
 # Prune this world of region files that contain no Entities, Tile Entities, or non-air blocks
-def process_region(arg):
-    region, _ = arg
+def process_region(region):
     num_entities = 0
     num_block_entities = 0
     has_blocks={}
@@ -80,9 +79,11 @@ if __name__ == '__main__':
 
         results = world.iter_regions_parallel(process_region, num_processes=6, region_types=(Region, EntitiesRegion)) # TODO: PoiRegion ignored for now
         deleted = 0
+        total = 0
         for region_result in results:
+            total += 1
             if not region_result:
                 deleted += 1
 
-        print(f"Deleted {deleted} empty region files of {len(results)} total regions")
+        print(f"Deleted {deleted} empty region files of {total} total regions")
 

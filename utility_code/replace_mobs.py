@@ -120,9 +120,7 @@ def process_entity(entity, replacements_log) -> None:
         remove_unwanted_spawner_tags(nbt)
         return replace_mgr.replace_mob(nbt, replacements_log, entity.get_path_str())
 
-def process_region(args):
-    region, arg = args
-    dry_run = arg
+def process_region(region, dry_run):
     replacements_log = {}
     num_replacements = 0
     for chunk in region.iter_chunks(autosave=(not dry_run)):
@@ -333,7 +331,7 @@ if __name__ == '__main__':
         world = World(world_path)
         timings.nextStep("Loaded world")
 
-        parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads, min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, arg=(dry_run))
+        parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads, min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, additional_args=(dry_run,))
         timings.nextStep("World replacements done")
 
     if schematics_path:

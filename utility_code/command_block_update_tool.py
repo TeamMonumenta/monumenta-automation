@@ -13,8 +13,7 @@ from minecraft.world import World
 def usage():
     sys.exit("Usage: {} <--world /path/to/world> <--output file.json | --input file.json> [--pos1 x,y,z --pos2 x,y,z] [--num-threads num]".format(sys.argv[0]))
 
-def out_region_iter(arg):
-    region, _ = arg
+def out_region_iter(region):
     out = []
     for chunk in region.iter_chunks(autosave=False):
         for block_entity in chunk.recursive_iter_block_entities():
