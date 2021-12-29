@@ -38,9 +38,7 @@ def process_region(region):
 
     return (num_replacements, replacements_log)
 
-def process_schematic(arg):
-    schem_path, custom_args = arg
-    item_replace_manager, dry_run = custom_args
+def process_schematic(schem_path):
     replacements_log = {}
     num_replacements = 0
 
@@ -144,7 +142,7 @@ if __name__ == '__main__':
         for root, subdirs, files in os.walk(schematics_path):
             for fname in files:
                 if fname.endswith(".schematic"):
-                    args.append((os.path.join(root, fname), (item_replace_manager, dry_run)))
+                    args.append(os.path.join(root, fname))
 
         if num_threads == 1:
             # Don't bother with processes if only going to use one
@@ -153,7 +151,7 @@ if __name__ == '__main__':
             for arg in args:
                 parallel_results.append(process_schematic(arg))
         else:
-            with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads, initializer=process_init, initargs=(item_replace_manager, dry_run)) as pool:
                 parallel_results = pool.map(process_schematic, args)
         timings.nextStep("Schematics replacements done")
 
