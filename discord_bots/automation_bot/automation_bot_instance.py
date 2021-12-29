@@ -1305,17 +1305,14 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         await self.run(["bash", "-c", f"mv {self._server_dir}/0_STAGE/* {self._server_dir}"])
         await self.run(f"rmdir {self._server_dir}/0_STAGE")
 
-# TODO: Really need to find a nice way to load the redis databases directly and bypass this weirdness. Or make playerdata_save_load faster
-#        await self.display("Loading player data from the play server...")
-#        await self.run("rm -rf /home/epic/temp_player_data")
-#        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.play/ play --output /home/epic/temp_player_data")
-#        await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + " redis://redis.stage/ play --input /home/epic/temp_player_data 2")
-#
-#        await self.display("Refreshing leaderboards")
-#        await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis.stage/ play " + os.path.join(_top_level, "leaderboards.yaml"))
-#
-#        await self.display("Updating uuid2name and name2uuid indexes...")
-#        await self.run(os.path.join(_top_level, "rust/bin/update_redis_uuid2name_name2uuid") + " redis://redis.stage/ play")
+        # Download the entire redis database from the play server
+        await self.display("Stopping stage redis...")
+        await self.stop("redis")
+        await self.cd(f"{self._server_dir}/../redis")
+        await self.run(f"mv dump.rdb dump.rdb.previous")
+        await self.display("Downloading current redis database from the play server...")
+        await self.run(f"redis-cli -h redis.play --rdb dump.rdb")
+        await self.start("redis")
 
         await self.display("Disabling Plan and PremiumVanish...")
         await self.run(f"mv -f {self._server_dir}/server_config/plugins/Plan.jar {self._server_dir}/server_config/plugins/Plan.jar.disabled")
