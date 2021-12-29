@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env pypy3
 '''view scores [-d] Conditions [Order]
 
   -d shows duplicate scores only (ie, same apartment)

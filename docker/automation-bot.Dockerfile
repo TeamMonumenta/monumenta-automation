@@ -1,7 +1,7 @@
 FROM ubuntu:20.04
 
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip unzip pigz python3-dev libtool curl liblz4-tool netcat && \
+	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip unzip pigz python3-dev libtool curl liblz4-tool netcat pypy3 && \
 	pip3 install wheel && \
 	pip3 install discord.py kubernetes pika redis bitstring kanboard flask mutf8 && \
 	pip3 install -U pyyaml
@@ -30,6 +30,15 @@ RUN groupadd --non-unique -g $GID $USERNAME && \
 	useradd -lmNs /bin/bash -u $UID -g $GID $USERNAME
 
 USER $USERNAME
+
+RUN cd /tmp && \
+	curl -O https://bootstrap.pypa.io/get-pip.py && \
+	pypy3 get-pip.py && \
+	rm get-pip.py && \
+	pypy3 -m pip install wheel && \
+	pypy3 -m pip install discord.py kubernetes pika redis bitstring kanboard flask mutf8 && \
+	pypy3 -m pip install pyyaml
+
 
 COPY quarry $USERHOME/MCEdit-And-Automation/quarry
 COPY rust/bin $USERHOME/MCEdit-And-Automation/rust/bin
