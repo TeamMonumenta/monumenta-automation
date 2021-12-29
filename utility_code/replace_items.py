@@ -79,7 +79,7 @@ def process_structure(arg):
     return (num_replacements, replacements_log)
 
 if __name__ == '__main__':
-    multiprocessing.set_start_method("spawn")
+    multiprocessing.set_start_method("fork")
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "w:s:g:l:j:d", ["world=", "schematics=", "structures=", "logfile=", "num-threads=", "dry-run"])

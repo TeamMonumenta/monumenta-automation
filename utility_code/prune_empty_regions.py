@@ -62,7 +62,7 @@ def process_region(region):
         return False
 
 if __name__ == '__main__':
-    multiprocessing.set_start_method("spawn")
+    multiprocessing.set_start_method("fork")
 
     args = sys.argv
     name = args.pop(0)
