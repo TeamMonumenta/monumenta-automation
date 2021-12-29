@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Raffle library - first used for weekly voting raffle
 """

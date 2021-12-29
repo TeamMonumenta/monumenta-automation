@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """A library for common Minecraft recursive iteration.
 
 Note that this class has some odd import requirements. It is the base class for BlockEntity, Entity, and Item,

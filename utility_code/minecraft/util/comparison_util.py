@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """A library for forced comparison results."""
 
 class AlwaysLess():
