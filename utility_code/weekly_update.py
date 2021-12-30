@@ -481,15 +481,13 @@ if __name__ == '__main__':
 
     # Run the regions in parallel using a pool. As results come in, accumulate them to the appropriate list based on the world
     num_global_replacements = 0
-    replacements_to_merge = {}
+    replacements_to_merge = []
     done_count = 0
     with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads, initializer=process_init, initargs=(worlds, prev_worlds, item_replace_manager)) as pool:
         for world_name, num_replacements, replacements_log in pool.map(process_region, regions):
             done_count += 1
             num_global_replacements += num_replacements
-            if world_name not in replacements_to_merge:
-                replacements_to_merge[world_name] = []
-            replacements_to_merge[world_name].append(replacements_log)
+            replacements_to_merge.append(replacements_log)
 
             print(f"  {done_count} / {num_regions} regions processed, {num_global_replacements} replacements so far")
     timings.nextStep("Processed regions")
@@ -499,9 +497,7 @@ if __name__ == '__main__':
 
     print(f"Merging replacements logs...")
 
-    replacements_log = {}
-    for world_name in replacements_to_merge:
-        replacements_log[world_name] = item_replace_manager.merge_logs(replacements_to_merge[world_name])
+    replacements_log = item_replace_manager.merge_logs(replacements_to_merge)
     timings.nextStep("Replacements logs merged")
 
     ##################################################################################
