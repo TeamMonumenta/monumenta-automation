@@ -177,7 +177,7 @@ class AutomationBotInstance(object):
 
             # TODO: This is horrible - each bot has one instance (this class) for each channel. Only want one instance to listen to rabbitmq messages
             # Should really be done via some much better mechanism...
-            if "rabbitmq" in config and self._channel.id != 486019840134610965:
+            if "rabbitmq" in config:
                 try:
                     # Get the event loop on the main thread
                     loop = asyncio.get_event_loop()
