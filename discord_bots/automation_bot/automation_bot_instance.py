@@ -1145,11 +1145,6 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(f"rm -rf {self._shards['purgatory']}")
             await self.run(f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory {self._shards['purgatory']}")
 
-        if min_phase <= 8 and "tutorial" in self._shards:
-            await self.display("Copying tutorial...")
-            await self.run(f"rm -rf {self._shards['tutorial']}")
-            await self.run(f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/tutorial {self._shards['tutorial']}")
-
         ########################################
         # Raffle
 
