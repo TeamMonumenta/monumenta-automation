@@ -72,6 +72,8 @@ ignored_reaction_channels = [
         358326443609948160,
         # rp-announcements
         481866909097132043,
+        # mod-chat
+        313404419628859394,
 ]
 
 try:
