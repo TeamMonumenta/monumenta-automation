@@ -111,7 +111,6 @@ class AutomationBotInstance(object):
             "stop": self.action_stop,
             "restart": self.action_restart,
 
-            "plot get": self.action_plot_get,
             "view scores": self.action_view_scores,
             "set score": self.action_set_player_scores,
 
@@ -1437,16 +1436,6 @@ Syntax:
                 await self.start(shard)
 
         await self.display(message.author.mention)
-
-    async def action_plot_get(self, cmd, message):
-        '''Gets information on the plots shard. Run without arguements for options.'''
-        commandArgs = message.content[len(self._prefix + cmd)+1:]
-        await self.display("Please wait...")
-        if len(commandArgs) > 0:
-            await self.run(os.path.join(_top_level, "utility_code/plot_get.py {}".format(commandArgs)), 0, displayOutput=True)
-        else:
-            await self.run(os.path.join(_top_level, "utility_code/plot_get.py"), 0, displayOutput=True)
-        await self.display("Done.")
 
     async def action_find_loot_problems(self, cmd, message):
         '''Finds loot table problems
