@@ -52,6 +52,10 @@ fn main() -> BoxResult<()> {
 
     let mut outputplayer = inputplayer.clone();
     outputplayer.uuid = outputuuid;
+
+    // TODO: Do not transfer remote data for now. This needs to manually update plot access UUIDs
+    outputplayer.remotedata = None;
+
     outputplayer.update_history(&format!("Import from {}", &inputname));
 
     if let Err(err) = outputplayer.save_redis(&domain, &mut con) {
