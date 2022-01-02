@@ -27,7 +27,7 @@ def is_entity_in_spawner(entity) -> bool:
     # Start at the node above this one and iterate upwards
     node = entity.parent
     while node is not None:
-        if node.nbt.has_path("SpawnPotentials"):
+        if node.nbt is not None and node.nbt.has_path("SpawnPotentials"):
             return True
         node = node.parent
 

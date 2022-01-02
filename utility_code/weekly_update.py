@@ -20,7 +20,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../qu
 from quarry.types import nbt
 
 def usage():
-    sys.exit("Usage: {} <--last_week_dir dir> <--build_template_dir dir> <--output_dir dir> [--redis_host host] [--num-threads #] <server1> [server2] [...]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--last_week_dir dir> <--build_template_dir dir> <--output_dir dir> [--redis_host host] [--num-threads #] [--logfile <stdout|stderr|path>] <server1> [server2] [...]".format(sys.argv[0]))
 
 def get_dungeon_config(name, objective):
     return {
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     datapacks_dungeon = datapacks_base + ['file/dungeon']
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "j:", ["last_week_dir=", "build_template_dir=", "output_dir=", "redis_host=", "num-threads="])
+        opts, args = getopt.getopt(sys.argv[1:], "j:", ["last_week_dir=", "build_template_dir=", "output_dir=", "redis_host=", "logfile=", "num-threads="])
     except getopt.GetoptError as err:
         eprint(str(err))
         usage()
@@ -114,6 +114,7 @@ if __name__ == '__main__':
     last_week_dir = None
     build_template_dir = None
     output_dir = None
+    logfile = None
     num_threads = 4
     redis_host = 'redis'
 
@@ -132,6 +133,8 @@ if __name__ == '__main__':
                 output_dir = output_dir[:-1]
         elif o in ("--redis_host"):
             redis_host = a
+        elif o in ("-l", "--logfile"):
+            logfile = a
         elif o in ("-j", "--num-threads"):
             num_threads = int(a)
         else:
@@ -481,15 +484,13 @@ if __name__ == '__main__':
 
     # Run the regions in parallel using a pool. As results come in, accumulate them to the appropriate list based on the world
     num_global_replacements = 0
-    replacements_to_merge = {}
+    replacements_to_merge = []
     done_count = 0
     with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads, initializer=process_init, initargs=(worlds, prev_worlds, item_replace_manager)) as pool:
         for world_name, num_replacements, replacements_log in pool.map(process_region, regions):
             done_count += 1
             num_global_replacements += num_replacements
-            if world_name not in replacements_to_merge:
-                replacements_to_merge[world_name] = []
-            replacements_to_merge[world_name].append(replacements_log)
+            replacements_to_merge.append(replacements_log)
 
             print(f"  {done_count} / {num_regions} regions processed, {num_global_replacements} replacements so far")
     timings.nextStep("Processed regions")
@@ -499,9 +500,7 @@ if __name__ == '__main__':
 
     print(f"Merging replacements logs...")
 
-    replacements_log = {}
-    for world_name in replacements_to_merge:
-        replacements_log[world_name] = item_replace_manager.merge_logs(replacements_to_merge[world_name])
+    replacements_log = item_replace_manager.merge_logs(replacements_to_merge)
     timings.nextStep("Replacements logs merged")
 
     ##################################################################################
@@ -509,11 +508,21 @@ if __name__ == '__main__':
 
     print(f"Writing replacements logs...")
 
-    logfile = "/home/epic/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{}.log".format(datetime.date.today().strftime("%Y-%m-%d"))
-    if not os.path.isdir(os.path.dirname(logfile)):
-        os.makedirs(os.path.dirname(logfile), mode=0o775)
-    with open(logfile, "w") as fd:
-        yaml.dump(replacements_log, fd, width=2147483647, allow_unicode=True)
+    log_handle = None
+    if logfile == "stdout":
+        log_handle = sys.stdout
+    elif logfile == "stderr":
+        log_handle = sys.stderr
+    elif logfile is not None:
+        if not os.path.isdir(os.path.dirname(logfile)):
+            os.makedirs(os.path.dirname(logfile), mode=0o775)
+        log_handle = open(logfile, 'w')
+
+    if log_handle is not None:
+        yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
+
+    if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
+        log_handle.close()
 
     timings.nextStep("Logs written")
 

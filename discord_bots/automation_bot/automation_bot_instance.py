@@ -920,7 +920,9 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
             folders_to_update.remove("server_config")
 
         await self.display("Running actual weekly update (this will take a while!)...")
-        await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 6 " + " ".join(folders_to_update)))
+
+        logfile = f"/home/epic/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{self._name}_{datetime.date.today().strftime('%Y-%m-%d')}.log"
+        await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ --logfile {logfile} -j 6 " + " ".join(folders_to_update)))
 
         for shard in ["plots", "valley", "isles", "playerplots",]:
             if shard in folders_to_update:

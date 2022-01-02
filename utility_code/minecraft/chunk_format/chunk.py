@@ -34,7 +34,7 @@ class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
 
         self.region = region
 
-        self.nbt_path_init(nbt, None, self, nbt.at_path('DataVersion').value)
+        self.nbt_path_init(nbt, region, self, nbt.at_path('DataVersion').value)
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)

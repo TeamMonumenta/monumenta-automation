@@ -16,6 +16,13 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from quarry.types import nbt
 from quarry.types.buffer import Buffer, BufferUnderrun
 
+def shorten_path(path):
+    if "/" in path:
+        split = path.split("/")
+        if len(split) >= 3:
+            return "/".join(split[-3:])
+    return path
+
 def _fixEntity(dx, dz, entity, regenerate_uuids):
     nbtPaths = (
         ('x', 'z'),
@@ -53,7 +60,7 @@ def _fixEntity(dx, dz, entity, regenerate_uuids):
         entity.value.pop("UUIDLeast", None)
         entity.value["UUID"] = uuid_to_mc_uuid_tag_int_array(uuid.uuid4())
 
-class BaseRegion(MutableMapping):
+class BaseRegion(MutableMapping, NbtPathDebug):
     """A base region file that is common to all types"""
 
     def __init__(self, path, rx, rz, read_only=False):
@@ -62,6 +69,11 @@ class BaseRegion(MutableMapping):
         self.rx = rx
         self.rz = rz
         self._region = nbt.RegionFile(self.path, read_only=read_only)
+
+        self.nbt_path_init(None, None, self, None)
+
+    def get_debug_str(self):
+        return str(self)
 
     def has_chunk(self, cx, cz):
         """Return True if this region contains chunk cx, cz (global coordinates)."""
@@ -426,7 +438,7 @@ class Region(BaseRegion):
                 self.save_chunk(chunk)
 
     def __repr__(self):
-        return f'Region({self.path!r}, {self.rx!r}, {self.rz!r})'
+        return f'Region({shorten_path(self.path)!r}, {self.rx!r}, {self.rz!r})'
 
 class EntitiesRegion(BaseRegion):
     """An 'entities' type region file"""
@@ -451,7 +463,7 @@ class EntitiesRegion(BaseRegion):
         return region
 
     def __repr__(self):
-        return f'EntitiesRegion({self.path!r}, {self.rx!r}, {self.rz!r})'
+        return f'EntitiesRegion({shorten_path(self.path)!r}, {self.rx!r}, {self.rz!r})'
 
 class PoiRegion(BaseRegion):
     """An 'poi' type region file"""
@@ -464,4 +476,4 @@ class PoiRegion(BaseRegion):
         raise NotImplementedError
 
     def __repr__(self):
-        return f'PoiRegion({self.path!r}, {self.rx!r}, {self.rz!r})'
+        return f'PoiRegion({shorten_path(self.path)!r}, {self.rx!r}, {self.rz!r})'
