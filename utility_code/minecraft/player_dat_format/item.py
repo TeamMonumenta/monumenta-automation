@@ -48,8 +48,7 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
         if self.nbt.has_path("tag.display.Name"):
             name = parse_name_possibly_json(self.nbt.at_path("tag.display.Name").value, remove_color=True)
 
-        return f"""{self.id.replace("minecraft:","")}{" " + " ".join(str(x) for x in self.pos) if self.pos is not None else ""}{" " + name if name is not None else ""}"""
-
+        return f"""{self.id.replace("minecraft:","")}{" " + " ".join(str(round(x, 1)) for x in self.pos) if self.pos is not None else ""}{" " + name if name is not None else ""}"""
 
     @classmethod
     def from_command_format(cls, command, check_count=True):

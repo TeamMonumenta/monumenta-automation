@@ -5,10 +5,12 @@ import sys
 import getopt
 import yaml
 import multiprocessing
+import traceback
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import eprint
+from lib_py3.plugin_data import iter_plugin_data_parallel
 from lib_py3.upgrade import upgrade_entity
 from lib_py3.timing import Timings
 from minecraft.world import World
@@ -36,8 +38,19 @@ def process_player(player):
 
     return (num_replacements, replacements_log)
 
+def process_plugin_data(plugin_data):
+    num_replacements = 0
+    replacements_log = {}
+
+    for item in plugin_data.graves().recursive_iter_items():
+        if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+            num_replacements += 1
+
+    return (num_replacements, replacements_log)
+
 def err_func(ex):
     eprint(f"Caught exception: {ex}")
+    eprint(traceback.format_exc())
     return (0, {})
 
 if __name__ == '__main__':
@@ -94,17 +107,20 @@ if __name__ == '__main__':
     elif logfile is not None:
         log_handle = open(logfile, 'w')
 
-    player_results = world.iter_players_parallel(process_player, err_func, num_processes=num_threads, autosave=(not dry_run), initializer=process_init, initargs=(item_replace_manager,))
-    timings.nextStep("Replacements done")
-
+    # Note that these iterators are really generators - and will produce results as they come in
+    # They are consumed here as they come in to avoid having to store the entire log in RAM all at once
     num_replacements = 0
-    replacements_to_merge = []
-    for player_result in player_results:
-        num_replacements += player_result[0]
-        replacements_to_merge.append(player_result[1])
+    replacements_log = {}
 
-    replacements_log = item_replace_manager.merge_logs(replacements_to_merge)
-    timings.nextStep("Logs merged")
+    generator = world.iter_players_parallel(process_player, err_func, num_processes=num_threads, autosave=(not dry_run), initializer=process_init, initargs=(item_replace_manager,))
+    replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
+    num_replacements += replacements
+
+    generator = iter_plugin_data_parallel(os.path.join(world_path, "plugindata"), process_plugin_data, err_func, num_processes=num_threads, autosave=(not dry_run), initializer=process_init, initargs=(item_replace_manager,))
+    replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
+    num_replacements += replacements
+
+    timings.nextStep("Replacements done and logs merged")
 
     if log_handle is not None:
         yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)

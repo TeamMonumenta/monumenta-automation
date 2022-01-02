@@ -150,10 +150,8 @@ class World():
         if num_processes == 1:
             # Don't bother with processes if only going to use one
             # This makes debugging much easier
-            retval = []
             for region in self.iter_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
-                retval.append(func(*((region,) + additional_args)))
-            return retval
+                yield func(*((region,) + additional_args))
         else:
             region_list = []
             for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
@@ -161,7 +159,7 @@ class World():
 
             if len(region_list) > 0:
                 with concurrent.futures.ProcessPoolExecutor(max_workers=num_processes, initializer=initializer, initargs=initargs) as pool:
-                    return pool.map(_parallel_region_wrapper, region_list)
+                    yield from pool.map(_parallel_region_wrapper, region_list)
 
     def get_region(self, rx, rz, read_only=False, region_type=Region):
         rx = int(rx)
@@ -216,10 +214,11 @@ class World():
         if num_processes == 1:
             # Don't bother with processes if only going to use one
             # This makes debugging much easier
-            retval = []
             for player in self.iter_players(autosave=autosave):
-                retval.append(func(*((player,) + additional_args)))
-            return retval
+                try:
+                    yield func(*((player,) + additional_args))
+                except Exception as ex:
+                    yield err_func(ex)
         else:
             player_list = []
             for full_path in self.enumerate_players():
@@ -227,7 +226,7 @@ class World():
 
             if len(player_list) > 0:
                 with concurrent.futures.ProcessPoolExecutor(max_workers=num_processes, initializer=initializer, initargs=initargs) as pool:
-                    return pool.map(_parallel_player_wrapper, player_list)
+                    yield from pool.map(_parallel_player_wrapper, player_list)
 
     def __repr__(self):
         return f'World({self.path!r}, {self.name!r})'

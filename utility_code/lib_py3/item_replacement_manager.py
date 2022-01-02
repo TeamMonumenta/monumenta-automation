@@ -145,3 +145,24 @@ class ItemReplacementManager(object):
                         for debug_path in log_dict[log_key]["FROM"][orig_tag_mojangson]:
                             out_log_dict[log_key]["FROM"][orig_tag_mojangson].append(debug_path)
         return out_log_dict
+
+    @classmethod
+    def merge_log_tuples(cls, log_dicts_to_merge, out_log_dict={}):
+        """Merges item replacements log tuples. out_log_dict can be specified to merge multiple different result generators into the same output
+
+        Returns a tuple(num_replacements, {dict})"""
+        num_replacements = 0
+        for replacements, log_dict in log_dicts_to_merge:
+            num_replacements += replacements
+            for log_key in log_dict:
+                if log_key not in out_log_dict:
+                    # Cheat and just reference the entire structure in the output
+                    out_log_dict[log_key] = log_dict[log_key]
+                else:
+                    for orig_tag_mojangson in log_dict[log_key]["FROM"]:
+                        if orig_tag_mojangson not in out_log_dict[log_key]["FROM"]:
+                            out_log_dict[log_key]["FROM"][orig_tag_mojangson] = []
+
+                        for debug_path in log_dict[log_key]["FROM"][orig_tag_mojangson]:
+                            out_log_dict[log_key]["FROM"][orig_tag_mojangson].append(debug_path)
+        return num_replacements, out_log_dict
