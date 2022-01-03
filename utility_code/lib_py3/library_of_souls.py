@@ -134,6 +134,7 @@ class LibraryOfSouls(object):
             current_nbt.append(soul_nbt)
 
         mgr.add_replacements(current_nbt)
+        mgr.run_replacements_on_master_passengers()
 
     def save(self) -> None:
         if self._readonly:

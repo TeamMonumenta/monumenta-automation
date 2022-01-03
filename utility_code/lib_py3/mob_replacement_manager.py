@@ -22,6 +22,7 @@ def remove_unwanted_spawner_tags(entity_nbt: nbt.TagCompound):
     pop_if_present(entity_nbt, 'OnGround')
     pop_if_present(entity_nbt, 'Dimension')
     pop_if_present(entity_nbt, 'Rotation')
+    pop_if_present(entity_nbt, 'Brain')
     pop_if_present(entity_nbt, 'WorldUUIDMost')
     pop_if_present(entity_nbt, 'WorldUUIDLeast')
     pop_if_present(entity_nbt, 'HurtTime')
@@ -38,11 +39,16 @@ def remove_unwanted_spawner_tags(entity_nbt: nbt.TagCompound):
     pop_if_present(entity_nbt, 'Paper.AAAB')
     pop_if_present(entity_nbt, 'Paper.Origin')
     pop_if_present(entity_nbt, 'Paper.FromMobSpawner')
+    pop_if_present(entity_nbt, 'Paper.SpawnReason')
+    pop_if_present(entity_nbt, 'Paper.OriginWorld')
+    pop_if_present(entity_nbt, 'Bukkit.Aware')
+    pop_if_present(entity_nbt, 'HurtByTimestamp')
+    pop_if_present(entity_nbt, 'InWaterTime')
     pop_if_present(entity_nbt, 'Team')
 
     # Recurse over passengers
-    if (entity_nbt.has_path('Passengers')):
-        remove_unwanted_spawner_tags(entity_nbt.at_path('Passengers'))
+    for entity in entity_nbt.iter_multipath('Passengers[]'):
+        remove_unwanted_spawner_tags(entity)
 
 class MobReplacementManager(object):
     """
@@ -98,6 +104,42 @@ class MobReplacementManager(object):
                     raise Exception("New replacements mob {!r} matches existing substitution {!r}".format(mob_name, get_entity_name_from_nbt(sub_mob)))
 
             self._mob_map[mob_id][mob_name] = mob
+
+    # This is needed to prevent re-replacing things that don't need replacing
+    # What was happening before was:
+    # - Iterate a top-level mob
+    # - Replace that mob with the LoS version, which had a passenger that was outdated
+    # - Iterate into the passenger, and replace it with the correct top-level replacement
+    # - Save
+    #
+    # Problem is, next time when an nbt diff is done against a mob replacement
+    # candidate, it looks like it needs replacing (because the nbt doesn't
+    # match the LoS master)
+    #
+    # So - we need to run replacements pre-emptively on the master copy
+    # passengers to ensure they're the same as what would ultimately end up
+    # resulting to prevent false-positive matches
+    #
+
+    def recurse_replace(self, entity_nbt) -> int:
+        replacements = 0
+        if self.replace_mob(entity_nbt):
+            from lib_py3.common import get_entity_name_from_nbt
+            eprint(f"Incorrect passenger {get_entity_name_from_nbt(entity_nbt)}")
+            replacements += 1
+
+        for entity_nbt in entity_nbt.iter_multipath('Passengers[]'):
+            replacements += self.recurse_replace(entity_nbt)
+
+        return replacements
+
+    def run_replacements_on_master_passengers(self) -> int:
+        replacements = 0
+        for mob_id in self._mob_map:
+            mob_type = self._mob_map[mob_id]
+            for mob_name in mob_type:
+                replacements += self.recurse_replace(mob_type[mob_name])
+        return replacements
 
     def add_substitutions(self, substitutions: [dict], force_add_ignoring_conflicts=False) -> None:
         """
