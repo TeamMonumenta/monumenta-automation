@@ -239,6 +239,8 @@ if __name__ == '__main__':
             ('plugins/ScriptedQuests/races/common', '../../../../server_config/data/scriptedquests/races/common'),
             ('plugins/ScriptedQuests/growables/{servername}', '../../../../server_config/data/scriptedquests/growables/{servername}'),
             ('plugins/ScriptedQuests/growables/common', '../../../../server_config/data/scriptedquests/growables/common'),
+            ('plugins/ScriptedQuests/guis/{servername}', '../../../../server_config/data/scriptedquests/guis/{servername}'),
+            ('plugins/ScriptedQuests/guis/common', '../../../../server_config/data/scriptedquests/guis/common'),
             ('plugins/ScriptedQuests/traders/{servername}', '../../../../server_config/data/scriptedquests/traders/{servername}'),
             ('plugins/ScriptedQuests/traders/common', '../../../../server_config/data/scriptedquests/traders/common'),
             ('plugins/ScriptedQuests/codes/{servername}', '../../../../server_config/data/scriptedquests/codes/{servername}'),
@@ -437,7 +439,7 @@ if __name__ == '__main__':
                 ('server.properties', 'difficulty', 'difficulty=normal'),
                 ('plugins/LibraryOfSouls/config.yml', 'read_only', 'read_only: false'),
             ],
-            'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect + gobrush,
+            'linked':server_config + base_plugins + dynmap,
         },
 
         'event':{
@@ -500,7 +502,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
-            'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect + gobrush,
+            'linked':server_config + base_plugins + dynmap,
         },
 
         'dev2':{
@@ -509,7 +511,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
-            'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect + gobrush,
+            'linked':server_config + base_plugins + dynmap,
         },
 
         'dev3':{
@@ -518,7 +520,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
-            'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + monumenta + coreprotect + gobrush,
+            'linked':server_config + base_plugins + dynmap,
         },
 
         'plots':{
