@@ -5,6 +5,7 @@ import getopt
 import json
 import math
 import multiprocessing
+import traceback
 from pprint import pprint, pformat
 
 from lib_py3.common import eprint
@@ -35,6 +36,12 @@ def out_region_iter(region):
                 out.append(entry)
 
     return out
+
+def err_func(ex, args):
+    eprint(f"Caught exception: {ex}")
+    eprint(f"While iterating: {args}")
+    eprint(traceback.format_exc())
+    return []
 
 if __name__ == '__main__':
     multiprocessing.set_start_method("fork")
@@ -98,7 +105,7 @@ if __name__ == '__main__':
     output_mode = (input_path is None)
 
     if output_mode:
-        results = world.iter_regions_parallel(out_region_iter, num_processes=num_threads, min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2])
+        results = world.iter_regions_parallel(out_region_iter, err_func, num_processes=num_threads, min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2])
         out = []
         for result in results:
             for item in result:
@@ -106,6 +113,8 @@ if __name__ == '__main__':
 
         with open(output_path, 'w') as outfile:
             json.dump(out, outfile, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
+
+        print(f"Wrote {len(out)} command blocks to {output_path}")
 
     else:
         # Build a map of all the commands that need updating

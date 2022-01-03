@@ -21,7 +21,7 @@ class Player(Entity):
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 
-    def __init__(self, nbt):
+    def __init__(self, nbt, player_file=None):
         """Load a player from an NBT tag.
 
         Must be saved from wherever the tag was loaded from for changes to apply.
@@ -32,6 +32,8 @@ class Player(Entity):
         self._multipaths = type(self).__MULTIPATHS
 
         self.nbt_path_init(nbt, None, self, nbt.at_path('DataVersion').value)
+
+        self.player_file = player_file
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
@@ -237,7 +239,7 @@ class PlayerFile():
         self.path = path
         with open(self.path, 'rb') as fp:
             self.player_dat_file = nbt.NBTFile.load(self.path)
-            self.player = Player(self.player_dat_file.root_tag.body)
+            self.player = Player(self.player_dat_file.root_tag.body, self)
 
     def save(self):
         """Save the player file to its original location."""

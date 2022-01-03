@@ -10,6 +10,33 @@ In order to avoid any weird import issues, they would all need to be defined in 
 import math
 import os
 import sys
+import concurrent.futures
+import multiprocessing
+
+def _parallel_object_wrapper(arg):
+    create_lambda, create_args, finalize_lambda, finalize_args, func, err_func, additional_args = arg
+    try:
+        obj = create_lambda(*create_args)
+        result = func(*((obj,) + additional_args))
+        if finalize_lambda is not None:
+            finalize_lambda(obj, *finalize_args)
+    except Exception as ex:
+        result = err_func(ex, arg)
+    return result
+
+def process_in_parallel(parallel_args, num_processes=0, initializer=None, initargs=()):
+    if num_processes <= 0:
+        num_processes = multiprocessing.cpu_count()
+
+    if num_processes == 1:
+        # Don't bother with processes if only going to use one
+        # This is both faster and makes debugging much easier
+        for arg in parallel_args:
+            yield _parallel_object_wrapper(arg)
+    else:
+        if len(parallel_args) > 0:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=num_processes, initializer=initializer, initargs=initargs) as pool:
+                yield from pool.map(_parallel_object_wrapper, parallel_args)
 
 class TypeMultipathMap(dict):
     """A map of multipaths for each class and its superclasses."""

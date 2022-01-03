@@ -48,8 +48,9 @@ def process_plugin_data(plugin_data):
 
     return (num_replacements, replacements_log)
 
-def err_func(ex):
+def err_func(ex, args):
     eprint(f"Caught exception: {ex}")
+    eprint(f"While iterating: {args}")
     eprint(traceback.format_exc())
     return (0, {})
 
@@ -116,11 +117,13 @@ if __name__ == '__main__':
     replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
     num_replacements += replacements
 
+    timings.nextStep(f"Player replacements done: {replacements} replacements")
+
     generator = iter_plugin_data_parallel(os.path.join(world_path, "plugindata"), process_plugin_data, err_func, num_processes=num_threads, autosave=(not dry_run), initializer=process_init, initargs=(item_replace_manager,))
     replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
     num_replacements += replacements
 
-    timings.nextStep("Replacements done and logs merged")
+    timings.nextStep(f"Plugin data replacements done: {replacements} replacements")
 
     if log_handle is not None:
         yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)

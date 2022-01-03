@@ -7,55 +7,55 @@ import concurrent.futures
 
 from minecraft.player_dat_format.item import Item
 from minecraft.util.debug_util import NbtPathDebug
-from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
+from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap, process_in_parallel
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
 
+def _create_plugindata_lambda(full_path):
+    return PluginData(json_path=full_path)
 
-def _parallel_plugin_data_wrapper(arg):
-    full_path, autosave, func, err_func, additional_args = arg
-    try:
-        plugin_data = PluginData(json_path=full_path)
-        result = func(*((plugin_data,) + additional_args))
-        if autosave:
-            plugin_data.save()
-    except Exception as ex:
-        result = err_func(ex)
-    return result
-
+def _finalize_plugindata_lambda(plugin_data, autosave):
+    if autosave:
+        plugin_data.save()
 
 def iter_plugin_data_parallel(path, func, err_func, num_processes=4, autosave=False, additional_args=(), initializer=None, initargs=()):
     """Iterates player plugin data in parallel using multiple processes.
 
-    func will be called with each PluginData object that this folder contains.
+    func will be called with each PluginData object that this folder contains
+    plus any arguments supplied in additional_args
 
-    Any value returned by that function will be collected into a list and
-    returned to the caller. For example, if there are three players, func
-    will be called three times. If each one returns a dict, the return value
-    from this function will be: [{}, {}, {}]
+    This function is a generator - values returned by func(...) will be yielded
+    back to the caller as those results become available.
 
-    Processes are pooled such that only at most num_processes will run simultaneously
+    For example, if there are three players, func will be called three times.
+    If each one returns a dict, the values yielded from this function will be:
+    [{}, {}, {}]
 
-    Set num_processes to 1 for debugging to invoke the function without creating a new process
+    err_func will be called with (exception, args) if an exception is triggered
+    and should return an empty result of the same type as func()
+
+    Processes are pooled such that only at most num_processes will run
+    simultaneously. If num_processes is set to 0 will automatically use as many
+    CPUs as are available. If num_processes is 1, will iterate directly and not
+    launch any new processes, which is easier to debug.
+
+    initializer can be set to a function that initializes any variables once
+    for each process worker, which for large static arguments is much faster
+    than putting them in additional_args which would copy them for each
+    iteration. initializer will be called with the arguments supplied in
+    init_args.
     """
     if not os.path.isdir(path):
         raise ValueError("Expected path to be a folder")
-    plugin_data_list = []
+
+    parallel_args = []
     for plugin_data_path in os.listdir(path):
         if plugin_data_path.endswith(".json"):
             full_path = os.path.join(path, plugin_data_path)
-            plugin_data_list.append((full_path, autosave, func, err_func, additional_args))
+            parallel_args.append((_create_plugindata_lambda, (full_path,), _finalize_plugindata_lambda, (autosave,), func, err_func, additional_args))
 
-    if num_processes == 1:
-        # Don't bother with processes if only going to use one
-        # This makes debugging much easier
-        for plugin_data_arg in plugin_data_list:
-            yield _parallel_plugin_data_wrapper(plugin_data_arg)
-    else:
-        if len(plugin_data_list) > 0:
-            with concurrent.futures.ProcessPoolExecutor(max_workers=num_processes, initializer=initializer, initargs=initargs) as pool:
-                yield from pool.map(_parallel_plugin_data_wrapper, plugin_data_list)
+    yield from process_in_parallel(parallel_args, num_processes=num_processes, initializer=initializer, initargs=initargs)
 
 class PluginData(NbtPathDebug):
     """Plugin data loaded alongside player data."""

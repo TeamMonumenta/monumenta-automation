@@ -73,35 +73,40 @@ def process_init(worlds_in, prev_worlds_in, mgr):
     prev_worlds = prev_worlds_in
     item_replace_manager = mgr
 
+# Nothing actually to do here - just return the dict
+def _create_region_lambda(region_config):
+    return region_config
+
 def process_region(region_config):
-    try:
-        world = worlds[region_config["world"]]
-        rx = region_config["rx"]
-        rz = region_config["rz"]
-        if "preserve" in region_config:
-            prev_world = prev_worlds[region_config["world"]]
-            prev_region = prev_world.get_region(region_config["preserve"]["rx"], region_config["preserve"]["rz"], read_only=True)
-            region = prev_region.copy_to(world, rx, rz, regenerate_uuids=False)
-        else:
-            region = world.get_region(rx, rz)
+    world = worlds[region_config["world"]]
+    rx = region_config["rx"]
+    rz = region_config["rz"]
+    if "preserve" in region_config:
+        prev_world = prev_worlds[region_config["world"]]
+        prev_region = prev_world.get_region(region_config["preserve"]["rx"], region_config["preserve"]["rz"], read_only=True)
+        region = prev_region.copy_to(world, rx, rz, regenerate_uuids=False)
+    else:
+        region = world.get_region(rx, rz)
 
-        replacements_log = {}
-        num_replacements = 0
-        for chunk in region.iter_chunks(autosave=True):
-            for item in chunk.recursive_iter_items():
-                if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
-                    num_replacements += 1
+    replacements_log = {}
+    num_replacements = 0
+    for chunk in region.iter_chunks(autosave=True):
+        for item in chunk.recursive_iter_items():
+            if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+                num_replacements += 1
 
-        return (region_config["world"], num_replacements, replacements_log)
-    except Exception as ex:
-        eprint("WARNING: Failed to process region:", pformat(region_config))
-        eprint("  Error was:", ex)
-        return (region_config["world"], 0, {})
+    return (num_replacements, replacements_log)
+
+def err_func(ex, args):
+    eprint(f"Caught exception: {ex}")
+    eprint(f"While iterating: {args}")
+    eprint(traceback.format_exc())
+    return (0, {})
 
 if __name__ == '__main__':
     multiprocessing.set_start_method("spawn")
 
-    datapacks_default = ['file/vanilla','file/bukkit']
+    datapacks_default = ['file/vanilla', 'file/bukkit']
     datapacks_base = datapacks_default + ['file/base']
     datapacks_dungeon = datapacks_base + ['file/dungeon']
 
@@ -227,7 +232,7 @@ if __name__ == '__main__':
         "copy_maps": "build",
         "datapacks":datapacks_base + ['file/valley'],
         "coordinates_to_fill":(
-            {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
+            {"name":"Magic Block", "pos1":(-1441, 2, -1441), "pos2":(-1441, 2, -1441), 'block': {'name': 'minecraft:air'}},
         ),
     }
 
@@ -239,7 +244,7 @@ if __name__ == '__main__':
         "copy_maps": "build",
         "datapacks":datapacks_base + ['file/isles'],
         "coordinates_to_fill":(
-            {"name":"Magic Block", "pos1":(-1441, 2,-1441), "pos2":(-1441, 2,-1441), 'block': {'name': 'minecraft:air'}},
+            {"name":"Magic Block", "pos1":(-1441, 2, -1441), "pos2":(-1441, 2, -1441), 'block': {'name': 'minecraft:air'}},
         ),
     }
 
@@ -483,25 +488,14 @@ if __name__ == '__main__':
     print(f"Processing {num_regions} regions...")
 
     # Run the regions in parallel using a pool. As results come in, accumulate them to the appropriate list based on the world
-    num_global_replacements = 0
-    replacements_to_merge = []
-    done_count = 0
-    with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads, initializer=process_init, initargs=(worlds, prev_worlds, item_replace_manager)) as pool:
-        for world_name, num_replacements, replacements_log in pool.map(process_region, regions):
-            done_count += 1
-            num_global_replacements += num_replacements
-            replacements_to_merge.append(replacements_log)
+    parallel_args = []
+    for region_config in regions:
+        parallel_args.append((_create_region_lambda, (region_config,), None, None, process_region, err_func, ()))
 
-            print(f"  {done_count} / {num_regions} regions processed, {num_global_replacements} replacements so far")
-    timings.nextStep("Processed regions")
+    generator = process_in_parallel(parallel_args, num_processes=num_processes, initializer=process_init, initargs=(worlds, prev_worlds, item_replace_manager))
+    num_global_replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
 
-    ##################################################################################
-    # Merge replacements logs
-
-    print(f"Merging replacements logs...")
-
-    replacements_log = item_replace_manager.merge_logs(replacements_to_merge)
-    timings.nextStep("Replacements logs merged")
+    timings.nextStep("Processed regions and merged logs: {num_global_replacements} replacements")
 
     ##################################################################################
     # Writing logs

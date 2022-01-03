@@ -3,38 +3,25 @@ import sys
 import time
 import zlib
 import math
-import concurrent.futures
 
 from lib_py3.common import bounded_range
 
 from minecraft.level_dat import LevelDat
 from minecraft.region import Region, EntitiesRegion, PoiRegion
 from minecraft.player_dat_format.player import PlayerFile
+from minecraft.util.iter_util import process_in_parallel
 
-# This wraps the callback for iter_regions_parallel so that the region
-# files themselves are loaded by the process that will work on them.
-# Calling the callback directly would force the caller to handle instantiating
-# the region files, and it isn't possible to copy a loaded Region file across
-# processes so it has to be loaded afterwards
-def _parallel_region_wrapper(parallel_arg):
-    full_path, rx, rz, func, region_type, additional_args = parallel_arg
-    return func(*((region_type(full_path, rx, rz),) + additional_args))
+def _create_region_lambda(region_type, full_path, rx, rz):
+    return region_type(full_path, rx, rz)
 
-# This wraps the callback for iter_players_parallel so that the player
-# files themselves are loaded by the process that will work on them.
-# Calling the callback directly would force the caller to handle instantiating
-# the player files, and it isn't possible to copy a loaded player file across
-# processes so it has to be loaded afterwards
-def _parallel_player_wrapper(parallel_arg):
-    full_path, autosave, func, err_func, additional_args = parallel_arg
-    try:
-        player_file = PlayerFile(full_path)
-        result = func(*((player_file.player,) + additional_args))
-        if autosave:
-            player_file.save()
-    except Exception as ex:
-        result = err_func(ex)
-    return result
+# No _finalize_region_lambda, chunks are saved as they are iterated
+
+def _create_player_lambda(full_path):
+    return PlayerFile(full_path).player
+
+def _finalize_player_lambda(player, autosave):
+    if autosave:
+        player.player_file.save()
 
 class World():
     """A Minecraft world folder."""
@@ -130,36 +117,39 @@ class World():
         for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
             yield region_type(full_path, rx, rz, read_only=read_only)
 
-    def iter_regions_parallel(self, func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion), additional_args=(), initializer=None, initargs=()): # TODO: PoiRegion
-        """
-        Iterates regions in parallel using multiple processes.
+    def iter_regions_parallel(self, func, err_func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion), additional_args=(), initializer=None, initargs=()): # TODO: PoiRegion
+        """Iterates regions in parallel using multiple processes.
 
-        func will be called with each Region object that this world contains.
+        func will be called with each Region object that this folder contains
+        plus any arguments supplied in additional_args
 
-        Any value returned by that function will be collected into a list and
-        returned to the caller. For example, if there are three regions, func
-        will be called three times. If each one returns a dict, the return value
-        from this function will be: [{}, {}, {}]
+        This function is a generator - values returned by func(...) will be
+        yielded back to the caller as those results become available.
+
+        For example, if there are three regions, func will be called three
+        times.  If each one returns a dict, the values yielded from this
+        function will be: [{}, {}, {}]
+
+        err_func will be called with (exception, args) if an exception is
+        triggered and should return an empty result of the same type as func()
 
         Processes are pooled such that only at most num_processes will run
-        simultaneously
+        simultaneously. If num_processes is set to 0 will automatically use as
+        many CPUs as are available. If num_processes is 1, will iterate
+        directly and not launch any new processes, which is easier to debug.
 
-        Set num_processes to 1 for debugging to invoke the function without creating a new process
+        initializer can be set to a function that initializes any variables
+        once for each process worker, which for large static arguments is much
+        faster than putting them in additional_args which would copy them for
+        each iteration. initializer will be called with the arguments supplied
+        in init_args.
         """
 
-        if num_processes == 1:
-            # Don't bother with processes if only going to use one
-            # This makes debugging much easier
-            for region in self.iter_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
-                yield func(*((region,) + additional_args))
-        else:
-            region_list = []
-            for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
-                region_list.append((full_path, rx, rz, func, region_type, additional_args))
+        parallel_args = []
+        for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
+            parallel_args.append((_create_region_lambda, (region_type, full_path, rx, rz), None, None, func, err_func, additional_args))
 
-            if len(region_list) > 0:
-                with concurrent.futures.ProcessPoolExecutor(max_workers=num_processes, initializer=initializer, initargs=initargs) as pool:
-                    yield from pool.map(_parallel_region_wrapper, region_list)
+        yield from process_in_parallel(parallel_args, num_processes=num_processes, initializer=initializer, initargs=initargs)
 
     def get_region(self, rx, rz, read_only=False, region_type=Region):
         rx = int(rx)
@@ -194,39 +184,40 @@ class World():
                 player_file.save()
 
     def iter_players_parallel(self, func, err_func, num_processes=4, autosave=False, additional_args=(), initializer=None, initargs=()):
-        """
-        Iterates players in parallel using multiple processes.
+        """Iterates players in parallel using multiple processes.
 
         Does **NOT** include the level.dat player
 
-        func will be called with each Player object that this world contains.
+        func will be called with each Player object that this folder contains
+        plus any arguments supplied in additional_args
 
-        Any value returned by that function will be collected into a list and
-        returned to the caller. For example, if there are three players, func
-        will be called three times. If each one returns a dict, the return value
-        from this function will be: [{}, {}, {}]
+        This function is a generator - values returned by func(...) will be
+        yielded back to the caller as those results become available.
+
+        For example, if there are three players, func will be called three
+        times.  If each one returns a dict, the values yielded from this
+        function will be: [{}, {}, {}]
+
+        err_func will be called with (exception, args) if an exception is
+        triggered and should return an empty result of the same type as func()
 
         Processes are pooled such that only at most num_processes will run
-        simultaneously
+        simultaneously. If num_processes is set to 0 will automatically use as
+        many CPUs as are available. If num_processes is 1, will iterate
+        directly and not launch any new processes, which is easier to debug.
 
-        Set num_processes to 1 for debugging to invoke the function without creating a new process
+        initializer can be set to a function that initializes any variables
+        once for each process worker, which for large static arguments is much
+        faster than putting them in additional_args which would copy them for
+        each iteration. initializer will be called with the arguments supplied
+        in init_args.
         """
-        if num_processes == 1:
-            # Don't bother with processes if only going to use one
-            # This makes debugging much easier
-            for player in self.iter_players(autosave=autosave):
-                try:
-                    yield func(*((player,) + additional_args))
-                except Exception as ex:
-                    yield err_func(ex)
-        else:
-            player_list = []
-            for full_path in self.enumerate_players():
-                player_list.append((full_path, autosave, func, err_func, additional_args))
 
-            if len(player_list) > 0:
-                with concurrent.futures.ProcessPoolExecutor(max_workers=num_processes, initializer=initializer, initargs=initargs) as pool:
-                    yield from pool.map(_parallel_player_wrapper, player_list)
+        parallel_args = []
+        for full_path in self.enumerate_players():
+            parallel_args.append((_create_player_lambda, (full_path,), _finalize_player_lambda, (autosave,), func, err_func, additional_args))
+
+        yield from process_in_parallel(parallel_args, num_processes=num_processes, initializer=initializer, initargs=initargs)
 
     def __repr__(self):
         return f'World({self.path!r}, {self.name!r})'

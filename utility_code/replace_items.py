@@ -38,45 +38,24 @@ def process_region(region):
 
     return (num_replacements, replacements_log)
 
-def process_schematic(schem_path):
+def process_schematic_or_structure(obj):
     replacements_log = {}
     num_replacements = 0
 
-    try:
-        schem = Schematic(schem_path)
-        for item in schem.recursive_iter_items():
-            if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
-                num_replacements += 1
+    for item in obj.recursive_iter_items():
+        if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+            num_replacements += 1
 
-        if not dry_run and num_replacements > 0:
-            schem.save()
-    except Exception as ex:
-        eprint(f"Failed to process schematic '{schem_path}': {ex}\n{str(traceback.format_exc())}")
-        replacements_log = {}
-        num_replacements = 0
+    if not dry_run and num_replacements > 0:
+        obj.save()
 
     return (num_replacements, replacements_log)
 
-def process_structure(arg):
-    struct_path, custom_args = arg
-    item_replace_manager, dry_run = custom_args
-    replacements_log = {}
-    num_replacements = 0
-
-    try:
-        struct = Structure(struct_path)
-        for item in struct.recursive_iter_items():
-            if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
-                num_replacements += 1
-
-        if not dry_run and num_replacements > 0:
-            struct.save()
-    except Exception as ex:
-        eprint(f"Failed to process structatic '{struct_path}': {ex}\n{str(traceback.format_exc())}")
-        replacements_log = {}
-        num_replacements = 0
-
-    return (num_replacements, replacements_log)
+def err_func(ex, args):
+    eprint(f"Caught exception: {ex}")
+    eprint(f"While iterating: {args}")
+    eprint(traceback.format_exc())
+    return (0, {})
 
 if __name__ == '__main__':
     multiprocessing.set_start_method("fork")
@@ -130,58 +109,34 @@ if __name__ == '__main__':
     elif logfile is not None:
         log_handle = open(logfile, 'w')
 
+    num_replacements = 0
+    replacements_log = {}
+
     if world_path:
         world = World(world_path)
         timings.nextStep("Loaded world")
 
-        parallel_results = world.iter_regions_parallel(process_region, num_processes=num_threads, initializer=process_init, initargs=(item_replace_manager, dry_run))
-        timings.nextStep("World replacements done")
+        generator = world.iter_regions_parallel(process_region, err_func, num_processes=num_threads, initializer=process_init, initargs=(item_replace_manager, dry_run))
+        replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
+        num_replacements += replacements
+
+        timings.nextStep(f"World replacements done, {replacements} replacements")
 
     if schematics_path:
-        args = []
-        for root, subdirs, files in os.walk(schematics_path):
-            for fname in files:
-                if fname.endswith(".schematic"):
-                    args.append(os.path.join(root, fname))
+        # Note: autosave=False is because we only save schematics that had some item replacements in them
+        generator = Schematic.iter_schematics_parallel(schematics_path, process_schematic_or_structure, err_func, num_processes=num_threads, autosave=False, initializer=process_init, initargs=(item_replace_manager, dry_run))
+        replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
+        num_replacements += replacements
 
-        if num_threads == 1:
-            # Don't bother with processes if only going to use one
-            # This makes debugging much easier
-            parallel_results = []
-            for arg in args:
-                parallel_results.append(process_schematic(arg))
-        else:
-            with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads, initializer=process_init, initargs=(item_replace_manager, dry_run)) as pool:
-                parallel_results = pool.map(process_schematic, args)
-        timings.nextStep("Schematics replacements done")
+        timings.nextStep(f"Schematics replacements done, {replacements} replacements")
 
     if structures_path:
-        args = []
-        for root, subdirs, files in os.walk(structures_path):
-            for fname in files:
-                if fname.endswith(".nbt"):
-                    args.append((os.path.join(root, fname), (item_replace_manager, dry_run)))
+        # Note: autosave=False is because we only save structures that had some item replacements in them
+        generator = Structure.iter_structures_parallel(structures_path, process_schematic_or_structure, err_func, num_processes=num_threads, autosave=False, initializer=process_init, initargs=(item_replace_manager, dry_run))
+        replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
+        num_replacements += replacements
 
-        if num_threads == 1:
-            # Don't bother with processes if only going to use one
-            # This makes debugging much easier
-            parallel_results = []
-            for arg in args:
-                parallel_results.append(process_structure(arg))
-        else:
-            with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads, initializer=process_init, initargs=(item_replace_manager, dry_run)) as pool:
-                parallel_results = pool.map(process_structure, args)
-        timings.nextStep("Structures replacements done")
-
-    num_replacements = 0
-    replacements_to_merge = []
-    for region_result in parallel_results:
-        num_replacements += region_result[0]
-        replacements_to_merge.append(region_result[1])
-
-    replacements_log = item_replace_manager.merge_logs(replacements_to_merge)
-    timings.nextStep("Logs merged")
-
+        timings.nextStep(f"Structures replacements done, {replacements} replacements")
 
     if log_handle is not None:
         yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
