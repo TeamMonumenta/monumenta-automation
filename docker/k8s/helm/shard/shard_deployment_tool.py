@@ -25,7 +25,6 @@ shard_config = {
     "dungeon"            : { "build": { "node": "m12", "memGB": 3   , }, },
     "ring"               : { "build": { "node": "m12", "memGB": 3   , }, },
     "test"               : { "build": { "node": "m12", "memGB": 3   , }, },
-    "test2"              : { "build": { "node": "m12", "memGB": 3   , }, },
     "event"              : { "build": { "node": "m12", "memGB": 3   , }, },
     "monumenta-sdk"      : { "build": { "node": "m12", "memGB": 3   , "nodePort": 22221, }, },
 
