@@ -52,9 +52,9 @@ def process_region(arg):
                             has_blocks[name] = has_blocks.get(name, 0) + 1
                             if fast_mode:
                                 break
-                except IndexError:
+                except Exception:
                     print("Warning: unable to iterate blocks. Assuming there are some blocks")
-                    has_blocks = True
+                    has_blocks["?????"] = 1
                     break
 
                 if fast_mode and len(has_blocks) > 0:
