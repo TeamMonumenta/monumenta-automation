@@ -143,13 +143,13 @@ class MonumentaGraves(NbtPathDebug):
         yield from self.iter_thrown_items()
 
     def iter_block_entities(self):
-        pass
+        return
 
     def iter_entities(self):
-        pass
+        return
 
     def iter_items(self):
-        pass
+        return
 
     def recursive_iter_all_types(self):
         yield self
@@ -185,11 +185,8 @@ class MonumentaGrave(NbtPathDebug):
         if equipment is not None:
             self._equipment = {}
             for key, item_snbt in equipment.items():
-                if item_snbt is None:
-                    self._equipment[key] = None
-                else:
-                    item_nbt = nbt.TagCompound.from_mojangson(item_snbt)
-                    self._equipment[key] = Item(item_nbt)
+                item_nbt = nbt.TagCompound.from_mojangson(item_snbt)
+                self._equipment[key] = Item(item_nbt)
 
         # Given to players
         self._items = None
@@ -205,14 +202,10 @@ class MonumentaGrave(NbtPathDebug):
     def serialize(self):
         if isinstance(self._equipment, dict):
             for key, item in self._equipment.items():
-                if item is None:
-                    self._data["equipment"][key] = None
-                else:
-                    self._data["equipment"][key] = item.nbt.to_mojangson()
+                self._data["equipment"][key] = item.nbt.to_mojangson()
 
         if isinstance(self._items, list):
-            for i, grave_item in enumerate(self._items):
-                self._data["items"][i] = grave_item.serialize()
+            self._data["items"] = [grave_item.serialize() for grave_item in self._items]
 
         return self._data
 
@@ -227,10 +220,10 @@ class MonumentaGrave(NbtPathDebug):
             yield from self._items
 
     def iter_block_entities(self):
-        pass
+        return
 
     def iter_entities(self):
-        pass
+        return
 
     def iter_items(self):
         if isinstance(self._equipment, dict):
