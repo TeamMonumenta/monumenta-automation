@@ -81,8 +81,16 @@ fn main() -> BoxResult<()> {
 
     match mode {
         Mode::OUTPUT => {
-            Player::get_redis_players(&domain, &mut con)?.par_iter_mut().for_each(|(_, player)| {
+            Player::get_redis_players(&domain, &mut con)?.par_iter().for_each(|(_, player)| {
                 THREAD_CONNECTIONS.with(|cell| {
+                    /*
+                     * Clone the player, which at this point is just the UUID.
+                     * This allows this player to be loaded with a bunch of data and then dropped
+                     * when this iteration completes, eliminating the need to keep all player data
+                     * in memory all at once
+                     */
+                    let mut player = player.clone();
+
                     let mut local_con = cell.borrow_mut();
 
                     // Create a new connection once per thread if it is not initialized
