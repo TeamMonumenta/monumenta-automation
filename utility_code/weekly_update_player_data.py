@@ -1,11 +1,11 @@
 #!/usr/bin/env pypy3
 
 import os
-import sys
 import getopt
-import yaml
 import multiprocessing
+import sys
 import traceback
+import yaml
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager

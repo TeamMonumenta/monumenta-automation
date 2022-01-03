@@ -187,7 +187,7 @@ if __name__ == '__main__':
 
         # Blocks to set
         "set_blocks_in_spawn":[
-            {'pos': [-1441, 2, -1441], 'block': {'name': 'minecraft:air'} },
+            {'pos': [-1441, 2, -1441], 'block': {'name': 'minecraft:air'}},
         ],
 
         "set_blocks":[
@@ -328,14 +328,12 @@ if __name__ == '__main__':
         if skip_count is None:
             if "set_blocks_in_spawn" in config:
                 for block in config["set_blocks_in_spawn"]:
-                    from pprint import pprint
                     new_world.set_block(block["pos"], block["block"])
 
         # Set other blocks
         if "set_blocks" in config:
-                for block in config["set_blocks"]:
-                    from pprint import pprint
-                    new_world.set_block(block["pos"], block["block"])
+            for block in config["set_blocks"]:
+                new_world.set_block(block["pos"], block["block"])
 
         timings.nextStep(f"{name}: {dungeon['count']} instances generated")
 

@@ -1,13 +1,11 @@
 #!/usr/bin/env pypy3
 
-import math
-import sys
-import os
 import getopt
-import yaml
+import math
 import multiprocessing
-import concurrent.futures
+import sys
 import traceback
+import yaml
 
 from lib_py3.mob_replacement_manager import MobReplacementManager, remove_unwanted_spawner_tags
 from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items, get_named_armor_items, get_named_hand_item_ids, get_named_armor_item_ids
@@ -20,9 +18,6 @@ from minecraft.chunk_format.entity import Entity
 from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.world import World
 
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
-from quarry.types import nbt
-
 def is_entity_in_spawner(entity) -> bool:
     # Start at the node above this one and iterate upwards
     node = entity.parent
@@ -34,41 +29,41 @@ def is_entity_in_spawner(entity) -> bool:
     return False
 
 def match_id(target_id: str, chain=lambda mob: True):
-    return lambda mob : chain(mob) and ((mob.has_path("id") and mob.at_path("id").value == target_id) or (mob.has_path("Id") and mob.at_path("Id").value == target_id))
+    return lambda mob: chain(mob) and ((mob.has_path("id") and mob.at_path("id").value == target_id) or (mob.has_path("Id") and mob.at_path("Id").value == target_id))
 
 def match_armor(armor: [str], chain=lambda mob: True):
-    return lambda mob : chain(mob) and get_named_armor_items(mob) == armor
+    return lambda mob: chain(mob) and get_named_armor_items(mob) == armor
 
 def match_armor_ids(armor_ids: [str], chain=lambda mob: True):
-    return lambda mob : chain(mob) and get_named_armor_item_ids(mob) == armor_ids
+    return lambda mob: chain(mob) and get_named_armor_item_ids(mob) == armor_ids
 
 def match_noarmor(chain=lambda mob: True):
-    return lambda mob : chain(mob) and (not mob.has_path('ArmorItems'))
+    return lambda mob: chain(mob) and (not mob.has_path('ArmorItems'))
 
 def match_hand(hand: [str], chain=lambda mob: True):
-    return lambda mob : chain(mob) and get_named_hand_items(mob) == hand
+    return lambda mob: chain(mob) and get_named_hand_items(mob) == hand
 
 def match_hand_ids(hand_ids: [str], chain=lambda mob: True):
-    return lambda mob : chain(mob) and get_named_hand_item_ids(mob) == hand_ids
+    return lambda mob: chain(mob) and get_named_hand_item_ids(mob) == hand_ids
 
 def match_nohand(chain=lambda mob: True):
-    return lambda mob : chain(mob) and (not mob.has_path('HandItems'))
+    return lambda mob: chain(mob) and (not mob.has_path('HandItems'))
 
 def match_name(name: str, chain=lambda mob: True):
-    return lambda mob : chain(mob) and mob.has_path('CustomName') and get_entity_name_from_nbt(mob) == name
+    return lambda mob: chain(mob) and mob.has_path('CustomName') and get_entity_name_from_nbt(mob) == name
 
 def match_noname(chain=lambda mob: True):
-    return lambda mob : chain(mob) and (not mob.has_path('CustomName'))
+    return lambda mob: chain(mob) and (not mob.has_path('CustomName'))
 
 # Matches health to within += 1.0
 def match_hp(hp: float, chain=lambda mob: True):
-    return lambda mob : chain(mob) and mob.has_path('Health') and math.isclose(mob.at_path('Health').value, hp, abs_tol=1.0)
+    return lambda mob: chain(mob) and mob.has_path('Health') and math.isclose(mob.at_path('Health').value, hp, abs_tol=1.0)
 
 def match_passenger(host_chain, passenger_chain):
-    return lambda mob : (host_chain(mob)
-            and mob.has_path('Passengers')
-            and mob.count_multipath('Passengers[]') >= 1
-            and passenger_chain(mob.at_path('Passengers[0]')))
+    return lambda mob: (host_chain(mob)
+                        and mob.has_path('Passengers')
+                        and mob.count_multipath('Passengers[]') >= 1
+                        and passenger_chain(mob.at_path('Passengers[0]')))
 
 # Note that these will be evaluated last to first - so put more broad checks first for performance
 sub = [
@@ -195,10 +190,11 @@ def process_entity(entity, replacements_log) -> None:
 
     return False, []
 
-def process_init(mgr, dry, force, minx, miny, minz, maxx, maxy, maxz):
-    global replace_mgr, dry_run, min_x, min_y, min_z, max_x, max_y, max_z
+def process_init(mgr, dry, f, minx, miny, minz, maxx, maxy, maxz):
+    global replace_mgr, dry_run, force, min_x, min_y, min_z, max_x, max_y, max_z
     replace_mgr = mgr
     dry_run = dry
+    force = f
     min_x = minx
     min_y = miny
     min_z = minz
@@ -296,14 +292,14 @@ if __name__ == '__main__':
             structures_path = a
         elif o in ("-b", "--library-of-souls"):
             library_of_souls_path = a
-        elif o in ("--pos1"):
+        elif o in ("--pos1",):
             try:
                 split = a.split(",")
                 pos1 = (int(split[0]), int(split[1]), int(split[2]))
             except:
                 eprint("Invalid --pos1 argument")
                 usage()
-        elif o in ("--pos2"):
+        elif o in ("--pos2",):
             try:
                 split = a.split(",")
                 pos2 = (int(split[0]), int(split[1]), int(split[2]))

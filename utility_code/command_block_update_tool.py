@@ -6,7 +6,6 @@ import json
 import math
 import multiprocessing
 import traceback
-from pprint import pprint, pformat
 
 from lib_py3.common import eprint
 from minecraft.world import World
@@ -60,20 +59,20 @@ if __name__ == '__main__':
     num_threads = 4
 
     for o, a in opts:
-        if o in ("--world"):
+        if o in ("--world",):
             world_path = a
-        elif o in ("--output"):
+        elif o in ("--output",):
             output_path = a
-        elif o in ("--input"):
+        elif o in ("--input",):
             input_path = a
-        elif o in ("--pos1"):
+        elif o in ("--pos1",):
             try:
                 split = a.split(",")
                 pos1 = (int(split[0]), int(split[1]), int(split[2]))
             except:
                 eprint("Invalid --pos1 argument")
                 usage()
-        elif o in ("--pos2"):
+        elif o in ("--pos2",):
             try:
                 split = a.split(",")
                 pos2 = (int(split[0]), int(split[1]), int(split[2]))

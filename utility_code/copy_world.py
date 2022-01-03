@@ -1,7 +1,6 @@
 #!/usr/bin/env pypy3
 
 import sys
-import os
 from minecraft.world import World
 
 if __name__ == '__main__':

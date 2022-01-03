@@ -1,12 +1,10 @@
 #!/usr/bin/env pypy3
 
-import os
-import sys
 import getopt
-import yaml
 import multiprocessing
-import concurrent.futures
+import sys
 import traceback
+import yaml
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
@@ -16,9 +14,6 @@ from lib_py3.timing import Timings
 from minecraft.chunk_format.schematic import Schematic
 from minecraft.chunk_format.structure import Structure
 from minecraft.world import World
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
-from quarry.types import nbt
 
 def usage():
     sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> | --structures /path/to/structures [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))

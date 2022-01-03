@@ -1,12 +1,13 @@
 #!/usr/bin/env pypy3
-import yaml
+
+import concurrent.futures
+import getopt
+import multiprocessing
+from pprint import pprint
 import os
 import sys
-import datetime
-import multiprocessing
-import getopt
-import concurrent.futures
-from pprint import pprint, pformat
+import traceback
+import yaml
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
@@ -16,9 +17,6 @@ from lib_py3.timing import Timings
 
 from minecraft.world import World
 from minecraft.util.iter_util import process_in_parallel
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
-from quarry.types import nbt
 
 def usage():
     sys.exit("Usage: {} <--last_week_dir dir> <--build_template_dir dir> <--output_dir dir> [--redis_host host] [--num-threads #] [--logfile <stdout|stderr|path>] <server1> [server2] [...]".format(sys.argv[0]))
@@ -125,11 +123,11 @@ if __name__ == '__main__':
     redis_host = 'redis'
 
     for o, a in opts:
-        if o in ("--last_week_dir"):
+        if o in ("--last_week_dir",):
             last_week_dir = a
             if last_week_dir.endswith("/"):
                 last_week_dir = last_week_dir[:-1]
-        elif o in ("--build_template_dir"):
+        elif o in ("--build_template_dir",):
             build_template_dir = a
             if build_template_dir.endswith("/"):
                 build_template_dir = build_template_dir[:-1]
@@ -137,7 +135,7 @@ if __name__ == '__main__':
             output_dir = a
             if output_dir.endswith("/"):
                 output_dir = output_dir[:-1]
-        elif o in ("--redis_host"):
+        elif o in ("--redis_host",):
             redis_host = a
         elif o in ("-l", "--logfile"):
             logfile = a
@@ -325,7 +323,7 @@ if __name__ == '__main__':
     for config in config_list:
         if "preserve_instances" in config:
             preserve_instances = config["preserve_instances"]
-            score_objects = redis_scoreboard.search_scores(Objective=preserve_instances["dungeon_objective"],Score={"min":1})
+            score_objects = redis_scoreboard.search_scores(Objective=preserve_instances["dungeon_objective"], Score={"min":1})
             dungeon_scores = set()
             inval_scores = set()
             for score in score_objects:
@@ -493,8 +491,8 @@ if __name__ == '__main__':
     for region_config in regions:
         parallel_args.append((_create_region_lambda, (region_config,), None, None, process_region, err_func, ()))
 
-    generator = process_in_parallel(parallel_args, num_processes=num_processes, initializer=process_init, initargs=(worlds, prev_worlds, item_replace_manager))
-    num_global_replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
+    generator = process_in_parallel(parallel_args, num_processes=num_threads, initializer=process_init, initargs=(worlds, prev_worlds, item_replace_manager))
+    num_global_replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, {})
 
     timings.nextStep("Processed regions and merged logs: {num_global_replacements} replacements")
 
