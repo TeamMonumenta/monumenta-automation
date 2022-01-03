@@ -280,9 +280,9 @@ class JsonWrappedItem(Item, NbtPathDebug):
 
     @property
     def pos(self):
-        """Returns the grave's coordinates as (x, y, z).
-
-        >>> print(self.pos)
-        (2.71817181, 63.5, 3.1415)
-        """
-        return (self._data["location"]["x"], self._data["location"]["y"], self._data["location"]["z"])
+        """Returns the items's coordinates as (x, y, z) or None"""
+        if "location" in self._data:
+            return (self._data["location"]["x"], self._data["location"]["y"], self._data["location"]["z"])
+        elif self.parent is not None:
+            return self.parent.pos
+        return None

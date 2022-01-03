@@ -15,6 +15,7 @@ from lib_py3.redis_scoreboard import RedisScoreboard, RedisRBoard
 from lib_py3.timing import Timings
 
 from minecraft.world import World
+from minecraft.util.iter_util import process_in_parallel
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types import nbt
