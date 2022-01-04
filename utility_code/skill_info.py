@@ -1,20 +1,14 @@
-#!/usr/bin/env python3
-"""skill info <exported_skills.json>"""
+#!/usr/bin/env pypy3
+"""Gathers info on skills selected by players."""
 
+import argparse
 import json
-import sys
 from collections import Counter, defaultdict, namedtuple
 from datetime import datetime, timezone
+from pathlib import Path
 
 from lib_py3.redis_scoreboard import RedisScoreboard
 from lib_py3.timing import Timings
-
-sys.argv.pop(0)
-if len(sys.argv) == 0:
-    print(__doc__)
-    exit()
-exported_skills_path = sys.argv.pop(0)
-
 
 PlayerSkill = namedtuple('PlayerSkill', ('name', 'level'))
 PlayerSpec = namedtuple('PlayerSpec', ('name', 'total_level', 'skills'))
@@ -160,6 +154,17 @@ class ClassManager():
 
 
 def main():
+    arg_parser = argparse.ArgumentParser(description=__doc__)
+    arg_parser.add_argument('exported_skills_json', type=Path)
+    arg_parser.add_argument('redis_host', type=str)
+
+    args = arg_parser.parse_args()
+    exported_skills_path = args.exported_skills_json
+
+    if not exported_skills_path.is_file():
+        arg_parser.error('exported_skills_json must be a json file.')
+        sys.exit()
+
     mainTiming = Timings(enabled=True)
     nextStep = mainTiming.nextStep
     nextStep("Init")
@@ -184,8 +189,8 @@ def main():
                 print(f'    - {skill.shorthand:{class_manager.max_chars["skill_shorthand"]}} {skill_name}')
     print("="*80)
 
-    # Play 10.217.0.65
-    scoreboard = RedisScoreboard("play", redis_host="10.217.1.171")
+    nextStep("Connecting to play redis database")
+    scoreboard = RedisScoreboard("play", redis_host=args.redis_host)
 
 
     nextStep("Getting list of players who played in the last week")
