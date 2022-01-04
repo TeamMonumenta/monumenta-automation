@@ -4,22 +4,22 @@ Raffle library - first used for weekly voting raffle
 
 import os
 import json
-import yaml
 from collections import OrderedDict
 from pprint import pformat
+import yaml
 
-def normalized( a_list ):
+def normalized(a_list):
     """
     Normalize a list of numbers to add up to 1.0
     """
-    total = 1.0 * sum( a_list )
+    total = 1.0 * sum(a_list)
     new_list = []
     for a_val in a_list:
-        new_list.append( a_val / total )
+        new_list.append(a_val / total)
     return new_list
 
 def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
-    logfp = open( log_path, "w" )
+    logfp = open(log_path, "w")
     winner_every_n_points = 300
     no_vote_penalty = 3
 
@@ -35,7 +35,7 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
     total_raffle_entries = 0
 
     # Get the votes from this week
-    for root, dirs, files in os.walk(votes_dir_path):
+    for root, _, files in os.walk(votes_dir_path):
         for aFile in files:
             if aFile.endswith(".json"):
                 uuid = aFile[:-5]
@@ -71,12 +71,12 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
     # Sort this week's votes
     votes = OrderedDict(sorted(votes.items(), key=lambda kv: kv[1], reverse=True))
 
-    logfp.write( " Raffle Entries | Votes This Week | Name\n" )
-    logfp.write( "-----------------------------------------------------\n" )
+    logfp.write(" Raffle Entries | Votes This Week | Name\n")
+    logfp.write("-----------------------------------------------------\n")
     for voter in votes:
-        logfp.write( " {} | {} | {}\n".format( str( votes[voter][0] ).rjust( 15 ), str( votes[voter][1] ).rjust( 15 ), get_name(voter) ) )
-    logfp.write( "-----------------------------------------------------\n" )
-    logfp.write( " {} | {} | Total\n\n".format( str( total_raffle_entries ).rjust( 15 ), str( total_votes_this_week ).rjust( 15 )) )
+        logfp.write(" {} | {} | {}\n".format(str(votes[voter][0]).rjust(15), str(votes[voter][1]).rjust(15), get_name(voter)))
+    logfp.write("-----------------------------------------------------\n")
+    logfp.write(" {} | {} | Total\n\n".format(str(total_raffle_entries).rjust(15), str(total_votes_this_week).rjust(15)))
 
     # Decrement votes for anyone who hasn't voted this week, minimum of 0.
     someone_lost_raffle_entries = False
@@ -178,6 +178,7 @@ else:
 
     else:
         logfp.write("No winners this week")
+        return
 
     #
     #####################################################################################################
