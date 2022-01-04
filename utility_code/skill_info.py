@@ -1,248 +1,258 @@
 #!/usr/bin/env python3
+"""skill info <exported_skills.json>"""
+
+import json
+import sys
+from collections import Counter, defaultdict, namedtuple
+from datetime import datetime, timezone
 
 from lib_py3.redis_scoreboard import RedisScoreboard
 from lib_py3.timing import Timings
 
-if __name__ == '__main__':
+sys.argv.pop(0)
+if len(sys.argv) == 0:
+    print(__doc__)
+    exit()
+exported_skills_path = sys.argv.pop(0)
+
+
+PlayerSkill = namedtuple('PlayerSkill', ('name', 'level'))
+PlayerSpec = namedtuple('PlayerSpec', ('name', 'total_level', 'skills'))
+PlayerClass = namedtuple('PlayerClass', ('name', 'total_level', 'skills', 'spec'))
+
+
+def shorthand(class_manager, loadout):
+    """Display a player's loadout in minimal aligned characters.
+
+    Accepts a skill, spec, or class loadout.
+    Not used for the final spreadsheet, but useful for debugging.
+    """
+    if isinstance(loadout, PlayerSkill):
+        skill = class_manager.skills_by_name[loadout.name]
+        return f'{skill.shorthand}{loadout.level}'
+
+    elif isinstance(loadout, PlayerSpec):
+        return f'{loadout.name}{loadout.total_level} ' + " ".join([shorthand(class_manager, skill) for skill in loadout.skills])
+
+    elif isinstance(loadout, PlayerClass):
+        return f'{loadout.name}{loadout.total_level:>02} '\
+            + " ".join([shorthand(class_manager, skill) for skill in loadout.skills])\
+            + " "\
+            + shorthand(class_manager, loadout.spec)
+
+    else:
+        return str(loadout)
+
+
+class Skill():
+    """A Monumenta class skill"""
+    def __init__(self, skill_data):
+        self.objective = skill_data["scoreboardId"]
+        self.name = skill_data["displayName"]
+        self.shorthand = skill_data.get("shortName", "???")
+        if self.shorthand == "???":
+            print(f'{self.name} has no shorthand name and will display as ???')
+        self.descriptions = skill_data["descriptions"]
+        self.trigger = skill_data.get("trigger", None)
+        self.cooldown = skill_data["cooldown"]
+
+
+    def get_player_loadout(self, scoreboard, player_name):
+        level = scoreboard.get_score(player_name, self.objective, Fallback=0)
+        return PlayerSkill(self.name, level)
+
+
+class Spec():
+    """A Monumenta ability class specialization"""
+    def __init__(self, spec_data):
+        self.index = spec_data["specId"]
+        self.name = spec_data["specName"]
+        self.quest_objective = spec_data["specQuestScore"]
+
+        self.skills = {}
+        for skill_data in spec_data["specSkills"]:
+            skill = Skill(skill_data)
+            self.skills[skill.name] = skill
+
+
+    def get_player_loadout(self, scoreboard, player_name):
+        total_level = scoreboard.get_score(player_name, "TotalSpec", Fallback=0)
+
+        skill_loadouts = []
+        for skill_name in sorted(self.skills.keys()):
+            skill = self.skills[skill_name]
+            skill_loadouts.append(skill.get_player_loadout(scoreboard, player_name))
+
+        return PlayerSpec(self.name, total_level, tuple(skill_loadouts))
+
+
+class Class():
+    """A Monumenta ability class"""
+    def __init__(self, class_data):
+        self.index = class_data["classId"]
+        self.name = class_data["className"]
+
+        self.skills = {}
+        for skill_data in class_data["skills"]:
+            skill = Skill(skill_data)
+            self.skills[skill.name] = skill
+
+        self.specs = {}
+        self.specs_by_name = {}
+        for spec_data in class_data["specs"]:
+            spec = Spec(spec_data)
+            self.specs[spec.index] = spec
+            self.specs_by_name[spec.name] = spec
+
+
+    def get_player_loadout(self, scoreboard, player_name):
+        total_level = scoreboard.get_score(player_name, "TotalLevel", Fallback=0)
+
+        skill_loadouts = []
+        for skill_name in sorted(self.skills.keys()):
+            skill = self.skills[skill_name]
+            skill_loadouts.append(skill.get_player_loadout(scoreboard, player_name))
+
+        spec_id = scoreboard.get_score(player_name, "Specialization", Fallback=0)
+        spec_loadout = None
+        if spec_id in self.specs:
+            spec = self.specs[spec_id]
+            spec_loadout = spec.get_player_loadout(scoreboard, player_name)
+
+        return PlayerClass(self.name, total_level, tuple(skill_loadouts), spec_loadout)
+
+
+class ClassManager():
+    def __init__(self, exported_skills):
+        self.classes = {}
+        self.classes_by_name = {}
+        self.specs_by_name = {}
+        self.skills_by_name = {}
+        self.max_chars = defaultdict(int)
+        for class_data in exported_skills["classes"]:
+            ability_class = Class(class_data)
+            self.classes[ability_class.index] = ability_class
+            self.classes_by_name[ability_class.name] = ability_class
+            self.max_chars["class_name"] = max(self.max_chars["class_name"], len(ability_class.name))
+
+            for skill_name, skill in ability_class.skills.items():
+                self.skills_by_name[skill_name] = skill
+                self.max_chars["skill_name"] = max(self.max_chars["skill_name"], len(skill_name))
+                self.max_chars["skill_shorthand"] = max(self.max_chars["skill_shorthand"], len(skill.shorthand))
+
+            for spec_name, spec in ability_class.specs_by_name.items():
+                self.specs_by_name[spec_name] = spec
+                self.max_chars["spec_name"] = max(self.max_chars["spec_name"], len(spec_name))
+                for skill_name, skill in spec.skills.items():
+                    self.skills_by_name[skill_name] = skill
+                    self.max_chars["skill_name"] = max(self.max_chars["skill_name"], len(skill_name))
+                    self.max_chars["skill_shorthand"] = max(self.max_chars["skill_shorthand"], len(skill.shorthand))
+
+
+    def get_player_loadout(self, scoreboard, player_name):
+        class_id = scoreboard.get_score(player_name, "Class", Fallback=0)
+        class_loadout = None
+        if class_id in self.classes:
+            ability_class = self.classes[class_id]
+            class_loadout = ability_class.get_player_loadout(scoreboard, player_name)
+
+        return class_loadout
+
+
+def main():
     mainTiming = Timings(enabled=True)
     nextStep = mainTiming.nextStep
     nextStep("Init")
 
-    classList = [
-        "Mage",
-        "Warrior",
-        "Cleric",
-        "Rogue",
-        "Alchemist",
-        "Scout",
-        "Warlock",
-    ]
+    now = datetime.now(timezone.utc)
+    now_timestamp = now.timestamp()
+    days_since_epoch = int(now_timestamp/60/60/24)
 
-    maxSkillPoints = 9
-    maxSkillLevel = 2
+    with open(exported_skills_path, "r") as fp:
+        exported_skills = json.load(fp)
+    class_manager = ClassManager(exported_skills)
 
-    classSkills = [
-        [ # Mage
-            {"Shorthand":"AS", "Objective":"ArcaneStrike","Name":"Arcane Strike"},
-            {"Shorthand":"FN", "Objective":"FrostNova",   "Name":"Frost Nova"},
-            {"Shorthand":"PS", "Objective":"Prismatic",   "Name":"Prismatic Shield"},
-            {"Shorthand":"MS", "Objective":"Magma",       "Name":"Magma Shield",},
-            {"Shorthand":"ML", "Objective":"ManaLance",   "Name":"Mana Lance"},
-            {"Shorthand":"EA", "Objective":"Elemental",   "Name":"Elemental Arrows"},
-            {"Shorthand":"SS", "Objective":"SpellShock",  "Name":"SpellShock",},
-        ],
-        [ # Warrior
-            {"Shorthand":"CS", "Objective":"CounterStrike","Name":"Counter Strike"},
-            {"Shorthand":"WM", "Objective":"WeaponMastery","Name":"Weapon Mastery"},
-            {"Shorthand":"Tgh","Objective":"Toughness",    "Name":"Toughness"},
-            {"Shorthand":"Fnz","Objective":"Frenzy",       "Name":"Frenzy"},
-            {"Shorthand":"Rip","Objective":"Obliteration", "Name":"Riposte"},
-            {"Shorthand":"DL", "Objective":"DefensiveLine","Name":"Defensive Line"},
-            {"Shorthand":"BF", "Objective":"BruteForce",   "Name":"Brute Force"},
-        ],
-        [ # Cleric
-            {"Shorthand":"Rjv","Objective":"Rejuvenation", "Name":"Rejuvenation"},
-            {"Shorthand":"SA", "Objective":"Sanctified",   "Name":"Sanctified Armor"},
-            {"Shorthand":"HB", "Objective":"HeavenlyBoon", "Name":"Heavenly Boon"},
-            {"Shorthand":"CB", "Objective":"Celestial",    "Name":"Celestial Blessing"},
-            {"Shorthand":"CR", "Objective":"Cleansing",    "Name":"Cleansing Rain"},
-            {"Shorthand":"HoL","Objective":"Healing",      "Name":"Hand of Light"},
-            {"Shorthand":"DJ", "Objective":"DivineJustice","Name":"Divine Justice"},
-        ],
-        [ # Rogue
-            {"Shorthand":"DT", "Objective":"DaggerThrow",     "Name":"Dagger Throw"},
-            {"Shorthand":"BmB","Objective":"ByMyBlade",       "Name":"By My Blade"},
-            {"Shorthand":"VC", "Objective":"ViciousCombos",   "Name":"Vicious Combos"},
-            {"Shorthand":"AS", "Objective":"AdvancingShadows","Name":"Advancing Shadows"},
-            {"Shorthand":"Smk","Objective":"SmokeScreen",     "Name":"Smokescreen"},
-            {"Shorthand":"Dg", "Objective":"Dodging",         "Name":"Dodging"},
-            {"Shorthand":"ED", "Objective":"EscapeDeath",     "Name":"Escape Death"},
-        ],
-        [ # Alchemist
-            {"Shorthand":"GA", "Objective":"GruesomeAlchemy", "Name":"Gruesome Alchemy"},
-            {"Shorthand":"BA", "Objective":"BrutalAlchemy",   "Name":"Brutal Alchemy"},
-            {"Shorthand":"IT", "Objective":"IronTincture",    "Name":"Iron Tincture"},
-            {"Shorthand":"BP", "Objective":"BasiliskPoison",  "Name":"Basilisk Poison"},
-            {"Shorthand":"PI", "Objective":"PowerInjection",  "Name":"Power Injection"},
-            {"Shorthand":"UA", "Objective":"BombArrow",       "Name":"Unstable Arrows"},
-            {"Shorthand":"EE", "Objective":"EnfeeblingElixir","Name":"Enfeebling Elixer"},
-        ],
-        [ # Scout
-            {"Shorthand":"Agl","Objective":"Agility",     "Name":"Agility"},
-            {"Shorthand":"Swf","Objective":"Swiftness",   "Name":"Swiftness"},
-            {"Shorthand":"SC", "Objective":"SwiftCuts",   "Name":"Swift Cuts"},
-            {"Shorthand":"BM", "Objective":"BowMastery",  "Name":"Bow Mastery"},
-            {"Shorthand":"EE", "Objective":"Tinkering",   "Name":"Eagle Eye"},
-            {"Shorthand":"Vly","Objective":"Volley",      "Name":"Volley"},
-            {"Shorthand":"ShS","Objective":"Sharpshooter","Name":"Sharpshooter"},
-        ],
-        [ # Warlock
-            {"Shorthand":"AH", "Objective":"AmplifyingHex",  "Name":"Amplifying Hex"},
-            {"Shorthand":"BA", "Objective":"BlasphemousAura","Name":"Blasphemous Aura"},
-            {"Shorthand":"CW", "Objective":"CursedWound",    "Name":"Cursed Wound"},
-            {"Shorthand":"GC", "Objective":"GraspingClaws",  "Name":"Grasping Claws"},
-            {"Shorthand":"SR", "Objective":"SoulRend",       "Name":"Soul Rend"},
-            {"Shorthand":"VM", "Objective":"Harvester",      "Name":"Harvester of the Damned"},
-            {"Shorthand":"CF", "Objective":"ConsumingFlames","Name":"Consuming Flames"},
-        ],
-    ]
+    for class_id, ability_class in sorted(class_manager.classes.items()):
+        print("="*80)
+        print(f'{class_id} {ability_class.name}:')
+        for skill_name, skill in sorted(ability_class.skills.items()):
+            print(f'- {skill.shorthand:{class_manager.max_chars["skill_shorthand"]}} {skill_name}')
+        for spec in ability_class.specs.values():
+            print('-'*40)
+            print(f'- {spec.index:2} {spec.name}:')
+            for skill_name, skill in sorted(spec.skills.items()):
+                print(f'    - {skill.shorthand:{class_manager.max_chars["skill_shorthand"]}} {skill_name}')
+    print("="*80)
 
-    Objectives = ["Class","Skill","TotalLevel"]
-    for skills in classSkills:
-        for skill in skills:
-            Objectives.append(skill["Objective"])
+    # Play 10.217.0.65
+    scoreboard = RedisScoreboard("play", redis_host="10.217.1.171")
 
-    worldScores = RedisScoreboard("play", redis_host="redis")
 
-    nextStep("Building caches")
+    nextStep("Getting list of players who played in the last week")
 
-    GlobalCache = worldScores.get_cache(Objective=Objectives)
-    TotalLevelCache = worldScores.get_cache(Objective="TotalLevel",Cache=GlobalCache)
-    SkillCache = worldScores.get_cache(Objective="Skill",Cache=GlobalCache)
+    players = []
+    for score in scoreboard.search_scores(Objective="DailyVersion", Score={"min": days_since_epoch - 7}):
+        players.append(score.at_path("Name").value)
 
-    for skills in classSkills:
-        for skill in skills:
-            skill["Cache"] = worldScores.get_cache(Objective=skill["Objective"],Score={"min":1,"max":maxSkillLevel},Cache=GlobalCache)
 
-    nextStep("Caches complete")
+    nextStep("Reading player loadouts")
 
-    searchResults = worldScores.search_scores(Objective="Class",Score={"min":1,"max":len(classList)},Cache=GlobalCache)
+    all_loadouts_histogram = Counter()
+    class_loadouts_histograms = defaultdict(Counter)
+    spec_loadouts_histograms = defaultdict(Counter)
 
-    playersByClass = {}
-    # 0th item is total regardless of skill points
-    totalWithClass = [0]
-    for skillPoints in range(1,maxSkillPoints+1):
-        totalWithClass.append(0)
-        for classNum in range(1,len(classList)+1):
-            playersByClass[(classNum,skillPoints)] = []
+    for player_name in players:
+        loadout = class_manager.get_player_loadout(scoreboard, player_name)
+        all_loadouts_histogram[loadout] += 1
 
-    for aScoreEntry in searchResults:
-        player = aScoreEntry.at_path("Name").value
-        playerClass = aScoreEntry.at_path("Score").value
+        if loadout is None:
+            continue
+        class_name = loadout.name
+        class_loadouts_histograms[class_name][loadout] += 1
 
-        playerTotalLevel = worldScores.get_score(Name=player,Objective="TotalLevel",Fallback=0,Cache=TotalLevelCache)
-        playerSkillPointsLeft = worldScores.get_score(Name=player,Objective="Skill",Fallback=0,Cache=SkillCache)
-        playerSkillCount = playerTotalLevel - playerSkillPointsLeft
-        try:
-            playersByClass[(playerClass,playerSkillCount)].append(player)
-            totalWithClass[playerSkillCount] += 1
-            totalWithClass[0] += 1
-        except:
-            pass
+        if loadout.spec is None:
+            continue
+        spec = loadout.spec
+        spec_name = spec.name
+        spec_loadouts_histograms[spec_name][spec] += 1
 
-    print("Percentage of players with X skill points spent:")
-    for skillPoints in range(1,maxSkillPoints+1):
-        percent = 100.0 * totalWithClass[skillPoints] / totalWithClass[0]
-        print("{0:>2} points, {1:6.2f}%".format(skillPoints,percent))
 
-    print("Class by skill points")
-    line = "         ,"
-    for skillPoints in range(1,maxSkillPoints+1):
-        line += "{0:>7},".format(skillPoints)
-    print(line)
-    for classNum in range(len(classList)):
-        className = classList[classNum]
-        line = "{0:<9},".format(className)
-        for skillPoints in range(1,maxSkillPoints+1):
-            totalMembers = len(playersByClass[(classNum+1,skillPoints)])
-            percentUsage = 100.0 * totalMembers / totalWithClass[skillPoints]
-            line += "{0:6.2f}%,".format(percentUsage)
-        print(line)
+    # TEMP
+    COLUMNS = 230
 
-    for skillPoints in range(1,maxSkillPoints+1):
-        print("=--="*20)
-        print("Players with {} skill points selected:".format(skillPoints))
-        for classNum in range(len(classList)):
-            className = classList[classNum]
+    print("all_loadouts_histogram:")
+    for key, value in all_loadouts_histogram.most_common(5):
+        abridged_key = shorthand(class_manager, key)
+        if len(abridged_key) > COLUMNS:
+            abridged_key = abridged_key[:COLUMNS-3] + "..."
+        print(f'{value:2d}x {abridged_key}')
+    if len(all_loadouts_histogram) > 5:
+        print(f'...and {len(all_loadouts_histogram)-5} more.')
 
-            print("="*80)
-            print(className)
+    print("class_loadouts_histograms:")
+    for class_name, class_loadout in class_loadouts_histograms.items():
+        print(f'{class_name}:')
+        for key, value in class_loadout.most_common(5):
+            abridged_key = shorthand(class_manager, key)
+            if len(abridged_key) > COLUMNS:
+                abridged_key = abridged_key[:COLUMNS-3] + "..."
+            print(f'{value:2d}x {abridged_key}')
+        if len(class_loadout) > 5:
+            print(f'...and {len(class_loadout)-5} more.')
 
-            skillList = classSkills[classNum]
-
-            classMembers = playersByClass[(classNum+1,skillPoints)]
-            totalMembers = len(classMembers)
-
-            percentUsage = 100.0 * totalMembers / totalWithClass[skillPoints]
-
-            print("-"*80)
-            print("{} Members".format(totalMembers))
-            print("{0:6.2f}% of players play this class".format(percentUsage))
-
-            if totalMembers == 0:
-                continue
-
-            playersUsingSkill = {}
-            specSheet = {}
-            for skillId in range(len(skillList)):
-                for level in range(1,maxSkillLevel+1):
-                    playersUsingSkill[(skillId,level)] = 0
-
-                    specSheet[(skillId,level)] = {}
-                    for specSkillId in range(len(skillList)):
-                        for specLevel in range(1,maxSkillLevel+1):
-                            specSheet[(skillId,level)][(specSkillId,specLevel)] = 0
-
-            for player in classMembers:
-                for skillId in range(len(skillList)):
-                    skill = skillList[skillId]
-                    skillObjective = skill["Objective"]
-                    skillCache = skill["Cache"]
-
-                    level = worldScores.get_score(Name=player,Objective=skillObjective,Fallback=0,Cache=skillCache)
-                    if level == 0:
-                        continue
-                    if level > maxSkillLevel:
-                        continue
-                    playersUsingSkill[(skillId,level)] += 1
-
-                    for specSkillId in range(len(skillList)):
-                        specSkill = skillList[specSkillId]
-                        specSkillObjective = specSkill["Objective"]
-                        specSkillCache = specSkill["Cache"]
-
-                        specLevel = worldScores.get_score(Name=player,Objective=specSkillObjective,Fallback=0,Cache=specSkillCache)
-                        if specLevel == 0:
-                            continue
-                        if specLevel > maxSkillLevel:
-                            continue
-                        specSheet[(skillId,level)][(specSkillId,specLevel)] += 1
-
-            print("-"*80)
-            for skillId in range(len(skillList)):
-                skill = skillList[skillId]
-                skillName = skill["Name"]
-
-                for level in range(1,maxSkillLevel+1):
-                    percentThisSkill = 100.0 * playersUsingSkill[(skillId,level)] / totalMembers
-                    print("{0:6.2f}% of {1} players use {2} {3}".format(percentThisSkill,className,skillName,level))
-
-            print("-"*80)
-            print("For players using skill A, this percent use skill B:")
-            header = "       ,"
-            toPrint = []
-            for skillId in range(len(skillList)):
-                skill = skillList[skillId]
-                skillShorthand = skill["Shorthand"]
-
-                for level in range(1,maxSkillLevel+1):
-                    header += "  {0:>3} {1},".format(skillShorthand,level)
-                    thisLine = "  {0:>3} {1},".format(skillShorthand,level)
-                    playersThisSkill = playersUsingSkill[(skillId,level)]
-
-                    for specSkillId in range(len(skillList)):
-                        for specLevel in range(1,maxSkillLevel+1):
-                            if playersThisSkill == 0:
-                                percentThisSpec = 0.0
-                            else:
-                                percentThisSpec = 100.0 * specSheet[(skillId,level)][(specSkillId,specLevel)] / playersThisSkill
-                            thisLine += "{0:6.2f}%,".format(percentThisSpec)
-                    toPrint.append(thisLine)
-
-            print(header)
-            for thisLine in toPrint:
-                print(thisLine)
-            print("-"*80)
+    print("spec_loadouts_histograms:")
+    for spec_name, spec_loadout in spec_loadouts_histograms.items():
+        print(f'{spec_name}:')
+        for key, value in spec_loadout.most_common(5):
+            abridged_key = shorthand(class_manager, key)
+            if len(abridged_key) > COLUMNS:
+                abridged_key = abridged_key[:COLUMNS-3] + "..."
+            print(f'{value:2d}x {abridged_key}')
+        if len(spec_loadout) > 5:
+            print(f'...and {len(spec_loadout)-5} more.')
+    # TEMP
 
     nextStep("Done")
 
+if __name__ == '__main__':
+    main()
