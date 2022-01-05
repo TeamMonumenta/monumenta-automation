@@ -4,38 +4,30 @@ import os
 import sys
 import asyncio
 import subprocess
-import json
 import re
 import tempfile
 import time
-import numpy
+import datetime
+from pprint import pformat
+import logging
 import discord
 import yaml
 
-from collections import OrderedDict
-from pprint import pformat
-
-import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 # TODO: Move this to config file
 _file_depth = 3
 _file = os.path.abspath(__file__)
-_top_level = os.path.abspath( os.path.join( _file, '../'*_file_depth ) )
+_top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from lib_py3.raffle import vote_raffle
-from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.common import parse_name_possibly_json
 from lib_py3.lib_k8s import KubernetesManager
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.redis_scoreboard import RedisRBoard
 
-from automation_bot_lib import get_list_match, get_available_storage, datestr, split_string
-from quarry.types.text_format import unformat_text
-from quarry.types import nbt
+from automation_bot_lib import datestr, split_string
 
 class Listening():
     def __init__(self):
@@ -71,11 +63,6 @@ class Listening():
             self.deselect(key)
         else:
             self.select(key)
-
-class PermissionsError(Exception):
-   """Raised when a user does not have permission to run a command"""
-   pass
-
 
 class AutomationBotInstance(object):
 
@@ -187,7 +174,7 @@ class AutomationBotInstance(object):
                         def socket_callback(message):
                             if "channel" in message:
                                 if "Heartbeat" in message["channel"]:
-                                    return;
+                                    return
 
                                 logger.info("Got socket message: {}".format(pformat(message)))
                                 if self._audit_channel:
@@ -200,7 +187,7 @@ class AutomationBotInstance(object):
                                         asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                                channel=self._admin_channel),
                                                                          loop)
-                                if self._audit_severe_channel :
+                                if self._audit_severe_channel:
                                     if (message["channel"] == "Monumenta.Automation.AuditLogSevere"):
                                         # Schedule the display coroutine back on the main event loop
                                         asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
@@ -225,13 +212,13 @@ class AutomationBotInstance(object):
                             try:
                                 self._audit_channel = client.get_channel(conf["audit_channel"])
                             except:
-                                logging.error( "Cannot connect to audit channel: " + conf["audit_channel"] )
+                                logging.error("Cannot connect to audit channel: " + conf["audit_channel"])
                         self._audit_severe_channel = None
                         if "audit_severe_channel" in conf:
                             try:
                                 self._audit_severe_channel = client.get_channel(conf["audit_severe_channel"])
                             except:
-                                logging.error( "Cannot connect to audit severe channel: " + conf["audit_severe_channel"] )
+                                logging.error("Cannot connect to audit severe channel: " + conf["audit_severe_channel"])
                         self._admin_channel = None
                         if "admin_channel" in conf:
                             try:
@@ -287,7 +274,7 @@ class AutomationBotInstance(object):
 
     def check_permissions(self, command, author):
         logger.debug("author.id = {}".format(author.id))
-        user_info = self._permissions["users"].get( author.id, {"rights":["@everyone"]} )
+        user_info = self._permissions["users"].get(author.id, {"rights":["@everyone"]})
         logger.debug("User info = {}".format(pformat(user_info)))
         # This is a copy, not a reference
         user_rights = list(user_info.get("rights",["@everyone"]))
@@ -311,7 +298,7 @@ class AutomationBotInstance(object):
                     already_checked.add(perm)
                     user_rights = self._permissions["groups"][perm] + user_rights
                 continue
-            givenPerm = ( perm[0] == "+" )
+            givenPerm = (perm[0] == "+")
             if (
                 perm[1:] == command or
                 perm[1:] == "*"
@@ -568,7 +555,7 @@ Examples:
         commandArgs = arg_str.split()
 
         # Kills the bot, causing k8s to restart it
-        if arg_str == 'bot' and (action == self.stop or action == self.restart):
+        if arg_str == 'bot' and action in (self.stop, self.restart):
             await message.channel.send("Restarting bot. Note: This will not update the bot's image")
             sys.exit(0)
 
@@ -635,8 +622,8 @@ Do not use for debugging quests or other scores that are likely to change often.
         while len(commandArgs) > 0:
             cmd_str = cmd_str + " " + commandArgs.pop(0)
 
-        await self.run(cmd_str, displayOutput=True),
-        await self.display("Done"),
+        await self.run(cmd_str, displayOutput=True)
+        await self.display("Done")
 
 
     async def action_set_player_scores(self, cmd, message):
@@ -645,7 +632,6 @@ Do not use for debugging quests or other scores that are likely to change often.
 
         commandArgs = message.content[len(self._prefix + cmd) + 1:]
         lines = commandArgs.split("\n")
-        output = ""
         setscores = 0
         for line in lines:
             line = line.strip()
@@ -668,7 +654,7 @@ Do not use for debugging quests or other scores that are likely to change often.
             self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": f"execute if entity {name} run scoreboard players set {name} {objective} {value}"})
             setscores += 1
 
-        await self.display(f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)"),
+        await self.display(f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)")
 
     async def action_generate_instances(self, cmd, message):
         '''Dangerous!
@@ -783,7 +769,7 @@ Examples:
             if shard == "--debug":
                 debug = True
                 await self.display("Debug mode enabled! Will not stop shards prior to copying")
-            elif shard == "valley" or shard == "isles":
+            elif shard in ("valley", "isles",):
                 main_shards.append(shard)
             elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "mist", "willows", "sanctum", "shiftingcity", "labs", "depths", "remorse", "corridors", "verdant"]:
                 instance_gen_required.append(shard)
@@ -973,7 +959,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
             self._socket.send_packet("*", "monumentanetworkrelay.command",
                     {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta's weekly update will begin in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". The server will be down for approximately 1 hour while we patch new content into the game."}]'''}
             )
-            await self.display("{} to weekly update".format(time_left)),
+            await self.display("{} to weekly update".format(time_left))
 
         await send_broadcast_msg("10 minutes")
         await asyncio.sleep(3 * 60)
@@ -998,7 +984,6 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await asyncio.sleep(5)
 
         # Stop bungee
-        shards = await self._k8s.list()
         await self.stop("bungee")
 
         await self.display(message.author.mention)
