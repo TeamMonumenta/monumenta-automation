@@ -114,7 +114,7 @@ if __name__ == '__main__':
             },
             "verdant":{
                 "region":{"x":-2, "z":5},
-                "count":150,
+                "count":500,
                 "objective":"DVAccess"
             },
             "corridors":{
