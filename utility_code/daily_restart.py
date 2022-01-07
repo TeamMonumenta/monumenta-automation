@@ -103,7 +103,10 @@ if __name__ == '__main__':
             else:
                 log_level = 20
 
-            socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level)
+            # Get the first channel
+            channel = next(iter(conf))
+
+            socket = SocketManager(channel["host"], "daily_restart", durable=False, callback=None, log_level=log_level)
 
         k8s = KubernetesManager(config["k8s_namespace"])
     except KeyError as e:
