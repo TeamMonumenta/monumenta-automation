@@ -802,8 +802,7 @@ Examples:
                 await self.display("Running replacements on copied version of {shard}...".format(shard=shard))
                 args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard}".format(shard=shard)
                 await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
-                # TODO: Update LoS path from mobs dir
-                args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard} --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json".format(shard=shard)
+                args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json".format(shard=shard)
                 await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         if len(instance_gen_required) > 0:
@@ -822,8 +821,7 @@ Examples:
             await self.display("Running replacements on copied dungeon masters...")
             args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon"
             await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
-            # TODO: Update LoS path from mobs dir
-            args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json"
+            args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
             await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
             await self.display("Generating dungeon instances for [{}]...".format(" ".join(instance_gen_required)))
@@ -840,7 +838,7 @@ Examples:
         await self.display("Running replacements on copied structures...")
         args = (" --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
             + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
-            + " --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json")
+            + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
         await self.run(os.path.join(_top_level, "utility_code/replace_items.py"
             + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
             + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
@@ -1409,7 +1407,7 @@ Syntax:
                 await self.cd("/home/epic/project_epic/server_config/data")
                 await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --schematics structures --structures generated --logfile {base_backup_name}_items.yml"), displayOutput=True)
                 await self.cd("/home/epic/project_epic/server_config/data")
-                await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --structures generated --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
+                await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --structures generated --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
 
             else:
                 base_backup_name = f"/home/epic/0_OLD_BACKUPS/Project_Epic-{shard}_pre_entity_loot_updates_{datestr()}"
@@ -1421,7 +1419,7 @@ Syntax:
                 await self.cd(self._shards[shard])
                 await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --world Project_Epic-{shard} --logfile {base_backup_name}_items.yml"), displayOutput=True)
                 await self.cd(self._shards[shard])
-                await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --world Project_Epic-{shard} --library-of-souls /home/epic/project_epic/mobs/plugins/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
+                await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --world Project_Epic-{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
                 await self.start(shard)
 
         await self.display(message.author.mention)
