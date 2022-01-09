@@ -171,13 +171,13 @@ def process_entity(entity, replacements_log) -> None:
         if nbt.has_path('SpawnPotentials'):
             new_potentials = []
             for nested_entity in nbt.iter_multipath('SpawnPotentials[]'):
-                if (nested_entity.has_path('Entity.id') and nested_entity.at_path('Entity.id').value == "minecraft:pig") or (nested_entity.has_path('Entity.Id') and nested_entity.at_path('Entity.Id').value == "minecraft:pig"):
+                if (nested_entity.has_path('Entity.id') and nested_entity.at_path('Entity.id').value == "minecraft:pig" and not nested_entity.has_path('Entity.CustomName')) or (nested_entity.has_path('Entity.Id') and nested_entity.at_path('Entity.Id').value == "minecraft:pig" and not nested_entity.has_path('Entity.CustomName')):
                     changed_something = True
                     msgs.append(f"Removing pig from SpawnPotentials at {entity.get_path_str()}\n")
                 else:
                     new_potentials.append(nested_entity)
             nbt.at_path('SpawnPotentials').value = new_potentials
-        if (nbt.has_path("SpawnData.id") and nbt.at_path("SpawnData.id").value == "minecraft:pig") or (nbt.has_path("SpawnData.Id") and nbt.at_path("SpawnData.Id").value == "minecraft:pig"):
+        if (nbt.has_path("SpawnData.id") and nbt.at_path("SpawnData.id").value == "minecraft:pig" and not nbt.has_path('SpawnData.CustomName')) or (nbt.has_path("SpawnData.Id") and nbt.at_path("SpawnData.Id").value == "minecraft:pig" and not nbt.has_path('SpawnData.CustomName')):
             changed_something = True
             msgs.append(f"Removing pig Spawndata at {entity.get_path_str()}\n")
             nbt.value.pop("SpawnData")
