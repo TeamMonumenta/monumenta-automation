@@ -76,16 +76,17 @@ if __name__ == '__main__':
     los = LibraryOfSouls("/home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
     los.clear_tags()
 
-    for basedir in ["/home/epic/project_epic/server_config/data/generated"]:
-        for root, subdirs, files in os.walk(basedir):
-            for fname in files:
-                if fname.endswith(".nbt"):
-                    struct = Structure(os.path.join(root, fname))
-
-                    print("Processing structure: {}".format(struct.name))
-
-                    for entity in struct.recursive_iter_entities():
-                        process_entity(entity, struct.name)
+# TODO: Don't scan these until they can be reorganized
+#    for basedir in ["/home/epic/project_epic/server_config/data/generated"]:
+#        for root, subdirs, files in os.walk(basedir):
+#            for fname in files:
+#                if fname.endswith(".nbt"):
+#                    struct = Structure(os.path.join(root, fname))
+#
+#                    print("Processing structure: {}".format(struct.name))
+#
+#                    for entity in struct.recursive_iter_entities():
+#                        process_entity(entity, struct.name)
 
     for basedir in ["/home/epic/project_epic/server_config/data/structures/valley", "/home/epic/project_epic/server_config/data/structures/isles"]:
         for root, subdirs, files in os.walk(basedir):
@@ -122,7 +123,8 @@ if __name__ == '__main__':
         "yellow":{"x":-3, "z":2},
         "willows":{"x":-3, "z":3},
         "corridors":{"x":-2, "z":-1},
-        "verdant":{"x":-2, "z":5},
+        "verdantstrike":{"min": (-1024, 0, 2815), "max": (-768, 255, 3071)},
+        "verdantstory":{"min": (-767, 0, 2560), "max": (-513, 255, 2815)},
         "reverie":{"x":-3, "z":4},
         "tutorial":{"x":-2, "z":1},
         "sanctum":{"x":-3, "z":12},
@@ -145,11 +147,23 @@ if __name__ == '__main__':
 
     for dungeon in dungeons:
         print("Processing dungeon: {}".format(dungeon))
-        rx = dungeons[dungeon]["x"]
-        rz = dungeons[dungeon]["z"]
-        for chunk in dungeonWorld.get_region(rx, rz, read_only = True).iter_chunks(autosave=False):
-            for entity in chunk.recursive_iter_entities():
-                process_entity(entity, dungeon)
+        dungeon_config=dungeons[dungeon]
+        if "x" in dungeon_config and "z" in dungeon_config:
+            rx = dungeon_config["x"]
+            rz = dungeon_config["z"]
+            for chunk in dungeonWorld.get_region(rx, rz, read_only=True).iter_chunks(autosave=False):
+                for entity in chunk.recursive_iter_entities():
+                    process_entity(entity, dungeon)
+        elif "min" in dungeon_config and "max" in dungeon_config:
+            pos1 = dungeon_config["min"]
+            pos2 = dungeon_config["max"]
+
+            for region in dungeonWorld.iter_regions(min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2], read_only=True):
+                for chunk in region.iter_chunks(min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2], autosave=False):
+                    for entity in chunk.recursive_iter_entities(min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2]):
+                        process_entity(entity, dungeon)
+        else:
+            raise Exception(f"Invalid config doesn't specify either x/z or min/max: {dungeon_config}")
 
     print("\n\n\n\n\n\nNot found unique mobs:")
     for name in not_found_unique_mobs:
