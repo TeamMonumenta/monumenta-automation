@@ -131,7 +131,10 @@ class SubtituteItems(SubstitutionRule):
 
         for substitution in [
             #["minecraft:example_item_id", "Example Name", "minecraft:new_id", "Example New Name"],
+            # Any name:
             #["minecraft:example_banned_item", always_equal, "minecraft:new_id", "Example New Name"],
+            # No name:
+            #["minecraft:example_vanilla_item", None, "minecraft:new_id", "Example New Name"],
 
             ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
             ["minecraft:bow", "Heatwave", "minecraft:crossbow", "Heatwave"],
