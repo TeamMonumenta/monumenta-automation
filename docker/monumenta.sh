@@ -13,6 +13,8 @@ check_var SERVER_DIR
 check_var JAVA_JAR
 check_var JAVA_MEM
 check_var JAVA_META_MEM
+# Optional argument
+# JAVA_ARG
 
 if [[ ! -d "$SERVER_DIR" ]]; then
 	echo "SERVER_DIR='$SERVER_DIR' does not exist!"
@@ -31,5 +33,5 @@ args="$args -XX:+UseG1GC -XX:+ParallelRefProcEnabled -XX:MaxGCPauseMillis=200 -X
 
 cd "$SERVER_DIR"
 echo "Executing:"
-echo java $args -jar "$JAVA_JAR"
-exec java $args -jar "$JAVA_JAR"
+echo java $args -jar "$JAVA_JAR" $JAVA_ARG
+exec java $args -jar "$JAVA_JAR" $JAVA_ARG
