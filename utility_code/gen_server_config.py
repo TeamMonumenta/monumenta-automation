@@ -214,6 +214,7 @@ if __name__ == '__main__':
             ('plugins/NetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
             ('plugins/WorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
             ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
+            ('plugins/Monumenta/experiencinator_config.json', '../../../server_config/data/plugins/all/Monumenta/experiencinator_config.json'),
             ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
             ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
             ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
