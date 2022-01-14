@@ -30,6 +30,8 @@ metadata:
   labels:
     app: build-ssh
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -49,19 +51,39 @@ spec:
                 values:
                 - monumenta-8
       volumes:
-        - name: nfs-data
+        - name: scriptedquests
           hostPath:
             type: Directory
-            path: /nfs/4_SHARED/build_shard_data
+            path: /nfs/4_SHARED/build_shard_data/scriptedquests
+        - name: datapacks
+          hostPath:
+            type: Directory
+            path: /nfs/play/m8/build/Project_Epic-build/datapacks
+        - name: logs
+          hostPath:
+            type: Directory
+            path: /nfs/play/m8/build/logs
+        - name: authorized-keys-config
+          secret:
+            secretName: authorized-keys-config
+            defaultMode: 292
       containers:
-      - name: build-ssh
-        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-build-ssh
+      - name: basic-ssh
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-basic-ssh
         tty: false
         stdin: false
         ports:
         - containerPort: 22
         volumeMounts:
-        - name: nfs-data
-          mountPath: /home/build/data
+        - name: scriptedquests
+          mountPath: /home/epic/scriptedquests
+        - name: datapacks
+          mountPath: /home/epic/datapacks
+        - name: logs
+          mountPath: /home/epic/logs
+          readOnly: true
+        - name: authorized-keys-config
+          mountPath: /home/epic/.ssh/authorized_keys
+          subPath: authorized_keys
       imagePullSecrets:
       - name: githubcred
