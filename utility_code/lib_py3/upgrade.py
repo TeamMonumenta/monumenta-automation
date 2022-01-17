@@ -185,7 +185,7 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
             nbt.value["Item"] = nbt.at_path("Potion")
             nbt.value.pop("Potion")
         elif type(nbt.at_path("Potion")) is TagString:
-            nbt.at_path("Potion").value = nbt.at_path("Potion").value.replace("empty", "mundane").replace("awkward", "mundane")
+            nbt.at_path("Potion").value = nbt.at_path("Potion").value.replace("empty", "mundane") # .replace("awkward", "mundane")
 
     # Upgrade UUIDMost/UUIDLeast -> UUID
     upgrade_uuid_if_present(nbt, regenerateUUIDs=regenerateUUIDs)
