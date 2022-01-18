@@ -17,6 +17,27 @@ class LootTableManager(object):
     """
     A tool to manipulate loot tables
     """
+    INTERCHANGEABLE_ITEM_IDS = (
+        ( # Shulker boxes
+            "minecraft:shulker_box",
+            "minecraft:white_shulker_box",
+            "minecraft:orange_shulker_box",
+            "minecraft:magenta_shulker_box",
+            "minecraft:light_blue_shulker_box",
+            "minecraft:yellow_shulker_box",
+            "minecraft:lime_shulker_box",
+            "minecraft:pink_shulker_box",
+            "minecraft:gray_shulker_box",
+            "minecraft:light_gray_shulker_box",
+            "minecraft:cyan_shulker_box",
+            "minecraft:purple_shulker_box",
+            "minecraft:blue_shulker_box",
+            "minecraft:brown_shulker_box",
+            "minecraft:green_shulker_box",
+            "minecraft:red_shulker_box",
+            "minecraft:black_shulker_box",
+        ),
+    )
 
     ####################################################################################################
     # Utility Functions
@@ -202,6 +223,16 @@ class LootTableManager(object):
         new_entry["nbt"] = item_tag_nbt
         new_entry["namespaced_key"] = self.to_namespaced_path(filename)
 
+        found_in_interchangeable_set = False
+        for interchangeable_id_set in self.INTERCHANGEABLE_ITEM_IDS:
+            if item_id in interchangeable_id_set:
+                found_in_interchangeable_set = True
+                for interchangeable_id in interchangeable_id_set:
+                    self.register_loot_table_item(interchangeable_id, item_name, new_entry)
+        if not found_in_interchangeable_set:
+            self.register_loot_table_item(item_id, item_name, new_entry)
+
+    def register_loot_table_item(self, item_id, item_name, new_entry):
         if item_id in self.item_map:
             if item_name in self.item_map[item_id]:
                 # DUPLICATE! This name / item id already exists
