@@ -118,6 +118,8 @@ class GlobalRule(object):
 ################################################################################
 # Global rules begin
 
+### Items on Monumenta mobs have no lore text so they don't get updated
+
 class AbortNoLore(GlobalRule):
     name = "Abort if there's no lore text"
 
@@ -132,6 +134,8 @@ class AbortNoLore(GlobalRule):
 
         # Anything at this point is probably fine.
         return
+
+### Vanilla data to preserve
 
 class PreserveArmorColor(GlobalRule):
     name = 'Preserve armor color'
@@ -226,6 +230,31 @@ class PreserveCrossbowItem(GlobalRule):
             item.tag.value['Charged'] = self.Charged
         if self.ChargedProjectiles is not None:
             item.tag.value['ChargedProjectiles'] = self.ChargedProjectiles
+
+### Monumenta data to preserve
+
+class PreserveMonumentaPlayerModifications(GlobalRule):
+    name = 'Preserve player-modified tags from Monumenta'
+
+    def preprocess(self, template, item):
+        self.tag = None
+        if item.nbt.has_path('tag.Monumenta.PlayerModified'):
+            self.tag = item.tag.at_path('Monumenta.PlayerModified')
+
+    def postprocess(self, item):
+        if self.tag is None:
+            if item.nbt.has_path('tag.Monumenta.PlayerModified'):
+                monumenta_tag = item.nbt.tag.at_path('Monumenta')
+                monumenta_tag.value.pop('PlayerModified')
+                if len(monumenta_tag.value) == 0:
+                    monumenta_tag = item.nbt.tag.value.pop('Monumenta')
+        else:
+            if not item.nbt.has_path('tag'):
+                item.nbt.value['tag'] = nbt.TagCompound({})
+            if not item.tag.has_path('Monumenta'):
+                item.tag.value['Monumenta'] = nbt.TagCompound({})
+            item.tag.value.at_path('Monumenta').value['PlayerModified'] = self.tag
+            
 
 class PreserveEnchantments(GlobalRule):
     name = 'Preserve Enchantments'
