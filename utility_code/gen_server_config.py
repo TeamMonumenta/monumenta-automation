@@ -533,6 +533,15 @@ if __name__ == '__main__':
             'linked':server_config + base_plugins + dynmap,
         },
 
+        'dev4':{
+            'config':server_config_to_copy + [
+                ('server.properties', 'view-distance', 'view-distance=6'),
+                ('spigot.yml', 'view-distance', '    view-distance: 6'),
+                ('server.properties', 'difficulty', 'difficulty=normal'),
+            ],
+            'linked':server_config + base_plugins + dynmap,
+        },
+
         'plots':{
             'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=6'),
