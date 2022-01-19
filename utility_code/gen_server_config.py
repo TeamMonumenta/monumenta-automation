@@ -163,6 +163,8 @@ if __name__ == '__main__':
             ('plugins/CoreProtect/config.yml',),
             ('plugins/FastAsyncWorldEdit/config.yml',),
             ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: {}".format("minecraft:diamond_axe" if SERVER_TYPE == 'build' else "minecraft:knowledge_book")),
+            ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: {}".format("minecraft:diamond_axe" if SERVER_TYPE == 'build' else "minecraft:knowledge_book")),
+            ('plugins/FastAsyncVoxelSniper/config.yml',),
             ('plugins/NBTEditor/config.yml',),
             ('plugins/LightCleaner/config.yml',),
             ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: {}'.format(SERVER_TYPE == 'build')),
@@ -435,6 +437,7 @@ if __name__ == '__main__':
                 ('server.properties', 'gamemode', 'gamemode=creative'),
                 ('plugins/MonumentaNetworkRelay/config.yml', 'broadcast-command-sending-enabled', 'broadcast-command-sending-enabled: true'),
                 ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
+                ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
             ],
             'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + [
                 ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
