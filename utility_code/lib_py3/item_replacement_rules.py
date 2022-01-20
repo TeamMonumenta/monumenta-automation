@@ -323,19 +323,19 @@ class PreserveEnchantments(GlobalRule):
 
         for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
             for enchantment in self.enchantment_state:
-                if enchantment['use_numeral'] and lore.contains(enchantment['enchantment']):
+                if enchantment['use_numeral'] and enchantment['enchantment'] in lore:
                     level = to_number(lore.split(' ')[1])
                     self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level),
                                         'infuser': nbt.TagString(get_uuid('_Stickers1342'))}
-                elif enchantment['use_number'] and lore.contains(enchantment['enchantment']):
+                elif enchantment['use_number'] and enchantment['enchantment'] in lore:
                     level = lore.split(' ')[1]
                     self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level + 1),
                                         'infuser': nbt.TagString(get_uuid('_Stickers1342'))}
-                elif enchantment['owner_prefix'] is not None and lore.contains(enchantment['owner_prefix']):
+                elif enchantment['owner_prefix'] is not None and enchantment['owner_prefix'] in lore:
                     username = lore.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '')
                     self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
                                         'infuser': nbt.TagString(get_uuid(username))}
-                elif lore.contains(enchantment['enchantment']):
+                elif enchantment['enchantment'] in lore:
                     self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
                                         'infuser': nbt.TagString('_Stickers1342')}
 
