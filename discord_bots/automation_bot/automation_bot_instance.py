@@ -802,7 +802,7 @@ Examples:
                 await self.display("Running replacements on copied version of {shard}...".format(shard=shard))
                 args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard}".format(shard=shard)
                 await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
-                args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database_postrework.json".format(shard=shard)
+                args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json".format(shard=shard)
                 await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         if len(instance_gen_required) > 0:
@@ -821,7 +821,7 @@ Examples:
             await self.display("Running replacements on copied dungeon masters...")
             args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon"
             await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
-            args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database_postrework.json"
+            args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
             await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
             await self.display("Generating dungeon instances for [{}]...".format(" ".join(instance_gen_required)))
@@ -838,7 +838,7 @@ Examples:
         await self.display("Running replacements on copied structures...")
         args = (" --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
             + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
-            + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database_postrework.json")
+            + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
         await self.run(os.path.join(_top_level, "utility_code/replace_items.py"
             + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
             + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
