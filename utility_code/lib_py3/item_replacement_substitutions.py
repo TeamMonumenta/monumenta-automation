@@ -269,6 +269,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:stone_hoe", "Brimstone Scythe", "minecraft:stone_hoe", "Cavewalker's Scythe"],
             ["minecraft:trident", "Celsian Sarissa", "minecraft:iron_sword", "Celsian Sarissa"],
             ["minecraft:trident", "Thalassic Lance", "minecraft:iron_sword", "Thalassic Lance"],
+            ["minecraft:leather_boots", "Shadowborn Boots", "minecraft:leather_boots", "Grovewalker's Sandals"],
             ["minecraft:leather_helmet", None, "minecraft:leather_helmet", "Leather Cap"],
             ["minecraft:leather_chestplate", None, "minecraft:leather_chestplate", "Leather Tunic"],
             ["minecraft:leather_leggings", None, "minecraft:leather_leggings", "Leather Pants"],
