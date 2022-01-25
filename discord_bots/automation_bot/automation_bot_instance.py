@@ -183,7 +183,9 @@ class AutomationBotInstance(object):
                                         asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                                channel=self._audit_channel),
                                                                          loop)
-                                    elif (message["channel"] == "Monumenta.Automation.AdminNotification"):
+
+                                if self._admin_channel:
+                                    if (message["channel"] == "Monumenta.Automation.AdminNotification"):
                                         asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                                channel=self._admin_channel),
                                                                          loop)

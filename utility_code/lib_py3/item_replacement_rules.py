@@ -22,7 +22,7 @@ from quarry.types import nbt
 from quarry.types.text_format import unformat_text, TextFormats, TextStyles
 
 
-with open("/home/epic/automation/name2uuid.yml", "r") as f:
+with open("/home/epic/4_SHARED/name2uuid.yml", "r") as f:
     name2uuid = yaml.load(f, Loader=yaml.FullLoader)
 
 def jsonify_text_hack(text):
@@ -260,7 +260,7 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
                 item.nbt.value['tag'] = nbt.TagCompound({})
             if not item.tag.has_path('Monumenta'):
                 item.tag.value['Monumenta'] = nbt.TagCompound({})
-            item.tag.value.at_path('Monumenta').value['PlayerModified'] = self.tag
+            item.tag.at_path('Monumenta').value['PlayerModified'] = self.tag
 
 
 class PreserveEnchantments(GlobalRule):
