@@ -1,5 +1,6 @@
 #!/usr/bin/env pypy3
 
+import os
 import getopt
 import multiprocessing
 import sys
@@ -108,6 +109,10 @@ if __name__ == '__main__':
     replacements_log = {}
 
     if world_path:
+        if not os.path.exists(world_path):
+            eprint(f"World path '{world_path}' does not exist")
+            usage()
+
         world = World(world_path)
         timings.nextStep("Loaded world")
 

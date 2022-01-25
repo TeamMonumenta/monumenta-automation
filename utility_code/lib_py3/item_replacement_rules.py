@@ -2,6 +2,7 @@ import json
 import os
 import re
 import sys
+import yaml
 
 import traceback
 
@@ -14,9 +15,15 @@ from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.chunk_format.entity import Entity
 from minecraft.player_dat_format.item import Item
 
+import requests
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 from quarry.types.text_format import unformat_text, TextFormats, TextStyles
+
+
+with open("/home/epic/4_SHARED/name2uuid.yml", "r") as f:
+    name2uuid = yaml.load(f, Loader=yaml.FullLoader)
 
 def jsonify_text_hack(text):
     if text == "":
@@ -46,6 +53,26 @@ def jsonify_text_hack(text):
         return json.dumps({"extra":extra,"text":""}, ensure_ascii=False, separators=(',', ':'))
     else:
         return json.dumps({"extra":[{"text":text}],"text":""}, ensure_ascii=False, separators=(',', ':'))
+
+def to_number(numeral):
+    if numeral == 'I':
+        return 1
+    elif numeral == 'II':
+        return 2
+    elif numeral == 'III':
+        return 3
+    elif numeral == 'IV':
+        return 4
+    else:
+        return 0
+
+def get_uuid(username):
+    if username in name2uuid:
+        uuid = name2uuid[username]
+    else:
+        username = "_Stickers1342"
+        uuid = name2uuid[username]
+    return uuid
 
 class GlobalRule(object):
     """Base pre/post processing rule for item replacements, used to preserve and edit data."""
@@ -95,126 +122,10 @@ class GlobalRule(object):
     def __repr__(self):
         return f'{type(self).__name__}()'
 
-def enchantify(item, player, enchantment, owner_prefix=None, enchantment_color="§7", add_pre_cost_adjust=False):
-    """Applies a lore-text enchantment to item (full item nbt, including id and Count).
-
-    Must be kept in sync with the plugin version!
-
-    Lore format is:
-    ```
-    ...
-    enchantment
-    ...
-    owner_prefix player
-    ...
-    ```
-    regions is a list of the relevant region names, such as ["King's Valley", "Celsian Isles"]
-    player is the player's name
-
-    The plugin version of this also requires:
-    sender, who/what is sending the command
-    duplicateItem, whether to make an unedited copy
-    """
-    if not item.nbt.has_path('tag.display.Lore'):
-        return
-    lore = item.tag.at_path('display.Lore').value
-
-    if len(lore) == 0:
-        return
-
-    newLore = []
-    enchantmentFound = False
-    nameAdded = (owner_prefix is None)
-    for loreEntry in lore:
-        loreText = parse_name_possibly_json(loreEntry.value)
-        if enchantment in loreText:
-            if add_pre_cost_adjust:
-                newLore.append(nbt.TagString(jsonify_text_hack("PRE COST ADJUST")))
-            enchantmentFound = True
-
-        loreStripped = unformat_text(loreText).strip()
-        HEADER_LORE = (
-            "King's Valley :",
-            "Celsian Isles :",
-            "Monumenta :",
-            "Armor",
-            "Magic Wand",
-            "Alchemical Utensil"
-        )
-        if not enchantmentFound and (
-            any(x in loreStripped for x in HEADER_LORE) or
-            len(loreStripped) == 0
-        ):
-            enchantment_json = jsonify_text_hack(enchantment_color + enchantment)
-            newLore.append(nbt.TagString(enchantment_json))
-            if add_pre_cost_adjust:
-                newLore.append(nbt.TagString(jsonify_text_hack("PRE COST ADJUST")))
-            enchantmentFound = True
-
-        if (not nameAdded and len(loreStripped.strip()) == 0):
-            owner_json = jsonify_text_hack(owner_prefix + " " + player)
-            newLore.append(nbt.TagString(owner_json))
-            nameAdded = True
-
-        newLore.append(loreEntry)
-
-    if not enchantmentFound:
-        # Don't apply changes
-        return
-
-    if not nameAdded:
-        owner_json = jsonify_text_hack(owner_prefix + " " + player)
-        newLore.append(nbt.TagString(owner_json))
-
-    item.tag.at_path('display.Lore').value = newLore
-
-def freeInfusion(player: str, item: Item, selection: str, level: str):
-    """Infuse an item with <selection> infusion at level <level>"""
-    newLore = []
-    if item.nbt.has_path('tag.display.Lore'):
-        for line in item.tag.iter_multipath('display.Lore[]'):
-            if "PRE COST ADJUST" not in line.value:
-                newLore.append(line.deep_copy())
-        item.tag.at_path('display.Lore').value = newLore
-
-    numeral = level
-    if isinstance(level, int):
-        numeral = {
-            1: " I",
-            2: " II",
-            3: " III",
-            4: " IV",
-        }[level]
-    enchantify(item, player, selection + numeral)
-
-def shatter_item(item):
-    """Applies shattered enchantment to an item
-
-    Must be kept in sync with plugin version!
-
-    Note that the logic to check if the item *should*
-    be shattered is skipped here, as this will only
-    be called if the item definitely should be
-    shattered.
-
-    item is type Item.
-    """
-
-    if not item.has_tag():
-        item.tag = nbt.TagCompound({})
-    if not item.tag.has_path('display'):
-        item.tag.value['display'] = nbt.TagCompound({})
-    if not item.tag.has_path('display.Lore'):
-        item.tag.at_path('display').value['Lore'] = nbt.TagList([])
-
-    lore = item.tag.at_path('display.Lore').value
-
-    lore.append(nbt.TagString(jsonify_text_hack("§4§l* SHATTERED *")))
-    lore.append(nbt.TagString(jsonify_text_hack("§4Maybe a Master Repairman")))
-    lore.append(nbt.TagString(jsonify_text_hack("§4could reforge it...")))
-
 ################################################################################
 # Global rules begin
+
+### Items on Monumenta mobs have no lore text so they don't get updated
 
 class AbortNoLore(GlobalRule):
     name = "Abort if there's no lore text"
@@ -230,6 +141,8 @@ class AbortNoLore(GlobalRule):
 
         # Anything at this point is probably fine.
         return
+
+### Vanilla data to preserve
 
 class PreserveArmorColor(GlobalRule):
     name = 'Preserve armor color'
@@ -325,6 +238,31 @@ class PreserveCrossbowItem(GlobalRule):
         if self.ChargedProjectiles is not None:
             item.tag.value['ChargedProjectiles'] = self.ChargedProjectiles
 
+### Monumenta data to preserve
+
+class PreserveMonumentaPlayerModifications(GlobalRule):
+    name = 'Preserve player-modified tags from Monumenta'
+
+    def preprocess(self, template, item):
+        self.tag = None
+        if item.nbt.has_path('tag.Monumenta.PlayerModified'):
+            self.tag = item.tag.at_path('Monumenta.PlayerModified')
+
+    def postprocess(self, item):
+        if self.tag is None:
+            if item.nbt.has_path('tag.Monumenta.PlayerModified'):
+                monumenta_tag = item.nbt.tag.at_path('Monumenta')
+                monumenta_tag.value.pop('PlayerModified')
+                if len(monumenta_tag.value) == 0:
+                    monumenta_tag = item.nbt.tag.value.pop('Monumenta')
+        else:
+            if not item.nbt.has_path('tag'):
+                item.nbt.value['tag'] = nbt.TagCompound({})
+            if not item.tag.has_path('Monumenta'):
+                item.tag.value['Monumenta'] = nbt.TagCompound({})
+            item.tag.value.at_path('Monumenta').value['PlayerModified'] = self.tag
+
+
 class PreserveEnchantments(GlobalRule):
     name = 'Preserve Enchantments'
     enchantments = (
@@ -332,99 +270,103 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Gilded', "owner_prefix": 'Gilded by'},
         {"enchantment": 'Festive', "owner_prefix": 'Decorated by'},
         {"enchantment": 'Colossal', "owner_prefix": 'Reinforced by'},
+        {"enchantment": 'Phylactery', "owner_prefix": 'Embalmed by'},
+        {"enchantment": 'Soulbound', "owner_prefix": 'Soulbound to'},
         {"enchantment": 'Locked'},
         {"enchantment": 'Barking'},
         {"enchantment": 'Debarking'},
 
         # Infusions
-        {"enchantment": 'Acumen'},
-        {"enchantment": 'Focus'},
-        {"enchantment": 'Perspicacity'},
-        {"enchantment": 'Tenacity'},
-        {"enchantment": 'Vigor'},
-        {"enchantment": 'Vitality'},
+        {"enchantment": 'Acumen', 'use_numeral': True},
+        {"enchantment": 'Focus', 'use_numeral': True},
+        {"enchantment": 'Perspicacity', 'use_numeral': True},
+        {"enchantment": 'Tenacity', 'use_numeral': True},
+        {"enchantment": 'Vigor', 'use_numeral': True},
+        {"enchantment": 'Vitality', 'use_numeral': True},
 
-        {"enchantment": 'Pennate'},
-        {"enchantment": 'Carapace'},
-        {"enchantment": 'Aura'},
-        {"enchantment": 'Expedite'},
-        {"enchantment": 'Choler'},
-        {"enchantment": 'Usurper'},
-        {"enchantment": 'Empowered'},
-        {"enchantment": 'Nutriment'},
-        {"enchantment": 'Execution'},
-        {"enchantment": 'Reflection'},
-        {"enchantment": 'Mitosis'},
-        {"enchantment": 'Ardor'},
-        {"enchantment": 'Epoch'},
-        {"enchantment": 'Natant'},
-        {"enchantment": 'Understanding'},
-
-        {"enchantment": 'Phylactery', "owner_prefix": 'Embalmed by'},
+        {"enchantment": 'Pennate', 'use_numeral': True},
+        {"enchantment": 'Carapace', 'use_numeral': True},
+        {"enchantment": 'Aura', 'use_numeral': True},
+        {"enchantment": 'Expedite', 'use_numeral': True},
+        {"enchantment": 'Choler', 'use_numeral': True},
+        {"enchantment": 'Usurper', 'use_numeral': True},
+        {"enchantment": 'Empowered', 'use_numeral': True},
+        {"enchantment": 'Nutriment', 'use_numeral': True},
+        {"enchantment": 'Execution', 'use_numeral': True},
+        {"enchantment": 'Reflection', 'use_numeral': True},
+        {"enchantment": 'Mitosis', 'use_numeral': True},
+        {"enchantment": 'Ardor', 'use_numeral': True},
+        {"enchantment": 'Epoch', 'use_numeral': True},
+        {"enchantment": 'Natant', 'use_numeral': True},
+        {"enchantment": 'Understanding', 'use_numeral': True},
 
         # Stat tracking
-        {"enchantment": 'Stat Track', "owner_prefix": 'Tracked by', "enchantment_color": "§7"},
-        {"enchantment": 'Mob Kills', "enchantment_color": "§c"},
-        {"enchantment": 'Spawners Broken', "enchantment_color": "§c"},
-        {"enchantment": 'Times Consumed', "enchantment_color": "§c"},
-        {"enchantment": 'Blocks Placed', "enchantment_color": "§c"},
-        {"enchantment": 'Melee Damage Dealt', "enchantment_color": "§c"},
-        {"enchantment": 'Boss Damage Dealt', "enchantment_color": "§c"},
+        {"enchantment": 'Stat Track', "owner_prefix": 'Tracked by'},
+        {"enchantment": 'Mob Kills', 'use_number': True},
+        {"enchantment": 'Spawners Broken', 'use_number': True},
+        {"enchantment": 'Times Consumed', 'use_number': True},
+        {"enchantment": 'Blocks Placed', 'use_number': True},
+        {"enchantment": 'Melee Damage Dealt', 'use_number': True},
+        {"enchantment": 'Boss Damage Dealt', 'use_number': True},
     )
 
     def __init__(self):
         self.enchantment_state = []
+        self.apply = False
 
     def preprocess(self, template, item):
         self.enchantment_state = []
+        self.tags_to_add = []
 
         for enchantment in self.enchantments:
             newstate = {
                 'enchantment': enchantment['enchantment'],
                 'owner_prefix': enchantment.get('owner_prefix', None),
-                'enchantment_color': enchantment.get("enchantment_color", "§7"),
-                'PRE COST ADJUST': enchantment.get('PRE COST ADJUST', False),
-                'enchant_found': False,
-                'enchant_line': None,
-                'players': []
+                'use_numeral': enchantment.get('use_numeral', False),
+                'use_number': enchantment.get('use_number', False),
             }
 
             self.enchantment_state.append(newstate)
 
         for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
             for enchantment in self.enchantment_state:
-                owner_prefix = enchantment['owner_prefix']
-                lore_text = unformat_text(parse_name_possibly_json(lore.value))
-                if lore_text.startswith(enchantment['enchantment']):
-                    enchantment['enchant_found'] = True
-                    if not enchantment["enchantment"].startswith("Gilded"):
-                        enchantment['enchant_line'] = lore_text
-                    else:
-                        enchantment['enchant_line'] = 'Gilded'
-                if owner_prefix is not None and lore_text.startswith(owner_prefix):
-                    if not enchantment["enchantment"].startswith("Gilded") or len(enchantment['players']) <= 0:
-                        enchantment['players'].append(lore_text[len(owner_prefix)+1:])
-                elif owner_prefix == 'Embalmed by' and lore_text.startswith('Enbalmed by'):
-                    if not enchantment["enchantment"].startswith("Gilded") or len(enchantment['players']) <= 0:
-                        enchantment['players'].append(lore_text[len(owner_prefix)+1:])
+                if enchantment['use_numeral'] and enchantment['enchantment'] in lore.value:
+                    level = to_number(lore.value.split(' ')[1])
+                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level),
+                                        'infuser': nbt.TagString(get_uuid('_Stickers1342'))})
+                elif enchantment['use_number'] and enchantment['enchantment'] in lore.value:
+                    level = lore.value.split(' ')[-1].split('"')[0]
+                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(int(level) + 1),
+                                        'infuser': nbt.TagString(get_uuid('_Stickers1342'))})
+                elif enchantment['owner_prefix'] is not None and enchantment['owner_prefix'] in lore.value:
+                    username = lore.value.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '').replace('"', '').replace('}', '').split(']')[0]
+                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
+                                        'infuser': nbt.TagString(get_uuid(username))})
+                elif enchantment['enchantment'] in lore.value:
+                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
+                                        'infuser': nbt.TagString('_Stickers1342')})
+
 
     def postprocess(self, item):
-        for enchantment in self.enchantment_state:
-            enchant_found = enchantment['enchant_found']
-            players = enchantment['players']
-            enchant_line = enchantment['enchant_line']
-            owner_prefix = enchantment['owner_prefix']
-            enchantment_color = enchantment['enchantment_color']
+        if not item.nbt.has_path('tag'):
+            item.nbt.value['tag'] = nbt.TagCompound({})
+        if not item.tag.has_path('Monumenta'):
+            item.tag.value['Monumenta'] = nbt.TagCompound({})
+        if not item.tag.has_path('Monumenta.PlayerModified'):
+            item.tag.at_path('Monumenta').value['PlayerModified'] = nbt.TagCompound({})
+        if not item.tag.has_path('Monumenta.PlayerModified.Infusions'):
+            item.tag.at_path('Monumenta.PlayerModified').value['Infusions'] = nbt.TagCompound({})
 
-            if not enchant_found:
-                continue
-
-            if players:
-                for player in players:
-                   enchantify(item, player, enchant_line, owner_prefix=owner_prefix, enchantment_color=enchantment_color, add_pre_cost_adjust=enchantment["PRE COST ADJUST"])
-            else:
-                # Apply the enchantment without saying who added it (workaround for past bug)
-                enchantify(item, None, enchant_line, owner_prefix=None, enchantment_color=enchantment_color, add_pre_cost_adjust=enchantment["PRE COST ADJUST"])
+        if len(self.tags_to_add) > 0:
+            for infusion_dict in self.tags_to_add:
+                enchant = infusion_dict['enchant']
+                level = infusion_dict['level']
+                infuser = infusion_dict['infuser']
+                infusion_tag = nbt.TagCompound({})
+                infusion_tag.value['Level'] = level
+                infusion_tag.value['Infuser'] = infuser
+                item.tag.at_path('Monumenta.PlayerModified.Infusions').value[
+                    enchant.replace(' ', '')] = infusion_tag
 
 class PreserveShattered(GlobalRule):
     name = 'Preserve Shattered'
@@ -440,33 +382,16 @@ class PreserveShattered(GlobalRule):
 
     def postprocess(self, item):
         if self.shattered:
-            shatter_item(item)
+            if not item.nbt.has_path('tag'):
+                item.nbt.value['tag'] = nbt.TagCompound({})
+            if not item.tag.has_path('Monumenta'):
+                item.tag.value['Monumenta'] = nbt.TagCompound({})
+            if not item.tag.has_path('Monumenta.PlayerModified'):
+                item.tag.at_path('Monumenta').value['PlayerModified'] = nbt.TagCompound({})
+            if not item.tag.has_path('Monumenta.PlayerModified.Shattered'):
+                item.tag.at_path('Monumenta.PlayerModified').value['Shattered'] = nbt.TagCompound({})
 
-class PreserveSoulbound(GlobalRule):
-    name = 'Preserve soulbound'
-
-    def preprocess(self, template, item):
-        self.player_line = None
-        for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
-            lore_text = parse_name_possibly_json(lore.value)
-            if unformat_text(lore_text).startswith("* Soulbound to "):
-                self.player_line = lore
-                return
-
-    def postprocess(self, item):
-        if self.player_line is None:
-            return
-
-        # Make sure tag exists first
-        if not item.has_tag():
-            item.tag = nbt.TagCompound({})
-        if not item.tag.has_path('display'):
-            item.tag.value['display'] = nbt.TagCompound({})
-        if not item.tag.has_path('display.Lore'):
-            item.tag.at_path('display').value['Lore'] = nbt.TagList([])
-
-        # Apply soulbound lore
-        item.tag.at_path('display.Lore').value.append(self.player_line)
+            item.tag.at_path('Monumenta.PlayerModified.Shattered').value['Shattered'] = nbt.TagInt(1)
 
 class PreserveBlockEntityTag(GlobalRule):
     name = 'Preserve block entity tag'
