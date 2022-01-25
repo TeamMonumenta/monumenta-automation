@@ -322,20 +322,21 @@ class PreserveEnchantments(GlobalRule):
             self.enchantment_state.append(newstate)
 
         for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
+            print(lore)
             for enchantment in self.enchantment_state:
-                if enchantment['use_numeral'] and enchantment['enchantment'] in lore:
-                    level = to_number(lore.split(' ')[1])
+                if enchantment['use_numeral'] and enchantment['enchantment'] in lore.value:
+                    level = to_number(lore.value.split(' ')[1])
                     self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level),
                                         'infuser': nbt.TagString(get_uuid('_Stickers1342'))}
-                elif enchantment['use_number'] and enchantment['enchantment'] in lore:
-                    level = lore.split(' ')[1]
+                elif enchantment['use_number'] and enchantment['enchantment'] in lore.value:
+                    level = lore.value.split(' ')[1]
                     self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level + 1),
                                         'infuser': nbt.TagString(get_uuid('_Stickers1342'))}
-                elif enchantment['owner_prefix'] is not None and enchantment['owner_prefix'] in str(lore):
-                    username = lore.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '')
+                elif enchantment['owner_prefix'] is not None and enchantment['owner_prefix'] in lore.value:
+                    username = lore.value.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '')
                     self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
                                         'infuser': nbt.TagString(get_uuid(username))}
-                elif enchantment['enchantment'] in lore:
+                elif enchantment['enchantment'] in lore.value:
                     self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
                                         'infuser': nbt.TagString('_Stickers1342')}
 
