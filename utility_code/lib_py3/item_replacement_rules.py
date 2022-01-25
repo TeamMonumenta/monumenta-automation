@@ -260,7 +260,7 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
                 item.nbt.value['tag'] = nbt.TagCompound({})
             if not item.tag.has_path('Monumenta'):
                 item.tag.value['Monumenta'] = nbt.TagCompound({})
-            item.tag.value.at_path('Monumenta').value['PlayerModified'] = self.tag
+            item.tag.at_path('Monumenta').value['PlayerModified'] = self.tag
 
 
 class PreserveEnchantments(GlobalRule):
