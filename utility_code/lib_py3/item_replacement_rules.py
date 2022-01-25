@@ -22,7 +22,7 @@ from quarry.types import nbt
 from quarry.types.text_format import unformat_text, TextFormats, TextStyles
 
 
-with open("/home/epic/automation/name2uuid.yml", "r") as f:
+with open("/home/epic/4_SHARED/name2uuid.yml", "r") as f:
     name2uuid = yaml.load(f, Loader=yaml.FullLoader)
 
 def jsonify_text_hack(text):
