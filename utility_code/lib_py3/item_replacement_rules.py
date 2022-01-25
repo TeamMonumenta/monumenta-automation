@@ -55,7 +55,6 @@ def jsonify_text_hack(text):
         return json.dumps({"extra":[{"text":text}],"text":""}, ensure_ascii=False, separators=(',', ':'))
 
 def to_number(numeral):
-    print(numeral)
     if numeral == 'I':
         return 1
     elif numeral == 'II':
