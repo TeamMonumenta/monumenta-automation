@@ -345,9 +345,9 @@ class PreserveEnchantments(GlobalRule):
                     username = lore.value.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '').replace('"', '').replace('}', '').split(']')[0]
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
                                         'infuser': nbt.TagString(get_uuid(username))})
-                elif enchantment['enchantment'] in lore.value:
+                elif enchantment['enchantment'] in lore.value and enchantment['owner_prefix'] is None:
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
-                                        'infuser': nbt.TagString('_Stickers1342')})
+                                        'infuser': nbt.TagString(get_uuid('_Stickers1342'))})
 
 
     def postprocess(self, item):
