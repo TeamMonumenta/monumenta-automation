@@ -2,6 +2,7 @@ import json
 import os
 import re
 import sys
+import yaml
 
 import traceback
 
@@ -19,6 +20,10 @@ import requests
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 from quarry.types.text_format import unformat_text, TextFormats, TextStyles
+
+
+with open("/home/epic/automation/name2uuid.yml", "r") as f:
+    name2uuid = yaml.load(f, Loader=yaml.FullLoader)
 
 def jsonify_text_hack(text):
     if text == "":
@@ -62,9 +67,11 @@ def to_number(numeral):
         return 0
 
 def get_uuid(username):
-    url = f'https://api.mojang.com/users/profiles/minecraft/{username}?'
-    response = requests.get(url)
-    uuid = response.json()['id']
+    if username in name2uuid:
+        uuid = name2uuid[username]
+    else:
+        username = "_Stickers1342"
+        uuid = name2uuid[username]
     return uuid
 
 class GlobalRule(object):
@@ -322,23 +329,22 @@ class PreserveEnchantments(GlobalRule):
             self.enchantment_state.append(newstate)
 
         for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
-            print(lore)
             for enchantment in self.enchantment_state:
                 if enchantment['use_numeral'] and enchantment['enchantment'] in lore.value:
                     level = to_number(lore.value.split(' ')[1])
-                    self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level),
-                                        'infuser': nbt.TagString(get_uuid('_Stickers1342'))}
+                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level),
+                                        'infuser': nbt.TagString(get_uuid('_Stickers1342'))})
                 elif enchantment['use_number'] and enchantment['enchantment'] in lore.value:
-                    level = lore.value.split(' ')[1]
-                    self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level + 1),
-                                        'infuser': nbt.TagString(get_uuid('_Stickers1342'))}
+                    level = lore.value.split(' ')[-1].split('"')[0]
+                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(int(level) + 1),
+                                        'infuser': nbt.TagString(get_uuid('_Stickers1342'))})
                 elif enchantment['owner_prefix'] is not None and enchantment['owner_prefix'] in lore.value:
-                    username = lore.value.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '')
-                    self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
-                                        'infuser': nbt.TagString(get_uuid(username))}
+                    username = lore.value.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '').replace('"', '').replace('}', '').split(']')[0]
+                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
+                                        'infuser': nbt.TagString(get_uuid(username))})
                 elif enchantment['enchantment'] in lore.value:
-                    self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
-                                        'infuser': nbt.TagString('_Stickers1342')}
+                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
+                                        'infuser': nbt.TagString('_Stickers1342')})
 
 
     def postprocess(self, item):
@@ -356,9 +362,9 @@ class PreserveEnchantments(GlobalRule):
                 enchant = infusion_dict['enchant']
                 level = infusion_dict['level']
                 infuser = infusion_dict['infuser']
-                infusion_tag = item.nbt.TagCompound({})
-                infusion_tag['Level'] = level
-                infusion_tag['Infuser'] = infuser
+                infusion_tag = nbt.TagCompound({})
+                infusion_tag.value['Level'] = level
+                infusion_tag.value['Infuser'] = infuser
                 item.tag.at_path('Monumenta.PlayerModified.Infusions').value[
                     enchant.replace(' ', '')] = infusion_tag
 
