@@ -254,7 +254,7 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
             if not item.tag.has_path('Monumenta'):
                 item.tag.value['Monumenta'] = nbt.TagCompound({})
             item.tag.value.at_path('Monumenta').value['PlayerModified'] = self.tag
-            
+
 
 class PreserveEnchantments(GlobalRule):
     name = 'Preserve Enchantments'
@@ -331,7 +331,7 @@ class PreserveEnchantments(GlobalRule):
                     level = lore.split(' ')[1]
                     self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level + 1),
                                         'infuser': nbt.TagString(get_uuid('_Stickers1342'))}
-                elif enchantment['owner_prefix'] is not None and enchantment['owner_prefix'] in lore:
+                elif enchantment['owner_prefix'] is not None and enchantment['owner_prefix'] in str(lore):
                     username = lore.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '')
                     self.tags_to_add = {'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
                                         'infuser': nbt.TagString(get_uuid(username))}
