@@ -331,7 +331,7 @@ class PreserveEnchantments(GlobalRule):
         for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
             for enchantment in self.enchantment_state:
                 if enchantment['use_numeral'] and enchantment['enchantment'] in lore.value:
-                    level = to_number(lore.value.split(' ')[1])
+                    level = to_number(lore.value.split(' ')[-1].split('"')[0])
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level),
                                         'infuser': nbt.TagString(get_uuid('_Stickers1342'))})
                 elif enchantment['use_number'] and enchantment['enchantment'] in lore.value:
