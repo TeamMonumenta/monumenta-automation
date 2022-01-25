@@ -163,6 +163,8 @@ if __name__ == '__main__':
             ('plugins/CoreProtect/config.yml',),
             ('plugins/FastAsyncWorldEdit/config.yml',),
             ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: {}".format("minecraft:diamond_axe" if SERVER_TYPE == 'build' else "minecraft:knowledge_book")),
+            ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: {}".format("minecraft:diamond_axe" if SERVER_TYPE == 'build' else "minecraft:knowledge_book")),
+            ('plugins/FastAsyncVoxelSniper/config.yml',),
             ('plugins/NBTEditor/config.yml',),
             ('plugins/LightCleaner/config.yml',),
             ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: {}'.format(SERVER_TYPE == 'build')),
@@ -216,6 +218,7 @@ if __name__ == '__main__':
             ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
             ('plugins/Monumenta/experiencinator_config.json', '../../../server_config/data/plugins/all/Monumenta/experiencinator_config.json'),
             ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
+            ('plugins/Monumenta/seasonalevents', '../../../server_config/data/plugins/all/Monumenta/seasonalevents'),
             ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
             ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
             ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
@@ -291,19 +294,10 @@ if __name__ == '__main__':
     nbteditor = [
             ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
             ('plugins/LibraryOfSouls.jar', '../../server_config/plugins/LibraryOfSouls.jar'),
-            ('plugins/LibraryOfSouls/bestiary_config.yml', '../../../server_config/data/plugins/all/LibraryOfSouls/bestiary_config.yml'),
-        ]
-    if (SERVER_TYPE == 'build'):
-        nbteditor += [
-            ('plugins/LibraryOfSouls/souls_database.json', '../../../server_config/data/plugins/all/LibraryOfSouls/souls_database_postrework.json'),
-            ('plugins/LibraryOfSouls/soul_parties_database.json', '../../../server_config/data/plugins/all/LibraryOfSouls/soul_parties_database_postrework.json'),
-            ('plugins/LibraryOfSouls/soul_pools_database.json', '../../../server_config/data/plugins/all/LibraryOfSouls/soul_pools_database_postrework.json'),
-        ]
-    else:
-        nbteditor += [
             ('plugins/LibraryOfSouls/souls_database.json', '../../../server_config/data/plugins/all/LibraryOfSouls/souls_database.json'),
             ('plugins/LibraryOfSouls/soul_parties_database.json', '../../../server_config/data/plugins/all/LibraryOfSouls/soul_parties_database.json'),
             ('plugins/LibraryOfSouls/soul_pools_database.json', '../../../server_config/data/plugins/all/LibraryOfSouls/soul_pools_database.json'),
+            ('plugins/LibraryOfSouls/bestiary_config.yml', '../../../server_config/data/plugins/all/LibraryOfSouls/bestiary_config.yml'),
         ]
 
     openinv = [
@@ -435,6 +429,7 @@ if __name__ == '__main__':
                 ('server.properties', 'gamemode', 'gamemode=creative'),
                 ('plugins/MonumentaNetworkRelay/config.yml', 'broadcast-command-sending-enabled', 'broadcast-command-sending-enabled: true'),
                 ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
+                ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
             ],
             'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + [
                 ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
@@ -525,6 +520,15 @@ if __name__ == '__main__':
         },
 
         'dev3':{
+            'config':server_config_to_copy + [
+                ('server.properties', 'view-distance', 'view-distance=6'),
+                ('spigot.yml', 'view-distance', '    view-distance: 6'),
+                ('server.properties', 'difficulty', 'difficulty=normal'),
+            ],
+            'linked':server_config + base_plugins + dynmap,
+        },
+
+        'dev4':{
             'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=6'),
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
