@@ -272,9 +272,9 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Colossal', "owner_prefix": 'Reinforced by'},
         {"enchantment": 'Phylactery', "owner_prefix": 'Embalmed by'},
         {"enchantment": 'Soulbound', "owner_prefix": 'Soulbound to'},
-        {"enchantment": 'Locked'},
-        {"enchantment": 'Barking'},
-        {"enchantment": 'Debarking'},
+        {"enchantment": 'Locked', "owner_prefix": 'Locked by'},
+        {"enchantment": 'Barking', "owner_prefix", 'Barked by'},
+        {"enchantment": 'Debarking', "owner_prefix", 'Debarked by'},
 
         # Infusions
         {"enchantment": 'Acumen', 'use_numeral': True},
