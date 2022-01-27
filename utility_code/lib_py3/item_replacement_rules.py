@@ -273,8 +273,8 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Phylactery', "owner_prefix": 'Embalmed by'},
         {"enchantment": 'Soulbound', "owner_prefix": 'Soulbound to'},
         {"enchantment": 'Locked', "owner_prefix": 'Locked by'},
-        {"enchantment": 'Barking', "owner_prefix", 'Barked by'},
-        {"enchantment": 'Debarking', "owner_prefix", 'Debarked by'},
+        {"enchantment": 'Barking', "owner_prefix": 'Barked by'},
+        {"enchantment": 'Debarking', "owner_prefix": 'Debarked by'},
 
         # Infusions
         {"enchantment": 'Acumen', 'use_numeral': True},
