@@ -22,6 +22,9 @@ from quarry.types import nbt
 from quarry.types.text_format import unformat_text, TextFormats, TextStyles
 
 
+NIL = uuid.UUID("00000000-0000-0000-0000-000000000000")
+
+
 with open("/home/epic/4_SHARED/name2uuid.yml", "r") as f:
     name2uuid = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -67,12 +70,7 @@ def to_number(numeral):
         return 0
 
 def get_uuid(username):
-    if username in name2uuid:
-        uuid = name2uuid[username]
-    else:
-        username = "_Stickers1342"
-        uuid = name2uuid[username]
-    return uuid
+    return name2uuid.get(username, NIL)
 
 class GlobalRule(object):
     """Base pre/post processing rule for item replacements, used to preserve and edit data."""
@@ -336,18 +334,18 @@ class PreserveEnchantments(GlobalRule):
                         continue
                     level = to_number(num)
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level),
-                                        'infuser': nbt.TagString(get_uuid('_Stickers1342'))})
+                                        'infuser': nbt.TagString(NIL)})
                 elif enchantment['use_number'] and enchantment['enchantment'] in lore.value:
                     level = lore.value.split(' ')[-1].split('"')[0]
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(int(level) + 1),
-                                        'infuser': nbt.TagString(get_uuid('_Stickers1342'))})
+                                        'infuser': nbt.TagString(NIL)})
                 elif enchantment['owner_prefix'] is not None and enchantment['owner_prefix'] in lore.value:
                     username = lore.value.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '').replace('"', '').replace('}', '').split(']')[0]
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
                                         'infuser': nbt.TagString(get_uuid(username))})
                 elif enchantment['enchantment'] in lore.value and enchantment['owner_prefix'] is None:
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
-                                        'infuser': nbt.TagString(get_uuid('_Stickers1342'))})
+                                        'infuser': nbt.TagString(NIL)})
 
 
     def postprocess(self, item):
