@@ -264,7 +264,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:iron_sword", "Bloodthirsty Crescent", "minecraft:iron_sword", "Putrid Maw"],
             ["minecraft:golden_boots", "Ifrit's Sandals", "minecraft:golden_boots", "Aspiration"],
             ["minecraft:iron_sword", "Glass Rapier", "minecraft:iron_sword", "Treasured Rapier"],
-            ["minecraft:golden_hoe", "Marauder's Haze", "minecraft:golden_hoe", "Marauder's Haze"],
+            ["minecraft:golden_hoe", "Spider's Crux", "minecraft:golden_hoe", "Marauder's Haze"],
             ["minecraft:wooden_sword", "Fangridian Catcrappe", "minecraft:wooden_sword", "Civit Dagger"],
             ["minecraft:stone_hoe", "Brimstone Scythe", "minecraft:stone_hoe", "Cavewalker's Scythe"],
             ["minecraft:trident", "Celsian Sarissa", "minecraft:iron_sword", "Celsian Sarissa"],
