@@ -22,7 +22,7 @@ from quarry.types import nbt
 from quarry.types.text_format import unformat_text, TextFormats, TextStyles
 
 
-NIL = uuid.UUID("00000000-0000-0000-0000-000000000000")
+NIL = "00000000-0000-0000-0000-000000000000"
 
 
 with open("/home/epic/4_SHARED/name2uuid.yml", "r") as f:
