@@ -349,6 +349,9 @@ class PreserveEnchantments(GlobalRule):
 
 
     def postprocess(self, item):
+        if len(self.tags_to_add) == 0:
+            return
+
         if not item.nbt.has_path('tag'):
             item.nbt.value['tag'] = nbt.TagCompound({})
         if not item.tag.has_path('Monumenta'):
@@ -358,16 +361,15 @@ class PreserveEnchantments(GlobalRule):
         if not item.tag.has_path('Monumenta.PlayerModified.Infusions'):
             item.tag.at_path('Monumenta.PlayerModified').value['Infusions'] = nbt.TagCompound({})
 
-        if len(self.tags_to_add) > 0:
-            for infusion_dict in self.tags_to_add:
-                enchant = infusion_dict['enchant']
-                level = infusion_dict['level']
-                infuser = infusion_dict['infuser']
-                infusion_tag = nbt.TagCompound({})
-                infusion_tag.value['Level'] = level
-                infusion_tag.value['Infuser'] = infuser
-                item.tag.at_path('Monumenta.PlayerModified.Infusions').value[
-                    enchant.replace(' ', '')] = infusion_tag
+        for infusion_dict in self.tags_to_add:
+            enchant = infusion_dict['enchant']
+            level = infusion_dict['level']
+            infuser = infusion_dict['infuser']
+            infusion_tag = nbt.TagCompound({})
+            infusion_tag.value['Level'] = level
+            infusion_tag.value['Infuser'] = infuser
+            item.tag.at_path('Monumenta.PlayerModified.Infusions').value[
+                enchant.replace(' ', '')] = infusion_tag
 
 class PreserveShattered(GlobalRule):
     name = 'Preserve Shattered'
