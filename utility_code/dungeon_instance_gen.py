@@ -69,7 +69,7 @@ if __name__ == '__main__':
             },
             "lightblue":{
                 "region":{"x":-3, "z":1},
-                "count":75,
+                "count":200,
                 "objective":"D4Access"
             },
             "yellow":{
@@ -89,7 +89,7 @@ if __name__ == '__main__':
             },
             "gray":{
                 "region":{"x":-3, "z":6},
-                "count":70,
+                "count":200,
                 "objective":"D8Access"
             },
             "lightgray":{
