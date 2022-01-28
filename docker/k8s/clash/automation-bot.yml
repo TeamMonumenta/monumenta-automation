@@ -21,9 +21,13 @@ rules:
       - "apps"
     resources:
       - deployments
+      # TODO: Don't need this?
+      - pods
     verbs:
       - list
       - patch
+      # TODO: Don't need this?
+      - update
 
 ---
 
