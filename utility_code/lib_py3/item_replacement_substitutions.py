@@ -242,7 +242,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:leather_helmet", "Scout's Visage", "minecraft:leather_helmet", "Visage of the Lost"],
             ["minecraft:crossbow", "Erix's Bloody Stream", "minecraft:crossbow", "Warforged Crossbow"],
             ["minecraft:quartz", "Render's Ruthless Claw", "minecraft:stone_scythe", "Render's Ruthless Claw"],
-            ["minecraft:pink_tulip", "Teewie's Eternal Tulip", "minecraft:white_tulip", "Eternal Bloom"],
+            ["minecraft:white_tulip", "Teewie's Eternal Tulip", "minecraft:white_tulip", "Eternal Bloom"],
             ["minecraft:stone_axe", "Annihilator", "minecraft:stone_axe", "Lunatic's Respite"],
             ["minecraft:bow", "Arcane Hailstorm", "minecraft:bow", "Xanatull's Skystorm"],
             ["minecraft:leather_leggings", "Busty's Hotter Pants", "minecraft:leather_leggings", "Sulfuric Robes"],
