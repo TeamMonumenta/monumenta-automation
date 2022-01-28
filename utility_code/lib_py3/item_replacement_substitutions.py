@@ -261,6 +261,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:iron_sword", "Jade Longsword", "minecraft:iron_sword", "True Ice Splinter"],
             ["minecraft:iron_sword", "Hell's Torment", "minecraft:iron_sword", "Amaranth Blade"],
             ["minecraft:crossbow", "Steel Arbalest", "minecraft:crossbow", "Springloaded Gadget"],
+            ["minecraft:bow", "Hoarfrost Shortbow", "minecraft:bow", "Legionis"],
             ["minecraft:iron_hoe", "Rebellious Scythe", "minecraft:iron_hoe", "Gambler's Cane"],
             ["minecraft:iron_sword", "Erisana", "minecraft:iron_sword", "Chainbreaker's Blight"],
             ["minecraft:iron_sword", "Bloodthirsty Crescent", "minecraft:iron_sword", "Putrid Maw"],
