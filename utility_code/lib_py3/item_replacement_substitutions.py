@@ -299,6 +299,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:netherite_leggings", None, "minecraft:netherite_leggings", "Netherite Leggings"],
             ["minecraft:netherite_boots", None, "minecraft:netherite_boots", "Netherite Boots"],
             ["minecraft:turtle_helmet", None, "minecraft:turtle_helmet", "Turtle Shell"],
+            ["minecraft:cobweb", "Soul Conglomerate", "minecraft:cobweb", "Twisted Soul Threads"],
         ]:
             old_id, old_name, new_id, new_name = substitution
 
