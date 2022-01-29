@@ -1,21 +1,11 @@
 import json
 import os
-import re
 import sys
 import yaml
 
-import traceback
-
 from lib_py3.common import eprint
-from lib_py3.common import jsonify_text
 from lib_py3.common import parse_name_possibly_json
 from lib_py3.common import update_plain_tag
-
-from minecraft.chunk_format.block_entity import BlockEntity
-from minecraft.chunk_format.entity import Entity
-from minecraft.player_dat_format.item import Item
-
-import requests
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
@@ -31,8 +21,8 @@ with open("/home/epic/4_SHARED/name2uuid.yml", "r") as f:
 def jsonify_text_hack(text):
     if text == "":
         return json.dumps({"text":""}, ensure_ascii=False, separators=(',', ':'))
-    elif text.startswith("§"):
-        extra = [{"bold":False,"italic":False,"underlined":False,"strikethrough":False,"obfuscated":False,"color":"light_purple","text":""}]
+    if text.startswith("§"):
+        extra = [{"bold":False, "italic":False, "underlined":False, "strikethrough":False, "obfuscated":False, "color":"light_purple", "text":""}]
         while text:
             while text.startswith("§"):
                 try:
@@ -53,26 +43,25 @@ def jsonify_text_hack(text):
                 text = text[1:]
             if text:
                 extra.append({"text":""})
-        return json.dumps({"extra":extra,"text":""}, ensure_ascii=False, separators=(',', ':'))
-    else:
-        return json.dumps({"extra":[{"text":text}],"text":""}, ensure_ascii=False, separators=(',', ':'))
+        return json.dumps({"extra":extra, "text":""}, ensure_ascii=False, separators=(',', ':'))
+
+    return json.dumps({"extra":[{"text":text}], "text":""}, ensure_ascii=False, separators=(',', ':'))
 
 def to_number(numeral):
     if numeral == 'I':
         return 1
-    elif numeral == 'II':
+    if numeral == 'II':
         return 2
-    elif numeral == 'III':
+    if numeral == 'III':
         return 3
-    elif numeral == 'IV':
+    if numeral == 'IV':
         return 4
-    else:
-        return 0
+    return 0
 
 def get_uuid(username):
     return name2uuid.get(username, NIL)
 
-class GlobalRule(object):
+class GlobalRule():
     """Base pre/post processing rule for item replacements, used to preserve and edit data."""
     # Edit this for all new objects:
     name = "Undefined global rule"
@@ -145,6 +134,10 @@ class AbortNoLore(GlobalRule):
 class PreserveArmorColor(GlobalRule):
     name = 'Preserve armor color'
 
+    def __init__(self):
+        super().__init__()
+        self.color = None
+
     def preprocess(self, template, item):
         self.color = None
         if item.nbt.has_path('tag.display.color'):
@@ -152,11 +145,11 @@ class PreserveArmorColor(GlobalRule):
 
     def postprocess(self, item):
         if item.id not in (
-            'minecraft:leather_helmet',
-            'minecraft:leather_chestplate',
-            'minecraft:leather_leggings',
-            'minecraft:leather_boots',
-            'minecraft:leather_horse_armor',
+                'minecraft:leather_helmet',
+                'minecraft:leather_chestplate',
+                'minecraft:leather_leggings',
+                'minecraft:leather_boots',
+                'minecraft:leather_horse_armor',
         ):
             # Don't preserve armor color if it's no longer leather
             return
@@ -179,6 +172,10 @@ class PreserveArmorColor(GlobalRule):
 
 class PreserveDamage(GlobalRule):
     name = 'Preserve damage'
+
+    def __init__(self):
+        super().__init__()
+        self.damage = None
 
     def preprocess(self, template, item):
         self.damage = None
@@ -205,6 +202,11 @@ class PreserveDamage(GlobalRule):
 
 class PreserveCrossbowItem(GlobalRule):
     name = 'Preserve crossbow item'
+
+    def __init__(self):
+        super().__init__()
+        self.Charged = None
+        self.ChargedProjectiles = None
 
     def preprocess(self, template, item):
         self.Charged = None
@@ -240,6 +242,10 @@ class PreserveCrossbowItem(GlobalRule):
 
 class PreserveMonumentaPlayerModifications(GlobalRule):
     name = 'Preserve player-modified tags from Monumenta'
+
+    def __init__(self):
+        super().__init__()
+        self.tag = None
 
     def preprocess(self, template, item):
         self.tag = None
@@ -309,8 +315,9 @@ class PreserveEnchantments(GlobalRule):
     )
 
     def __init__(self):
+        super().__init__()
         self.enchantment_state = []
-        self.apply = False
+        self.tags_to_add = []
 
     def preprocess(self, template, item):
         self.enchantment_state = []
@@ -334,18 +341,18 @@ class PreserveEnchantments(GlobalRule):
                         continue
                     level = to_number(num)
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level),
-                                        'infuser': nbt.TagString(NIL)})
+                                             'infuser': nbt.TagString(NIL)})
                 elif enchantment['use_number'] and enchantment['enchantment'] in lore.value:
                     level = lore.value.split(' ')[-1].split('"')[0]
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(int(level) + 1),
-                                        'infuser': nbt.TagString(NIL)})
+                                             'infuser': nbt.TagString(NIL)})
                 elif enchantment['owner_prefix'] is not None and enchantment['owner_prefix'] in lore.value:
                     username = lore.value.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '').replace('"', '').replace('}', '').split(']')[0]
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
-                                        'infuser': nbt.TagString(get_uuid(username))})
+                                             'infuser': nbt.TagString(get_uuid(username))})
                 elif enchantment['enchantment'] in lore.value and enchantment['owner_prefix'] is None:
                     self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
-                                        'infuser': nbt.TagString(NIL)})
+                                             'infuser': nbt.TagString(NIL)})
 
 
     def postprocess(self, item):
@@ -375,6 +382,10 @@ class PreserveShattered(GlobalRule):
     name = 'Preserve Shattered'
     enchantment = "§4§l* SHATTERED *"
 
+    def __init__(self):
+        super().__init__()
+        self.shattered = False
+
     def preprocess(self, template, item):
         self.shattered = False
 
@@ -399,12 +410,16 @@ class PreserveShattered(GlobalRule):
 class PreserveBlockEntityTag(GlobalRule):
     name = 'Preserve block entity tag'
 
+    def __init__(self):
+        super().__init__()
+        self.block_entity_tag = None
+
     def preprocess(self, template, item):
         self.block_entity_tag = None
         if item.nbt.has_path('tag.BlockEntityTag'):
             self.block_entity_tag = item.tag.at_path('BlockEntityTag')
 
-            if type(self.block_entity_tag) is not nbt.TagCompound:
+            if not isinstance(self.block_entity_tag, nbt.TagCompound):
                 self.block_entity_tag = None
                 eprint("Skipping invalid BlockEntityTag: " + item.nbt.to_mojangson(highlight=False))
                 return
@@ -424,6 +439,10 @@ class PreserveBlockEntityTag(GlobalRule):
 
 class PreserveTotemOfTransposing(GlobalRule):
     name = 'Preserve Totem of Transposing tags'
+
+    def __init__(self):
+        super().__init__()
+        self.channel = None
 
     def preprocess(self, template, item):
         self.channel = None
@@ -453,4 +472,3 @@ class UpdatePlainTag(GlobalRule):
 # Global rules end
 
 global_rules = GlobalRule.recursive_public_subclasses()
-
