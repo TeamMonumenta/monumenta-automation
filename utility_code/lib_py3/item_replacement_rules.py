@@ -59,7 +59,10 @@ def to_number(numeral):
     return 0
 
 def get_uuid(username):
-    return name2uuid.get(username, NIL)
+    retval = name2uuid.get(username, NIL)
+    if retval == NIL:
+        eprint(f"Failed to look up uuid for '{username}'")
+    return retval
 
 class GlobalRule():
     """Base pre/post processing rule for item replacements, used to preserve and edit data."""
