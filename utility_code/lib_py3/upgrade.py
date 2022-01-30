@@ -126,6 +126,9 @@ def upgrade_attributes(attributes_nbt: TagCompound, regenerateUUIDs = False) -> 
             mod = attribute.at_path("AttributeName")
             mod.value = translate_attribute_name(mod.value)
 
+        if attribute.has_path("Name") and attribute.has_path("UUID") and attribute.at_path("Name").value == "Dummy":
+            attribute.value["UUID"] = uuid_to_mc_uuid_tag_int_array(uuid.UUID("44dda14d-b03e-4540-5ba7-363b9def6235"))
+
         if attribute.has_path("Modifiers"):
             upgrade_attributes(attribute.at_path("Modifiers"), regenerateUUIDs=regenerateUUIDs)
 
