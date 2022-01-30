@@ -89,6 +89,9 @@ class GlobalRule():
         Should multiple subclasses need to be derived from another subclass,
         a base subclass whose name starts with '_' should be created so
         its children are returned, but not the base subclass itself.
+
+        Note that this returns classes in the order they are defined in this file, so they can
+        be re-ordered if needed
         """
         result = []
 
@@ -239,7 +242,6 @@ class PreserveCrossbowItem(GlobalRule):
             item.tag.value['ChargedProjectiles'] = self.ChargedProjectiles
 
 ### Monumenta data to preserve
-
 class PreserveMonumentaPlayerModifications(GlobalRule):
     name = 'Preserve player-modified tags from Monumenta'
 
@@ -266,7 +268,7 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
                 item.tag.value['Monumenta'] = nbt.TagCompound({})
             item.tag.at_path('Monumenta').value['PlayerModified'] = self.tag
 
-
+# TODO: Remove this PreserveEnchantments and PreserveShattered blocks below
 class PreserveEnchantments(GlobalRule):
     name = 'Preserve Enchantments'
     enchantments = (
@@ -276,9 +278,10 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Colossal', "owner_prefix": 'Reinforced by'},
         {"enchantment": 'Phylactery', "owner_prefix": 'Embalmed by'},
         {"enchantment": 'Soulbound', "owner_prefix": 'Soulbound to'},
-        {"enchantment": 'Locked', "owner_prefix": 'Locked by'},
-        {"enchantment": 'Barking', "owner_prefix": 'Barked by'},
-        {"enchantment": 'Debarking', "owner_prefix": 'Debarked by'},
+
+        {"enchantment": 'Locked'},
+        {"enchantment": 'Barking'},
+        {"enchantment": 'Debarking'},
 
         # Infusions
         {"enchantment": 'Acumen', 'use_numeral': True},
@@ -316,44 +319,48 @@ class PreserveEnchantments(GlobalRule):
 
     def __init__(self):
         super().__init__()
-        self.enchantment_state = []
         self.tags_to_add = []
 
     def preprocess(self, template, item):
-        self.enchantment_state = []
+        # Tuple("name", TagInt(level), TagString(owner_uuid))
         self.tags_to_add = []
 
         for enchantment in self.enchantments:
-            newstate = {
-                'enchantment': enchantment['enchantment'],
-                'owner_prefix': enchantment.get('owner_prefix', None),
-                'use_numeral': enchantment.get('use_numeral', False),
-                'use_number': enchantment.get('use_number', False),
-            }
+            ench_name = enchantment['enchantment']
+            ench_owner_prefix = enchantment.get('owner_prefix', None)
+            ench_use_numeral = enchantment.get('use_numeral', False)
+            ench_use_number = enchantment.get('use_number', False)
 
-            self.enchantment_state.append(newstate)
+            found = False
+            found_level = 1
+            found_owner = NIL
 
-        for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
-            for enchantment in self.enchantment_state:
-                if enchantment['use_numeral'] and enchantment['enchantment'] in lore.value:
-                    num = lore.value.split(' ')[-1].split('"')[0]
-                    if num not in ['I', 'II', 'III', 'IV']:
-                        continue
-                    level = to_number(num)
-                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(level),
-                                             'infuser': nbt.TagString(NIL)})
-                elif enchantment['use_number'] and enchantment['enchantment'] in lore.value:
-                    level = lore.value.split(' ')[-1].split('"')[0]
-                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(int(level) + 1),
-                                             'infuser': nbt.TagString(NIL)})
-                elif enchantment['owner_prefix'] is not None and enchantment['owner_prefix'] in lore.value:
+            for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
+                # This only matches lore lines containing the enchant and NOT lore lines that contain the owner prefix
+                # For example for Locked which has an owner prefix of Locked by, will match a line containing "Locked" but not "Locked by"
+                if ench_name in lore.value and (ench_owner_prefix is None or ench_owner_prefix not in lore.value):
+                    # Since this item has no owner prefix, preserve it with the default NIL owner
+                    # If ench_owner_prefix is not none, don't mark this as found yet, since it may have no owner and should be removed (i.e. Hope)
+                    if ench_owner_prefix is None:
+                        found = True
+
+                    # Parse out the level if appropriate
+                    if ench_use_numeral:
+                        num = lore.value.split(' ')[-1].split('"')[0]
+                        if num in ['I', 'II', 'III', 'IV']:
+                            found_level = to_number(num)
+                    elif ench_use_number:
+                        found_level = int(lore.value.split(' ')[-1].split('"')[0]) + 1
+
+                # This matches owner prefix lines only
+                if ench_owner_prefix is not None and ench_owner_prefix in lore.value:
+                    found = True
                     username = lore.value.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '').replace('"', '').replace('}', '').split(']')[0]
-                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
-                                             'infuser': nbt.TagString(get_uuid(username))})
-                elif enchantment['enchantment'] in lore.value and enchantment['owner_prefix'] is None:
-                    self.tags_to_add.append({'enchant': enchantment['enchantment'], 'level': nbt.TagInt(1),
-                                             'infuser': nbt.TagString(NIL)})
+                    found_owner = get_uuid(username)
 
+            # Now that all lore lines are processed, add this enchant to the list if it was found
+            if found:
+                self.tags_to_add.append((ench_name, nbt.TagInt(found_level), nbt.TagString(found_owner)))
 
     def postprocess(self, item):
         if len(self.tags_to_add) == 0:
@@ -368,13 +375,11 @@ class PreserveEnchantments(GlobalRule):
         if not item.tag.has_path('Monumenta.PlayerModified.Infusions'):
             item.tag.at_path('Monumenta.PlayerModified').value['Infusions'] = nbt.TagCompound({})
 
-        for infusion_dict in self.tags_to_add:
-            enchant = infusion_dict['enchant']
-            level = infusion_dict['level']
-            infuser = infusion_dict['infuser']
-            infusion_tag = nbt.TagCompound({})
-            infusion_tag.value['Level'] = level
-            infusion_tag.value['Infuser'] = infuser
+        for enchant, level, infuser in self.tags_to_add:
+            infusion_tag = nbt.TagCompound({
+                'Level': level,
+                'Infuser': infuser,
+            })
             item.tag.at_path('Monumenta.PlayerModified.Infusions').value[
                 enchant.replace(' ', '')] = infusion_tag
 
