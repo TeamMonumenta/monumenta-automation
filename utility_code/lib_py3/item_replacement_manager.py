@@ -69,8 +69,6 @@ class ItemReplacementManager(object):
             item.tag = nbt.TagCompound({})
 
         orig_tag_copy = item.tag.deep_copy()
-        if "Damage" in orig_tag_copy.value:
-            orig_tag_copy.value.pop("Damage")
 
         # Run preprocess rules; if one returns True, abort replacements on this item!
         for rule in self.global_rules:
@@ -95,39 +93,44 @@ class ItemReplacementManager(object):
                 eprint("This may be a CRITICAL ERROR!")
                 eprint(str(traceback.format_exc()))
 
-        # Get a copy of the newly updated item to compare with (without damage)
-        updated_tag_copy = item.tag.deep_copy()
-        if "Damage" in updated_tag_copy.value:
-            updated_tag_copy.value.pop("Damage")
-
         if item.has_tag() and len(item.tag.value) == 0:
             item.tag = None
 
-        if not orig_tag_copy.equals_exact(updated_tag_copy):
-            # Item changed
-            if log_dict is not None:
-                log_key = item_name + "  " + item_id
-                if log_key not in log_dict:
-                    log_dict[log_key] = {}
-
-                    log_dict[log_key]["NAME"] = item_name
-                    log_dict[log_key]["ID"] = item_id
-                    log_dict[log_key]["TO"] = updated_tag_copy.to_mojangson()
-                    log_dict[log_key]["FROM"] = {}
-
-                if orig_tag_copy == updated_tag_copy:
-                    orig_tag_mojangson = "<equivalent permutation>"
-                else:
-                    orig_tag_mojangson = orig_tag_copy.to_mojangson()
-
-                if orig_tag_mojangson not in log_dict[log_key]["FROM"]:
-                    log_dict[log_key]["FROM"][orig_tag_mojangson] = []
-
-                log_dict[log_key]["FROM"][orig_tag_mojangson].append(debug_path)
-            return True
-        else:
-            # Nothing actually changed
+        # Check if the tag exactly equals the original tag, including ordering
+        if orig_tag_copy.equals_exact(item.tag):
+            # Item is exactly the same, no logging or changes needed
             return False
+
+        if orig_tag_copy == item.tag:
+            # The items are functionally the same but the ordering has changed
+            # This isn't worth logging - but it is a change that requires saving the chunks
+            # So still return True to indicate something changed
+            return True
+
+        # To reduce the number of log entries, pop the Damage value off both the original and destination logged items
+        out_item_no_damage_copy = item.tag.deep_copy()
+        if "Damage" in out_item_no_damage_copy.value:
+            out_item_no_damage_copy.value.pop("Damage")
+        if "Damage" in orig_tag_copy.value:
+            orig_tag_copy.value.pop("Damage")
+
+        # Item has changed meaningfully, need to log it
+        if log_dict is not None:
+            item_log_key = item_name + " | " + item_id
+
+            # This is the block that's common for all items of this type that were nontrivially replaced
+            log_block = log_dict.setdefault(item_log_key, {})
+
+            # This is the block for this specific NBT of an item, containing all items that replaced to it
+            specific_output = log_block.setdefault(out_item_no_damage_copy.to_mojangson(), {})
+
+            # This is the list of specific locations where this item was located and replaced
+            # Note we use sort=[] to sort all keys here because the input key order really doesn't matter, and this combines entries
+            locations = specific_output.setdefault(orig_tag_copy.to_mojangson(sort=[]), [])
+
+            locations.append(debug_path)
+
+        return True
 
     @classmethod
     def merge_log_tuples(cls, log_dicts_to_merge, out_log_dict={}):
@@ -137,15 +140,16 @@ class ItemReplacementManager(object):
         num_replacements = 0
         for replacements, log_dict in log_dicts_to_merge:
             num_replacements += replacements
-            for log_key in log_dict:
-                if log_key not in out_log_dict:
-                    # Cheat and just reference the entire structure in the output
-                    out_log_dict[log_key] = log_dict[log_key]
-                else:
-                    for orig_tag_mojangson in log_dict[log_key]["FROM"]:
-                        if orig_tag_mojangson not in out_log_dict[log_key]["FROM"]:
-                            out_log_dict[log_key]["FROM"][orig_tag_mojangson] = []
+            for new_item_log_key in log_dict:
+                existing_log_block = out_log_dict.setdefault(new_item_log_key, {})
+                new_item_log_block = log_dict[new_item_log_key]
 
-                        for debug_path in log_dict[log_key]["FROM"][orig_tag_mojangson]:
-                            out_log_dict[log_key]["FROM"][orig_tag_mojangson].append(debug_path)
+                for new_specific_output_key in new_item_log_block:
+                    existing_specific_output = existing_log_block.setdefault(new_specific_output_key, {})
+                    new_specific_output = new_item_log_block[new_specific_output_key]
+
+                    for new_location_key in new_specific_output:
+                        existing_locations = existing_specific_output.setdefault(new_location_key, [])
+                        existing_locations += new_specific_output[new_location_key]
+
         return num_replacements, out_log_dict
