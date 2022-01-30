@@ -1,21 +1,14 @@
 import os
 import sys
 
-import json
-import traceback
-
 from lib_py3.common import always_equal
-from lib_py3.common import eprint
-from lib_py3.common import get_item_name_from_nbt
 from lib_py3.common import parse_name_possibly_json
-from lib_py3.common import unformat_text
 from lib_py3.common import update_plain_tag
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
-from quarry.types import nbt
 from quarry.types.text_format import unformat_text
 
-class SubstitutionRule(object):
+class SubstitutionRule():
     """Base substitution rule for item replacements, used to preserve and edit data."""
     # Edit this for all new objects:
     name = "Undefined substitution rule"
@@ -71,7 +64,7 @@ class FixBookTitles(SubstitutionRule):
 class FixBrokenSectionSymbols(SubstitutionRule):
     name = "Fix broken section symbols"
 
-    def _fix(self,old_str):
+    def _fix(self, old_str):
         return old_str.replace(chr(0xfffd), chr(0xa7))
 
     def process(self, item_meta, item):
@@ -226,7 +219,7 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:bone", "Deathchill Staff", "minecraft:stick", "Staff of the Soulseaker"],
             ["minecraft:stone_axe", "Giant's Axe", "minecraft:stone_axe", "Velara Crusher"],
             ["minecraft:stone_hoe", "Cryptkeeper's Scythe", "minecraft:stone_hoe", "Forest's Reaper"],
-            ["minecraft:stone_hoe", "Brimstone Scythe", "minecraft:stone_hoe", "Cavewalker's Scythe"],
+            ["minecraft:stone_hoe", "Brimstone Scythe", "minecraft:stone_hoe", "Cavewalker Scythe"],
             ["minecraft:stone_pickaxe", "Pebblebane", "minecraft:stone_pickaxe", "Rubblebane"],
             ["minecraft:bow", "Demonbreath", "minecraft:bow", "Screamcaller"],
             ["minecraft:crossbow", "Redstone Repeater", "minecraft:crossbow", "Callum's Spellslinger"],
@@ -299,7 +292,8 @@ class SubtituteItems(SubstitutionRule):
             ["minecraft:netherite_leggings", None, "minecraft:netherite_leggings", "Netherite Leggings"],
             ["minecraft:netherite_boots", None, "minecraft:netherite_boots", "Netherite Boots"],
             ["minecraft:turtle_helmet", None, "minecraft:turtle_helmet", "Turtle Shell"],
-        ]:
+                ]:
+
             old_id, old_name, new_id, new_name = substitution
 
             if old_id not in self.replacements:
@@ -313,7 +307,7 @@ class SubtituteItems(SubstitutionRule):
         old_name = item_meta['name']
 
         # This way around so always_equal works
-        for replaceable_id in self.replacements.keys():
+        for replaceable_id in self.replacements:
             if replaceable_id == old_id:
                 # This way around so always_equal works
                 for replaceable_name in self.replacements[replaceable_id].keys():
