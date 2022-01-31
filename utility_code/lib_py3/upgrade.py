@@ -1,5 +1,6 @@
 import sys
 import os
+import hashlib
 import uuid
 import json
 import traceback
@@ -11,9 +12,17 @@ from lib_py3.json_file import jsonFile
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 
 from quarry.types import nbt
-from quarry.types.nbt import TagCompound, TagString, TagShort
+from quarry.types.nbt import TagCompound
+from quarry.types.nbt import TagDouble
+from quarry.types.nbt import TagInt
+from quarry.types.nbt import TagList
+from quarry.types.nbt import TagShort
+from quarry.types.nbt import TagString
 from quarry.types.text_format import unformat_text
 from brigadier.string_reader import StringReader
+
+UUID4_MASK = (0xffffffffffff4fffbfffffffffffffff).to_bytes(length=16, byteorder='big')
+UUID4_SET = (0x00000000000040008000000000000000).to_bytes(length=16, byteorder='big')
 
 _single_item_locations = (
     "ArmorItem",
@@ -133,6 +142,52 @@ def upgrade_attributes(attributes_nbt: TagCompound, regenerateUUIDs = False) -> 
             upgrade_attributes(attribute.at_path("Modifiers"), regenerateUUIDs=regenerateUUIDs)
 
         upgrade_uuid_if_present(attribute, regenerateUUIDs=regenerateUUIDs)
+
+def upgrade_item_attribute_modifiers(item_id: str,
+                                     plain_name: str,
+                                     attribute_modifiers_nbt: TagList) -> None:
+    """Updates item attribute modifiers by hash.
+
+    Note that this does not work on entities, which have a slightly different data structure.
+    """
+
+    new_modifiers = []
+    for attribute in attribute_modifiers_nbt.value:
+        if not attribute.has_path("AttributeName"):
+            continue
+        if not attribute.has_path("UUID"):
+            continue
+        if not attribute.has_path("Operation"):
+            continue
+        if not attribute.has_path("Amount"):
+            continue
+
+        attr_name = attribute.at_path("AttributeName").value
+        slot = ""
+        if attribute.has_path("Slot"):
+            slot = attribute.at_path("Slot").value
+        operation = attribute.at_path("Operation").value
+        amount = attribute.at_path("Amount").value
+
+        uuid_seed = f'{item_id},{plain_name},{attr_name},{operation},{slot}'
+        bytes_of_seed = uuid_seed.encode("utf-8")
+        md = hashlib.md5()
+        md.update(bytes_of_seed)
+        digest = md.digest()
+
+        modifier_id = uuid.UUID("".join([f"{(digest[i] & UUID4_MASK[i]) | UUID4_SET[i]:02x}" for i in range(16)]))
+
+        modifier = TagCompound({})
+        modifier.value["AttributeName"] = TagString(attr_name)
+        modifier.value["Name"] = TagString(attr_name)
+        if slot != "":
+            modifier.value["Slot"] = TagString(slot)
+        modifier.value["Operation"] = TagInt(operation)
+        modifier.value["Amount"] = TagDouble(amount)
+        modifier.value["UUID"] = uuid_to_mc_uuid_tag_int_array(modifier_id)
+
+        new_modifiers.add(modifier)
+    attribute_modifiers_nbt.value = new_modifiers
 
 enchant_id_map = {
     0:"minecraft:protection",
