@@ -126,6 +126,14 @@ spec:
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
           value: {{ .Values.name }}
+        - name: "MONUMENTA_IS_PLAY"
+{{- if eq .Values.namespace "play" }}
+          value: "1"
+{{- else if eq .Values.namespace "stage" }}
+          value: "1"
+{{- else }}
+          value: "0"
+{{- end }}
 {{- if .Values.useHTTPForProbes }}
         readinessProbe:
           httpGet:
