@@ -244,7 +244,7 @@ class PreserveCrossbowItem(GlobalRule):
         if self.ChargedProjectiles is not None:
             item.tag.value['ChargedProjectiles'] = self.ChargedProjectiles
 
-### Monumenta data to preserve
+## Monumenta data to preserve
 class PreserveMonumentaPlayerModifications(GlobalRule):
     name = 'Preserve player-modified tags from Monumenta'
 
@@ -258,18 +258,21 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
             self.tag = item.tag.at_path('Monumenta.PlayerModified')
 
     def postprocess(self, item):
-        if self.tag is None:
-            if item.nbt.has_path('tag.Monumenta.PlayerModified'):
-                monumenta_tag = item.nbt.tag.at_path('Monumenta')
-                monumenta_tag.value.pop('PlayerModified')
-                if len(monumenta_tag.value) == 0:
-                    monumenta_tag = item.nbt.tag.value.pop('Monumenta')
-        else:
+        if self.tag is not None:
             if not item.nbt.has_path('tag'):
                 item.nbt.value['tag'] = nbt.TagCompound({})
             if not item.tag.has_path('Monumenta'):
                 item.tag.value['Monumenta'] = nbt.TagCompound({})
             item.tag.at_path('Monumenta').value['PlayerModified'] = self.tag
+
+        if item.nbt.has_path('tag.Monumenta.PlayerModified.Infusions') and len(item.nbt.at_path('tag.Monumenta.PlayerModified.Infusions').value) == 0:
+            item.tag.at_path('Monumenta.PlayerModified').value.pop('Infusions')
+
+        if item.nbt.has_path('tag.Monumenta.PlayerModified') and len(item.nbt.at_path('tag.Monumenta.PlayerModified').value) == 0:
+            item.tag.at_path('Monumenta').value.pop('PlayerModified')
+
+        if item.nbt.has_path('tag.Monumenta') and len(item.nbt.at_path('tag.Monumenta').value) == 0:
+            item.tag.value.pop('Monumenta')
 
 # TODO: Remove this PreserveEnchantments and PreserveShattered blocks below
 class PreserveEnchantments(GlobalRule):
