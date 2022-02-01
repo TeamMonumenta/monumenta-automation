@@ -15,26 +15,29 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../qu
 from quarry.types import nbt
 from quarry.types.text_format import unformat_text
 
-mgr = LootTableManager()
-mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
+def main():
+    mgr = LootTableManager()
+    mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
 
-containerlist = []
-chestcount = 0
-for item_id in mgr.item_map:
-    for item in mgr.item_map[item_id]:
-        if type(mgr.item_map[item_id][item]) is list:
-            item_nbt = mgr.item_map[item_id][item][0]["nbt"]
-        else:
-            item_nbt = mgr.item_map[item_id][item]["nbt"]
+    containerlist = []
+    chestcount = 0
+    for item_id in mgr.item_map:
+        for item in mgr.item_map[item_id]:
+            if type(mgr.item_map[item_id][item]) is list:
+                item_nbt = mgr.item_map[item_id][item][0]["nbt"]
+            else:
+                item_nbt = mgr.item_map[item_id][item]["nbt"]
 
-        item_slot = nbt.TagCompound({"Slot": nbt.TagByte(len(containerlist)), "Count": nbt.TagByte(1), "id": nbt.TagString(item_id), "tag": item_nbt})
-        containerlist.append(item_slot)
-        if len(containerlist) == 27:
-            chestcount += 1
-            print(r'''give @s chest{display:{Name:"\"''' + str(chestcount) + r'''\""},''' + nbt.TagCompound({"id": nbt.TagString("minecraft:chest"), "BlockEntityTag": nbt.TagCompound({"Items": nbt.TagList(containerlist)})}).to_mojangson()[1:])
-            containerlist = []
+            item_slot = nbt.TagCompound({"Slot": nbt.TagByte(len(containerlist)), "Count": nbt.TagByte(1), "id": nbt.TagString(item_id), "tag": item_nbt})
+            containerlist.append(item_slot)
+            if len(containerlist) == 27:
+                chestcount += 1
+                print(r'''give @s chest{display:{Name:"\"''' + str(chestcount) + r'''\""},''' + nbt.TagCompound({"id": nbt.TagString("minecraft:chest"), "BlockEntityTag": nbt.TagCompound({"Items": nbt.TagList(containerlist)})}).to_mojangson()[1:])
+                containerlist = []
 
-chestcount += 1
-print(r'''give @s chest{display:{Name:"\"''' + str(chestcount) + r'''\""},''' + nbt.TagCompound({"id": nbt.TagString("minecraft:chest"), "BlockEntityTag": nbt.TagCompound({"Items": nbt.TagList(containerlist)})}).to_mojangson()[1:])
-containerlist = []
+    chestcount += 1
+    print(r'''give @s chest{display:{Name:"\"''' + str(chestcount) + r'''\""},''' + nbt.TagCompound({"id": nbt.TagString("minecraft:chest"), "BlockEntityTag": nbt.TagCompound({"Items": nbt.TagList(containerlist)})}).to_mojangson()[1:])
+    containerlist = []
 
+if __name__ == '__main__':
+    main()
