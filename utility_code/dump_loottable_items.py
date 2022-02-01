@@ -16,6 +16,12 @@ def is_up_to_date(item_tag):
     """Returns true if an item is up to date."""
     if item_tag.has_path("Monumenta"):
         return True
+    if (
+    	not item_tag.has_path("display.Lore")
+    	and not item_tag.has_path("AttributeModifiers")
+    	and not item_tag.has_path("Enchantments")
+    ):
+        return True
     return False
 
 
