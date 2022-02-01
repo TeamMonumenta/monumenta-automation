@@ -103,7 +103,7 @@ class KubernetesManager(object):
 
             pod_name = pod.metadata.name
             for deployment_name in result:
-                if deployment_name in pod_name:
+                if pod_name.startswith(deployment_name):
                     result[deployment_name]["pod_name"] = pod_name
                     break
 
