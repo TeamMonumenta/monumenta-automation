@@ -219,7 +219,6 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:bone", "Deathchill Staff", "minecraft:stick", "Staff of the Soulseaker"],
                 ["minecraft:stone_axe", "Giant's Axe", "minecraft:stone_axe", "Velara Crusher"],
                 ["minecraft:stone_hoe", "Cryptkeeper's Scythe", "minecraft:stone_hoe", "Forest's Reaper"],
-                ["minecraft:stone_hoe", "Brimstone Scythe", "minecraft:stone_hoe", "Cavewalker's Scythe"],
                 ["minecraft:stone_pickaxe", "Pebblebane", "minecraft:stone_pickaxe", "Rubblebane"],
                 ["minecraft:bow", "Demonbreath", "minecraft:bow", "Screamcaller"],
                 ["minecraft:crossbow", "Redstone Repeater", "minecraft:crossbow", "Callum's Spellslinger"],
@@ -261,12 +260,12 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:golden_boots", "Ifrit's Sandals", "minecraft:golden_boots", "Aspiration"],
                 ["minecraft:iron_sword", "Glass Rapier", "minecraft:iron_sword", "Treasured Rapier"],
                 ["minecraft:golden_hoe", "Spider's Crux", "minecraft:golden_hoe", "Marauder's Haze"],
-                ["minecraft:wooden_sword", "Fangridian Cattcrappe", "minecraft:wooden_sword", "Civit Dagger"],
-                ["minecraft:stone_hoe", "Brimstone Scythe", "minecraft:stone_hoe", "Cavewalker's Scythe"],
+                ["minecraft:stone_sword", "Fangridian Cattcrappe", "minecraft:wooden_sword", "Civit Dagger"],
+                ["minecraft:stone_hoe", "Brimstone Scythe", "minecraft:stone_hoe", "Cavewalker Scythe"],
                 ["minecraft:trident", "Celsian Sarissa", "minecraft:iron_sword", "Celsian Sarissa"],
                 ["minecraft:trident", "Thalassic Lance", "minecraft:iron_sword", "Thalassic Lance"],
                 ["minecraft:shield", "Tlaxia's Bulwark", "minecraft:shield", "Soulspoiler's Bulwark"],
-                ["minecraft:leather_boots", "Shadowborn Boots", "minecraft:leather_boots", "Grovewalker's Sandals"],
+                ["minecraft:leather_boots", "Shadowborn Boots", "minecraft:leather_boots", "Grovewalker Sandals"],
                 ["minecraft:leather_helmet", None, "minecraft:leather_helmet", "Leather Cap"],
                 ["minecraft:leather_chestplate", None, "minecraft:leather_chestplate", "Leather Tunic"],
                 ["minecraft:leather_leggings", None, "minecraft:leather_leggings", "Leather Pants"],
@@ -292,8 +291,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:netherite_leggings", None, "minecraft:netherite_leggings", "Netherite Leggings"],
                 ["minecraft:netherite_boots", None, "minecraft:netherite_boots", "Netherite Boots"],
                 ["minecraft:turtle_helmet", None, "minecraft:turtle_helmet", "Turtle Shell"],
-                ["minecraft:cobweb", "Soul Conglomerate", "minecraft:cobweb", "Twisted Soul Threads"],
         ]:
+
             old_id, old_name, new_id, new_name = substitution
 
             if old_id not in self.replacements:
