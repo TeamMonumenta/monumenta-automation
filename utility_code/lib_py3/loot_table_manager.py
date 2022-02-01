@@ -238,9 +238,15 @@ class LootTableManager(object):
         if item_id in self.item_map:
             if item_name in self.item_map[item_id]:
                 # DUPLICATE! This name / item id already exists
-                if type(self.item_map[item_id][item_name]) is list:
+                if generated:
+                    # Generated items take lower priority than existing items
+                    pass
+                elif type(self.item_map[item_id][item_name]) is list:
                     # If already a list, add this to that list
                     self.item_map[item_id][item_name].append(new_entry)
+                elif self.item_map[item_id][item_name]["generated"]:
+                    # Old entry was generated, override
+                    self.item_map[item_id][item_name] = new_entry
                 else:
                     # If not a list, make a list
                     self.item_map[item_id][item_name] = [self.item_map[item_id][item_name], new_entry]
