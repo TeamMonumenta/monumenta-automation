@@ -228,11 +228,13 @@ class LootTableManager(object):
             if item_id in interchangeable_id_set:
                 found_in_interchangeable_set = True
                 for interchangeable_id in interchangeable_id_set:
-                    self.register_loot_table_item(interchangeable_id, item_name, new_entry)
+                    self.register_loot_table_item(interchangeable_id, item_name, new_entry, generated=True)
         if not found_in_interchangeable_set:
             self.register_loot_table_item(item_id, item_name, new_entry)
 
-    def register_loot_table_item(self, item_id, item_name, new_entry):
+    def register_loot_table_item(self, item_id, item_name, new_entry, generated=False):
+        new_entry = dict(new_entry)
+        new_entry["generated"] = generated
         if item_id in self.item_map:
             if item_name in self.item_map[item_id]:
                 # DUPLICATE! This name / item id already exists
