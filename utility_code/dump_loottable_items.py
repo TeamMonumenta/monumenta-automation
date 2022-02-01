@@ -26,7 +26,7 @@ def is_up_to_date(item_id, plain_name, item_tag):
 
 def main():
     arg_parser = argparse.ArgumentParser(description=__doc__)
-    arg_parser.add_argument('--unupdated')
+    arg_parser.add_argument('--unupdated', action='store_true')
     args = arg_parser.parse_args()
 
     mgr = LootTableManager()
