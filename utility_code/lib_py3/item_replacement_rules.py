@@ -4,14 +4,11 @@ import sys
 import yaml
 
 from lib_py3.common import eprint
-from lib_py3.common import parse_name_possibly_json
 from lib_py3.common import update_plain_tag
-from lib_py3.common import json_text_to_plain_text
-from lib_py3.common import NON_PLAIN_REGEX
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
-from quarry.types.text_format import unformat_text, TextFormats, TextStyles
+from quarry.types.text_format import TextFormats, TextStyles
 
 
 NIL = "00000000-0000-0000-0000-000000000000"
@@ -275,160 +272,6 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
 
         if item.nbt.has_path('tag.Monumenta') and len(item.nbt.at_path('tag.Monumenta').value) == 0:
             item.tag.value.pop('Monumenta')
-
-# TODO: Remove this PreserveEnchantments and PreserveShattered blocks below
-class PreserveEnchantments(GlobalRule):
-    name = 'Preserve Enchantments'
-    enchantments = (
-        {"enchantment": 'Hope', "owner_prefix": 'Infused by'},
-        {"enchantment": 'Gilded', "owner_prefix": 'Gilded by'},
-        {"enchantment": 'Festive', "owner_prefix": 'Decorated by'},
-        {"enchantment": 'Colossal', "owner_prefix": 'Reinforced by'},
-        {"enchantment": 'Phylactery', "owner_prefix": 'Embalmed by'},
-        {"enchantment": 'Soulbound', "owner_prefix": '* Soulbound to'},
-
-        {"enchantment": 'Locked'},
-        {"enchantment": 'Barking'},
-        {"enchantment": 'Debarking'},
-
-        # Infusions
-        {"enchantment": 'Acumen', 'use_numeral': True},
-        {"enchantment": 'Focus', 'use_numeral': True},
-        {"enchantment": 'Perspicacity', 'use_numeral': True},
-        {"enchantment": 'Tenacity', 'use_numeral': True},
-        {"enchantment": 'Vigor', 'use_numeral': True},
-        {"enchantment": 'Vitality', 'use_numeral': True},
-
-        {"enchantment": 'Pennate', 'use_numeral': True},
-        {"enchantment": 'Carapace', 'use_numeral': True},
-        {"enchantment": 'Aura', 'use_numeral': True},
-        {"enchantment": 'Expedite', 'use_numeral': True},
-        {"enchantment": 'Choler', 'use_numeral': True},
-        {"enchantment": 'Usurper', 'use_numeral': True},
-        {"enchantment": 'Empowered', 'use_numeral': True},
-        {"enchantment": 'Nutriment', 'use_numeral': True},
-        {"enchantment": 'Execution', 'use_numeral': True},
-        {"enchantment": 'Reflection', 'use_numeral': True},
-        {"enchantment": 'Mitosis', 'use_numeral': True},
-        {"enchantment": 'Ardor', 'use_numeral': True},
-        {"enchantment": 'Epoch', 'use_numeral': True},
-        {"enchantment": 'Natant', 'use_numeral': True},
-        {"enchantment": 'Understanding', 'use_numeral': True},
-
-        # Stat tracking
-        {"enchantment": 'Stat Track', "owner_prefix": 'Tracked by'},
-        {"enchantment": 'Mob Kills', 'use_number': True},
-        {"enchantment": 'Spawners Broken', 'use_number': True},
-        {"enchantment": 'Times Consumed', 'use_number': True},
-        {"enchantment": 'Blocks Placed', 'use_number': True},
-        {"enchantment": 'Melee Damage Dealt', 'use_number': True},
-        {"enchantment": 'Boss Damage Dealt', 'use_number': True},
-    )
-
-    def __init__(self):
-        super().__init__()
-        self.tags_to_add = []
-
-    def preprocess(self, template, item):
-        # Tuple("name", TagInt(level), TagString(owner_uuid))
-        self.tags_to_add = []
-
-        for enchantment in self.enchantments:
-            ench_name = enchantment['enchantment']
-            ench_owner_prefix = enchantment.get('owner_prefix', None)
-            ench_use_numeral = enchantment.get('use_numeral', False)
-            ench_use_number = enchantment.get('use_number', False)
-
-            found = False
-            found_level = 1
-            found_owner = NIL
-
-            for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
-                # This only matches lore lines containing the enchant and NOT lore lines that contain the owner prefix
-                # For example for Locked which has an owner prefix of Locked by, will match a line containing "Locked" but not "Locked by"
-
-                try:
-                    plain_str = parse_name_possibly_json(lore.value, remove_color=True)
-                    plain_str = NON_PLAIN_REGEX.sub('', plain_str).strip()
-                except Exception as ex:
-                    eprint(f"Failed to parse '{lore.value}' to plain text")
-
-                    # No good option but to keep going
-                    plain_str = lore.value
-
-                if plain_str.startswith(ench_name) and (ench_owner_prefix is None or not plain_str.startswith(ench_owner_prefix)):
-                    # Since this item has no owner prefix, preserve it with the default NIL owner
-                    # If ench_owner_prefix is not none, don't mark this as found yet, since it may have no owner and should be removed (i.e. Hope)
-                    if ench_owner_prefix is None:
-                        found = True
-
-                    # Parse out the level if appropriate
-                    if ench_use_numeral:
-                        num = lore.value.split(' ')[-1].split('"')[0]
-                        if num in ['I', 'II', 'III', 'IV']:
-                            found_level = to_number(num)
-                    elif ench_use_number:
-                        found_level = int(lore.value.split(' ')[-1].split('"')[0]) + 1
-
-                # This matches owner prefix lines only
-                if ench_owner_prefix is not None and plain_str.startswith(ench_owner_prefix):
-                    found = True
-                    username = lore.value.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '').replace('"', '').replace('}', '').split(']')[0]
-                    found_owner = get_uuid(username)
-
-            # Now that all lore lines are processed, add this enchant to the list if it was found
-            if found:
-                self.tags_to_add.append((ench_name, nbt.TagInt(found_level), nbt.TagString(found_owner)))
-
-    def postprocess(self, item):
-        if len(self.tags_to_add) == 0:
-            return
-
-        if not item.nbt.has_path('tag'):
-            item.nbt.value['tag'] = nbt.TagCompound({})
-        if not item.tag.has_path('Monumenta'):
-            item.tag.value['Monumenta'] = nbt.TagCompound({})
-        if not item.tag.has_path('Monumenta.PlayerModified'):
-            item.tag.at_path('Monumenta').value['PlayerModified'] = nbt.TagCompound({})
-        if not item.tag.has_path('Monumenta.PlayerModified.Infusions'):
-            item.tag.at_path('Monumenta.PlayerModified').value['Infusions'] = nbt.TagCompound({})
-
-        for enchant, level, infuser in self.tags_to_add:
-            infusion_tag = nbt.TagCompound({
-                'Level': level,
-                'Infuser': infuser,
-            })
-            item.tag.at_path('Monumenta.PlayerModified.Infusions').value[
-                enchant.replace(' ', '')] = infusion_tag
-
-class PreserveShattered(GlobalRule):
-    name = 'Preserve Shattered'
-    enchantment = "§4§l* SHATTERED *"
-
-    def __init__(self):
-        super().__init__()
-        self.shattered = False
-
-    def preprocess(self, template, item):
-        self.shattered = False
-
-        for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
-            if unformat_text(parse_name_possibly_json(lore.value)) == unformat_text(self.enchantment):
-                self.shattered = True
-                return
-
-    def postprocess(self, item):
-        if self.shattered:
-            if not item.nbt.has_path('tag'):
-                item.nbt.value['tag'] = nbt.TagCompound({})
-            if not item.tag.has_path('Monumenta'):
-                item.tag.value['Monumenta'] = nbt.TagCompound({})
-            if not item.tag.has_path('Monumenta.PlayerModified'):
-                item.tag.at_path('Monumenta').value['PlayerModified'] = nbt.TagCompound({})
-            if not item.tag.has_path('Monumenta.PlayerModified.Shattered'):
-                item.tag.at_path('Monumenta.PlayerModified').value['Shattered'] = nbt.TagCompound({})
-
-            item.tag.at_path('Monumenta.PlayerModified.Shattered').value['Shattered'] = nbt.TagInt(1)
 
 class PreserveBlockEntityTag(GlobalRule):
     name = 'Preserve block entity tag'
