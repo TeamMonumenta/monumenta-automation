@@ -6,6 +6,8 @@ import yaml
 from lib_py3.common import eprint
 from lib_py3.common import parse_name_possibly_json
 from lib_py3.common import update_plain_tag
+from lib_py3.common import json_text_to_plain_text
+from lib_py3.common import NON_PLAIN_REGEX
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
@@ -283,7 +285,7 @@ class PreserveEnchantments(GlobalRule):
         {"enchantment": 'Festive', "owner_prefix": 'Decorated by'},
         {"enchantment": 'Colossal', "owner_prefix": 'Reinforced by'},
         {"enchantment": 'Phylactery', "owner_prefix": 'Embalmed by'},
-        {"enchantment": 'Soulbound', "owner_prefix": 'Soulbound to'},
+        {"enchantment": 'Soulbound', "owner_prefix": '* Soulbound to'},
 
         {"enchantment": 'Locked'},
         {"enchantment": 'Barking'},
@@ -344,7 +346,17 @@ class PreserveEnchantments(GlobalRule):
             for lore in item.nbt.iter_multipath('tag.display.Lore[]'):
                 # This only matches lore lines containing the enchant and NOT lore lines that contain the owner prefix
                 # For example for Locked which has an owner prefix of Locked by, will match a line containing "Locked" but not "Locked by"
-                if ench_name in lore.value and (ench_owner_prefix is None or ench_owner_prefix not in lore.value):
+
+                try:
+                    plain_str = parse_name_possibly_json(lore.value, remove_color=True)
+                    plain_str = NON_PLAIN_REGEX.sub('', plain_str).strip()
+                except Exception as ex:
+                    eprint(f"Failed to parse '{lore.value}' to plain text")
+
+                    # No good option but to keep going
+                    plain_str = lore.value
+
+                if plain_str.startswith(ench_name) and (ench_owner_prefix is None or not plain_str.startswith(ench_owner_prefix)):
                     # Since this item has no owner prefix, preserve it with the default NIL owner
                     # If ench_owner_prefix is not none, don't mark this as found yet, since it may have no owner and should be removed (i.e. Hope)
                     if ench_owner_prefix is None:
@@ -359,7 +371,7 @@ class PreserveEnchantments(GlobalRule):
                         found_level = int(lore.value.split(' ')[-1].split('"')[0]) + 1
 
                 # This matches owner prefix lines only
-                if ench_owner_prefix is not None and ench_owner_prefix in lore.value:
+                if ench_owner_prefix is not None and plain_str.startswith(ench_owner_prefix):
                     found = True
                     username = lore.value.split(enchantment['owner_prefix'])[-1].replace(' ', '').replace('*', '').replace(')', '').replace('"', '').replace('}', '').split(']')[0]
                     found_owner = get_uuid(username)
