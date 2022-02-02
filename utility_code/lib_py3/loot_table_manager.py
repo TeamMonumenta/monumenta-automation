@@ -3,7 +3,6 @@ import sys
 import traceback
 import json
 import re
-from collections import OrderedDict
 
 from lib_py3.json_file import jsonFile
 from lib_py3.common import eprint
@@ -75,22 +74,22 @@ class LootTableManager(object):
         """
         Autoformats a single json file
         """
-        if not type(loot_table) is OrderedDict:
-            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if not isinstance(loot_table, dict):
+            raise TypeError('loot_table is type {}, not instance of dict'.format(type(loot_table)))
         if "pools" not in loot_table:
             return
-        if not type(loot_table["pools"]) is list:
-            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        if not isinstance(loot_table["pools"], list):
+            raise TypeError('loot_table["pools"] is type {}, not instance of list'.format(type(loot_table["pools"])))
         for pool in loot_table["pools"]:
-            if not type(pool) is OrderedDict:
-                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if not isinstance(pool, dict):
+                raise TypeError('pool is type {}, not instance of dict'.format(type(pool)))
             if "entries" not in pool:
                 continue
-            if not type(pool["entries"]) is list:
-                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            if not isinstance(pool["entries"], list):
+                raise TypeError('pool["entries"] is type {}, not instance of list'.format(type(pool["entries"])))
             for entry in pool["entries"]:
-                if not type(entry) is OrderedDict:
-                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if not isinstance(entry, dict):
+                    raise TypeError('entry is type {}, not instance of dict'.format(type(entry)))
                 if "type" not in entry:
                     continue
                 if entry["type"] == "item":
@@ -111,11 +110,11 @@ class LootTableManager(object):
 
                     if "functions" not in entry:
                         continue
-                    if not type(entry["functions"]) is list:
-                        raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+                    if not isinstance(entry["functions"], list):
+                        raise TypeError('entry["functions"] is type {}, not instance of list'.format(type(entry["functions"])))
                     for function in entry["functions"]:
-                        if not type(function) is OrderedDict:
-                            raise TypeError('function is type {}, not type dict'.format(type(function)))
+                        if not isinstance(function, dict):
+                            raise TypeError('function is type {}, not instance of dict'.format(type(function)))
                         if "function" not in function:
                             continue
                         function_type = function["function"]
@@ -171,7 +170,7 @@ class LootTableManager(object):
 
                     try:
                         json_file = jsonFile(filename)
-                        if type(json_file.dict) is OrderedDict and "pools" in json_file.dict:
+                        if isinstance(json_file.dict, dict) and "pools" in json_file.dict:
                             # This is probably a loot table - no other json files have "pools" at the top level
                             self.fixup_loot_table(filename, json_file.dict)
 
@@ -198,12 +197,12 @@ class LootTableManager(object):
         item_id = entry["name"]
         if "functions" not in entry:
             return
-        if not type(entry["functions"]) is list:
-            raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+        if not isinstance(entry["functions"], list):
+            raise TypeError('entry["functions"] is type {}, not instance of list'.format(type(entry["functions"])))
         item_name = None
         for function in entry["functions"]:
-            if not type(function) is OrderedDict:
-                raise TypeError('function is type {}, not type dict'.format(type(function)))
+            if not isinstance(function, dict):
+                raise TypeError('function is type {}, not instance of dict'.format(type(function)))
             if "function" not in function:
                 raise KeyError("functions entry is missing 'function' key")
             function_type = function["function"]
@@ -241,7 +240,7 @@ class LootTableManager(object):
                 if generated:
                     # Generated items take lower priority than existing items
                     pass
-                elif type(self.item_map[item_id][item_name]) is list:
+                elif isinstance(self.item_map[item_id][item_name], list):
                     # If already a list, add this to that list
                     self.item_map[item_id][item_name].append(new_entry)
                 elif self.item_map[item_id][item_name]["generated"]:
@@ -276,7 +275,7 @@ class LootTableManager(object):
         if table_path in self.table_map:
             if location_type in self.table_map[table_path]:
                 # This table name already exists somewhere in the loot tables
-                if type(self.table_map[table_path][location_type]) is list:
+                if isinstance(self.table_map[table_path][location_type], list):
                     # If already a list, add this to that list
                     self.table_map[table_path][location_type].append(ref_obj)
                 else:
@@ -298,29 +297,29 @@ class LootTableManager(object):
         Loads a single file into the manager
         """
         loot_table = jsonFile(filename).dict
-        if not type(loot_table) is OrderedDict:
-            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if not isinstance(loot_table, dict):
+            raise TypeError('loot_table is type {}, not instance of dict'.format(type(loot_table)))
         if len(loot_table) == 0:
             # Nothing to do
             return
         if "pools" not in loot_table:
             return
-        if not type(loot_table["pools"]) is list:
-            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        if not isinstance(loot_table["pools"], list):
+            raise TypeError('loot_table["pools"] is type {}, not instance of list'.format(type(loot_table["pools"])))
 
         # Add a reference to the loot table to later test that references to it are valid
         self.add_loot_table_reference(self.to_namespaced_path(filename), None, filename)
 
         for pool in loot_table["pools"]:
-            if not type(pool) is OrderedDict:
-                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if not isinstance(pool, dict):
+                raise TypeError('pool is type {}, not instance of dict'.format(type(pool)))
             if "entries" not in pool:
                 continue
-            if not type(pool["entries"]) is list:
-                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            if not isinstance(pool["entries"], list):
+                raise TypeError('pool["entries"] is type {}, not instance of list'.format(type(pool["entries"])))
             for entry in pool["entries"]:
-                if not type(entry) is OrderedDict:
-                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if not isinstance(entry, dict):
+                    raise TypeError('entry is type {}, not instance of dict'.format(type(entry)))
                 if "type" not in entry:
                     continue
                 if entry["type"] == "item":
@@ -382,10 +381,10 @@ class LootTableManager(object):
     #
 
     def load_scripted_quests_recursive(self, filename, element):
-        if type(element) is list:
+        if isinstance(element, list):
             for el in element:
                 self.load_scripted_quests_recursive(filename, el)
-        elif type(element) is OrderedDict:
+        elif isinstance(element, dict):
             for el in element:
                 if el == "command":
                     self.load_command(element[el], "scripted_quests", filename)
@@ -425,10 +424,10 @@ class LootTableManager(object):
         """
         Recursively processes quests json replacing loot table path if appropriate
         """
-        if type(element) is list:
+        if isinstance(element, list):
             for el in element:
                 self.update_table_link_in_quest_recursive(filename, el, old_namespaced_path, new_namespaced_path)
-        elif type(element) is OrderedDict:
+        elif isinstance(element, dict):
             for el in element:
                 if el == "command":
                     element[el] = self.update_table_link_in_command(element[el], old_namespaced_path, new_namespaced_path)
@@ -465,17 +464,17 @@ class LootTableManager(object):
         """
         advancements = jsonFile(filename).dict
 
-        if not type(advancements) is OrderedDict:
-            raise TypeError('advancements is type {}, not type dict'.format(type(advancements)))
+        if not isinstance(advancements, dict):
+            raise TypeError('advancements is type {}, not instance of dict'.format(type(advancements)))
         if "rewards" not in advancements:
             return
-        if not type(advancements["rewards"]) is OrderedDict:
-            raise TypeError('advancements["rewards"] is type {}, not a dictionary'.format(type(advancements["rewards"])))
+        if not isinstance(advancements["rewards"], dict):
+            raise TypeError('advancements["rewards"] is type {}, not instance of dict'.format(type(advancements["rewards"])))
 
         if "loot" not in advancements["rewards"]:
             return
-        if not type(advancements["rewards"]["loot"]) is list:
-            raise TypeError('advancements["rewards"]["loot"] is type {}, not list'.format(type(advancements["rewards"]["loot"])))
+        if not isinstance(advancements["rewards"]["loot"], list):
+            raise TypeError('advancements["rewards"]["loot"] is type {}, not instance of list'.format(type(advancements["rewards"]["loot"])))
 
         for loot_table in advancements["rewards"]["loot"]:
             self.add_loot_table_reference(loot_table, "advancements", filename)
@@ -686,22 +685,22 @@ class LootTableManager(object):
         json_file = jsonFile(filename)
         loot_table = json_file.dict
 
-        if not type(loot_table) is OrderedDict:
-            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if not isinstance(loot_table, dict):
+            raise TypeError('loot_table is type {}, not instance of dict'.format(type(loot_table)))
         if "pools" not in loot_table:
             return
-        if not type(loot_table["pools"]) is list:
-            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        if not isinstance(loot_table["pools"], list):
+            raise TypeError('loot_table["pools"] is type {}, not instance of list'.format(type(loot_table["pools"])))
         for pool in loot_table["pools"]:
-            if not type(pool) is OrderedDict:
-                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if not isinstance(pool, dict):
+                raise TypeError('pool is type {}, not instance of dict'.format(type(pool)))
             if "entries" not in pool:
                 continue
-            if not type(pool["entries"]) is list:
-                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            if not isinstance(pool["entries"], list):
+                raise TypeError('pool["entries"] is type {}, not instance of list'.format(type(pool["entries"])))
             for entry in pool["entries"]:
-                if not type(entry) is OrderedDict:
-                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if not isinstance(entry, dict):
+                    raise TypeError('entry is type {}, not instance of dict'.format(type(entry)))
                 if "type" not in entry:
                     continue
                 if entry["type"] == "item":
@@ -710,12 +709,12 @@ class LootTableManager(object):
                     item_id = entry["name"]
                     if "functions" not in entry:
                         continue
-                    if not type(entry["functions"]) is list:
-                        raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+                    if not isinstance(entry["functions"], list):
+                        raise TypeError('entry["functions"] is type {}, not instance of list'.format(type(entry["functions"])))
                     item_name = None
                     for function in entry["functions"]:
-                        if not type(function) is OrderedDict:
-                            raise TypeError('function is type {}, not type dict'.format(type(function)))
+                        if not isinstance(function, dict):
+                            raise TypeError('function is type {}, not instance of dict'.format(type(function)))
                         if "function" not in function:
                             continue
                         function_type = function["function"]
@@ -754,7 +753,7 @@ class LootTableManager(object):
 
         # Get a list of all the occurrences for iterating
         match_list = []
-        if type(self.item_map[item_id][item_name]) is list:
+        if isinstance(self.item_map[item_id][item_name], list):
             match_list = self.item_map[item_id][item_name]
         else:
             match_list.append(self.item_map[item_id][item_name])
@@ -776,22 +775,22 @@ class LootTableManager(object):
         json_file = jsonFile(filename)
         loot_table = json_file.dict
 
-        if not type(loot_table) is OrderedDict:
-            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if not isinstance(loot_table, dict):
+            raise TypeError('loot_table is type {}, not instance of dict'.format(type(loot_table)))
         if "pools" not in loot_table:
             return
-        if not type(loot_table["pools"]) is list:
-            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        if not isinstance(loot_table["pools"], list):
+            raise TypeError('loot_table["pools"] is type {}, not instance of list'.format(type(loot_table["pools"])))
         for pool in loot_table["pools"]:
-            if not type(pool) is OrderedDict:
-                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if not isinstance(pool, dict):
+                raise TypeError('pool is type {}, not instance of dict'.format(type(pool)))
             if "entries" not in pool:
                 continue
-            if not type(pool["entries"]) is list:
-                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            if not isinstance(pool["entries"], list):
+                raise TypeError('pool["entries"] is type {}, not instance of list'.format(type(pool["entries"])))
             for entry in pool["entries"]:
-                if not type(entry) is OrderedDict:
-                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if not isinstance(entry, dict):
+                    raise TypeError('entry is type {}, not instance of dict'.format(type(entry)))
                 if "type" not in entry:
                     continue
                 if entry["type"] == "loot_table":
@@ -813,7 +812,7 @@ class LootTableManager(object):
 
         # Get a list of files where this needs updating
         update_file_list = []
-        if type(self.table_map[old_namespaced_path][label]) is list:
+        if isinstance(self.table_map[old_namespaced_path][label], list):
             update_file_list = self.table_map[old_namespaced_path][label]
         else:
             update_file_list.append(self.table_map[old_namespaced_path][label])
@@ -844,8 +843,8 @@ class LootTableManager(object):
         unique_item_map = {}
 
         for item_id in self.item_map:
-            for item_name in OrderedDict(sorted(self.item_map[item_id].items())):
-                if type(self.item_map[item_id][item_name]) is list:
+            for item_name in dict(sorted(self.item_map[item_id].items())):
+                if isinstance(self.item_map[item_id][item_name], list):
                     # DUPLICATE!
 
                     # First check if every duplicate is identical
