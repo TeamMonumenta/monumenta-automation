@@ -49,12 +49,10 @@ def main():
 
     containerlist = []
     chestcount = 0
-    for item_id in mgr.item_map:
-        for item in mgr.item_map[item_id]:
-            if isinstance(mgr.item_map[item_id][item], list):
-                entry = mgr.item_map[item_id][item][0]
-            else:
-                entry = mgr.item_map[item_id][item]
+    for item_id, sub_map in mgr.item_map.items():
+        for item_name, entry in sub_map.items():
+            if isinstance(entry, list):
+                entry = entry[0]
             if entry["generated"]:
                 # Skip generated entries
                 continue
