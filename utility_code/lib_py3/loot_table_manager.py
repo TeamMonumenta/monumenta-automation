@@ -1,3 +1,4 @@
+"""A library for managing loot tables and their items."""
 import os
 import sys
 import traceback
@@ -11,7 +12,7 @@ from lib_py3.upgrade import upgrade_entity
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 
-class LootTableManager(object):
+class LootTableManager():
     """A tool to manipulate loot tables."""
     INTERCHANGEABLE_ITEM_IDS = (
         ( # Shulker boxes
@@ -96,7 +97,7 @@ class LootTableManager(object):
                         item_id = entry["name"]
 
                     # Convert type=item tables that give air to type=empty
-                    if item_id == "minecraft:air" or item_id == "minecraft:empty":
+                    if item_id in ("minecraft:air", "minecraft:empty"):
                         entry["type"] = "empty"
                         entry.pop("name")
                         continue
@@ -124,7 +125,7 @@ class LootTableManager(object):
                             if not "epic/loot_tables/index" in filename and item_nbt.has_path('display.Name'):
                                 item_name = get_item_name_from_nbt(item_nbt)
 
-                                item_index_entry = self.item_map.get(item_id,{}).get(item_name,None)
+                                item_index_entry = self.item_map.get(item_id, {}).get(item_name, None)
                                 if item_index_entry is not None and "epic:index" in item_index_entry["namespaced_key"]:
                                     print(f'Updating item in loot table to point to index: {item_id} - {item_name} - {filename}')
 
@@ -147,10 +148,10 @@ class LootTableManager(object):
 
     def autoformat_json_files_in_directory(self, directory, indent=2):
         """Autoformats all json files in a directory."""
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".json"):
-                    filename = os.path.join(root, aFile)
+        for root, _, files in os.walk(directory):
+            for file_ in files:
+                if file_.endswith(".json"):
+                    filename = os.path.join(root, file_)
 
                     # Don't update the items index files, they are auto generated
                     if "epic/loot_tables/index" in filename:
@@ -166,8 +167,8 @@ class LootTableManager(object):
                             self.fixup_loot_table(filename, json_file.dict)
 
                         json_file.save(filename, indent=indent)
-                    except Exception as e:
-                        print(f'Failed to autoformat {filename!r} : {e}')
+                    except Exception as exception:
+                        print(f'Failed to autoformat {filename!r} : {exception}')
 
     #
     # Loot table autoformatting methods
@@ -183,6 +184,7 @@ class LootTableManager(object):
     #
 
     def load_loot_tables_item(self, filename, entry):
+        """Loads a single item from a loot table entry."""
         if "name" not in entry:
             raise KeyError("item loot table entry does not contain 'name'")
         item_id = entry["name"]
@@ -320,25 +322,26 @@ class LootTableManager(object):
 
     def load_loot_tables_directory(self, directory):
         """Loads all json files in a directory into the manager."""
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".json"):
-                    filename = os.path.join(root, aFile)
+        for root, _, files in os.walk(directory):
+            for file_ in files:
+                if file_.endswith(".json"):
+                    filename = os.path.join(root, file_)
                     try:
                         self.load_loot_tables_file(filename)
-                    except:
+                    except Exception:
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def load_loot_tables_subdirectories(self, directory):
         """Loads all json files in all subdirectories named "loot_tables"."""
-        for root, dirs, files in os.walk(directory):
+        for root, dirs, _ in os.walk(directory):
             for dirname in dirs:
                 if dirname == "loot_tables":
                     self.load_loot_tables_directory(os.path.join(root, dirname))
 
 
     def get_invalid_loot_table_references(self):
+        """Returns a map of loot tables that are referenced, but do not exist."""
         invalid_references = {}
         for item in self.table_map:
             if not "valid" in self.table_map[item] and item != "minecraft:empty":
@@ -364,17 +367,18 @@ class LootTableManager(object):
     #
 
     def load_scripted_quests_recursive(self, filename, element):
+        """Loads a scripted quests file, including child actions such as in clickable dialog."""
         if isinstance(element, list):
-            for el in element:
-                self.load_scripted_quests_recursive(filename, el)
+            for child_element in element:
+                self.load_scripted_quests_recursive(filename, child_element)
         elif isinstance(element, dict):
-            for el in element:
-                if el == "command":
-                    self.load_command(element[el], "scripted_quests", filename)
-                elif el == "give_loot":
-                    self._add_loot_table_reference(element[el], "scripted_quests", filename)
+            for action_key in element:
+                if action_key == "command":
+                    self.load_command(element[action_key], "scripted_quests", filename)
+                elif action_key == "give_loot":
+                    self._add_loot_table_reference(element[action_key], "scripted_quests", filename)
                 else:
-                    self.load_scripted_quests_recursive(filename, element[el])
+                    self.load_scripted_quests_recursive(filename, element[action_key])
         else:
             # Nothing interesting to do for fundamental type objects
             pass
@@ -389,33 +393,35 @@ class LootTableManager(object):
 
     def load_scripted_quests_directory(self, directory):
         """Loads all json files in all subdirectories - specifically looking for references to loot tables."""
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".json"):
-                    filename = os.path.join(root, aFile)
+        for root, _, files in os.walk(directory):
+            for file_ in files:
+                if file_.endswith(".json"):
+                    filename = os.path.join(root, file_)
                     try:
                         self.load_scripted_quests_file(filename)
-                    except:
+                    except Exception:
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def update_table_link_in_quest_recursive(self, filename, element, old_namespaced_path, new_namespaced_path):
         """Recursively processes quests json replacing loot table path if appropriate."""
         if isinstance(element, list):
-            for el in element:
-                self.update_table_link_in_quest_recursive(filename, el, old_namespaced_path, new_namespaced_path)
+            for child_element in element:
+                self.update_table_link_in_quest_recursive(filename, child_element, old_namespaced_path, new_namespaced_path)
         elif isinstance(element, dict):
-            for el in element:
-                if el == "command":
-                    element[el] = self.update_table_link_in_command(element[el], old_namespaced_path, new_namespaced_path)
-                elif el == "give_loot":
-                    if element[el] == old_namespaced_path:
-                        element[el] = new_namespaced_path
+            for action_key in element:
+                if action_key == "command":
+                    element[action_key] = self.update_table_link_in_command(filename,
+                                                                            element[action_key],
+                                                                            old_namespaced_path,
+                                                                            new_namespaced_path)
+                elif action_key == "give_loot":
+                    if element[action_key] == old_namespaced_path:
+                        element[action_key] = new_namespaced_path
                 else:
-                    self.update_table_link_in_quest_recursive(filename, element[el], old_namespaced_path, new_namespaced_path)
-        else:
-            # Nothing interesting to do for fundamental type objects
-            pass
+                    self.update_table_link_in_quest_recursive(filename, element[action_key], old_namespaced_path, new_namespaced_path)
+
+        # Nothing interesting to do for fundamental type objects
 
     def update_table_link_in_single_quests_file(self, filename, old_namespaced_path, new_namespaced_path):
         """Updates a reference to a table within a single quests file."""
@@ -454,24 +460,26 @@ class LootTableManager(object):
 
     def load_advancements_directory(self, directory):
         """Loads all json files in all subdirectories - specifically looking for references to loot tables."""
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".json"):
-                    filename = os.path.join(root, aFile)
+        for root, _, files in os.walk(directory):
+            for file_ in files:
+                if file_.endswith(".json"):
+                    filename = os.path.join(root, file_)
                     try:
                         self.load_advancements_file(filename)
-                    except:
+                    except Exception:
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def load_advancements_subdirectories(self, directory):
         """Loads all json files in all subdirectories named "advancements"."""
-        for root, dirs, files in os.walk(directory):
+        for root, dirs, _ in os.walk(directory):
             for dirname in dirs:
                 if dirname == "advancements":
                     self.load_advancements_directory(os.path.join(root, dirname))
 
-    def update_table_link_in_single_advancement(self, filename, old_namespaced_path, new_namespaced_path):
+    @staticmethod
+    def update_table_link_in_single_advancement(filename, old_namespaced_path, new_namespaced_path):
+        """Refactors a loot table path in an advancement."""
         json_file = jsonFile(filename)
         advancements = json_file.dict
 
@@ -490,7 +498,7 @@ class LootTableManager(object):
     #
 
     def load_command(self, command, source_label, ref_obj):
-
+        """Load a command into the loot table manager."""
         if "giveloottable" in command:
             #pat = re.compile(r'giveloottable (.*) "([^"]+)" *[0-9]*')
             match = re.match(r'.*giveloottable.*"(.*)" *[0-9]*', command)
@@ -510,27 +518,27 @@ class LootTableManager(object):
 
     def load_functions_directory(self, directory):
         """Loads all mcfunction files in all subdirectories - specifically looking for references to loot tables."""
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".mcfunction"):
-                    filename = os.path.join(root, aFile)
+        for root, _, files in os.walk(directory):
+            for file_ in files:
+                if file_.endswith(".mcfunction"):
+                    filename = os.path.join(root, file_)
                     try:
                         with open(filename, 'r') as fp:
                             for line in fp.readlines():
                                 self.load_command(line, "functions", filename)
-                    except:
+                    except Exception:
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def load_functions_subdirectories(self, directory):
         """Loads all mcfunction files in all subdirectories named "functions"."""
-        for root, dirs, files in os.walk(directory):
+        for root, dirs, _ in os.walk(directory):
             for dirname in dirs:
                 if dirname == "functions":
                     self.load_functions_directory(os.path.join(root, dirname))
 
     @classmethod
-    def update_table_link_in_command(cls, command, old_namespaced_path, new_namespaced_path):
+    def update_table_link_in_command(cls, ref_obj, command, old_namespaced_path, new_namespaced_path):
         """Replaces a loot table path in a command."""
         if "giveloottable" in command:
             orig_command = command
@@ -543,18 +551,18 @@ class LootTableManager(object):
 
             if command[command.rfind('"') + 1:] == old_namespaced_path:
                 return command[:command.rfind('"')] + '"' + new_namespaced_path + '"'
-            else:
-                return orig_command
+            return orig_command
 
         # This handles both mob DeathLootTable and chest/container LootTable
         return command.replace('LootTable:"' + old_namespaced_path + '"', 'LootTable:"' + new_namespaced_path + '"')
 
     @classmethod
-    def update_table_link_in_single_function(self, filename, old_namespaced_path, new_namespaced_path):
+    def update_table_link_in_single_function(cls, filename, old_namespaced_path, new_namespaced_path):
+        """Refactors a loot table path in a function."""
         output_lines = []
         with open(filename, 'r') as fp:
             for line in fp.readlines():
-                line = self.update_table_link_in_command(line, old_namespaced_path, new_namespaced_path)
+                line = cls.update_table_link_in_command(filename, line, old_namespaced_path, new_namespaced_path)
                 if line[-1] != '\n':
                     line += '\n'
 
@@ -623,7 +631,8 @@ class LootTableManager(object):
                     entity.at_path("LootTable").value = new_namespaced_path
 
             if entity.has_path("Command"):
-                entity.at_path("Command").value = self.update_table_link_in_command(entity.at_path("Command").value,
+                entity.at_path("Command").value = self.update_table_link_in_command(tile_entity_ref,
+                                                                                    entity.at_path("Command").value,
                                                                                     old_namespaced_path, new_namespaced_path)
             if entity.has_path("DeathLootTable"):
                 if entity.at_path("DeathLootTable").value == old_namespaced_path:
