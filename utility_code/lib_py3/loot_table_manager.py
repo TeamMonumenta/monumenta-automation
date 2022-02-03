@@ -1,9 +1,8 @@
+"""A library for managing loot tables and their items."""
 import os
 import sys
 import traceback
-import json
 import re
-from collections import OrderedDict
 
 from lib_py3.json_file import jsonFile
 from lib_py3.common import eprint
@@ -13,10 +12,8 @@ from lib_py3.upgrade import upgrade_entity
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 
-class LootTableManager(object):
-    """
-    A tool to manipulate loot tables
-    """
+class LootTableManager():
+    """A tool to manipulate loot tables."""
     INTERCHANGEABLE_ITEM_IDS = (
         ( # Shulker boxes
             "minecraft:shulker_box",
@@ -43,11 +40,9 @@ class LootTableManager(object):
     # Utility Functions
     #
 
-    @classmethod
-    def to_namespaced_path(cls, path):
-        """
-        Takes a filename and converts it to a loot table namespaced path (i.e. 'epic:loot/blah')
-        """
+    @staticmethod
+    def _to_namespaced_path(path):
+        """Takes a filename and converts it to a loot table namespaced path (i.e. 'epic:loot/blah')."""
         split = path.split('/')
         namespace = None
         for i in range(1, len(split)):
@@ -57,7 +52,7 @@ class LootTableManager(object):
                 break
 
         if not namespace:
-            raise ValueError("'loot_tables' not found in path {!r}".format(path))
+            raise ValueError(f'"loot_tables" not found in path {path!r}')
 
         if key.lower().endswith('.json'):
             key = key[:-5]
@@ -68,29 +63,27 @@ class LootTableManager(object):
     ####################################################################################################
 
     ####################################################################################################
-    # Loot table autoformatting class methods
+    # Loot table autoformatting methods
     #
 
     def fixup_loot_table(self, filename, loot_table):
-        """
-        Autoformats a single json file
-        """
-        if not type(loot_table) is OrderedDict:
-            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        """Autoformats a single json file."""
+        if not isinstance(loot_table, dict):
+            raise TypeError(f'loot_table is type {type(loot_table)}, not instance of dict')
         if "pools" not in loot_table:
             return
-        if not type(loot_table["pools"]) is list:
-            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        if not isinstance(loot_table["pools"], list):
+            raise TypeError(f'loot_table["pools"] is type {type(loot_table["pools"])}, not instance of list')
         for pool in loot_table["pools"]:
-            if not type(pool) is OrderedDict:
-                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if not isinstance(pool, dict):
+                raise TypeError(f'pool is type {type(pool)}, not instance of dict')
             if "entries" not in pool:
                 continue
-            if not type(pool["entries"]) is list:
-                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            if not isinstance(pool["entries"], list):
+                raise TypeError(f'pool["entries"] is type {type(pool["entries"])}, not instance of list')
             for entry in pool["entries"]:
-                if not type(entry) is OrderedDict:
-                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if not isinstance(entry, dict):
+                    raise TypeError(f'entry is type {type(entry)}, not instance of dict')
                 if "type" not in entry:
                     continue
                 if entry["type"] == "item":
@@ -104,18 +97,18 @@ class LootTableManager(object):
                         item_id = entry["name"]
 
                     # Convert type=item tables that give air to type=empty
-                    if item_id == "minecraft:air" or item_id == "minecraft:empty":
+                    if item_id in ("minecraft:air", "minecraft:empty"):
                         entry["type"] = "empty"
                         entry.pop("name")
                         continue
 
                     if "functions" not in entry:
                         continue
-                    if not type(entry["functions"]) is list:
-                        raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+                    if not isinstance(entry["functions"], list):
+                        raise TypeError(f'entry["functions"] is type {type(entry["functions"])}, not instance of list')
                     for function in entry["functions"]:
-                        if not type(function) is OrderedDict:
-                            raise TypeError('function is type {}, not type dict'.format(type(function)))
+                        if not isinstance(function, dict):
+                            raise TypeError(f'function is type {type(function)}, not instance of dict')
                         if "function" not in function:
                             continue
                         function_type = function["function"]
@@ -132,9 +125,9 @@ class LootTableManager(object):
                             if not "epic/loot_tables/index" in filename and item_nbt.has_path('display.Name'):
                                 item_name = get_item_name_from_nbt(item_nbt)
 
-                                item_index_entry = self.item_map.get(item_id,{}).get(item_name,None)
+                                item_index_entry = self.item_map.get(item_id, {}).get(item_name, None)
                                 if item_index_entry is not None and "epic:index" in item_index_entry["namespaced_key"]:
-                                    print("Updating item in loot table to point to index: {} - {} - {}".format(item_id, item_name, filename))
+                                    print(f'Updating item in loot table to point to index: {item_id} - {item_name} - {filename}')
 
                                     entry["type"] = "loot_table"
                                     entry["name"] = item_index_entry["namespaced_key"]
@@ -154,13 +147,11 @@ class LootTableManager(object):
                         continue
 
     def autoformat_json_files_in_directory(self, directory, indent=2):
-        """
-        Autoformats all json files in a directory
-        """
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".json"):
-                    filename = os.path.join(root, aFile)
+        """Autoformats all json files in a directory."""
+        for root, _, files in os.walk(directory):
+            for file_ in files:
+                if file_.endswith(".json"):
+                    filename = os.path.join(root, file_)
 
                     # Don't update the items index files, they are auto generated
                     if "epic/loot_tables/index" in filename:
@@ -171,16 +162,16 @@ class LootTableManager(object):
 
                     try:
                         json_file = jsonFile(filename)
-                        if type(json_file.dict) is OrderedDict and "pools" in json_file.dict:
+                        if isinstance(json_file.dict, dict) and "pools" in json_file.dict:
                             # This is probably a loot table - no other json files have "pools" at the top level
                             self.fixup_loot_table(filename, json_file.dict)
 
                         json_file.save(filename, indent=indent)
-                    except Exception as e:
-                        print("Failed to autoformat {!r} : {}".format(filename, e))
+                    except Exception as exception:
+                        print(f'Failed to autoformat {filename!r} : {exception}')
 
     #
-    # Loot table autoformatting class methods
+    # Loot table autoformatting methods
     ####################################################################################################
 
     def __init__(self):
@@ -193,17 +184,18 @@ class LootTableManager(object):
     #
 
     def load_loot_tables_item(self, filename, entry):
+        """Loads a single item from a loot table entry."""
         if "name" not in entry:
             raise KeyError("item loot table entry does not contain 'name'")
         item_id = entry["name"]
         if "functions" not in entry:
             return
-        if not type(entry["functions"]) is list:
-            raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+        if not isinstance(entry["functions"], list):
+            raise TypeError(f'entry["functions"] is type {type(entry["functions"])}, not instance of list')
         item_name = None
         for function in entry["functions"]:
-            if not type(function) is OrderedDict:
-                raise TypeError('function is type {}, not type dict'.format(type(function)))
+            if not isinstance(function, dict):
+                raise TypeError(f'function is type {type(function)}, not instance of dict')
             if "function" not in function:
                 raise KeyError("functions entry is missing 'function' key")
             function_type = function["function"]
@@ -221,18 +213,18 @@ class LootTableManager(object):
         new_entry = {}
         new_entry["file"] = filename
         new_entry["nbt"] = item_tag_nbt
-        new_entry["namespaced_key"] = self.to_namespaced_path(filename)
+        new_entry["namespaced_key"] = self._to_namespaced_path(filename)
 
         found_in_interchangeable_set = False
         for interchangeable_id_set in self.INTERCHANGEABLE_ITEM_IDS:
             if item_id in interchangeable_id_set:
                 found_in_interchangeable_set = True
                 for interchangeable_id in interchangeable_id_set:
-                    self.register_loot_table_item(interchangeable_id, item_name, new_entry, generated=True)
+                    self._register_loot_table_item(interchangeable_id, item_name, new_entry, generated=True)
         if not found_in_interchangeable_set:
-            self.register_loot_table_item(item_id, item_name, new_entry)
+            self._register_loot_table_item(item_id, item_name, new_entry)
 
-    def register_loot_table_item(self, item_id, item_name, new_entry, generated=False):
+    def _register_loot_table_item(self, item_id, item_name, new_entry, generated=False):
         new_entry = dict(new_entry)
         new_entry["generated"] = generated
         if item_id in self.item_map:
@@ -241,7 +233,7 @@ class LootTableManager(object):
                 if generated:
                     # Generated items take lower priority than existing items
                     pass
-                elif type(self.item_map[item_id][item_name]) is list:
+                elif isinstance(self.item_map[item_id][item_name], list):
                     # If already a list, add this to that list
                     self.item_map[item_id][item_name].append(new_entry)
                 elif self.item_map[item_id][item_name]["generated"]:
@@ -260,10 +252,8 @@ class LootTableManager(object):
             self.item_map[item_id] = {}
             self.item_map[item_id][item_name] = new_entry
 
-    def add_loot_table_reference(self, table_path, location_type, ref_obj):
-        """
-        Adds a reference to the table_map indicating where a reference to the table is
-        """
+    def _add_loot_table_reference(self, table_path, location_type, ref_obj):
+        """Adds a reference to the table_map indicating where a reference to the table is."""
         if location_type is None:
             # Not a reference, just making a note that this path exists / is valid
             if table_path in self.table_map:
@@ -276,7 +266,7 @@ class LootTableManager(object):
         if table_path in self.table_map:
             if location_type in self.table_map[table_path]:
                 # This table name already exists somewhere in the loot tables
-                if type(self.table_map[table_path][location_type]) is list:
+                if isinstance(self.table_map[table_path][location_type], list):
                     # If already a list, add this to that list
                     self.table_map[table_path][location_type].append(ref_obj)
                 else:
@@ -294,33 +284,31 @@ class LootTableManager(object):
 
 
     def load_loot_tables_file(self, filename):
-        """
-        Loads a single file into the manager
-        """
+        """Loads a single file into the manager."""
         loot_table = jsonFile(filename).dict
-        if not type(loot_table) is OrderedDict:
-            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if not isinstance(loot_table, dict):
+            raise TypeError(f'loot_table is type {type(loot_table)}, not instance of dict')
         if len(loot_table) == 0:
             # Nothing to do
             return
         if "pools" not in loot_table:
             return
-        if not type(loot_table["pools"]) is list:
-            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        if not isinstance(loot_table["pools"], list):
+            raise TypeError(f'loot_table["pools"] is type {type(loot_table["pools"])}, not instance of list')
 
         # Add a reference to the loot table to later test that references to it are valid
-        self.add_loot_table_reference(self.to_namespaced_path(filename), None, filename)
+        self._add_loot_table_reference(self._to_namespaced_path(filename), None, filename)
 
         for pool in loot_table["pools"]:
-            if not type(pool) is OrderedDict:
-                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if not isinstance(pool, dict):
+                raise TypeError(f'pool is type {type(pool)}, not instance of dict')
             if "entries" not in pool:
                 continue
-            if not type(pool["entries"]) is list:
-                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            if not isinstance(pool["entries"], list):
+                raise TypeError(f'pool["entries"] is type {type(pool["entries"])}, not instance of list')
             for entry in pool["entries"]:
-                if not type(entry) is OrderedDict:
-                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if not isinstance(entry, dict):
+                    raise TypeError(f'entry is type {type(entry)}, not instance of dict')
                 if "type" not in entry:
                     continue
                 if entry["type"] == "item":
@@ -329,34 +317,31 @@ class LootTableManager(object):
                     if "name" not in entry:
                         raise KeyError("table loot table entry does not contain 'name'")
 
-                    self.add_loot_table_reference(entry["name"], "loot_table", filename)
+                    self._add_loot_table_reference(entry["name"], "loot_table", filename)
 
 
     def load_loot_tables_directory(self, directory):
-        """
-        Loads all json files in a directory into the manager
-        """
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".json"):
-                    filename = os.path.join(root, aFile)
+        """Loads all json files in a directory into the manager."""
+        for root, _, files in os.walk(directory):
+            for file_ in files:
+                if file_.endswith(".json"):
+                    filename = os.path.join(root, file_)
                     try:
                         self.load_loot_tables_file(filename)
-                    except:
+                    except Exception:
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def load_loot_tables_subdirectories(self, directory):
-        """
-        Loads all json files in all subdirectories named "loot_tables"
-        """
-        for root, dirs, files in os.walk(directory):
+        """Loads all json files in all subdirectories named "loot_tables"."""
+        for root, dirs, _ in os.walk(directory):
             for dirname in dirs:
                 if dirname == "loot_tables":
                     self.load_loot_tables_directory(os.path.join(root, dirname))
 
 
     def get_invalid_loot_table_references(self):
+        """Returns a map of loot tables that are referenced, but do not exist."""
         invalid_references = {}
         for item in self.table_map:
             if not "valid" in self.table_map[item] and item != "minecraft:empty":
@@ -382,69 +367,64 @@ class LootTableManager(object):
     #
 
     def load_scripted_quests_recursive(self, filename, element):
-        if type(element) is list:
-            for el in element:
-                self.load_scripted_quests_recursive(filename, el)
-        elif type(element) is OrderedDict:
-            for el in element:
-                if el == "command":
-                    self.load_command(element[el], "scripted_quests", filename)
-                elif el == "give_loot":
-                    self.add_loot_table_reference(element[el], "scripted_quests", filename)
+        """Loads a scripted quests file, including child actions such as in clickable dialog."""
+        if isinstance(element, list):
+            for child_element in element:
+                self.load_scripted_quests_recursive(filename, child_element)
+        elif isinstance(element, dict):
+            for action_key in element:
+                if action_key == "command":
+                    self.load_command(element[action_key], "scripted_quests", filename)
+                elif action_key == "give_loot":
+                    self._add_loot_table_reference(element[action_key], "scripted_quests", filename)
                 else:
-                    self.load_scripted_quests_recursive(filename, element[el])
+                    self.load_scripted_quests_recursive(filename, element[action_key])
         else:
             # Nothing interesting to do for fundamental type objects
             pass
 
 
     def load_scripted_quests_file(self, filename):
-        """
-        Loads a single scripted quests file into the manager looking for references to loot tables
-        """
+        """Loads a single scripted quests file into the manager looking for references to loot tables."""
         scripted_quests_file = jsonFile(filename)
 
         self.load_scripted_quests_recursive(filename, scripted_quests_file.dict)
 
 
     def load_scripted_quests_directory(self, directory):
-        """
-        Loads all json files in all subdirectories - specifically looking for references to loot tables
-        """
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".json"):
-                    filename = os.path.join(root, aFile)
+        """Loads all json files in all subdirectories - specifically looking for references to loot tables."""
+        for root, _, files in os.walk(directory):
+            for file_ in files:
+                if file_.endswith(".json"):
+                    filename = os.path.join(root, file_)
                     try:
                         self.load_scripted_quests_file(filename)
-                    except:
+                    except Exception:
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def update_table_link_in_quest_recursive(self, filename, element, old_namespaced_path, new_namespaced_path):
-        """
-        Recursively processes quests json replacing loot table path if appropriate
-        """
-        if type(element) is list:
-            for el in element:
-                self.update_table_link_in_quest_recursive(filename, el, old_namespaced_path, new_namespaced_path)
-        elif type(element) is OrderedDict:
-            for el in element:
-                if el == "command":
-                    element[el] = self.update_table_link_in_command(element[el], old_namespaced_path, new_namespaced_path)
-                elif el == "give_loot":
-                    if element[el] == old_namespaced_path:
-                        element[el] = new_namespaced_path
+        """Recursively processes quests json replacing loot table path if appropriate."""
+        if isinstance(element, list):
+            for child_element in element:
+                self.update_table_link_in_quest_recursive(filename, child_element, old_namespaced_path, new_namespaced_path)
+        elif isinstance(element, dict):
+            for action_key in element:
+                if action_key == "command":
+                    element[action_key] = self.update_table_link_in_command(filename,
+                                                                            element[action_key],
+                                                                            old_namespaced_path,
+                                                                            new_namespaced_path)
+                elif action_key == "give_loot":
+                    if element[action_key] == old_namespaced_path:
+                        element[action_key] = new_namespaced_path
                 else:
-                    self.update_table_link_in_quest_recursive(filename, element[el], old_namespaced_path, new_namespaced_path)
-        else:
-            # Nothing interesting to do for fundamental type objects
-            pass
+                    self.update_table_link_in_quest_recursive(filename, element[action_key], old_namespaced_path, new_namespaced_path)
+
+        # Nothing interesting to do for fundamental type objects
 
     def update_table_link_in_single_quests_file(self, filename, old_namespaced_path, new_namespaced_path):
-        """
-        Updates a reference to a table within a single quests file
-        """
+        """Updates a reference to a table within a single quests file."""
         json_file = jsonFile(filename)
 
         self.update_table_link_in_quest_recursive(filename, json_file.dict, old_namespaced_path, new_namespaced_path)
@@ -460,50 +440,46 @@ class LootTableManager(object):
     #
 
     def load_advancements_file(self, filename):
-        """
-        Loads a single scripted quests file into the manager looking for references to loot tables
-        """
+        """Loads a single scripted quests file into the manager looking for references to loot tables."""
         advancements = jsonFile(filename).dict
 
-        if not type(advancements) is OrderedDict:
-            raise TypeError('advancements is type {}, not type dict'.format(type(advancements)))
+        if not isinstance(advancements, dict):
+            raise TypeError(f'advancements is type {type(advancements)}, not instance of dict')
         if "rewards" not in advancements:
             return
-        if not type(advancements["rewards"]) is OrderedDict:
-            raise TypeError('advancements["rewards"] is type {}, not a dictionary'.format(type(advancements["rewards"])))
+        if not isinstance(advancements["rewards"], dict):
+            raise TypeError(f'advancements["rewards"] is type {type(advancements["rewards"])}, not instance of dict')
 
         if "loot" not in advancements["rewards"]:
             return
-        if not type(advancements["rewards"]["loot"]) is list:
-            raise TypeError('advancements["rewards"]["loot"] is type {}, not list'.format(type(advancements["rewards"]["loot"])))
+        if not isinstance(advancements["rewards"]["loot"], list):
+            raise TypeError(f'advancements["rewards"]["loot"] is type {type(advancements["rewards"]["loot"])}, not instance of list')
 
         for loot_table in advancements["rewards"]["loot"]:
-            self.add_loot_table_reference(loot_table, "advancements", filename)
+            self._add_loot_table_reference(loot_table, "advancements", filename)
 
     def load_advancements_directory(self, directory):
-        """
-        Loads all json files in all subdirectories - specifically looking for references to loot tables
-        """
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".json"):
-                    filename = os.path.join(root, aFile)
+        """Loads all json files in all subdirectories - specifically looking for references to loot tables."""
+        for root, _, files in os.walk(directory):
+            for file_ in files:
+                if file_.endswith(".json"):
+                    filename = os.path.join(root, file_)
                     try:
                         self.load_advancements_file(filename)
-                    except:
+                    except Exception:
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def load_advancements_subdirectories(self, directory):
-        """
-        Loads all json files in all subdirectories named "advancements"
-        """
-        for root, dirs, files in os.walk(directory):
+        """Loads all json files in all subdirectories named "advancements"."""
+        for root, dirs, _ in os.walk(directory):
             for dirname in dirs:
                 if dirname == "advancements":
                     self.load_advancements_directory(os.path.join(root, dirname))
 
-    def update_table_link_in_single_advancement(self, filename, old_namespaced_path, new_namespaced_path):
+    @staticmethod
+    def update_table_link_in_single_advancement(filename, old_namespaced_path, new_namespaced_path):
+        """Refactors a loot table path in an advancement."""
         json_file = jsonFile(filename)
         advancements = json_file.dict
 
@@ -522,13 +498,13 @@ class LootTableManager(object):
     #
 
     def load_command(self, command, source_label, ref_obj):
-
+        """Load a command into the loot table manager."""
         if "giveloottable" in command:
             #pat = re.compile(r'giveloottable (.*) "([^"]+)" *[0-9]*')
             match = re.match(r'.*giveloottable.*"(.*)" *[0-9]*', command)
             if not match:
-                raise ValueError("Can't identify loot table in command: {}".format(command))
-            self.add_loot_table_reference(match.group(1), source_label, ref_obj)
+                raise ValueError(f"Can't identify loot table in command: {command}")
+            self._add_loot_table_reference(match.group(1), source_label, ref_obj)
 
         # This handles both mob DeathLootTable and chest/container LootTable
         line = command
@@ -537,62 +513,56 @@ class LootTableManager(object):
             idx = line.find(matchstr)
             line = line[idx + len(matchstr):]
             idx = line.find('"')
-            self.add_loot_table_reference(line[:idx], source_label, ref_obj)
+            self._add_loot_table_reference(line[:idx], source_label, ref_obj)
             line = line[idx:]
 
     def load_functions_directory(self, directory):
-        """
-        Loads all mcfunction files in all subdirectories - specifically looking for references to loot tables
-        """
-        for root, dirs, files in os.walk(directory):
-            for aFile in files:
-                if aFile.endswith(".mcfunction"):
-                    filename = os.path.join(root, aFile)
+        """Loads all mcfunction files in all subdirectories - specifically looking for references to loot tables."""
+        for root, _, files in os.walk(directory):
+            for file_ in files:
+                if file_.endswith(".mcfunction"):
+                    filename = os.path.join(root, file_)
                     try:
                         with open(filename, 'r') as fp:
                             for line in fp.readlines():
                                 self.load_command(line, "functions", filename)
-                    except:
+                    except Exception:
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
     def load_functions_subdirectories(self, directory):
-        """
-        Loads all mcfunction files in all subdirectories named "functions"
-        """
-        for root, dirs, files in os.walk(directory):
+        """Loads all mcfunction files in all subdirectories named "functions"."""
+        for root, dirs, _ in os.walk(directory):
             for dirname in dirs:
                 if dirname == "functions":
                     self.load_functions_directory(os.path.join(root, dirname))
 
     @classmethod
-    def update_table_link_in_command(cls, command, old_namespaced_path, new_namespaced_path):
-        """
-        Replaces a loot table path in a command
-        """
+    def update_table_link_in_command(cls, ref_obj, command, old_namespaced_path, new_namespaced_path):
+        """Replaces a loot table path in a command."""
         if "giveloottable" in command:
             orig_command = command
             command = command.strip()
             if command[-1] != '"':
-                raise ValueError('giveloottable command in {} does not end with a "'.format(ref_obj))
+                raise ValueError(f'giveloottable command in {ref_obj} does not end with a "')
             command = command[:-1]
             if not command.rfind('"'):
-                raise ValueError('giveloottable command in {} missing first "'.format(ref_obj))
+                raise ValueError(f'giveloottable command in {ref_obj} missing first "')
 
             if command[command.rfind('"') + 1:] == old_namespaced_path:
                 return command[:command.rfind('"')] + '"' + new_namespaced_path + '"'
-            else:
-                return orig_command
+            return orig_command
 
         # This handles both mob DeathLootTable and chest/container LootTable
         return command.replace('LootTable:"' + old_namespaced_path + '"', 'LootTable:"' + new_namespaced_path + '"')
 
     @classmethod
-    def update_table_link_in_single_function(self, filename, old_namespaced_path, new_namespaced_path):
+    def update_table_link_in_single_function(cls, filename, old_namespaced_path, new_namespaced_path):
+        """Refactors a loot table path in a function."""
         output_lines = []
         with open(filename, 'r') as fp:
             for line in fp.readlines():
-                line = self.update_table_link_in_command(line, old_namespaced_path, new_namespaced_path)
+                line = cls.update_table_link_in_command(filename, line, old_namespaced_path, new_namespaced_path)
                 if line[-1] != '\n':
                     line += '\n'
 
@@ -611,8 +581,8 @@ class LootTableManager(object):
     #
 
     def load_entity(self, entity):
-        """
-        Loads a single entity into the manager looking for references to loot tables
+        """Loads a single entity into the manager looking for references to loot tables
+
         If this was from a spawner, set ref_dict to the blockdata that will actually be the record entry
         """
 
@@ -625,17 +595,16 @@ class LootTableManager(object):
             ref_dict["entity_name"] = entity.nbt.at_path("CustomName").value
 
         if entity.nbt.has_path("DeathLootTable"):
-            self.add_loot_table_reference(entity.nbt.at_path("DeathLootTable").value, "world", ref_dict)
+            self._add_loot_table_reference(entity.nbt.at_path("DeathLootTable").value, "world", ref_dict)
 
         if entity.nbt.has_path("LootTable"):
-            self.add_loot_table_reference(entity.nbt.at_path("LootTable").value, "world", ref_dict)
+            self._add_loot_table_reference(entity.nbt.at_path("LootTable").value, "world", ref_dict)
 
         if entity.nbt.has_path("Command"):
             self.load_command(entity.nbt.at_path("Command").value, "world", ref_dict)
 
     def load_world(self, world):
-        """
-        Loads all loot table locations in a world
+        """Loads all loot table locations in a world
 
         These locations are loaded so far:
             tile entities
@@ -651,9 +620,7 @@ class LootTableManager(object):
 
 
     def update_table_link_in_world_entry(self, tile_entity_ref, old_namespaced_path, new_namespaced_path):
-        """
-        Updates a reference to a table in all entities and tile entities in the world that reference the old path
-        """
+        """Updates a reference to a table in all entities and tile entities in the world that reference the old path."""
 
         pos = tile_entity_ref["pos"]
         # Ask the world to find this tile entity again
@@ -664,7 +631,8 @@ class LootTableManager(object):
                     entity.at_path("LootTable").value = new_namespaced_path
 
             if entity.has_path("Command"):
-                entity.at_path("Command").value = self.update_table_link_in_command(entity.at_path("Command").value,
+                entity.at_path("Command").value = self.update_table_link_in_command(tile_entity_ref,
+                                                                                    entity.at_path("Command").value,
                                                                                     old_namespaced_path, new_namespaced_path)
             if entity.has_path("DeathLootTable"):
                 if entity.at_path("DeathLootTable").value == old_namespaced_path:
@@ -679,29 +647,28 @@ class LootTableManager(object):
     # Loot table manipulation
     #
 
-    def update_item_in_single_loot_table(self, filename, search_item_name, search_item_id, replace_item_nbt):
-        """
-        Updates an item within a single loot table
-        """
+    @staticmethod
+    def _update_item_in_single_loot_table(filename, search_item_name, search_item_id, replace_item_nbt):
+        """Updates an item within a single loot table."""
         json_file = jsonFile(filename)
         loot_table = json_file.dict
 
-        if not type(loot_table) is OrderedDict:
-            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if not isinstance(loot_table, dict):
+            raise TypeError(f'loot_table is type {type(loot_table)}, not instance of dict')
         if "pools" not in loot_table:
             return
-        if not type(loot_table["pools"]) is list:
-            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        if not isinstance(loot_table["pools"], list):
+            raise TypeError(f'loot_table["pools"] is type {type(loot_table["pools"])}, not instance of list')
         for pool in loot_table["pools"]:
-            if not type(pool) is OrderedDict:
-                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if not isinstance(pool, dict):
+                raise TypeError(f'pool is type {type(pool)}, not instance of dict')
             if "entries" not in pool:
                 continue
-            if not type(pool["entries"]) is list:
-                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            if not isinstance(pool["entries"], list):
+                raise TypeError(f'pool["entries"] is type {type(pool["entries"])}, not instance of list')
             for entry in pool["entries"]:
-                if not type(entry) is OrderedDict:
-                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if not isinstance(entry, dict):
+                    raise TypeError(f'entry is type {type(entry)}, not instance of dict')
                 if "type" not in entry:
                     continue
                 if entry["type"] == "item":
@@ -710,12 +677,12 @@ class LootTableManager(object):
                     item_id = entry["name"]
                     if "functions" not in entry:
                         continue
-                    if not type(entry["functions"]) is list:
-                        raise TypeError('entry["functions"] is type {}, not type list'.format(type(entry["functions"])))
+                    if not isinstance(entry["functions"], list):
+                        raise TypeError(f'entry["functions"] is type {type(entry["functions"])}, not instance of list')
                     item_name = None
                     for function in entry["functions"]:
-                        if not type(function) is OrderedDict:
-                            raise TypeError('function is type {}, not type dict'.format(type(function)))
+                        if not isinstance(function, dict):
+                            raise TypeError(f'function is type {type(function)}, not instance of dict')
                         if "function" not in function:
                             continue
                         function_type = function["function"]
@@ -733,9 +700,7 @@ class LootTableManager(object):
         json_file.save(filename)
 
     def update_item_in_loot_tables(self, item_id, item_nbt=None, item_nbt_str=None):
-        """
-        Updates an item within all loaded loot tables
-        """
+        """Updates an item within all loaded loot tables."""
         if item_nbt is None and item_nbt_str is None:
             raise ValueError("Either item_nbt or item_nbt_str must be specified")
 
@@ -747,14 +712,14 @@ class LootTableManager(object):
             raise ValueError("Item NBT does not have a name")
 
         if not item_id in self.item_map:
-            raise ValueError("Item id {!r} not in loot tables".format(item_id))
+            raise ValueError(f'Item id {item_id!r} not in loot tables')
 
         if not item_name in self.item_map[item_id]:
-            raise ValueError("Item id {!r} name {!r} not in loot tables".format(item_id, item_name))
+            raise ValueError(f'Item id {item_id!r} name {item_name!r} not in loot tables')
 
         # Get a list of all the occurrences for iterating
         match_list = []
-        if type(self.item_map[item_id][item_name]) is list:
+        if isinstance(self.item_map[item_id][item_name], list):
             match_list = self.item_map[item_id][item_name]
         else:
             match_list.append(self.item_map[item_id][item_name])
@@ -765,33 +730,32 @@ class LootTableManager(object):
             update_file_list.append(match["file"])
 
         for filename in update_file_list:
-            self.update_item_in_single_loot_table(filename, item_name, item_id, item_nbt)
+            self._update_item_in_single_loot_table(filename, item_name, item_id, item_nbt)
 
         return update_file_list
 
-    def update_table_link_in_single_loot_table(self, filename, old_namespaced_path, new_namespaced_path):
-        """
-        Updates a reference to a table within a single loot table
-        """
+    @staticmethod
+    def _update_table_link_in_single_loot_table(filename, old_namespaced_path, new_namespaced_path):
+        """Updates a reference to a table within a single loot table."""
         json_file = jsonFile(filename)
         loot_table = json_file.dict
 
-        if not type(loot_table) is OrderedDict:
-            raise TypeError('loot_table is type {}, not type dict'.format(type(loot_table)))
+        if not isinstance(loot_table, dict):
+            raise TypeError(f'loot_table is type {type(loot_table)}, not instance of dict')
         if "pools" not in loot_table:
             return
-        if not type(loot_table["pools"]) is list:
-            raise TypeError('loot_table["pools"] is type {}, not type list'.format(type(loot_table["pools"])))
+        if not isinstance(loot_table["pools"], list):
+            raise TypeError(f'loot_table["pools"] is type {type(loot_table["pools"])}, not instance of list')
         for pool in loot_table["pools"]:
-            if not type(pool) is OrderedDict:
-                raise TypeError('pool is type {}, not type dict'.format(type(pool)))
+            if not isinstance(pool, dict):
+                raise TypeError(f'pool is type {type(pool)}, not instance of dict')
             if "entries" not in pool:
                 continue
-            if not type(pool["entries"]) is list:
-                raise TypeError('pool["entries"] is type {}, not type list'.format(type(pool["entries"])))
+            if not isinstance(pool["entries"], list):
+                raise TypeError(f'pool["entries"] is type {type(pool["entries"])}, not instance of list')
             for entry in pool["entries"]:
-                if not type(entry) is OrderedDict:
-                    raise TypeError('entry is type {}, not type dict'.format(type(entry)))
+                if not isinstance(entry, dict):
+                    raise TypeError(f'entry is type {type(entry)}, not instance of dict')
                 if "type" not in entry:
                     continue
                 if entry["type"] == "loot_table":
@@ -803,9 +767,7 @@ class LootTableManager(object):
         json_file.save(filename)
 
     def update_table_link_in_all_of_type(self, old_namespaced_path, new_namespaced_path, label, update_function):
-        """
-        Updates all references to a table of the given label using the provided update_function
-        """
+        """Updates all references to a table of the given label using the provided update_function."""
 
         if not label in self.table_map[old_namespaced_path]:
             # Not referenced in the loot tables
@@ -813,7 +775,7 @@ class LootTableManager(object):
 
         # Get a list of files where this needs updating
         update_file_list = []
-        if type(self.table_map[old_namespaced_path][label]) is list:
+        if isinstance(self.table_map[old_namespaced_path][label], list):
             update_file_list = self.table_map[old_namespaced_path][label]
         else:
             update_file_list.append(self.table_map[old_namespaced_path][label])
@@ -822,15 +784,13 @@ class LootTableManager(object):
             update_function(filename, old_namespaced_path, new_namespaced_path)
 
     def update_table_link_everywhere(self, old_namespaced_path, new_namespaced_path):
-        """
-        Updates all references to a table everywhere loaded into this class
-        """
+        """Updates all references to a table everywhere loaded into this class."""
 
         if not old_namespaced_path in self.table_map:
             # Not referenced anywhere
             return
 
-        self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "loot_table", self.update_table_link_in_single_loot_table)
+        self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "loot_table", self._update_table_link_in_single_loot_table)
         self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "advancements", self.update_table_link_in_single_advancement)
         self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "functions", self.update_table_link_in_single_function)
         self.update_table_link_in_all_of_type(old_namespaced_path, new_namespaced_path, "scripted_quests", self.update_table_link_in_single_quests_file)
@@ -841,11 +801,12 @@ class LootTableManager(object):
     ####################################################################################################
 
     def get_unique_item_map(self, show_errors=True):
+        """Returns item_map[item_id][item_name] = entry without alternate versions."""
         unique_item_map = {}
 
         for item_id in self.item_map:
-            for item_name in OrderedDict(sorted(self.item_map[item_id].items())):
-                if type(self.item_map[item_id][item_name]) is list:
+            for item_name in dict(sorted(self.item_map[item_id].items())):
+                if isinstance(self.item_map[item_id][item_name], list):
                     # DUPLICATE!
 
                     # First check if every duplicate is identical
@@ -855,22 +816,19 @@ class LootTableManager(object):
                             # This is really bad - different loot table entries with different contents
                             different = True
 
-                    if show_errors:
-                        if different:
-                            eprint("\033[1;31m", end="")
-                            eprint("ERROR: Item {!r} type {!r} is different and duplicated in the loot tables!".format(item_name, item_id))
+                    if show_errors and different:
+                        eprint("\033[1;31m", end="")
+                        eprint(f'ERROR: Item {item_name!r} type {item_id!r} is different and duplicated in the loot tables!')
 
-                            count = 1
-                            for loc in self.item_map[item_id][item_name]:
-                                eprint(" {}: {} - {}".format(count, loc["namespaced_key"], loc["file"]))
-                                if different:
-                                    eprint("    {}".format(loc["nbt"].to_mojangson()))
+                        count = 1
+                        for loc in self.item_map[item_id][item_name]:
+                            eprint(f' {count}: {loc["namespaced_key"]} - {loc["file"]}')
+                            eprint(f'    {loc["nbt"].to_mojangson()}')
 
-                                count += 1
+                            count += 1
 
-                            if different:
-                                eprint("\033[0;0m", end="")
-                            eprint()
+                        eprint("\033[0;0m", end="")
+                        eprint()
 
                     if not item_id in unique_item_map:
                         unique_item_map[item_id] = {}
