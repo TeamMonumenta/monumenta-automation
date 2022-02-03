@@ -182,6 +182,7 @@ class LootTableManager():
     def __init__(self):
         self.item_map = {}
         self.table_map = {}
+        self.skin_map = {}
         self._world = None
 
     ####################################################################################################
@@ -230,10 +231,20 @@ class LootTableManager():
         if not found_in_interchangeable_set:
             self._register_loot_table_item(item_id, item_name, new_entry)
 
+    def _register_loot_table_item(self, item_id, item_name, new_entry, generated=False, skin_of=None):
+        """Registers an item to the item_map
 
-    def _register_loot_table_item(self, item_id, item_name, new_entry, generated=False):
+        new_entry = {"file": filename, "nbt": item_tag_nbt, "namespaced_key": namespaced_path}
+        generated = True if automatically generated from another item, else False (shulker box colors, etc)
+        skin_of = the item_name of the parent item with the same ID, or None if not a skin
+        """
+        namespaced_path = new_entry["namespaced_key"]
+        self._add_loot_table_reference(namespaced_path, "forward_reference_item", {"item_id": item_id, "item_name": item_name})
+
         new_entry = dict(new_entry)
         new_entry["generated"] = generated
+        if skin_of is not None:
+            new_entry["skin_of"] = skin_of
         if item_id in self.item_map:
             if item_name in self.item_map[item_id]:
                 # DUPLICATE! This name / item id already exists
@@ -291,6 +302,131 @@ class LootTableManager():
             self.table_map[table_path][location_type] = ref_obj
 
 
+    @staticmethod
+    def _invalidate_skin_entry(skin_entry):
+        """Marks a skin entry as invalid, freeing up unneeded data in the process"""
+        skin_entry.clear()
+        skin_entry["valid"] = False
+
+
+    @staticmethod
+    def _mark_skin_entry_valid(skin_entry):
+        """Marks a skin entry as valid, freeing up unneeded data in the process"""
+        skin_entry["valid"] = True
+        del skin_entry["functions"]
+
+
+    def _handle_skin_entry_from_loot_table(self, original_target_namespaced_path, skin_path, skin_entry, forward_target_namespaced_path):
+        """"Validates and loads a single skin from another skin if possible."""
+        # TODO HERE Just speeding things along for development
+        raise NotImplementedError("Skins of skins are not supported for now.")
+
+
+    def _handle_skin_entry_from_item(self, target_namespaced_path, skin_path, skin_entry, item_id, source_item_name):
+        """"Validates and loads a single skin from an item if possible."""
+        base_item = self.item_map.get(item_id, {}).get(source_item_name, None)
+        if base_item is None:
+            raise TypeError(f'base_item not found')
+        elif isinstance(base_item, list):
+            # Most likely just a loot table giving more than one item
+            self._invalidate_skin_entry(skin_entry)
+            return
+
+        # Make sure the original copy isn't modified
+        item_new_name = source_item_name
+        new_entry = {
+            "file": skin_path,
+            "nbt": base_item["nbt"].deep_copy(),
+            "namespaced_key": self._to_namespaced_path(skin_path),
+        }
+
+        functions = skin_entry["functions"]
+        if not isinstance(functions, list):
+            raise TypeError(f'functions is type {type(functions)}, not instance of list')
+        for function in functions:
+            if not isinstance(function, dict):
+                raise TypeError(f'function is type {type(function)}, not instance of dict')
+            if "function" not in function:
+                raise KeyError("functions entry is missing 'function' key")
+            function_type = function["function"]
+            if function_type == "set_nbt":
+                if "tag" not in function:
+                    raise KeyError('set_nbt function is missing nbt field!')
+                item_tag_patch_json = function["tag"]
+                item_tag_patch_nbt = nbt.TagCompound.from_mojangson(item_tag_patch_json)
+                item_new_name = get_item_name_from_nbt(item_tag_patch_nbt)
+                new_entry["nbt"].update(item_tag_patch_nbt)
+
+        if source_item_name == item_new_name:
+            # Most likely just a loot table giving more than one item
+            self._invalidate_skin_entry(skin_entry)
+            return
+
+        self._register_loot_table_item(item_id, item_new_name, new_entry, skin_of=source_item_name)
+        self._mark_skin_entry_valid(skin_entry)
+
+
+    def _handle_skin_entry(self, target_namespaced_path, skin_path, skin_entry):
+        """"Validates and loads a single skin if possible."""
+        target = self.table_map.get(target_namespaced_path, None)
+        if target is None or not target.get("valid", None):
+            raise KeyError(f'forward_loot_table {target_namespaced_path!r} not found')
+
+        if "forward_reference_loot_table" not in target and "forward_reference_item" not in target:
+            raise KeyError('target has neither "forward_reference_loot_table" nor "forward_reference_item" key')
+        if "forward_reference_loot_table" in target and "forward_reference_item" in target:
+            self._invalidate_skin_entry(skin_entry)
+            return
+        if "forward_reference_loot_table" in target:
+            forward_loot_table = target["forward_reference_loot_table"]
+            if isinstance(forward_loot_table, str):
+                self._handle_skin_entry_from_loot_table(target_namespaced_path,
+                                                        skin_path,
+                                                        skin_entry,
+                                                        forward_loot_table)
+                return
+            else:
+                self._invalidate_skin_entry(skin_entry)
+                return
+
+        # Forward reference item
+        forward_item_id_and_name = target["forward_reference_item"]
+        if isinstance(forward_item_id_and_name, dict):
+            keys = set(forward_item_id_and_name.keys())
+            if keys != {"item_id", "item_name"}:
+                raise KeyError('forward_item_id_and_name keys must be exactly {"item_id", "item_name"}, not ' + repr(keys))
+            self._handle_skin_entry_from_item(target_namespaced_path,
+                                              skin_path,
+                                              skin_entry,
+                                              forward_item_id_and_name["item_id"],
+                                              forward_item_id_and_name["item_name"])
+        else:
+            self._invalidate_skin_entry(skin_entry)
+            return
+
+
+    def handle_skin_map(self):
+        """Validate and load skins that were added to the work queue"""
+        while True:
+            loaded_last_pass = 0
+
+            for target_namespaced_path, sub_map in dict(self.skin_map).items():
+                for skin_path, skin_entry in dict(sub_map).items():
+                    if skin_entry["valid"] is not None:
+                        continue
+                    try:
+                        self._handle_skin_entry(target_namespaced_path, skin_path, skin_entry)
+                    except Exception:
+                        self._invalidate_skin_entry(skin_entry)
+                        eprint(f'Error parsing {skin_path!r}')
+                        eprint(str(traceback.format_exc()))
+                    if skin_entry["valid"]:
+                        loaded_last_pass += 1
+
+            if loaded_last_pass == 0:
+                break
+
+
     def load_loot_tables_file(self, filename):
         """Loads a single file into the manager."""
         loot_table = jsonFile(filename).dict
@@ -305,7 +441,8 @@ class LootTableManager():
             raise TypeError(f'loot_table["pools"] is type {type(loot_table["pools"])}, not instance of list')
 
         # Add a reference to the loot table to later test that references to it are valid
-        self._add_loot_table_reference(self._to_namespaced_path(filename), None, filename)
+        namespaced_path = self._to_namespaced_path(filename)
+        self._add_loot_table_reference(namespaced_path, None, filename)
 
         for pool in loot_table["pools"]:
             if not isinstance(pool, dict):
@@ -324,8 +461,22 @@ class LootTableManager():
                 if entry["type"] == "loot_table":
                     if "name" not in entry:
                         raise KeyError("table loot table entry does not contain 'name'")
+                    target = entry["name"]
 
-                    self._add_loot_table_reference(entry["name"], "loot_table", filename)
+                    self._add_loot_table_reference(target, "loot_table", filename)
+                    self._add_loot_table_reference(namespaced_path, "forward_reference_loot_table", target)
+
+                    if "functions" in entry:
+                        skin_entry = {"valid": None, "functions": entry["functions"]}
+
+                        if target not in self.skin_map:
+                            self.skin_map[target] = {}
+
+                        if filename not in self.skin_map[target]:
+                            self.skin_map[target][filename] = skin_entry
+                        else:
+                            # If there's more than one loot table with a function modifying it, it's probably not skins
+                            self._invalidate_skin_entry(self.skin_map[target][filename])
 
 
     def load_loot_tables_directory(self, directory):
