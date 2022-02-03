@@ -12,6 +12,7 @@ from lib_py3.upgrade import upgrade_entity
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 
+
 class LootTableManager():
     """A tool to manipulate loot tables."""
     INTERCHANGEABLE_ITEM_IDS = (
@@ -40,6 +41,7 @@ class LootTableManager():
     # Utility Functions
     #
 
+
     @staticmethod
     def _to_namespaced_path(path):
         """Takes a filename and converts it to a loot table namespaced path (i.e. 'epic:loot/blah')."""
@@ -65,6 +67,7 @@ class LootTableManager():
     ####################################################################################################
     # Loot table autoformatting methods
     #
+
 
     def fixup_loot_table(self, filename, loot_table):
         """Autoformats a single json file."""
@@ -146,6 +149,7 @@ class LootTableManager():
                         entry.pop("name")
                         continue
 
+
     def autoformat_json_files_in_directory(self, directory, indent=2):
         """Autoformats all json files in a directory."""
         for root, _, files in os.walk(directory):
@@ -174,6 +178,7 @@ class LootTableManager():
     # Loot table autoformatting methods
     ####################################################################################################
 
+
     def __init__(self):
         self.item_map = {}
         self.table_map = {}
@@ -182,6 +187,7 @@ class LootTableManager():
     ####################################################################################################
     # Loot table loading
     #
+
 
     def load_loot_tables_item(self, filename, entry):
         """Loads a single item from a loot table entry."""
@@ -224,6 +230,7 @@ class LootTableManager():
         if not found_in_interchangeable_set:
             self._register_loot_table_item(item_id, item_name, new_entry)
 
+
     def _register_loot_table_item(self, item_id, item_name, new_entry, generated=False):
         new_entry = dict(new_entry)
         new_entry["generated"] = generated
@@ -251,6 +258,7 @@ class LootTableManager():
             # Item name does not exist - add it
             self.item_map[item_id] = {}
             self.item_map[item_id][item_name] = new_entry
+
 
     def _add_loot_table_reference(self, table_path, location_type, ref_obj):
         """Adds a reference to the table_map indicating where a reference to the table is."""
@@ -332,6 +340,7 @@ class LootTableManager():
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
+
     def load_loot_tables_subdirectories(self, directory):
         """Loads all json files in all subdirectories named "loot_tables"."""
         for root, dirs, _ in os.walk(directory):
@@ -365,6 +374,7 @@ class LootTableManager():
     ####################################################################################################
     # Scripted Quests File Loading
     #
+
 
     def load_scripted_quests_recursive(self, filename, element):
         """Loads a scripted quests file, including child actions such as in clickable dialog."""
@@ -403,6 +413,7 @@ class LootTableManager():
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
+
     def update_table_link_in_quest_recursive(self, filename, element, old_namespaced_path, new_namespaced_path):
         """Recursively processes quests json replacing loot table path if appropriate."""
         if isinstance(element, list):
@@ -423,6 +434,7 @@ class LootTableManager():
 
         # Nothing interesting to do for fundamental type objects
 
+
     def update_table_link_in_single_quests_file(self, filename, old_namespaced_path, new_namespaced_path):
         """Updates a reference to a table within a single quests file."""
         json_file = jsonFile(filename)
@@ -438,6 +450,7 @@ class LootTableManager():
     ####################################################################################################
     # Advancements File Loading
     #
+
 
     def load_advancements_file(self, filename):
         """Loads a single scripted quests file into the manager looking for references to loot tables."""
@@ -458,6 +471,7 @@ class LootTableManager():
         for loot_table in advancements["rewards"]["loot"]:
             self._add_loot_table_reference(loot_table, "advancements", filename)
 
+
     def load_advancements_directory(self, directory):
         """Loads all json files in all subdirectories - specifically looking for references to loot tables."""
         for root, _, files in os.walk(directory):
@@ -470,12 +484,14 @@ class LootTableManager():
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
+
     def load_advancements_subdirectories(self, directory):
         """Loads all json files in all subdirectories named "advancements"."""
         for root, dirs, _ in os.walk(directory):
             for dirname in dirs:
                 if dirname == "advancements":
                     self.load_advancements_directory(os.path.join(root, dirname))
+
 
     @staticmethod
     def update_table_link_in_single_advancement(filename, old_namespaced_path, new_namespaced_path):
@@ -497,6 +513,7 @@ class LootTableManager():
     # Functions File Loading
     #
 
+
     def load_command(self, command, source_label, ref_obj):
         """Load a command into the loot table manager."""
         if "giveloottable" in command:
@@ -516,6 +533,7 @@ class LootTableManager():
             self._add_loot_table_reference(line[:idx], source_label, ref_obj)
             line = line[idx:]
 
+
     def load_functions_directory(self, directory):
         """Loads all mcfunction files in all subdirectories - specifically looking for references to loot tables."""
         for root, _, files in os.walk(directory):
@@ -530,12 +548,14 @@ class LootTableManager():
                         eprint("Error parsing " + repr(filename))
                         eprint(str(traceback.format_exc()))
 
+
     def load_functions_subdirectories(self, directory):
         """Loads all mcfunction files in all subdirectories named "functions"."""
         for root, dirs, _ in os.walk(directory):
             for dirname in dirs:
                 if dirname == "functions":
                     self.load_functions_directory(os.path.join(root, dirname))
+
 
     @classmethod
     def update_table_link_in_command(cls, ref_obj, command, old_namespaced_path, new_namespaced_path):
@@ -555,6 +575,7 @@ class LootTableManager():
 
         # This handles both mob DeathLootTable and chest/container LootTable
         return command.replace('LootTable:"' + old_namespaced_path + '"', 'LootTable:"' + new_namespaced_path + '"')
+
 
     @classmethod
     def update_table_link_in_single_function(cls, filename, old_namespaced_path, new_namespaced_path):
@@ -580,6 +601,7 @@ class LootTableManager():
     # World Loading
     #
 
+
     def load_entity(self, entity):
         """Loads a single entity into the manager looking for references to loot tables
 
@@ -602,6 +624,7 @@ class LootTableManager():
 
         if entity.nbt.has_path("Command"):
             self.load_command(entity.nbt.at_path("Command").value, "world", ref_dict)
+
 
     def load_world(self, world):
         """Loads all loot table locations in a world
@@ -646,6 +669,7 @@ class LootTableManager():
     ####################################################################################################
     # Loot table manipulation
     #
+
 
     @staticmethod
     def _update_item_in_single_loot_table(filename, search_item_name, search_item_id, replace_item_nbt):
@@ -699,6 +723,7 @@ class LootTableManager():
 
         json_file.save(filename)
 
+
     def update_item_in_loot_tables(self, item_id, item_nbt=None, item_nbt_str=None):
         """Updates an item within all loaded loot tables."""
         if item_nbt is None and item_nbt_str is None:
@@ -734,6 +759,7 @@ class LootTableManager():
 
         return update_file_list
 
+
     @staticmethod
     def _update_table_link_in_single_loot_table(filename, old_namespaced_path, new_namespaced_path):
         """Updates a reference to a table within a single loot table."""
@@ -766,6 +792,7 @@ class LootTableManager():
 
         json_file.save(filename)
 
+
     def update_table_link_in_all_of_type(self, old_namespaced_path, new_namespaced_path, label, update_function):
         """Updates all references to a table of the given label using the provided update_function."""
 
@@ -783,6 +810,7 @@ class LootTableManager():
         for filename in update_file_list:
             update_function(filename, old_namespaced_path, new_namespaced_path)
 
+
     def update_table_link_everywhere(self, old_namespaced_path, new_namespaced_path):
         """Updates all references to a table everywhere loaded into this class."""
 
@@ -799,6 +827,7 @@ class LootTableManager():
     #
     # Loot table manipulation
     ####################################################################################################
+
 
     def get_unique_item_map(self, show_errors=True):
         """Returns item_map[item_id][item_name] = entry without alternate versions."""
