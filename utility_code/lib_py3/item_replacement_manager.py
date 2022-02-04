@@ -48,9 +48,6 @@ class ItemReplacementManager(object):
         orig_id = item_meta['id']
         for rule in self.substitution_rules:
             rule.process(item_meta, item)
-        # If the id changed, update the base item
-        if orig_id != item_meta['id']:
-            item.id = item_meta['id']
 
         # Abort replacement if the item has no name (no valid replacement)
         if not item_meta['name']:
@@ -63,6 +60,10 @@ class ItemReplacementManager(object):
         new_item_tag = self.item_map.get(item_id, {}).get(item_name, None)
         if not new_item_tag:
             return False
+
+        # If the id changed, update the base item
+        if orig_id != item_meta['id']:
+            item.id = item_meta['id']
 
         # Remember the original tag (without damage)
         if not item.has_tag():
