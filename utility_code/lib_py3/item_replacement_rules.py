@@ -14,9 +14,6 @@ from quarry.types.text_format import TextFormats, TextStyles
 NIL = "00000000-0000-0000-0000-000000000000"
 
 
-with open("/home/epic/4_SHARED/name2uuid.yml", "r") as f:
-    name2uuid = yaml.load(f, Loader=yaml.FullLoader)
-
 def jsonify_text_hack(text):
     if text == "":
         return json.dumps({"text":""}, ensure_ascii=False, separators=(',', ':'))
@@ -56,12 +53,6 @@ def to_number(numeral):
     if numeral == 'IV':
         return 4
     return 0
-
-def get_uuid(username):
-    retval = name2uuid.get(username, NIL)
-    if retval == NIL:
-        eprint(f"Failed to look up uuid for '{username}'")
-    return retval
 
 class GlobalRule():
     """Base pre/post processing rule for item replacements, used to preserve and edit data."""
