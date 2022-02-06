@@ -88,7 +88,6 @@ shard_config = {
     },
     "depths": {
         "play" : { "node": "m11", "memGB": 3   , },
-        "build": { "node": "m12", "memMB": 1536, },
         "stage": { "node": "m12", "memMB": 1536, },
         "clash": { "node": "m12", "memMB": 1536, },
     },
