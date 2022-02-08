@@ -69,12 +69,12 @@ if __name__ == '__main__':
             },
             "lightblue":{
                 "region":{"x":-3, "z":1},
-                "count":200,
+                "count":75,
                 "objective":"D4Access"
             },
             "yellow":{
                 "region":{"x":-3, "z":2},
-                "count":70,
+                "count":150,
                 "objective":"D5Access"
             },
             "lime":{
@@ -84,12 +84,12 @@ if __name__ == '__main__':
             },
             "pink":{
                 "region":{"x":-3, "z":7},
-                "count":70,
+                "count":150,
                 "objective":"D7Access"
             },
             "gray":{
                 "region":{"x":-3, "z":6},
-                "count":200,
+                "count":70,
                 "objective":"D8Access"
             },
             "lightgray":{
