@@ -21,14 +21,18 @@ for item_type in mgr.item_map:
         nbt = None
         if type(item) is list:
             for elem in item:
-                locs.append(elem["file"].replace("/home/epic/project_epic/server_config/", ""))
-                nbt = elem["nbt"]
+                if not elem.get("generated", False):
+                    locs.append(elem["file"].replace("/home/epic/project_epic/server_config/", ""))
+                    nbt = elem["nbt"]
         else:
-            locs.append(item["file"].replace("/home/epic/project_epic/server_config/", ""))
-            nbt = item["nbt"]
+            if not elem.get("generated", False):
+                locs.append(item["file"].replace("/home/epic/project_epic/server_config/", ""))
+                nbt = item["nbt"]
 
-        items[item_name] = {"files": locs, "nbt": nbt.to_mojangson()}
-    out_map[item_type] = items
+        if nbt is not None:
+            items[item_name] = {"files": locs, "nbt": nbt.to_mojangson()}
+    if len(items) > 0:
+        out_map[item_type] = items
 
 
 with open(out_name, 'w') as outfile:

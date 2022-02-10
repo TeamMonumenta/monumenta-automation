@@ -215,14 +215,11 @@ class LootTableManager():
         new_entry["nbt"] = item_tag_nbt
         new_entry["namespaced_key"] = self._to_namespaced_path(filename)
 
-        found_in_interchangeable_set = False
+        self._register_loot_table_item(item_id, item_name, new_entry)
         for interchangeable_id_set in self.INTERCHANGEABLE_ITEM_IDS:
             if item_id in interchangeable_id_set:
-                found_in_interchangeable_set = True
                 for interchangeable_id in interchangeable_id_set:
                     self._register_loot_table_item(interchangeable_id, item_name, new_entry, generated=True)
-        if not found_in_interchangeable_set:
-            self._register_loot_table_item(item_id, item_name, new_entry)
 
     def _register_loot_table_item(self, item_id, item_name, new_entry, generated=False):
         new_entry = dict(new_entry)
@@ -727,7 +724,10 @@ class LootTableManager():
         # Get a list of files where this needs updating
         update_file_list = []
         for match in match_list:
-            update_file_list.append(match["file"])
+            if match.get("generated", False):
+                raise ValueError(f'Item id {item_id!r} name {item_name!r} is generated from a different item ID; the original can be found in {match["file"]}')
+            else:
+                update_file_list.append(match["file"])
 
         for filename in update_file_list:
             self._update_item_in_single_loot_table(filename, item_name, item_id, item_nbt)
