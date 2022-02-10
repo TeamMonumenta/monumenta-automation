@@ -215,6 +215,7 @@ if __name__ == '__main__':
     monumenta = [
             ('plugins/NetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
             ('plugins/WorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
+            ('plugins/MonumentaWorldManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaWorldManagement/config.yml'),
             ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
             ('plugins/Monumenta/experiencinator_config.json', '../../../server_config/data/plugins/all/Monumenta/experiencinator_config.json'),
             ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
@@ -455,52 +456,6 @@ if __name__ == '__main__':
             'linked':server_config + base_plugins + dynmap,
         },
 
-        'depths':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
-                ('server.properties', 'difficulty', 'difficulty=normal'),
-            ],
-            'linked':server_config + luckperms + openinv + worldedit + nbteditor + dynmap + speedchanger + coreprotect + gobrush + voxelsniper + [
-                ('plugins/NetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
-                ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
-                ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
-                ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
-                ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
-                ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
-                ('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
-                ('plugins/nbt-api.jar', '../../server_config/plugins/nbt-api.jar'),
-                ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
-                ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/depths/compass'),
-                ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
-                ('plugins/ScriptedQuests/clickables/{servername}', '../../../../server_config/data/depths/clickables'),
-                ('plugins/ScriptedQuests/clickables/common', '../../../../server_config/data/scriptedquests/clickables/common'),
-                ('plugins/ScriptedQuests/death/{servername}', '../../../../server_config/data/depths/death'),
-                ('plugins/ScriptedQuests/death/common', '../../../../server_config/data/scriptedquests/death/common'),
-                ('plugins/ScriptedQuests/login/{servername}', '../../../../server_config/data/depths/login'),
-                ('plugins/ScriptedQuests/login/common', '../../../../server_config/data/scriptedquests/login/common'),
-                ('plugins/ScriptedQuests/npcs/{servername}', '../../../../server_config/data/depths/npcs'),
-                ('plugins/ScriptedQuests/npcs/common', '../../../../server_config/data/scriptedquests/npcs/common'),
-                ('plugins/ScriptedQuests/races/{servername}', '../../../../server_config/data/depths/races'),
-                ('plugins/ScriptedQuests/races/common', '../../../../server_config/data/scriptedquests/races/common'),
-                ('plugins/ScriptedQuests/growables/{servername}', '../../../../server_config/data/depths/growables'),
-                ('plugins/ScriptedQuests/growables/common', '../../../../server_config/data/scriptedquests/growables/common'),
-                ('plugins/ScriptedQuests/traders/{servername}', '../../../../server_config/data/depths/traders'),
-                ('plugins/ScriptedQuests/traders/common', '../../../../server_config/data/scriptedquests/traders/common'),
-                ('plugins/ScriptedQuests/codes/{servername}', '../../../../server_config/data/depths/codes'),
-                ('plugins/ScriptedQuests/codes/common', '../../../../server_config/data/scriptedquests/codes/common'),
-                ('plugins/ScriptedQuests/interactables/{servername}', '../../../../server_config/data/depths/interactables'),
-                ('plugins/ScriptedQuests/interactables/common', '../../../../server_config/data/scriptedquests/interactables/common'),
-                ('plugins/ScriptedQuests/zone_layers/{servername}', '../../../../server_config/data/depths/zone_layers'),
-                ('plugins/ScriptedQuests/zone_properties/common', '../../../../server_config/data/scriptedquests/zone_properties/common'),
-                ('plugins/ScriptedQuests/zone_properties/{servername}', '../../../../server_config/data/depths/zone_properties'),
-                ('plugins/StructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
-                ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
-                ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
-                ('plugins/Monumenta/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
-            ]
-        },
-
         'dev1':{
             'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=6'),
@@ -543,16 +498,6 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
             ],
             'linked':server_config + base_plugins + dynmap,
-        },
-
-        'playerplots':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
-            ],
-            'linked':server_config + base_plugins + [
-                ('plugins/MonumentaWorldManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaWorldManagement/config.yml'),
-            ]
         },
 
         'shiftingcity':{
@@ -625,6 +570,7 @@ if __name__ == '__main__':
         'mist': 8,
         'depths': 5,
         'test': 8,
+        'playerplots': 6,
     }
 
     for key in simple_view_distance_config:

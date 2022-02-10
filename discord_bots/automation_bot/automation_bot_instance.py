@@ -678,21 +678,21 @@ Must be run before preparing the build server update bundle'''
             await self.stop("dungeon")
 
         await self.display("Copying the dungeon master copies...")
-        await self.run("cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
+        await self.run("cp -a /home/epic/project_epic/dungeon /home/epic/5_SCRATCH/tmpreset/dungeon")
 
         if not debug:
             await self.display("Restarting the dungeon shard...")
             await self.start("dungeon")
 
         await self.display("Generating dungeon instances (this may take a while)...")
-        instance_gen_arg = " --master-world /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon/ --out-folder /home/epic/5_SCRATCH/tmpreset/dungeons-out/"
+        instance_gen_arg = " --dungeon-path /home/epic/5_SCRATCH/tmpreset/dungeon/ --out-folder /home/epic/5_SCRATCH/tmpreset/dungeons-out/"
         if debug:
             instance_gen_arg += " --count 5"
         await self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py") + instance_gen_arg)
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE")
 
         await self.display("Cleaning up instance generation temp files...")
-        await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset/Project_Epic-dungeon")
+        await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset/dungeon")
         await self.display("Dungeon instance generation complete!")
         await self.display(message.author.mention)
 
@@ -795,6 +795,7 @@ Examples:
 
                 await self.display("Copying {shard}...".format(shard=shard))
                 await self.run("mkdir -p /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}".format(shard=shard))
+                # TODO: This needs to copy all the worlds, not just the base one
                 await self.run("cp -a /home/epic/project_epic/{shard}/Project_Epic-{shard} /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/".format(shard=shard))
 
                 if not debug:
@@ -802,9 +803,9 @@ Examples:
                     await self.start(shard)
 
                 await self.display("Running replacements on copied version of {shard}...".format(shard=shard))
-                args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard}".format(shard=shard)
+                args = " --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}".format(shard=shard)
                 await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
-                args = " --world /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/Project_Epic-{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json".format(shard=shard)
+                args = " --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json".format(shard=shard)
                 await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         if len(instance_gen_required) > 0:
@@ -814,20 +815,21 @@ Examples:
                 await self.stop("dungeon")
 
             await self.display("Copying the dungeon master copies...")
-            await self.run("cp -a /home/epic/project_epic/dungeon/Project_Epic-dungeon /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon")
+            await self.run("cp -a /home/epic/project_epic/dungeon /home/epic/5_SCRATCH/tmpstage/dungeon")
+            await self.run("rm -rf /home/epic/5_SCRATCH/tmpstage/dungeon/cache /home/epic/5_SCRATCH/tmpstage/dungeon/plugins")
 
             if not debug:
                 await self.display("Restarting the dungeon shard...")
                 await self.start("dungeon")
 
             await self.display("Running replacements on copied dungeon masters...")
-            args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon"
+            args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon"
             await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
-            args = " --world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
+            args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
             await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
             await self.display("Generating dungeon instances for [{}]...".format(" ".join(instance_gen_required)))
-            instance_gen_arg = (" --master-world /home/epic/5_SCRATCH/tmpstage/Project_Epic-dungeon/" +
+            instance_gen_arg = (" --dungeon-path /home/epic/5_SCRATCH/tmpstage/dungeon/" +
                                 " --out-folder /home/epic/5_SCRATCH/tmpstage/TEMPLATE" +
                                 " --count 8 " + " ".join(instance_gen_required))
             await self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py") + instance_gen_arg)
@@ -1412,16 +1414,16 @@ Syntax:
                 await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --structures generated --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
 
             else:
-                base_backup_name = f"/home/epic/0_OLD_BACKUPS/Project_Epic-{shard}_pre_entity_loot_updates_{datestr()}"
+                base_backup_name = f"/home/epic/0_OLD_BACKUPS/{shard}_pre_entity_loot_updates_{datestr()}"
 
                 await self.display("Running replacements on shard {}".format(shard))
                 await self.stop(shard)
-                await self.cd(self._shards[shard])
-                await self.run(["tar", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", f"Project_Epic-{shard}"])
-                await self.cd(self._shards[shard])
-                await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --world Project_Epic-{shard} --logfile {base_backup_name}_items.yml"), displayOutput=True)
-                await self.cd(self._shards[shard])
-                await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --world Project_Epic-{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
+                await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
+                await self.run(["tar", f"--exclude={shard}/logs", f"--exclude={shard}/plugins", f"--exclude={shard}/cache", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", shard])
+                await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
+                await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard} --logfile {base_backup_name}_items.yml"), displayOutput=True)
+                await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
+                await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --worlds {shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
                 await self.start(shard)
 
         await self.display(message.author.mention)

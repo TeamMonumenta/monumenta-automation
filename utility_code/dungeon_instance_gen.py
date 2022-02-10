@@ -13,11 +13,11 @@ from minecraft.world import World
 
 def usage():
     sys.exit(f"""
-Usage: {sys.argv[0]} <--master-world /path/to/world> <--out-folder /path/to/out> [--count #] [--skip #] [--num-threads #] [dungeon1 dungeon2 ...]
+Usage: {sys.argv[0]} <--dungeon-path /path/to/dungeon> <--out-folder /path/to/out> [--count #] [--skip #] [--num-threads #] [dungeon1 dungeon2 ...]
 
 Arguments:
-    --master-world world
-        The path to the Project_Epic-dungeon folder used as a template to generate instances
+    --dungeon-path path
+        The path to the dungeon folder which contains Project_Epic-dungeon and other worlds as a template to generate instances
     --out-folder out
         Output folder where instances will be generated
     --count #
@@ -29,8 +29,8 @@ Arguments:
         The names of dungeons to generate
 """)
 
-def create_instance(arg):
-    rx, rz = arg
+def create_instance(instance_arg):
+    rx, rz = instance_arg
     ref_region.copy_to(new_world, rx, rz)
 
 if __name__ == '__main__':
@@ -113,8 +113,7 @@ if __name__ == '__main__':
                 "objective":"DB1Access"
             },
             "verdant":{
-                "region":{"x":-2, "z":5},
-                "count":1500,
+                "world": "verdant",
                 "objective":"DVAccess"
             },
             "corridors":{
@@ -189,17 +188,15 @@ if __name__ == '__main__':
         "set_blocks_in_spawn":[
             {'pos': [-1441, 2, -1441], 'block': {'name': 'minecraft:air'}},
         ],
-
-        "set_blocks":[
-        ],
     }
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "w:o:c:s:j:", ["master-world=", "out-folder=", "count=", "skip=", "num-threads="])
+        opts, args = getopt.getopt(sys.argv[1:], "d:w:o:c:s:j:", ["dungeon-path=", "master-world=", "out-folder=", "count=", "skip=", "num-threads="])
     except getopt.GetoptError as err:
         eprint(str(err))
         usage()
 
+    dungeon_path = None
     world_path = None
     out_folder = None
     force_count = None
@@ -208,7 +205,12 @@ if __name__ == '__main__':
     specific_worlds = []
 
     for o, a in opts:
-        if o in ("-w", "--master-world"):
+        if o in ("-d", "--dungeon-path"):
+            dungeon_path = a
+            if not dungeon_path.endswith("/"):
+                dungeon_path += "/"
+        elif o in ("-w", "--master-world"):
+            eprint("--master-world is deprecated, use --dungeon-path instead")
             world_path = a
             if not world_path.endswith("/"):
                 world_path += "/"
@@ -246,9 +248,13 @@ if __name__ == '__main__':
         else:
             specific_worlds.append(arg)
 
-    if world_path is None:
-        eprint("--master-world must be specified!")
-        usage()
+    if dungeon_path is None:
+        if world_path is not None:
+            dungeon_path = os.path.join(world_path, "..")
+        else:
+            eprint("--dungeon-path must be specified!")
+            usage()
+
     if out_folder is None:
         eprint("--out-folder must be specified!")
         usage()
@@ -273,7 +279,9 @@ if __name__ == '__main__':
         print(f"Generating {name} instances...")
         dungeon = config["dungeons"][name]
         # Compute where the new world will be
-        new_world_path = os.path.join(out_folder, f"{name}", f"Project_Epic-{name}")
+        new_shard_path = os.path.join(out_folder, f"{name}")
+        new_world_path = os.path.join(new_shard_path, f"Project_Epic-{name}")
+        dungeon_template_world_path = os.path.join(dungeon_path, "Project_Epic-dungeon")
 
         # Create target directories
         for region_type in ('entities', 'poi', 'region'):
@@ -281,11 +289,11 @@ if __name__ == '__main__':
                 os.makedirs(os.path.join(new_world_path, region_type), mode=0o775)
 
         # Copy files/directories
-        copy_paths(world_path, new_world_path, config["copy_paths"])
-        copy_maps(world_path, new_world_path)
+        copy_paths(dungeon_template_world_path, new_world_path, config["copy_paths"])
+        copy_maps(dungeon_template_world_path, new_world_path)
 
         # Load new and old worlds
-        ref_world = World(world_path)
+        ref_world = World(dungeon_template_world_path)
         new_world = World(new_world_path)
 
         # TODO: Change level.dat uuid and name
@@ -295,47 +303,44 @@ if __name__ == '__main__':
             spawn_region = config["spawn_region"]
             ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True).copy_to(new_world, spawn_region["x"], spawn_region["z"])
 
-        ###############
-        # Create the new instances
-
-        # Open the source region as a global variable
-        ref_region = ref_world.get_region(dungeon["region"]["x"], dungeon["region"]["z"], read_only=True)
-
-        # Create a list of all the region files that need copying to
-        args = []
-        for i in range(dungeon["count"]):
-            if skip_count is not None and i < skip_count:
-                continue
-            args.append((config["target_region"]["x"], config["target_region"]["z"] + i))
-
-        if num_threads == 1:
-            # Don't bother with processes if only going to use one
-            # This makes debugging much easier
-            for arg in args:
-                create_instance(arg)
-        else:
-            done_count = 0
-            with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
-                for _ in pool.map(create_instance, args):
-                    done_count += 1
-
-                    print(f"  {done_count} / {dungeon['count']} instances generated")
-
-        # /Create the new instances
-        ###############
-
-        # Set blocks in sorting box if one was made
-        if skip_count is None:
+            # Set blocks in sorting box if one was made
             if "set_blocks_in_spawn" in config:
                 for block in config["set_blocks_in_spawn"]:
                     new_world.set_block(block["pos"], block["block"])
 
-        # Set other blocks
-        if "set_blocks" in config:
-            for block in config["set_blocks"]:
-                new_world.set_block(block["pos"], block["block"])
+        if "region" in dungeon:
+            ################ Create the new instances from a given region
 
-        timings.nextStep(f"{name}: {dungeon['count']} instances generated")
+            # Open the source region as a global variable
+            ref_region = ref_world.get_region(dungeon["region"]["x"], dungeon["region"]["z"], read_only=True)
+
+            # Create a list of all the region files that need copying to
+            args = []
+            for i in range(dungeon["count"]):
+                if skip_count is not None and i < skip_count:
+                    continue
+                args.append((config["target_region"]["x"], config["target_region"]["z"] + i))
+
+            if num_threads == 1:
+                # Don't bother with processes if only going to use one
+                # This makes debugging much easier
+                for arg in args:
+                    create_instance(arg)
+            else:
+                done_count = 0
+                with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
+                    for _ in pool.map(create_instance, args):
+                        done_count += 1
+
+                        print(f"  {done_count} / {dungeon['count']} instances generated")
+
+            timings.nextStep(f"{name}: {dungeon['count']} instances generated")
+
+        elif "world" in dungeon:
+            ################ Copy the template world that instances will be created from
+            copy_paths(dungeon_path, new_shard_path, [dungeon["world"],])
+
+            timings.nextStep(f"{name}: world copied")
 
     with open(os.path.join(out_folder, "dungeon_info.yml"), "w") as fp:
         yaml.dump(config, fp, width=2147483647, allow_unicode=True)

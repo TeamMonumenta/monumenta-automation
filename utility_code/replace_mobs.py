@@ -1,5 +1,6 @@
 #!/usr/bin/env pypy3
 
+import os
 import getopt
 import math
 import multiprocessing
@@ -138,7 +139,7 @@ sub = [
 ]
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics | --structures /path/to/structures> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run] [--force]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--worlds /path/to/folder_containing_worlds | --world /path/to/world | --schematics /path/to/schematics | --structures /path/to/structures> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run] [--force]".format(sys.argv[0]))
 
 # This is handy here because it has direct access to previously defined globals
 def process_entity(entity, replacements_log) -> None:
@@ -266,11 +267,12 @@ if __name__ == '__main__':
     multiprocessing.set_start_method("fork")
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "w:s:g:b:l:j:dif", ["world=", "schematics=", "structures=", "library-of-souls=", "logfile=", "num-threads=", "dry-run", "pos1=", "pos2=", "force"])
+        opts, args = getopt.getopt(sys.argv[1:], "z:w:s:g:b:l:j:dif", ["worlds=", "world=", "schematics=", "structures=", "library-of-souls=", "logfile=", "num-threads=", "dry-run", "pos1=", "pos2=", "force"])
     except getopt.GetoptError as err:
         eprint(str(err))
         usage()
 
+    worlds_path = None
     world_path = None
     schematics_path = None
     structures_path = None
@@ -283,7 +285,9 @@ if __name__ == '__main__':
     force = False
 
     for o, a in opts:
-        if o in ("-w", "--world"):
+        if o in ("-z", "--worlds"):
+            worlds_path = a
+        elif o in ("-w", "--world"):
             world_path = a
         elif o in ("-s", "--schematics"):
             schematics_path = a
@@ -317,8 +321,8 @@ if __name__ == '__main__':
             eprint("Unknown argument: {}".format(o))
             usage()
 
-    if world_path is None and schematics_path is None and structures_path is None:
-        eprint("--world, --schematics, or --structures must be specified!")
+    if worlds_path is None and world_path is None and schematics_path is None and structures_path is None:
+        eprint("--worlds, --world, --schematics, or --structures must be specified!")
         usage()
     elif library_of_souls_path is None:
         eprint("--library-of-souls must be specified!")
@@ -351,15 +355,23 @@ if __name__ == '__main__':
     replacements_log = {}
     replacements_msgs = []
 
-    if world_path:
-        world = World(world_path)
-        timings.nextStep("Loaded world")
+    if world_path or worlds_path:
+        worlds = []
+        if world_path:
+            worlds.append(world_path)
+        if worlds_path:
+            for worldname in World.enumerate_worlds(worlds_path):
+                worlds.append(os.path.join(worlds_path, worldname))
 
-        generator = world.iter_regions_parallel(process_region, err_func, num_processes=num_threads, initializer=process_init, initargs=(replace_mgr, dry_run, force, min_x, min_y, min_z, max_x, max_y, max_z))
-        replacements, replacements_log, replacements_msgs = merge_log_tuples(generator, replacements_log, replacements_msgs)
-        num_replacements += replacements
+        for world_path in worlds:
+            world = World(world_path)
+            timings.nextStep("Loaded world")
 
-        timings.nextStep(f"World replacements done, {replacements} replacements")
+            generator = world.iter_regions_parallel(process_region, err_func, num_processes=num_threads, initializer=process_init, initargs=(replace_mgr, dry_run, force, min_x, min_y, min_z, max_x, max_y, max_z))
+            replacements, replacements_log, replacements_msgs = merge_log_tuples(generator, replacements_log, replacements_msgs)
+            num_replacements += replacements
+
+            timings.nextStep(f"World replacements done, {replacements} replacements")
 
     if schematics_path:
         # Note: autosave=False is because we only save schematics that had some item replacements in them

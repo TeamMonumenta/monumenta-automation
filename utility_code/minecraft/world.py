@@ -43,7 +43,7 @@ class World():
         if not os.path.isdir(dir):
             return []
         return [o for o in os.listdir(dir)
-                    if os.path.isdir(os.path.join(dir,o)) and os.path.isfile(os.path.join(dir, o, "level.dat"))]
+                    if os.path.isdir(os.path.join(dir, o)) and os.path.isfile(os.path.join(dir, o, "level.dat"))]
 
     def copy_to(self, path, regenerate_uuids=True):
         os.makedirs(path)

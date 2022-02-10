@@ -17,7 +17,7 @@ from minecraft.chunk_format.structure import Structure
 from minecraft.world import World
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world | --schematics /path/to/schematics> | --structures /path/to/structures [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--worlds /path/to/folder_containing_worlds | --world /path/to/world | --schematics /path/to/schematics> | --structures /path/to/structures [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
 
 def process_init(mgr, dry):
     global item_replace_manager, dry_run
@@ -57,11 +57,12 @@ if __name__ == '__main__':
     multiprocessing.set_start_method("fork")
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "w:s:g:l:j:d", ["world=", "schematics=", "structures=", "logfile=", "num-threads=", "dry-run"])
+        opts, args = getopt.getopt(sys.argv[1:], "z:w:s:g:l:j:d", ["worlds=", "world=", "schematics=", "structures=", "logfile=", "num-threads=", "dry-run"])
     except getopt.GetoptError as err:
         eprint(str(err))
         usage()
 
+    worlds_path = None
     world_path = None
     schematics_path = None
     structures_path = None
@@ -72,6 +73,8 @@ if __name__ == '__main__':
     for o, a in opts:
         if o in ("-w", "--world"):
             world_path = a
+        elif o in ("-z", "--worlds"):
+            worlds_path = a
         elif o in ("-s", "--schematics"):
             schematics_path = a
         elif o in ("-s", "--structures"):
@@ -86,8 +89,8 @@ if __name__ == '__main__':
             eprint("Unknown argument: {}".format(o))
             usage()
 
-    if world_path is None and schematics_path is None and structures_path is None:
-        eprint("--world, --schematics, or --structures must be specified!")
+    if worlds_path is None and world_path is None and schematics_path is None and structures_path is None:
+        eprint("--worlds, --world, --schematics, or --structures must be specified!")
         usage()
 
     timings = Timings(enabled=dry_run)
@@ -108,19 +111,27 @@ if __name__ == '__main__':
     num_replacements = 0
     replacements_log = {}
 
-    if world_path:
-        if not os.path.exists(world_path):
-            eprint(f"World path '{world_path}' does not exist")
-            usage()
+    if world_path or worlds_path:
+        worlds = []
+        if world_path:
+            worlds.append(world_path)
+        if worlds_path:
+            for worldname in World.enumerate_worlds(worlds_path):
+                worlds.append(os.path.join(worlds_path, worldname))
 
-        world = World(world_path)
-        timings.nextStep("Loaded world")
+        for world_path in worlds:
+            if not os.path.exists(world_path):
+                eprint(f"World path '{world_path}' does not exist")
+                usage()
 
-        generator = world.iter_regions_parallel(process_region, err_func, num_processes=num_threads, initializer=process_init, initargs=(item_replace_manager, dry_run))
-        replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
-        num_replacements += replacements
+            world = World(world_path)
+            timings.nextStep("Loaded world")
 
-        timings.nextStep(f"World replacements done, {replacements} replacements")
+            generator = world.iter_regions_parallel(process_region, err_func, num_processes=num_threads, initializer=process_init, initargs=(item_replace_manager, dry_run))
+            replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
+            num_replacements += replacements
+
+            timings.nextStep(f"World replacements done, {replacements} replacements")
 
     if schematics_path:
         # Note: autosave=False is because we only save schematics that had some item replacements in them

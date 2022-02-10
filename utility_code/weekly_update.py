@@ -24,7 +24,6 @@ def usage():
 def get_dungeon_config(name, objective):
     return {
         "server":f"{name}",
-        "build_world_path":f"{build_template_dir}/{name}/Project_Epic-{name}/",
         "copy_base_from":"build",
         "copy_previous_paths":["stats", "data/scoreboard.dat"],
         "copy_maps": "build",
@@ -177,7 +176,6 @@ if __name__ == '__main__':
 
     corridors = {
         "server":"corridors",
-        "build_world_path":f"{build_template_dir}/corridors/Project_Epic-corridors/",
         "copy_base_from":"build",
         "copy_previous_paths":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/corridors'],
@@ -185,7 +183,6 @@ if __name__ == '__main__':
 
     verdant = {
         "server":"verdant",
-        "build_world_path":f"{build_template_dir}/verdant/Project_Epic-verdant/",
         "copy_base_from":"build",
         "copy_previous_paths":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/verdant'],
@@ -193,7 +190,6 @@ if __name__ == '__main__':
 
     rush = {
         "server":"rush",
-        "build_world_path":f"{build_template_dir}/rush/Project_Epic-rush/",
         "copy_base_from":"build",
         "copy_previous_paths":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/rush'],
@@ -201,7 +197,6 @@ if __name__ == '__main__':
 
     mist = {
         "server":"mist",
-        "build_world_path":f"{build_template_dir}/mist/Project_Epic-mist/",
         "copy_base_from":"build",
         "copy_previous_paths":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/mist'],
@@ -209,7 +204,6 @@ if __name__ == '__main__':
 
     remorse = {
         "server":"remorse",
-        "build_world_path":f"{build_template_dir}/remorse/Project_Epic-remorse/",
         "copy_base_from":"build",
         "copy_previous_paths":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/remorse'],
@@ -217,7 +211,6 @@ if __name__ == '__main__':
 
     depths = {
         "server":"depths",
-        "build_world_path":f"{build_template_dir}/depths/Project_Epic-depths/",
         "copy_base_from":"build",
         "copy_previous_paths":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/depths'],
@@ -225,7 +218,6 @@ if __name__ == '__main__':
 
     valley = {
         "server":"valley",
-        "build_world_path":f"{build_template_dir}/valley/Project_Epic-valley/",
         "copy_base_from":"build",
         "copy_previous_paths":["stats", "data"],
         "copy_maps": "build",
@@ -237,7 +229,6 @@ if __name__ == '__main__':
 
     isles = {
         "server":"isles",
-        "build_world_path":f"{build_template_dir}/isles/Project_Epic-isles/",
         "copy_base_from":"build",
         "copy_previous_paths":["stats", "data/scoreboard.dat"],
         "copy_maps": "build",
