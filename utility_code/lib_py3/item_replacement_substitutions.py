@@ -116,6 +116,29 @@ class FixPlainTag(SubstitutionRule):
         if item.nbt.has_path("tag"):
             update_plain_tag(item.nbt.at_path("tag"))
 
+class FixBrokenStatTrack(SubstitutionRule):
+    """Note: To be deleted after the next weekly update (11/02/2022)."""
+    name = "Fix stat track"
+
+    def process(self, item_meta, item):
+        if not item.nbt.has_path('tag.Monumenta.PlayerModified.Infusions.StatTrack'):
+            return
+        infusion_nbt = item.tag.at_path('Monumenta.PlayerModified.Infusions')
+        for (bad_name, good_name) in (
+            ('StatTrack', 'Stat Track'),
+            ('BlocksPlaced', 'Blocks Placed'),
+            ('TimesConsumed', 'Times Consumed'),
+            ('SpawnersBroken', 'Spawners Broken'),
+            ('MobKills', 'Mob Kills'),
+            ('MeleeDamageDealt', 'Melee Damage Dealt'),
+            ('BossDamageDealt', 'Boss Damage Dealt'),
+        ):
+            if good_name in infusion_nbt.value:
+                del infusion_nbt.value[good_name]
+            if infusion_nbt.has_path(bad_name):
+                value = infusion_nbt.value.pop(bad_name)
+                infusion_nbt.value[good_name] = value
+
 class SubtituteItems(SubstitutionRule):
     name = "Substitute the ID and name of items, ignoring other NBT"
 
