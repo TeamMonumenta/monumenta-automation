@@ -726,7 +726,10 @@ class LootTableManager():
         # Get a list of files where this needs updating
         update_file_list = []
         for match in match_list:
-            update_file_list.append(match["file"])
+            if match.get("generated", False):
+                raise ValueError(f'Item id {item_id!r} name {item_name!r} is generated from a different item ID; the original can be found in {match["file"]}')
+            else:
+                update_file_list.append(match["file"])
 
         for filename in update_file_list:
             self._update_item_in_single_loot_table(filename, item_name, item_id, item_nbt)
