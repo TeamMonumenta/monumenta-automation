@@ -215,11 +215,9 @@ class LootTableManager():
         new_entry["nbt"] = item_tag_nbt
         new_entry["namespaced_key"] = self._to_namespaced_path(filename)
 
-        found_in_interchangeable_set = False
         self._register_loot_table_item(item_id, item_name, new_entry)
         for interchangeable_id_set in self.INTERCHANGEABLE_ITEM_IDS:
             if item_id in interchangeable_id_set:
-                found_in_interchangeable_set = True
                 for interchangeable_id in interchangeable_id_set:
                     self._register_loot_table_item(interchangeable_id, item_name, new_entry, generated=True)
 
