@@ -133,9 +133,10 @@ class FixBrokenStatTrack(SubstitutionRule):
             ('MeleeDamageDealt', 'Melee Damage Dealt'),
             ('BossDamageDealt', 'Boss Damage Dealt'),
         ):
+            if good_name in infusion_nbt.value:
+                del infusion_nbt.value[good_name]
             if infusion_nbt.has_path(bad_name):
-                value = infusion_nbt.value[bad_name]
-                del infusion_nbt.value[bad_name]
+                value = infusion_nbt.value.pop(bad_name)
                 infusion_nbt.value[good_name] = value
 
 class SubtituteItems(SubstitutionRule):
