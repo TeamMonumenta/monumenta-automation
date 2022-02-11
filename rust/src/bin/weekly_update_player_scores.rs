@@ -20,22 +20,14 @@ fn usage() {
     println!("Usage: weekly_update_players path/to/directory");
 }
 
-const INSTANCE_WEEK_OFFSET: i32 = 10000;
-
-fn update_instance_scores(scores: &mut HashMap<String, i32>, objective: &str, increment: i32, max: i32, additional_objectives_to_reset: &[&str]) {
-    if let Some(access) = scores.get(objective) {
-        if *access >= 1 {
-            let mut access: i32 = *access;
-            access += increment;
-            if access >= max {
-                access = 0;
-                /* Reset all other specified objectives on overflow */
-                for additional_objective in additional_objectives_to_reset {
-                    scores.insert(additional_objective.to_string(), 0);
-                }
+fn update_instance_scores(scores: &mut HashMap<String, i32>, days_since_epoch: i32, start_objective: &str, max_days: i32, additional_objectives_to_reset: &[&str]) {
+    if let Some(start) = scores.get(start_objective) {
+        if *start + days_since_epoch >= max_days {
+            /* Reset all specified objectives on expiration */
+            scores.insert(start_objective.to_string(), 0);
+            for additional_objective in additional_objectives_to_reset {
+                scores.insert(additional_objective.to_string(), 0);
             }
-            /* Update this specific objective always, since it either changed or was reset */
-            scores.insert(objective.to_string(), access);
         }
     }
 }
@@ -55,34 +47,35 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
     scores.insert("TotalLevel".to_string(), CorrectedLevel);
 }
 
-fn update_player_scores(player: &mut Player) {
+fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     if let Some(scores) = &mut player.scores {
         /*
          * These scores increment by 10000 or if >= max are reset to 0, along with resetting
          * the additional objectives listed at the end
          */
-        update_instance_scores(scores, "D0Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D0Finished"]);
-        update_instance_scores(scores, "D1Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D1Finished", "D1Delve1", "D1Delve2"]);
-        update_instance_scores(scores, "D2Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D2Finished", "D2Delve1", "D2Delve2"]);
-        update_instance_scores(scores, "D3Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D3Finished", "D3Delve1", "D3Delve2"]);
-        update_instance_scores(scores, "D4Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D4Finished", "D4Delve1", "D4Delve2"]);
-        update_instance_scores(scores, "D5Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D5Finished", "D5Delve1", "D5Delve2"]);
-        update_instance_scores(scores, "D6Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D6Finished", "D6Delve1", "D6Delve2"]);
-        update_instance_scores(scores, "D7Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D7Finished", "D7Delve1", "D7Delve2"]);
-        update_instance_scores(scores, "D8Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D8Finished", "D8Delve1", "D8Delve2"]);
-        update_instance_scores(scores, "D9Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D9Finished", "D9Delve1", "D9Delve2"]);
-        update_instance_scores(scores, "D10Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D10Finished", "D10Delve1", "D10Delve2"]);
-        update_instance_scores(scores, "D11Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["D11Finished", "D11Delve1", "D11Delve2"]);
-        update_instance_scores(scores, "DTLAccess", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["DTLFinished", "DTLDelve1", "DTLDelve2"]);
-        update_instance_scores(scores, "DCAccess", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["DCFinished", "DMRDelve1", "DMRDelve2"]);
-        update_instance_scores(scores, "DB1Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["DB1Finished", "DWDelve1", "DWDelve2"]);
-        update_instance_scores(scores, "DRL2Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["DRL2Finished", "DSCDelve1", "DSCDelve2"]);
-        update_instance_scores(scores, "DFFAccess", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["DFFFinished", "DFFDelve1", "DFFDelve2"]);
-        update_instance_scores(scores, "DS1Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["DS1Finished"]);
-        update_instance_scores(scores, "DS1Finished", INSTANCE_WEEK_OFFSET, 1, &["DS1Access"]);
+        update_instance_scores(scores, days_since_epoch, "D0StartDate", 28, &["D0Access", "D0Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D1StartDate", 28, &["D1Access", "D1Finished", "D1Delve1", "D1Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D2StartDate", 28, &["D2Access", "D2Finished", "D2Delve1", "D2Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D3StartDate", 28, &["D3Access", "D3Finished", "D3Delve1", "D3Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D4StartDate", 28, &["D4Access", "D4Finished", "D4Delve1", "D4Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D5StartDate", 28, &["D5Access", "D5Finished", "D5Delve1", "D5Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D6StartDate", 28, &["D6Access", "D6Finished", "D6Delve1", "D6Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D7StartDate", 28, &["D7Access", "D7Finished", "D7Delve1", "D7Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D8StartDate", 28, &["D8Access", "D8Finished", "D8Delve1", "D8Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D9StartDate", 28, &["D9Access", "D9Finished", "D9Delve1", "D9Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D10StartDate", 28, &["D10Access", "D10Finished", "D10Delve1", "D10Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D11StartDate", 28, &["D11Access", "D11Finished", "D11Delve1", "D11Delve2"]);
+        update_instance_scores(scores, days_since_epoch, "D12StartDate", 28, &["DTLAccess", "DTLFinished", "DTLDelve1", "DTLDelve2"]);
+        update_instance_scores(scores, days_since_epoch, "DMRStartDate", 28, &["DCAccess", "DCFinished", "DMRDelve1", "DMRDelve2"]);
+        update_instance_scores(scores, days_since_epoch, "DBWStartDate", 28, &["DB1Access", "DB1Finished", "DWDelve1", "DWDelve2"]);
+        update_instance_scores(scores, days_since_epoch, "DCSStartDate", 28, &["DRL2Access", "DRL2Finished", "DSCDelve1", "DSCDelve2"]);
+        update_instance_scores(scores, days_since_epoch, "DFFStartDate", 28, &["DFFAccess", "DFFFinished", "DFFDelve1", "DFFDelve2"]);
+        update_instance_scores(scores, days_since_epoch, "DFSStartDate", 28, &["DS1Access", "DS1Finished"]);
+        // TODO Forsworn Sanctum should be reset early if finished
 
         /* DelveDungeon score also increments as if it was a dungeon score */
-        update_instance_scores(scores, "DelveDungeon", 1000, 3 * 1000, &[]);
+        // TODO This needs a StartDate score
+        //update_instance_scores(scores, days_since_epoch, "DelveDungeon", 1000, 3 * 1000, &[]);
 
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
@@ -155,13 +148,14 @@ fn main() -> BoxResult<()> {
     println!("Loaded {} uuids in {} milliseconds", uuids.len(), (end - start).num_milliseconds());
 
     let start = Utc::now().time(); // START
+    let days_since_epoch: i32 = (Utc::now() - Utc.timestamp(0, 0)).num_days() as i32;
 
     uuids.par_iter().for_each(|uuid| {
         let mut player = Player::new(*uuid);
         player.load_dir(basedirpath).unwrap();
 
         player.update_history("Weekly update");
-        update_player_scores(&mut player);
+        update_player_scores(&mut player, days_since_epoch);
 
         /* Remove all the per-shard data */
         if let Some(sharddata) = &mut player.sharddata {
