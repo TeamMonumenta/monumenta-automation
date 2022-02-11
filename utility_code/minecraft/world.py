@@ -30,12 +30,17 @@ class World():
         """Load a world from the path provided."""
         self.path = path
         self.name = name
+        self.level_dat_ = None
         if self.name is None:
             self.name = os.path.basename(os.path.realpath(self.path))
-        if os.path.exists(os.path.join(self.path, 'level.dat')):
-            self.level_dat = LevelDat(os.path.join(self.path, 'level.dat'))
-        else:
-            self.level_dat = None
+
+    @property
+    @def level_dat(self):
+        if self._level_dat is not None:
+            return self._level_dat
+        if os.path.isfile(os.path.join(self.path, 'level.dat')):
+            self._level_dat = LevelDat(os.path.join(self.path, 'level.dat'))
+        return self._level_dat
 
     @classmethod
     def enumerate_worlds(cls, dir) -> [str]:
@@ -47,7 +52,8 @@ class World():
 
     def copy_to(self, path, regenerate_uuids=True):
         os.makedirs(path)
-        self.level_dat.save(os.path.join(path, 'level.dat'))
+        if self.level_dat is not None:
+            self.level_dat.save(os.path.join(path, 'level.dat'))
         new_world = World(path)
         for region in self.iter_regions():
             region.copy_to(new_world, region.rx, region.rz)
