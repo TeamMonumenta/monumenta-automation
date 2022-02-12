@@ -30,16 +30,18 @@ class World():
         """Load a world from the path provided."""
         self.path = path
         self.name = name
-        self.level_dat_ = None
+        self._level_dat_initialized = False
+        self._level_dat = None
         if self.name is None:
             self.name = os.path.basename(os.path.realpath(self.path))
 
     @property
-    @def level_dat(self):
-        if self._level_dat is not None:
+    def level_dat(self):
+        if self._level_dat_initialized:
             return self._level_dat
         if os.path.isfile(os.path.join(self.path, 'level.dat')):
             self._level_dat = LevelDat(os.path.join(self.path, 'level.dat'))
+        self._level_dat_initialized = True
         return self._level_dat
 
     @classmethod
