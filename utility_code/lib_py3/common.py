@@ -219,7 +219,7 @@ def move_file(old, new):
 
 def copy_file(old, new):
     if not os.path.exists(old):
-        raise Exception("Source file {old} does not exist!")
+        raise Exception(f"Source file {old} does not exist!")
     if not os.path.isdir(os.path.dirname(new)):
         os.makedirs(os.path.dirname(new), mode=0o775)
     if os.path.exists(new):

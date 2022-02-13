@@ -65,10 +65,8 @@ def parallel_copy(config):
             print(f"  {server} - Copying maps from {from_world_path} to {output_world_path}")
             copy_maps(from_world_path, output_world_path)
 
-def process_init(worlds_in, prev_worlds_in, mgr):
-    global worlds, prev_worlds, item_replace_manager
-    worlds = worlds_in
-    prev_worlds = prev_worlds_in
+def process_init(mgr):
+    global item_replace_manager
     item_replace_manager = mgr
 
 # Nothing actually to do here - just return the dict
@@ -76,11 +74,11 @@ def _create_region_lambda(region_config):
     return region_config
 
 def process_region(region_config):
-    world = worlds[region_config["world"]]
+    world = World(region_config["world_path"])
     rx = region_config["rx"]
     rz = region_config["rz"]
     if "preserve" in region_config:
-        prev_world = prev_worlds[region_config["world"]]
+        prev_world = World(region_config["prev_world_path"])
         prev_region = prev_world.get_region(region_config["preserve"]["rx"], region_config["preserve"]["rz"], read_only=True)
         region = prev_region.copy_to(world, rx, rz, regenerate_uuids=False)
     else:
@@ -382,21 +380,21 @@ if __name__ == '__main__':
     # Open the worlds for use
 
     print("Opening worlds, changing datapacks & filling areas...")
-    worlds = {}
-    prev_worlds = {}
+    worlds_paths = {}
+    prev_worlds_paths = {}
     for config in config_list:
         for world_name in config["worlds"]:
             output_world_path = os.path.join(config["output_path"], world_name)
             prev_world_path = os.path.join(config["previous_path"], world_name)
 
             world = World(output_world_path)
-            worlds[world_name] = world
+            worlds_paths[world_name] = output_world_path
 
             if not os.path.exists(prev_world_path):
                 eprint(f"!!!!!! WARNING: Missing previous week previous folder {prev_world_path}")
                 eprint("If you are not adding a shard, this is a critical problem!")
             else:
-                prev_worlds[world_name] = World(prev_world_path)
+                prev_worlds_paths[world_name] = prev_world_path
 
             if "datapacks" in config:
                 world.level_dat.enabled_datapacks = config["datapacks"]
@@ -432,6 +430,7 @@ if __name__ == '__main__':
     regions = []
     for config in config_list:
         for world_name in config["worlds"]:
+            world_path = worlds_paths[world_name]
             if "preserve_instances" in config:
                 preserve_instances = config["preserve_instances"]
                 start_rx = preserve_instances["start_rx"]
@@ -451,6 +450,8 @@ if __name__ == '__main__':
 
                     regions.append({
                         "world": world_name,
+                        "world_path": world_path,
+                        "prev_world_path": prev_worlds_paths[world_name],
                         "rx": new_rx,
                         "rz": new_rz,
                         "preserve": {
@@ -459,9 +460,10 @@ if __name__ == '__main__':
                         }
                     })
             elif "replace_items_globally" in config and config["replace_items_globally"]:
-                for _, rx, rz, __ in worlds[world_name].enumerate_regions():
+                for _, rx, rz, __ in World(world_path).enumerate_regions():
                     regions.append({
                         "world": world_name,
+                        "world_path": world_path,
                         "rx": rx,
                         "rz": rz,
                     })
@@ -482,7 +484,7 @@ if __name__ == '__main__':
     for region_config in regions:
         parallel_args.append((_create_region_lambda, (region_config,), None, None, process_region, err_func, ()))
 
-    generator = process_in_parallel(parallel_args, num_processes=num_threads, initializer=process_init, initargs=(worlds, prev_worlds, item_replace_manager))
+    generator = process_in_parallel(parallel_args, num_processes=num_threads, initializer=process_init, initargs=(item_replace_manager, ))
     num_global_replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, {})
 
     timings.nextStep("Processed regions and merged logs: {num_global_replacements} replacements")
@@ -498,7 +500,7 @@ if __name__ == '__main__':
     elif logfile == "stderr":
         log_handle = sys.stderr
     elif logfile is not None:
-        if not os.path.isdir(os.path.dirname(logfile)):
+        if os.path.dirname(logfile) and not os.path.isdir(os.path.dirname(logfile)):
             os.makedirs(os.path.dirname(logfile), mode=0o775)
         log_handle = open(logfile, 'w')
 
