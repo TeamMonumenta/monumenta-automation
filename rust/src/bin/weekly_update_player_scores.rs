@@ -74,8 +74,7 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         // TODO Forsworn Sanctum should be reset early if finished
 
         /* DelveDungeon score also increments as if it was a dungeon score */
-        // TODO This needs a StartDate score
-        //update_instance_scores(scores, days_since_epoch, "DelveDungeon", 1000, 3 * 1000, &[]);
+        update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
 
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
