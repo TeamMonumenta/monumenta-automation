@@ -113,8 +113,7 @@ if __name__ == '__main__':
                 "objective":"DB1Access"
             },
             "verdant":{
-                "region":{"x":-2, "z":5},
-                "count":800,
+                "world": "verdant",
                 "objective":"DVAccess"
             },
             "corridors":{
