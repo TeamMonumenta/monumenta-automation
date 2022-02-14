@@ -18,7 +18,7 @@ class jsonFile(object):
     file, store the nbt json as a string and use the nbt
     library's json functions.
     """
-    def __init__(self,path=None):
+    def __init__(self, path=None):
         """
         read a file as json; edit self.dict
         if no path is provided, it will create
@@ -28,7 +28,7 @@ class jsonFile(object):
         if path is None:
             self.dict = {}
             return
-        with open(path,'r') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             try:
                 fContent = f.read()
                 if fContent[0] == chr(0xfeff):
@@ -39,7 +39,7 @@ class jsonFile(object):
                 raise
             f.close()
 
-    def save(self,path=None,indent=2,separators=(',', ': '),sort_keys=False):
+    def save(self, path=None, indent=2, separators=(',', ': '), sort_keys=False):
         """
         save a json file; defaults to original location
         """
@@ -47,7 +47,7 @@ class jsonFile(object):
             path = self.path
             if path is None:
                 raise TypeError("Path not specified for json file")
-        with open(path,'w') as f:
+        with open(path, 'w', encoding='utf-8') as f:
             json.dump(
                 self.dict,
                 f,
