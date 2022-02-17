@@ -363,7 +363,9 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ],
-            'linked':server_config + base_plugins + dynmap,
+            'linked':server_config + base_plugins + dynmap + [
+                ('plugins/Monumenta/InfinityTower', '../../../server_config/data/plugins/valley/Monumenta/InfinityTower'),
+            ],
         },
 
         'isles':{
@@ -374,6 +376,7 @@ if __name__ == '__main__':
             'linked':server_config + base_plugins + dynmap + [
                 ('plugins/Roguelite', '../../server_config/data/Roguelite'),
                 ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
+                ('plugins/Monumenta/InfinityTower', '../../../server_config/data/plugins/isles/Monumenta/InfinityTower'),
             ],
         },
 
