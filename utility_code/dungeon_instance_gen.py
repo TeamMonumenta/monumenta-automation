@@ -74,7 +74,7 @@ if __name__ == '__main__':
             },
             "yellow":{
                 "region":{"x":-3, "z":2},
-                "count":150,
+                "count":60,
                 "objective":"D5Access"
             },
             "lime":{
@@ -84,7 +84,7 @@ if __name__ == '__main__':
             },
             "pink":{
                 "region":{"x":-3, "z":7},
-                "count":150,
+                "count":70,
                 "objective":"D7Access"
             },
             "gray":{
@@ -168,7 +168,7 @@ if __name__ == '__main__':
             },
             "depths":{
                 "region":{"x":-2, "z":4},
-                "count":600,
+                "count":800,
                 "objective":"DDAccess"
             },
         },
