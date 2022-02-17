@@ -283,7 +283,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:golden_boots", "Ifrit's Sandals", "minecraft:golden_boots", "Aspiration"],
                 ["minecraft:iron_sword", "Glass Rapier", "minecraft:iron_sword", "Treasured Rapier"],
                 ["minecraft:golden_hoe", "Spider's Crux", "minecraft:golden_hoe", "Marauder's Haze"],
-                ["minecraft:wooden_sword", "Fangridian Cattcrappe", "minecraft:wooden_sword", "Civit Dagger"],
+                ["minecraft:wooden_sword", "Fangridian Cattcrappe", "minecraft:stone_sword", "Civit Dagger"],
                 ["minecraft:stone_hoe", "Brimstone Scythe", "minecraft:stone_hoe", "Cavewalker Scythe"],
                 ["minecraft:trident", "Celsian Sarissa", "minecraft:iron_sword", "Celsian Sarissa"],
                 ["minecraft:trident", "Thalassic Lance", "minecraft:iron_sword", "Thalassic Lance"],
@@ -331,6 +331,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:shield", "Mu‘xro’hkr", "minecraft:shield", "Mu'xro'hkr"],
                 ["minecraft:shield", "Mu’xro‘hkr", "minecraft:shield", "Mu'xro'hkr"],
                 ["minecraft:shield", "Mu’xro’hkr", "minecraft:shield", "Mu'xro'hkr"],
+                ["minecraft:turtle_helmet", "Steel Aparatus", "minecraft:turtle_helmet", "Steel Apparatus"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
