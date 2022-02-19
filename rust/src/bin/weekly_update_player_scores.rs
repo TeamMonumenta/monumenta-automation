@@ -95,8 +95,6 @@ fn update_player_scores(player: &mut Player) {
         scores.insert("WeeklyMission2".to_string(), 0);
         scores.insert("WeeklyMission3".to_string(), 0);
 
-        scores.insert("ItemReworkToken".to_string(), 0);
-
         fix_total_level(scores);
     }
 }
