@@ -117,8 +117,7 @@ if __name__ == '__main__':
                 "objective":"DVAccess"
             },
             "corridors":{
-                "region":{"x":-2, "z":-1},
-                "count":150,
+                "world": "corridors",
                 "objective":"DRAccess"
             },
             "reverie":{
@@ -152,23 +151,19 @@ if __name__ == '__main__':
                 "objective":"DFFAccess"
             },
             "remorse":{
-                "region":{"x":-3, "z":10},
-                "count":150,
+                "world": "remorse",
                 "objective":"DSRAccess"
             },
             "rush":{
-                "region":{"x":-3, "z":15},
-                "count":75,
+                "world": "rush",
                 "objective":"DRDAccess"
             },
             "mist":{
-                "region":{"x":-2, "z":3},
-                "count":200,
+                "world": "mist",
                 "objective":"DBMAccess"
             },
             "depths":{
-                "region":{"x":-2, "z":4},
-                "count":800,
+                "world": "depths",
                 "objective":"DDAccess"
             },
         },
