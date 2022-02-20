@@ -25,7 +25,7 @@ for item_type in mgr.item_map:
                     locs.append(elem["file"].replace("/home/epic/project_epic/server_config/", ""))
                     nbt = elem["nbt"]
         else:
-            if not elem.get("generated", False):
+            if not item.get("generated", False):
                 locs.append(item["file"].replace("/home/epic/project_epic/server_config/", ""))
                 nbt = item["nbt"]
 
