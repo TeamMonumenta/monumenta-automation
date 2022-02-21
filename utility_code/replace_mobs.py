@@ -56,9 +56,9 @@ def match_name(name: str, chain=lambda mob: True):
 def match_noname(chain=lambda mob: True):
     return lambda mob: chain(mob) and (not mob.has_path('CustomName'))
 
-# Matches health to within += 1.0
+# Matches health to within += 5.0
 def match_hp(hp: float, chain=lambda mob: True):
-    return lambda mob: chain(mob) and mob.has_path('Health') and math.isclose(mob.at_path('Health').value, hp, abs_tol=1.0)
+    return lambda mob: chain(mob) and mob.has_path('Health') and math.isclose(mob.at_path('Health').value, hp, abs_tol=0.5)
 
 def match_passenger(host_chain, passenger_chain):
     return lambda mob: (host_chain(mob)
@@ -73,6 +73,7 @@ sub = [
     ('Departed Seafarer', match_noname(match_id('minecraft:drowned', match_armor_ids(["minecraft:chainmail_boots", "minecraft:string", "minecraft:chainmail_chestplate", None])))),
     ('Twilight Gryphon', match_passenger(match_id('minecraft:vex'), match_passenger(match_id('minecraft:phantom'), match_id('minecraft:zombie_villager', match_name('Twilight Rider'))))),
     ('Sky Screecher', match_passenger(match_id('minecraft:vex'), match_noname(match_id('minecraft:phantom', match_armor(["Generic phantom 1", None, None, None]))))),
+    ('Celsian Creeper', match_noname(match_id('minecraft:creeper', match_hp(28)))),
 
     # Piglin conversion
     ('Molten Citizen', match_id('minecraft:zombified_piglin', match_name('Molten Citizen'))),
