@@ -1421,6 +1421,8 @@ Syntax:
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(["tar", f"--exclude={shard}/logs", f"--exclude={shard}/plugins", f"--exclude={shard}/cache", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", shard])
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
+                await self.run(os.path.join(_top_level, f"utility_code/prune_empty_regions.py {shard}"), displayOutput=True)
+                await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard} --logfile {base_backup_name}_items.yml"), displayOutput=True)
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --worlds {shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)

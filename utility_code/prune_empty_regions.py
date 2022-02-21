@@ -4,7 +4,7 @@ import os
 import sys
 import multiprocessing
 import concurrent
-from pprint import pprint, pformat
+from pprint import pformat
 from minecraft.world import World
 from minecraft.region import Region, EntitiesRegion
 
@@ -21,16 +21,16 @@ def process_region(arg):
 
     num_entities = 0
     num_block_entities = 0
-    has_blocks={}
+    has_blocks = {}
 
     for chunk in region.iter_chunks():
         if len(has_blocks) > 10 or (fast_mode and (num_entities > 0 or num_block_entities > 0 or len(has_blocks) > 0)):
             break
 
-        if type(region) is EntitiesRegion:
+        if isinstance(region, EntitiesRegion):
             # Check if there are entities (fast check)
             num_entities += chunk.nbt.count_multipath('Entities[]')
-        elif type(region) is Region:
+        elif isinstance(region, Region):
             # Check if there are entities (fast check)
             num_entities += chunk.nbt.count_multipath('Entities[]')
 
@@ -70,10 +70,10 @@ def process_region(arg):
         else:
             print(f"{region} is valid")
         return True
-    else:
-        os.remove(region.path)
-        print(f"{region} is completely empty; deleted")
-        return False
+
+    os.remove(region.path)
+    print(f"{region} is completely empty; deleted")
+    return False
 
 if __name__ == '__main__':
     multiprocessing.set_start_method("fork")
@@ -95,10 +95,22 @@ if __name__ == '__main__':
 
     regions = []
 
+    all_world_paths = []
+    for world_path in args:
+        if os.path.isfile(os.path.join(world_path, "level.dat")):
+            all_world_paths.append(world_path)
+        else:
+            # Not directly a world - maybe a folder containing worlds?
+            all_world_paths += World.enumerate_worlds(world_path)
+
+    if len(all_world_paths) <= 0:
+        sys.exit("No valid worlds found to prune")
+
     print(f"Pruning empty regions from:")
-    for world_path in args:
+    for world_path in all_world_paths:
         print(f"  {world_path}")
-    for world_path in args:
+
+    for world_path in all_world_paths:
         world = World(world_path)
         for full_path, rx, rz, region_type in world.enumerate_regions():
             regions.append((full_path, rx, rz, region_type))
@@ -114,4 +126,3 @@ if __name__ == '__main__':
             deleted += 1
 
     print(f"Deleted {deleted} empty region files of {total} total regions")
-
