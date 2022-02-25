@@ -101,7 +101,8 @@ if __name__ == '__main__':
             all_world_paths.append(world_path)
         else:
             # Not directly a world - maybe a folder containing worlds?
-            all_world_paths += World.enumerate_worlds(world_path)
+            for enum_path in World.enumerate_worlds(world_path):
+                all_world_paths.append(os.path.join(world_path, enum_path))
 
     if len(all_world_paths) <= 0:
         sys.exit("No valid worlds found to prune")
