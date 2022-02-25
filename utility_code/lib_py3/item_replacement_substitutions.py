@@ -332,6 +332,10 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:shield", "Mu’xro‘hkr", "minecraft:shield", "Mu'xro'hkr"],
                 ["minecraft:shield", "Mu’xro’hkr", "minecraft:shield", "Mu'xro'hkr"],
                 ["minecraft:turtle_helmet", "Steel Aparatus", "minecraft:turtle_helmet", "Steel Apparatus"],
+                ["minecraft:leather_leggings", "Seeker‘s Pursuit", "minecraft:leather_leggings", "Seeker's Pursuit"],
+                ["minecraft:leather_leggings", "Seeker’s Pursuit", "minecraft:leather_leggings", "Seeker's Pursuit"],
+                ["minecraft:golden_helmet", "Excavator‘s Hardlamp", "minecraft:golden_helmet", "Excavator's Hardlamp"],
+                ["minecraft:golden_helmet", "Excavator’s Hardlamp", "minecraft:golden_helmet", "Excavator's Hardlamp"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
