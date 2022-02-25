@@ -3,7 +3,7 @@
 import concurrent.futures
 import getopt
 import multiprocessing
-from pprint import pprint
+from pprint import pprint, pformat
 import os
 import sys
 import traceback
@@ -343,15 +343,28 @@ if __name__ == '__main__':
             server = config['server']
             # Some shards don't have instances to update
             if server in dungeon_info:
-                objective = dungeon_info[server]['objective']
-                instances = dungeon_info[server]['count']
-                last_dict[objective] = 0
-                instances_dict[objective] = instances
+                server_info = dungeon_info[server]
+
+                if 'objective' not in server_info:
+                    eprint(f"!!!!!! WARNING: Invalid dungeon config for {server} missing 'objective': {pformat(server_info)}")
+                    continue
+
+                objective = server_info['objective']
+
+                if 'count' in server_info:
+                    instances_dict[objective] = server_info['count']
+                    last_dict[objective] = 0
+                elif 'world' in server_info:
+                    instances_dict[objective] = 9999999999
+                    # Intentionally don't set current instances amount, let it keep counting up
+                else:
+                    eprint(f"!!!!!! WARNING: Invalid dungeon config for {server} missing both 'count' and 'world': {pformat(server_info)}")
+                    continue
+
         print("Setting rboard scores for $Last:")
         pprint(last_dict)
         print("Setting rboard scores for $Instances:")
         pprint(instances_dict)
-        print(f"$Instances.{objective} = {instances}")
         rboard.setmulti("$Last", last_dict)
         rboard.setmulti("$Instances", instances_dict)
     except Exception as ex:
