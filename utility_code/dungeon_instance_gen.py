@@ -131,8 +131,7 @@ if __name__ == '__main__':
                 "objective":"DTAccess"
             },
             "sanctum":{
-                "region":{"x":-3, "z":12},
-                "count":40,
+                "world": "sanctum",
                 "objective":"DS1Access"
             },
             "shiftingcity":{
