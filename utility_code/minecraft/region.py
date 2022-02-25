@@ -23,7 +23,7 @@ def shorten_path(path):
             return "/".join(split[-3:])
     return path
 
-def _fixEntity(dx, dz, entity, regenerate_uuids):
+def _fixEntity(dx, dz, entity, regenerate_uuids, clear_world_uuid=False):
     nbtPaths = (
         ('x', 'z'),
         ('AX', 'AZ'),
@@ -59,6 +59,11 @@ def _fixEntity(dx, dz, entity, regenerate_uuids):
         entity.value.pop("UUIDMost", None)
         entity.value.pop("UUIDLeast", None)
         entity.value["UUID"] = uuid_to_mc_uuid_tag_int_array(uuid.uuid4())
+
+    # Clear Bukkit world UUID if set
+    if clear_world_uuid:
+        entity.value.pop("WorldUUIDMost", None)
+        entity.value.pop("WorldUUIDLeast", None)
 
 class BaseRegion(MutableMapping, NbtPathDebug):
     """A base region file that is common to all types"""
@@ -236,7 +241,7 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         self._region.fd.seek(4096 * extents[-1][0])
         self._region.fd.truncate()
 
-    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True):
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
         """
         Copies this region file to a new location and returns that new Region
 
@@ -256,8 +261,8 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         # Create the same type region object as the calling class (Region, EntitiesRegion, etc.)
         return type(self)(new_path, rx, rz)
 
-    def move_to(self, world, rx, rz, overwrite=False):
-        region = self.copy_to(world, rx, rz, overwrite=overwrite, regenerate_uuids=False)
+    def move_to(self, world, rx, rz, overwrite=False, clear_world_uuid=False):
+        region = self.copy_to(world, rx, rz, overwrite=overwrite, regenerate_uuids=False, clear_world_uuid=clear_world_uuid)
         self._region.close()
         os.remove(self.path)
         return region
@@ -359,7 +364,7 @@ class Region(BaseRegion):
     def folder_name(self):
         return "region"
 
-    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True):
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
         # Copy the file itself which is common to all region types
         region = super().copy_to(world, rx, rz, overwrite, regenerate_uuids)
         dx = (rx - self.rx) * 512
@@ -372,7 +377,7 @@ class Region(BaseRegion):
             for path in ['Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
                 if chunk.nbt.has_path(path):
                     for entity in chunk.nbt.iter_multipath(path + '[]'):
-                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids)
+                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
 
         return region
 
@@ -447,7 +452,7 @@ class EntitiesRegion(BaseRegion):
     def folder_name(self):
         return "entities"
 
-    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True):
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
         # Copy the file itself which is common to all region types
         region = super().copy_to(world, rx, rz, overwrite, regenerate_uuids)
         dx = (rx - self.rx) * 512
@@ -459,7 +464,7 @@ class EntitiesRegion(BaseRegion):
             for path in ['Entities',]:
                 if chunk.nbt.has_path(path):
                     for entity in chunk.nbt.iter_multipath(path + '[]'):
-                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids)
+                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
         return region
 
     def __repr__(self):
@@ -472,7 +477,7 @@ class PoiRegion(BaseRegion):
     def folder_name(self):
         return "poi"
 
-    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True):
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
         raise NotImplementedError
 
     def __repr__(self):

@@ -14,4 +14,4 @@ if __name__ == '__main__':
     dest_path = args[2]
 
     source_world = World(from_path)
-    source_world.copy_to(dest_path)
+    source_world.copy_to(dest_path, clear_world_uuid=True)
