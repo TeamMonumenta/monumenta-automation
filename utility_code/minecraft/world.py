@@ -52,13 +52,13 @@ class World():
         return [o for o in os.listdir(dir)
                     if os.path.isdir(os.path.join(dir, o)) and os.path.isfile(os.path.join(dir, o, "level.dat"))]
 
-    def copy_to(self, path, regenerate_uuids=True):
+    def copy_to(self, path, regenerate_uuids=True, clear_world_uuid=False):
         os.makedirs(path)
         if self.level_dat is not None:
             self.level_dat.save(os.path.join(path, 'level.dat'))
         new_world = World(path)
         for region in self.iter_regions():
-            region.copy_to(new_world, region.rx, region.rz)
+            region.copy_to(new_world, region.rx, region.rz, clear_world_uuid=clear_world_uuid)
         return new_world
 
     def enumerate_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion)): # TODO: PoiRegion
