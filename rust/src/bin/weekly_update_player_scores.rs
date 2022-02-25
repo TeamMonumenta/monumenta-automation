@@ -49,10 +49,7 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
 
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     if let Some(scores) = &mut player.scores {
-        /*
-         * These scores increment by 10000 or if >= max are reset to 0, along with resetting
-         * the additional objectives listed at the end
-         */
+        /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
         update_instance_scores(scores, days_since_epoch, "D0StartDate", 28, &["D0Access", "D0Finished"]);
         update_instance_scores(scores, days_since_epoch, "D1StartDate", 28, &["D1Access", "D1Finished", "D1Delve1", "D1Delve2"]);
         update_instance_scores(scores, days_since_epoch, "D2StartDate", 28, &["D2Access", "D2Finished", "D2Delve1", "D2Delve2"]);
@@ -71,9 +68,8 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         update_instance_scores(scores, days_since_epoch, "DCSStartDate", 28, &["DRL2Access", "DRL2Finished", "DSCDelve1", "DSCDelve2"]);
         update_instance_scores(scores, days_since_epoch, "DFFStartDate", 28, &["DFFAccess", "DFFFinished", "DFFDelve1", "DFFDelve2"]);
         update_instance_scores(scores, days_since_epoch, "DFSStartDate", 28, &["DS1Access", "DS1Finished"]);
-        // TODO Forsworn Sanctum should be reset early if finished
 
-        /* DelveDungeon score also increments as if it was a dungeon score */
+        /* DelveDungeon score also resets as if it was a dungeon score */
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
 
         /* These scores are always reset to 0 */
