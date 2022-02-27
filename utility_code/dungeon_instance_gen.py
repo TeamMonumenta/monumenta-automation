@@ -126,8 +126,7 @@ if __name__ == '__main__':
                 "objective":"DCAccess"
             },
             "tutorial":{
-                "region":{"x":-2, "z":1},
-                "count":1500,
+                "world": "tutorial",
                 "objective":"DTAccess"
             },
             "sanctum":{
