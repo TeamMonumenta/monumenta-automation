@@ -752,6 +752,7 @@ Must be run before starting weekly update on the play server'''
         '''Prepares a bundle of whichever shards you want to update on stage.
 
 `--debug` prepares the bundle without stopping shards.
+`--skip-server-config` prepares the bundle without including the server_config folder (no plugins or data folder updates)
 
 Examples:
 `{cmdPrefix}prepare stage bundle valley labs`
@@ -767,10 +768,14 @@ Examples:
         instance_gen_required = []
         main_shards = []
         debug = False
+        copy_server_config = True
         for shard in shards:
             if shard == "--debug":
                 debug = True
                 await self.display("Debug mode enabled! Will not stop shards prior to copying")
+            elif shard == "--skip-server-config":
+                copy_server_config = False
+                await self.display("--skip-server-config specified, will not copy server_config folder (no plugins or data folder updates) ")
             elif shard in ("valley", "isles",):
                 main_shards.append(shard)
             elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "mist", "willows", "sanctum", "shiftingcity", "labs", "depths", "remorse", "corridors", "verdant"]:
@@ -836,17 +841,18 @@ Examples:
 
             await self.display("Dungeon instance generation complete!")
 
-        await self.display("Copying server_config...")
-        await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpstage/TEMPLATE/")
+        if copy_server_config:
+            await self.display("Copying server_config...")
+            await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpstage/TEMPLATE/")
 
-        await self.display("Running replacements on copied structures...")
-        args = (" --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
-            + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
-            + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
-        await self.run(os.path.join(_top_level, "utility_code/replace_items.py"
-            + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
-            + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
-        await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
+            await self.display("Running replacements on copied structures...")
+            args = (" --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
+                + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
+                + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
+            await self.run(os.path.join(_top_level, "utility_code/replace_items.py"
+                + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
+                + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
+            await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         await self.display("Packaging up stage bundle...")
         await self.cd("/home/epic/5_SCRATCH/tmpstage")
