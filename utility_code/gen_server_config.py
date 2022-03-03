@@ -195,7 +195,7 @@ if __name__ == '__main__':
             ]
     else:
         purgatory_min += [
-                #('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
+                ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
                 ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
                 ('plugins/VentureChat/config.yml', '../../../server_config/data/plugins/all/VentureChat/config.yml'),
             ]
