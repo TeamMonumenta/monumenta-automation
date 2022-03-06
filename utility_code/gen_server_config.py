@@ -191,17 +191,6 @@ if __name__ == '__main__':
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
     ]
 
-    if SERVER_TYPE == 'build':
-        purgatory_min += [
-            ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
-        ]
-    else:
-        purgatory_min += [
-            ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
-            ('plugins/VentureChat.jar', '../../server_config/plugins/VentureChat.jar'),
-            ('plugins/VentureChat/config.yml', '../../../server_config/data/plugins/all/VentureChat/config.yml'),
-        ]
-
     server_config_min = purgatory_min + [
         ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
         ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
@@ -212,6 +201,11 @@ if __name__ == '__main__':
     server_config = server_config_min + [
         ('Project_Epic-{servername}/generated', '../../server_config/data/generated'),
         ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks'),
+    ]
+
+    network_chat = [
+        ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
+        ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/all/MonumentaNetworkChat/config.yml'),
     ]
 
     monumenta = [
@@ -336,7 +330,7 @@ if __name__ == '__main__':
     #   server_config
     #   structures
 
-    base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor
+    base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
     if SERVER_TYPE == 'build':
         base_plugins += speedchanger + voxelsniper + gobrush
     else:
@@ -438,6 +432,8 @@ if __name__ == '__main__':
                 ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
             ],
             'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + [
+                ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
+                ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/build/MonumentaNetworkChat/config.yml'),
                 ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
                 ('plugins/LibraryOfSouls.jar', '../../server_config/plugins/LibraryOfSouls.jar'),
             ],
