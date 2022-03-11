@@ -435,6 +435,7 @@ if __name__ == '__main__':
             'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + [
                 ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
                 ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/build/MonumentaNetworkChat/config.yml'),
+                ('plugins/MonumentaNetworkChat/help', '../../../server_config/data/plugins/all/MonumentaNetworkChat/help'),
                 ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
                 ('plugins/LibraryOfSouls.jar', '../../server_config/plugins/LibraryOfSouls.jar'),
             ],
