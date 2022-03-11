@@ -373,7 +373,6 @@ if __name__ == '__main__':
             'linked':server_config + base_plugins + dynmap + [
                 ('plugins/Roguelite', '../../server_config/data/Roguelite'),
                 ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
-                ('plugins/Monumenta/InfinityTower', '../../../server_config/data/plugins/isles/Monumenta/InfinityTower'),
             ],
         },
 
