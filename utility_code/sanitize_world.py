@@ -13,7 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from quarry.types.chunk import BlockArray
 
 def usage():
-    print("This script removes all blocks above non-glowstone at y=0 except for sea lanterns, glass, and coal blocks")
+    print("This script removes all blocks above non-glowstone non-lapis at y=0 except for sea lanterns, glass, and coal blocks")
     sys.exit("Usage: {} --world /path/to/world --pos1 x,y,z --pos2 x,y,z".format(sys.argv[0]))
 
 if __name__ == '__main__':
@@ -31,18 +31,18 @@ if __name__ == '__main__':
     for o, a in opts:
         if o in ("-w", "--world"):
             world_path = a
-        elif o in ("--pos1"):
+        elif o in ("--pos1", ):
             try:
                 split = a.split(",")
                 pos1 = (int(split[0]), int(split[1]), int(split[2]))
-            except:
+            except Exception:
                 eprint("Invalid --pos1 argument")
                 usage()
-        elif o in ("--pos2"):
+        elif o in ("--pos2", ):
             try:
                 split = a.split(",")
                 pos2 = (int(split[0]), int(split[1]), int(split[2]))
-            except:
+            except Exception:
                 eprint("Invalid --pos2 argument")
                 usage()
         else:
@@ -88,7 +88,7 @@ if __name__ == '__main__':
                             by = 0
                             for bz in bounded_range(min_z, max_z, cz, 16):
                                 for bx in bounded_range(min_x, max_x, cx, 16):
-                                    if blocks[256 * by + 16 * bz + bx]["name"] != "minecraft:glowstone":
+                                    if blocks[256 * by + 16 * bz + bx]["name"] not in ("minecraft:glowstone", "minecraft:lapis_block"):
                                         columns_to_prune.add(f"{bx}-{bz}")
 
                     # Prune them
@@ -132,4 +132,3 @@ if __name__ == '__main__':
                     region.save_chunk(chunk)
 
     print(f"{blocks_removed} blocks removed, {entities_removed} entities removed, {tile_entities_removed} tile entities removed")
-
