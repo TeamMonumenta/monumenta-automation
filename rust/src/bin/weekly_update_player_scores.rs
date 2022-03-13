@@ -95,18 +95,6 @@ fn update_player_scores(player: &mut Player) {
         scores.insert("WeeklyMission2".to_string(), 0);
         scores.insert("WeeklyMission3".to_string(), 0);
 
-        /* REVERT ME SINGLE WEEK CHANGES */
-        if let Some(raceval) = scores.remove("Race00") {
-            if raceval != 0 {
-                scores.insert("OldTutorialRace".to_string(), raceval);
-            }
-        }
-        if let Some(depthsval) = scores.get("DepthsEndless") {
-            if *depthsval > 121 {
-                scores.insert("DepthsEndless".to_string(), 121);
-            }
-        }
-
         fix_total_level(scores);
     }
 }
