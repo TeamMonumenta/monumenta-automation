@@ -57,6 +57,8 @@ RUN cd /tmp && \
 	rm get-pip.py && \
 	pypy3 -m pip install wheel pika redis bitstring kanboard flask mutf8 pyyaml
 
+ENV PYTHONIOENCODING UTF-8
+
 COPY quarry $USERHOME/MCEdit-And-Automation/quarry
 COPY rust/bin $USERHOME/MCEdit-And-Automation/rust/bin
 COPY leaderboards.yaml $USERHOME/MCEdit-And-Automation/leaderboards.yaml
