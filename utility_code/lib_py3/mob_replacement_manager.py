@@ -64,6 +64,9 @@ class MobReplacementManager(object):
         # _substitutions = [(lambda(mob) -> bool, replacement)]
         self._substitutions = []
 
+        # Whether to always try all substitutions, even if a matching mob exists
+        self._substitutions_forced = False
+
     def add_replacements(self, replacements: [nbt.TagCompound], allow_unwanted_spawner_tags=False) -> None:
         """
         Add additional replacements to the mob map
@@ -154,6 +157,8 @@ class MobReplacementManager(object):
 
         lambda functions that match too broadly will trigger an exception
         """
+        if force_add_ignoring_conflicts:
+            self._substitutions_forced = True
 
         for sub in substitutions:
             replacement = None
@@ -193,11 +198,10 @@ class MobReplacementManager(object):
         else:
             mob_name = "<nameless>"
 
-        if not new_nbt:
+        if not new_nbt or self._substitutions_forced:
             # No luck with exact name/id match replacement - try substitutions
 
             # Linear performance with substitutions, so keep the list short!
-            new_nbt = None
             for sub_matcher, sub_mob in self._substitutions:
                 if sub_matcher(mob):
                     new_nbt = sub_mob
