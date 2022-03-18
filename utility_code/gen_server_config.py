@@ -361,7 +361,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ],
             'linked':server_config + base_plugins + dynmap + [
-                ('plugins/Monumenta/InfinityTower', '../../../server_config/data/plugins/valley/Monumenta/InfinityTower'),
+                ('plugins/Monumenta/InfinityTower/InfinityFloors.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityFloors.json'),
             ],
         },
 

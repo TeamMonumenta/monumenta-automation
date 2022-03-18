@@ -58,7 +58,11 @@ class World():
             self.level_dat.save(os.path.join(path, 'level.dat'))
         new_world = World(path)
         for region in self.iter_regions():
-            region.copy_to(new_world, region.rx, region.rz, clear_world_uuid=clear_world_uuid)
+            try:
+                region.copy_to(new_world, region.rx, region.rz, clear_world_uuid=clear_world_uuid)
+            except Exception as e:
+                print(f'Exception copying {region!r}')
+                raise
         return new_world
 
     def enumerate_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion)): # TODO: PoiRegion

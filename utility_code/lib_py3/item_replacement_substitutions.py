@@ -336,6 +336,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:leather_leggings", "Seeker’s Pursuit", "minecraft:leather_leggings", "Seeker's Pursuit"],
                 ["minecraft:golden_helmet", "Excavator‘s Hardlamp", "minecraft:golden_helmet", "Excavator's Hardlamp"],
                 ["minecraft:golden_helmet", "Excavator’s Hardlamp", "minecraft:golden_helmet", "Excavator's Hardlamp"],
+                ["minecraft:bamboo", "Ancient rifle barrel", "minecraft:bamboo", "Ancient Rifle Barrel"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
