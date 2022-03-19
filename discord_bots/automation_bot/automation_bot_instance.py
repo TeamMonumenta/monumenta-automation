@@ -140,7 +140,7 @@ class AutomationBotInstance(object):
             "verdant": "DVAccess",
             "reverie": "DCAccess",
             "tutorial": "DTAccess",
-            "sanctum": "DS1Access",
+            "sanctum": "DFSAccess",
             "shiftingcity": "DRL2Access",
             "teal": "DTLAccess",
             "forum": "DFFAccess",

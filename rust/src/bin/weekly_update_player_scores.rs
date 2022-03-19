@@ -78,8 +78,6 @@ fn update_player_scores(player: &mut Player) {
         update_instance_scores(scores, "DB1Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["DB1Finished", "DWDelve1", "DWDelve2"]);
         update_instance_scores(scores, "DRL2Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["DRL2Finished", "DSCDelve1", "DSCDelve2"]);
         update_instance_scores(scores, "DFFAccess", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["DFFFinished", "DFFDelve1", "DFFDelve2"]);
-        update_instance_scores(scores, "DS1Access", INSTANCE_WEEK_OFFSET, 3 * INSTANCE_WEEK_OFFSET, &["DS1Finished"]);
-        update_instance_scores(scores, "DS1Finished", INSTANCE_WEEK_OFFSET, 1, &["DS1Access"]);
 
         /* DelveDungeon score also increments as if it was a dungeon score */
         update_instance_scores(scores, "DelveDungeon", 1000, 3 * 1000, &[]);
@@ -89,6 +87,7 @@ fn update_player_scores(player: &mut Player) {
         scores.insert("DRDAccess".to_string(), 0);
         scores.insert("DBMAccess".to_string(), 0);
         scores.insert("DSRAccess".to_string(), 0);
+        scores.insert("DFSAccess".to_string(), 0);
         scores.insert("DDAccess".to_string(), 0);
 
         scores.insert("WeeklyMission1".to_string(), 0);
