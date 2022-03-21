@@ -1076,7 +1076,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
             raffle_seed = self._rreact["msg_contents"]
 
         raffle_results = tempfile.mktemp()
-        vote_raffle(raffle_seed, '/home/epic/project_epic/bungee/uuid2name.yml', '/home/epic/project_epic/bungee/plugins/Monumenta-Bungee/votes', raffle_results, dry_run=True)
+        vote_raffle(raffle_seed, 'redis', raffle_results, dry_run=True)
         await self.run("cat {}".format(raffle_results), displayOutput=True)
 
     async def action_weekly_update(self, cmd, message):
@@ -1150,7 +1150,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                 raffle_seed = self._rreact["msg_contents"]
 
             raffle_results = tempfile.mktemp()
-            vote_raffle(raffle_seed, f"{self._shards['bungee']}/uuid2name.yml", f"{self._shards['bungee']}/plugins/Monumenta-Bungee/votes", raffle_results)
+            vote_raffle(raffle_seed, 'redis', raffle_results)
             await self.run("cat {}".format(raffle_results), displayOutput=True)
 
         # Raffle
