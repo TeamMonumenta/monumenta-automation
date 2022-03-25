@@ -159,7 +159,7 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "rush": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "sanctum": {
