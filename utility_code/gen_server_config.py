@@ -594,6 +594,7 @@ if __name__ == '__main__':
         config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=peaceful'))
         config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
         config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
+        config = add_config_if_not_set(config, ('server.properties', 'player-idle-timeout', 'player-idle-timeout=60'))
     else:
         config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=normal'))
         config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
