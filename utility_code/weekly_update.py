@@ -268,6 +268,7 @@ if __name__ == '__main__':
         "tutorial": tutorial,
         "build": None,
         "bungee": None,
+        "bungee-2": None,
         "purgatory": None,
     }
 

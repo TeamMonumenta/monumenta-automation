@@ -729,6 +729,7 @@ Must be run before starting weekly update on the play server'''
 
         await self.display("Copying bungee...")
         await self.run("cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
+        await self.run("cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/bungee-2")
 
         await self.display("Copying purgatory...")
         await self.run("cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
@@ -927,7 +928,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
                     await self.run(f"cp {self._server_dir}/0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml {self._shards[shard]}/plugins/MonumentaWarps/warps.yml")
 
         for shard in folders_to_update:
-            if shard in ["build","bungee"]:
+            if shard in ["build","bungee","bungee-2"]:
                 continue
 
             await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/stage/banned-ips.json {self._shards[shard]}/")
@@ -991,7 +992,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
         await asyncio.sleep(5)
 
         # Stop bungee
-        await self.stop("bungee")
+        await self.stop(["bungee", "bungee-2"])
 
         await self.display(message.author.mention)
 
@@ -1124,7 +1125,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         if min_phase <= 4:
             await self.display("Moving everything except bungee, and build to 0_PREVIOUS...")
             for f in files:
-                if f not in ["0_PREVIOUS", "bungee", "build",]:
+                if f not in ["0_PREVIOUS", "bungee", "bungee-2", "build"]:
                     await self.run("mv {} 0_PREVIOUS/".format(f))
 
         if min_phase <= 5:
@@ -1202,7 +1203,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                         await self.run("cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/MonumentaWarps/warps.yml"))
 
             for shard in self._shards:
-                if shard in ["build", "bungee"]:
+                if shard in ["build", "bungee", "bungee-2"]:
                     continue
 
                 await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
@@ -1312,7 +1313,15 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         await self.display("Adjusting bungee config...")
         with open(f"{self._shards['bungee']}/config.yml", "r") as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
+        with open(f"{self._shards['bungee']}/config.yml", "r") as f:
+            config_2 = yaml.load(f, Loader=yaml.FullLoader)
         config["listeners"][0]["priorities"] = [
+            "purgatory",
+            "valley",
+            "isles",
+            "plots",
+        ]
+        config_2["listeners"][0]["priorities"] = [
             "purgatory",
             "valley",
             "isles",
@@ -1320,6 +1329,8 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         ]
         with open(f"{self._shards['bungee']}/config.yml", "w") as f:
             yaml.dump(config, f, width=2147483647, allow_unicode=True)
+        with open(f"{self._shards['bungee-2']}/config.yml", "w") as f:
+            yaml.dump(config_2, f, width=2147483647, allow_unicode=True)
 
         await self.display("Stage server loaded with current play server data")
         await self.display(message.author.mention)

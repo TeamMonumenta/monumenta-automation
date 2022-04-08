@@ -11,10 +11,28 @@ from pprint import pprint
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.lib_k8s import KubernetesManager
 
+
 def send_broadcast_msg(time_left):
     socket.send_packet("*", "monumentanetworkrelay.command",
-            {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". This helps reduce lag! The server will be down for ~90 seconds."}]'''}
+            {"command": '''a Monumenta will perform its daily restart in <b>''' + time_left + '''</b>. This helps reduce lag! The server will be down for ~90 seconds.'''}
     )
+
+
+def maintenance(config, enabled):
+    # Read the BungeeDisplay config file
+    with open(config, 'r') as ymlfile:
+        bungee_display_yml = yaml.load(ymlfile, Loader=yaml.FullLoader)
+
+    bungee_display_yml["maintenance"]["enabled"] = enabled
+    if enabled:
+        bungee_display_yml["maintenance"]["join"] = '&cMonumenta is currently down for daily restart - try again in a few minutes'
+        bungee_display_yml["maintenance"]["kick_message"] = '&cMonumenta is going down for daily restart - join again in 5 minutes'
+        bungee_display_yml["maintenance"]["information"] = '&6Please try again in a few minutes'
+        bungee_display_yml["motd"]["maintenance"]["line2"] = '              &c&lDown for Daily Restart'
+
+    with open(config, 'w') as ymlfile:
+        yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
+
 
 async def main():
     # Short wait to make sure socket connects correctly
@@ -44,18 +62,9 @@ async def main():
     except:
         print("Failed to notify players about pending restart: {}".format(traceback.format_exc()))
 
-    # Read the BungeeDisplay config file
-    with open(f'{config["shards"]["bungee"]}/plugins/BungeeDisplay/config.yml', 'r') as ymlfile:
-        bungee_display_yml = yaml.load(ymlfile, Loader=yaml.FullLoader)
-
     # Modify the file to set maintenance mode - this kicks everyone
-    bungee_display_yml["maintenance"]["enabled"] = True
-    bungee_display_yml["maintenance"]["join"] = '&cMonumenta is currently down for daily restart - try again in a few minutes'
-    bungee_display_yml["maintenance"]["kick_message"] = '&cMonumenta is going down for daily restart - join again in 5 minutes'
-    bungee_display_yml["maintenance"]["information"] = '&6Please try again in a few minutes'
-    bungee_display_yml["motd"]["maintenance"]["line2"] = '              &c&lDown for Daily Restart'
-    with open(f'{config["shards"]["bungee"]}/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
-        yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
+    maintenance(f'{config["shards"]["bungee"]}/plugins/BungeeDisplay/config.yml', True)
+    maintenance(f'{config["shards"]["bungee-2"]}/plugins/BungeeDisplay/config.yml', True)
 
     # Just a bit of time to process config and kick players
     await asyncio.sleep(5)
@@ -63,6 +72,7 @@ async def main():
     # Restart bungee
     print("Restarting bungee...")
     socket.send_packet("bungee", "monumentanetworkrelay.command", {"command": "end"})
+    socket.send_packet("bungee-2", "monumentanetworkrelay.command", {"command": "end"})
 
     # At this point shards that didn't already restart will do so
 
@@ -70,9 +80,9 @@ async def main():
     await asyncio.sleep(85)
 
     # Turn maintenance mode back off
-    bungee_display_yml["maintenance"]["enabled"] = False
-    with open(f'{config["shards"]["bungee"]}/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
-        yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
+    maintenance(f'{config["shards"]["bungee"]}/plugins/BungeeDisplay/config.yml', False)
+    maintenance(f'{config["shards"]["bungee-2"]}/plugins/BungeeDisplay/config.yml', False)
+
 
 if __name__ == '__main__':
     ################################################################################
