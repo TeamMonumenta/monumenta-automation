@@ -1140,10 +1140,26 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(f"rm -rf {self._shards['purgatory']}")
             await self.run(f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory {self._shards['purgatory']}")
 
+        if min_phase <= 9 and self._common_weekly_update_tasks:
+            await self.display("Removing tutorial data")
+            await self.run(os.path.join(_top_level, "rust/bin/redis_remove_data") + " redis://redis/ tutorial:* --confirm")
+
+        if min_phase <= 10 and self._common_weekly_update_tasks:
+            await self.display("Running score changes for players and moving them to spawn...")
+            await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + f" {self._server_dir}/server_config/redis_data_initial")
+
+        if min_phase <= 11 and self._common_weekly_update_tasks:
+            await self.display("Running item replacements for players...")
+            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks --logfile {self._server_dir}/server_config/redis_data_initial/replacements.yml -j 16")
+
+        if min_phase <= 12 and self._common_weekly_update_tasks:
+            await self.display("Loading player data back into redis...")
+            await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --input {self._server_dir}/server_config/redis_data_initial 1")
+
         ########################################
         # Raffle
 
-        if min_phase <= 9 and "bungee" in self._shards:
+        if min_phase <= 13 and "bungee" in self._shards:
             await self.display("Raffle results:")
             raffle_seed = "Default raffle seed"
             if self._rreact["msg_contents"] is not None:
@@ -1155,22 +1171,6 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         # Raffle
         ########################################
-
-        if min_phase <= 10 and self._common_weekly_update_tasks:
-            await self.display("Removing tutorial data")
-            await self.run(os.path.join(_top_level, "rust/bin/redis_remove_data") + " redis://redis/ tutorial:* --confirm")
-
-        if min_phase <= 11 and self._common_weekly_update_tasks:
-            await self.display("Running score changes for players and moving them to spawn...")
-            await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + f" {self._server_dir}/server_config/redis_data_initial")
-
-        if min_phase <= 12 and self._common_weekly_update_tasks:
-            await self.display("Running item replacements for players...")
-            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks --logfile {self._server_dir}/server_config/redis_data_initial/replacements.yml -j 16")
-
-        if min_phase <= 13 and self._common_weekly_update_tasks:
-            await self.display("Loading player data back into redis...")
-            await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --input {self._server_dir}/server_config/redis_data_initial 1")
 
         if min_phase <= 14 and self._common_weekly_update_tasks:
             await self.display("Refreshing leaderboards")
