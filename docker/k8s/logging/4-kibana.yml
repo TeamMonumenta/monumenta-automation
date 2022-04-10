@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: kube-system
+  labels:
+    k8s-app: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: kibana
+  template:
+    metadata:
+      labels:
+        k8s-app: kibana
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-12
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana-oss:6.8.4
+        env:
+          - name: ELASTICSEARCH_URL
+            value: http://elasticsearch:9200
+        ports:
+        - containerPort: 5601
+          name: ui
+          protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  namespace: kube-system
+  labels:
+    k8s-app: kibana
+    kubernetes.io/name: "Kibana"
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5601
+    protocol: TCP
+    targetPort: ui
+  selector:
+    k8s-app: kibana
+
+
+---
+
+# To generate the logs-auth secret, run these commands:
+# htpasswd -c ./auth epic
+# kubectl create secret generic logs-auth --from-file auth -n kube-system
+# rm auth
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: logs
+  namespace: kube-system
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: logs-auth
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
+spec:
+  tls:
+  - hosts:
+    - logs.playmonumenta.com
+  rules:
+  - host: logs.playmonumenta.com
+    http:
+      paths:
+      - backend:
+          serviceName: kibana
+          servicePort: 5601
