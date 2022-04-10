@@ -55,6 +55,13 @@ def to_number(numeral):
         return 4
     return 0
 
+
+def mark_dirty(item):
+    if not item.nbt.has_path('tag.Monumenta'):
+        return
+    item.nbt.at_path('tag.Monumenta').value['Dirty'] = nbt.TagByte(1)
+
+
 class GlobalRule():
     """Base pre/post processing rule for item replacements, used to preserve and edit data."""
     # Edit this for all new objects:
@@ -264,6 +271,8 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
 
         if item.nbt.has_path('tag.Monumenta') and len(item.nbt.at_path('tag.Monumenta').value) == 0:
             item.tag.value.pop('Monumenta')
+        else:
+            mark_dirty(item)
 
 class PreserveBlockEntityTag(GlobalRule):
     name = 'Preserve block entity tag'
@@ -318,6 +327,7 @@ class PreserveTotemOfTransposing(GlobalRule):
                     plain_tag_path = 'plain.display.Lore[$INDEX$]'.replace('$INDEX$', str(i))
                     if item.tag.has_path(plain_tag_path):
                         item.tag.at_path(plain_tag_path).value = 'Transposing Channel: $TRANSPOSING_ID$'.replace('$TRANSPOSING_ID$', str(self.channel))
+            mark_dirty(item)
 
 class PreservePotionInjector(GlobalRule):
     name = 'Preserve Potion Injector config'
