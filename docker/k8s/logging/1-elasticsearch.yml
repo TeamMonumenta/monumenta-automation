@@ -72,7 +72,7 @@ spec:
                 - monumenta-12
       serviceAccountName: elasticsearch
       containers:
-      - image: elasticsearch:6.8.4
+      - image: elasticsearch:6.8.23
         name: elasticsearch
         ports:
         - containerPort: 9200

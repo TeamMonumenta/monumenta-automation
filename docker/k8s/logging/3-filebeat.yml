@@ -50,6 +50,11 @@ metadata:
     k8s-app: filebeat
 data:
   filebeat.yml: |-
+    filebeat.inputs:
+      multiline.type: pattern
+      multiline.pattern: '^\['
+      multiline.negate: true
+      multiline.match: after
     filebeat.config:
       prospectors:
         # Mounted `filebeat-prospectors` configmap:
@@ -80,6 +85,11 @@ data:
       processors:
         - add_kubernetes_metadata:
             in_cluster: true
+        - drop_fields:
+            when:
+              has_fields: ['kubernetes.labels.app']
+            fields:
+              - 'kubernetes.labels.app'
 
 ---
 

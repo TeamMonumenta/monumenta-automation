@@ -14,19 +14,18 @@ data:
       }
     }
     filter {
-      grok {
-          match => { "message" => "%{COMBINEDAPACHELOG}" }
-      }
       date {
-        match => [ "timestamp" , "dd/MMM/yyyy:HH:mm:ss Z" ]
+        match => [ "timestamp" , "HH:mm:ss" ]
       }
-      geoip {
-          source => "clientip"
-        }
+      mutate {
+        id => "Remove ANSI color codes"
+        gsub => ["message", "\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]", ""]
       }
-      output {
-        elasticsearch {
-          hosts => ["elasticsearch:9200"]
+    }
+    output {
+      elasticsearch {
+        hosts => ["elasticsearch:9200"]
+        index => "logstash-%{+YYYY.MM}"
       }
     }
 
@@ -59,7 +58,7 @@ spec:
                 - monumenta-12
       containers:
       - name: logstash
-        image: docker.elastic.co/logstash/logstash:6.3.0
+        image: logstash:6.8.23
         ports:
         - containerPort: 5044
         volumeMounts:
