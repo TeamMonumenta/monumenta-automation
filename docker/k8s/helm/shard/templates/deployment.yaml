@@ -101,6 +101,10 @@ spec:
           hostPath:
             path: /nfs/4_SHARED
             type: Directory
+        - name: nfs-scratch
+          hostPath:
+            path: /nfs/5_SCRATCH
+            type: Directory
       terminationGracePeriodSeconds: 90
       containers:
       - name: {{ .Values.name }}
@@ -182,6 +186,8 @@ spec:
 {{- end }}
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
+        - name: nfs-scratch
+          mountPath: /home/epic/5_SCRATCH
         resources:
           limits:
             # Set this to 1Gi
