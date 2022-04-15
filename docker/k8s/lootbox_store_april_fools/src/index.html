@@ -1,0 +1,164 @@
+<html>
+
+<head>
+    <title>Monumenta Official Webstore!</title>
+    <script>
+        function button1() {
+            document.getElementById("1out1").innerHTML = parseFloat(document.getElementById("1out1").innerHTML) + 1
+            document.getElementById("1out2").innerHTML = parseFloat(document.getElementById("1out2").innerHTML) + 2.75
+            document.getElementById("amount").innerHTML = parseFloat(document.getElementById("amount").innerHTML) + 1
+            document.getElementById("cost").innerHTML = parseFloat(document.getElementById("cost").innerHTML) + 2.75
+        }
+
+        function button2() {
+            document.getElementById("2out1").innerHTML = parseFloat(document.getElementById("2out1").innerHTML) + 1
+            document.getElementById("2out2").innerHTML = parseFloat(document.getElementById("2out2").innerHTML) + 5.5
+            document.getElementById("amount").innerHTML = parseFloat(document.getElementById("amount").innerHTML) + 1
+            document.getElementById("cost").innerHTML = parseFloat(document.getElementById("cost").innerHTML) + 5.5
+        }
+
+        function button5() {
+            document.getElementById("5out1").innerHTML = parseFloat(document.getElementById("5out1").innerHTML) + 1
+            document.getElementById("5out2").innerHTML = parseFloat(document.getElementById("5out2").innerHTML) + 12.375
+            document.getElementById("amount").innerHTML = parseFloat(document.getElementById("amount").innerHTML) + 1
+            document.getElementById("cost").innerHTML = parseFloat(document.getElementById("cost").innerHTML) + 12.375
+        }
+
+        function button10() {
+            document.getElementById("10out1").innerHTML = parseFloat(document.getElementById("10out1").innerHTML) + 1
+            document.getElementById("10out2").innerHTML = parseFloat(document.getElementById("10out2").innerHTML) + 30.25
+            document.getElementById("amount").innerHTML = parseFloat(document.getElementById("amount").innerHTML) + 1
+            document.getElementById("cost").innerHTML = parseFloat(document.getElementById("cost").innerHTML) + 30.25
+        }
+
+        function button25() {
+            document.getElementById("25out1").innerHTML = parseFloat(document.getElementById("25out1").innerHTML) + 1
+            document.getElementById("25out2").innerHTML = parseFloat(document.getElementById("25out2").innerHTML) + parseFloat(document.getElementById("cost25").innerHTML)
+            document.getElementById("amount").innerHTML = parseFloat(document.getElementById("amount").innerHTML) + 1
+            document.getElementById("cost").innerHTML = parseFloat(document.getElementById("cost").innerHTML) + parseFloat(document.getElementById("cost25").innerHTML)
+            document.getElementById("cost25").innerHTML = parseInt(document.getElementById("cost25").innerHTML) + 1
+        }
+
+    </script>
+    <link rel="icon" type="image/x-icon" href="img/money.png">
+</head>
+
+<body style="background-color: whitesmoke;">
+    <table>
+        <thead>
+            <tr>
+                <th width="20%"><a href="https://playmonumenta.com/"><img src="img/logo.png" width="50%"></a></th>
+                <th style="font-size:xx-large;">Welcome To The Official Monumenta Webstore! (BETA)</th>
+            </tr>
+        </thead>
+    </table>
+    <center>
+        <div style="border-style: dotted; width:20%; height: 5%;
+    top: 50%;
+  ">server.playmonumenta.com</div>
+    </center>
+    <br>
+
+    <center>
+        <div style="border-style: solid; width: 80%; height: 10%">Google Adsense Placeholder</div>
+    </center>
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid;
+        }
+    </style>
+    <br>
+    <center>
+        <table style="width: 80%; text-align: center; border-style: dashed;">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Content</th>
+                    <th>Add Button</th>
+                    <th>Amount</th>
+                    <th>Total (<img src="img/tlaxan_currency.png">)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><img src="img/box.png" style="width:100px;"></td>
+                    <td>ONE LOOT BOX<br>(2.75<img src="img/tlaxan_currency.png"> per)</td>
+                    <td><button onclick="button1()">PRESS</button></td>
+                    <td>
+                        <div id="1out1">0</div>
+                    </td>
+                    <td>
+                        <div id="1out2">0</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="img/twobox.png" style="width:100px;"></td>
+                    <td>TWO LOOT BOX<br>(5.5<img src="img/tlaxan_currency.png"> per)</td>
+                    <td><button onclick="button2()">PRESS</button></td>
+                    <td>
+                        <div id="2out1">0</div>
+                    </td>
+                    <td>
+                        <div id="2out2">0</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="img/fivebox.png" style="width:100px;"></td>
+                    <td>FIVE LOOT BOX<br>(12.375<img src="img/tlaxan_currency.png"> per) (10%!!)</td>
+                    <td><button onclick="button5()">PRESS</button></td>
+                    <td>
+                        <div id="5out1">0</div>
+                    </td>
+                    <td>
+                        <div id="5out2">0</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="img/tenbox.png" style="width:100px;"></td>
+                    <td>TEN LOOT BOX<br>(30.25<img src="img/tlaxan_currency.png"> per) (10%!!)</td>
+                    <td><button onclick="button10()">PRESS</button></td>
+                    <td>
+                        <div id="10out1">0</div>
+                    </td>
+                    <td>
+                        <div id="10out2">0</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="img/twentyfivebox.png" style="width:100px;"></td>
+                    <td>TWENTY-FIVE LOOT BOX<br>(<span id="cost25">55</span><img src="img/tlaxan_currency.png"> per) (BEST DEAL!!)</td>
+                    <td><button onclick="button25()">PRESS</button></td>
+                    <td>
+                        <div id="25out1">0</div>
+                    </td>
+                    <td>
+                        <div id="25out2">0</div>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>Total</td>
+                    <td>
+                        <div id="amount">0</div>
+                    </td>
+                    <td>
+                        <div id="cost">0</div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </center>
+
+    <br>
+    <p style="text-align: center;">CHECKOUT:</p>
+    <label>Minecraft Username:</label>
+    <input>
+    <button onclick="location.href='https://www.patreon.com/MonumentaMMO'">CHECKOUT BUTTON</button>
+</body>
+
+</html>

@@ -1,0 +1,69 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: store
+spec:
+  tls:
+  - hosts:
+    - store.playmonumenta.com
+  rules:
+  - host: store.playmonumenta.com
+    http:
+      paths:
+      - backend:
+          serviceName: store
+          servicePort: 80
+
+---
+
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: store
+  labels:
+    app: store
+spec:
+  type: ClusterIP
+  selector:
+    app: store
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store
+  labels:
+    app: store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: store
+  template:
+    metadata:
+      labels:
+        app: store
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-12
+      containers:
+      - name: store
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-store
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: githubcred
