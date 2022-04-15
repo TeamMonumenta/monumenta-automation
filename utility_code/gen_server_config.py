@@ -365,6 +365,7 @@ if __name__ == '__main__':
             ],
             'linked':server_config + base_plugins + dynmap + [
                 ('plugins/Monumenta/InfinityTower/InfinityFloors.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityFloors.json'),
+                ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/valley/Monumenta/bounties'),
             ],
         },
 
@@ -376,6 +377,7 @@ if __name__ == '__main__':
             'linked':server_config + base_plugins + dynmap + [
                 ('plugins/Roguelite', '../../server_config/data/Roguelite'),
                 ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
+                ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/isles/Monumenta/bounties'),
             ],
         },
 
