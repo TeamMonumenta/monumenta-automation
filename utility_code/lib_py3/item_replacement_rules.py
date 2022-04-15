@@ -4,6 +4,7 @@ import sys
 import yaml
 
 from lib_py3.common import eprint
+from lib_py3.common import get_item_name_from_nbt
 from lib_py3.common import update_plain_tag
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
@@ -53,6 +54,13 @@ def to_number(numeral):
     if numeral == 'IV':
         return 4
     return 0
+
+
+def mark_dirty(item):
+    if not item.nbt.has_path('tag.Monumenta'):
+        return
+    item.nbt.at_path('tag.Monumenta').value['Dirty'] = nbt.TagByte(1)
+
 
 class GlobalRule():
     """Base pre/post processing rule for item replacements, used to preserve and edit data."""
@@ -263,6 +271,8 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
 
         if item.nbt.has_path('tag.Monumenta') and len(item.nbt.at_path('tag.Monumenta').value) == 0:
             item.tag.value.pop('Monumenta')
+        else:
+            mark_dirty(item)
 
 class PreserveBlockEntityTag(GlobalRule):
     name = 'Preserve block entity tag'
@@ -317,6 +327,25 @@ class PreserveTotemOfTransposing(GlobalRule):
                     plain_tag_path = 'plain.display.Lore[$INDEX$]'.replace('$INDEX$', str(i))
                     if item.tag.has_path(plain_tag_path):
                         item.tag.at_path(plain_tag_path).value = 'Transposing Channel: $TRANSPOSING_ID$'.replace('$TRANSPOSING_ID$', str(self.channel))
+            mark_dirty(item)
+
+class PreservePotionInjector(GlobalRule):
+    name = 'Preserve Potion Injector config'
+
+    def __init__(self):
+        super().__init__()
+        self.injector_config = None
+
+    def preprocess(self, template, item):
+        self.injector_config = None
+        if item.id.startswith('minecraft:') and item.id.endswith('_shulker_box'):
+            if item.nbt.has_path('tag.display.Name') and get_item_name_from_nbt(item.tag, True) == 'Potion Injector':
+                if item.nbt.has_path('tag.display.Lore[1]'):
+                    self.injector_config = item.nbt.at_path('tag.display.Lore[1]')
+
+    def postprocess(self, item):
+        if self.injector_config is not None and item.nbt.has_path('tag.display.Lore[1]'):
+            item.nbt.at_path('tag.display.Lore').value[1] = self.injector_config
 
 class UpdatePlainTag(GlobalRule):
     name = 'Update plain tag'
