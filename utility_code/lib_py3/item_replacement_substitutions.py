@@ -52,6 +52,16 @@ substitution_rules = []
 ################################################################################
 # Substitution rules begin
 
+class ResetDirty(SubstitutionRule):
+    name = "Reset Dirty tag"
+
+    def process(self, item_meta, item):
+        if not item.nbt.has_path('tag.Monumenta.Dirty'):
+            return
+        item.tag.at_path('Monumenta').value.pop('Dirty')
+        if len(item.nbt.at_path('tag.Monumenta').value) == 0:
+            item.tag.value.pop('Monumenta')
+
 class FixBookTitles(SubstitutionRule):
     name = "Fix book titles"
 
