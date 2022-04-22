@@ -272,7 +272,7 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
         if item.nbt.has_path('tag.Monumenta') and len(item.nbt.at_path('tag.Monumenta').value) == 0:
             item.tag.value.pop('Monumenta')
 
-        if item.nbt.has_path('tag.Monumenta.PlayerModified[0]'):
+        if item.nbt.has_path('tag.Monumenta.PlayerModified') and len(item.nbt.at_path('tag.Monumenta.PlayerModified').value) > 0:
             mark_dirty(item)
 
 class PreserveBlockEntityTag(GlobalRule):
