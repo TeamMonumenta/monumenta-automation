@@ -18,10 +18,11 @@ RUN apt-get update && \
 	add-apt-repository -y ppa:pypy/ppa && \
 	apt-get update && \
 	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip unzip pigz python3-dev libtool curl liblz4-tool netcat pypy3 && \
-	pip3 install wheel && \
-	pip3 install discord.py kubernetes pika redis bitstring kanboard flask mutf8 && \
-	pip3 install -U pyyaml && \
 	rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install wheel && \
+	pip3 install discord.py kubernetes pika "redis<4.2.0" bitstring kanboard flask mutf8 && \
+	pip3 install -U pyyaml
 
 # Install rclone
 RUN curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && \
