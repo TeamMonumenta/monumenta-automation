@@ -249,19 +249,28 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
     def __init__(self):
         super().__init__()
         self.tag = None
+        self.items_tag = None
 
     def preprocess(self, template, item):
         self.tag = None
+        self.items_tag = None
         if item.nbt.has_path('tag.Monumenta.PlayerModified'):
             self.tag = item.tag.at_path('Monumenta.PlayerModified')
+        if item.nbt.has_path('tag.Monumenta.Items[0]'):
+            self.items_tag = item.tag.at_path('Monumenta.Items')
 
     def postprocess(self, item):
-        if self.tag is not None:
+        if self.tag is not None or self.items_tag is not None:
             if not item.nbt.has_path('tag'):
                 item.nbt.value['tag'] = nbt.TagCompound({})
             if not item.tag.has_path('Monumenta'):
                 item.tag.value['Monumenta'] = nbt.TagCompound({})
+
+        if self.tag is not None:
             item.tag.at_path('Monumenta').value['PlayerModified'] = self.tag
+
+        if self.items_tag is not None:
+            item.tag.at_path('Monumenta').value['Items'] = self.items_tag
 
         if item.nbt.has_path('tag.Monumenta.PlayerModified.Infusions') and len(item.nbt.at_path('tag.Monumenta.PlayerModified.Infusions').value) == 0:
             item.tag.at_path('Monumenta.PlayerModified').value.pop('Infusions')
