@@ -24,12 +24,17 @@ if __name__ == '__main__':
     print("Removed mobs:")
     new_souls = []
     for soul in souls:
-        if "location_names" in soul:
+        if "location_names" in soul and len(soul["location_names"]) > 0:
+            # Only keep the most recent history elemnt
+            soul["history"] = [soul["history"][0],]
             new_souls.append(soul)
         else:
             name = get_entity_name_from_nbt(TagCompound.from_mojangson(soul["history"][0]["mojangson"]), True)
             print("  " + name)
 
+    print("\n\n\nAll locations:")
+    for name in sorted(location_set):
+        print("  " + name)
 
     with open(sys.argv[1], "w") as fp:
         souls = json.dump(new_souls, fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))

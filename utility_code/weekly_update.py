@@ -254,7 +254,7 @@ if __name__ == '__main__':
         "purple": get_dungeon_config("purple", "D11Access"),
         "willows": get_dungeon_config("willows", "DB1Access"),
         "reverie": get_dungeon_config("reverie", "DCAccess"),
-        "sanctum": get_dungeon_config("sanctum", "DS1Access"),
+        "sanctum": get_dungeon_config("sanctum", "DFSAccess"),
         "labs": get_dungeon_config("labs", "D0Access"),
         "teal": get_dungeon_config("teal", "DTLAccess"),
         "forum": get_dungeon_config("forum", "DFFAccess"),
@@ -355,7 +355,7 @@ if __name__ == '__main__':
                     instances_dict[objective] = server_info['count']
                     last_dict[objective] = 0
                 elif 'world' in server_info:
-                    instances_dict[objective] = 9999999999
+                    instances_dict[objective] = 9999999
                     # Intentionally don't set current instances amount, let it keep counting up
                 else:
                     eprint(f"!!!!!! WARNING: Invalid dungeon config for {server} missing both 'count' and 'world': {pformat(server_info)}")

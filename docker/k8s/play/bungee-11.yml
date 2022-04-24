@@ -3,51 +3,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: bungee
-  namespace: stage
+  name: bungee-11
+  namespace: play
   labels:
-    app: bungee
+    app: bungee-11
     k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
-    app: bungee
+    app: bungee-11
   ports:
-  - name: monumenta-socket
-    port: 9576
-    targetPort: 9576
-  - name: plan
-    port: 8804
-    targetPort: 8804
   - name: metrics
     port: 9225
     targetPort: 9225
-
----
-
-# Service / external network ports
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: bungee-nodeport
-  namespace: stage
-  labels:
-    app: bungee
-spec:
-  type: NodePort
-  externalTrafficPolicy: Local
-  selector:
-    app: bungee
-  ports:
-  - name: minecraft
-    port: 9002
-    nodePort: 9002
-    targetPort: 25566
-  - name: votifier
-    port: 28192
-    nodePort: 28192
-    targetPort: 8192
 
 ---
 
@@ -56,21 +24,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bungee
-  namespace: stage
+  name: bungee-11
+  namespace: play
   labels:
-    app: bungee
+    app: bungee-11
 spec:
   strategy:
     type: Recreate
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
-      app: bungee
+      app: bungee-11
   template:
     metadata:
       labels:
-        app: bungee
+        app: bungee-11
     spec:
       affinity:
         nodeAffinity:
@@ -80,40 +48,40 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - monumenta-11
       volumes:
         - name: nfs-volume
           hostPath:
+            path: /nfs/play/m11
             type: Directory
-            path: /nfs/stage/m12
-        - name: nfs-plan
-          hostPath:
-            type: Directory
-            path: /nfs/stage/plan
       containers:
-      - name: bungee
+      - name: bungee-11
         image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard
         tty: true
         stdin: true
         ports:
+        # Primary Minecraft port
         - containerPort: 25566
-        - containerPort: 9575
-        - containerPort: 8804
+          hostPort: 25565
+          hostIP: "51.222.109.77" # The node's external facing IP address
+        # Votifier
         - containerPort: 8192
+          hostPort: 3333
+          hostIP: "51.222.109.77" # The node's external facing IP address
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
-          value: "512M"
+          value: "4G"
         - name: "JAVA_META_MEM"
-          value: "128M"
+          value: "256M"
         - name: "JAVA_JAR"
           value: "BungeeCord.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/stage/m12/bungee"
+          value: "/home/epic/play/m11/bungee-11"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
-          value: bungee
+          value: "bungee-11"
         readinessProbe:
           tcpSocket:
             port: 25566
@@ -128,15 +96,13 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/stage/m12
-        - name: nfs-plan
-          mountPath: /plan
+          mountPath: /home/epic/play/m11
         resources:
           limits:
             memory: 1Gi
-            hugepages-2Mi: 704Mi
+            hugepages-2Mi: 4608Mi
           requests:
             memory: 64Mi
-            hugepages-2Mi: 704Mi
+            hugepages-2Mi: 4608Mi
       imagePullSecrets:
       - name: githubcred

@@ -258,7 +258,7 @@ impl Player {
         fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
 
         if let Some(advancements) = &self.advancements {
-            fs::write(filepath, advancements.to_string_pretty())?;
+            fs::write(filepath, advancements.to_string())?;
         }
         Ok(())
     }
@@ -268,7 +268,7 @@ impl Player {
         fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
 
         if let Some(scores) = &self.scores {
-            let scores: String = serde_json::to_string_pretty(scores)?;
+            let scores: String = serde_json::to_string(scores)?;
             fs::write(filepath, scores)?;
         }
         Ok(())
@@ -279,7 +279,7 @@ impl Player {
         fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
 
         if let Some(plugindata) = &self.plugindata {
-            let plugindata: String = serde_json::to_string_pretty(plugindata)?;
+            let plugindata: String = serde_json::to_string(plugindata)?;
             fs::write(filepath, plugindata)?;
         }
         Ok(())
@@ -290,7 +290,7 @@ impl Player {
         fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
 
         if let Some(sharddata) = &self.sharddata {
-            let sharddata: String = serde_json::to_string_pretty(sharddata)?;
+            let sharddata: String = serde_json::to_string(sharddata)?;
             fs::write(filepath, sharddata)?;
         }
         Ok(())
@@ -301,7 +301,7 @@ impl Player {
         fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
 
         if let Some(remotedata) = &self.remotedata {
-            let remotedata: String = serde_json::to_string_pretty(remotedata)?;
+            let remotedata: String = serde_json::to_string(remotedata)?;
             fs::write(filepath, remotedata)?;
         }
         Ok(())

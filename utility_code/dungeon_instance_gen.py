@@ -126,13 +126,12 @@ if __name__ == '__main__':
                 "objective":"DCAccess"
             },
             "tutorial":{
-                "region":{"x":-2, "z":1},
-                "count":1500,
+                "world": "tutorial",
                 "objective":"DTAccess"
             },
             "sanctum":{
                 "world": "sanctum",
-                "objective":"DS1Access"
+                "objective":"DFSAccess"
             },
             "shiftingcity":{
                 "region":{"x":-2, "z":9},

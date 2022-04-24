@@ -41,6 +41,8 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
             'tag.ChargedProjectiles[]',
             # Bundles
             'tag.Items[]',
+            # Lootbox custom item storage, maybe others eventually?
+            'tag.Monumenta.Items[]',
         })
 
     def get_debug_str(self):

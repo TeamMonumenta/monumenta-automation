@@ -140,7 +140,7 @@ class AutomationBotInstance(object):
             "verdant": "DVAccess",
             "reverie": "DCAccess",
             "tutorial": "DTAccess",
-            "sanctum": "DS1Access",
+            "sanctum": "DFSAccess",
             "shiftingcity": "DRL2Access",
             "teal": "DTLAccess",
             "forum": "DFFAccess",
@@ -752,6 +752,7 @@ Must be run before starting weekly update on the play server'''
         '''Prepares a bundle of whichever shards you want to update on stage.
 
 `--debug` prepares the bundle without stopping shards.
+`--skip-server-config` prepares the bundle without including the server_config folder (no plugins or data folder updates)
 
 Examples:
 `{cmdPrefix}prepare stage bundle valley labs`
@@ -767,10 +768,14 @@ Examples:
         instance_gen_required = []
         main_shards = []
         debug = False
+        copy_server_config = True
         for shard in shards:
             if shard == "--debug":
                 debug = True
                 await self.display("Debug mode enabled! Will not stop shards prior to copying")
+            elif shard == "--skip-server-config":
+                copy_server_config = False
+                await self.display("--skip-server-config specified, will not copy server_config folder (no plugins or data folder updates) ")
             elif shard in ("valley", "isles",):
                 main_shards.append(shard)
             elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "mist", "willows", "sanctum", "shiftingcity", "labs", "depths", "remorse", "corridors", "verdant"]:
@@ -836,17 +841,18 @@ Examples:
 
             await self.display("Dungeon instance generation complete!")
 
-        await self.display("Copying server_config...")
-        await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpstage/TEMPLATE/")
+        if copy_server_config:
+            await self.display("Copying server_config...")
+            await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpstage/TEMPLATE/")
 
-        await self.display("Running replacements on copied structures...")
-        args = (" --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
-            + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
-            + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
-        await self.run(os.path.join(_top_level, "utility_code/replace_items.py"
-            + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
-            + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
-        await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
+            await self.display("Running replacements on copied structures...")
+            args = (" --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
+                + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
+                + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
+            await self.run(os.path.join(_top_level, "utility_code/replace_items.py"
+                + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
+                + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
+            await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         await self.display("Packaging up stage bundle...")
         await self.cd("/home/epic/5_SCRATCH/tmpstage")
@@ -1070,7 +1076,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
             raffle_seed = self._rreact["msg_contents"]
 
         raffle_results = tempfile.mktemp()
-        vote_raffle(raffle_seed, '/home/epic/project_epic/bungee/uuid2name.yml', '/home/epic/project_epic/bungee/plugins/Monumenta-Bungee/votes', raffle_results, dry_run=True)
+        vote_raffle(raffle_seed, 'redis', raffle_results, dry_run=True)
         await self.run("cat {}".format(raffle_results), displayOutput=True)
 
     async def action_weekly_update(self, cmd, message):
@@ -1134,41 +1140,41 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(f"rm -rf {self._shards['purgatory']}")
             await self.run(f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory {self._shards['purgatory']}")
 
+        if min_phase <= 9 and self._common_weekly_update_tasks:
+            await self.display("Removing tutorial data")
+            await self.run(os.path.join(_top_level, "rust/bin/redis_remove_data") + " redis://redis/ tutorial:* --confirm")
+
+        if min_phase <= 10 and self._common_weekly_update_tasks:
+            await self.display("Running score changes for players and moving them to spawn...")
+            await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + f" {self._server_dir}/server_config/redis_data_initial")
+
+        if min_phase <= 11 and self._common_weekly_update_tasks:
+            await self.display("Running item replacements for players...")
+            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks --logfile {self._server_dir}/server_config/redis_data_initial/replacements.yml -j 16")
+
+        if min_phase <= 12 and self._common_weekly_update_tasks:
+            await self.display("Loading player data back into redis...")
+            await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --input {self._server_dir}/server_config/redis_data_initial 1")
+
         ########################################
         # Raffle
 
-        if min_phase <= 9 and "bungee" in self._shards:
+        if min_phase <= 13 and "bungee" in self._shards:
             await self.display("Raffle results:")
             raffle_seed = "Default raffle seed"
             if self._rreact["msg_contents"] is not None:
                 raffle_seed = self._rreact["msg_contents"]
 
             raffle_results = tempfile.mktemp()
-            vote_raffle(raffle_seed, f"{self._shards['bungee']}/uuid2name.yml", f"{self._shards['bungee']}/plugins/Monumenta-Bungee/votes", raffle_results)
+            vote_raffle(raffle_seed, 'redis', raffle_results)
             await self.run("cat {}".format(raffle_results), displayOutput=True)
 
         # Raffle
         ########################################
 
-        if min_phase <= 10 and self._common_weekly_update_tasks:
+        if min_phase <= 14 and self._common_weekly_update_tasks:
             await self.display("Refreshing leaderboards")
             await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
-
-        if min_phase <= 11 and self._common_weekly_update_tasks:
-            await self.display("Removing tutorial data")
-            await self.run(os.path.join(_top_level, "rust/bin/redis_remove_data") + " redis://redis/ tutorial:* --confirm")
-
-        if min_phase <= 12 and self._common_weekly_update_tasks:
-            await self.display("Running score changes for players and moving them to spawn...")
-            await self.run(os.path.join(_top_level, "rust/bin/weekly_update_player_scores") + f" {self._server_dir}/server_config/redis_data_initial")
-
-        if min_phase <= 13 and self._common_weekly_update_tasks:
-            await self.display("Running item replacements for players...")
-            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks --logfile {self._server_dir}/server_config/redis_data_initial/replacements.yml -j 16")
-
-        if min_phase <= 14 and self._common_weekly_update_tasks:
-            await self.display("Loading player data back into redis...")
-            await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --input {self._server_dir}/server_config/redis_data_initial 1")
 
         if min_phase <= 15:
             await self.display("Running actual weekly update (this will take a while!)...")
@@ -1421,7 +1427,7 @@ Syntax:
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(["tar", f"--exclude={shard}/logs", f"--exclude={shard}/plugins", f"--exclude={shard}/cache", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", shard])
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
-                await self.run(os.path.join(_top_level, f"utility_code/prune_empty_regions.py {shard}"), displayOutput=True)
+                await self.run(os.path.join(_top_level, f"utility_code/prune_empty_regions.py {shard}"))
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard} --logfile {base_backup_name}_items.yml"), displayOutput=True)
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up

@@ -87,6 +87,14 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/build/m12/dev4/plugins
+        - name: nfs-futurama-logs
+          hostPath:
+            type: Directory
+            path: /nfs/build/m12/futurama/logs
+        - name: nfs-futurama-plugins
+          hostPath:
+            type: Directory
+            path: /nfs/build/m12/futurama/plugins
         - name: nfs-mobs-logs
           hostPath:
             type: Directory
@@ -141,6 +149,10 @@ spec:
           mountPath: /home/epic/dev4_shard_logs
         - name: nfs-dev4-plugins
           mountPath: /home/epic/dev4_shard_plugins
+        - name: nfs-futurama-logs
+          mountPath: /home/epic/futurama_shard_logs
+        - name: nfs-futurama-plugins
+          mountPath: /home/epic/futurama_shard_plugins
         - name: nfs-mobs-logs
           mountPath: /home/epic/mob_shard_logs
         - name: nfs-mobs-plugins

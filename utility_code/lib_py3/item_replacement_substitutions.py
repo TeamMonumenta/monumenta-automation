@@ -52,6 +52,16 @@ substitution_rules = []
 ################################################################################
 # Substitution rules begin
 
+class ResetDirty(SubstitutionRule):
+    name = "Reset Dirty tag"
+
+    def process(self, item_meta, item):
+        if not item.nbt.has_path('tag.Monumenta.Dirty'):
+            return
+        item.tag.at_path('Monumenta').value.pop('Dirty')
+        if len(item.nbt.at_path('tag.Monumenta').value) == 0:
+            item.tag.value.pop('Monumenta')
+
 class FixBookTitles(SubstitutionRule):
     name = "Fix book titles"
 
@@ -125,13 +135,13 @@ class FixBrokenStatTrack(SubstitutionRule):
             return
         infusion_nbt = item.tag.at_path('Monumenta.PlayerModified.Infusions')
         for (bad_name, good_name) in (
-            ('StatTrack', 'Stat Track'),
-            ('BlocksPlaced', 'Blocks Placed'),
-            ('TimesConsumed', 'Times Consumed'),
-            ('SpawnersBroken', 'Spawners Broken'),
-            ('MobKills', 'Mob Kills'),
-            ('MeleeDamageDealt', 'Melee Damage Dealt'),
-            ('BossDamageDealt', 'Boss Damage Dealt'),
+                ('StatTrack', 'Stat Track'),
+                ('BlocksPlaced', 'Blocks Placed'),
+                ('TimesConsumed', 'Times Consumed'),
+                ('SpawnersBroken', 'Spawners Broken'),
+                ('MobKills', 'Mob Kills'),
+                ('MeleeDamageDealt', 'Melee Damage Dealt'),
+                ('BossDamageDealt', 'Boss Damage Dealt'),
         ):
             if good_name in infusion_nbt.value:
                 del infusion_nbt.value[good_name]
@@ -334,8 +344,13 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:turtle_helmet", "Steel Aparatus", "minecraft:turtle_helmet", "Steel Apparatus"],
                 ["minecraft:leather_leggings", "Seeker‘s Pursuit", "minecraft:leather_leggings", "Seeker's Pursuit"],
                 ["minecraft:leather_leggings", "Seeker’s Pursuit", "minecraft:leather_leggings", "Seeker's Pursuit"],
-                ["minecraft:golden_helmet", "Excavator‘s Hardlamp", "minecraft:golden_helmet", "Excavator's Hardlamp"],
-                ["minecraft:golden_helmet", "Excavator’s Hardlamp", "minecraft:golden_helmet", "Excavator's Hardlamp"],
+                ["minecraft:golden_helmet", "Excavator‘s Hardlamp", "minecraft:iron_helmet", "Excavator's Hardlamp"],
+                ["minecraft:golden_helmet", "Excavator’s Hardlamp", "minecraft:iron_helmet", "Excavator's Hardlamp"],
+                ["minecraft:bamboo", "Ancient rifle barrel", "minecraft:bamboo", "Ancient Rifle Barrel"],
+                ["minecraft:stone_sword", "Binding Saber", "minecraft:stone_sword", "Binding Sabre"],
+                ["minecraft:blaze_rod", "Ta'Ferna's Quiver", "minecraft:stick", "Ta'Ferna's Quiver"],
+                ["minecraft:leather_leggings", "Demoncaller Robes", "minecraft:leather_leggings", "Demoncaller Pants"],
+                ["minecraft:leather_chestplate", "Soulbinder's Curiass", "minecraft:leather_chestplate", "Soulbinder's Cuirass"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
@@ -365,4 +380,3 @@ class SubtituteItems(SubstitutionRule):
 # Substitution rules end
 
 substitution_rules = SubstitutionRule.recursive_public_subclasses()
-

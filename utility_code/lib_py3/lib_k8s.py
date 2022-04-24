@@ -1,4 +1,5 @@
 import asyncio
+import re
 from pprint import pformat
 
 import logging
@@ -103,7 +104,7 @@ class KubernetesManager(object):
 
             pod_name = pod.metadata.name
             for deployment_name in result:
-                if pod_name.startswith(deployment_name):
+                if re.fullmatch(deployment_name + '-[0-9a-z]+-[0-9a-z]+', pod_name):
                     result[deployment_name]["pod_name"] = pod_name
                     break
 

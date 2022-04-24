@@ -2,11 +2,10 @@
 Raffle library - first used for weekly voting raffle
 """
 
-import os
-import json
+import sys
 from collections import OrderedDict
 from pprint import pformat
-import yaml
+import redis
 
 def normalized(a_list):
     """
@@ -18,45 +17,53 @@ def normalized(a_list):
         new_list.append(a_val / total)
     return new_list
 
-def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
-    logfp = open(log_path, "w")
+def vote_raffle(seed, redis_host, log_path, dry_run=False):
+    if log_path is sys.stdout or log_path is sys.stderr:
+        logfp = log_path
+    else:
+        logfp = open(log_path, "w")
+
     winner_every_n_points = 300
     no_vote_penalty = 3
 
-    # All the raw JSON data gets dumped here. key = 'uuid' val = { vote data }
-    raw_data = {}
-    # The original file paths containing the data. key = 'uuid' val = '/path/to/uuid.json'
-    file_paths = {}
-    # Votes relevant to this raffle. Format: { 'uuid': (since_win, this_week) }
+    # Votes relevant to this raffle. Format: { 'uuid': (raffleEntries, votesThisWeek) }
     votes = {}
     # List of uuids that had at least one vote & raffle entry this week
     uuids_that_voted_this_week = []
     total_votes_this_week = 0
     total_raffle_entries = 0
 
-    # Get the votes from this week
-    for root, _, files in os.walk(votes_dir_path):
-        for aFile in files:
-            if aFile.endswith(".json"):
-                uuid = aFile[:-5]
-                full_file_path = os.path.join(root, aFile)
-                with open(full_file_path, "r") as fp:
-                    data = json.load(fp)
-                    if "votesThisWeek" in data and "raffleEntries" in data:
-                        if data["votesThisWeek"] > 0 or data["raffleEntries"] > 0:
-                            raw_data[uuid] = data
-                            file_paths[uuid] = full_file_path
+    r = redis.StrictRedis(host=redis_host, port=6379, charset="utf-8", decode_responses=True)
 
-                            votes[uuid] = (data["raffleEntries"], data["votesThisWeek"])
+    cur = None
+    while cur is None or cur != 0:
+        cur, keys = r.scan(cursor=(0 if cur is None else cur), match="play:playerdata:*:remotedata", count=20000)
+        pipe = r.pipeline()
+        for key in keys:
+            pipe.hgetall(key)
+        bulkdata = pipe.execute()
 
-                            total_votes_this_week += data["votesThisWeek"]
-                            total_raffle_entries += data["raffleEntries"]
-                            if data["votesThisWeek"] > 0:
-                                uuids_that_voted_this_week.append(uuid)
+        if len(bulkdata) != len(keys):
+            raise Exception(f"len(bulkdata)={len(bulkdata)} != len(keys)={len(keys)}")
 
-    with open(uuid2name_path, "r") as fp:
-        uuid2name = yaml.load(fp, Loader=yaml.FullLoader)
-        name2uuid = {value: key for key, value in uuid2name.items()}
+        for i in range(len(bulkdata)):
+            key = keys[i]
+            data = bulkdata[i]
+
+            split = key.split(":")
+            uuid = split[2]
+
+            if "votesThisWeek" in data and "raffleEntries" in data:
+                if int(data["votesThisWeek"]) > 0 or int(data["raffleEntries"]) > 0:
+                    votes[uuid] = (int(data["raffleEntries"]), int(data["votesThisWeek"]))
+
+                    total_votes_this_week += int(data["votesThisWeek"])
+                    total_raffle_entries += int(data["raffleEntries"])
+                    if int(data["votesThisWeek"]) > 0:
+                        uuids_that_voted_this_week.append(uuid)
+
+    uuid2name = r.hgetall("uuid2name")
+    name2uuid = r.hgetall("name2uuid")
 
     def get_name(uuid):
         if uuid in uuid2name:
@@ -69,6 +76,7 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
         return name
 
     # Sort this week's votes
+    orig_votes = votes
     votes = OrderedDict(sorted(votes.items(), key=lambda kv: kv[1], reverse=True))
 
     logfp.write(" Raffle Entries | Votes This Week | Name\n")
@@ -78,19 +86,9 @@ def vote_raffle(seed, uuid2name_path, votes_dir_path, log_path, dry_run=False):
     logfp.write("-----------------------------------------------------\n")
     logfp.write(" {} | {} | Total\n\n".format(str(total_raffle_entries).rjust(15), str(total_votes_this_week).rjust(15)))
 
-    # Decrement votes for anyone who hasn't voted this week, minimum of 0.
-    someone_lost_raffle_entries = False
-    for uuid, voter_data in raw_data.items():
-        if voter_data["votesThisWeek"] != 0:
-            continue
-        if voter_data["raffleEntries"] > 0:
-            someone_lost_raffle_entries = True
-            voter_data["raffleEntries"] = max(0, voter_data["raffleEntries"] - no_vote_penalty)
-    if someone_lost_raffle_entries:
-        logfp.write(f"Players who did not vote this week lost {no_vote_penalty} raffle entries. Vote every week to keep all your raffle entries!\n\n")
-
     if total_raffle_entries == 0:
-        logfp.close()
+        if logfp is not sys.stdout and logfp is not sys.stderr:
+            logfp.close()
         return
 
     # Reduce votes down to just the current list of votes
@@ -162,6 +160,8 @@ else:
         total_votes += raffle_entries
         total_weekly_votes += weekly_votes
 
+    logfp.write(f"Players who did not vote this week lost {no_vote_penalty} raffle entries. Vote every week to keep all your raffle entries!\n\n")
+
     # Require at least one vote to proceed
     if total_weekly_votes >= 1:
         num_winners = total_weekly_votes // winner_every_n_points + 1
@@ -172,30 +172,36 @@ else:
         # Pick winners
         winners = list(random.choice(vote_names, replace=False, size=num_winners, p=[vote/total_votes for vote in vote_scores]))
         if num_winners == 1:
-            logfp.write("This week's winner: " + winners[0])
+            logfp.write(f"This week's winner: {winners[0]}\n")
         else:
-            logfp.write("This week's winners: " + ", ".join(sorted(winners)))
+            logfp.write(f"This week's winners: {', '.join(sorted(winners))}\n")
 
     else:
-        logfp.write("No winners this week")
-        return
+        winners = []
+        logfp.write("No winners this week\n")
 
     #
     #####################################################################################################
 
     # Set the winner's raffle scores, set their votes since win to 0
-    for winner in winners:
-        winner_uuid = get_uuid(winner)
-        raw_data[winner_uuid]["raffleWinsTotal"] += 1
-        raw_data[winner_uuid]["raffleWinsUnclaimed"] += 1
-        raw_data[winner_uuid]["raffleEntries"] = 0
-
-    for uuid in raw_data:
-        raw_data[uuid]["votesThisWeek"] = 0
-
     if not dry_run:
-        for uuid in raw_data:
-            with open(file_paths[uuid], 'w') as fp:
-                json.dump(raw_data[uuid], fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
+        pipe = r.pipeline()
 
-    logfp.close()
+        for winner in winners:
+            winner_uuid = get_uuid(winner)
+            pipe.hincrby(f"play:playerdata:{winner_uuid}:remotedata", "raffleWinsTotal", 1)
+            pipe.hincrby(f"play:playerdata:{winner_uuid}:remotedata", "raffleWinsUnclaimed", 1)
+            pipe.hset(f"play:playerdata:{winner_uuid}:remotedata", "raffleEntries", 0)
+
+        for uuid in orig_votes:
+            pipe.hset(f"play:playerdata:{uuid}:remotedata", "votesThisWeek", 0)
+
+            # Decrement votes for anyone who hasn't voted this week, minimum of 0.
+            raffle_entries, votes_this_week = orig_votes[uuid]
+            if votes_this_week == 0 and raffle_entries > 0:
+                pipe.hset(f"play:playerdata:{uuid}:remotedata", "raffleEntries", max(0, raffle_entries - no_vote_penalty))
+
+        pipe.execute()
+
+    if logfp is not sys.stdout and logfp is not sys.stderr:
+        logfp.close()

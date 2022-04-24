@@ -67,7 +67,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         update_instance_scores(scores, days_since_epoch, "DBWStartDate", 28, &["DB1Access", "DB1Finished", "DWDelve1", "DWDelve2"]);
         update_instance_scores(scores, days_since_epoch, "DCSStartDate", 28, &["DRL2Access", "DRL2Finished", "DSCDelve1", "DSCDelve2"]);
         update_instance_scores(scores, days_since_epoch, "DFFStartDate", 28, &["DFFAccess", "DFFFinished", "DFFDelve1", "DFFDelve2"]);
-        update_instance_scores(scores, days_since_epoch, "DFSStartDate", 28, &["DS1Access", "DS1Finished"]);
 
         /* DelveDungeon score also resets as if it was a dungeon score */
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
@@ -77,11 +76,15 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("DRDAccess".to_string(), 0);
         scores.insert("DBMAccess".to_string(), 0);
         scores.insert("DSRAccess".to_string(), 0);
+        scores.insert("DFSAccess".to_string(), 0);
         scores.insert("DDAccess".to_string(), 0);
 
         scores.insert("WeeklyMission1".to_string(), 0);
         scores.insert("WeeklyMission2".to_string(), 0);
         scores.insert("WeeklyMission3".to_string(), 0);
+
+        /* Uncomment this with each new season pass */
+        scores.insert("SeasonalEventMP".to_string(), 0);
 
         fix_total_level(scores);
     }
