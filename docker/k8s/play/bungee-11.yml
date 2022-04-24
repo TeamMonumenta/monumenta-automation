@@ -81,7 +81,7 @@ spec:
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
-          value: "bungee-11"
+          value: bungee-11
         readinessProbe:
           tcpSocket:
             port: 25566

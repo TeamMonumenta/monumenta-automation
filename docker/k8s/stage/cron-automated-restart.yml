@@ -3,11 +3,11 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: cron-automated-restart
-  namespace: play
+  namespace: stage
   labels:
     app: cron-automated-restart
 spec:
-  schedule: "55 8 * * SUN,MON,TUE,WED,THU,SAT"
+  schedule: "55 6 * * SUN,MON,TUE,WED,THU,FRI,SAT"
   concurrencyPolicy: Replace
   jobTemplate:
     spec:
@@ -24,7 +24,7 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                    - monumenta-8
+                    - monumenta-12
           serviceAccountName: automation-bot-service-account
           volumes:
           - name: secret-config
@@ -33,11 +33,7 @@ spec:
           - name: nfs-data
             hostPath:
               type: Directory
-              path: /nfs/play/m8/bungee/plugins/BungeeDisplay
-          - name: nfs-data-11
-            hostPath:
-              type: Directory
-              path: /nfs/play/m11/bungee-11/plugins/BungeeDisplay
+              path: /nfs/stage/m12/bungee/plugins/BungeeDisplay
           containers:
           - name: cron-automated-restart
             image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
@@ -49,9 +45,7 @@ spec:
             - name: secret-config
               mountPath: /home/epic/.monumenta_bot
             - name: nfs-data
-              mountPath: /home/epic/play/m8/bungee/plugins/BungeeDisplay
-            - name: nfs-data-11
-              mountPath: /home/epic/play/m11/bungee-11/plugins/BungeeDisplay
+              mountPath: /home/epic/stage/m12/bungee/plugins/BungeeDisplay
           restartPolicy: Never
           imagePullSecrets:
           - name: githubcred

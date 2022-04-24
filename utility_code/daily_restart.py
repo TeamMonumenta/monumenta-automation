@@ -45,7 +45,10 @@ async def main():
         print("Failed to notify players about pending restart: {}".format(traceback.format_exc()))
 
     # Read the BungeeDisplay config file
-    with open(f'{config["shards"]["bungee"]}/plugins/BungeeDisplay/config.yml', 'r') as ymlfile:
+    primary_bungee_name = config["primary_bungee_name"]
+    bungee_instances = config["bungee_instances"]
+
+    with open(bungee_instances[primary_bungee_name], 'r') as ymlfile:
         bungee_display_yml = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
     # Modify the file to set maintenance mode - this kicks everyone
@@ -54,15 +57,19 @@ async def main():
     bungee_display_yml["maintenance"]["kick_message"] = '&cMonumenta is going down for daily restart - join again in 5 minutes'
     bungee_display_yml["maintenance"]["information"] = '&6Please try again in a few minutes'
     bungee_display_yml["motd"]["maintenance"]["line2"] = '              &c&lDown for Daily Restart'
-    with open(f'{config["shards"]["bungee"]}/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
-        yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
+
+    # Write the updated config file to enable maintenance mode
+    for bungee in bungee_instances:
+        with open(bungee_instances[bungee], 'w') as ymlfile:
+            yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
 
     # Just a bit of time to process config and kick players
     await asyncio.sleep(5)
 
     # Restart bungee
     print("Restarting bungee...")
-    socket.send_packet("bungee", "monumentanetworkrelay.command", {"command": "end"})
+    for bungee in bungee_instances:
+        socket.send_packet(bungee, "monumentanetworkrelay.command", {"command": "end"})
 
     # At this point shards that didn't already restart will do so
 
@@ -71,8 +78,11 @@ async def main():
 
     # Turn maintenance mode back off
     bungee_display_yml["maintenance"]["enabled"] = False
-    with open(f'{config["shards"]["bungee"]}/plugins/BungeeDisplay/config.yml', 'w') as ymlfile:
-        yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
+
+    # Update maintenance state again
+    for bungee in bungee_instances:
+        with open(bungee_instances[bungee], 'w') as ymlfile:
+            yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
 
 if __name__ == '__main__':
     ################################################################################
@@ -84,7 +94,7 @@ if __name__ == '__main__':
         config_path = os.environ["BOT_CONFIG"]
     else:
         config_dir = os.path.expanduser("~/.monumenta_bot/")
-        config_path = os.path.join(config_dir, "config.yml")
+        config_path = os.path.join(config_dir, "automated-restart.yml")
 
     # Read the bot's config files
     with open(config_path, 'r') as ymlfile:
@@ -102,10 +112,6 @@ if __name__ == '__main__':
                 log_level = conf["log_level"]
             else:
                 log_level = 20
-
-            # Get the first channel
-            channel = next(iter(conf))
-            conf = conf[channel]
 
             socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level)
 
