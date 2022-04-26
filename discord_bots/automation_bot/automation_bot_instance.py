@@ -727,9 +727,6 @@ Must be run before starting weekly update on the play server'''
             await self.display("Restarting the isles shard...")
             await self.start("isles")
 
-        await self.display("Copying bungee...")
-        await self.run("cp -a /home/epic/project_epic/bungee /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
-
         await self.display("Copying purgatory...")
         await self.run("cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
@@ -927,7 +924,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
                     await self.run(f"cp {self._server_dir}/0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml {self._shards[shard]}/plugins/MonumentaWarps/warps.yml")
 
         for shard in folders_to_update:
-            if shard in ["build","bungee"]:
+            if shard in ["build",] or shard.startswith("bungee"):
                 continue
 
             await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/stage/banned-ips.json {self._shards[shard]}/")
@@ -992,6 +989,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
 
         # Stop bungee
         await self.stop("bungee")
+        await self.stop("bungee-11")
 
         await self.display(message.author.mention)
 
@@ -1015,7 +1013,6 @@ DELETES DUNGEON CORE PROTECT DATA'''
         # Fail if any shards are still running
         await self.display("Checking that all shards are stopped...")
         shards = await self._k8s.list()
-        await self.list_shards()
         for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
                 await self.display("ERROR: shard {!r} is still running!".format(shard))
@@ -1097,7 +1094,6 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         if min_phase <= 1:
             await self.display("Checking that all shards are stopped...")
             shards = await self._k8s.list()
-            await self.list_shards()
             for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
                 if shards[shard.replace('_', '')]['replicas'] != 0:
                     await self.display("ERROR: shard {!r} is still running!".format(shard))
@@ -1124,7 +1120,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         if min_phase <= 4:
             await self.display("Moving everything except bungee, and build to 0_PREVIOUS...")
             for f in files:
-                if f not in ["0_PREVIOUS", "bungee", "build",]:
+                if f not in ["0_PREVIOUS", "build",] and not f.startswith("bungee"):
                     await self.run("mv {} 0_PREVIOUS/".format(f))
 
         if min_phase <= 5:
@@ -1202,12 +1198,10 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                         await self.run("cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/MonumentaWarps/warps.yml"))
 
             for shard in self._shards:
-                if shard in ["build", "bungee"]:
-                    continue
-
-                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
-                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-players.json {self._shards[shard]}/")
-                await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/ops.json {self._shards[shard]}/")
+                if shard not in ["build",] and not shard.startswith("bungee"):
+                    await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
+                    await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-players.json {self._shards[shard]}/")
+                    await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/ops.json {self._shards[shard]}/")
 
         await self.cd(self._server_dir)
         if min_phase <= 17:
