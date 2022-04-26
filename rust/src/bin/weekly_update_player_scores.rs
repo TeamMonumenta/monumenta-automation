@@ -22,7 +22,9 @@ fn usage() {
 
 fn update_instance_scores(scores: &mut HashMap<String, i32>, days_since_epoch: i32, start_objective: &str, max_days: i32, additional_objectives_to_reset: &[&str]) {
     if let Some(start) = scores.get(start_objective) {
-        if *start + days_since_epoch >= max_days {
+        if days_since_epoch != i32::MAX && days_since_epoch < *start {
+            eprintln!("Got dungeon {} start {} which is in the future! Current days since epoch: {}", start_objective, *start, days_since_epoch);
+        } else if days_since_epoch == i32::MAX || days_since_epoch - *start >= max_days {
             /* Reset all specified objectives on expiration */
             scores.insert(start_objective.to_string(), 0);
             for additional_objective in additional_objectives_to_reset {
@@ -62,7 +64,7 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         update_instance_scores(scores, days_since_epoch, "D9StartDate", 28, &["D9Access", "D9Finished", "D9Delve1", "D9Delve2"]);
         update_instance_scores(scores, days_since_epoch, "D10StartDate", 28, &["D10Access", "D10Finished", "D10Delve1", "D10Delve2"]);
         update_instance_scores(scores, days_since_epoch, "D11StartDate", 28, &["D11Access", "D11Finished", "D11Delve1", "D11Delve2"]);
-        update_instance_scores(scores, days_since_epoch, "D12StartDate", 28, &["DTLAccess", "DTLFinished", "DTLDelve1", "DTLDelve2"]);
+        update_instance_scores(scores, days_since_epoch, "DTLStartDate", 28, &["DTLAccess", "DTLFinished", "DTLDelve1", "DTLDelve2"]);
         update_instance_scores(scores, days_since_epoch, "DMRStartDate", 28, &["DCAccess", "DCFinished", "DMRDelve1", "DMRDelve2"]);
         update_instance_scores(scores, days_since_epoch, "DBWStartDate", 28, &["DB1Access", "DB1Finished", "DWDelve1", "DWDelve2"]);
         update_instance_scores(scores, days_since_epoch, "DCSStartDate", 28, &["DRL2Access", "DRL2Finished", "DSCDelve1", "DSCDelve2"]);
