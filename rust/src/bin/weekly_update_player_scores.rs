@@ -22,9 +22,9 @@ fn usage() {
 
 fn update_instance_scores(scores: &mut HashMap<String, i32>, days_since_epoch: i32, start_objective: &str, max_days: i32, additional_objectives_to_reset: &[&str]) {
     if let Some(start) = scores.get(start_objective) {
-        if days_since_epoch != i32::MAX && days_since_epoch < *start {
+        if start != i32::MAX && days_since_epoch < *start {
             eprintln!("Got dungeon {} start {} which is in the future! Current days since epoch: {}", start_objective, *start, days_since_epoch);
-        } else if days_since_epoch == i32::MAX || days_since_epoch - *start >= max_days {
+        } else if start == i32::MAX || days_since_epoch - *start >= max_days {
             /* Reset all specified objectives on expiration */
             scores.insert(start_objective.to_string(), 0);
             for additional_objective in additional_objectives_to_reset {
