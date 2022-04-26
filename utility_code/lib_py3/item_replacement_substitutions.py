@@ -347,7 +347,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:golden_helmet", "Excavator‘s Hardlamp", "minecraft:iron_helmet", "Excavator's Hardlamp"],
                 ["minecraft:golden_helmet", "Excavator’s Hardlamp", "minecraft:iron_helmet", "Excavator's Hardlamp"],
                 ["minecraft:bamboo", "Ancient rifle barrel", "minecraft:bamboo", "Ancient Rifle Barrel"],
-                ["minecraft:stone_sword", "Binding Saber", "minecraft:stone_sword", "Binding Sabre"],
+                ["minecraft:stone_sword", "Biding Saber", "minecraft:stone_sword", "Biding Sabre"],
                 ["minecraft:blaze_rod", "Ta'Ferna's Quiver", "minecraft:stick", "Ta'Ferna's Quiver"],
                 ["minecraft:leather_leggings", "Demoncaller Robes", "minecraft:leather_leggings", "Demoncaller Pants"],
                 ["minecraft:leather_chestplate", "Soulbinder's Curiass", "minecraft:leather_chestplate", "Soulbinder's Cuirass"],
