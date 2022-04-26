@@ -1,6 +1,5 @@
 #!/usr/bin/env pypy3
 
-import concurrent.futures
 import getopt
 import multiprocessing
 from pprint import pprint, pformat
@@ -11,7 +10,7 @@ import yaml
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.common import eprint, copy_folder, copy_paths, copy_maps
+from lib_py3.common import eprint, move_folder, move_paths
 from lib_py3.redis_scoreboard import RedisScoreboard, RedisRBoard
 from lib_py3.timing import Timings
 
@@ -24,46 +23,14 @@ def usage():
 def get_dungeon_config(name, objective):
     return {
         "server":f"{name}",
-        "copy_base_from":"build",
-        "copy_previous_paths":["stats", "data/scoreboard.dat"],
-        "copy_maps": "build",
+        "move_base_from":"build",
+        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + [f'file/{name}'],
+        "replace_items_globally": True,
         "preserve_instances":{
             "dungeon_objective":f"{objective}",
-            "start_rx":-3,
-            "start_rz":-2,
         },
     }
-
-# Do the actual copying in parallel
-def parallel_copy(config):
-    server = config["server"]
-    if "copy_base_from" in config:
-        for world_name in config["worlds"]:
-            if config["copy_base_from"] == "build":
-                from_world_path = os.path.join(config["build_path"], world_name)
-            elif config["copy_base_from"] == "previous":
-                from_world_path = os.path.join(config["previous_path"], world_name)
-            output_world_path = os.path.join(config["output_path"], world_name)
-            print(f"  {server} - Copying world from {from_world_path} to {output_world_path}")
-            copy_folder(from_world_path, output_world_path)
-
-    if "copy_previous_paths" in config:
-        for world_name in config["worlds"]:
-            from_world_path = os.path.join(config["previous_path"], world_name)
-            output_world_path = os.path.join(config["output_path"], world_name)
-            print(f"  {server} - Copying previous paths from {from_world_path}/[{','.join(config['copy_previous_paths'])}] to {output_world_path}")
-            copy_paths(from_world_path, output_world_path, config["copy_previous_paths"])
-
-    if "copy_maps" in config:
-        for world_name in config["worlds"]:
-            if config["copy_maps"] == "build":
-                from_world_path = os.path.join(config["build_path"], world_name)
-            elif config["copy_maps"] == "previous":
-                from_world_path = os.path.join(config["previous_path"], world_name)
-            output_world_path = os.path.join(config["output_path"], world_name)
-            print(f"  {server} - Copying maps from {from_world_path} to {output_world_path}")
-            copy_maps(from_world_path, output_world_path)
 
 def process_init(mgr):
     global item_replace_manager
@@ -77,12 +44,7 @@ def process_region(region_config):
     world = World(region_config["world_path"])
     rx = region_config["rx"]
     rz = region_config["rz"]
-    if "preserve" in region_config:
-        prev_world = World(region_config["prev_world_path"])
-        prev_region = prev_world.get_region(region_config["preserve"]["rx"], region_config["preserve"]["rz"], read_only=True)
-        region = prev_region.copy_to(world, rx, rz, regenerate_uuids=False)
-    else:
-        region = world.get_region(rx, rz)
+    region = world.get_region(rx, rz)
 
     replacements_log = {}
     num_replacements = 0
@@ -154,71 +116,70 @@ if __name__ == '__main__':
 
     plots = {
         "server":"plots",
-        "copy_base_from":"previous",
+        "move_base_from":"previous",
         "datapacks":datapacks_base + ['file/plots'],
         "replace_items_globally": True,
     }
 
     playerplots = {
         "server":"playerplots",
-        "copy_base_from":"previous",
+        "move_base_from":"previous",
         "datapacks":datapacks_base + ['file/playerplots'],
         "replace_items_globally": True,
     }
 
     tutorial = {
         "server":"tutorial",
-        "copy_base_from":"build",
+        "move_base_from":"build",
         "datapacks":datapacks_dungeon + ['file/tutorial'],
     }
 
     corridors = {
         "server":"corridors",
-        "copy_base_from":"build",
-        "copy_previous_paths":["stats", "data/scoreboard.dat"],
+        "move_base_from":"build",
+        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/corridors'],
     }
 
     verdant = {
         "server":"verdant",
-        "copy_base_from":"build",
-        "copy_previous_paths":["stats", "data/scoreboard.dat"],
+        "move_base_from":"build",
+        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/verdant'],
     }
 
     rush = {
         "server":"rush",
-        "copy_base_from":"build",
-        "copy_previous_paths":["stats", "data/scoreboard.dat"],
+        "move_base_from":"build",
+        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/rush'],
     }
 
     mist = {
         "server":"mist",
-        "copy_base_from":"build",
-        "copy_previous_paths":["stats", "data/scoreboard.dat"],
+        "move_base_from":"build",
+        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/mist'],
     }
 
     remorse = {
         "server":"remorse",
-        "copy_base_from":"build",
-        "copy_previous_paths":["stats", "data/scoreboard.dat"],
+        "move_base_from":"build",
+        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/remorse'],
     }
 
     depths = {
         "server":"depths",
-        "copy_base_from":"build",
-        "copy_previous_paths":["stats", "data/scoreboard.dat"],
+        "move_base_from":"build",
+        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/depths'],
     }
 
     valley = {
         "server":"valley",
-        "copy_base_from":"build",
-        "copy_previous_paths":["stats", "data"],
-        "copy_maps": "build",
+        "move_base_from":"build",
+        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_base + ['file/valley'],
         "coordinates_to_fill":(
             {"name":"Magic Block", "pos1":(-1441, 2, -1441), "pos2":(-1441, 2, -1441), 'block': {'name': 'minecraft:air'}},
@@ -227,9 +188,8 @@ if __name__ == '__main__':
 
     isles = {
         "server":"isles",
-        "copy_base_from":"build",
-        "copy_previous_paths":["stats", "data/scoreboard.dat"],
-        "copy_maps": "build",
+        "move_base_from":"build",
+        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_base + ['file/isles'],
         "coordinates_to_fill":(
             {"name":"Magic Block", "pos1":(-1441, 2, -1441), "pos2":(-1441, 2, -1441), 'block': {'name': 'minecraft:air'}},
@@ -315,15 +275,9 @@ if __name__ == '__main__':
             preserve_instances = config["preserve_instances"]
             score_objects = redis_scoreboard.search_scores(Objective=preserve_instances["dungeon_objective"], Score={"min":1})
             dungeon_scores = set()
-            inval_scores = set()
             for score in score_objects:
                 val = score.at_path("Score").value
-                if val < 10000:
-                    inval_scores.add(val)
-                else:
-                    dungeon_scores.add(val)
-            if inval_scores:
-                eprint(f"WARNING: Found dungeon scores [{','.join([str(x) for x in inval_scores])}] for {config['server']} that are less than 10000! This indicates score changes didn't run correctly. This is fine on stage, but a serious problem on the play server")
+                dungeon_scores.add(val)
             dungeon_scores = sorted(list(dungeon_scores))
             preserve_instances["dungeon_scores"] = dungeon_scores
     timings.nextStep("Loaded dungeon scores")
@@ -366,49 +320,79 @@ if __name__ == '__main__':
         pprint(last_dict)
         print("Setting rboard scores for $Instances:")
         pprint(instances_dict)
-        rboard.setmulti("$Last", last_dict)
-        rboard.setmulti("$Instances", instances_dict)
+        if len(last_dict) > 0:
+            rboard.setmulti("$Last", last_dict)
+        if len(instances_dict) > 0:
+            rboard.setmulti("$Instances", instances_dict)
     except Exception as ex:
         eprint(f"!!!!!! WARNING: Failed to set redis instance count/used values: {ex}")
 
     timings.nextStep("Updated number of instances")
 
     ##################################################################################
-    # Copy base world files
+    # Move base world files
 
-    print("Copying base worlds...")
+    print("Moving base worlds...")
     # First check for missing directories and fail if any are found
     for config in config_list:
-        if config["copy_base_from"] == "build":
-            config["worlds"] = World.enumerate_worlds(config["build_path"])
-        elif config["copy_base_from"] == "previous":
-            config["worlds"] = World.enumerate_worlds(config["previous_path"])
+        server = config["server"]
 
+        # Move base first - either from build or previously existing data
+        if "move_base_from" in config:
+            if config["move_base_from"] == "build":
+                for world_name in World.enumerate_worlds(config["build_path"]):
+                    from_world_path = os.path.join(config["build_path"], world_name)
+                    output_world_path = os.path.join(config["output_path"], world_name)
+                    print(f"  {server} - Moving world from {from_world_path} to {output_world_path}")
+                    move_folder(from_world_path, output_world_path)
+
+            elif config["move_base_from"] == "previous":
+                for world_name in World.enumerate_worlds(config["previous_path"]):
+                    from_world_path = os.path.join(config["previous_path"], world_name)
+                    output_world_path = os.path.join(config["output_path"], world_name)
+                    print(f"  {server} - Moving world from {from_world_path} to {output_world_path}")
+                    move_folder(from_world_path, output_world_path)
+
+        # Move any dungeon instances that should be preserved
+        if "preserve_instances" in config:
+            preserve_instances = config["preserve_instances"]
+
+            print(f"  {server} - Instances preserved this week: [{','.join(str(x) for x in preserve_instances['dungeon_scores'])}]")
+            for instance in preserve_instances["dungeon_scores"]:
+                world_name = f"{server}{instance}"
+                from_world_path = os.path.join(config["build_path"], world_name)
+                output_world_path = os.path.join(config["output_path"], world_name)
+                if os.path.exists(from_world_path):
+                    move_folder(from_world_path, output_world_path)
+                else:
+                    eprint(f"WARNING: Unable to preserve {world_name} - previous world folder does not exist")
+
+        # Move any overworld subfolders that need to be preserved
+        if "move_previous_overworld_subfolders" in config:
+            world_name = f"Project_Epic-{server}"
+            from_world_path = os.path.join(config["previous_path"], world_name)
+            output_world_path = os.path.join(config["output_path"], world_name)
+            print(f"  {server} - Moving previous paths from {from_world_path}/[{','.join(config['move_previous_overworld_subfolders'])}] to {output_world_path}")
+            move_paths(from_world_path, output_world_path, config["move_previous_overworld_subfolders"])
+
+        # Enumerate all the resulting worlds for later use
+        config["worlds"] = World.enumerate_worlds(config["output_path"])
         if len(config["worlds"]) == 0:
             raise Exception("ERROR: Config doesn't specify any worlds or they are missing: {!r}".format(config))
-    with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
-        pool.map(parallel_copy, config_list)
-    timings.nextStep("Copied base worlds")
+
+    timings.nextStep("Moved folders")
 
     ##################################################################################
     # Open the worlds for use
 
     print("Opening worlds, changing datapacks & filling areas...")
     worlds_paths = {}
-    prev_worlds_paths = {}
     for config in config_list:
         for world_name in config["worlds"]:
             output_world_path = os.path.join(config["output_path"], world_name)
-            prev_world_path = os.path.join(config["previous_path"], world_name)
 
             world = World(output_world_path)
             worlds_paths[world_name] = output_world_path
-
-            if not os.path.exists(prev_world_path):
-                eprint(f"!!!!!! WARNING: Missing previous week previous folder {prev_world_path}")
-                eprint("If you are not adding a shard, this is a critical problem!")
-            else:
-                prev_worlds_paths[world_name] = prev_world_path
 
             if "datapacks" in config:
                 world.level_dat.enabled_datapacks = config["datapacks"]
@@ -432,48 +416,16 @@ if __name__ == '__main__':
     # [
     #   {
     #     "world": str
+    #     "world_path": str
     #     "rx": int
     #     "rz": int
-    #     # If being copied from the previous play server
-    #     "preserve": {
-    #       "rx": int
-    #       "rz": int
-    #     }
     #   }
     # ]
     regions = []
     for config in config_list:
-        for world_name in config["worlds"]:
-            world_path = worlds_paths[world_name]
-            if "preserve_instances" in config:
-                preserve_instances = config["preserve_instances"]
-                start_rx = preserve_instances["start_rx"]
-                start_rz = preserve_instances["start_rz"]
-
-                instances_per_week = 10000
-
-                print(f"  {config['server']} - Instances preserved this week: [{','.join(str(x) for x in preserve_instances['dungeon_scores'])}]")
-                for instance in preserve_instances["dungeon_scores"]:
-                    instance_week = instance // instances_per_week
-                    instance_in_week = instance % instances_per_week
-
-                    new_rx = start_rx + instance_week
-                    new_rz = start_rz + instance_in_week - 1 # index starts at 1
-                    old_rx = new_rx - 1
-                    old_rz = new_rz
-
-                    regions.append({
-                        "world": world_name,
-                        "world_path": world_path,
-                        "prev_world_path": prev_worlds_paths[world_name],
-                        "rx": new_rx,
-                        "rz": new_rz,
-                        "preserve": {
-                            "rx": new_rx - 1,
-                            "rz": new_rz,
-                        }
-                    })
-            elif "replace_items_globally" in config and config["replace_items_globally"]:
+        if "replace_items_globally" in config and config["replace_items_globally"]:
+            for world_name in config["worlds"]:
+                world_path = worlds_paths[world_name]
                 for _, rx, rz, __ in World(world_path).enumerate_regions():
                     regions.append({
                         "world": world_name,
@@ -501,7 +453,7 @@ if __name__ == '__main__':
     generator = process_in_parallel(parallel_args, num_processes=num_threads, initializer=process_init, initargs=(item_replace_manager, ))
     num_global_replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, {})
 
-    timings.nextStep("Processed regions and merged logs: {num_global_replacements} replacements")
+    timings.nextStep(f"Processed regions and merged logs: {num_global_replacements} replacements")
 
     ##################################################################################
     # Writing logs

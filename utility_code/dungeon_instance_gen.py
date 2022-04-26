@@ -48,68 +48,55 @@ if __name__ == '__main__':
 
         "dungeons":{
             "labs":{
-                "region":{"x":-2, "z":2},
-                "count":400,
+                "world": "labs",
                 "objective":"D0Access"
             },
             "white":{
-                "region":{"x":-3, "z":-2},
-                "count":150,
+                "world": "white",
                 "objective":"D1Access"
             },
             "orange":{
-                "region":{"x":-3, "z":-1},
-                "count":100,
+                "world": "orange",
                 "objective":"D2Access"
             },
             "magenta":{
-                "region":{"x":-3, "z":0},
-                "count":75,
+                "world": "magenta",
                 "objective":"D3Access"
             },
             "lightblue":{
-                "region":{"x":-3, "z":1},
-                "count":75,
+                "world": "lightblue",
                 "objective":"D4Access"
             },
             "yellow":{
-                "region":{"x":-3, "z":2},
-                "count":60,
+                "world": "yellow",
                 "objective":"D5Access"
             },
             "lime":{
-                "region":{"x":-3, "z":5},
-                "count":80,
+                "world": "lime",
                 "objective":"D6Access"
             },
             "pink":{
-                "region":{"x":-3, "z":7},
-                "count":70,
+                "world": "pink",
                 "objective":"D7Access"
             },
             "gray":{
-                "region":{"x":-3, "z":6},
-                "count":70,
+                "world": "gray",
                 "objective":"D8Access"
             },
             "lightgray":{
-                "region":{"x":-3, "z":8},
-                "count":70,
+                "world": "lightgray",
                 "objective":"D9Access"
             },
             "cyan":{
-                "region":{"x":-3, "z":9},
-                "count":60,
+                "world": "cyan",
                 "objective":"D10Access"
             },
             "purple":{
-                "region":{"x":-3, "z":13},
-                "count":60,
+                "world": "purple",
                 "objective":"D11Access"
             },
             "willows":{
-                "region":{"x":-3, "z":3},
-                "count":100,
+                "world": "willows",
                 "objective":"DB1Access"
             },
             "verdant":{
@@ -121,8 +108,7 @@ if __name__ == '__main__':
                 "objective":"DRAccess"
             },
             "reverie":{
-                "region":{"x":-3, "z":4},
-                "count":60,
+                "world": "reverie",
                 "objective":"DCAccess"
             },
             "tutorial":{
@@ -134,18 +120,15 @@ if __name__ == '__main__':
                 "objective":"DFSAccess"
             },
             "shiftingcity":{
-                "region":{"x":-2, "z":9},
-                "count":75,
+                "world": "shiftingcity",
                 "objective":"DRL2Access"
             },
             "teal":{
-                "region":{"x":-2, "z":12},
-                "count":60,
+                "world": "teal",
                 "objective":"DTLAccess"
             },
             "forum":{
-                "region":{"x":-3, "z":16},
-                "count":60,
+                "world": "forum",
                 "objective":"DFFAccess"
             },
             "remorse":{
@@ -255,7 +238,8 @@ if __name__ == '__main__':
     if force_count is not None:
         # Override all dungeon counts
         for name in config["dungeons"]:
-            config["dungeons"][name]["count"] = force_count
+            if "count" in config["dungeons"][name]:
+                config["dungeons"][name]["count"] = force_count
 
     if len(specific_worlds) > 0:
         # Only generate the specified worlds
