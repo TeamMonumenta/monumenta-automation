@@ -64,7 +64,7 @@ impl Player {
     pub fn get_redis_players(domain: &str, con: &mut redis::Connection) -> BoxResult<HashMap<Uuid, Player>> {
         let mut uuid: HashSet<Uuid> = HashSet::new();
 
-        let keys: Vec<String> = con.keys(format!("{}:playerdata:*", domain))?;
+        let keys: Vec<String> = con.keys(format!("{}:playerdata:*:data", domain))?;
         for key in keys {
             let split: Vec<&str> = key.split(":").collect();
             if split.len() >= 3 {
