@@ -42,7 +42,7 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
             # Bundles
             'tag.Items[]',
             # Lootbox custom item storage, maybe others eventually?
-            'tag.Monumenta.Items[]',
+            'tag.Monumenta.PlayerModified.Items[]',
         })
 
     def get_debug_str(self):
