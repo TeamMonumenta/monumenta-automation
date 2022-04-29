@@ -90,6 +90,9 @@ fn update_player_scores(player: &mut Player) {
         scores.insert("DFSAccess".to_string(), 0);
         scores.insert("DDAccess".to_string(), 0);
 
+        scores.insert("JP1HBathhouse".to_string(), 0);
+        scores.insert("JPHighwatch".to_string(), 0);
+
         scores.insert("WeeklyMission1".to_string(), 0);
         scores.insert("WeeklyMission2".to_string(), 0);
         scores.insert("WeeklyMission3".to_string(), 0);
