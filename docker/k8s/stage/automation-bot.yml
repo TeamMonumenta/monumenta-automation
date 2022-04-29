@@ -130,6 +130,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/4_SHARED
+        - name: nfs-scratch
+          hostPath:
+            type: Directory
+            path: /nfs/5_SCRATCH
         - name: secret-config
           secret:
             secretName: automation-bot-config
@@ -155,6 +159,8 @@ spec:
           mountPath: /home/epic/stage/redis
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
+        - name: nfs-scratch
+          mountPath: /home/epic/5_SCRATCH
         - name: secret-config
           mountPath: /home/epic/.monumenta_bot
         resources:
