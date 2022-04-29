@@ -2,7 +2,7 @@
 
 import getopt
 import multiprocessing
-from pprint import pprint, pformat
+from pprint import pprint
 import os
 import sys
 import traceback
@@ -11,7 +11,7 @@ import yaml
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import eprint, move_folder, move_paths
-from lib_py3.redis_scoreboard import RedisScoreboard, RedisRBoard
+from lib_py3.redis_scoreboard import RedisScoreboard
 from lib_py3.timing import Timings
 
 from minecraft.world import World
@@ -281,53 +281,6 @@ if __name__ == '__main__':
             dungeon_scores = sorted(list(dungeon_scores))
             preserve_instances["dungeon_scores"] = dungeon_scores
     timings.nextStep("Loaded dungeon scores")
-
-    ##################################################################################
-    # Update number of instances
-
-    print("Updating number of instances...")
-
-    try:
-        rboard = RedisRBoard("play", redis_host=redis_host)
-        with open(os.path.join(build_template_dir, "dungeon_info.yml")) as f:
-            dungeon_info = yaml.load(f, Loader=yaml.FullLoader)["dungeons"]
-
-        last_dict = {}
-        instances_dict = {}
-        for config in config_list:
-            server = config['server']
-            # Some shards don't have instances to update
-            if server in dungeon_info:
-                server_info = dungeon_info[server]
-
-                if 'objective' not in server_info:
-                    eprint(f"!!!!!! WARNING: Invalid dungeon config for {server} missing 'objective': {pformat(server_info)}")
-                    continue
-
-                objective = server_info['objective']
-
-                if 'count' in server_info:
-                    instances_dict[objective] = server_info['count']
-                    last_dict[objective] = 0
-                elif 'world' in server_info:
-                    instances_dict[objective] = 9999999
-                    # Intentionally don't set current instances amount, let it keep counting up
-                else:
-                    eprint(f"!!!!!! WARNING: Invalid dungeon config for {server} missing both 'count' and 'world': {pformat(server_info)}")
-                    continue
-
-        print("Setting rboard scores for $Last:")
-        pprint(last_dict)
-        print("Setting rboard scores for $Instances:")
-        pprint(instances_dict)
-        if len(last_dict) > 0:
-            rboard.setmulti("$Last", last_dict)
-        if len(instances_dict) > 0:
-            rboard.setmulti("$Instances", instances_dict)
-    except Exception as ex:
-        eprint(f"!!!!!! WARNING: Failed to set redis instance count/used values: {ex}")
-
-    timings.nextStep("Updated number of instances")
 
     ##################################################################################
     # Move base world files
