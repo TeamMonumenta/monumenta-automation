@@ -205,7 +205,7 @@ never_equal = NeverEqual()
 
 def move_file(old, new):
     if not os.path.exists(old):
-        print("*** {!r} does not exist, preserving original.".format(old))
+        eprint("*** {!r} does not exist, preserving original.".format(old))
         return False
     if os.path.exists(new):
         os.remove(new)
@@ -230,10 +230,25 @@ def copy_file(old, new):
     else:
         shutil.copy2(old, new)
 
+def move_folder(old, new):
+    # This does not check if it's a path or a file, but there's another function for that case.
+    if not os.path.exists(old):
+        eprint("*** {!r} does not exist, preserving original.".format(old))
+        return
+    if not os.path.isdir(os.path.dirname(new)):
+        os.makedirs(os.path.dirname(new), mode=0o775)
+    shutil.rmtree(new, ignore_errors=True)
+    if os.path.islink(old):
+        linkto = os.readlink(old)
+        os.symlink(linkto, new)
+        os.remove(old)
+    else:
+        shutil.move(old, new)
+
 def copy_folder(old, new):
     # This does not check if it's a path or a file, but there's another function for that case.
     if not os.path.exists(old):
-        print("*** {!r} does not exist, preserving original.".format(old))
+        eprint("*** {!r} does not exist, preserving original.".format(old))
         return
     if not os.path.isdir(os.path.dirname(new)):
         os.makedirs(os.path.dirname(new), mode=0o775)
@@ -250,18 +265,31 @@ def copy_maps(old, new):
             if os.path.exists(old_map):
                 copy_file(old_map, new_map)
 
+def move_path(old, new, path):
+    if os.path.isdir(os.path.join(old, path)):
+        move_folder(os.path.join(old, path), os.path.join(new, path))
+    else:
+        move_file(os.path.join(old, path), os.path.join(new, path))
+
 def copy_path(old, new, path):
     if os.path.isdir(os.path.join(old, path)):
         copy_folder(os.path.join(old, path), os.path.join(new, path))
     else:
         copy_file(os.path.join(old, path), os.path.join(new, path))
 
+def move_paths(old, new, paths):
+    for path in paths:
+        try:
+            move_path(old, new, path);
+        except:
+            eprint("*** " + path + " could not be moved, may not exist.")
+
 def copy_paths(old, new, paths):
     for path in paths:
         try:
             copy_path(old, new, path);
         except:
-            print("*** " + path + " could not be copied, may not exist.")
+            eprint("*** " + path + " could not be copied, may not exist.")
 
 def bounded_range(min_in, max_in, range_start, range_length, divide=1):
     """
