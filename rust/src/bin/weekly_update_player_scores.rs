@@ -85,9 +85,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("WeeklyMission2".to_string(), 0);
         scores.insert("WeeklyMission3".to_string(), 0);
 
-        /* Uncomment this with each new season pass */
-        scores.insert("SeasonalEventMP".to_string(), 0);
-
         fix_total_level(scores);
     }
 }
