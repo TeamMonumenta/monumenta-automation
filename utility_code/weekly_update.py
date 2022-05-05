@@ -10,7 +10,7 @@ import yaml
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.common import eprint, move_folder, move_paths
+from lib_py3.common import eprint, move_folder, copy_folder, move_paths
 from lib_py3.redis_scoreboard import RedisScoreboard
 from lib_py3.timing import Timings
 
@@ -171,14 +171,14 @@ if __name__ == '__main__':
 
     depths = {
         "server":"depths",
-        "move_base_from":"build",
+        "copy_base_from":"build",
         "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/depths'],
     }
 
     valley = {
         "server":"valley",
-        "move_base_from":"build",
+        "copy_base_from":"build",
         "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_base + ['file/valley'],
         "coordinates_to_fill":(
@@ -188,7 +188,7 @@ if __name__ == '__main__':
 
     isles = {
         "server":"isles",
-        "move_base_from":"build",
+        "copy_base_from":"build",
         "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
         "datapacks":datapacks_base + ['file/isles'],
         "coordinates_to_fill":(
@@ -200,7 +200,11 @@ if __name__ == '__main__':
         "plots": plots,
         "playerplots": playerplots,
         "valley": valley,
+        "valley-2": {**valley, **{"shard_name": "valley"}},
+        "valley-3": {**valley, **{"shard_name": "valley"}},
         "isles": isles,
+        "isles-2": {**isles, **{"shard_name": "isles"}},
+        "isles-3": {**isles, **{"shard_name": "isles"}},
         "white": get_dungeon_config("white", "D1Access"),
         "orange": get_dungeon_config("orange", "D2Access"),
         "magenta": get_dungeon_config("magenta", "D3Access"),
@@ -225,6 +229,8 @@ if __name__ == '__main__':
         "mist": mist,
         "remorse": remorse,
         "depths": depths,
+        "depths-2": {**depths, **{"shard_name": "depths"}},
+        "depths-3": {**depths, **{"shard_name": "depths"}},
         "tutorial": tutorial,
         "build": None,
         "bungee": None,
@@ -234,16 +240,17 @@ if __name__ == '__main__':
 
     # Parse additional non-option arguments and copy those configs to the list of servers to update
     config_list = []
-    for arg in args:
-        if arg in available_configs:
-            if available_configs[arg] is not None:
-                config = available_configs[arg]
-                config["build_path"] = os.path.join(build_template_dir, arg)
-                config["output_path"] = os.path.join(output_dir, arg)
-                config["previous_path"] = os.path.join(last_week_dir, arg)
-                config_list.append(available_configs[arg])
+    for server in args:
+        if server in available_configs:
+            if available_configs[server] is not None:
+                config = available_configs[server]
+                shard_name = config.get("shard_name", server)
+                config["build_path"] = os.path.join(build_template_dir, shard_name)
+                config["output_path"] = os.path.join(output_dir, server)
+                config["previous_path"] = os.path.join(last_week_dir, server)
+                config_list.append(available_configs[server])
         else:
-            print("ERROR: Unknown shard {} specified!".format(arg))
+            print("ERROR: Unknown shard {} specified!".format(server))
             usage()
 
     timings = Timings(enabled=True)
@@ -289,8 +296,10 @@ if __name__ == '__main__':
     # First check for missing directories and fail if any are found
     for config in config_list:
         server = config["server"]
+        # If the shard name is specified, use this as the base name for the shard, rather than the server name
+        shard_name = config.get("shard_name", server)
 
-        # Move base first - either from build or previously existing data
+        # Move or copy base first - either from build or previously existing data
         if "move_base_from" in config:
             if config["move_base_from"] == "build":
                 for world_name in World.enumerate_worlds(config["build_path"]):
@@ -306,13 +315,28 @@ if __name__ == '__main__':
                     print(f"  {server} - Moving world from {from_world_path} to {output_world_path}")
                     move_folder(from_world_path, output_world_path)
 
+        if "copy_base_from" in config:
+            if config["copy_base_from"] == "build":
+                for world_name in World.enumerate_worlds(config["build_path"]):
+                    from_world_path = os.path.join(config["build_path"], world_name)
+                    output_world_path = os.path.join(config["output_path"], world_name)
+                    print(f"  {server} - Copying world from {from_world_path} to {output_world_path}")
+                    copy_folder(from_world_path, output_world_path)
+
+            elif config["copy_base_from"] == "previous":
+                for world_name in World.enumerate_worlds(config["previous_path"]):
+                    from_world_path = os.path.join(config["previous_path"], world_name)
+                    output_world_path = os.path.join(config["output_path"], world_name)
+                    print(f"  {server} - Copying world from {from_world_path} to {output_world_path}")
+                    copy_folder(from_world_path, output_world_path)
+
         # Move any dungeon instances that should be preserved
         if "preserve_instances" in config:
             preserve_instances = config["preserve_instances"]
 
             print(f"  {server} - Instances preserved this week: [{','.join(str(x) for x in preserve_instances['dungeon_scores'])}]")
             for instance in preserve_instances["dungeon_scores"]:
-                world_name = f"{server}{instance}"
+                world_name = f"{shard_name}{instance}"
                 from_world_path = os.path.join(config["build_path"], world_name)
                 output_world_path = os.path.join(config["output_path"], world_name)
                 if os.path.exists(from_world_path):
@@ -322,7 +346,7 @@ if __name__ == '__main__':
 
         # Move any overworld subfolders that need to be preserved
         if "move_previous_overworld_subfolders" in config:
-            world_name = f"Project_Epic-{server}"
+            world_name = f"Project_Epic-{shard_name}"
             from_world_path = os.path.join(config["previous_path"], world_name)
             output_world_path = os.path.join(config["output_path"], world_name)
             print(f"  {server} - Moving previous paths from {from_world_path}/[{','.join(config['move_previous_overworld_subfolders'])}] to {output_world_path}")

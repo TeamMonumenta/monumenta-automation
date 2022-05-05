@@ -3,6 +3,7 @@
 import sys
 import os
 import re
+import copy
 
 # config should be the entire config map
 # data should be a tuple like ('server.properties', 'difficulty', 'difficulty=peaceful')
@@ -37,6 +38,9 @@ def gen_server_config(servername):
     dest = config[servername]
     serverConfig = dest["config"]
 
+    # If this was a copy of another shard, get the other shard name to be used for {servername} replacements
+    serverNameForReplacements = dest.get("copy_of", servername)
+
     ################################################################################
     # Copy customized configuration per-server
     ################################################################################
@@ -60,7 +64,7 @@ def gen_server_config(servername):
             with open(old, "rt") as fin:
                 with open(new, "wt") as fout:
                     for line in fin:
-                        fout.write(line.replace("{servername}", servername).replace("{serverdomain}", get_server_domain(servername)))
+                        fout.write(line.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", get_server_domain(serverNameForReplacements)))
         except Exception as e:
             print(e)
             continue
@@ -68,7 +72,7 @@ def gen_server_config(servername):
     # Do the per-file replacements
     for replacement in serverConfig:
         filename = servername + "/" + replacement[0]
-        filename = filename.replace("{servername}", servername).replace("{serverdomain}", get_server_domain(servername))
+        filename = filename.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", get_server_domain(serverNameForReplacements))
         if len(replacement) == 1:
             # Nothing to do here, just copying the file was enough
             continue
@@ -105,8 +109,8 @@ def gen_server_config(servername):
     for link in linked:
         linkname = servername + "/" + link[0]
         targetname = link[1]
-        linkname = linkname.replace("{servername}", servername).replace("{serverdomain}", get_server_domain(servername))
-        targetname = targetname.replace("{servername}", servername).replace("{serverdomain}", get_server_domain(servername))
+        linkname = linkname.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", get_server_domain(serverNameForReplacements))
+        targetname = targetname.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", get_server_domain(serverNameForReplacements))
 
         if os.path.islink(linkname):
             os.unlink(linkname)
@@ -590,6 +594,22 @@ if __name__ == '__main__':
             ],
             'linked':server_config + base_plugins,
         }
+
+
+    # These shards are copies of another shard, using that other shard's name for {servername} replacements
+    copied_shard_config = {
+        "valley-2": "valley",
+        "valley-3": "valley",
+        "isles-2": "isles",
+        "isles-3": "isles",
+        "depths-2": "depths",
+        "depths-3": "depths",
+    }
+
+    for key in copied_shard_config:
+        copy_of = copied_shard_config[key]
+        config[key] = copy.deepcopy(config[copy_of])
+        config[key]["copy_of"] = copy_of
 
 
     # Config additions that are specific to build or play server
