@@ -44,6 +44,7 @@ shard_config = {
     },
     "valley-2": {
         "play" : { "node": "m8" , "memGB": 6, },
+        "stage": { "node": "m12", "memGB": 3, },
     },
     "valley-3": {
         "play" : { "node": "m8" , "memGB": 6, },
