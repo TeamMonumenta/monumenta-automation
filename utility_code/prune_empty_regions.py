@@ -32,17 +32,15 @@ def process_region(arg):
             num_entities += chunk.nbt.count_multipath('Entities[]')
         elif isinstance(region, Region):
             # Check if there are entities (fast check)
-            num_entities += chunk.nbt.count_multipath('Entities[]')
+            num_entities += chunk.nbt.count_multipath('Level.Entities[]')
 
             # Check if there are tile entities (fast check)
-            num_block_entities += chunk.nbt.count_multipath('Level.TileEntities[]')
-
-            # Check if there are block entities (fast check)
-            num_block_entities += chunk.nbt.count_multipath('Level.BlockEntities[]')
+            num_block_entities += chunk.nbt.count_multipath('Level.TileEntities[]') # 1.17 and before
+            num_block_entities += chunk.nbt.count_multipath('block_entities[]')
 
             # Check for non-air blocks
             # This is an expensive check, keep it low priority
-            for section in chunk.nbt.at_path('Level.Sections').value:
+            for section in chunk.sections:
                 try:
                     blocks = BlockArray.from_nbt(section, block_map)
                     for block in blocks:

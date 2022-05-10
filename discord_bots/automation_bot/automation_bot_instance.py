@@ -1389,6 +1389,10 @@ Syntax:
             if shard in commandArgs:
                 replace_shards.append(shard)
 
+        do_prune = False
+        if "--prune" in commandArgs:
+            do_prune = True
+
         for token in commandArgs:
             if token in ["structures", "schematics"]:
                 replace_shards.append("structures")
@@ -1414,12 +1418,16 @@ Syntax:
             else:
                 base_backup_name = f"/home/epic/0_OLD_BACKUPS/{shard}_pre_entity_loot_updates_{datestr()}"
 
-                await self.display("Running replacements on shard {}".format(shard))
+                if do_prune:
+                    await self.display(f"Running replacements and pruning world regions on shard {shard}")
+                else:
+                    await self.display(f"Running replacements on shard {shard}")
                 await self.stop(shard)
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(["tar", f"--exclude={shard}/logs", f"--exclude={shard}/plugins", f"--exclude={shard}/cache", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", shard])
-                await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
-                await self.run(os.path.join(_top_level, f"utility_code/prune_empty_regions.py {shard}"))
+                if do_prune:
+                    await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
+                    await self.run(os.path.join(_top_level, f"utility_code/prune_empty_regions.py {shard}"))
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard} --logfile {base_backup_name}_items.yml"), displayOutput=True)
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up

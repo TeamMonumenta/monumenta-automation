@@ -9,7 +9,7 @@ import traceback
 import yaml
 
 from lib_py3.mob_replacement_manager import MobReplacementManager, remove_unwanted_spawner_tags
-from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items, get_named_armor_items, get_named_hand_item_ids, get_named_armor_item_ids
+from lib_py3.common import eprint, get_entity_name_from_nbt, get_named_hand_items, get_named_armor_items, get_named_hand_item_ids, get_named_armor_item_ids, parse_name_possibly_json
 from lib_py3.library_of_souls import LibraryOfSouls
 from lib_py3.timing import Timings
 
@@ -142,6 +142,12 @@ sub = [
 def usage():
     sys.exit("Usage: {} <--worlds /path/to/folder_containing_worlds | --world /path/to/world | --schematics /path/to/schematics | --structures /path/to/structures> <--library-of-souls /path/to/library-of-souls.json> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run] [--force]".format(sys.argv[0]))
 
+def is_pig_to_remove(entity_nbt, subpath):
+    if entity_nbt.has_path(subpath):
+        sub_nbt = entity_nbt.at_path(subpath)
+        return sub_nbt.has_path('id') and sub_nbt.at_path('id').value == "minecraft:pig" and (not sub_nbt.has_path('CustomName') or len(parse_name_possibly_json(sub_nbt.at_path('CustomName').value)) == 0)
+    return False
+
 # This is handy here because it has direct access to previously defined globals
 def process_entity(entity, replacements_log) -> None:
     if not isinstance(entity, Entity) and not isinstance(entity, BlockEntity):
@@ -172,13 +178,13 @@ def process_entity(entity, replacements_log) -> None:
         if nbt.has_path('SpawnPotentials'):
             new_potentials = []
             for nested_entity in nbt.iter_multipath('SpawnPotentials[]'):
-                if (nested_entity.has_path('Entity.id') and nested_entity.at_path('Entity.id').value == "minecraft:pig" and not nested_entity.has_path('Entity.CustomName')) or (nested_entity.has_path('Entity.Id') and nested_entity.at_path('Entity.Id').value == "minecraft:pig" and not nested_entity.has_path('Entity.CustomName')):
+                if is_pig_to_remove(nested_entity, 'Entity') or is_pig_to_remove(nested_entity, 'data.entity'):
                     changed_something = True
                     msgs.append(f"Removing pig from SpawnPotentials at {entity.get_path_str()}\n")
                 else:
                     new_potentials.append(nested_entity)
             nbt.at_path('SpawnPotentials').value = new_potentials
-        if (nbt.has_path("SpawnData.id") and nbt.at_path("SpawnData.id").value == "minecraft:pig" and not nbt.has_path('SpawnData.CustomName')) or (nbt.has_path("SpawnData.Id") and nbt.at_path("SpawnData.Id").value == "minecraft:pig" and not nbt.has_path('SpawnData.CustomName')):
+        if is_pig_to_remove(nbt, 'SpawnData') or is_pig_to_remove(nbt, 'SpawnData.entity'):
             changed_something = True
             msgs.append(f"Removing pig Spawndata at {entity.get_path_str()}\n")
             nbt.value.pop("SpawnData")
