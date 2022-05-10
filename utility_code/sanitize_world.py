@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
                     # Figure out which x/z columns need to be pruned
                     columns_to_prune = set()
-                    for section in chunk.nbt.iter_multipath('Level.Sections[]'):
+                    for section in chunk.sections:
                         cy = section.at_path("Y").value
                         if cy == 0:
                             blocks = BlockArray.from_nbt(section, block_map)
@@ -92,7 +92,7 @@ if __name__ == '__main__':
                                         columns_to_prune.add(f"{bx}-{bz}")
 
                     # Prune them
-                    for section in chunk.nbt.iter_multipath('Level.Sections[]'):
+                    for section in chunk.sections:
                         cy = section.at_path("Y").value
                         blocks = BlockArray.from_nbt(section, block_map)
                         for by in bounded_range(min_y, max_y, cy, 16):
@@ -105,30 +105,32 @@ if __name__ == '__main__':
                                             blocks_removed += 1
 
                     # Remove tile entities
-                    if chunk.nbt.has_path("Level.TileEntities"):
-                        new_tile_entities = []
-                        for block_entity in chunk.nbt.iter_multipath('Level.TileEntities[]'):
-                            x = block_entity.at_path("x").value - (cx * 16)
-                            z = block_entity.at_path("z").value - (cz * 16)
-                            if f"{x}-{z}" in columns_to_prune:
-                                tile_entities_removed += 1
-                            else:
-                                new_tile_entities.append(block_entity)
+                    for path in ["block_entities", "Level.TileEntities"]:
+                        if chunk.nbt.has_path(path):
+                            new_tile_entities = []
+                            for block_entity in chunk.nbt.iter_multipath(f"{path}[]"):
+                                x = block_entity.at_path("x").value - (cx * 16)
+                                z = block_entity.at_path("z").value - (cz * 16)
+                                if f"{x}-{z}" in columns_to_prune:
+                                    tile_entities_removed += 1
+                                else:
+                                    new_tile_entities.append(block_entity)
 
-                        chunk.nbt.at_path("Level.TileEntities").value = new_tile_entities
+                            chunk.nbt.at_path(path).value = new_tile_entities
 
                     # Remove regular entities
-                    if chunk.nbt.has_path("Level.Entities"):
-                        new_entities = []
-                        for entity in chunk.nbt.iter_multipath('Level.Entities[]'):
-                            x = int(entity.at_path("Pos").value[0].value) - (cx * 16)
-                            z = int(entity.at_path("Pos").value[2].value) - (cz * 16)
-                            if f"{x}-{z}" in columns_to_prune:
-                                entities_removed += 1
-                            else:
-                                new_entities.append(entity)
+                    for path in ["entities", "Level.Entities"]:
+                        if chunk.nbt.has_path(path):
+                            new_entities = []
+                            for entity in chunk.nbt.iter_multipath(f'{path}[]'):
+                                x = int(entity.at_path("Pos").value[0].value) - (cx * 16)
+                                z = int(entity.at_path("Pos").value[2].value) - (cz * 16)
+                                if f"{x}-{z}" in columns_to_prune:
+                                    entities_removed += 1
+                                else:
+                                    new_entities.append(entity)
 
-                        chunk.nbt.at_path("Level.Entities").value = new_entities
+                            chunk.nbt.at_path(path).value = new_entities
                     region.save_chunk(chunk)
 
     print(f"{blocks_removed} blocks removed, {entities_removed} entities removed, {tile_entities_removed} tile entities removed")
