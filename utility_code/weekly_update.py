@@ -339,7 +339,7 @@ if __name__ == '__main__':
             print(f"  {server} - Instances preserved this week: [{','.join(str(x) for x in preserve_instances['dungeon_scores'])}]")
             for instance in preserve_instances["dungeon_scores"]:
                 world_name = f"{shard_name}{instance}"
-                from_world_path = os.path.join(config["build_path"], world_name)
+                from_world_path = os.path.join(config["previous_path"], world_name)
                 output_world_path = os.path.join(config["output_path"], world_name)
                 if os.path.exists(from_world_path):
                     move_folder(from_world_path, output_world_path)
