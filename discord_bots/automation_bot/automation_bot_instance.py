@@ -34,19 +34,19 @@ class Listening():
         self._set = set()
 
     def isListening(self, key):
-        logger.debug("Listening _set: {}".format(pformat(self._set)))
-        logger.debug("Listening key: {}".format(pformat(key)))
-        if type(key) is not tuple:
+        logger.debug(f"Listening _set: {pformat(self._set)}")
+        logger.debug(f"Listening key: {pformat(key)}")
+        if not isinstance(key, tuple):
             key = (key.channel.id, key.author.id)
         return key not in self._set
 
     def select(self, key):
-        if type(key) is not tuple:
+        if not isinstance(key, tuple):
             key = (key.channel.id, key.author.id)
         self._set.remove(key)
 
     def deselect(self, key):
-        if type(key) is not tuple:
+        if not isinstance(key, tuple):
             key = (key.channel.id, key.author.id)
         self._set.add(key)
 
@@ -57,14 +57,15 @@ class Listening():
             self.deselect(key)
 
     def toggle(self, key):
-        if type(key) is not tuple:
+        if not isinstance(key, tuple):
             key = (key.channel.id, key.author.id)
         if self.isListening(key):
             self.deselect(key)
         else:
             self.select(key)
 
-class AutomationBotInstance(object):
+# pylint: disable=unused-argument
+class AutomationBotInstance():
 
     ################################################################################
     # Entry points
@@ -178,24 +179,24 @@ class AutomationBotInstance(object):
 
                                 logger.info("Got socket message: {}".format(pformat(message)))
                                 if self._audit_channel:
-                                    if (message["channel"] == "Monumenta.Automation.AuditLog"):
+                                    if message["channel"] == "Monumenta.Automation.AuditLog":
                                         # Schedule the display coroutine back on the main event loop
                                         asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                                channel=self._audit_channel),
                                                                          loop)
 
                                 if self._admin_channel:
-                                    if (message["channel"] == "Monumenta.Automation.AdminNotification"):
+                                    if message["channel"] == "Monumenta.Automation.AdminNotification":
                                         asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                                channel=self._admin_channel),
                                                                          loop)
                                 if self._audit_severe_channel:
-                                    if (message["channel"] == "Monumenta.Automation.AuditLogSevere"):
+                                    if message["channel"] == "Monumenta.Automation.AuditLogSevere":
                                         # Schedule the display coroutine back on the main event loop
                                         asyncio.run_coroutine_threadsafe(self.display_verbatim(message["data"]["message"],
                                                                                                channel=self._audit_severe_channel),
                                                                          loop)
-                                if (message["channel"] == "Monumenta.Automation.stage"):
+                                if message["channel"] == "Monumenta.Automation.stage":
                                     # Schedule the display coroutine back on the main event loop
                                     asyncio.run_coroutine_threadsafe(self.stage_data_request(message["data"]), loop)
 
@@ -213,19 +214,19 @@ class AutomationBotInstance(object):
                         if "audit_channel" in conf:
                             try:
                                 self._audit_channel = client.get_channel(conf["audit_channel"])
-                            except:
+                            except Exception:
                                 logging.error("Cannot connect to audit channel: " + conf["audit_channel"])
                         self._audit_severe_channel = None
                         if "audit_severe_channel" in conf:
                             try:
                                 self._audit_severe_channel = client.get_channel(conf["audit_severe_channel"])
-                            except:
+                            except Exception:
                                 logging.error("Cannot connect to audit severe channel: " + conf["audit_severe_channel"])
                         self._admin_channel = None
                         if "admin_channel" in conf:
                             try:
                                 self._admin_channel = client.get_channel(conf["admin_channel"])
-                            except:
+                            except Exception:
                                 logging.error("Cannot connect to admin channel: " + conf["admin_channel"])
                     except Exception as e:
                         logger.warn('Failed to connect to rabbitmq: {}'.format(e))
@@ -279,9 +280,9 @@ class AutomationBotInstance(object):
         user_info = self._permissions["users"].get(author.id, {"rights":["@everyone"]})
         logger.debug("User info = {}".format(pformat(user_info)))
         # This is a copy, not a reference
-        user_rights = list(user_info.get("rights",["@everyone"]))
+        user_rights = list(user_info.get("rights", ["@everyone"]))
         for role in author.roles:
-            permGroupName = self._permissions["groups_by_role"].get(role.id,None)
+            permGroupName = self._permissions["groups_by_role"].get(role.id, None)
             if permGroupName is not None:
                 user_rights = [permGroupName] + user_rights
 
@@ -301,10 +302,7 @@ class AutomationBotInstance(object):
                     user_rights = self._permissions["groups"][perm] + user_rights
                 continue
             givenPerm = (perm[0] == "+")
-            if (
-                perm[1:] == command or
-                perm[1:] == "*"
-            ):
+            if (perm[1:] == command or perm[1:] == "*"):
                 result = givenPerm
 
         return result
@@ -330,7 +328,7 @@ class AutomationBotInstance(object):
             await self._channel.send(chunk)
 
     async def run(self, cmd, ret=0, displayOutput=False):
-        if not type(cmd) is list:
+        if not isinstance(cmd, list):
             # For simple stuff, splitting on spaces is enough
             splitCmd = cmd.split(' ')
         else:
@@ -357,30 +355,30 @@ class AutomationBotInstance(object):
                 await self._channel.send("stderr from command {!r}:".format(cmd))
                 await self.display_verbatim(stderr)
 
-            if ret != None and rc != ret:
+            if ret is not None and rc != ret:
                 raise ValueError("Expected result {}, got result {} while processing {!r}".format(ret, rc, cmd))
 
         return stdout
 
     async def stop(self, shards):
-        if not type(shards) is list:
-            shards=[shards,]
+        if not isinstance(shards, list):
+            shards = [shards,]
         async with self._channel.typing():
             await self.debug("Stopping shards [{}]...".format(",".join(shards)))
             await self._k8s.stop(shards)
             await self.debug("Stopped shards [{}]".format(",".join(shards)))
 
     async def start(self, shards):
-        if not type(shards) is list:
-            shards=[shards,]
+        if not isinstance(shards, list):
+            shards = [shards,]
         async with self._channel.typing():
             await self.debug("Starting shards [{}]...".format(",".join(shards)))
             await self._k8s.start(shards)
             await self.debug("Started shards [{}]".format(",".join(shards)))
 
     async def restart(self, shards):
-        if not type(shards) is list:
-            shards=[shards,]
+        if not isinstance(shards, list):
+            shards = [shards,]
         async with self._channel.typing():
             await self.debug("Restarting shards [{}]...".format(",".join(shards)))
             await self._k8s.restart(shards)
@@ -409,10 +407,7 @@ class AutomationBotInstance(object):
         else:
             helptext = None
             for command in self._commands:
-                if not (
-                    command == target_command or
-                    self._prefix + command == target_command
-                ):
+                if not (command == target_command or self._prefix + command == target_command):
                     continue
 
                 helptext = '''__Help on:__'''
@@ -420,7 +415,7 @@ class AutomationBotInstance(object):
                     helptext += "\n**" + self._prefix + command + "**"
                 else:
                     helptext += "\n~~" + self._prefix + command + "~~"
-                helptext += "```" + self._commands[command].__doc__.replace('{cmdPrefix}',self._prefix) + "```"
+                helptext += "```" + self._commands[command].__doc__.replace('{cmdPrefix}', self._prefix) + "```"
 
             if helptext is None:
                 helptext = '''Command {!r} does not exist!'''.format(target_command)
@@ -444,13 +439,7 @@ Examples:
 
         commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
 
-        if (
-            (
-                '*' in commandArgs or
-                self._name in commandArgs
-            ) ^
-            self._listening.isListening(message)
-        ):
+        if ('*' in commandArgs or self._name in commandArgs) ^ self._listening.isListening(message):
             self._listening.toggle(message)
             if self._listening.isListening(message):
                 await self.display(self._name + " is now listening for commands.")
@@ -550,6 +539,7 @@ Examples:
         inst_str += "```"
         await self.display(inst_str)
 
+    # pylint: disable=comparison-with-callable
     async def _start_stop_restart_common(self, cmd, message, action):
         arg_str = message.content[len(self._prefix + cmd)+1:].strip()
         if arg_str.startswith("shard "):
@@ -844,11 +834,11 @@ Examples:
 
             await self.display("Running replacements on copied structures...")
             args = (" --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
-                + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
-                + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
+                    + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
+                    + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
             await self.run(os.path.join(_top_level, "utility_code/replace_items.py"
-                + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
-                + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
+                                        + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
+                                        + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
             await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         await self.display("Packaging up stage bundle...")
@@ -961,8 +951,7 @@ Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data
 
         async def send_broadcast_msg(time_left):
             self._socket.send_packet("*", "monumentanetworkrelay.command",
-                    {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta's weekly update will begin in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". The server will be down for approximately 1 hour while we patch new content into the game."}]'''}
-            )
+                                     {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta's weekly update will begin in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". The server will be down for approximately 1 hour while we patch new content into the game."}]'''})
             await self.display("{} to weekly update".format(time_left))
 
         await send_broadcast_msg("10 minutes")
@@ -1493,7 +1482,7 @@ Syntax:
 `{cmdPrefix}generate demo release <version>`'''
 
         commandArgs = message.content[len(self._prefix + cmd)+1:]
-        version = "".join([i if re.match('[0-9\.]', i) else '' for i in commandArgs])
+        version = "".join([i if re.match(r'[0-9\.]', i) else '' for i in commandArgs])
 
         if not version:
             await self.display("Version must be specified and can contain only numbers and periods")
@@ -1503,7 +1492,7 @@ Syntax:
         # Test if this version already exists
         try:
             await self.run(["test", "!", "-f", "/home/epic/4_SHARED/monumenta_demo/Monumenta Demo - The Halls of Wind and Blood V{}.zip".format(version)])
-        except:
+        except Exception:
             await self.display("Demo release V{} already exists!".format(version))
             return
 
