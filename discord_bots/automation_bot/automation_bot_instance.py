@@ -10,6 +10,7 @@ import time
 import datetime
 from pprint import pformat
 import logging
+import redis
 import discord
 import yaml
 
@@ -1079,6 +1080,14 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         await self.run("mkdir -p /home/epic/1_ARCHIVE")
         await self.run("mkdir -p /home/epic/0_OLD_BACKUPS")
 
+        r = redis.Redis(host="redis", port=6379)
+        if min_phase <= 0:
+            r.set('monumenta:automation:weekly_update_common_done', 'False')
+            common_done = r.get('monumenta:automation:weekly_update_common_done').decode("utf-8")
+            await self.display("Marked common update tasks as not done")
+            if common_done != "False":
+                raise Exception(f"Tried to set common_done = False but got {common_done} back!")
+
         # Fail if any shards are still running
         if min_phase <= 1:
             await self.display("Checking that all shards are stopped...")
@@ -1144,7 +1153,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         ########################################
         # Raffle
 
-        if min_phase <= 13 and "bungee" in self._shards:
+        if min_phase <= 13 and self._common_weekly_update_tasks:
             await self.display("Raffle results:")
             raffle_seed = "Default raffle seed"
             if self._rreact["msg_contents"] is not None:
@@ -1161,31 +1170,31 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.display("Refreshing leaderboards")
             await self.run(os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
 
-        if min_phase <= 15:
+        if min_phase <= 15 and self._common_weekly_update_tasks:
+            await self.display("Restarting rabbitmq")
+            await self.restart("rabbitmq")
+
+        if min_phase <= 16 and self._common_weekly_update_tasks:
+            await self.display("Marking common tasks as complete")
+            r.set('monumenta:automation:weekly_update_common_done', 'True')
+
+        if min_phase <= 17:
+            await self.display("Waiting for common tasks to complete...")
+            while True:
+                common_done = r.get('monumenta:automation:weekly_update_common_done').decode("utf-8")
+                if common_done == "True":
+                    await self.display("Detected common tasks are complete, proceeding with update")
+                    break
+
+                # Not done yet, wait a bit before polling
+                await asyncio.sleep(5)
+
+        if min_phase <= 18:
             await self.display("Running actual weekly update (this will take a while!)...")
             logfile = f"/home/epic/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{self._name}_{datetime.date.today().strftime('%Y-%m-%d')}.log"
             await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ --logfile {logfile} -j 16 " + " ".join(self._shards)))
 
-        if min_phase <= 16:
-            for shard in ["plots","playerplots",]:
-                if shard in self._shards:
-                    await self.display(f"Preserving coreprotect for {shard}...")
-                    await self.run(f"mkdir -p {self._shards[shard]}/plugins/CoreProtect")
-                    await self.run("mv {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/CoreProtect/database.db"))
-
-            for shard in ["plots",]:
-                if shard in self._shards:
-                    await self.display(f"Preserving plot access for {shard}...")
-                    await self.run(f"mkdir -p {self._shards[shard]}/plugins/Monumenta")
-                    await self.run("cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/Monumenta/plot_access.json"))
-
-            for shard in ["plots", "valley", "isles", "playerplot",]:
-                if shard in self._shards:
-                    await self.display(f"Preserving warps for {shard}...")
-                    os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
-                    if os.path.exists(f"{self._server_dir}/0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml"):
-                        await self.run("cp {0}/0_PREVIOUS/{1}/{2} {0}/{1}/{2}".format(self._server_dir, shard, "plugins/MonumentaWarps/warps.yml"))
-
+        if min_phase <= 19:
             for shard in self._shards:
                 if shard not in ["build",] and not shard.startswith("bungee"):
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
@@ -1193,16 +1202,16 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/ops.json {self._shards[shard]}/")
 
         await self.cd(self._server_dir)
-        if min_phase <= 17:
+        if min_phase <= 20:
             await self.display("Generating per-shard config...")
             await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(self._shards.keys())))
 
-        if min_phase <= 18:
+        if min_phase <= 21:
             await self.display("Checking for broken symbolic links...")
             await self.run(f"find {self._server_dir} -xtype l", displayOutput=True)
 
         await self.cd("/home/epic")
-        if min_phase <= 19:
+        if min_phase <= 22:
             await self.display("Backing up post-update artifacts...")
             await self.cd(f"{self._server_dir}/..")
             folder_name = self._server_dir.strip("/").split("/")[-1]

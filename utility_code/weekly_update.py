@@ -24,7 +24,7 @@ def get_dungeon_config(name, objective):
     return {
         "server":f"{name}",
         "move_base_from":"build",
-        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
+        "move_previous_paths":[f"Project_Epic-{name}/stats", f"Project_Epic-{name}/data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + [f'file/{name}'],
         "replace_items_globally": True,
         "preserve_instances":{
@@ -118,6 +118,7 @@ if __name__ == '__main__':
         "server":"plots",
         "move_base_from":"previous",
         "datapacks":datapacks_base + ['file/plots'],
+        "move_previous_paths":["Project_Epic-plots/stats", "Project_Epic-plots/data/scoreboard.dat", "plugins/CoreProtect", "plugins/MonumentaWarps"],
         "replace_items_globally": True,
     }
 
@@ -125,6 +126,7 @@ if __name__ == '__main__':
         "server":"playerplots",
         "move_base_from":"previous",
         "datapacks":datapacks_base + ['file/playerplots'],
+        "move_previous_paths":["Project_Epic-playerplots/stats", "Project_Epic-playerplots/data/scoreboard.dat", "plugins/CoreProtect", "plugins/MonumentaWarps"],
         "replace_items_globally": True,
     }
 
@@ -137,49 +139,49 @@ if __name__ == '__main__':
     corridors = {
         "server":"corridors",
         "move_base_from":"build",
-        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
+        "move_previous_paths":["Project_Epic-corridors/stats", "Project_Epic-corridors/data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/corridors'],
     }
 
     verdant = {
         "server":"verdant",
         "move_base_from":"build",
-        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
+        "move_previous_paths":["Project_Epic-verdant/stats", "Project_Epic-verdant/data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/verdant'],
     }
 
     rush = {
         "server":"rush",
         "move_base_from":"build",
-        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
+        "move_previous_paths":["Project_Epic-rush/stats", "Project_Epic-rush/data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/rush'],
     }
 
     mist = {
         "server":"mist",
         "move_base_from":"build",
-        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
+        "move_previous_paths":["Project_Epic-mist/stats", "Project_Epic-mist/data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/mist'],
     }
 
     remorse = {
         "server":"remorse",
         "move_base_from":"build",
-        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
+        "move_previous_paths":["Project_Epic-remorse/stats", "Project_Epic-remorse/data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/remorse'],
     }
 
     depths = {
         "server":"depths",
         "copy_base_from":"build",
-        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
+        "move_previous_paths":["Project_Epic-depths/stats", "Project_Epic-depths/data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/depths'],
     }
 
     valley = {
         "server":"valley",
         "copy_base_from":"build",
-        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
+        "move_previous_paths":["Project_Epic-valley/stats", "Project_Epic-valley/data/scoreboard.dat", "plugins/MonumentaWarps"],
         "datapacks":datapacks_base + ['file/valley'],
         "coordinates_to_fill":(
             {"name":"Magic Block", "pos1":(-1441, 2, -1441), "pos2":(-1441, 2, -1441), 'block': {'name': 'minecraft:air'}},
@@ -189,7 +191,7 @@ if __name__ == '__main__':
     isles = {
         "server":"isles",
         "copy_base_from":"build",
-        "move_previous_overworld_subfolders":["stats", "data/scoreboard.dat"],
+        "move_previous_paths":["Project_Epic-isles/stats", "Project_Epic-isles/data/scoreboard.dat", "plugins/MonumentaWarps"],
         "datapacks":datapacks_base + ['file/isles'],
         "coordinates_to_fill":(
             {"name":"Magic Block", "pos1":(-1441, 2, -1441), "pos2":(-1441, 2, -1441), 'block': {'name': 'minecraft:air'}},
@@ -345,12 +347,9 @@ if __name__ == '__main__':
                     eprint(f"WARNING: Unable to preserve {world_name} - previous world folder does not exist")
 
         # Move any overworld subfolders that need to be preserved
-        if "move_previous_overworld_subfolders" in config:
-            world_name = f"Project_Epic-{shard_name}"
-            from_world_path = os.path.join(config["previous_path"], world_name)
-            output_world_path = os.path.join(config["output_path"], world_name)
-            print(f"  {server} - Moving previous paths from {from_world_path}/[{','.join(config['move_previous_overworld_subfolders'])}] to {output_world_path}")
-            move_paths(from_world_path, output_world_path, config["move_previous_overworld_subfolders"])
+        if "move_previous_paths" in config:
+            print(f"  {server} - Moving previous paths from {config['previous_path']}/[{','.join(config['move_previous_paths'])}] to {config['output_path']}")
+            move_paths(config['previous_path'], config['output_path'], config["move_previous_paths"])
 
         # Enumerate all the resulting worlds for later use
         config["worlds"] = World.enumerate_worlds(config["output_path"])
