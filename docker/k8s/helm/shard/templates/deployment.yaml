@@ -150,7 +150,7 @@ spec:
           httpGet:
             path: /alive
             port: 8000
-          initialDelaySeconds: 240
+          initialDelaySeconds: 360
           timeoutSeconds: 5
           periodSeconds: 10
 {{- else if .Values.useSocketForProbes }}
@@ -163,7 +163,7 @@ spec:
         livenessProbe:
           tcpSocket:
             port: 25566
-          initialDelaySeconds: 240
+          initialDelaySeconds: 360
           timeoutSeconds: 5
           periodSeconds: 10
 {{- end }}
