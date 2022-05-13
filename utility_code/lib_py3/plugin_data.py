@@ -258,7 +258,7 @@ class MonumentaGrave(NbtPathDebug):
         return (self._data["location"]["x"], self._data["location"]["y"], self._data["location"]["z"])
 
     def __repr__(self):
-        return f'Grave({self._data["world"]} {" ".join([str(round(x, 1)) for x in self.pos])})'
+        return f'Grave({self._data["shard"]} {" ".join([str(round(x, 1)) for x in self.pos])})'
 
 
 class JsonWrappedItem(Item, NbtPathDebug):

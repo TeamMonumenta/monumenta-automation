@@ -89,15 +89,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     }
 }
 
-fn update_world(world: &str) -> &str {
-    if world == "Project_Epic-region_1" {
-        return "Project_Epic-valley"
-    } else if world == "Project_Epic-region_2" {
-        return "Project_Epic-isles"
-    }
-    return world
-}
-
 fn main() -> BoxResult<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
@@ -160,6 +151,8 @@ fn main() -> BoxResult<()> {
         }
 
         /* Update plugin data */
+        /* This is no longer used but likely to be useful in the future */
+        /*
         if let Some(mut plugindata) = player.plugindata {
             for (key, value) in plugindata.iter_mut() {
                 /* Update graves with the R1/R2 rename */
@@ -167,50 +160,14 @@ fn main() -> BoxResult<()> {
                     if let serde_json::value::Value::Object(obj) = value {
                         for (key, value) in obj.iter_mut() {
                             if key == "graves" {
-                                for entry in value.as_array_mut().unwrap() {
-                                    let entry = entry.as_object_mut().unwrap();
-                                    entry.insert("world".to_owned(), json!(update_world(entry.get("world").unwrap().as_str().unwrap())));
-                                }
+                                // Example only, this code no longer works
+                                // for entry in value.as_array_mut().unwrap() {
+                                //     let entry = entry.as_object_mut().unwrap();
+                                //     entry.insert("world".to_owned(), json!(update_world(entry.get("world").unwrap().as_str().unwrap())));
+                                // }
                             } else if key == "thrown_items" {
-                                for entry in value.as_array_mut().unwrap() {
-                                    let entry = entry.as_object_mut().unwrap();
-                                    entry.insert("world".to_owned(), json!(update_world(entry.get("world").unwrap().as_str().unwrap())));
-                                }
-                                /*
-                                 * TODO: Maybe someday this will be worth fixing to automatically
-                                 * remove compass graves...
-                                 */
-                                /*
-                                let value : Vec<serde_json::value::Value> = value.as_array_mut().unwrap().iter_mut().filter_map(|entry| {
-                                    if let Some(obj) = entry.as_object_mut() {
-                                        // Upgrade world if needed
-                                        if let Some(world) = obj.get("world") {
-                                            if let Some(worldstr) = world.as_str() {
-                                                obj.insert("world".to_owned(), json!(update_world(worldstr)));
-                                            }
-                                        } else {
-                                            println!("WARNING: Found thrown_items entry missing world");
-                                            return None;
-                                        }
+                                // Example
 
-                                        if let Some(nbt) = obj.get("nbt") {
-                                            if let Some(nbtstr) = nbt.as_str() {
-                                                if nbtstr.contains("Quest Compass") {
-                                                    println!("Compass!");
-                                                    return None;
-                                                }
-                                            }
-                                            return Some(json!(obj));
-                                        } else {
-                                            println!("WARNING: Found thrown_items entry missing nbt");
-                                            return None;
-                                        }
-                                    } else {
-                                        println!("WARNING: Found thrown_items entry that is not an object");
-                                        return None;
-                                    }
-                                }).collect();
-                                */
                             } else {
                                 println!("GOT UNKNOWN MonumentaGravesV2 KEY: {:?}", key);
                             }
@@ -220,7 +177,7 @@ fn main() -> BoxResult<()> {
             }
             player.plugindata = Some(plugindata);
         }
-
+        */
 
         player.save_dir(basedirpath).unwrap();
         ()
