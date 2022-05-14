@@ -14,6 +14,9 @@ except getopt.GetoptError as err:
     eprint(str(err))
     usage()
 
+if len(args) < 2:
+    usage()
+
 from_path = args[0]
 dest_path = args[1]
 
