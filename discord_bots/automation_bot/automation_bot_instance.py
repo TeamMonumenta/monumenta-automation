@@ -101,6 +101,7 @@ class AutomationBotInstance():
             "restart": self.action_restart,
 
             "view scores": self.action_view_scores,
+            "get score": self.action_get_player_scores,
             "set score": self.action_set_player_scores,
 
             "update item": self.action_update_items,
@@ -356,8 +357,11 @@ class AutomationBotInstance():
                 await self._channel.send("stderr from command {!r}:".format(cmd))
                 await self.display_verbatim(stderr)
 
-            if ret is not None and rc != ret:
-                raise ValueError("Expected result {}, got result {} while processing {!r}".format(ret, rc, cmd))
+            if isinstance(ret, int) and rc != ret:
+                raise ValueError(f"Expected result {ret}, got result {rc} while processing {cmd!r}")
+
+            if isinstance(ret, (list, tuple, set)) and rc not in ret:
+                raise ValueError(f"Expected result in {ret}, got result {rc} while processing {cmd!r}")
 
         return stdout
 
@@ -616,6 +620,21 @@ Do not use for debugging quests or other scores that are likely to change often.
             cmd_str = cmd_str + " " + commandArgs.pop(0)
 
         await self.run(cmd_str, displayOutput=True)
+        await self.display("Done")
+
+
+    async def action_get_player_scores(self, cmd, message):
+        """Get score for a player
+
+Note: the values from this command could be at most 5 minutes behind the play server if the player is online.
+Do not use for debugging quests or other scores that are likely to change often."""
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+
+        cmd_str = os.path.join(_top_level, "utility_code/get_score.py")
+        cmd_str = " ".join([cmd_str] + list(commandArgs))
+
+        await self.run(cmd_str, displayOutput=True, ret=(0, 2))
         await self.display("Done")
 
 
