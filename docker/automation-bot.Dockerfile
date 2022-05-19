@@ -17,7 +17,7 @@ RUN apt-get update && \
 	apt-get install -y software-properties-common && \
 	add-apt-repository -y ppa:pypy/ppa && \
 	apt-get update && \
-	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy zip unzip pigz python3-dev libtool curl liblz4-tool netcat pypy3 && \
+	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy python3-git zip unzip pigz python3-dev libtool curl liblz4-tool netcat pypy3 git && \
 	rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install wheel && \
@@ -56,7 +56,9 @@ RUN cd /tmp && \
 	curl -O https://bootstrap.pypa.io/get-pip.py && \
 	pypy3 get-pip.py && \
 	rm get-pip.py && \
-	pypy3 -m pip install wheel pika redis bitstring kanboard flask mutf8 pyyaml
+	pypy3 -m pip install wheel pika redis bitstring kanboard flask mutf8 pyyaml && \
+	git config --global user.name "Automation Bot" && \
+	git config --global user.email "monumentammo@gmail.com"
 
 ENV PYTHONIOENCODING UTF-8
 
