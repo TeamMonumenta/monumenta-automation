@@ -38,7 +38,7 @@ fn main() -> BoxResult<()> {
         return Ok(());
     }
 
-    args.remove(0);
+    args.remove(0); // Program name
 
     let redis_uri = args.remove(0);
 

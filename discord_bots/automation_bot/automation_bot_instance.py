@@ -104,6 +104,8 @@ class AutomationBotInstance():
             "view scores": self.action_view_scores,
             "get score": self.action_get_player_scores,
             "set score": self.action_set_player_scores,
+            "transfer playerdata": self.action_transfer_playerdata,
+            "rollback playerdata": self.action_rollback_playerdata,
 
             "update item": self.action_update_items,
             "run replacements": self.action_run_replacements,
@@ -400,12 +402,15 @@ class AutomationBotInstance():
         '''Lists commands available with this bot'''
 
         commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+        await self.help_internal(commandArgs, message.author, message.channel)
+
+    async def help_internal(self, commandArgs, author, channel):
         # any -v style arguments should go here
         target_command = " ".join(commandArgs)
         if len(commandArgs) == 0:
             helptext = '''__Available Actions__'''
             for command in self._commands:
-                if self.check_permissions(command, message.author):
+                if self.check_permissions(command, author):
                     helptext += "\n**" + self._prefix + command + "**"
                 else:
                     helptext += "\n~~" + self._prefix + command + "~~"
@@ -417,7 +422,7 @@ class AutomationBotInstance():
                     continue
 
                 helptext = '''__Help on:__'''
-                if self.check_permissions(command, message.author):
+                if self.check_permissions(command, author):
                     helptext += "\n**" + self._prefix + command + "**"
                 else:
                     helptext += "\n~~" + self._prefix + command + "~~"
@@ -426,7 +431,7 @@ class AutomationBotInstance():
             if helptext is None:
                 helptext = '''Command {!r} does not exist!'''.format(target_command)
 
-        await message.channel.send(helptext)
+        await channel.send(helptext)
 
     async def action_list_bots(self, cmd, message):
         '''Lists currently running bots'''
@@ -668,6 +673,57 @@ Do not use for debugging quests or other scores that are likely to change often.
             setscores += 1
 
         await self.display(f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)")
+
+    async def action_transfer_playerdata(self, cmd, message):
+        '''Transfers player data from one account to another.
+
+Usage: ~transfer playerdata <sourceplayer> <destplayer>
+
+This will transfer everything from <sourceplayer> to <destplayer> except their guild and plot access. Guild must be done manually by you. Plot access will have to be recreated by the player.
+
+After transferring, source player data is backed up and then deleted. The source player can play again as a new player.
+
+**Both players must be offline for this to work. The bot is not currently able to test for this, so you have to check manually!**
+        '''
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+
+        if len(commandArgs) != 2:
+            await self.help_internal(["transfer playerdata"], message.author, message.channel)
+            return
+
+        fromplayer = commandArgs[0]
+        toplayer = commandArgs[1]
+        backuppath = f"/home/epic/0_OLD_BACKUPS/transfer_player_{fromplayer}_to_{toplayer}_{datestr()}"
+
+        await self.run([os.path.join(_top_level, "rust/bin/move_redis_data_between_players"), "redis://redis/", "play", fromplayer, toplayer, backuppath], displayOutput=True)
+        await self.display(f"{fromplayer} has been wiped and moved to the tutorial. If this was a mistake, you can ask an operator to restore it from the backup in {backuppath}.")
+        await self.display(f"{toplayer} has had their data overwritten by the data from {fromplayer}. If this was a mistake, you can roll the player back to before the transfer using the in-game /rollback command")
+        await self.display(f"**You still have to fix the player's guilds.**")
+        await self.display(f"To do this, go in-game and run ```/lp user {fromplayer} parent info``` Take note of the guild group. Then remove the original player from that guild via ```/lp user {fromplayer} parent remove <guild>``` and add the new player to the guild via ```/lp user {toplayer} parent add <guild>```")
+
+    async def action_rollback_playerdata(self, cmd, message):
+        '''Rolls a player back to the most recent weekly update
+
+Usage: ~rollback playerdata <player>
+
+This will roll a player back to the most recent weekly update data.
+
+**Player must be offline for this to work. The bot is not currently able to test for this, so you have to check manually!**
+        '''
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+
+        if len(commandArgs) != 1:
+            await self.help_internal(["rollback playerdata"], message.author, message.channel)
+            return
+
+        playername = commandArgs[0]
+        rollbackpath = f"/home/epic/play/m8/server_config/redis_data_initial"
+        backuppath = f"/home/epic/0_OLD_BACKUPS/rollback_player_{playername}_{datestr()}"
+
+        await self.run([os.path.join(_top_level, "rust/bin/player_backup_and_rollback"), "redis://redis/", "play", playername, rollbackpath, backuppath], displayOutput=True)
+        await self.display(f"{playername} has been rolled back to the last weekly update. If this was a mistake, you can either fix it in-game using the `/rollback` command, or ask an operator to restore it from the backup in {backuppath}.")
 
     async def action_generate_instances(self, cmd, message):
         '''Generates instances from dungeon worlds

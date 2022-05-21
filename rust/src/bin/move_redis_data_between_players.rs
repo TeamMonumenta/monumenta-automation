@@ -1,4 +1,5 @@
 #[macro_use] extern crate log;
+#[macro_use] extern crate simple_error;
 
 use std::error::Error;
 type BoxResult<T> = Result<T,Box<dyn Error>>;
@@ -20,14 +21,14 @@ fn main() -> BoxResult<()> {
 
     let mut args: Vec<String> = env::args().collect();
 
-    if args.len() != 5 {
-        println!("Usage: {} <domain> <from_player_name> <to_player_name> <backup_dir>", args.remove(0));
-        return Ok(());
+    if args.len() != 6 {
+        bail!("Usage: {} 'redis://127.0.0.1/' <domain> <from_player_name> <to_player_name> <backup_dir>", args.remove(0));
     }
 
     args.remove(0);
 
-    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let redis_uri = args.remove(0);
+    let client = redis::Client::open(redis_uri)?;
     let mut con : redis::Connection = client.get_connection()?;
 
     let domain = args.remove(0);
@@ -45,6 +46,9 @@ fn main() -> BoxResult<()> {
     let mut inputplayer = Player::new(inputuuid);
     inputplayer.load_redis(&domain, &mut con)?;
 
+    let bungeelocs = format!("{}:bungee:locations", domain);
+    let inputlocation: String = con.hget(&bungeelocs, inputuuid.to_hyphenated().to_string())?;
+
     if let Err(err) = inputplayer.save_dir(&backupdir) {
         warn!("Failed to save player {} domain {} to backup directory {}: {}", inputname, domain, backupdir, err);
         return Err(err);
@@ -53,8 +57,7 @@ fn main() -> BoxResult<()> {
     let mut outputplayer = inputplayer.clone();
     outputplayer.uuid = outputuuid;
 
-    // TODO: Do not transfer remote data for now. This needs to manually update plot access UUIDs
-    outputplayer.remotedata = None;
+    // TODO: Need to update remote data for plot access records
 
     outputplayer.update_history(&format!("Import from {}", &inputname));
 
@@ -69,6 +72,11 @@ fn main() -> BoxResult<()> {
         warn!("Failed to delete original player {} domain {}: {}", inputuuid, domain, err);
         return Err(err);
     }
+
+    // Delete the location record for bungee, moving the player back to the default
+    con.hdel(&bungeelocs, inputuuid.to_hyphenated().to_string())?;
+    // Move the new player to the location of the old player
+    con.hset(&bungeelocs, outputuuid.to_hyphenated().to_string(), inputlocation)?;
 
     info!("Successfully deleted original player data for user {} domain {}", &inputname, &domain);
 
