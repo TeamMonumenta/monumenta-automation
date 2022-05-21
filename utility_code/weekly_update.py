@@ -10,7 +10,7 @@ import yaml
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.common import eprint, move_folder, copy_folder, move_paths, copy_paths
+from lib_py3.common import eprint, move_folder, copy_folder, move_paths
 from lib_py3.redis_scoreboard import RedisScoreboard
 from lib_py3.timing import Timings
 
@@ -181,8 +181,7 @@ if __name__ == '__main__':
     valley = {
         "server":"valley",
         "copy_base_from":"build",
-        "move_previous_paths":["Project_Epic-valley/stats", "Project_Epic-valley/data/scoreboard.dat"],
-        "copy_previous_primary_paths":["plugins/MonumentaWarps"],
+        "move_previous_paths":["Project_Epic-valley/stats", "Project_Epic-valley/data/scoreboard.dat", "plugins/MonumentaWarps"],
         "datapacks":datapacks_base + ['file/valley'],
         "coordinates_to_fill":(
             {"name":"Magic Block", "pos1":(-1441, 2, -1441), "pos2":(-1441, 2, -1441), 'block': {'name': 'minecraft:air'}},
@@ -192,8 +191,7 @@ if __name__ == '__main__':
     isles = {
         "server":"isles",
         "copy_base_from":"build",
-        "move_previous_paths":["Project_Epic-isles/stats", "Project_Epic-isles/data/scoreboard.dat"],
-        "copy_previous_primary_paths":["plugins/MonumentaWarps"],
+        "move_previous_paths":["Project_Epic-isles/stats", "Project_Epic-isles/data/scoreboard.dat", "plugins/MonumentaWarps"],
         "datapacks":datapacks_base + ['file/isles'],
         "coordinates_to_fill":(
             {"name":"Magic Block", "pos1":(-1441, 2, -1441), "pos2":(-1441, 2, -1441), 'block': {'name': 'minecraft:air'}},
@@ -252,7 +250,6 @@ if __name__ == '__main__':
                 config["build_path"] = os.path.join(build_template_dir, shard_name)
                 config["output_path"] = os.path.join(output_dir, server)
                 config["previous_path"] = os.path.join(last_week_dir, server)
-                config["previous_primary_path"] = os.path.join(last_week_dir, shard_name)
                 config_list.append(available_configs[server])
         else:
             print("ERROR: Unknown shard {} specified!".format(server))
@@ -348,11 +345,6 @@ if __name__ == '__main__':
                     move_folder(from_world_path, output_world_path)
                 else:
                     eprint(f"WARNING: Unable to preserve {world_name} - previous world folder does not exist")
-
-        # Move any overworld subfolders that need to be preserved
-        if "copy_previous_primary_paths" in config:
-            print(f"  {server} - Copying previous primary paths from {config['previous_primary_path']}/[{','.join(config['copy_previous_primary_paths'])}] to {config['output_path']}")
-            copy_paths(config['previous_primary_path'], config['output_path'], config["copy_previous_primary_paths"])
 
         # Move any overworld subfolders that need to be preserved
         if "move_previous_paths" in config:

@@ -1166,10 +1166,19 @@ DELETES DUNGEON CORE PROTECT DATA'''
             await self.run(f"rm -rf {' '.join(dirs_to_del)}")
 
         if "valley" in self._shards:
-            await self.display("Saving ops and banned players")
+            await self.display("Saving valley warps, ops, and banned players")
+            await self.run("mkdir -p /home/epic/4_SHARED/op-ban-sync/valley/plugins/")
+            await self.run("rm -rf /home/epic/4_SHARED/op-ban-sync/valley/plugins/MonumentaWarps")
             await self.run(f"cp -a {self._shards['valley']}/banned-ips.json /home/epic/4_SHARED/op-ban-sync/valley/")
             await self.run(f"cp -a {self._shards['valley']}/banned-players.json /home/epic/4_SHARED/op-ban-sync/valley/")
             await self.run(f"cp -a {self._shards['valley']}/ops.json /home/epic/4_SHARED/op-ban-sync/valley/")
+            await self.run(f"cp -a {self._shards['valley']}/plugins/MonumentaWarps /home/epic/4_SHARED/op-ban-sync/valley/plugins/MonumentaWarps")
+
+        if "isles" in self._shards:
+            await self.display("Saving isles warps")
+            await self.run("mkdir -p /home/epic/4_SHARED/op-ban-sync/isles/plugins/")
+            await self.run("rm -rf /home/epic/4_SHARED/op-ban-sync/isles/plugins/MonumentaWarps")
+            await self.run(f"cp -a {self._shards['isles']}/plugins/MonumentaWarps /home/epic/4_SHARED/op-ban-sync/isles/plugins/MonumentaWarps")
 
         if self._common_weekly_update_tasks:
             await self.display("Copying player data from redis")
@@ -1341,6 +1350,14 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-players.json {self._shards[shard]}/")
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/ops.json {self._shards[shard]}/")
+
+                if os.path.isdir(f"{self._shards[shard]}/Project_Epic-valley"):
+                    await self.run(f"rm -rf {self._shards[shard]}/plugins/MonumentaWarps")
+                    await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/plugins/MonumentaWarps {self._shards[shard]}/plugins/MonumentaWarps")
+
+                if os.path.isdir(f"{self._shards[shard]}/Project_Epic-isles"):
+                    await self.run(f"rm -rf {self._shards[shard]}/plugins/MonumentaWarps")
+                    await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/isles/plugins/MonumentaWarps {self._shards[shard]}/plugins/MonumentaWarps")
 
                 # Enable maintenance mode on all bungee shards
                 if shard.startswith("bungee"):
