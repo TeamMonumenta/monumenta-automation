@@ -43,6 +43,9 @@ class ItemReplacementManager(object):
         if item.nbt.has_path('tag.display.Name'):
             # If a name isn't found, it can still be replaced with a named item.
             item_meta['name'] = get_item_name_from_nbt(item.tag)
+            if item.nbt.has_path('tag.Monumenta.Masterwork') and item.nbt.at_path('tag.Monumenta.Masterwork').value.isin(['1', '2', '3', '4', '5', '6', '7']):
+                item_meta['name'] = item_meta['name'] + '|M' + item.nbt.at_path('tag.Monumenta.Masterwork').value
+
 
         # Substitute name/id values in case an item changed ID.
         orig_id = item_meta['id']
