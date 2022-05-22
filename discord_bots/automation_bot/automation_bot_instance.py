@@ -1352,11 +1352,11 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/ops.json {self._shards[shard]}/")
 
                 if os.path.isdir(f"{self._shards[shard]}/Project_Epic-valley"):
-                    await self.run(f"rm -rf {self._shards[shard]}/plugins/MonumentaWarps")
+                    await self.run(f"mkdir -p {self._shards[shard]}/plugins")
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/plugins/MonumentaWarps {self._shards[shard]}/plugins/MonumentaWarps")
 
                 if os.path.isdir(f"{self._shards[shard]}/Project_Epic-isles"):
-                    await self.run(f"rm -rf {self._shards[shard]}/plugins/MonumentaWarps")
+                    await self.run(f"mkdir -p {self._shards[shard]}/plugins")
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/isles/plugins/MonumentaWarps {self._shards[shard]}/plugins/MonumentaWarps")
 
                 # Enable maintenance mode on all bungee shards
