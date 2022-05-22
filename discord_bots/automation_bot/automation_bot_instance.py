@@ -13,6 +13,7 @@ import logging
 import redis
 import discord
 import yaml
+import git
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -101,7 +102,10 @@ class AutomationBotInstance():
             "restart": self.action_restart,
 
             "view scores": self.action_view_scores,
+            "get score": self.action_get_player_scores,
             "set score": self.action_set_player_scores,
+            "transfer playerdata": self.action_transfer_playerdata,
+            "rollback playerdata": self.action_rollback_playerdata,
 
             "update item": self.action_update_items,
             "run replacements": self.action_run_replacements,
@@ -356,8 +360,11 @@ class AutomationBotInstance():
                 await self._channel.send("stderr from command {!r}:".format(cmd))
                 await self.display_verbatim(stderr)
 
-            if ret is not None and rc != ret:
-                raise ValueError("Expected result {}, got result {} while processing {!r}".format(ret, rc, cmd))
+            if isinstance(ret, int) and rc != ret:
+                raise ValueError(f"Expected result {ret}, got result {rc} while processing {cmd!r}")
+
+            if isinstance(ret, (list, tuple, set)) and rc not in ret:
+                raise ValueError(f"Expected result in {ret}, got result {rc} while processing {cmd!r}")
 
         return stdout
 
@@ -395,12 +402,15 @@ class AutomationBotInstance():
         '''Lists commands available with this bot'''
 
         commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+        await self.help_internal(commandArgs, message.author, message.channel)
+
+    async def help_internal(self, commandArgs, author, channel):
         # any -v style arguments should go here
         target_command = " ".join(commandArgs)
         if len(commandArgs) == 0:
             helptext = '''__Available Actions__'''
             for command in self._commands:
-                if self.check_permissions(command, message.author):
+                if self.check_permissions(command, author):
                     helptext += "\n**" + self._prefix + command + "**"
                 else:
                     helptext += "\n~~" + self._prefix + command + "~~"
@@ -412,7 +422,7 @@ class AutomationBotInstance():
                     continue
 
                 helptext = '''__Help on:__'''
-                if self.check_permissions(command, message.author):
+                if self.check_permissions(command, author):
                     helptext += "\n**" + self._prefix + command + "**"
                 else:
                     helptext += "\n~~" + self._prefix + command + "~~"
@@ -421,7 +431,7 @@ class AutomationBotInstance():
             if helptext is None:
                 helptext = '''Command {!r} does not exist!'''.format(target_command)
 
-        await message.channel.send(helptext)
+        await channel.send(helptext)
 
     async def action_list_bots(self, cmd, message):
         '''Lists currently running bots'''
@@ -619,6 +629,21 @@ Do not use for debugging quests or other scores that are likely to change often.
         await self.display("Done")
 
 
+    async def action_get_player_scores(self, cmd, message):
+        """Get score for a player
+
+Note: the values from this command could be at most 5 minutes behind the play server if the player is online.
+Do not use for debugging quests or other scores that are likely to change often."""
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+
+        cmd_str = os.path.join(_top_level, "utility_code/get_score.py")
+        cmd_str = " ".join([cmd_str] + list(commandArgs))
+
+        await self.run(cmd_str, displayOutput=True, ret=(0, 2))
+        await self.display("Done")
+
+
     async def action_set_player_scores(self, cmd, message):
         '''Set score for a player. This will work for offline and online players (scores are set in both redis and by broadcastcommand)
         '''
@@ -649,16 +674,73 @@ Do not use for debugging quests or other scores that are likely to change often.
 
         await self.display(f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)")
 
+    async def action_transfer_playerdata(self, cmd, message):
+        '''Transfers player data from one account to another.
+
+Usage: ~transfer playerdata <sourceplayer> <destplayer>
+
+This will transfer everything from <sourceplayer> to <destplayer> except their guild and plot access. Guild must be done manually by you. Plot access will have to be recreated by the player.
+
+After transferring, source player data is backed up and then deleted. The source player can play again as a new player.
+
+**Both players must be offline for this to work. The bot is not currently able to test for this, so you have to check manually!**
+        '''
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+
+        if len(commandArgs) != 2:
+            await self.help_internal(["transfer playerdata"], message.author, message.channel)
+            return
+
+        fromplayer = commandArgs[0]
+        toplayer = commandArgs[1]
+        backuppath = f"/home/epic/0_OLD_BACKUPS/transfer_player_{fromplayer}_to_{toplayer}_{datestr()}"
+
+        await self.run([os.path.join(_top_level, "rust/bin/move_redis_data_between_players"), "redis://redis/", "play", fromplayer, toplayer, backuppath], displayOutput=True)
+        await self.display(f"{fromplayer} has been wiped and moved to the tutorial. If this was a mistake, you can ask an operator to restore it from the backup in {backuppath}.")
+        await self.display(f"{toplayer} has had their data overwritten by the data from {fromplayer}. If this was a mistake, you can roll the player back to before the transfer using the in-game /rollback command")
+        await self.display(f"**You still have to fix the player's guilds.**")
+        await self.display(f"To do this, go in-game and run ```/lp user {fromplayer} parent info``` Take note of the guild group. Then remove the original player from that guild via ```/lp user {fromplayer} parent remove <guild>``` and add the new player to the guild via ```/lp user {toplayer} parent add <guild>```")
+
+    async def action_rollback_playerdata(self, cmd, message):
+        '''Rolls a player back to the most recent weekly update
+
+Usage: ~rollback playerdata <player>
+
+This will roll a player back to the most recent weekly update data.
+
+**Player must be offline for this to work. The bot is not currently able to test for this, so you have to check manually!**
+        '''
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+
+        if len(commandArgs) != 1:
+            await self.help_internal(["rollback playerdata"], message.author, message.channel)
+            return
+
+        playername = commandArgs[0]
+        rollbackpath = f"/home/epic/play/m8/server_config/redis_data_initial"
+        backuppath = f"/home/epic/0_OLD_BACKUPS/rollback_player_{playername}_{datestr()}"
+
+        await self.run([os.path.join(_top_level, "rust/bin/player_backup_and_rollback"), "redis://redis/", "play", playername, rollbackpath, backuppath], displayOutput=True)
+        await self.display(f"{playername} has been rolled back to the last weekly update. If this was a mistake, you can either fix it in-game using the `/rollback` command, or ask an operator to restore it from the backup in {backuppath}.")
+
     async def action_generate_instances(self, cmd, message):
-        '''Dangerous!
-Deletes previous weekly update data
+        '''Generates instances from dungeon worlds
 Temporarily brings down the dungeon shard to generate dungeon instances.
-Must be run before preparing the build server update bundle'''
+Must be run before preparing the build server update bundle
+If --debug argument is specified, will not stop dungeon shard before copying
+'''
 
         debug = False
         if message.content[len(self._prefix + cmd) + 1:].strip() == "--debug":
             debug = True
             await self.display("Debug mode enabled! Will only generate 5 of each dungeon, and will not cleanly copy the dungeon shard")
+
+        await self.generate_instances_internal(mention=message.author.mention, debug=debug)
+
+    async def generate_instances_internal(self, mention=None, debug=False):
+        '''Internals of ~generate instances'''
 
         await self.display("Cleaning up old weekly update data...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
@@ -685,18 +767,83 @@ Must be run before preparing the build server update bundle'''
         await self.display("Cleaning up instance generation temp files...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset/dungeon")
         await self.display("Dungeon instance generation complete!")
-        await self.display(message.author.mention)
+        if mention is not None:
+            await self.display(mention)
 
     async def action_prepare_update_bundle(self, cmd, message):
-        '''Dangerous!
-Temporarily brings down the valley and isles shards to prepare for weekly update
-Packages up all of the pre-update server components needed by the play server for update
-Must be run before starting weekly update on the play server'''
+        '''prepare update bundle <version> [--debug] [--skip-commit] [--skip-replacements] [--skip-generation]
+
+Does several things:
+- Deletes any existing update bundle
+- Commits the data folder, runs autoformat on the data folder, printing errors, commits the autoformat, and tags the commit with <version> (skipped by --skip-commit)
+- Runs replacements on valley/isles/dungeon/structures (skipped by --skip-replacements)
+- Runs ~generate instances (skipped by --skip-generation)
+- Packages up the update bundle
+
+If specified, --debug implies --skip-format, and --skip-replacements. Shards will not be stopped before copying data.
+Generation will still run with the --debug argument, which skips stopping the dungeon shard
+
+Must be run before starting the update on the play server
+'''
 
         debug = False
-        if message.content[len(self._prefix + cmd) + 1:].strip() == "--debug":
+        skip_commit = False
+        skip_replacements = False
+        skip_generation = False
+        version = None
+        args = message.content[len(self._prefix + cmd) + 1:].strip().split(" ")
+
+        if "--debug" in args:
             debug = True
-            await self.display("Debug mode enabled! Will not stop shards before copying")
+            skip_commit = True
+            skip_replacements = True
+            await self.display("--debug mode enabled! Will not stop shards before copying")
+
+        if "--skip-commit" in args or skip_commit:
+            skip_commit = True
+            await self.display("--skip-commit mode enabled! Will not commit, autoformat, or tag the data folder")
+
+        if "--skip-replacements" in args or skip_replacements:
+            skip_replacements = True
+            await self.display("--skip-replacements mode enabled! Will not run replacements")
+
+        if "--skip-generation" in args or skip_generation:
+            skip_generation = True
+            await self.display("--skip-generation mode enabled! Will not run instance generation. **This probably isn't what you want.**")
+
+        if not skip_commit:
+            repo = git.Repo('/home/epic/project_epic/server_config/data')
+            tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
+            str_tags = [tag.name for tag in tags]
+            latest_tag = str_tags[-1]
+
+            if len(args) > 0 and not args[0].startswith("--") and len(args[0]) > 2:
+                version = args[0]
+
+            if version is None:
+                await self.display(f"Version must be specified. Latest version is {latest_tag}")
+                await self.display(message.author.mention)
+                return
+
+            if version in str_tags:
+                await self.display(f"Version {version} already exists. Latest version is {latest_tag}")
+                await self.display(message.author.mention)
+                return
+
+            await self.cd('/home/epic/project_epic/server_config/data')
+            await self.run('git add .')
+            await self.run(['git', 'commit', '-m', "Update bundle pre autoformat", '-s'], ret=[0, 1])
+            await self.run(os.path.join(_top_level, "utility_code/autoformat_cleanup_loot_tables_and_quests.py"), displayOutput=True)
+            await self.cd('/home/epic/project_epic/server_config/data')
+            await self.run('git add .')
+            await self.run(['git', 'commit', '-m', "Update bundle post autoformat", '-s'], ret=[0, 1])
+            await self.run(['git', 'tag', version])
+
+        if not skip_replacements:
+            await self.run_replacements_internal(["valley", "isles", "dungeon", "structures"], do_prune=True)
+
+        if not skip_generation:
+            await self.generate_instances_internal(debug=debug)
 
         if not debug:
             await self.display("Stopping valley and isles...")
@@ -731,7 +878,8 @@ Must be run before starting weekly update on the play server'''
 
         await self.display("Packaging up update bundle...")
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
-        await self.run(["tar", "-I", "pigz --best", "-cf", f"/home/epic/4_SHARED/project_epic_build_template_pre_reset_{datestr()}.tgz", "TEMPLATE"])
+        await self.run("rm -f /home/epic/4_SHARED/project_epic_build_template.tgz")
+        await self.run(["tar", "-I", "pigz --best", "-cf", "/home/epic/4_SHARED/project_epic_build_template.tgz", "TEMPLATE"])
 
         await self.display("Update bundle ready!")
         await self.display(message.author.mention)
@@ -907,13 +1055,6 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
 
         await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 6 " + " ".join(folders_to_update)))
 
-        for shard in ["plots", "valley", "isles", "playerplots",]:
-            if shard in folders_to_update:
-                await self.display("Preserving warps for {0}...".format(shard))
-                os.makedirs(f"{self._shards[shard]}/plugins/MonumentaWarps")
-                if os.path.exists(f"{self._server_dir}/0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml"):
-                    await self.run(f"cp {self._server_dir}/0_PREVIOUS/{shard}/plugins/MonumentaWarps/warps.yml {self._shards[shard]}/plugins/MonumentaWarps/warps.yml")
-
         for shard in folders_to_update:
             if shard in ["build",] or shard.startswith("bungee"):
                 continue
@@ -942,7 +1083,7 @@ Downloads the weekly update bundle from the build server and unpacks it'''
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset")
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
-        await self.run("tar xzf /home/epic/4_SHARED/project_epic_build_template_pre_reset_" + datestr() + ".tgz")
+        await self.run("tar xzf /home/epic/4_SHARED/project_epic_build_template.tgz")
         await self.display("Build server template data retrieved and ready for update.")
         await self.display(message.author.mention)
 
@@ -1201,6 +1342,10 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-players.json {self._shards[shard]}/")
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/ops.json {self._shards[shard]}/")
 
+                # Enable maintenance mode on all bungee shards
+                if shard.startswith("bungee"):
+                    await self.run(["perl", "-p", "-i", "-e", "s|enabled: *false|enabled: true|g", f"{self._shards[shard]}/plugins/BungeeDisplay/config.yml"])
+
         await self.cd(self._server_dir)
         if min_phase <= 20:
             await self.display("Generating per-shard config...")
@@ -1389,6 +1534,10 @@ Syntax:
             if shard in commandArgs:
                 replace_shards.append(shard)
 
+        do_prune = False
+        if "--prune" in commandArgs:
+            do_prune = True
+
         for token in commandArgs:
             if token in ["structures", "schematics"]:
                 replace_shards.append("structures")
@@ -1397,6 +1546,9 @@ Syntax:
             await self.display("Nothing to do")
             return
 
+        await self.run_replacements_internal(replace_shards, mention=message.author.mention, do_prune=do_prune)
+
+    async def run_replacements_internal(self, replace_shards, mention=None, do_prune=False):
         await self.display(f"Replacing both mobs AND items on [{' '.join(replace_shards)}]")
 
         for shard in replace_shards:
@@ -1414,19 +1566,24 @@ Syntax:
             else:
                 base_backup_name = f"/home/epic/0_OLD_BACKUPS/{shard}_pre_entity_loot_updates_{datestr()}"
 
-                await self.display("Running replacements on shard {}".format(shard))
+                if do_prune:
+                    await self.display(f"Running replacements and pruning world regions on shard {shard}")
+                else:
+                    await self.display(f"Running replacements on shard {shard}")
                 await self.stop(shard)
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(["tar", f"--exclude={shard}/logs", f"--exclude={shard}/plugins", f"--exclude={shard}/cache", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", shard])
-                await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
-                await self.run(os.path.join(_top_level, f"utility_code/prune_empty_regions.py {shard}"))
+                if do_prune:
+                    await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
+                    await self.run(os.path.join(_top_level, f"utility_code/prune_empty_regions.py {shard}"))
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard} --logfile {base_backup_name}_items.yml"), displayOutput=True)
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(os.path.join(_top_level, f"utility_code/replace_mobs.py --worlds {shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
                 await self.start(shard)
 
-        await self.display(message.author.mention)
+        if mention is not None:
+            await self.display(mention)
 
     async def action_find_loot_problems(self, cmd, message):
         '''Finds loot table problems

@@ -22,7 +22,7 @@ def load_world_warp_items(items, world, min_x, min_y, min_z, max_x, max_y, max_z
 
                     # Get all the block types at y=0
                     column_y0_type = {}
-                    for section in chunk.nbt.iter_multipath('Level.Sections[]'):
+                    for section in chunk.sections:
                         cy = section.at_path("Y").value
                         if cy == 0:
                             blocks = BlockArray.from_nbt(section, block_map)

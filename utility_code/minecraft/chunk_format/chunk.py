@@ -1,5 +1,6 @@
 import os
 import sys
+import ctypes
 
 # TODO: This needs to get moved into this library
 from lib_py3.block_map import block_map
@@ -40,9 +41,11 @@ class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
         super()._init_multipaths(multipaths)
         multipaths[BlockEntity] |= frozenset({
             'Level.TileEntities[]',
+            'block_entities[]',
         })
         multipaths[Entity] |= frozenset({
             'Level.Entities[]',
+            'entities[]',
         })
 
     def get_debug_str(self):
@@ -66,11 +69,22 @@ class Chunk(BaseChunk):
 
     @property
     def cx(self):
-        return self.nbt.at_path('Level.xPos').value
+        if self.nbt.has_path("Level"): # 1.17 and before
+            return self.nbt.at_path('Level.xPos').value
+        return self.nbt.at_path('xPos').value
 
     @property
     def cz(self):
-        return self.nbt.at_path('Level.zPos').value
+        if self.nbt.has_path("Level"): # 1.17 and before
+            return self.nbt.at_path('Level.zPos').value
+        return self.nbt.at_path('zPos').value
+
+    @property
+    def sections(self):
+        path = "sections[]"
+        if self.nbt.has_path("Level"): # 1.17 and before
+            path = "Level.Sections[]"
+        yield from self.nbt.iter_multipath(path)
 
     def get_block(self, pos: [int, int, int]):
         """
@@ -93,7 +107,7 @@ class Chunk(BaseChunk):
             raise Exception("Coordinates don't match this chunk!")
 
         section_not_found = True
-        for section in self.nbt.iter_multipath('Level.Sections[]'):
+        for section in self.sections:
             if section.at_path('Y').value == cy:
                 section_not_found = False
                 blocks = BlockArray.from_nbt(section, block_map)
@@ -127,7 +141,7 @@ class Chunk(BaseChunk):
             raise Exception("Coordinates don't match this chunk!")
 
         section_not_found = True
-        for section in self.nbt.iter_multipath('Level.Sections[]'):
+        for section in self.sections:
             if section.at_path('Y').value == cy:
                 section_not_found = False
                 blocks = BlockArray.from_nbt(section, block_map)
@@ -164,7 +178,7 @@ class Chunk(BaseChunk):
         required_sections_left = set(range(min_cy, max_cy + 1))
 
         # Handle blocks - eventually liquids, lighting, etc will be handled here too
-        for section in self.nbt.iter_multipath('Level.Sections[]'):
+        for section in self.sections:
             cy = section.at_path("Y").value
             if min_cy > cy or cy > max_cy:
                 continue
@@ -190,11 +204,11 @@ class EntitiesChunk(BaseChunk):
 
     @property
     def cx(self):
-        return self.nbt.at_path('Position').value[0] + self.region.rx * 32
+        return ctypes.c_int32(self.nbt.at_path('Position').value[0]).value
 
     @property
     def cz(self):
-        return self.nbt.at_path('Position').value[1] + self.region.rz * 32
+        return ctypes.c_int32(self.nbt.at_path('Position').value[1]).value
 
 class PoiChunk(BaseChunk):
     """An 'entities' chunk"""

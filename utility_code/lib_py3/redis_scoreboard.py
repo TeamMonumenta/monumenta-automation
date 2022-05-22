@@ -257,7 +257,10 @@ class RedisScoreboard(object):
         Return Name's score for Objective;
         if not found, return Fallback (default is None)
         """
-        return self._players[self.get_uuid(Name)].get(Objective, Fallback)
+        try:
+            return self._players[self.get_uuid(Name)].get(Objective, Fallback)
+        except KeyError:
+            return Fallback
 
     def set_score(self, Name, Objective, Score, Cache=None):
         """

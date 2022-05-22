@@ -16,7 +16,7 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
 
-    def __init__(self, nbt=None, parent=None, data_version=None):
+    def __init__(self, nbt_=None, parent=None, data_version=None):
         """Load an item from an NBT tag.
 
         Must be saved from wherever the tag was loaded from for changes to apply.
@@ -26,7 +26,7 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
             type(self).__CLASS_UNINITIALIZED = False
         self._multipaths = type(self).__MULTIPATHS
 
-        self.nbt_path_init(nbt if nbt is not None else nbt.TagCompound({}), parent, parent.root if parent is not None and parent.root is not None else self, data_version)
+        self.nbt_path_init(nbt_ if nbt_ is not None else nbt.TagCompound({}), parent, parent.root if parent is not None and parent.root is not None else self, data_version)
 
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
@@ -141,6 +141,8 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
                     raise SyntaxError(f'Unexpected text after Mojangson in set_nbt loot table function: {reader.get_remaining()!r}')
 
             elif func_type in ("minecraft:set_count" or "set_count"):
+                if not check_count:
+                    continue
                 count = function.get("count", None)
                 if isinstance(count, int):
                     pass

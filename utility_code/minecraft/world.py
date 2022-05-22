@@ -52,12 +52,12 @@ class World():
         return [o for o in os.listdir(dir)
                     if os.path.isdir(os.path.join(dir, o)) and os.path.isfile(os.path.join(dir, o, "level.dat"))]
 
-    def copy_to(self, path, regenerate_uuids=True, clear_world_uuid=False):
+    def copy_to(self, path, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, regenerate_uuids=True, clear_world_uuid=False):
         os.makedirs(path)
         if self.level_dat is not None:
             self.level_dat.save(os.path.join(path, 'level.dat'))
         new_world = World(path)
-        for region in self.iter_regions():
+        for region in self.iter_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z):
             try:
                 region.copy_to(new_world, region.rx, region.rz, clear_world_uuid=clear_world_uuid)
             except Exception as e:
