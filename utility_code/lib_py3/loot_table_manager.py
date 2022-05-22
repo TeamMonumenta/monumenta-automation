@@ -124,9 +124,9 @@ class LootTableManager():
 
                             if not "epic/loot_tables/index" in filename and item_nbt.has_path('display.Name'):
                                 item_name = get_item_name_from_nbt(item_nbt)
-                                if item_nbt.has_path('tag.Monumenta.Region') and item_nbt.at_path('tag.Monumenta.Region').value == 'ring':
-                                    if item_nbt.has_path('tag.Monumenta.Masterwork') and item_nbt.at_path('tag.Monumenta.Masterwork').value.isin(['1', '2', '3', '4', '5', '6', '7']):
-                                        item_name = item_name + '|M' + item_nbt.at_path('tag.Monumenta.Masterwork').value
+                                if item_nbt.has_path('tag.Monumenta.Masterwork') and item_nbt.at_path('tag.Monumenta.Masterwork').value.isin(['1', '2', '3', '4', '5', '6', '7']):
+                                    item_name = item_name + '|M' + item_nbt.at_path('tag.Monumenta.Masterwork').value
+
 
                                 item_index_entry = self.item_map.get(item_id, {}).get(item_name, None)
                                 if item_index_entry is not None and "epic:index" in item_index_entry["namespaced_key"]:
@@ -208,9 +208,8 @@ class LootTableManager():
                 item_tag_json = function["tag"]
                 item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
                 item_name = get_item_name_from_nbt(item_tag_nbt)
-                if item_tag_nbt.has_path('tag.Monumenta.Region') and item_tag_nbt.at_path('tag.Monumenta.Region').value == 'ring':
-                    if item_tag_nbt.has_path('tag.Monumenta.Masterwork') and item_tag_nbt.at_path('tag.Monumenta.Masterwork').value.isin(['1', '2', '3', '4', '5', '6', '7']):
-                        item_name = item_name + '|M' + item_tag_nbt.at_path('tag.Monumenta.Masterwork').value
+                if item_tag_nbt.has_path('tag.Monumenta.Masterwork') and item_tag_nbt.at_path('tag.Monumenta.Masterwork').value.isin(['1', '2', '3', '4', '5', '6', '7']):
+                    item_name = item_name + '|M' + item_tag_nbt.at_path('tag.Monumenta.Masterwork').value
 
         if item_name is None:
             return
@@ -695,9 +694,8 @@ class LootTableManager():
                             item_tag_json = function["tag"]
                             item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
                             item_name = get_item_name_from_nbt(item_tag_nbt)
-                            if item_tag_nbt.has_path('tag.Monumenta.Region') and item_tag_nbt.at_path('tag.Monumenta.Region').value == 'ring':
-                                if item_tag_nbt.has_path('tag.Monumenta.Masterwork') and item_tag_nbt.at_path('tag.Monumenta.Masterwork').value.isin(['1', '2', '3', '4', '5', '6', '7']):
-                                    item_name = item_name + '|M' + item_tag_nbt.at_path('tag.Monumenta.Masterwork').value
+                            if item_tag_nbt.has_path('tag.Monumenta.Masterwork') and item_tag_nbt.at_path('tag.Monumenta.Masterwork').value.isin(['1', '2', '3', '4', '5', '6', '7']):
+                                item_name = item_name + '|M' + item_tag_nbt.at_path('tag.Monumenta.Masterwork').value
 
 
                             if item_name == search_item_name and item_id == search_item_id:
@@ -715,9 +713,8 @@ class LootTableManager():
             item_nbt = nbt.TagCompound.from_mojangson(item_nbt_str)
 
         item_name = get_item_name_from_nbt(item_nbt)
-        if item_nbt.has_path('tag.Monumenta.Region') and item_nbt.at_path('tag.Monumenta.Region').value == 'ring':
-            if item_nbt.has_path('tag.Monumenta.Masterwork') and item_nbt.at_path('tag.Monumenta.Masterwork').value.isin(['1', '2', '3', '4', '5', '6', '7']):
-                item_name = item_name + '|M' + item_nbt.at_path('tag.Monumenta.Masterwork').value
+        if item_nbt.has_path('tag.Monumenta.Masterwork') and item_nbt.at_path('tag.Monumenta.Masterwork').value.isin(['1', '2', '3', '4', '5', '6', '7']):
+            item_name = item_name + '|M' + item_nbt.at_path('tag.Monumenta.Masterwork').value
         if not item_name:
             raise ValueError("Item NBT does not have a name")
 
