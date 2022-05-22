@@ -19,16 +19,6 @@ from minecraft.chunk_format.entity import Entity
 from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.world import World
 
-def is_entity_in_spawner(entity) -> bool:
-    # Start at the node above this one and iterate upwards
-    node = entity.parent
-    while node is not None:
-        if node.nbt is not None and node.nbt.has_path("SpawnPotentials"):
-            return True
-        node = node.parent
-
-    return False
-
 def match_id(target_id: str, chain=lambda mob: True):
     return lambda mob: chain(mob) and ((mob.has_path("id") and mob.at_path("id").value == target_id) or (mob.has_path("Id") and mob.at_path("Id").value == target_id))
 
@@ -191,7 +181,7 @@ def process_entity(entity, replacements_log) -> None:
 
         return changed_something, msgs
 
-    elif is_entity_in_spawner(entity):
+    elif entity.is_in_spawner():
         remove_unwanted_spawner_tags(nbt)
         return replace_mgr.replace_mob(nbt, replacements_log, entity.get_path_str()), []
 

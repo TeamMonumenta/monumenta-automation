@@ -7,8 +7,43 @@ from lib_py3.common import get_item_name_from_nbt, get_entity_name_from_nbt, par
 from lib_py3.item_replacement_rules import global_rules
 from lib_py3.item_replacement_substitutions import substitution_rules
 
+from minecraft.chunk_format.entity import Entity
+
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
+
+WORLD_SPECIFIC_TAG_NAMES = (
+    'Pos',
+    'Leash',
+    'Leashed',
+    'Air',
+    'OnGround',
+    'Dimension',
+    'Rotation',
+    'Brain',
+    'UUID',
+    'WorldUUIDMost',
+    'WorldUUIDLeast',
+    'HurtTime',
+    'HurtByTimestamp',
+    'FallFlying',
+    'PortalCooldown',
+    'FallDistance',
+    'DeathTime',
+    'HandDropChances',
+    'ArmorDropChances',
+    'CanPickUpLoot',
+    'Bukkit.updateLevel',
+    'Spigot.ticksLived',
+    'Paper.AAAB',
+    'Paper.Origin',
+    'Paper.FromMobSpawner',
+    'Paper.SpawnReason',
+    'Paper.OriginWorld',
+    'Bukkit.Aware',
+    'InWaterTime',
+    'Team',
+)
 
 def pop_if_present(entity_nbt: nbt.TagCompound, key: str):
     if isinstance(entity_nbt, nbt.TagCompound) and key in entity_nbt.value:
@@ -16,35 +51,8 @@ def pop_if_present(entity_nbt: nbt.TagCompound, key: str):
         entity_nbt.value.pop(key)
 
 def remove_unwanted_spawner_tags(entity_nbt: nbt.TagCompound):
-    pop_if_present(entity_nbt, 'Pos')
-    pop_if_present(entity_nbt, 'Leashed')
-    pop_if_present(entity_nbt, 'Air')
-    pop_if_present(entity_nbt, 'OnGround')
-    pop_if_present(entity_nbt, 'Dimension')
-    pop_if_present(entity_nbt, 'Rotation')
-    pop_if_present(entity_nbt, 'Brain')
-    pop_if_present(entity_nbt, 'WorldUUIDMost')
-    pop_if_present(entity_nbt, 'WorldUUIDLeast')
-    pop_if_present(entity_nbt, 'HurtTime')
-    pop_if_present(entity_nbt, 'HurtByTimestamp')
-    pop_if_present(entity_nbt, 'FallFlying')
-    pop_if_present(entity_nbt, 'PortalCooldown')
-    pop_if_present(entity_nbt, 'FallDistance')
-    pop_if_present(entity_nbt, 'DeathTime')
-    pop_if_present(entity_nbt, 'HandDropChances')
-    pop_if_present(entity_nbt, 'ArmorDropChances')
-    pop_if_present(entity_nbt, 'CanPickUpLoot')
-    pop_if_present(entity_nbt, 'Bukkit.updateLevel')
-    pop_if_present(entity_nbt, 'Spigot.ticksLived')
-    pop_if_present(entity_nbt, 'Paper.AAAB')
-    pop_if_present(entity_nbt, 'Paper.Origin')
-    pop_if_present(entity_nbt, 'Paper.FromMobSpawner')
-    pop_if_present(entity_nbt, 'Paper.SpawnReason')
-    pop_if_present(entity_nbt, 'Paper.OriginWorld')
-    pop_if_present(entity_nbt, 'Bukkit.Aware')
-    pop_if_present(entity_nbt, 'HurtByTimestamp')
-    pop_if_present(entity_nbt, 'InWaterTime')
-    pop_if_present(entity_nbt, 'Team')
+    for tag_name in WORLD_SPECIFIC_TAG_NAMES:
+        pop_if_present(entity_nbt, tag_name)
 
     # Recurse over passengers
     for entity in entity_nbt.iter_multipath('Passengers[]'):
@@ -231,7 +239,43 @@ class MobReplacementManager(object):
 
                 log_dict[log_key]["FROM"][orig_mojangson].append(debug_path)
 
-            mob.value = new_nbt.deep_copy().value
+            updated_mob = new_nbt.deep_copy()
+            mob_entity = Entity(mob)
+
+            # Preserve anything that should be kept in the world
+            for tag_name in WORLD_SPECIFIC_TAG_NAMES:
+                if mob.has_path(tag_name):
+                    updated_mob.value[tag_name] = mob.at_path(tag_name).deep_copy()
+
+            # Remove any items or mobs that are no longer on the mob
+            for class_, multipaths in mob_entity._multipaths.items():
+                for multipath in multipaths:
+                    for path, src_tag in self.nbt.iter_multipath_pair(multipath):
+                        if updated_mob.has_path(path):
+                            dst_tag = updated_mob.at_path(path)
+                            if (
+                                isinstance(src_tag, nbt.TagCompound) and
+                                isinstance(dst_tag, nbt.TagCompound) and
+                                not bool(src_tag.value) and
+                                bool(dst_tag.value)
+                            ):
+                                dst_tag.value.clear()
+
+            # Re-apply any health/status effects
+            for path in (
+                'Fire',
+                'Motion',
+                'TicksFrozen',
+                'AbsorptionAmount',
+                'ActiveEffects',
+                'Health',
+            ):
+                if mob.has_path(path):
+                    updated_mob.value[path] = mob.at_path(path).deep_copy()
+
+            # TODO Attribute modifiers (complicated)
+
+            mob.value = updated_mobs.value
 
             return True
 
