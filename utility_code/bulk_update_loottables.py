@@ -38,7 +38,7 @@ def update_items(container_nbt_list, output_dir=None):
             if item_nbt.has_path("tag.display.Name"):
                 item_name = parse_name_possibly_json(item_nbt.at_path('tag.display.Name').value)
                 if item_nbt.has_path('tag.Monumenta.Masterwork') and item_nbt.at_path('tag.Monumenta.Masterwork').value in ['1', '2', '3', '4', '5', '6', '7']:
-                    item_name = item_name + '|m' + item_nbt.at_path('tag.Monumenta.Masterwork').value
+                    item_name = item_name + '~m' + item_nbt.at_path('tag.Monumenta.Masterwork').value
             else:
                 item_name = parse_name_possibly_json(item_nbt.at_path('tag.title').value)
 
@@ -53,7 +53,7 @@ def update_items(container_nbt_list, output_dir=None):
 
                 filename = item_name.lower()
                 filename = re.sub(" +", "_", filename)
-                filename = "".join([i if re.match('[a-z0-9-_|]', i) else '' for i in filename])
+                filename = "".join([i if re.match('[a-z0-9-_~]', i) else '' for i in filename])
                 filename = filename + ".json"
 
                 entry_json = OrderedDict()
