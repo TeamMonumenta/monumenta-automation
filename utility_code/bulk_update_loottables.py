@@ -90,6 +90,8 @@ def usage():
 if __name__ == '__main__':
     output_dir = None
     filename = None
+    if len(sys.argv) < 2:
+        usage()
     args = sys.argv[1:]
     if args[0] == "--output-dir":
         output_dir = args[1]
