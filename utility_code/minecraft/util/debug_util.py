@@ -25,6 +25,23 @@ class NbtPathDebug():
                 if parent.nbt.has_path('MaxSpawnDelay'):
                     return True
 
+            if not hasattr(parent, 'parent'):
+                return False
+
+            # Remember to go up a level, or infinite recursion issues occur
+            parent = parent.parent
+
+        return False
+
+    def is_in_spawn_egg(self):
+        parent = self.parent
+        while parent is not None:
+            if isinstance(parent, Item) and parent.id.endswith('_spawn_egg'):
+                return True
+
+            if not hasattr(parent, 'parent'):
+                return False
+
             # Remember to go up a level, or infinite recursion issues occur
             parent = parent.parent
 
@@ -63,3 +80,5 @@ class NbtPathDebug():
         if self.parent is None:
             return repr(self)
         return f'{repr(self.parent)} \\\n    {repr(self)}'
+
+from minecraft.player_dat_format.item import Item
