@@ -351,6 +351,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:blaze_rod", "Ta'Ferna's Quiver", "minecraft:stick", "Ta'Ferna's Quiver"],
                 ["minecraft:leather_leggings", "Demoncaller Robes", "minecraft:leather_leggings", "Demoncaller Pants"],
                 ["minecraft:leather_chestplate", "Soulbinder's Curiass", "minecraft:leather_chestplate", "Soulbinder's Cuirass"],
+                ["minecraft:shield", "Soulspoiler's Bulwark", "minecraft:shield", "Soulblighters's Bulwark"],
+                ["minecraft:bone", "Soulspoiler's Scepter", "minecraft:bone", "Soulblighters's Scepter"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
