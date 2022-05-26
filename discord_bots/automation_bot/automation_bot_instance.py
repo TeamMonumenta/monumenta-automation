@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import json
 import os
 import sys
 import asyncio
@@ -7,13 +8,17 @@ import subprocess
 import re
 import tempfile
 import time
-import datetime
 from pprint import pformat
 import logging
 import redis
 import discord
 import yaml
 import git
+
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -118,7 +123,7 @@ class AutomationBotInstance():
             "prepare stage bundle": self.action_prepare_stage_bundle,
             "apply stage bundle": self.action_apply_stage_bundle,
             "fetch update bundle": self.action_fetch_update_bundle,
-            "stop in 10 minutes": self.action_stop_in_10_minutes,
+            "stop at": self.action_stop_at_minute,
             "stop and backup": self.action_stop_and_backup,
             "weekly update": self.action_weekly_update,
             "get raffle seed": self.action_get_raffle_seed,
@@ -1087,40 +1092,116 @@ Downloads the weekly update bundle from the build server and unpacks it'''
         await self.display("Build server template data retrieved and ready for update.")
         await self.display(message.author.mention)
 
-    async def action_stop_in_10_minutes(self, cmd, message):
-        '''Dangerous!
-Starts a bungee shutdown timer for 10 minutes and cleans up old coreprotect data'''
+    async def action_stop_at_minute(self, cmd, message):
+        '''Starts a bungee shutdown timer the next HH:MM for the minute specified
+
+Optionally, set a reason. The default reason is "maintenance":
+~stop at 15
+~stop at 0 weekly update
+If the reason is weekly update, and the timer has at least 5 minutes left,
+old coreprotect data will be removed at the 5 minute mark.
+'''
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].strip().split(maxsplit=1)
+        reason = "maintenance"
+        if len(commandArgs) == 0:
+            await self.display("Error: Please specify at which minute past the hour to stop.")
+            await self.display(message.author.mention)
+            return
+        elif len(commandArgs) >= 2:
+            reason = commandArgs[1]
+        try:
+            target_minute = int(commandArgs[0])
+        except Exception:
+            await self.display(f"Error: Minute must be an integer: {commandArgs[0]!r}")
+            await self.display(message.author.mention)
+            return
+
+        if target_minute not in range(60):
+            await self.display(f"Error: Minute must be in 0..59: {target_minute}")
+            await self.display(message.author.mention)
+            return
+
+        tz = timezone.utc
+        second = timedelta(seconds=1)
+        now = datetime.now(tz)
+        stop_time = datetime(now.year, now.month, now.day, now.hour, target_minute, tzinfo=tz)
+        if stop_time < now:
+            stop_time = datetime(now.year, now.month, now.day, now.hour + 1, target_minute, tzinfo=tz)
+
+        countdown_targets = sorted([
+            60 * 50,
+            60 * 40,
+            60 * 30,
+            60 * 20,
+            60 * 10,
+            60 * 7,
+            60 * 5,
+            60 * 3,
+            60 * 2,
+            60,
+            30,
+            15,
+            5,
+            4,
+            3,
+            2,
+            1,
+        ], reverse=True)
+
+        self._socket.send_packet("*", "monumentanetworkrelay.command",
+                                 {"command": '''tellraw @a ''' + json.dumps([
+                                    "",
+                                    {"text":"[Alert] ","color":"red"},
+                                    {"text":"The Monumenta server is stopping for " + reason + " at ","color":"white"},
+                                    {"text":stop_time.strftime('%I:%M %p UTC'),"color":"red"},
+                                    {"text":". Check our discord for details."}
+                                ], ensure_ascii=False, separators=(',', ':'))})
+        await self.display(f"Server stopping at <t:{int(stop_time.timestamp())}> (<t:{int(stop_time.timestamp())}:R>) for {reason}")
+
+        def seconds_to_string(seconds):
+            if seconds == 0:
+                return "now"
+            elif seconds == 1:
+                return "1 second"
+            elif seconds < 60:
+                return f"{seconds} seconds"
+
+            minutes = seconds // 60
+            if minutes == 1:
+                return "1 minute"
+            else:
+                return f"{minutes} minutes"
 
         async def send_broadcast_msg(time_left):
             self._socket.send_packet("*", "monumentanetworkrelay.command",
-                                     {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta's weekly update will begin in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". The server will be down for approximately 1 hour while we patch new content into the game."}]'''})
-            await self.display("{} to weekly update".format(time_left))
+                                     {"command": '''tellraw @a ''' + json.dumps([
+                                        "",
+                                        {"text":"[Alert] ","color":"red"},
+                                        {"text":"The Monumenta server is stopping for " + reason + " in ","color":"white"},
+                                        {"text":time_left,"color":"red"},
+                                        {"text":". Check our discord for details."}
+                                    ], ensure_ascii=False, separators=(',', ':'))})
+            await self.display(f"{time_left} to {reason}")
 
-        await send_broadcast_msg("10 minutes")
-        await asyncio.sleep(3 * 60)
-        await send_broadcast_msg("7 minutes")
-        await asyncio.sleep(2 * 60)
-        await send_broadcast_msg("5 minutes")
-        self._socket.send_packet("playerplots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
-        self._socket.send_packet("plots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
-        await asyncio.sleep(2 * 60)
-        await send_broadcast_msg("3 minutes")
-        await asyncio.sleep(60)
-        await send_broadcast_msg("2 minutes")
-        await asyncio.sleep(60)
-        await send_broadcast_msg("1 minute")
-        await asyncio.sleep(30)
-        await send_broadcast_msg("30 seconds")
-        await asyncio.sleep(15)
-        await send_broadcast_msg("15 seconds")
-        self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": 'save-all'})
-        await asyncio.sleep(10)
-        await send_broadcast_msg("5 seconds")
-        await asyncio.sleep(5)
+        while countdown_targets:
+            next_target = countdown_targets.pop(0)
+            remaining_seconds = (stop_time - datetime.now(tz)) / second
+            if remaining_seconds < next_target:
+                continue
+            time.sleep(remaining_seconds - next_target)
+
+            if next_target == 60 * 5 and reason == "weekly update":
+                await self.display("Clearing coreprotect data older than 30 days")
+                self._socket.send_packet("playerplots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
+                self._socket.send_packet("plots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
+            if next_target == 15:
+                self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": 'save-all'})
+
+            await send_broadcast_msg(seconds_to_string(next_target))
 
         # Stop bungee
-        await self.stop("bungee")
-        await self.stop("bungee-11")
+        await self.stop(["bungee", "bungee-11"])
 
         await self.display(message.author.mention)
 
@@ -1341,7 +1422,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 18:
             await self.display("Running actual weekly update (this will take a while!)...")
-            logfile = f"/home/epic/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{self._name}_{datetime.date.today().strftime('%Y-%m-%d')}.log"
+            logfile = f"/home/epic/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{self._name}_{date.today().strftime('%Y-%m-%d')}.log"
             await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ --logfile {logfile} -j 16 " + " ".join(self._shards)))
 
         if min_phase <= 19:
