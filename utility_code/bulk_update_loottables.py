@@ -53,7 +53,8 @@ def update_items(container_nbt_list, output_dir=None):
 
                 filename = item_name.lower()
                 filename = re.sub(" +", "_", filename)
-                filename = "".join([i if re.match('[a-z0-9-_~]', i) else '' for i in filename])
+                filename = re.sub("~", "_", filename)
+                filename = "".join([i if re.match('[a-z0-9-_]', i) else '' for i in filename])
                 filename = filename + ".json"
 
                 entry_json = OrderedDict()
