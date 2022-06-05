@@ -353,6 +353,17 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:leather_chestplate", "Soulbinder's Curiass", "minecraft:leather_chestplate", "Soulbinder's Cuirass"],
                 ["minecraft:shield", "Soulspoiler's Bulwark", "minecraft:shield", "Soulblighters's Bulwark"],
                 ["minecraft:bone", "Soulspoiler's Scepter", "minecraft:bone", "Soulblighters's Scepter"],
+                ["minecraft:magma_block", "Ephemeral Key Normal", "minecraft:magma_block", "Ephemeral Key - Practice"],
+                ["minecraft:magma_block", "Ephemeral Key Hardcore Tier I", "minecraft:magma_block", "Ephemeral Key - Standard"],
+                ["minecraft:magma_block", "Ephemeral Key Hardcore Tier II", "minecraft:magma_block", "Ephemeral Key - Standard"],
+                ["minecraft:magma_block", "Ephemeral Key Hardcore Tier III", "minecraft:magma_block", "Ephemeral Key - Standard"],
+                ["minecraft:magma_block", "Ephemeral Key Hardcore Tier IV", "minecraft:magma_block", "Ephemeral Key - Standard"],
+                ["minecraft:magma_block", "Ephemeral Key Hardcore Tier V", "minecraft:magma_block", "Ephemeral Key - Standard"],
+                ["minecraft:magma_block", "Ephemeral Key Classic Tier I", "minecraft:magma_block", "Ephemeral Key - Fullwipe"],
+                ["minecraft:magma_block", "Ephemeral Key Classic Tier II", "minecraft:magma_block", "Ephemeral Key - Fullwipe"],
+                ["minecraft:magma_block", "Ephemeral Key Classic Tier III", "minecraft:magma_block", "Ephemeral Key - Fullwipe"],
+                ["minecraft:magma_block", "Ephemeral Key Classic Tier IV", "minecraft:magma_block", "Ephemeral Key - Fullwipe"],
+                ["minecraft:magma_block", "Ephemeral Key Classic Tier V", "minecraft:magma_block", "Ephemeral Key - Fullwipe"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
