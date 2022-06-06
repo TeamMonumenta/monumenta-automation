@@ -34,6 +34,7 @@ class NbtPathDebug():
         return False
 
     def is_in_spawn_egg(self):
+        from minecraft.player_dat_format.item import Item
         parent = self.parent
         while parent is not None:
             if isinstance(parent, Item) and parent.id.endswith('_spawn_egg'):
@@ -80,5 +81,3 @@ class NbtPathDebug():
         if self.parent is None:
             return repr(self)
         return f'{repr(self.parent)} \\\n    {repr(self)}'
-
-from minecraft.player_dat_format.item import Item
