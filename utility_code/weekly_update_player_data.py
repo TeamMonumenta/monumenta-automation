@@ -8,6 +8,7 @@ import traceback
 import yaml
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
+from lib_py3.item_replacement_substitutions import SubtituteItems
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import eprint
 from lib_py3.plugin_data import iter_plugin_data_parallel

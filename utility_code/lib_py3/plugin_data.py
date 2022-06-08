@@ -311,9 +311,16 @@ class MonumentaVanity(NbtPathDebug):
         equipment = self._data.get("equipped", None)
         if equipment is not None:
             for key, item_snbt in equipment.items():
-                item_nbt = nbt.TagCompound.from_mojangson(item_snbt)
-                yield item_nbt
-                equipment[key] = item_nbt.to_mojangson()
+                item = Item(nbt.TagCompound.from_mojangson(item_snbt))
+                # add display.Lore to enable replacements
+                if not item.nbt.has_path('tag'):
+                    item.nbt.value['tag'] = nbt.TagCompound({})
+                if not item.tag.has_path('display'):
+                    item.tag.value['display'] = nbt.TagCompound({})
+                if not item.tag.at_path('display').has_path('Lore'):
+                    item.tag.at_path('display').value['Lore'] = nbt.TagList([])
+                yield item
+                equipment[key] = item.nbt.to_mojangson()
 
     def __repr__(self):
         return 'Vanity'
