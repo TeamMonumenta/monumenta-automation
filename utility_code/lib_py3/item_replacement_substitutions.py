@@ -389,6 +389,22 @@ class SubtituteItems(SubstitutionRule):
                         item_meta['id'] = new_id
                         item_meta['name'] = new_name
 
+	def process_identifier(self, identifier):
+		"""Performs id+name substitution on the provided string. The string must be formatted like 'id:name', where id has no namespace prefix."""
+		[old_id, old_name] = identifier.split(':', 1)
+		if old_name == '':
+			old_name = None
+		old_id = 'minecraft:'+old_id
+        for replaceable_id in self.replacements:
+            if replaceable_id == old_id:
+                for replaceable_name in self.replacements[replaceable_id].keys():
+                    if replaceable_name == old_name:
+                        new_id, new_name = self.replacements[replaceable_id][replaceable_name]
+						new_id = new_id.replace('minecraft:', '')
+						return new_id+':'+new_name
+		return identifier
+
+
 ################################################################################
 # Substitution rules end
 

@@ -45,6 +45,13 @@ def process_plugin_data(plugin_data):
     for item in plugin_data.graves().recursive_iter_items():
         if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
             num_replacements += 1
+    for item in plugin_data.vanity().iter_items():
+        if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+            num_replacements += 1
+	substitute_items = SubtituteItems()
+    for cosmetic in plugin_data.cosmetics().iter_cosmetics():
+		if cosmetic.type == 'vanity':
+			cosmetic.name = substitute_items.process_identifier(cosmetic.name)
 
     return (num_replacements, replacements_log)
 
