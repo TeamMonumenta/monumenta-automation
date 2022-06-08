@@ -130,7 +130,11 @@ class AbortNoLore(GlobalRule):
         #if item.is_in_spawner():
         #    return True
 
-        # ~~Anything at this point is probably fine.~~ It was not fine after all - mobs in the world, mobs in spawn eggs
+        # Items without lore in spawn eggs never get replaced
+        #if item.is_in_spawn_egg():
+        #    return True
+
+        # ~~Anything at this point is probably fine.~~ It was not fine after all - mobs in the world
         return True
 
 ### Vanilla data to preserve
