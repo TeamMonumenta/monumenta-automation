@@ -312,7 +312,7 @@ class MonumentaVanity(NbtPathDebug):
         if equipment is not None:
             for key, item_snbt in equipment.items():
                 item_nbt = nbt.TagCompound.from_mojangson(item_snbt)
-				yield item_nbt
+                yield item_nbt
                 equipment[key] = item_nbt.to_mojangson()
 
     def __repr__(self):
@@ -357,9 +357,9 @@ class MonumentaCosmetic(NbtPathDebug):
         return str(self)
 
     def serialize(self):
-		self._data["name"] = self.name
-		self._data["type"] = self.type
-		self._data["enabled"] = self.enabled
+        self._data["name"] = self.name
+        self._data["type"] = self.type
+        self._data["enabled"] = self.enabled
 
         return self._data
 
