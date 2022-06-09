@@ -177,7 +177,7 @@ class MonumentaGraves(NbtPathDebug):
             yield from obj.recursive_iter_items()
 
     def __repr__(self):
-        return f'Graves'
+        return f'Graves({self._data!r})'
 
 class MonumentaGrave(NbtPathDebug):
     """A collection of items preserved from a single death."""
@@ -323,7 +323,7 @@ class MonumentaVanity(NbtPathDebug):
                 equipment[key] = item.nbt.to_mojangson()
 
     def __repr__(self):
-        return 'Vanity'
+        return 'Vanity({self._data!r})'
 
 
 class MonumentaCosmetics(NbtPathDebug):
@@ -346,7 +346,7 @@ class MonumentaCosmetics(NbtPathDebug):
             cosmetics[i] = cosmetic.serialize()
 
     def __repr__(self):
-        return 'Cosmetics'
+        return 'Cosmetics({self._data!r})'
 
 class MonumentaCosmetic(NbtPathDebug):
     """A single unlocked cosmetic."""
