@@ -160,11 +160,11 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "corridors-2": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m11", "memGB": 2   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "corridors-3": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m11", "memGB": 2   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "rush": {
