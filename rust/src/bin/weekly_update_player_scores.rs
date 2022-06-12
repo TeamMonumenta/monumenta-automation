@@ -15,8 +15,6 @@ use std::fs;
 
 use monumenta::player::Player;
 
-const ENDLESS_CORRIDORS: &str = "RogEndless";
-
 fn usage() {
     println!("Usage: weekly_update_players path/to/directory");
 }
@@ -31,16 +29,6 @@ fn update_instance_scores(scores: &mut HashMap<String, i32>, days_since_epoch: i
             for additional_objective in additional_objectives_to_reset {
                 scores.insert(additional_objective.to_string(), 0);
             }
-        }
-    }
-}
-
-fn fix_endless_corridors_scores(scores: &mut HashMap<String, i32>) {
-    if let Some(score) = scores.get(ENDLESS_CORRIDORS) {
-        if *score >= 1000 {
-            /* Adjust score to be < 1000 */
-            let new_value: i32 = *score % 1000;
-            scores.insert(ENDLESS_CORRIDORS.to_string(), new_value);
         }
     }
 }
@@ -83,8 +71,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
 
         /* DelveDungeon score also resets as if it was a dungeon score */
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
-
-        fix_endless_corridors_scores(scores);
 
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
