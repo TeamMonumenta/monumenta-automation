@@ -226,6 +226,8 @@ if __name__ == '__main__':
         "forum": get_dungeon_config("forum", "DFFAccess"),
         "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
         "corridors": corridors,
+        "corridors-2": {**corridors, **{"shard_name": "corridors"}},
+        "corridors-3": {**corridors, **{"shard_name": "corridors"}},
         "verdant": verdant,
         "rush": rush,
         "mist": mist,
@@ -237,6 +239,7 @@ if __name__ == '__main__':
         "build": None,
         "bungee": None,
         "bungee-11": None,
+        "bungee-13": None,
         "purgatory": None,
     }
 

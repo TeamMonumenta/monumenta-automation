@@ -602,6 +602,8 @@ if __name__ == '__main__':
         "valley-3": "valley",
         "isles-2": "isles",
         "isles-3": "isles",
+        "corridors-2": "corridors",
+        "corridors-3": "corridors",
         "depths-2": "depths",
         "depths-3": "depths",
     }
