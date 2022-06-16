@@ -353,7 +353,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:leather_chestplate", "Soulbinder's Curiass", "minecraft:leather_chestplate", "Soulbinder's Cuirass"],
                 ["minecraft:shield", "Soulspoiler's Bulwark", "minecraft:shield", "Soulblighter's Bulwark"],
                 ["minecraft:bone", "Soulspoiler's Scepter", "minecraft:bone", "Soulblighter's Scepter"],
-                ["minecraft:leather_pants", "Soulblighter's Scepter", "minecraft:bone", "Soulblighter's Scepter"],
+                ["minecraft:leather_leggings", "Soulblighter's Scepter", "minecraft:bone", "Soulblighter's Scepter"],
                 ["minecraft:magma_block", "Ephemeral Key Normal", "minecraft:magma_block", "Ephemeral Key - Practice"],
                 ["minecraft:magma_block", "Ephemeral Key Hardcore Tier I", "minecraft:magma_block", "Ephemeral Key - Standard"],
                 ["minecraft:magma_block", "Ephemeral Key Hardcore Tier II", "minecraft:magma_block", "Ephemeral Key - Standard"],
@@ -365,6 +365,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:magma_block", "Ephemeral Key Classic Tier III", "minecraft:magma_block", "Ephemeral Key - Fullwipe"],
                 ["minecraft:magma_block", "Ephemeral Key Classic Tier IV", "minecraft:magma_block", "Ephemeral Key - Fullwipe"],
                 ["minecraft:magma_block", "Ephemeral Key Classic Tier V", "minecraft:magma_block", "Ephemeral Key - Fullwipe"],
+                ["minecraft:golden_hoe", "Thresher‘s Harvester", "minecraft:golden_hoe", "Thresher's Harvester"],
+                ["minecraft:golden_hoe", "Thresher’s Harvester", "minecraft:golden_hoe", "Thresher's Harvester"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
