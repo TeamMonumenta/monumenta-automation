@@ -132,6 +132,8 @@ class AutomationBotInstance():
             "stage": self.action_stage,
             "generate demo release": self.action_gen_demo_release,
             "broadcastcommand": self.action_dummy,
+            "broadcastbungeecommand": self.action_dummy,
+            "broadcastminecraftcommand": self.action_dummy,
         }
         self._all_commands = set(self._commands.keys())
 
@@ -221,6 +223,8 @@ class AutomationBotInstance():
 
                         # Add commands that require the sockets here!
                         self._commands["broadcastcommand"] = self.action_broadcastcommand
+                        self._commands["broadcastbungeecommand"] = self.action_broadcastbungeecommand
+                        self._commands["broadcastminecraftcommand"] = self.action_broadcastminecraftcommand
 
                         self._audit_channel = None
                         if "audit_channel" in conf:
@@ -431,7 +435,7 @@ class AutomationBotInstance():
                     helptext += "\n**" + self._prefix + command + "**"
                 else:
                     helptext += "\n~~" + self._prefix + command + "~~"
-            helptext += "\nRun `~help <command>` for more info."
+            helptext += f"\nRun `{self._prefix}help <command>` for more info."
         else:
             helptext = None
             for command in self._commands:
@@ -486,14 +490,14 @@ Examples:
         for command in commands:
             if command.startswith("batch"):
                 command = command[5:]
-            elif command.startswith("~batch"):
+            elif command.startswith(f"{self._prefix}batch"):
                 command = command[6:]
 
             if not command:
                 continue
             command = command.strip()
-            if not command.startswith("~"):
-                command = "~" + command
+            if not command.startswith(self._prefix):
+                command = self._prefix + command
             message.content = command
             await self.handle_message(message)
         message.content = orig_content
@@ -694,7 +698,7 @@ Do not use for debugging quests or other scores that are likely to change often.
     async def action_transfer_playerdata(self, cmd, message):
         '''Transfers player data from one account to another.
 
-Usage: ~transfer playerdata <sourceplayer> <destplayer>
+Usage: {cmdPrefix}transfer playerdata <sourceplayer> <destplayer>
 
 This will transfer everything from <sourceplayer> to <destplayer> except their guild and plot access. Guild must be done manually by you. Plot access will have to be recreated by the player.
 
@@ -722,7 +726,7 @@ After transferring, source player data is backed up and then deleted. The source
     async def action_rollback_playerdata(self, cmd, message):
         '''Rolls a player back to the most recent weekly update
 
-Usage: ~rollback playerdata <player>
+Usage: {cmdPrefix}rollback playerdata <player>
 
 This will roll a player back to the most recent weekly update data.
 
@@ -757,7 +761,7 @@ If --debug argument is specified, will not stop dungeon shard before copying
         await self.generate_instances_internal(mention=message.author.mention, debug=debug)
 
     async def generate_instances_internal(self, mention=None, debug=False):
-        '''Internals of ~generate instances'''
+        '''Internals of {cmdPrefix}generate instances'''
 
         await self.display("Cleaning up old weekly update data...")
         await self.run("rm -rf /home/epic/5_SCRATCH/tmpreset", None)
@@ -794,7 +798,7 @@ Does several things:
 - Deletes any existing update bundle
 - Commits the data folder, runs autoformat on the data folder, printing errors, commits the autoformat, and tags the commit with <version> (skipped by --skip-commit)
 - Runs replacements on valley/isles/dungeon/structures (skipped by --skip-replacements)
-- Runs ~generate instances (skipped by --skip-generation)
+- Runs {cmdPrefix}generate instances (skipped by --skip-generation)
 - Packages up the update bundle
 
 If specified, --debug implies --skip-format, and --skip-replacements. Shards will not be stopped before copying data.
@@ -1108,8 +1112,8 @@ Downloads the weekly update bundle from the build server and unpacks it'''
         '''Starts a bungee shutdown timer the next HH:MM for the minute specified
 
 Optionally, set a reason. The default reason is "maintenance":
-~stop at 15
-~stop at 0 weekly update
+{cmdPrefix}stop at 15
+{cmdPrefix}stop at 0 weekly update
 If the reason is weekly update, and the timer has at least 5 minutes left,
 old coreprotect data will be removed at the 5 minute mark.
 '''
@@ -1588,9 +1592,9 @@ Archives the previous stage server contents under 0_PREVIOUS '''
 Updates one or more items in all loot tables
 
 Usage:
-    ~update item /setblock 1217 3 2720 minecraft:chest{Items:[...]}
+    {cmdPrefix}update item /setblock 1217 3 2720 minecraft:chest{Items:[...]}
     Or if too long for a discord message:
-    ~update item
+    {cmdPrefix}update item
     <.txt file attachment starting with /setblock ...>
 
 Easiest way to get this is putting an item in a chest, and looking at that chest and pressing f3+i
@@ -1804,12 +1808,34 @@ Syntax:
         await self.display(message.author.mention)
 
     async def action_broadcastcommand(self, cmd, message):
-        '''Sends a command to all shards connected to bungeecord
+        '''Sends a command to all shards and bungeecord instances
 Syntax:
 `{cmdPrefix}broadcastcommand <command>`'''
         commandArgs = message.content[len(self._prefix + cmd)+1:].strip()
         if commandArgs.startswith("/"):
             commandArgs = commandArgs[1:]
 
-        await self.display("Broadcasting command {!r} to all shards".format(commandArgs))
+        await self.display("Broadcasting command {!r} to all servers".format(commandArgs))
         self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": commandArgs})
+
+    async def action_broadcastbungeecommand(self, cmd, message):
+        '''Sends a command to all bungeecord instances
+Syntax:
+`{cmdPrefix}broadcastbungeecommand <command>`'''
+        commandArgs = message.content[len(self._prefix + cmd)+1:].strip()
+        if commandArgs.startswith("/"):
+            commandArgs = commandArgs[1:]
+
+        await self.display("Broadcasting command {!r} to all bungee servers".format(commandArgs))
+        self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "bungee", "command": commandArgs})
+
+    async def action_broadcastminecraftcommand(self, cmd, message):
+        '''Sends a command to all minecraft instances
+Syntax:
+`{cmdPrefix}broadcastminecraftcommand <command>`'''
+        commandArgs = message.content[len(self._prefix + cmd)+1:].strip()
+        if commandArgs.startswith("/"):
+            commandArgs = commandArgs[1:]
+
+        await self.display("Broadcasting command {!r} to all minecraft servers".format(commandArgs))
+        self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "minecraft", "command": commandArgs})
