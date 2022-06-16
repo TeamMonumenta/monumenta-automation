@@ -8,6 +8,7 @@ import subprocess
 import re
 import tempfile
 import time
+import traceback
 from pprint import pformat
 import logging
 import redis
@@ -19,6 +20,8 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
+
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -94,6 +97,7 @@ class AutomationBotInstance():
             "list bots": self.action_list_bots,
             "select": self.action_select_bot,
             "batch": self.action_batch,
+            "update avatar": self.action_update_avatar,
 
             "verbose": self.action_verbose,
             "test": self.action_test,
@@ -1839,3 +1843,64 @@ Syntax:
 
         await self.display("Broadcasting command {!r} to all minecraft servers".format(commandArgs))
         self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "minecraft", "command": commandArgs})
+
+
+    async def action_update_avatar(self, cmd, message):
+        """Updates the avatar of the bot.
+Usage:
+{cmdPrefix}update avatar /home/epic/4_SHARED/bot_avatars/example.png
+"""
+
+        PNG_HEADER = b'\x89\x50\x4e\x47\x0d\x0a\x1a\x0a'
+        JPG_HEADER = b'\xff\xd8\xff'
+
+        avatar_path_str = message.content[len(self._prefix + cmd) + 1:]
+        avatar_path = Path(avatar_path_str)
+        await self.display(f"Attempting to set avatar `{avatar_path_str}`")
+        if not avatar_path.is_file():
+            await self.display("File not found.")
+            test_path = avatar_path.parent
+            limit = 5
+            while test_path != test_path.parent:
+                limit -= 1
+                if limit < 0:
+                    break
+                if not test_path.is_dir():
+                    await self.display(f"- Could not find folder `{test_path!s}`")
+                    test_path = test_path.parent
+                    continue
+                break
+            if limit < 0:
+                await self.display(f"Refusing to search any higher up.")
+                return
+            await self.display(f"Did find `{test_path}` at least, which contains:")
+            await self.display_verbatim(f'{[item.name for item in test_path.iterdir()]}')
+
+            return
+        if not avatar_path_str.endswith('.png') and not avatar_path_str.endswith('.jpg'):
+            await self.display("Only png and jpg files are supported.")
+            return
+
+        file_contents = None
+        try:
+            file_contents = avatar_path.read_bytes()
+        except Exception:
+            await self.display("Could not open avatar file.")
+            return
+        if not file_contents.startswith(PNG_HEADER) and not file_contents.startswith(JPG_HEADER):
+            await self.display("Only jpg and png files are supported. Nice try changing the extension, though.")
+            return
+
+        user = self._client.user
+        if user is None:
+            await self.display("No user object found. Not logged in?")
+            return
+
+        try:
+            await user.edit(avatar=file_contents)
+        except Exception:
+            await self.display("Failed to set the avater (see link)")
+            await self.display_verbatim(traceback.format_exc())
+            await self.display("https://discordpy.readthedocs.io/en/stable/api.html#discord.ClientUser.edit")
+            return
+        await self.display("Success")
