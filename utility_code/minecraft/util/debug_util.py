@@ -50,8 +50,9 @@ class NbtPathDebug():
 
     def is_vanity(self):
         """Checks if this item is a vanity item in a Lockbox"""
+        from minecraft.player_dat_format.item import Item
         parent = self.parent
-        if parent is None:
+        if parent is None or not instanceof(parent, Item):
             return False
         return (parent.nbt.has_path('tag.Monumenta.PlayerModified.VanityItems.head') and parent.nbt.at_path('tag.Monumenta.PlayerModified.VanityItems.head') is self.nbt
             or parent.nbt.has_path('tag.Monumenta.PlayerModified.VanityItems.chest') and parent.nbt.at_path('tag.Monumenta.PlayerModified.VanityItems.chest') is self.nbt
