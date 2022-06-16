@@ -131,7 +131,9 @@ class AutomationBotInstance():
 
             "stage": self.action_stage,
             "generate demo release": self.action_gen_demo_release,
+            "broadcastcommand": self.action_dummy,
         }
+        self._all_commands = set(self._commands.keys())
 
         self._dungeons = {
             "labs": "D0Access",
@@ -242,7 +244,7 @@ class AutomationBotInstance():
                         logger.warn('Failed to connect to rabbitmq: {}'.format(e))
 
             # Remove any commands that aren't available in the config
-            for command in dict(self._commands):
+            for command in set(self._commands.keys()):
                 if command not in config["commands"]:
                     self._commands.pop(command)
 
@@ -265,13 +267,17 @@ class AutomationBotInstance():
             return
 
         match = None
-        for command in self._commands:
+        for command in self._all_commands:
             if msg[1:].startswith(command):
-                match = command
+                if match is None or len(match) < len(command):
+                    match = command
         if match is None:
             return
 
-        if (match not in self._always_listening_commands) and not self._listening.isListening(message):
+        if match not in self._always_listening_commands and not self._listening.isListening(message):
+            return
+
+        if match not in self._commands:
             return
 
         if self.check_permissions(match, message.author):
@@ -402,6 +408,12 @@ class AutomationBotInstance():
 
     ################################################################################
     # Always listening actions
+
+    async def action_dummy(self, cmd, message):
+        '''Placeholder command; the real command did not load correctly.'''
+
+        await self.display("This command didn't load correctly!")
+        await self.display(message.author.mention)
 
     async def action_help(self, cmd, message):
         '''Lists commands available with this bot'''
