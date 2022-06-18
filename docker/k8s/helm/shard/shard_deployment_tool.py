@@ -78,13 +78,13 @@ shard_config = {
 
     # Player build shard
     "build": {
-        "play" : { "node": "m8" , "memGB": 2   , "gsheetCredentials": "false" },
+        "play" : { "node": "m8" , "memGB": 3   , "gsheetCredentials": "false" },
         "stage": { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
     },
 
     # Dungeons
     "cyan": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "depths": {
@@ -100,55 +100,55 @@ shard_config = {
         "play" : { "node": "m11", "memGB": 3   , },
     },
     "forum": {
-        "play" : { "node": "m11", "memGB": 4   , },
+        "play" : { "node": "m13", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 2048, },
     },
     "gray": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "labs": {
-        "play" : { "node": "m11", "memGB": 6   , },
+        "play" : { "node": "m13", "memGB": 6   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "lightblue": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "lightgray": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "lime": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "magenta": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "mist": {
-        "play" : { "node": "m11", "memGB": 2   , },
+        "play" : { "node": "m11", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "orange": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m13" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "pink": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "purple": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "remorse": {
-        "play" : { "node": "m11", "memGB": 2   , },
+        "play" : { "node": "m11", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "reverie": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "verdant": {
@@ -156,15 +156,15 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "corridors": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "corridors-2": {
-        "play" : { "node": "m11", "memGB": 2   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "corridors-3": {
-        "play" : { "node": "m11", "memGB": 2   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "rush": {
@@ -172,7 +172,7 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "sanctum": {
-        "play" : { "node": "m8" , "memGB": 3   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "shiftingcity": {
@@ -184,19 +184,19 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "tutorial": {
-        "play" : { "node": "m8" , "memGB": 5   , },
+        "play" : { "node": "m13", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "white": {
-        "play" : { "node": "m8" , "memGB": 3   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "willows": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "yellow": {
-        "play" : { "node": "m8" , "memGB": 2   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
 }
