@@ -113,6 +113,7 @@ class AutomationBotInstance():
             "view scores": self.action_view_scores,
             "get score": self.action_get_player_scores,
             "set score": self.action_set_player_scores,
+            "player shard": self.action_player_shard,
             "transfer playerdata": self.action_transfer_playerdata,
             "rollback playerdata": self.action_rollback_playerdata,
 
@@ -698,6 +699,21 @@ Do not use for debugging quests or other scores that are likely to change often.
             setscores += 1
 
         await self.display(f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)")
+
+    async def action_player_shard(self, cmd, message):
+        '''A tool to check what shard a player is on, or transfer one more more offline players.
+Usage:
+`{cmdPrefix}player shard get NickNackGus` - tells you which shard NickNackGus is on
+`{cmdPrefix}player shard transfer NickNackGus playerplots` - sends NickNackGus to playerplots shard
+`{cmdPrefix}player shard bulk_transfer corridors-2,corridors-3 corridors` - sends everyone on corridors-2/3 to the corridors shard
+`{cmdPrefix}player shard bulk_transfer betaplots,plots valley,valley-2,valley-3` - sends everyone on betaplots and plots to one of three valley shards
+'''
+
+        commandArgs = message.content[len(self._prefix + cmd) + 1:].split()
+        ns = self._k8s.namespace
+        if ns == 'stage':
+            ns = 'play'
+        await self.run([os.path.join(_top_level, "rust/bin/shard_utils"), "redis://redis/", ns, *commandArgs], displayOutput=True)
 
     async def action_transfer_playerdata(self, cmd, message):
         '''Transfers player data from one account to another.
