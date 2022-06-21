@@ -437,7 +437,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
                 ('server.properties', 'difficulty', 'difficulty=peaceful'),
                 ('server.properties', 'gamemode', 'gamemode=creative'),
-                ('plugins/MonumentaNetworkRelay/config.yml', 'broadcast-command-sending-enabled', 'broadcast-command-sending-enabled: true'),
+                ('plugins/MonumentaNetworkRelay/config.yml', 'broadcast-command-sending-enabled', 'broadcast-command-sending-enabled: false'),
                 ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
                 ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
             ],
