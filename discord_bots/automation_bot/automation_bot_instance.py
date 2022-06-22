@@ -704,6 +704,7 @@ Do not use for debugging quests or other scores that are likely to change often.
         '''A tool to check what shard a player is on, or transfer one more more offline players.
 Usage:
 `{cmdPrefix}player shard get NickNackGus` - tells you which shard NickNackGus is on
+`{cmdPrefix}player shard histogram` - lists how many players are on each shard
 `{cmdPrefix}player shard transfer NickNackGus playerplots` - sends NickNackGus to playerplots shard
 `{cmdPrefix}player shard bulk_transfer corridors-2,corridors-3 corridors` - sends everyone on corridors-2/3 to the corridors shard
 `{cmdPrefix}player shard bulk_transfer betaplots,plots valley,valley-2,valley-3` - sends everyone on betaplots and plots to one of three valley shards
