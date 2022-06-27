@@ -5,6 +5,38 @@ import os
 import re
 import copy
 
+from pathlib import Path
+
+def get_alt_version(alt_version, original_path, relative_to=Path('.')):
+    """Returns alternate versions of a path, or the original if not found.
+
+    Example transformations:
+    get_alt_version(None, 'anything') -> Path('anything')
+    get_alt_version('1.18', 'foo') -> Path('foo-1.18')
+    get_alt_version('1.18', 'foo.bar') -> Path('foo-1.18.bar')
+    get_alt_version('1.18', 'foo.bar.baz') -> Path('foo-1.18.bar.baz')
+
+    Assuming there is a 'baz-1.18' in the current working directory:
+    get_alt_version('1.18', '../../baz', 'foo/bar') -> Path('../../baz-1.18')
+    """
+    relative_to = Path(relative_to)
+    original_path = Path(original_path)
+
+    if alt_version is None:
+        return original_path
+
+    parts = original_path.name.split('.', maxsplit=1)
+    parts[0] = parts[0] + f'-{alt_version}'
+    alt_name = f'.'.join(parts)
+
+    test_path = original_path.parent / alt_name
+    if not test_path.is_absolute():
+        test_path = relative_to / test_path
+    if test_path.exists():
+        return original_path.parent / alt_name
+
+    return original_path
+
 # config should be the entire config map
 # data should be a tuple like ('server.properties', 'difficulty', 'difficulty=peaceful')
 def add_config_if_not_set(config, data):
@@ -39,7 +71,10 @@ def gen_server_config(servername):
     serverConfig = dest["config"]
 
     # If this was a copy of another shard, get the other shard name to be used for {servername} replacements
+    is_copy = "copy_of" in dest
     serverNameForReplacements = dest.get("copy_of", servername)
+
+    alt_version = dest.get("alt_version", None)
 
     ################################################################################
     # Copy customized configuration per-server
@@ -59,6 +94,8 @@ def gen_server_config(servername):
 
         if not os.path.isdir(os.path.dirname(new)):
             os.makedirs(os.path.dirname(new), mode=0o775)
+
+        old = get_alt_version(alt_version, old)
 
         try:
             with open(old, "rt") as fin:
@@ -186,6 +223,35 @@ if __name__ == '__main__':
         ('plugins/HolographicDisplays/symbols.yml',),
     ]
 
+    server_config_to_copy_1_18 = [
+        ('bukkit.yml',),
+        ('commands.yml',),
+        ('eula.txt',),
+        ('help.yml',),
+        ('permissions.yml',),
+        ('server.properties',),
+        ('spigot.yml',),
+        ('paper.yml',),
+        ('start.sh',),
+        ('wepif.yml',),
+        ('plugins/BKCommonLib/config.yml',),
+        ('plugins/CoreProtect/config.yml',),
+        ('plugins/FastAsyncWorldEdit/config.yml',),
+        ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: {}".format("minecraft:diamond_axe" if SERVER_TYPE == 'build' else "minecraft:knowledge_book")),
+        ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: {}".format("minecraft:diamond_axe" if SERVER_TYPE == 'build' else "minecraft:knowledge_book")),
+        ('plugins/FastAsyncVoxelSniper/config.yml',),
+        ('plugins/NBTEditor/config.yml',),
+        ('plugins/LightCleaner/config.yml',),
+        ('plugins/ScriptedQuests/config.yml', 'show_timer_names', 'show_timer_names: {}'.format(SERVER_TYPE == 'build')),
+        ('plugins/ScriptedQuests/config.yml', 'show_zones_dynmap', 'show_zones_dynmap: {}'.format(SERVER_TYPE == 'build')),
+        ('plugins/PrometheusExporter/config.yml',),
+        ('plugins/ProtocolLib/config.yml',),
+        ('plugins/Vault/config.yml',),
+        ('plugins/ChestSort/config.yml',),
+        ('plugins/MonumentaRedisSync/config.yml',),
+        ('plugins/MonumentaNetworkRelay/config.yml',),
+    ]
+
     purgatory_min = [
         ('paperclip.jar', '../server_config/paperclip.jar'),
         ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
@@ -207,6 +273,18 @@ if __name__ == '__main__':
         ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks'),
     ]
 
+    server_config_1_18 = server_config_min + [
+        ('Project_Epic-{servername}/generated', '../../server_config/data/generated'),
+        ('Project_Epic-{servername}/datapacks/vanilla', '../../../server_config/data/datapacks_1_18/vanilla'),
+    ]
+    datapacks_path = Path('server_config/data/datapacks')
+    shard_datapacks_1_18_prefix = Path('Project_Epic-{servername}/datapacks')
+    datapack_1_18_link_prefix = Path('../../../server_config/data/datapacks')
+    for child in datapacks_path.glob('*'):
+        if str(child) == 'vanilla':
+            continue
+        server_config_1_18.append((str(shard_datapacks_1_18_prefix / child), str(datapack_1_18_link_prefix / child)))
+
     network_chat = [
         ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
         ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/all/MonumentaNetworkChat/config.yml'),
@@ -223,8 +301,9 @@ if __name__ == '__main__':
         ('plugins/Monumenta/seasonalevents', '../../../server_config/data/plugins/all/Monumenta/seasonalevents'),
         ('plugins/Monumenta/InfinityTower/TowerMobs.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/TowerMobs.json'),
         ('plugins/Monumenta/InfinityTower/InfinityTowerDefault.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityTowerDefault.json'),
+        ('plugins/Monumenta/CommonProperties.json', '../../../server_config/data/plugins/all/Monumenta/CommonProperties.json'),
+        ('plugins/Monumenta/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
         ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
-        ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
         ('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
         ('plugins/nbt-api.jar', '../../server_config/plugins/nbt-api.jar'),
@@ -233,7 +312,8 @@ if __name__ == '__main__':
         ('plugins/spark.jar', '../../server_config/plugins/spark.jar'),
         ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
         ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
-        (f'plugins/ScriptedQuests/translations', f'/home/epic/4_SHARED/translations/{SERVER_TYPE}'),
+        ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
+        ('plugins/ScriptedQuests/translations', f'/home/epic/4_SHARED/translations/{SERVER_TYPE}'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
         ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
         ('plugins/ScriptedQuests/clickables/{servername}', '../../../../server_config/data/scriptedquests/clickables/{servername}'),
@@ -262,8 +342,59 @@ if __name__ == '__main__':
         ('plugins/StructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
         ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
+    ]
+
+    monumenta_1_18 = [
+        ('plugins/NetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
+        ('plugins/WorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
+        ('plugins/MonumentaWorldManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaWorldManagement/config.yml'),
+        ('plugins/Monumenta-1.18.jar', '../../server_config/plugins/Monumenta-1.18.jar'),
+        ('plugins/Monumenta/experiencinator_config.json', '../../../server_config/data/plugins/all/Monumenta/experiencinator_config.json'),
+        ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
+        ('plugins/Monumenta/seasonalevents', '../../../server_config/data/plugins/all/Monumenta/seasonalevents'),
+        ('plugins/Monumenta/InfinityTower/TowerMobs.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/TowerMobs.json'),
+        ('plugins/Monumenta/InfinityTower/InfinityTowerDefault.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityTowerDefault.json'),
         ('plugins/Monumenta/CommonProperties.json', '../../../server_config/data/plugins/all/Monumenta/CommonProperties.json'),
         ('plugins/Monumenta/Properties.json', '../../../server_config/data/plugins/{servername}/Monumenta/Properties.json'),
+        ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
+        #('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
+        #('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
+        ('plugins/nbt-api.jar', '../../server_config/plugins/nbt-api.jar'),
+        #('plugins/HolographicDisplays.jar', '../../server_config/plugins/HolographicDisplays.jar'),
+        #('plugins/HolographicDisplays/database.yml', '../../../server_config/data/plugins/{servername}/HolographicDisplays/database.yml'),
+        ('plugins/spark.jar', '../../server_config/plugins/spark.jar'),
+        ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
+        ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
+        ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
+        ('plugins/ScriptedQuests/translations', f'/home/epic/4_SHARED/translations/{SERVER_TYPE}'),
+        ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
+        ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
+        ('plugins/ScriptedQuests/clickables/{servername}', '../../../../server_config/data/scriptedquests/clickables/{servername}'),
+        ('plugins/ScriptedQuests/clickables/common', '../../../../server_config/data/scriptedquests/clickables/common'),
+        ('plugins/ScriptedQuests/death/{servername}', '../../../../server_config/data/scriptedquests/death/{servername}'),
+        ('plugins/ScriptedQuests/death/common', '../../../../server_config/data/scriptedquests/death/common'),
+        ('plugins/ScriptedQuests/login/{servername}', '../../../../server_config/data/scriptedquests/login/{servername}'),
+        ('plugins/ScriptedQuests/login/common', '../../../../server_config/data/scriptedquests/login/common'),
+        ('plugins/ScriptedQuests/npcs/{servername}', '../../../../server_config/data/scriptedquests/npcs/{servername}'),
+        ('plugins/ScriptedQuests/npcs/common', '../../../../server_config/data/scriptedquests/npcs/common'),
+        ('plugins/ScriptedQuests/races/{servername}', '../../../../server_config/data/scriptedquests/races/{servername}'),
+        ('plugins/ScriptedQuests/races/common', '../../../../server_config/data/scriptedquests/races/common'),
+        ('plugins/ScriptedQuests/growables/{servername}', '../../../../server_config/data/scriptedquests/growables/{servername}'),
+        ('plugins/ScriptedQuests/growables/common', '../../../../server_config/data/scriptedquests/growables/common'),
+        ('plugins/ScriptedQuests/guis/{servername}', '../../../../server_config/data/scriptedquests/guis/{servername}'),
+        ('plugins/ScriptedQuests/guis/common', '../../../../server_config/data/scriptedquests/guis/common'),
+        ('plugins/ScriptedQuests/traders/{servername}', '../../../../server_config/data/scriptedquests/traders/{servername}'),
+        ('plugins/ScriptedQuests/traders/common', '../../../../server_config/data/scriptedquests/traders/common'),
+        ('plugins/ScriptedQuests/codes/{servername}', '../../../../server_config/data/scriptedquests/codes/{servername}'),
+        ('plugins/ScriptedQuests/codes/common', '../../../../server_config/data/scriptedquests/codes/common'),
+        ('plugins/ScriptedQuests/interactables/{servername}', '../../../../server_config/data/scriptedquests/interactables/{servername}'),
+        ('plugins/ScriptedQuests/interactables/common', '../../../../server_config/data/scriptedquests/interactables/common'),
+        ('plugins/ScriptedQuests/zone_layers/{servername}', '../../../../server_config/data/scriptedquests/zone_layers/{servername}'),
+        ('plugins/ScriptedQuests/zone_properties/common', '../../../../server_config/data/scriptedquests/zone_properties/common'),
+        ('plugins/ScriptedQuests/zone_properties/{servername}', '../../../../server_config/data/scriptedquests/zone_properties/{servername}'),
+        #('plugins/StructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
+        #('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
+        #('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
     ]
 
     vanish = [
@@ -275,8 +406,17 @@ if __name__ == '__main__':
         ('plugins/CoreProtect.jar', '../../server_config/plugins/CoreProtect.jar'),
     ]
 
+    coreprotect_1_18 = [
+        ('plugins/CoreProtect.jar', '../../server_config/plugins/CoreProtect-1.18.jar'),
+    ]
+
     worldedit = [
         ('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit.jar'),
+        ('plugins/FastAsyncWorldEdit/schematics', '/home/epic/4_SHARED/schematics'),
+    ]
+
+    worldedit_1_18 = [
+        ('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit-1.18.jar'),
         ('plugins/FastAsyncWorldEdit/schematics', '/home/epic/4_SHARED/schematics'),
     ]
 
@@ -317,6 +457,10 @@ if __name__ == '__main__':
         ('plugins/FastAsyncVoxelSniper.jar', '../../server_config/plugins/FastAsyncVoxelSniper.jar'),
     ]
 
+    voxelsniper_1_18 = [
+        ('plugins/FastAsyncVoxelSniper.jar', '../../server_config/plugins/FastAsyncVoxelSniper-1.18.jar'),
+    ]
+
     # Analytics plugin - only for the play server!
     plan = [
         ('plugins/Plan.jar', '../../server_config/plugins/Plan.jar'),
@@ -334,13 +478,26 @@ if __name__ == '__main__':
         ('plugins/HeadDatabase', '../../server_config/data/plugins/all/HeadDatabase'),
     ]
 
+    gobrush_1_18 = [
+        ('plugins/Arceon.jar', '../../server_config/plugins/Arceon-1.18.jar'),
+        ('plugins/Arceon', '../../server_config/plugins/Arceon'),
+        ('plugins/goBrush.jar', '../../server_config/plugins/goBrush-1.18.jar'),
+        ('plugins/goBrush', '../../server_config/data/plugins/all/goBrush'),
+        ('plugins/goPaint.jar', '../../server_config/plugins/goPaint-1.18.jar'),
+        ('plugins/goPaint', '../../server_config/data/plugins/all/goPaint'),
+        ('plugins/HeadDatabase.jar', '../../server_config/plugins/HeadDatabase.jar'),
+        ('plugins/HeadDatabase', '../../server_config/data/plugins/all/HeadDatabase'),
+    ]
+
     # Index of nodes:
     #   server_config
     #   structures
 
     base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
+    base_plugins_1_18 = luckperms + monumenta_1_18 + worldedit_1_18 + coreprotect_1_18 + nbteditor + network_chat
     if SERVER_TYPE == 'build':
         base_plugins += speedchanger + voxelsniper + gobrush
+        base_plugins_1_18 += speedchanger + voxelsniper_1_18 + gobrush_1_18
     else:
         base_plugins += vanish
 
@@ -495,14 +652,15 @@ if __name__ == '__main__':
             'linked':server_config + base_plugins + dynmap,
         },
 
-#        'dev4':{
-#            'config':server_config_to_copy + [
-#                ('server.properties', 'view-distance', 'view-distance=6'),
-#                ('spigot.yml', 'view-distance', '    view-distance: 6'),
-#                ('server.properties', 'difficulty', 'difficulty=normal'),
-#            ],
-#            'linked':server_config + base_plugins + dynmap,
-#        },
+        'dev4':{
+            'alt_version': '1.18',
+            'config':server_config_to_copy_1_18 + [
+                ('server.properties', 'view-distance', 'view-distance=6'),
+                ('spigot.yml', 'view-distance', '    view-distance: 6'),
+                ('server.properties', 'difficulty', 'difficulty=normal'),
+            ],
+            'linked':server_config_1_18 + base_plugins_1_18,
+        },
 
         'plots':{
             'config':server_config_to_copy + [
@@ -602,8 +760,6 @@ if __name__ == '__main__':
         "valley-3": "valley",
         "isles-2": "isles",
         "isles-3": "isles",
-        "corridors-2": "corridors",
-        "corridors-3": "corridors",
         "depths-2": "depths",
         "depths-3": "depths",
     }
