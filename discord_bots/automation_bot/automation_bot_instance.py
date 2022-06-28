@@ -705,7 +705,7 @@ Do not use for debugging quests or other scores that are likely to change often.
 Usage:
 `{cmdPrefix}player shard get NickNackGus` - tells you which shard NickNackGus is on
 `{cmdPrefix}player shard transfer NickNackGus playerplots` - sends NickNackGus to playerplots shard
-`{cmdPrefix}player shard bulk_transfer corridors-2,corridors-3 corridors` - sends everyone on corridors-2/3 to the corridors shard
+`{cmdPrefix}player shard bulk_transfer depths-2,depths-3 depths` - sends everyone on depths-2/3 to the depths shard
 `{cmdPrefix}player shard bulk_transfer betaplots,plots valley,valley-2,valley-3` - sends everyone on betaplots and plots to one of three valley shards
 '''
 

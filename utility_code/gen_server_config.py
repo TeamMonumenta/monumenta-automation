@@ -441,7 +441,7 @@ if __name__ == '__main__':
                 ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
                 ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
             ],
-            'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + [
+            'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + vanish + [
                 ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
                 ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/build/MonumentaNetworkChat/config.yml'),
                 ('plugins/MonumentaNetworkChat/help', '../../../server_config/data/plugins/all/MonumentaNetworkChat/help'),
@@ -602,8 +602,6 @@ if __name__ == '__main__':
         "valley-3": "valley",
         "isles-2": "isles",
         "isles-3": "isles",
-        "corridors-2": "corridors",
-        "corridors-3": "corridors",
         "depths-2": "depths",
         "depths-3": "depths",
     }
