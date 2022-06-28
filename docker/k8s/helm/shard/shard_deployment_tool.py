@@ -21,7 +21,7 @@ shard_config = {
     "dev1"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "dev2"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "dev3"               : { "build": { "node": "m12", "memMB": 1536, }, },
-    "dev4"               : { "build": { "node": "m12", "memMB": 1536, }, },
+    "dev4"               : { "build": { "node": "m12", "memMB": 1536, "image": "monumenta-java-shard-17", }, },
     "mobs"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "dungeon"            : { "build": { "node": "m12", "memGB": 3   , }, },
     "ring"               : { "build": { "node": "m12", "memGB": 3   , }, },
