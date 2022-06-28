@@ -198,6 +198,12 @@ if __name__ == '__main__':
         ),
     }
 
+    ring = {
+        "server":"ring",
+        "copy_base_from":"build",
+        "datapacks":datapacks_base + ['file/ring'],
+    }
+
     available_configs = {
         "plots": plots,
         "playerplots": playerplots,
@@ -207,6 +213,7 @@ if __name__ == '__main__':
         "isles": isles,
         "isles-2": {**isles, **{"shard_name": "isles"}},
         "isles-3": {**isles, **{"shard_name": "isles"}},
+        "ring": ring,
         "white": get_dungeon_config("white", "D1Access"),
         "orange": get_dungeon_config("orange", "D2Access"),
         "magenta": get_dungeon_config("magenta", "D3Access"),
