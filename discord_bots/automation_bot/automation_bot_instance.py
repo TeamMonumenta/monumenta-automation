@@ -1229,8 +1229,12 @@ old coreprotect data will be removed at the 5 minute mark.
 
             if next_target == 60 * 5 and reason == "weekly update":
                 await self.display("Clearing coreprotect data older than 30 days")
-                self._socket.send_packet("playerplots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
-                self._socket.send_packet("plots", "monumentanetworkrelay.command", {"command": 'co purge t:30d'})
+                for shard in self._shards:
+                    if shard not in ["build",]:
+                        self._socket.send_packet(shard, "monumentanetworkrelay.command", {
+                            "server_type": "minecraft",
+                            "command": 'co purge t:30d'
+                        })
             if next_target == 15:
                 self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": 'save-all'})
 
@@ -1277,7 +1281,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
                 dirs_to_del.append(f"{self._shards[shard]}/plugins/FastAsyncWorldEdit/history")
                 dirs_to_del.append(f"{self._shards[shard]}/plugins/FastAsyncWorldEdit/sessions")
 
-            if shard not in ["build", "valley", "plots", "playerplots"]:
+            if shard in ["tutorial",]:
                 dirs_to_del.append(f"{self._shards[shard]}/plugins/CoreProtect")
 
             await self.run(f"rm -rf {' '.join(dirs_to_del)}")

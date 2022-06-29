@@ -24,7 +24,7 @@ def get_dungeon_config(name, objective):
     return {
         "server":f"{name}",
         "move_base_from":"build",
-        "move_previous_paths":[f"Project_Epic-{name}/stats", f"Project_Epic-{name}/data/scoreboard.dat"],
+        "move_previous_paths":[f"Project_Epic-{name}/stats", f"Project_Epic-{name}/data/scoreboard.dat", "plugins/CoreProtect"],
         "datapacks":datapacks_dungeon + [f'file/{name}'],
         "replace_items_globally": True,
         "preserve_instances":{
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     valley = {
         "server":"valley",
         "copy_base_from":"build",
-        "move_previous_paths":["Project_Epic-valley/stats", "Project_Epic-valley/data/scoreboard.dat"],
+        "move_previous_paths":["Project_Epic-valley/stats", "Project_Epic-valley/data/scoreboard.dat", "plugins/CoreProtect"],
         "datapacks":datapacks_base + ['file/valley'],
         "coordinates_to_fill":(
             {"name":"Magic Block", "pos1":(-1441, 2, -1441), "pos2":(-1441, 2, -1441), 'block': {'name': 'minecraft:air'}},
@@ -191,7 +191,7 @@ if __name__ == '__main__':
     isles = {
         "server":"isles",
         "copy_base_from":"build",
-        "move_previous_paths":["Project_Epic-isles/stats", "Project_Epic-isles/data/scoreboard.dat"],
+        "move_previous_paths":["Project_Epic-isles/stats", "Project_Epic-isles/data/scoreboard.dat", "plugins/CoreProtect"],
         "datapacks":datapacks_base + ['file/isles'],
         "coordinates_to_fill":(
             {"name":"Magic Block", "pos1":(-1441, 2, -1441), "pos2":(-1441, 2, -1441), 'block': {'name': 'minecraft:air'}},
