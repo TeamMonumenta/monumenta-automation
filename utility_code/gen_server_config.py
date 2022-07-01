@@ -280,10 +280,10 @@ if __name__ == '__main__':
     datapacks_path = Path('server_config/data/datapacks')
     shard_datapacks_1_18_prefix = Path('Project_Epic-{servername}/datapacks')
     datapack_1_18_link_prefix = Path('../../../server_config/data/datapacks')
-    for child in datapacks_path.glob('*'):
-        if str(child) == 'vanilla':
+    for child in datapacks_path.iterdir():
+        if str(child.name) == 'vanilla':
             continue
-        server_config_1_18.append((str(shard_datapacks_1_18_prefix / child), str(datapack_1_18_link_prefix / child)))
+        server_config_1_18.append((str(shard_datapacks_1_18_prefix / child.name), str(datapack_1_18_link_prefix / child.name)))
 
     network_chat = [
         ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
@@ -543,12 +543,28 @@ if __name__ == '__main__':
             ],
         },
 
-        'region_3':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=12'),
-                ('spigot.yml', 'view-distance', '    view-distance: 12'),
+        'ring':{
+            'alt_version': '1.18',
+            'config':server_config_to_copy_1_18 + [
+                ('server.properties', 'view-distance', 'view-distance=8'),
+                ('spigot.yml', 'view-distance', '    view-distance: 8'),
+                ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + dynmap,
+            'linked':server_config_1_18 + base_plugins_1_18 + [
+                ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
+            ],
+        },
+
+        'futurama':{
+            'alt_version': '1.18',
+            'config':server_config_to_copy_1_18 + [
+                ('server.properties', 'view-distance', 'view-distance=8'),
+                ('spigot.yml', 'view-distance', '    view-distance: 8'),
+                ('spigot.yml', '      villagers:', '      villagers: 25'),
+            ],
+            'linked':server_config_1_18 + base_plugins_1_18 + [
+                ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
+            ],
         },
 
         'test2':{
