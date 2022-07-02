@@ -275,15 +275,8 @@ if __name__ == '__main__':
 
     server_config_1_18 = server_config_min + [
         ('Project_Epic-{servername}/generated', '../../server_config/data/generated'),
-        ('Project_Epic-{servername}/datapacks/vanilla', '../../../server_config/data/datapacks_1_18/vanilla'),
+        ('Project_Epic-{servername}/datapacks_1_18', '../../server_config/data/datapacks'),
     ]
-    datapacks_path = Path('server_config/data/datapacks')
-    shard_datapacks_1_18_prefix = Path('Project_Epic-{servername}/datapacks')
-    datapack_1_18_link_prefix = Path('../../../server_config/data/datapacks')
-    for child in datapacks_path.iterdir():
-        if str(child.name) == 'vanilla':
-            continue
-        server_config_1_18.append((str(shard_datapacks_1_18_prefix / child.name), str(datapack_1_18_link_prefix / child.name)))
 
     network_chat = [
         ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
