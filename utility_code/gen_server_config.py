@@ -275,7 +275,7 @@ if __name__ == '__main__':
 
     server_config_1_18 = server_config_min + [
         ('Project_Epic-{servername}/generated', '../../server_config/data/generated'),
-        ('Project_Epic-{servername}/datapacks_1_18', '../../server_config/data/datapacks'),
+        ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks_1_18'),
     ]
 
     network_chat = [
