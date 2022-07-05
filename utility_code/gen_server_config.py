@@ -73,8 +73,11 @@ def gen_server_config(servername):
     # If this was a copy of another shard, get the other shard name to be used for {servername} replacements
     is_copy = "copy_of" in dest
     serverNameForReplacements = dest.get("copy_of", servername)
+    server_domain = get_server_domain(serverNameForReplacements)
 
     alt_version = dest.get("alt_version", None)
+    if server_domain == 'build' and alt_version is not None:
+        server_domain = f'{server_domain}-{alt_version}'
 
     ################################################################################
     # Copy customized configuration per-server
@@ -101,7 +104,7 @@ def gen_server_config(servername):
             with open(old, "rt") as fin:
                 with open(new, "wt") as fout:
                     for line in fin:
-                        fout.write(line.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", get_server_domain(serverNameForReplacements)))
+                        fout.write(line.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", server_domain))
         except Exception as e:
             print(e)
             continue
@@ -109,7 +112,7 @@ def gen_server_config(servername):
     # Do the per-file replacements
     for replacement in serverConfig:
         filename = servername + "/" + replacement[0]
-        filename = filename.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", get_server_domain(serverNameForReplacements))
+        filename = filename.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", server_domain)
         if len(replacement) == 1:
             # Nothing to do here, just copying the file was enough
             continue
@@ -146,8 +149,8 @@ def gen_server_config(servername):
     for link in linked:
         linkname = servername + "/" + link[0]
         targetname = link[1]
-        linkname = linkname.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", get_server_domain(serverNameForReplacements))
-        targetname = targetname.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", get_server_domain(serverNameForReplacements))
+        linkname = linkname.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", server_domain)
+        targetname = targetname.replace("{servername}", serverNameForReplacements).replace("{serverdomain}", server_domain)
 
         if os.path.islink(linkname):
             os.unlink(linkname)
