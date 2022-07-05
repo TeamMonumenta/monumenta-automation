@@ -261,7 +261,23 @@ if __name__ == '__main__':
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
     ]
 
+    purgatory_min_1_18 = [
+        ('paperclip.jar', '../server_config/paperclip-1.18.jar'),
+        ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
+        ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
+        ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
+        ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI-1.18.jar'),
+        ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
+    ]
+
     server_config_min = purgatory_min + [
+        ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
+        ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
+        ('plugins/BKCommonLib.jar', '../../server_config/plugins/BKCommonLib.jar'),
+        ('plugins/LightCleaner.jar', '../../server_config/plugins/LightCleaner.jar'),
+    ]
+
+    server_config_min_1_18 = purgatory_min_1_18 + [
         ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
         ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
         ('plugins/BKCommonLib.jar', '../../server_config/plugins/BKCommonLib.jar'),
@@ -273,7 +289,7 @@ if __name__ == '__main__':
         ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks'),
     ]
 
-    server_config_1_18 = server_config_min + [
+    server_config_1_18 = server_config_min_1_18 + [
         ('Project_Epic-{servername}/generated', '../../server_config/data/generated'),
         ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks_1_18'),
     ]

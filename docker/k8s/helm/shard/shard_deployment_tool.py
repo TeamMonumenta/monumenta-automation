@@ -21,10 +21,10 @@ shard_config = {
     "dev1"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "dev2"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "dev3"               : { "build": { "node": "m12", "memMB": 1536, }, },
-    "dev4"               : { "build": { "node": "m12", "memMB": 1536, }, },
+    "dev4"               : { "build": { "node": "m12", "memMB": 1536, "image": "monumenta-java-shard-17", }, },
     "mobs"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "dungeon"            : { "build": { "node": "m12", "memGB": 3   , }, },
-    "futurama"           : { "build": { "node": "m12", "memGB": 3   , }, },
+    "futurama"           : { "build": { "node": "m12", "memGB": 3   , "image": "monumenta-java-shard-17", }, },
     "test"               : { "build": { "node": "m12", "memGB": 3   , }, },
     "event"              : { "build": { "node": "m12", "memGB": 3   , }, },
     "monumenta-sdk"      : { "build": { "node": "m12", "memGB": 3   , "nodePort": 22221, }, },
@@ -66,8 +66,8 @@ shard_config = {
 
     # R3 (Testing)
     "ring": {
-        "build": { "node": "m12", "memGB": 3   , },
-        "stage": { "node": "m12", "memGB": 3   , },
+        "build": { "node": "m12", "memGB": 3   , "image": "monumenta-java-shard-17", },
+        "stage": { "node": "m12", "memGB": 3   , "image": "monumenta-java-shard-17", },
     },
 
     # Plots
