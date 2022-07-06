@@ -1309,7 +1309,8 @@ DELETES DUNGEON CORE PROTECT DATA'''
             await self.display("Saving ring warps")
             await self.run("mkdir -p /home/epic/4_SHARED/op-ban-sync/ring/plugins/")
             await self.run("rm -rf /home/epic/4_SHARED/op-ban-sync/ring/plugins/MonumentaWarps")
-            await self.run(f"cp -a {self._shards['ring']}/plugins/MonumentaWarps /home/epic/4_SHARED/op-ban-sync/ring/plugins/MonumentaWarps")
+            await self.run(f"cp -a {self._shards['ring']}/plugins/MonumentaWarps /home/epic/4_SHARED/op-ban-sync/ring/plugins/MonumentaWarps", ret=(0, 1,))
+            await self.run("mkdir -p /home/epic/4_SHARED/op-ban-sync/ring/plugins/MonumentaWarps")
 
         if self._common_weekly_update_tasks:
             await self.display("Copying player data from redis")
