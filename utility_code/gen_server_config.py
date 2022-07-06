@@ -77,7 +77,7 @@ def gen_server_config(servername):
 
     alt_version = dest.get("alt_version", None)
     if server_domain == 'build' and alt_version is not None:
-        server_domain = f'{server_domain}-{alt_version}'
+        server_domain = f'{server_domain}-{alt_version.replace(".", "")}'
 
     ################################################################################
     # Copy customized configuration per-server
