@@ -100,7 +100,7 @@ shard_config = {
         "play" : { "node": "m11", "memGB": 3   , },
     },
     "forum": {
-        "play" : { "node": "m13", "memGB": 4   , },
+        "play" : { "node": "m13", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 2048, },
     },
     "gray": {
