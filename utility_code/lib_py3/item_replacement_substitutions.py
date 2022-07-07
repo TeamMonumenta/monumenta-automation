@@ -367,6 +367,9 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:magma_block", "Ephemeral Key Classic Tier V", "minecraft:magma_block", "Ephemeral Key - Fullwipe"],
                 ["minecraft:golden_hoe", "Thresher‘s Harvester", "minecraft:golden_hoe", "Thresher's Harvester"],
                 ["minecraft:golden_hoe", "Thresher’s Harvester", "minecraft:golden_hoe", "Thresher's Harvester"],
+                ["minecraft:splash_potion", "C‘Zanil‘s Transgression", "minecraft:splash_potion", "C'Zanil's Transgression"],
+                ["minecraft:splash_potion", "C’Zanil’s Transgression", "minecraft:splash_potion", "C'Zanil's Transgression"],
+                ["minecraft:turtle_spawn_egg", "Permafrost Golem Dummy", "minecraft:turtle_spawn_egg", "Permafrost Construct Dummy"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
