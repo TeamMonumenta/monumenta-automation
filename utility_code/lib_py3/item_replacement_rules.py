@@ -343,7 +343,7 @@ class PreservePotionInjector(GlobalRule):
 
     def preprocess(self, template, item):
         self.injector_config = None
-        if item.id.startswith('minecraft:') and item.id.endswith('_shulker_box'):
+        if item.id.startswith('minecraft:') and item.id.endswith('shulker_box'):
             if item.nbt.has_path('tag.display.Name') and get_item_name_from_nbt(item.tag, True) == 'Potion Injector':
                 if item.nbt.has_path('tag.display.Lore[1]'):
                     self.injector_config = item.nbt.at_path('tag.display.Lore[1]')
