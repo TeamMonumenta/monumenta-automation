@@ -372,6 +372,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:turtle_spawn_egg", "Permafrost Golem Dummy", "minecraft:turtle_spawn_egg", "Permafrost Construct Dummy"],
                 ["minecraft:chainmail_boots", "Consumption", "minecraft:chainmail_helmet", "Consumption"],
                 ["minecraft:quartz", "Purified Claw", "minecraft:stone_sword", "Purified Claw"],
+                ["minecraft:prismarine_shard", "Weathered Rune", "minecraft:popped_chorus_fruit", "Weathered Rune"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
