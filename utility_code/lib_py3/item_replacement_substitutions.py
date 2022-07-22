@@ -373,6 +373,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:chainmail_boots", "Consumption", "minecraft:chainmail_helmet", "Consumption"],
                 ["minecraft:quartz", "Purified Claw", "minecraft:stone_sword", "Purified Claw"],
                 ["minecraft:prismarine_shard", "Weathered Rune", "minecraft:popped_chorus_fruit", "Weathered Rune"],
+                ["minecraft:stone_sword", "Bandit‘s Dagger", "minecraft:stone_sword", "Bandit's Dagger"]
+                ["minecraft:stone_sword", "Bandit’s Dagger", "minecraft:stone_sword", "Bandit's Dagger"]
         ]:
 
             old_id, old_name, new_id, new_name = substitution
