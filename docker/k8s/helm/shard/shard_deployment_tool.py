@@ -209,10 +209,16 @@ abbrev_node_to_full = {
     "m13": "monumenta-13",
 }
 
+
+RE_NUMBER = re.compile('''[0-9]+''')
+RE_NOT_NUMBER = re.compile('''[^0-9]+''')
+
+
 def usage():
     sys.exit(f'''Usage: {sys.argv[0]} <action> <namespace> <shard>
 <action> can be one of these:
     print - Generates the YAML deployment and prints it out
+    memoryusage - Displays the memory usage on each node
     apply - Generates and applies the deployment, possibly creating or restarting the existing shard
     applyall - Generates and applies all deployments for this namespace with names matching the regex given by <shard>. Use '.' to match all.
     delete - Generates and then deletes the deployment, stopping shard if it is running
@@ -267,6 +273,104 @@ def perform_shard_action(action, namespace, shard):
             fp.flush()
             kubectl = subprocess.run(["kubectl", "delete", "-f", fp.name])
 
+
+def natural_sort(key):
+    if not isinstance(key, str):
+        return key
+
+    result = []
+    while len(key) > 0:
+        match = RE_NUMBER.match(key)
+        if match:
+            result.append(int(key[:match.end()]))
+            key = key[match.end():]
+            continue
+
+        match = RE_NOT_NUMBER.match(key)
+        if match:
+            part = key[:match.end()]
+            if part.startswith('.'):
+                result.append('.')
+                part = part[1:]
+            result.append(part.lower())
+            result.append(part)
+            key = key[match.end():]
+            continue
+
+        print('Somehow not a number nor a non-number?')
+        print(repr(key))
+        result.append(key)
+        break
+
+    return result
+
+
+def print_memory_usage():
+    node_memory_usages = {}
+    namespace_memory_usages = {}
+    namespaces = set()
+    for shard in shard_config.values():
+        for namespace, namespace_info in shard.items():
+            if "node" not in namespace_info:
+                continue
+            if "memMB" not in namespace_info and "memGB" not in namespace_info:
+                continue
+
+            namespaces.add(namespace)
+
+            node = namespace_info["node"]
+            memGB = 0
+            if "memMB" in namespace_info:
+                memGB = namespace_info["memMB"] / 1024.0
+            else:
+                memGB = float(namespace_info["memGB"])
+
+            if node not in node_memory_usages:
+                node_memory_usages[node] = 0.0
+            node_memory_usages[node] += memGB
+
+            if namespace not in namespace_memory_usages:
+                namespace_memory_usages[namespace] = {}
+            if node not in namespace_memory_usages[namespace]:
+                namespace_memory_usages[namespace][node] = 0.0
+            namespace_memory_usages[namespace][node] += memGB
+
+    header_width = max(len('Total:'), *[len(namespace) for namespace in namespaces])
+    column_width = max(len(' '*7 + ' GB'), *[len(node) for node in node_memory_usages.keys()])
+
+    print(' ' * header_width, end='')
+    for node in sorted(node_memory_usages.keys(), key=natural_sort):
+        print(f' │ {node:<{column_width}}', end='')
+    print('')
+
+    print('─' * header_width, end='')
+    for node in sorted(node_memory_usages.keys(), key=natural_sort):
+        print('─┼─' + '─'*column_width, end='')
+    print('')
+
+    for namespace in sorted(namespaces, key=natural_sort):
+        namespace_info = namespace_memory_usages[namespace]
+        print(f'{namespace:<{header_width}}', end='')
+        for node in sorted(node_memory_usages.keys(), key=natural_sort):
+            memGB = namespace_info.get(node, 0.0)
+            preformatted_entry = f'{memGB:7.2f} GB'
+            print(f' │ {preformatted_entry:>{column_width}}', end='')
+        print('')
+
+    print('─' * header_width, end='')
+    for node in sorted(node_memory_usages.keys(), key=natural_sort):
+        print('─┼─' + '─'*column_width, end='')
+    print('')
+
+    header = 'Total:'
+    print(f'{header:<{header_width}}', end='')
+    for node in sorted(node_memory_usages.keys(), key=natural_sort):
+        memGB = node_memory_usages[node]
+        preformatted_entry = f'{memGB:7.2f} GB'
+        print(f' │ {preformatted_entry:>{column_width}}', end='')
+    print('')
+
+
 if len(sys.argv) != 4:
     usage()
 
@@ -274,8 +378,11 @@ action = sys.argv[1]
 namespace = sys.argv[2]
 shard = sys.argv[3]
 
-if action in ["print", "apply", "delete"]:
-    perform_shard_action(action, namespace, shard)
+if action in ["print", "apply", "delete", "memoryusage"]:
+    if action == "memoryusage":
+        print_memory_usage()
+    else:
+        perform_shard_action(action, namespace, shard)
 elif action in ["applyall", "deleteall", "testall"]:
     # Shard is a regex for "all" operations
     shards = [s for s in shard_config if ((namespace in shard_config[s]) and re.match(shard, s))]
