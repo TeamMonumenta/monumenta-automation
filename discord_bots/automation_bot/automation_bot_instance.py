@@ -888,8 +888,8 @@ Must be run before starting the update on the play server
             await self.generate_instances_internal(debug=debug)
 
         if not debug:
-            await self.display("Stopping valley and isles...")
-            await self.stop(["valley", "isles"])
+            await self.display("Stopping valley, isles, and ring...")
+            await self.stop(["valley", "isles", "ring"])
 
         await self.display("Copying valley...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley")
@@ -906,6 +906,14 @@ Must be run before starting the update on the play server
         if not debug:
             await self.display("Restarting the isles shard...")
             await self.start("isles")
+
+        await self.display("Copying ring...")
+        await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring")
+        await self.run("cp -a /home/epic/project_epic/ring/Project_Epic-ring /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+
+        if not debug:
+            await self.display("Restarting the ring shard...")
+            await self.start("ring")
 
         await self.display("Copying purgatory...")
         await self.run("cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
@@ -954,7 +962,7 @@ Examples:
             elif shard == "--skip-server-config":
                 copy_server_config = False
                 await self.display("--skip-server-config specified, will not copy server_config folder (no plugins or data folder updates) ")
-            elif shard in ("valley", "isles",):
+            elif shard in ("valley", "isles", "ring",):
                 main_shards.append(shard)
             elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "mist", "willows", "sanctum", "shiftingcity", "labs", "depths", "remorse", "corridors", "verdant"]:
                 instance_gen_required.append(shard)
@@ -1302,6 +1310,13 @@ DELETES DUNGEON CORE PROTECT DATA'''
             await self.run("rm -rf /home/epic/4_SHARED/op-ban-sync/isles/plugins/MonumentaWarps")
             await self.run(f"cp -a {self._shards['isles']}/plugins/MonumentaWarps /home/epic/4_SHARED/op-ban-sync/isles/plugins/MonumentaWarps")
 
+        if "ring" in self._shards:
+            await self.display("Saving ring warps")
+            await self.run("mkdir -p /home/epic/4_SHARED/op-ban-sync/ring/plugins/")
+            await self.run("rm -rf /home/epic/4_SHARED/op-ban-sync/ring/plugins/MonumentaWarps")
+            await self.run(f"cp -a {self._shards['ring']}/plugins/MonumentaWarps /home/epic/4_SHARED/op-ban-sync/ring/plugins/MonumentaWarps", ret=(0, 1,))
+            await self.run("mkdir -p /home/epic/4_SHARED/op-ban-sync/ring/plugins/MonumentaWarps")
+
         if self._common_weekly_update_tasks:
             await self.display("Copying player data from redis")
             await self.run(os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --output {self._server_dir}/server_config/redis_data_final")
@@ -1480,6 +1495,10 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                 if os.path.isdir(f"{self._shards[shard]}/Project_Epic-isles"):
                     await self.run(f"mkdir -p {self._shards[shard]}/plugins")
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/isles/plugins/MonumentaWarps {self._shards[shard]}/plugins/MonumentaWarps")
+
+                if os.path.isdir(f"{self._shards[shard]}/Project_Epic-ring"):
+                    await self.run(f"mkdir -p {self._shards[shard]}/plugins")
+                    await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/ring/plugins/MonumentaWarps {self._shards[shard]}/plugins/MonumentaWarps")
 
                 # Enable maintenance mode on all bungee shards
                 if shard.startswith("bungee"):
