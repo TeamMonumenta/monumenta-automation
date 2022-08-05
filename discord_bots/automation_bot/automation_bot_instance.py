@@ -36,6 +36,7 @@ from lib_py3.raffle import vote_raffle
 from lib_py3.lib_k8s import KubernetesManager
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.redis_scoreboard import RedisRBoard
+from minecraft.world import World
 
 from automation_bot_lib import datestr, split_string
 
@@ -967,7 +968,7 @@ Examples:
             elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "mist", "willows", "sanctum", "shiftingcity", "labs", "depths", "remorse", "corridors", "verdant"]:
                 instance_gen_required.append(shard)
             else:
-                await self.display("Unknown shard specified: {}".format(shard))
+                await self.display(f"Unknown shard specified: {shard}")
                 return
 
         await self.display("Starting stage bundle preparation for shards: [{}]".format(" ".join(shards)))
@@ -981,22 +982,26 @@ Examples:
 
             for shard in main_shards:
                 if not debug:
-                    await self.display("Stopping {shard}...".format(shard=shard))
+                    await self.display(f"Stopping {shard}...")
                     await self.stop(shard)
 
-                await self.display("Copying {shard}...".format(shard=shard))
-                await self.run("mkdir -p /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}".format(shard=shard))
-                # TODO: This needs to copy all the worlds, not just the base one
-                await self.run("cp -a /home/epic/project_epic/{shard}/Project_Epic-{shard} /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/".format(shard=shard))
+                await self.run(f"mkdir -p /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}")
+                worlds = World.enumerate_worlds(f"/home/epic/project_epic/{shard}")
+                await self.display(f"Copying worlds {' '.join(worlds)} from {shard}")
+                for worldname in worlds:
+                    await self.run(f"cp -a /home/epic/project_epic/{shard}/{worldname} /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/")
+
+                # Copy the current warps
+                await self.run(f"cp -a /home/epic/project_epic/{shard}/plugins/MonumentaWarps/warps.yml /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/")
 
                 if not debug:
-                    await self.display("Restarting {shard}...".format(shard=shard))
+                    await self.display(f"Restarting {shard}...")
                     await self.start(shard)
 
-                await self.display("Running replacements on copied version of {shard}...".format(shard=shard))
-                args = " --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}".format(shard=shard)
+                await self.display(f"Running replacements on copied version of {shard}...")
+                args = f" --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}"
                 await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
-                args = " --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json".format(shard=shard)
+                args = f" --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
                 await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         if len(instance_gen_required) > 0:
@@ -1077,7 +1082,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.stop([shard for shard in self._shards if shard.replace('_', '') in shards])
         for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
-                await self.display("ERROR: shard {!r} is still running!".format(shard))
+                await self.display(f"ERROR: shard {shard} is still running!")
                 await self.display(message.author.mention)
                 return
 
@@ -1093,8 +1098,8 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.run("mkdir 0_PREVIOUS")
 
         await self.display(f"Moving [{' '.join(folders_to_update)}] to 0_PREVIOUS...")
-        for f in folders_to_update:
-            await self.run("mv {} 0_PREVIOUS/".format(f), None)
+        for folder in folders_to_update:
+            await self.run(f"mv {folder} 0_PREVIOUS/", None)
 
         if "server_config" in folders_to_update:
             await self.display("Getting new server config...")
@@ -1116,6 +1121,10 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.display("Generating per-shard config...")
         await self.cd(self._server_dir)
         await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(folders_to_update)))
+
+        # Apply the warps from the build server
+        await self.run(f"mkdir -p {self._server_dir}/{shard}/plugins/MonumentaWarps")
+        await self.run(f"cp -a /home/epic/5_SCRATCH/tmpreset/TEMPLATE/{shard}/warps.yml {self._server_dir}/{shard}/plugins/MonumentaWarps/warps.yml")
 
         await self.display("Checking for broken symbolic links...")
         await self.run("find . -xtype l", displayOutput=True)
