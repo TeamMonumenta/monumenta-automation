@@ -4,6 +4,7 @@ import sys
 import os
 import pprint
 import getopt
+import math
 
 from minecraft.world import World
 
@@ -56,7 +57,7 @@ minxregion = min_x//512
 minzregion = min_z//512
 maxxregion = max_x//512
 maxzregion = max_z//512
-for region in world.iter_regions:
-    if region.rx < minxregion or region.rx > maxxregion or region.rz < minzregion or region.rz > maxzregion:
-        print("rm", os.path.join(world.path, "region", "r.{}.{}.mca".format(region.rx, region.rz)))
+for path, rx, rz, region in world.enumerate_regions():
+    if rx < minxregion or rx > maxxregion or rz < minzregion or rz > maxzregion:
+        print(f"rm {path}")
 
