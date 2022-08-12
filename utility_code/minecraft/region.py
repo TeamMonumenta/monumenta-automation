@@ -93,21 +93,8 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         if not self.has_chunk(cx, cz):
             raise KeyError(f'Chunk {cx},{cz} not found.')
 
-        entry = self._get_entry(cx, cz)
-        chunk_offset, chunk_length = entry >> 8, entry & 0xff
-
-        # Read compressed chunk NBT data
-        self._region.fd.seek(4096 * chunk_offset)
-        buff = Buffer()
-        buff.add(self._region.fd.read(4096 * chunk_length))
-        compressed_size, compression_format = buff.unpack('IB')
-        # Fix off-by-one error when reading chunk data
-        compressed_size = min(compressed_size, len(buff))
-
         try:
-            chunk_tag = buff.read(compressed_size)
-            chunk_tag = zlib.decompress(chunk_tag)
-            chunk_tag = nbt.TagRoot.from_bytes(chunk_tag)
+            chunk_tag = self._region.load_chunk(cx & 0x1f, cz & 0x1f)
         except Exception as ex:
             print(f"Failed to load chunk {cx},{cz} in region {self.rx},{self.rz} global coords {cx*16},{cz*16}")
             raise ex
@@ -144,61 +131,12 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         ):
             raise KeyError(f'Region file ({self.rx}, {self.rz}) does not contain chunk coordinate ({cx}, {cz}).')
 
+        chunk.cx = 32 * self.rx + local_cx
+        chunk.cz = 32 * self.rz + local_cz
+
         chunk = nbt.TagRoot.from_body(chunk.nbt)
 
-        # Compress chunk
-        chunk = zlib.compress(chunk.to_bytes())
-        chunk = Buffer.pack('IB', len(chunk), 2) + chunk
-        chunk_length = 1 + (len(chunk) - 1) // 4096
-
-        # Load extents
-        extents = [(0, 2)] # Ignore the extent and timestamp tables.
-        self._region.fd.seek(0)
-        buff = Buffer(self._region.fd.read(4096))
-        for entry_index in range(1024):
-            z, x = divmod(entry_index, 32)
-            entry = buff.unpack('I') & 0xffffffff
-            offset, length = entry >> 8, entry & 0xff
-            if self._entry_valid(entry) and not (x == local_cx and z == local_cz):
-                extents.append((offset, length))
-        # Sort extents by starting offset
-        extents.sort()
-        # Terminator extent - track where the new end of the region file would be if the file needs expanding.
-        extents.append((extents[-1][0] + extents[-1][1] + chunk_length, 0))
-
-        # Compute new extent
-        for idx in range(len(extents) - 1):
-            prev_extent = extents[idx]
-            prev_extent_start = prev_extent[0]
-            prev_extent_len = prev_extent[1]
-
-            next_extent = extents[idx+1]
-            next_extent_start = next_extent[0]
-
-            extent_gap_start = prev_extent_start + prev_extent_len
-            extent_gap_end = next_extent_start
-            extent_gap_len = extent_gap_end - extent_gap_start
-
-            if extent_gap_len >= chunk_length:
-                chunk_offset = extent_gap_start
-                extents.insert(idx+1, (chunk_offset, chunk_length))
-                break
-
-        # Write extent header
-        self._region.fd.seek(4 * (32 * local_cz + local_cx))
-        self._region.fd.write(Buffer.pack('I', (chunk_offset << 8) | (chunk_length & 0xff)))
-
-        # Write timestamp header
-        self._region.fd.seek(4096 + 4 * (32 * local_cz + local_cx))
-        self._region.fd.write(Buffer.pack('I', int(time.time())))
-
-        # Write chunk
-        self._region.fd.seek(4096 * chunk_offset)
-        self._region.fd.write(chunk)
-
-        # Truncate file
-        self._region.fd.seek(4096 * extents[-1][0])
-        self._region.fd.truncate()
+        self._region.save_chunk(chunk)
 
     def delete_chunk(self, cx, cz):
         """Save the Chunk at cx, cz.
@@ -214,32 +152,7 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         ):
             raise KeyError(f'Region file ({self.rx}, {self.rz}) does not contain chunk coordinate ({cx}, {cz}).')
 
-        # Load extents
-        extents = [(0, 2)] # Ignore the extent and timestamp tables.
-        self._region.fd.seek(0)
-        buff = Buffer(self._region.fd.read(4096))
-        for entry_index in range(1024):
-            z, x = divmod(entry_index, 32)
-            entry = buff.unpack('I') & 0xffffffff
-            offset, length = entry >> 8, entry & 0xff
-            if self._entry_valid(entry) and not (x == local_cx and z == local_cz):
-                extents.append((offset, length))
-        # Sort extents by starting offset
-        extents.sort()
-        # Terminator extent - track end of region file
-        extents.append((extents[-1][0] + extents[-1][1], 0))
-
-        # Write extent header
-        self._region.fd.seek(4 * (32 * local_cz + local_cx))
-        self._region.fd.write(Buffer.pack('I', 0))
-
-        # Write timestamp header
-        self._region.fd.seek(4096 + 4 * (32 * local_cz + local_cx))
-        self._region.fd.write(Buffer.pack('I', 0))
-
-        # Truncate file
-        self._region.fd.seek(4096 * extents[-1][0])
-        self._region.fd.truncate()
+        self._region.delete_chunk(local_cx, local_cz)
 
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
         """

@@ -73,11 +73,25 @@ class Chunk(BaseChunk):
             return self.nbt.at_path('Level.xPos').value
         return self.nbt.at_path('xPos').value
 
+    @cx.setter
+    def cx(self, value):
+        if self.nbt.has_path("Level"): # 1.17 and before
+            self.nbt.at_path('Level.xPos').value = value
+        else:
+            self.nbt.at_path('xPos').value = value
+
     @property
     def cz(self):
         if self.nbt.has_path("Level"): # 1.17 and before
             return self.nbt.at_path('Level.zPos').value
         return self.nbt.at_path('zPos').value
+
+    @cz.setter
+    def cz(self, value):
+        if self.nbt.has_path("Level"): # 1.17 and before
+            self.nbt.at_path('Level.zPos').value = value
+        else:
+            self.nbt.at_path('zPos').value = value
 
     @property
     def sections(self):
