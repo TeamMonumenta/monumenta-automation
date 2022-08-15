@@ -389,28 +389,28 @@ class AutomationBotInstance():
 
         return stdout
 
-    async def stop(self, shards):
+    async def stop(self, shards, wait=True):
         if not isinstance(shards, list):
             shards = [shards,]
         async with self._channel.typing():
             await self.debug("Stopping shards [{}]...".format(",".join(shards)))
-            await self._k8s.stop(shards)
+            await self._k8s.stop(shards, wait=wait)
             await self.debug("Stopped shards [{}]".format(",".join(shards)))
 
-    async def start(self, shards):
+    async def start(self, shards, wait=True):
         if not isinstance(shards, list):
             shards = [shards,]
         async with self._channel.typing():
             await self.debug("Starting shards [{}]...".format(",".join(shards)))
-            await self._k8s.start(shards)
+            await self._k8s.start(shards, wait=wait)
             await self.debug("Started shards [{}]".format(",".join(shards)))
 
-    async def restart(self, shards):
+    async def restart(self, shards, wait=True):
         if not isinstance(shards, list):
             shards = [shards,]
         async with self._channel.typing():
             await self.debug("Restarting shards [{}]...".format(",".join(shards)))
-            await self._k8s.restart(shards)
+            await self._k8s.restart(shards, wait=wait)
             await self.debug("Restarted shards [{}]".format(",".join(shards)))
 
     # Infrastructure
@@ -940,6 +940,7 @@ Must be run before starting the update on the play server
 
 `--debug` prepares the bundle without stopping shards.
 `--skip-server-config` prepares the bundle without including the server_config folder (no plugins or data folder updates)
+`--skip-replacements` prepares the bundle without running replacements on copied worlds (much faster)
 
 Examples:
 `{cmdPrefix}prepare stage bundle valley labs`
@@ -956,13 +957,17 @@ Examples:
         main_shards = []
         debug = False
         copy_server_config = True
+        run_replacements = True
         for shard in shards:
             if shard == "--debug":
                 debug = True
                 await self.display("Debug mode enabled! Will not stop shards prior to copying")
             elif shard == "--skip-server-config":
                 copy_server_config = False
-                await self.display("--skip-server-config specified, will not copy server_config folder (no plugins or data folder updates) ")
+                await self.display("--skip-server-config specified, will not copy server_config folder (no plugins or data folder updates)")
+            elif shard == "--skip-replacements":
+                run_replacements = False
+                await self.display("--skip-replacements specified, will not run replacements on copied worlds")
             elif shard in ("valley", "isles", "ring",):
                 main_shards.append(shard)
             elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "mist", "willows", "sanctum", "shiftingcity", "labs", "depths", "remorse", "corridors", "verdant"]:
@@ -996,13 +1001,14 @@ Examples:
 
                 if not debug:
                     await self.display(f"Restarting {shard}...")
-                    await self.start(shard)
+                    await self.start(shard, wait=False)
 
-                await self.display(f"Running replacements on copied version of {shard}...")
-                args = f" --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}"
-                await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
-                args = f" --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
-                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
+                if run_replacements:
+                    await self.display(f"Running replacements on copied version of {shard}...")
+                    args = f" --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}"
+                    await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
+                    args = f" --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
+                    await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         if len(instance_gen_required) > 0:
             # Need to generate instances
@@ -1016,13 +1022,14 @@ Examples:
 
             if not debug:
                 await self.display("Restarting the dungeon shard...")
-                await self.start("dungeon")
+                await self.start("dungeon", wait=False)
 
-            await self.display("Running replacements on copied dungeon masters...")
-            args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon"
-            await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
-            args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
-            await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
+            if run_replacements:
+                await self.display("Running replacements on copied dungeon masters...")
+                args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon"
+                await self.run(os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
+                args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
+                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
             await self.display("Generating dungeon instances for [{}]...".format(" ".join(instance_gen_required)))
             instance_gen_arg = (" --dungeon-path /home/epic/5_SCRATCH/tmpstage/dungeon/" +
@@ -1036,14 +1043,15 @@ Examples:
             await self.display("Copying server_config...")
             await self.run("cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpstage/TEMPLATE/")
 
-            await self.display("Running replacements on copied structures...")
-            args = (" --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
-                    + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
-                    + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
-            await self.run(os.path.join(_top_level, "utility_code/replace_items.py"
-                                        + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
-                                        + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
-            await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
+            if run_replacements:
+                await self.display("Running replacements on copied structures...")
+                args = (" --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
+                        + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"
+                        + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
+                await self.run(os.path.join(_top_level, "utility_code/replace_items.py"
+                                            + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
+                                            + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
+                await self.run(os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         await self.display("Packaging up stage bundle...")
         await self.cd("/home/epic/5_SCRATCH/tmpstage")
