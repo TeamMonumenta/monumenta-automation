@@ -555,25 +555,23 @@ if __name__ == '__main__':
         },
 
         'ring':{
-            'alt_version': '1.18',
-            'config':server_config_to_copy_1_18 + [
+            'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config_1_18 + base_plugins_1_18 + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
             ],
         },
 
         'futurama':{
-            'alt_version': '1.18',
-            'config':server_config_to_copy_1_18 + [
+            'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config_1_18 + base_plugins_1_18 + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
             ],
         },
@@ -680,13 +678,12 @@ if __name__ == '__main__':
         },
 
         'dev4':{
-            'alt_version': '1.18',
-            'config':server_config_to_copy_1_18 + [
+            'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=6'),
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
-            'linked':server_config_1_18 + base_plugins_1_18,
+            'linked':server_config + base_plugins,
         },
 
         'plots':{
