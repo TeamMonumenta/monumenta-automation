@@ -164,9 +164,15 @@ class World():
         yield from process_in_parallel(parallel_args, num_processes=num_processes, initializer=initializer, initargs=initargs)
 
     def get_region(self, rx, rz, read_only=False, region_type=Region):
+        """
+        Get and return a region file of the specified type.
+        If the region file does not exist, return None
+        """
         rx = int(rx)
         rz = int(rz)
         full_path = os.path.join(self.path, region_type.folder_name(), f'r.{rx}.{rz}.mca')
+        if not os.path.exists(full_path):
+            return None
         return region_type(full_path, rx, rz, read_only=read_only)
 
     def enumerate_players(self):
@@ -241,9 +247,14 @@ class World():
         {'facing': 'north', 'waterlogged': 'false', 'name': 'minecraft:wall_sign'}
 
         Liquids are not yet supported
+
+        Returns None if the region file containing the requested block does not exist
         """
         x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
-        return self.get_region(x // 512, z // 512).get_block(pos)
+        region = self.get_region(x // 512, z // 512)
+        if region is None:
+            return None
+        return region.get_block(pos)
 
     def set_block(self, pos: [int, int, int], block):
         """
@@ -256,9 +267,14 @@ class World():
         - Block NBT cannot be set, but can be read.
         - Existing block NBT for the specified coordinate is cleared.
         - Liquids are not yet supported
+
+        Returns None if the region file containing the requested block does not exist
         """
         x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
-        return self.get_region(x // 512, z // 512).set_block(pos, block)
+        region = self.get_region(x // 512, z // 512)
+        if region is None:
+            return None
+        return region.set_block(pos, block)
 
     def fill_blocks(self, pos1, pos2, block):
         """
@@ -272,6 +288,8 @@ class World():
         - Similar to the vanilla /fill command, entities are ignored.
         - Existing block NBT for the specified coordinate is cleared.
         - Liquids are not yet supported
+
+        Will not operate on blocks that don't exist (i.e. will not create regions)
         """
         min_x = min(pos1[0], pos2[0])
         min_z = min(pos1[2], pos2[2])
@@ -280,4 +298,6 @@ class World():
 
         for rz in range(min_z//512, (max_z - 1)//512 + 1):
             for rx in range(min_x//512, (max_x - 1)//512 + 1):
-                self.get_region(rx, rz).fill_blocks(pos1, pos2, block)
+                region = self.get_region(rx, rz)
+                if region is not None:
+                    region.fill_blocks(pos1, pos2, block)
