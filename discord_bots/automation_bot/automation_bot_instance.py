@@ -1132,7 +1132,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
 
         # Apply the warps from the build server
         await self.run(f"mkdir -p {self._server_dir}/{shard}/plugins/MonumentaWarps")
-        await self.run(f"cp -a /home/epic/5_SCRATCH/tmpreset/TEMPLATE/{shard}/warps.yml {self._server_dir}/{shard}/plugins/MonumentaWarps/warps.yml")
+        await self.run(f"cp -a /home/epic/5_SCRATCH/tmpreset/TEMPLATE/{shard}/warps.yml {self._server_dir}/{shard}/plugins/MonumentaWarps/warps.yml", None)
 
         await self.display("Checking for broken symbolic links...")
         await self.run("find . -xtype l", displayOutput=True)
