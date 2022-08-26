@@ -220,9 +220,17 @@ class EntitiesChunk(BaseChunk):
     def cx(self):
         return ctypes.c_int32(self.nbt.at_path('Position').value[0]).value
 
+    @cx.setter
+    def cx(self, value):
+        self.nbt.at_path('Position').value[0] = ctypes.c_uint32(value).value
+
     @property
     def cz(self):
         return ctypes.c_int32(self.nbt.at_path('Position').value[1]).value
+
+    @cz.setter
+    def cz(self, value):
+        self.nbt.at_path('Position').value[1] = ctypes.c_uint32(value).value
 
 class PoiChunk(BaseChunk):
     """An 'entities' chunk"""
@@ -237,6 +245,14 @@ class PoiChunk(BaseChunk):
     def cx(self):
         raise NotImplementedError
 
+    @cx.setter
+    def cx(self, value):
+        raise NotImplementedError
+
     @property
     def cz(self):
+        raise NotImplementedError
+
+    @cz.setter
+    def cz(self, value):
         raise NotImplementedError
