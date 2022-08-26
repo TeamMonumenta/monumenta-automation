@@ -178,6 +178,13 @@ if __name__ == '__main__':
         "datapacks":datapacks_dungeon + ['file/depths'],
     }
 
+    gallery = {
+        "server":"gallery",
+        "copy_base_from":"build",
+        "move_previous_paths":["Project_Epic-gallery/stats", "Project_Epic-gallery/data/scoreboard.dat"],
+        "datapacks":datapacks_dungeon + ['file/gallery'],
+    }
+
     valley = {
         "server":"valley",
         "copy_base_from":"build",
@@ -232,6 +239,9 @@ if __name__ == '__main__':
         "teal": get_dungeon_config("teal", "DTLAccess"),
         "forum": get_dungeon_config("forum", "DFFAccess"),
         "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
+
+
+        "gallery": gallery,
         "corridors": corridors,
         "verdant": verdant,
         "rush": rush,

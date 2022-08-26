@@ -79,6 +79,7 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("DSRAccess".to_string(), 0);
         scores.insert("DFSAccess".to_string(), 0);
         scores.insert("DDAccess".to_string(), 0);
+        scores.insert("DGAccess".to_string(), 0);
 
         fix_total_level(scores);
     }
