@@ -647,6 +647,8 @@ if __name__ == '__main__':
         'depths': 5,
         'test': 8,
         'playerplots': 6,
+
+        'gallery': 8,
     }
 
     for key in simple_view_distance_config:

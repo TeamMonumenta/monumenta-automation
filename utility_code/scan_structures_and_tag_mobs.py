@@ -141,6 +141,7 @@ if __name__ == '__main__':
         "mist":{"world": "mist"},
         "remorse":{"world": "remorse"},
         "depths":{"world": "depths"},
+        "gallery":{"world": "gallery"},
     }
 
 

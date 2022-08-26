@@ -147,6 +147,11 @@ if __name__ == '__main__':
                 "world": "depths",
                 "objective":"DDAccess"
             },
+
+            "gallery":{
+                "world": "gallery",
+                "objective":"DGAccess"
+            },
         },
 
         # Chunk to copy directly from the reference folder
