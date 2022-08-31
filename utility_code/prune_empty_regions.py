@@ -46,12 +46,12 @@ def process_region(arg):
                     for block in blocks:
                         name = block['name']
                         if name not in ("minecraft:air", "minecraft:bedrock", "minecraft:black_concrete", "minecraft:black_concrete_powder"):
-                            #print(chunk.cx * 16, "~", chunk.cz * 16, name)
+                            #print(chunk.cx * 16, "~", chunk.cz * 16, name, flush=True)
                             has_blocks[name] = has_blocks.get(name, 0) + 1
                             if fast_mode:
                                 break
                 except Exception:
-                    print("Warning: unable to iterate blocks. Assuming there are some blocks")
+                    print("Warning: unable to iterate blocks. Assuming there are some blocks", flush=True)
                     has_blocks["?????"] = 1
                     break
 
@@ -64,13 +64,13 @@ def process_region(arg):
                 blockstr = "(more than 5 kinds)"
             else:
                 blockstr = pformat(has_blocks)
-            print(f"{region} is valid: entities={num_entities}  block entities={num_block_entities}  has_blocks={blockstr}")
+            print(f"{region} is valid: entities={num_entities}  block entities={num_block_entities}  has_blocks={blockstr}", flush=True)
         else:
-            print(f"{region} is valid")
+            print(f"{region} is valid", flush=True)
         return True
 
     os.remove(region.path)
-    print(f"{region} is completely empty; deleted")
+    print(f"{region} is completely empty; deleted", flush=True)
     return False
 
 if __name__ == '__main__':
