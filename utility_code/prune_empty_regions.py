@@ -4,13 +4,8 @@ import os
 import sys
 import multiprocessing
 import concurrent
-from pprint import pformat
 from minecraft.world import World
 from minecraft.region import Region, EntitiesRegion
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
-from quarry.types.chunk import BlockArray
-from lib_py3.block_map import block_map
 
 fast_mode = True
 
@@ -21,7 +16,7 @@ def process_region(arg):
 
     num_entities = 0
     num_block_entities = 0
-    has_blocks = {}
+    has_blocks = set()
 
     for chunk in region.iter_chunks():
         if len(has_blocks) > 10 or (fast_mode and (num_entities > 0 or num_block_entities > 0 or len(has_blocks) > 0)):
@@ -42,17 +37,20 @@ def process_region(arg):
             # This is an expensive check, keep it low priority
             for section in chunk.sections:
                 try:
-                    blocks = BlockArray.from_nbt(section, block_map)
-                    for block in blocks:
-                        name = block['name']
-                        if name not in ("minecraft:air", "minecraft:bedrock", "minecraft:black_concrete", "minecraft:black_concrete_powder"):
+                    # This section has no blocks, nothing to find here. Continue to next section
+                    if not section.has_path("block_states.palette"):
+                        continue
+
+                    for palette_entry in section.at_path("block_states.palette").value:
+                        name = palette_entry.at_path("Name").value
+                        if name not in ("minecraft:air", ):
                             #print(chunk.cx * 16, "~", chunk.cz * 16, name, flush=True)
-                            has_blocks[name] = has_blocks.get(name, 0) + 1
+                            has_blocks.add(name.replace("minecraft:", ""))
                             if fast_mode:
                                 break
                 except Exception:
                     print("Warning: unable to iterate blocks. Assuming there are some blocks", flush=True)
-                    has_blocks["?????"] = 1
+                    has_blocks.add("?????")
                     break
 
                 if fast_mode and len(has_blocks) > 0:
@@ -60,11 +58,7 @@ def process_region(arg):
 
     if num_entities > 0 or num_block_entities > 0 or len(has_blocks) > 0:
         if not fast_mode:
-            if len(has_blocks) > 5:
-                blockstr = "(more than 5 kinds)"
-            else:
-                blockstr = pformat(has_blocks)
-            print(f"{region} is valid: entities={num_entities}  block entities={num_block_entities}  has_blocks={blockstr}", flush=True)
+            print(f"{region} is valid: entities={num_entities}  block entities={num_block_entities}  has_blocks=[{','.join(has_blocks)}]", flush=True)
         else:
             print(f"{region} is valid", flush=True)
         return True
