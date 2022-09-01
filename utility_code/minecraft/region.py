@@ -1,7 +1,5 @@
 import os
 import sys
-import time
-import zlib
 import math
 import uuid
 
@@ -46,8 +44,8 @@ def _fixEntity(dx, dz, entity, regenerate_uuids, clear_world_uuid=False):
 
     for nbtPath in nbtPaths:
         if (
-            bool(entity.count_multipath(nbtPath[0])) and
-            bool(entity.count_multipath(nbtPath[1]))
+                bool(entity.count_multipath(nbtPath[0])) and
+                bool(entity.count_multipath(nbtPath[1]))
         ):
             for xTag in entity.iter_multipath(nbtPath[0]):
                 xTag.value += dx
@@ -101,11 +99,11 @@ class BaseRegion(MutableMapping, NbtPathDebug):
 
         chunk_tag = chunk_tag.body
 
-        if type(self) is Region:
+        if isinstance(self, Region):
             return Chunk(chunk_tag, self)
-        elif type(self) is EntitiesRegion:
+        if isinstance(self, EntitiesRegion):
             return EntitiesChunk(chunk_tag, self)
-        elif type(self) is PoiRegion:
+        if isinstance(self, PoiRegion):
             return PoiChunk(chunk_tag, self)
         raise Exception(f"Unable to load chunk for region of type {type(self)}")
 
@@ -126,8 +124,8 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         local_cz = cz - 32 * self.rz
 
         if (
-            0 > local_cx or local_cx > 31 or
-            0 > local_cz or local_cz > 31
+                local_cx < 0 or local_cx > 31 or
+                local_cz < 0 or local_cz > 31
         ):
             raise KeyError(f'Region file ({self.rx}, {self.rz}) does not contain chunk coordinate ({cx}, {cz}).')
 
@@ -147,8 +145,8 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         local_cz = cz - 32 * self.rz
 
         if (
-            0 > local_cx or local_cx > 31 or
-            0 > local_cz or local_cz > 31
+                local_cx < 0 or local_cx > 31 or
+                local_cz < 0 or local_cz > 31
         ):
             raise KeyError(f'Region file ({self.rx}, {self.rz}) does not contain chunk coordinate ({cx}, {cz}).')
 
@@ -184,30 +182,48 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         """Iterate over chunk coordinates `tuple(cx, cz)` in this region file."""
         yield from iter(self)
 
-    def iter_chunks(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, autosave: bool=False):
+    def iter_chunks(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, autosave=False, on_exception=None):
+        """
+        Iterates chunks in this region
+        on_exception(exception) can be set to a lambda that handles exceptions on chunk load or save.
+        If this function is defined this iterator will not throw exceptions, it will pass them to this function (which could then itself throw the exception)
+        """
         for cx, cz in self.iter_chunk_coordinates():
             if (
-                16*cx + 16 <= min_x or
-                16*cx      >  max_x or
-                16*cz + 16 <= min_z or
-                16*cz      >  max_z
+                    16*cx + 16 <= min_x or
+                    16*cx > max_x or
+                    16*cz + 16 <= min_z or
+                    16*cz > max_z
             ):
                 continue
 
-            chunk = self.load_chunk(cx, cz)
+            try:
+                chunk = self.load_chunk(cx, cz)
+            except Exception as ex:
+                if on_exception is not None:
+                    on_exception(ex)
+                    continue
+
+                raise ex
 
             yield chunk
 
             if autosave:
-                self.save_chunk(chunk)
+                try:
+                    self.save_chunk(chunk)
+                except Exception as ex:
+                    if on_exception is not None:
+                        on_exception(ex)
+                    else:
+                        raise ex
 
     def _get_entry(self, cx, cz):
         local_cx = cx - 32 * self.rx
         local_cz = cz - 32 * self.rz
 
         if (
-            0 > local_cx or local_cx > 31 or
-            0 > local_cz or local_cz > 31
+                local_cx < 0 or local_cx > 31 or
+                local_cz < 0 or local_cz > 31
         ):
             return False
 
@@ -227,7 +243,7 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         count = 0
         self._region.fd.seek(0)
         buff = Buffer(self._region.fd.read(4096))
-        for entry_index in range(1024):
+        for _ in range(1024):
             entry = buff.unpack('I') & 0xffffffff
             if self._entry_valid(entry):
                 count += 1
@@ -274,7 +290,7 @@ class Region(BaseRegion):
     """A 'region' type region file"""
 
     @classmethod
-    def folder_name(self):
+    def folder_name(cls):
         return "region"
 
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
@@ -308,7 +324,7 @@ class Region(BaseRegion):
 
         Liquids are not yet supported
         """
-        x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
+        x, z = (int(pos[0]), int(pos[2]))
         if self.rx != x // 512 or self.rz != z // 512:
             raise Exception("Coordinates don't match this region!")
 
@@ -368,7 +384,7 @@ class EntitiesRegion(BaseRegion):
     """An 'entities' type region file"""
 
     @classmethod
-    def folder_name(self):
+    def folder_name(cls):
         return "entities"
 
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
@@ -393,7 +409,7 @@ class PoiRegion(BaseRegion):
     """An 'poi' type region file"""
 
     @classmethod
-    def folder_name(self):
+    def folder_name(cls):
         return "poi"
 
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):

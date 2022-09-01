@@ -41,14 +41,19 @@ def _create_region_lambda(region_config):
     return region_config
 
 def process_region(region_config):
-    world = World(region_config["world_path"])
+    world_name = region_config["world_path"]
+    world = World(world_name)
     rx = region_config["rx"]
     rz = region_config["rz"]
     region = world.get_region(rx, rz)
 
+    def on_chunk_exception(ex: Exception):
+        eprint(f"Caught chunk error processing {world_name} region {rx}.{rz}:", ex)
+        eprint(traceback.format_exc())
+
     replacements_log = {}
     num_replacements = 0
-    for chunk in region.iter_chunks(autosave=True):
+    for chunk in region.iter_chunks(autosave=True, on_exception=on_chunk_exception):
         for item in chunk.recursive_iter_items():
             if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
                 num_replacements += 1
