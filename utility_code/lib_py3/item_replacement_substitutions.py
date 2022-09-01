@@ -7,6 +7,7 @@ from lib_py3.common import update_plain_tag
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types.text_format import unformat_text
+from quarry.types import nbt
 
 class SubstitutionRule():
     """Base substitution rule for item replacements, used to preserve and edit data."""
@@ -126,28 +127,18 @@ class FixPlainTag(SubstitutionRule):
         if item.nbt.has_path("tag"):
             update_plain_tag(item.nbt.at_path("tag"))
 
-class FixBrokenStatTrack(SubstitutionRule):
-    """Note: To be deleted after the next weekly update (11/02/2022)."""
-    name = "Fix stat track"
+class UpdateShattered(SubstitutionRule):
+    """Note: To be deleted after the grave rework went live."""
+    name = "Update Shattered"
 
     def process(self, item_meta, item):
-        if not item.nbt.has_path('tag.Monumenta.PlayerModified.Infusions.StatTrack'):
+        if not item.nbt.has_path('tag.Monumenta.PlayerModified.Shattered'):
             return
-        infusion_nbt = item.tag.at_path('Monumenta.PlayerModified.Infusions')
-        for (bad_name, good_name) in (
-                ('StatTrack', 'Stat Track'),
-                ('BlocksPlaced', 'Blocks Placed'),
-                ('TimesConsumed', 'Times Consumed'),
-                ('SpawnersBroken', 'Spawners Broken'),
-                ('MobKills', 'Mob Kills'),
-                ('MeleeDamageDealt', 'Melee Damage Dealt'),
-                ('BossDamageDealt', 'Boss Damage Dealt'),
-        ):
-            if good_name in infusion_nbt.value:
-                del infusion_nbt.value[good_name]
-            if infusion_nbt.has_path(bad_name):
-                value = infusion_nbt.value.pop(bad_name)
-                infusion_nbt.value[good_name] = value
+        del item.nbt.at_path('tag.Monumenta.PlayerModified').value['Shattered']
+        if not item.nbt.has_path('tag.Monumenta.PlayerModified.Infusions'):
+            item.nbt.at_path('tag.Monumenta.PlayerModified').value['Infusions'] = nbt.TagCompound({})
+        item.nbt.at_path('tag.Monumenta.PlayerModified.Infusions').value['Shattered'] =\
+            nbt.TagCompound({'Infuser': nbt.TagString("00000000-0000-0000-0000-000000000000"), 'Level': nbt.TagInt(3)})
 
 class SubtituteItems(SubstitutionRule):
     name = "Substitute the ID and name of items, ignoring other NBT"
