@@ -37,8 +37,10 @@ def process_region(arg):
             # This is an expensive check, keep it low priority
             for section in chunk.sections:
                 try:
-                    # This section has no blocks, nothing to find here. Continue to next section
+                    # This section has no palette - it's using the global one
+                    # This only happens when there's a lot of blocks - so definitely keep it
                     if not section.has_path("block_states.palette"):
+                        has_blocks.add("GLOBAL_PALETTE")
                         continue
 
                     for palette_entry in section.at_path("block_states.palette").value:
