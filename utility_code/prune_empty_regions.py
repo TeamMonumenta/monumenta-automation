@@ -38,9 +38,13 @@ def process_region(arg):
             for section in chunk.sections:
                 try:
                     # This section has no palette - it's using the global one
-                    # This only happens when there's a lot of blocks - so definitely keep it
+                    # NOTE: This is complicated to deal with. Odds are, it's using the global one just for air - and it's probably empty
+                    # However, it might also be that this chunk section has tons of different types of blocks, so it's using the global palette because it's needed to capture that much data
+                    # Here we gamble that it's not important - if there actually is data here, other nearby chunk sections will also have data and prevent the region from being deleted
                     if not section.has_path("block_states.palette"):
-                        has_blocks.add("GLOBAL_PALETTE")
+                        # Uncommenting the below line will cause chunk sections like this to keep the entire region, even though they might be empty
+                        # TODO: Would be great to have an efficient method to test if this section is really junk or not...
+                        #has_blocks.add("GLOBAL_PALETTE")
                         continue
 
                     for palette_entry in section.at_path("block_states.palette").value:
