@@ -75,6 +75,13 @@ class BaseRegion(MutableMapping, NbtPathDebug):
 
         self.nbt_path_init(None, None, self, None)
 
+    @classmethod
+    def get_region_type(cls, folder_name: str) -> object:
+        for region_type in (Region, EntitiesRegion, PoiRegion):
+            if folder_name == region_type.folder_name():
+                return region_type
+        return None
+
     def get_debug_str(self):
         return str(self)
 
@@ -266,7 +273,7 @@ class BaseRegion(MutableMapping, NbtPathDebug):
     def __delitem__(self, chunk_coord_pair):
         """Delete a chunk using a dict-style key access, ex: `del region[(5, 4)]`."""
         cx, cz = chunk_coord_pair
-        return self.delete_chunk(chunk, cx, cz)
+        return self.delete_chunk(cx, cz)
 
     def __iter__(self):
         """Iterate over chunk coordinates `tuple(cx, cz)` in this region file."""

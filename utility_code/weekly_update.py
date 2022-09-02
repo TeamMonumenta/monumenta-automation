@@ -15,6 +15,7 @@ from lib_py3.redis_scoreboard import RedisScoreboard
 from lib_py3.timing import Timings
 
 from minecraft.world import World
+from minecraft.region import BaseRegion
 from minecraft.util.iter_util import process_in_parallel
 
 def usage():
@@ -45,7 +46,13 @@ def process_region(region_config):
     world = World(world_name)
     rx = region_config["rx"]
     rz = region_config["rz"]
-    region = world.get_region(rx, rz)
+    region_folder_name = region_config["region_folder_name"]
+    region_type = BaseRegion.get_region_type(region_folder_name)
+    if region_type is None:
+        eprint(f"ERROR: Skipping {world_name} region {rx}.{rz} because region_folder_name '{region_folder_name}' is invalid")
+        return (0, {})
+
+    region = world.get_region(rx, rz, region_type=region_type)
 
     def on_chunk_exception(ex: Exception):
         eprint(f"Caught chunk error processing {world_name} region {rx}.{rz}:", ex)
@@ -410,6 +417,7 @@ if __name__ == '__main__':
     #   {
     #     "world": str
     #     "world_path": str
+    #     "region_folder_name": str
     #     "rx": int
     #     "rz": int
     #   }
@@ -419,10 +427,11 @@ if __name__ == '__main__':
         if "replace_items_globally" in config and config["replace_items_globally"]:
             for world_name in config["worlds"]:
                 world_path = worlds_paths[world_name]
-                for _, rx, rz, __ in World(world_path).enumerate_regions():
+                for _, rx, rz, region_type in World(world_path).enumerate_regions():
                     regions.append({
                         "world": world_name,
                         "world_path": world_path,
+                        "region_folder_name": region_type.folder_name(),
                         "rx": rx,
                         "rz": rz,
                     })
