@@ -840,6 +840,7 @@ Must be run before starting the update on the play server
         if "--debug" in args:
             debug = True
             skip_commit = True
+            skip_replacements = True
             await self.display("--debug mode enabled! Will not stop shards before copying")
 
         if "--skip-commit" in args or skip_commit:
