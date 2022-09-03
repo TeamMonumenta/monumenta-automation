@@ -45,7 +45,7 @@ class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
         })
         multipaths[Entity] |= frozenset({
             'Level.Entities[]',
-            'entities[]',
+            'Entities[]',
         })
 
     def get_debug_str(self):

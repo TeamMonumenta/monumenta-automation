@@ -119,7 +119,7 @@ if __name__ == '__main__':
                             chunk.nbt.at_path(path).value = new_tile_entities
 
                     # Remove regular entities
-                    for path in ["entities", "Level.Entities"]:
+                    for path in ["Entities", "Level.Entities"]:
                         if chunk.nbt.has_path(path):
                             new_entities = []
                             for entity in chunk.nbt.iter_multipath(f'{path}[]'):

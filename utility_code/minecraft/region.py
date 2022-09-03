@@ -315,8 +315,8 @@ class Region(BaseRegion):
             chunk.nbt.at_path(f'{prefix}xPos').value = rx * 32 + (chunk.nbt.at_path(f'{prefix}xPos').value & 0x1f)
             chunk.nbt.at_path(f'{prefix}zPos').value = rz * 32 + (chunk.nbt.at_path(f'{prefix}zPos').value & 0x1f)
 
-            # This is only 1.17 and below - no need to iterate block_entities, etc. which are in EntitiesRegions in 1.18+
-            for path in ['Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
+            # Level.* are in 1.17 and below - block_entities is in region files in 1.18+ but Entities are not
+            for path in ['block_entities', 'Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
                 if chunk.nbt.has_path(path):
                     for entity in chunk.nbt.iter_multipath(path + '[]'):
                         _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
@@ -403,7 +403,7 @@ class EntitiesRegion(BaseRegion):
         for chunk in region.iter_chunks(autosave=True):
             # entities chunk format already has relative cx/cz values, so don't need to update Position here
             # Still need to fix the entities though
-            for path in ['entities', 'block_entities']:
+            for path in ['Entities', 'block_entities']:
                 if chunk.nbt.has_path(path):
                     for entity in chunk.nbt.iter_multipath(path + '[]'):
                         _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
