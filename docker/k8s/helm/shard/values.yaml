@@ -12,7 +12,7 @@ namespace: "play"
 node: "m8"
 
 # Image for the shard; mostly controls Java version
-image: "monumenta-java-shard"
+image: "monumenta-java-shard-17"
 
 # "monumenta-8", "monumenta-11", etc.
 nodeFull: "monumenta-8"

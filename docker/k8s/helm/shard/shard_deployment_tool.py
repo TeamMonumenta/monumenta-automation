@@ -206,8 +206,8 @@ shard_config = {
 # Defaults for each namespace
 namespace_defaults = {
     "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true" },
-    "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "image": "monumenta-java-shard-17" },
-    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "image": "monumenta-java-shard-17" },
+    "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
+    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
     "clash": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "false" },
 }
 
