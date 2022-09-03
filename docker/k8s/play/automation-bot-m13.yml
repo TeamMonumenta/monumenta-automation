@@ -57,7 +57,7 @@ spec:
             secretName: automation-bot-m13-config
       containers:
       - name: automation-bot
-        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-legacy
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
         tty: false
         stdin: false
         volumeMounts:
