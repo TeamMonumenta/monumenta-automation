@@ -1214,13 +1214,13 @@ old coreprotect data will be removed at the 5 minute mark.
 
         self._socket.send_packet("*", "monumentanetworkrelay.command",
                                  {"command": '''tellraw @a ''' + json.dumps([
-                                    "",
-                                    {"text":"[Alert] ","color":"red"},
-                                    {"text":"The Monumenta server is stopping for " + reason + " at ","color":"white"},
-                                    {"text":stop_time.strftime('%I:%M %p UTC'),"color":"red"},
-                                    {"text":". Check our discord for details."}
-                                ], ensure_ascii=False, separators=(',', ':'))})
-        await self.display(f"Server stopping at <t:{int(stop_time.timestamp())}> (<t:{int(stop_time.timestamp())}:R>) for {reason}")
+                                     "",
+                                     {"text":"[Alert] ", "color":"red"},
+                                     {"text":"Monumenta is going down at ", "color":"white"},
+                                     {"text":stop_time.strftime('%I:%M %p UTC'), "color":"red"},
+                                     {"text":". " + reason + ". Check our discord for details.", "color":"white"}
+                                 ], ensure_ascii=False, separators=(',', ':'))})
+        await self.display(f"Server stopping at <t:{int(stop_time.timestamp())}> (<t:{int(stop_time.timestamp())}:R>)")
 
         def seconds_to_string(seconds):
             if seconds == 0:
@@ -1239,13 +1239,13 @@ old coreprotect data will be removed at the 5 minute mark.
         async def send_broadcast_msg(time_left):
             self._socket.send_packet("*", "monumentanetworkrelay.command",
                                      {"command": '''tellraw @a ''' + json.dumps([
-                                        "",
-                                        {"text":"[Alert] ","color":"red"},
-                                        {"text":"The Monumenta server is stopping for " + reason + " in ","color":"white"},
-                                        {"text":time_left,"color":"red"},
-                                        {"text":". Check our discord for details."}
-                                    ], ensure_ascii=False, separators=(',', ':'))})
-            await self.display(f"{time_left} to {reason}")
+                                         "",
+                                         {"text":"[Alert] ", "color":"red"},
+                                         {"text":"The Monumenta server is stopping in ", "color":"white"},
+                                         {"text":time_left, "color":"red"},
+                                         {"text":". " + reason + ". Check our discord for details."}
+                                     ], ensure_ascii=False, separators=(',', ':'))})
+            await self.display(f"{time_left} to stop")
 
         while countdown_targets:
             next_target = countdown_targets.pop(0)
@@ -1254,7 +1254,7 @@ old coreprotect data will be removed at the 5 minute mark.
                 continue
             await asyncio.sleep(remaining_seconds - next_target)
 
-            if next_target == 60 * 5 and reason == "weekly update":
+            if next_target == 60 * 5 and "weekly update" in reason:
                 await self.display("Clearing coreprotect data older than 30 days")
                 for shard in self._shards:
                     if shard not in ["build",]:
