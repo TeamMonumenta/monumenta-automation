@@ -803,8 +803,6 @@ If --debug argument is specified, will not stop dungeon shard before copying
 
         await self.display("Generating dungeon instances (this may take a while)...")
         instance_gen_arg = " --dungeon-path /home/epic/5_SCRATCH/tmpreset/dungeon/ --out-folder /home/epic/5_SCRATCH/tmpreset/dungeons-out/"
-        if debug:
-            instance_gen_arg += " --count 5"
         await self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py") + instance_gen_arg)
         await self.run("mv /home/epic/5_SCRATCH/tmpreset/dungeons-out /home/epic/5_SCRATCH/tmpreset/TEMPLATE")
 
@@ -1034,8 +1032,8 @@ Examples:
 
             await self.display("Generating dungeon instances for [{}]...".format(" ".join(instance_gen_required)))
             instance_gen_arg = (" --dungeon-path /home/epic/5_SCRATCH/tmpstage/dungeon/" +
-                                " --out-folder /home/epic/5_SCRATCH/tmpstage/TEMPLATE" +
-                                " --count 8 " + " ".join(instance_gen_required))
+                                " --out-folder /home/epic/5_SCRATCH/tmpstage/TEMPLATE " +
+                                " ".join(instance_gen_required))
             await self.run(os.path.join(_top_level, "utility_code/dungeon_instance_gen.py") + instance_gen_arg)
 
             await self.display("Dungeon instance generation complete!")
