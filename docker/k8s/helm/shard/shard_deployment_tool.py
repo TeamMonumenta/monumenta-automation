@@ -201,6 +201,22 @@ shard_config = {
     "gallery": {
         "stage": { "node": "m12", "memMB": 1536, },
     },
+
+    "blue": {
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+
+    "portal": {
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+
+    "ruin": {
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
+
+    "skt": {
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
 }
 
 # Defaults for each namespace

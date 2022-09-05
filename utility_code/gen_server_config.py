@@ -631,6 +631,7 @@ if __name__ == '__main__':
         'lightgray': 11,
         'cyan': 8,
         'purple': 10,
+        'blue': 8,
         'teal': 9,
         'forum': 8,
         'remorse': 8,
@@ -649,6 +650,9 @@ if __name__ == '__main__':
         'playerplots': 6,
 
         'gallery': 8,
+        'portal': 8,
+        'ruin': 8,
+        'skt': 8,
     }
 
     for key in simple_view_distance_config:
