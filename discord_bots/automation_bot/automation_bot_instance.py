@@ -1500,6 +1500,12 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ --logfile {logfile} -j 16 " + " ".join(self._shards)))
 
         if min_phase <= 19:
+            await self.display("Pruning scores from expired instances...")
+            for shard in self._shards:
+                if shard not in ["build",] and not shard.startswith("bungee"):
+                    await self.run(os.path.join(_top_level, f"utility_code/prune_scores.py -j 16 {self._shards[shard]}"))
+
+        if min_phase <= 20:
             for shard in self._shards:
                 if shard not in ["build",] and not shard.startswith("bungee"):
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
@@ -1523,16 +1529,16 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run(["perl", "-p", "-i", "-e", "s|enabled: *false|enabled: true|g", f"{self._shards[shard]}/plugins/BungeeDisplay/config.yml"])
 
         await self.cd(self._server_dir)
-        if min_phase <= 20:
+        if min_phase <= 21:
             await self.display("Generating per-shard config...")
             await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(self._shards.keys())))
 
-        if min_phase <= 21:
+        if min_phase <= 22:
             await self.display("Checking for broken symbolic links...")
             await self.run(f"find {self._server_dir} -xtype l", displayOutput=True)
 
         await self.cd("/home/epic")
-        if min_phase <= 22:
+        if min_phase <= 23:
             await self.display("Backing up post-update artifacts...")
             await self.cd(f"{self._server_dir}/..")
             folder_name = self._server_dir.strip("/").split("/")[-1]
