@@ -172,7 +172,7 @@ class AutomationBotInstance():
             "remorse": "DSRAccess",
             "gallery": "DGAccess",
             "portal": "DPSAccess",
-            #"ruin": "D??Access",
+            "ruin": "DMASAccess",
             "skt": "DSKTAccess",
         }
 

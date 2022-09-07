@@ -148,9 +148,9 @@ if __name__ == '__main__':
                 "world": "portal",
                 "objective":"DPSAccess"
             },
-            # "objective" is no longer read, skipping for now
             "ruin":{
-                "world": "ruin"
+                "world": "ruin",
+                "objective":"DMASAccess"
             },
             "skt":{
                 "world": "skt",
