@@ -151,7 +151,7 @@ if __name__ == '__main__':
     corridors = {
         "server":"corridors",
         "move_base_from":"build",
-        "move_previous_paths":["Project_Epic-corridors/stats"],
+        "move_previous_paths":["Project_Epic-corridors/stats", "Project_Epic-corridors/data/scoreboard.dat"],
         "datapacks":datapacks_dungeon + ['file/corridors'],
     }
 
