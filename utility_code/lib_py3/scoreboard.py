@@ -4,6 +4,7 @@ Tools useful for modifying Scoreboard values
 # Required libraries have links where not part of a standard Python install.
 import os
 import sys
+import uuid
 import weakref
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
@@ -183,7 +184,7 @@ class Scoreboard(object):
             for child in self.children:
                 try:
                     child.append(the_score, check_if_parent=False)
-                except:
+                except Exception:
                     # Child cache may no longer be referenced; keep going.
                     pass
 
@@ -206,7 +207,7 @@ class Scoreboard(object):
                         if child.conditions == score:
                             child.scores.append(score)
                     child.refresh(check_if_parent=False)
-                except:
+                except Exception:
                     # Child cache may no longer be referenced; keep going.
                     pass
 
@@ -423,7 +424,15 @@ class Scoreboard(object):
         for score in self.all_scores.scores:
             owner = score.at_path("Name").value
             if len(owner) != 36 or owner in uuids_to_keep:
+                # Definitely not a UUID, or in the list to keep
                 preserved.append(score)
+            else:
+                try:
+                    uuid.UUID(owner)
+                    # Removed entity
+                except Exception:
+                    # Not a UUID, keep anyways
+                    preserved.append(score)
         self.all_scores.scores = preserved
         self.all_scores.refresh()
 
