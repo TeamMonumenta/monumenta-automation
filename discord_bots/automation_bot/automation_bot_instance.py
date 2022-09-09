@@ -40,6 +40,11 @@ from minecraft.world import World
 
 from automation_bot_lib import datestr, split_string
 
+# TODO: This should probably be in a config file
+cpu_count = os.cpu_count()
+if not isinstance(cpu_count, int) or cpu_count < 1:
+    cpu_count = 1
+
 class Listening():
     def __init__(self):
         self._set = set()
@@ -1447,7 +1452,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 11 and self._common_weekly_update_tasks:
             await self.display("Running item replacements for players...")
-            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks --logfile {self._server_dir}/server_config/redis_data_initial/replacements.yml -j 16")
+            await self.run(os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks --logfile {self._server_dir}/server_config/redis_data_initial/replacements.yml -j {cpu_count}")
 
         if min_phase <= 12 and self._common_weekly_update_tasks:
             await self.display("Loading player data back into redis...")
@@ -1495,9 +1500,15 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         if min_phase <= 18:
             await self.display("Running actual weekly update (this will take a while!)...")
             logfile = f"/home/epic/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{self._name}_{date.today().strftime('%Y-%m-%d')}.log"
-            await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ --logfile {logfile} -j 16 " + " ".join(self._shards)))
+            await self.run(os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ --logfile {logfile} -j {cpu_count} " + " ".join(self._shards)))
 
         if min_phase <= 19:
+            await self.display("Pruning scores from expired instances...")
+            for shard in self._shards:
+                if shard not in ["build",] and not shard.startswith("bungee"):
+                    await self.run(os.path.join(_top_level, f"utility_code/prune_scores.py -j {cpu_count} {self._shards[shard]}"))
+
+        if min_phase <= 20:
             for shard in self._shards:
                 if shard not in ["build",] and not shard.startswith("bungee"):
                     await self.run(f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
@@ -1521,16 +1532,16 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run(["perl", "-p", "-i", "-e", "s|enabled: *false|enabled: true|g", f"{self._shards[shard]}/plugins/BungeeDisplay/config.yml"])
 
         await self.cd(self._server_dir)
-        if min_phase <= 20:
+        if min_phase <= 21:
             await self.display("Generating per-shard config...")
             await self.run(os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(self._shards.keys())))
 
-        if min_phase <= 21:
+        if min_phase <= 22:
             await self.display("Checking for broken symbolic links...")
             await self.run(f"find {self._server_dir} -xtype l", displayOutput=True)
 
         await self.cd("/home/epic")
-        if min_phase <= 22:
+        if min_phase <= 23:
             await self.display("Backing up post-update artifacts...")
             await self.cd(f"{self._server_dir}/..")
             folder_name = self._server_dir.strip("/").split("/")[-1]
