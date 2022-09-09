@@ -22,7 +22,7 @@ def get_region_entity_uuids(arg):
         for entity in chunk.recursive_iter_entities():
             entity_uuid = entity.uuid
             if entity_uuid is not None:
-                entity_uuids.add(str(entity_uuid).encode('utf-8'))
+                entity_uuids.add(str(entity_uuid))
     return entity_uuids
 
 
