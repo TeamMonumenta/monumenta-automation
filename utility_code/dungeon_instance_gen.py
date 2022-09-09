@@ -83,6 +83,10 @@ if __name__ == '__main__':
                 "world": "purple",
                 "objective":"D11Access"
             },
+            "blue":{
+                "world": "blue",
+                "objective":"D12Access"
+            },
             "willows":{
                 "world": "willows",
                 "objective":"DB1Access"
@@ -139,6 +143,18 @@ if __name__ == '__main__':
             "gallery":{
                 "world": "gallery",
                 "objective":"DGAccess"
+            },
+            "portal":{
+                "world": "portal",
+                "objective":"DPSAccess"
+            },
+            "ruin":{
+                "world": "ruin",
+                "objective":"DMASAccess"
+            },
+            "skt":{
+                "world": "skt",
+                "objective":"DSKTAccess"
             },
         },
 

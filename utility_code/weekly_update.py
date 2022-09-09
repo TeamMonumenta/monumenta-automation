@@ -197,6 +197,27 @@ if __name__ == '__main__':
         "datapacks":datapacks_dungeon + ['file/gallery'],
     }
 
+    portal = {
+        "server":"portal",
+        "copy_base_from":"build",
+        "move_previous_paths":["Project_Epic-portal/stats", "Project_Epic-portal/data/scoreboard.dat"],
+        "datapacks":datapacks_dungeon + ['file/portal'],
+    }
+
+    ruin = {
+        "server":"ruin",
+        "copy_base_from":"build",
+        "move_previous_paths":["Project_Epic-ruin/stats", "Project_Epic-ruin/data/scoreboard.dat"],
+        "datapacks":datapacks_dungeon + ['file/ruin'],
+    }
+
+    skt = {
+        "server":"skt",
+        "copy_base_from":"build",
+        "move_previous_paths":["Project_Epic-skt/stats", "Project_Epic-skt/data/scoreboard.dat"],
+        "datapacks":datapacks_dungeon + ['file/skt'],
+    }
+
     valley = {
         "server":"valley",
         "copy_base_from":"build",
@@ -238,6 +259,7 @@ if __name__ == '__main__':
         "lightgray": get_dungeon_config("lightgray", "D9Access"),
         "cyan": get_dungeon_config("cyan", "D10Access"),
         "purple": get_dungeon_config("purple", "D11Access"),
+        "blue": get_dungeon_config("blue", "D12Access"),
         "willows": get_dungeon_config("willows", "DB1Access"),
         "reverie": get_dungeon_config("reverie", "DCAccess"),
         "sanctum": get_dungeon_config("sanctum", "DFSAccess"),
@@ -248,6 +270,9 @@ if __name__ == '__main__':
 
 
         "gallery": gallery,
+        "portal": portal,
+        "ruin": ruin,
+        "skt": skt,
         "corridors": corridors,
         "verdant": verdant,
         "rush": rush,

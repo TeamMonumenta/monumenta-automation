@@ -130,6 +130,7 @@ if __name__ == '__main__':
         "cyan":{"world": "cyan"},
         "lightgray":{"world": "lightgray"},
         "purple":{"world": "purple"},
+        "blue":{"world": "blue"},
         "teal":{"world": "teal"},
         "forum":{"world": "forum"},
 
@@ -142,6 +143,9 @@ if __name__ == '__main__':
         "remorse":{"world": "remorse"},
         "depths":{"world": "depths"},
         "gallery":{"world": "gallery"},
+        "portal":{"world": "portal"},
+        "ruin":{"world": "ruin"},
+        "skt":{"world": "skt"},
     }
 
 
