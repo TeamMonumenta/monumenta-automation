@@ -149,11 +149,11 @@ if __name__ == '__main__':
                 "objective":"DPSAccess"
             },
             "ruin":{
-                "world": "ruin",
+                "world": "bluestrike",
                 "objective":"DMASAccess"
             },
             "skt":{
-                "world": "skt",
+                "world": "SKT",
                 "objective":"DSKTAccess"
             },
         },

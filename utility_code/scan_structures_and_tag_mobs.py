@@ -144,8 +144,8 @@ if __name__ == '__main__':
         "depths":{"world": "depths"},
         "gallery":{"world": "gallery"},
         "portal":{"world": "portal"},
-        "ruin":{"world": "ruin"},
-        "skt":{"world": "skt"},
+        "ruin":{"world": "bluestrike"},
+        "skt":{"world": "SKT"},
     }
 
 
