@@ -28,14 +28,14 @@ for o, a in opts:
         try:
             split = a.split(",")
             pos1 = (int(split[0]), int(split[1]), int(split[2]))
-        except:
+        except Exception:
             eprint("Invalid --pos1 argument")
             usage()
     elif o in ("--pos2",):
         try:
             split = a.split(",")
             pos2 = (int(split[0]), int(split[1]), int(split[2]))
-        except:
+        except Exception:
             eprint("Invalid --pos2 argument")
             usage()
     else:

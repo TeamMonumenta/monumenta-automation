@@ -117,7 +117,7 @@ def parse_name_possibly_json(name, remove_color=False):
         possibly_json_workaround = '{"value":' + name + '}'
         name_json_workaround = json.loads(possibly_json_workaround)
         name = json_text_to_plain_text(name_json_workaround["value"])
-    except:
+    except Exception:
         pass
 
     if remove_color:
@@ -281,14 +281,14 @@ def move_paths(old, new, paths):
     for path in paths:
         try:
             move_path(old, new, path);
-        except:
+        except Exception:
             eprint("*** " + path + " could not be moved, may not exist.")
 
 def copy_paths(old, new, paths):
     for path in paths:
         try:
             copy_path(old, new, path);
-        except:
+        except Exception:
             eprint("*** " + path + " could not be copied, may not exist.")
 
 def bounded_range(min_in, max_in, range_start, range_length, divide=1):

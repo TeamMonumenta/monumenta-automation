@@ -79,7 +79,7 @@ class ItemReplacementManager(object):
             try:
                 if rule.preprocess(new_item_tag['nbt'], item):
                     return False
-            except:
+            except Exception:
                 eprint("Error preprocessing " + repr(rule.name) + ":")
                 eprint("Item being preprocessed: " + item.nbt.to_mojangson(highlight=True))
                 eprint(str(traceback.format_exc()))
@@ -91,7 +91,7 @@ class ItemReplacementManager(object):
         for rule in self.global_rules:
             try:
                 rule.postprocess(item)
-            except:
+            except Exception:
                 eprint("Error postprocessing " + repr(rule.name) + ":")
                 eprint("Item being postprocessed: " + item.nbt.to_mojangson(highlight=True))
                 eprint("This may be a CRITICAL ERROR!")

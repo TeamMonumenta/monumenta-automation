@@ -41,7 +41,7 @@ async def main():
         await asyncio.sleep(10)
         send_broadcast_msg("5 seconds")
         await asyncio.sleep(5)
-    except:
+    except Exception:
         print("Failed to notify players about pending restart: {}".format(traceback.format_exc()))
 
     # Read the BungeeDisplay config file
