@@ -1121,7 +1121,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
             await self.display("Getting new server config...")
             await self.run(f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config {self._server_dir}/")
             folders_to_update.remove("server_config")
-            await self.cd(f"rm -f {self._server_dir}/server_config/plugins")
+            await self.cd(f"{self._server_dir}/server_config/plugins")
             await self.run(f"rm -f Monumenta.jar", None)
             await self.run(f"mv Monumenta-r3.jar Monumenta.jar")
             await self.run(f"ln -s Monumenta.jar Monumenta-r3.jar")
