@@ -126,6 +126,10 @@ class AbortNoLore(GlobalRule):
         if item.nbt.has_path('tag.display.Lore'):
             return
 
+        # Always update vanity items, even with no lore
+        if item.is_vanity():
+            return
+
         # Items without lore in spawners never get replaced
         #if item.is_in_spawner():
         #    return True

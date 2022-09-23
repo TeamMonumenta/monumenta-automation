@@ -108,6 +108,14 @@ class PluginData(NbtPathDebug):
         """Get the graves stored on a player, if they exist."""
         return MonumentaGraves(self._data.get("MonumentaGravesV2", {}), self)
 
+    def vanity(self):
+        """Get the vanity stored on a player, if it exists."""
+        return MonumentaVanity(self._data.get("MonumentaVanity", {}), self)
+
+    def cosmetics(self):
+        """Unlocked cosmetics of a player."""
+        return MonumentaCosmetics(self._data.get("Cosmetics", {}), self)
+
     def __repr__(self):
         return f'PluginData({os.path.basename(self._path)!r})'
 
@@ -169,7 +177,7 @@ class MonumentaGraves(NbtPathDebug):
             yield from obj.recursive_iter_items()
 
     def __repr__(self):
-        return f'Graves'
+        return f'Graves({self._data!r})'
 
 class MonumentaGrave(NbtPathDebug):
     """A collection of items preserved from a single death."""
@@ -286,3 +294,81 @@ class JsonWrappedItem(Item, NbtPathDebug):
         elif self.parent is not None:
             return self.parent.pos
         return None
+
+
+class MonumentaVanity(NbtPathDebug):
+    """A collection of items shown instead of a player's real equipment."""
+
+    def __init__(self, json_data, parent):
+        self._data = json_data
+
+        self.nbt_path_init(None, parent, parent.root if parent is not None and parent.root is not None else self, None)
+
+    def get_debug_str(self):
+        return str(self)
+
+    def iter_items(self):
+        equipment = self._data.get("equipped", None)
+        if equipment is not None:
+            for key, item_snbt in equipment.items():
+                item = Item(nbt.TagCompound.from_mojangson(item_snbt))
+                # add display.Lore to enable replacements
+                if not item.nbt.has_path('tag'):
+                    item.nbt.value['tag'] = nbt.TagCompound({})
+                if not item.tag.has_path('display'):
+                    item.tag.value['display'] = nbt.TagCompound({})
+                if not item.tag.at_path('display').has_path('Lore'):
+                    item.tag.at_path('display').value['Lore'] = nbt.TagList([])
+                yield item
+                equipment[key] = item.nbt.to_mojangson()
+
+    def __repr__(self):
+        return 'Vanity({self._data!r})'
+
+
+class MonumentaCosmetics(NbtPathDebug):
+    """A collection of unlocked cosmetics."""
+
+    def __init__(self, json_data, parent):
+        self._data = json_data
+
+        self.nbt_path_init(None, parent, parent.root if parent is not None and parent.root is not None else self, None)
+
+    def get_debug_str(self):
+        return str(self)
+
+    def iter_cosmetics(self):
+        cosmetics = self._data.get("cosmetics", [])
+        num_cosmetics = len(cosmetics)
+        for i in range(num_cosmetics):
+            cosmetic = MonumentaCosmetic(cosmetics[i], self)
+            yield cosmetic
+            cosmetics[i] = cosmetic.serialize()
+
+    def __repr__(self):
+        return 'Cosmetics({self._data!r})'
+
+class MonumentaCosmetic(NbtPathDebug):
+    """A single unlocked cosmetic."""
+
+    def __init__(self, json_data, parent):
+        self._data = json_data
+
+        self.nbt_path_init(None, parent, parent.root if parent is not None and parent.root is not None else self, None)
+
+        self.name = self._data["name"]
+        self.type = self._data["type"]
+        self.enabled = self._data["enabled"]
+
+    def get_debug_str(self):
+        return str(self)
+
+    def serialize(self):
+        self._data["name"] = self.name
+        self._data["type"] = self.type
+        self._data["enabled"] = self.enabled
+
+        return self._data
+
+    def __repr__(self):
+        return f'Cosmetic({self._type} {self._name})'

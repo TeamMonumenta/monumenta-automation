@@ -8,6 +8,7 @@ import traceback
 import yaml
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
+from lib_py3.item_replacement_substitutions import SubtituteItems
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.common import eprint
 from lib_py3.plugin_data import iter_plugin_data_parallel
@@ -38,6 +39,7 @@ def process_player(player):
 
     return (num_replacements, replacements_log)
 
+substitute_items = SubtituteItems()
 def process_plugin_data(plugin_data):
     num_replacements = 0
     replacements_log = {}
@@ -45,6 +47,13 @@ def process_plugin_data(plugin_data):
     for item in plugin_data.graves().recursive_iter_items():
         if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
             num_replacements += 1
+    for item in plugin_data.vanity().iter_items():
+        if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+            num_replacements += 1
+    for cosmetic in plugin_data.cosmetics().iter_cosmetics():
+        if cosmetic.type == 'vanity':
+            global substitute_items
+            cosmetic.name = substitute_items.process_identifier(cosmetic.name)
 
     return (num_replacements, replacements_log)
 

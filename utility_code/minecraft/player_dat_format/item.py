@@ -43,6 +43,12 @@ class Item(RecursiveMinecraftIterator, NbtPathDebug):
             'tag.Items[]',
             # Lootbox custom item storage, maybe others eventually?
             'tag.Monumenta.PlayerModified.Items[]',
+            # Vanity items in lockboxes
+            'tag.Monumenta.PlayerModified.VanityItems.head',
+            'tag.Monumenta.PlayerModified.VanityItems.chest',
+            'tag.Monumenta.PlayerModified.VanityItems.legs',
+            'tag.Monumenta.PlayerModified.VanityItems.feet',
+            'tag.Monumenta.PlayerModified.VanityItems.off_hand',
         })
 
     def get_debug_str(self):
