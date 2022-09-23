@@ -366,6 +366,15 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:prismarine_shard", "Weathered Rune", "minecraft:popped_chorus_fruit", "Weathered Rune"],
                 ["minecraft:stone_sword", "Bandit‘s Dagger", "minecraft:stone_sword", "Bandit's Dagger"],
                 ["minecraft:stone_sword", "Bandit’s Dagger", "minecraft:stone_sword", "Bandit's Dagger"],
+                ["minecraft:end_rod", "Spyglass", "minecraft:spyglass", "Spyglass"],
+                ["minecraft:end_rod", "Telescope", "minecraft:spyglass", "Telescope"],
+                ["minecraft:end_rod", "Midnight Spyglass", "minecraft:spyglass", "Midnight Spyglass"],
+                ["minecraft:end_rod", "Captain Bijou's Spyglass", "minecraft:spyglass", "Captain Bijou's Spyglass"],
+                ["minecraft:leather_chestplate", "Dichen Gambison", "minecraft:leather_chestplate", "Dichen Gambeson"],
+                ["minecraft:gray_dye", "Archite Ring", "minecraft:gray_dye", "Archos Ring"],
+                ["minecraft:firework_star", "Hyperchromatic Archite Ring", "minecraft:firework_star", "Hyperchromatic Archos Ring"],
+
+
         ]:
 
             old_id, old_name, new_id, new_name = substitution
