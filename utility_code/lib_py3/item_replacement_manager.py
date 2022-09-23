@@ -43,7 +43,7 @@ class ItemReplacementManager(object):
         if item.nbt.has_path('tag.display.Name'):
             # If a name isn't found, it can still be replaced with a named item.
             item_meta['name'] = get_item_name_from_nbt(item.tag)
-            if item.nbt.has_path('tag.Monumenta.Masterwork') and item.nbt.at_path('tag.Monumenta.Masterwork').value in ['1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
+            if item.nbt.has_path('tag.Monumenta.Masterwork') and item.nbt.at_path('tag.Monumenta.Masterwork').value in ['0', '1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
                 item_meta['name'] = item_meta['name'] + '_m' + item.nbt.at_path('tag.Monumenta.Masterwork').value
 
 

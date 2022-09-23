@@ -37,7 +37,7 @@ def update_items(container_nbt_list, output_dir=None):
             item_nbt_str = item_nbt.at_path("tag").to_mojangson()
             if item_nbt.has_path("tag.display.Name"):
                 item_name = parse_name_possibly_json(item_nbt.at_path('tag.display.Name').value)
-                if item_nbt.has_path('tag.Monumenta.Masterwork') and item_nbt.at_path('tag.Monumenta.Masterwork').value in ['1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
+                if item_nbt.has_path('tag.Monumenta.Masterwork') and item_nbt.at_path('tag.Monumenta.Masterwork').value in ['0', '1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
                     item_name = item_name + '_m' + item_nbt.at_path('tag.Monumenta.Masterwork').value
             else:
                 item_name = parse_name_possibly_json(item_nbt.at_path('tag.title').value)
