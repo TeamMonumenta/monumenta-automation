@@ -23,7 +23,7 @@ shard_config = {
     "dev3"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "dev4"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "mobs"               : { "build": { "node": "m12", "memMB": 1536, }, },
-    "dungeon"            : { "build": { "node": "m12", "memGB": 3   , }, },
+    "dungeon"            : { "build": { "node": "m12", "memGB": 8   , }, },
     "futurama"           : { "build": { "node": "m12", "memGB": 3   , }, },
     "test"               : { "build": { "node": "m12", "memGB": 3   , }, },
     "event"              : { "build": { "node": "m12", "memGB": 3   , }, },
