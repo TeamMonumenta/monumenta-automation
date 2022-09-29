@@ -66,15 +66,20 @@ async def main():
     # Just a bit of time to process config and kick players
     await asyncio.sleep(5)
 
-    # Restart bungee
-    print("Restarting bungee...")
-    for bungee in bungee_instances:
-        socket.send_packet(bungee, "monumentanetworkrelay.command", {"command": "end"})
+    # Kick anyone with ops who bypassed maintenance
+    print("Broadcasting kick @a command to all shards...")
+    socket.send_packet("*", "monumentanetworkrelay.command",
+            {"command": 'kick @a'}
+    )
 
     # At this point shards that didn't already restart will do so
 
     # Enough time for everything to stabilize
     await asyncio.sleep(85)
+
+    # Stop bungee
+    print("Stopping bungee...")
+    await k8s.stop(list(bungee_instances))
 
     # Turn maintenance mode back off
     bungee_display_yml["maintenance"]["enabled"] = False
@@ -83,6 +88,11 @@ async def main():
     for bungee in bungee_instances:
         with open(bungee_instances[bungee], 'w') as ymlfile:
             yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
+            os.fsync(ymlfile)
+
+    # Start bungee
+    print("Starting bungee...")
+    await k8s.start(list(bungee_instances))
 
 if __name__ == '__main__':
     ################################################################################
