@@ -123,7 +123,7 @@ class AbortNoLore(GlobalRule):
 
     def preprocess(self, template, item):
         # Items with lore are always replaced
-        if item.nbt.has_path('tag.display.Lore'):
+        if item.nbt.has_path('tag.display.Lore') and len(item.nbt.at_path('tag.display.Lore').value) > 0:
             return
 
         # Items without lore in spawners never get replaced
