@@ -101,6 +101,11 @@ def get_refined_creative_tab_flags(item_tag):
                     enchantment_name = get_tag_safe_rci(enchantment_name)
                     result.append(f"ench_{enchantment_name}")
 
+            if stock_tag.has_path('Effects[0].EffectType'):
+                for effect_type_tag in stock_tag.iter_multipath('Effects[].EffectType'):
+                    effect_type = get_tag_safe_rci(effect_type_tag.value)
+                    result.append(f"effect_{effect_type}")
+
     return result
 
 
