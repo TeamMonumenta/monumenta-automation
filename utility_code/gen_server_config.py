@@ -364,6 +364,11 @@ if __name__ == '__main__':
         ('plugins/FastAsyncVoxelSniper.jar', '../../server_config/plugins/FastAsyncVoxelSniper.jar'),
     ]
 
+    metatools = [
+        ('plugins/MetaEdits.jar', '../../server_config/plugins/MetaEdits.jar'),
+        ('plugins/MetaBrushes.jar', '../../server_config/plugins/MetaBrushes.jar'),
+    ]
+
     # Analytics plugin - only for the play server!
     plan = [
         ('plugins/Plan.jar', '../../server_config/plugins/Plan.jar'),
@@ -387,7 +392,7 @@ if __name__ == '__main__':
 
     base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
     if SERVER_TYPE == 'build':
-        base_plugins += speedchanger + voxelsniper + gobrush
+        base_plugins += speedchanger + voxelsniper + gobrush + metatools
     else:
         base_plugins += vanish
 
@@ -434,7 +439,6 @@ if __name__ == '__main__':
         },
 
         'ring':{
-            'alt_version': 'r3',
             'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
@@ -446,7 +450,6 @@ if __name__ == '__main__':
         },
 
         'futurama':{
-            'alt_version': 'r3',
             'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
@@ -559,7 +562,6 @@ if __name__ == '__main__':
         },
 
         'dev4':{
-            'alt_version': 'r3',
             'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=6'),
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
