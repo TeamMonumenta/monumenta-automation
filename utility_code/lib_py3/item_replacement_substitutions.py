@@ -440,7 +440,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:leather_chestplate", "Dichen Gambison", "minecraft:leather_chestplate", "Dichen Gambeson"],
                 ["minecraft:gray_dye", "Archite Ring", "minecraft:gray_dye", "Archos Ring"],
                 ["minecraft:firework_star", "Hyperchromatic Archite Ring", "minecraft:firework_star", "Hyperchromatic Archos Ring"],
-                ["minecraft:golden_apple", None, "minecraft:golden_apple", "Kingfruit"]
+                ["minecraft:golden_apple", None, "minecraft:golden_apple", "Kingfruit"],
                 ["minecraft:enchanted_golden_apple", None, "minecraft:enchanted_golden_apple", "Soulfruit"],
                 # ["minecraft:potion", None, "minecraft:potion", "Bygone Brew"], //TODO: Fix Water bottles and uncomment this line
                 ["minecraft:splash_potion", None, "minecraft:potion", "Bygone Brew"],
