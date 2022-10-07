@@ -137,6 +137,9 @@ sub = [
 
     # Depths
     ("Ravenous Ooze", match_name('Abyssal Guardian', match_id('minecraft:guardian'))),
+
+    # Squid to kid
+    ("Star Spitter", match_name('Star Spitter', match_id('minecraft:squid'))),
 ]
 
 def usage():
