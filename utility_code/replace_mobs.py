@@ -84,6 +84,7 @@ sub = [
     ('Soaked Ghoul', match_id('minecraft:drowned', match_name('Ghoul'))),
     ('Ice Archer', match_id('minecraft:skeleton', match_name('Ice Archer'))),
     ('Animated Archer', match_id('minecraft:skeleton', match_name('Animated Gear'))),
+    ('Coven Aberration', match_id('minecraft:ghast', match_name('6Coven Aberration'))),
 
     # Mobs on insta-die trash
     ("Rusted Gear", match_passenger(match_id('minecraft:guardian'), match_name('Rusted Gear', match_id('minecraft:drowned')))),
