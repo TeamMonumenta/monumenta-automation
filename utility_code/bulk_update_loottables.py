@@ -5,15 +5,13 @@ import sys
 import json
 import re
 from collections import OrderedDict
-from pprint import pprint
 
 from lib_py3.loot_table_manager import LootTableManager
 from lib_py3.upgrade import upgrade_entity
-from lib_py3.common import parse_name_possibly_json
+from lib_py3.common import get_item_name_from_nbt
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types import nbt
-from quarry.types.text_format import unformat_text
 
 def update_items(container_nbt_list, output_dir=None):
     mgr = LootTableManager()
@@ -35,12 +33,7 @@ def update_items(container_nbt_list, output_dir=None):
 
             item_id = item_nbt.at_path("id").value
             item_nbt_str = item_nbt.at_path("tag").to_mojangson()
-            if item_nbt.has_path("tag.display.Name"):
-                item_name = parse_name_possibly_json(item_nbt.at_path('tag.display.Name').value)
-                if item_nbt.has_path('tag.Monumenta.Masterwork') and item_nbt.at_path('tag.Monumenta.Masterwork').value in ['0', '1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
-                    item_name = item_name + '_m' + item_nbt.at_path('tag.Monumenta.Masterwork').value
-            else:
-                item_name = parse_name_possibly_json(item_nbt.at_path('tag.title').value)
+            item_name = get_item_name_from_nbt(item_nbt.at_path("tag"), include_masterwork_level=True)
 
             if "Book of Souls" in item_name:
                 raise KeyError("No books of souls!")
@@ -106,7 +99,7 @@ if __name__ == '__main__':
     if filename is None:
         usage()
 
-    with open(filename,'r') if filename != "-" else sys.stdin as f:
+    with open(filename, 'r') if filename != "-" else sys.stdin as f:
         container_nbt_list = []
         while True:
             raw = f.readline().strip()

@@ -123,10 +123,7 @@ class LootTableManager():
                             # Update item entry to use index instead
 
                             if not "epic/loot_tables/index" in filename and item_nbt.has_path('display.Name'):
-                                item_name = get_item_name_from_nbt(item_nbt)
-                                if item_nbt.has_path('Monumenta.Masterwork') and item_nbt.at_path('Monumenta.Masterwork').value in ['0', '1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
-                                    item_name = item_name + '_m' + item_nbt.at_path('Monumenta.Masterwork').value
-
+                                item_name = get_item_name_from_nbt(item_nbt, include_masterwork_level=True)
 
                                 item_index_entry = self.item_map.get(item_id, {}).get(item_name, None)
                                 if item_index_entry is not None and "epic:index" in item_index_entry["namespaced_key"]:
@@ -207,9 +204,7 @@ class LootTableManager():
                     raise KeyError('set_nbt function is missing nbt field!')
                 item_tag_json = function["tag"]
                 item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
-                item_name = get_item_name_from_nbt(item_tag_nbt)
-                if item_tag_nbt.has_path('Monumenta.Masterwork') and item_tag_nbt.at_path('Monumenta.Masterwork').value in ['0', '1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
-                    item_name = item_name + '_m' + item_tag_nbt.at_path('Monumenta.Masterwork').value
+                item_name = get_item_name_from_nbt(item_tag_nbt, include_masterwork_level=True)
 
         if item_name is None:
             return
@@ -693,10 +688,7 @@ class LootTableManager():
                                 raise KeyError('set_nbt function is missing nbt field!')
                             item_tag_json = function["tag"]
                             item_tag_nbt = nbt.TagCompound.from_mojangson(item_tag_json)
-                            item_name = get_item_name_from_nbt(item_tag_nbt)
-                            if item_tag_nbt.has_path('Monumenta.Masterwork') and item_tag_nbt.at_path('Monumenta.Masterwork').value in ['0', '1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
-                                item_name = item_name + '_m' + item_tag_nbt.at_path('Monumenta.Masterwork').value
-
+                            item_name = get_item_name_from_nbt(item_tag_nbt, include_masterwork_level=True)
 
                             if item_name == search_item_name and item_id == search_item_id:
                                 # Found a match! Update the tag
@@ -712,9 +704,7 @@ class LootTableManager():
         if item_nbt is None:
             item_nbt = nbt.TagCompound.from_mojangson(item_nbt_str)
 
-        item_name = get_item_name_from_nbt(item_nbt)
-        if item_nbt.has_path('Monumenta.Masterwork') and item_nbt.at_path('Monumenta.Masterwork').value in ['0', '1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
-            item_name = item_name + '_m' + item_nbt.at_path('Monumenta.Masterwork').value
+        item_name = get_item_name_from_nbt(item_nbt, include_masterwork_level=True)
         if not item_name:
             raise ValueError("Item NBT does not have a name")
 
@@ -736,8 +726,8 @@ class LootTableManager():
         for match in match_list:
             if match.get("generated", False):
                 raise ValueError(f'Item id {item_id!r} name {item_name!r} is generated from a different item ID; the original can be found in {match["file"]}')
-            else:
-                update_file_list.append(match["file"])
+
+            update_file_list.append(match["file"])
 
         for filename in update_file_list:
             self._update_item_in_single_loot_table(filename, item_name, item_id, item_nbt)
