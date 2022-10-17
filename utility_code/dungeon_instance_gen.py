@@ -11,6 +11,10 @@ from minecraft.world import World
 from minecraft.region import Region, EntitiesRegion
 
 def usage():
+    """
+    Prints usage
+    """
+
     sys.exit(f"""
 Usage: {sys.argv[0]} <--dungeon-path /path/to/dungeon> <--out-folder /path/to/out> [dungeon1 dungeon2 ...]
 
@@ -242,15 +246,18 @@ if __name__ == '__main__':
         ref_world = World(dungeon_template_world_path)
         new_world = World(new_world_path)
 
-        # TODO: Change level.dat uuid and name
-
         # Copy spawn chunks
         spawn_region = config["spawn_region"]
         ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True, region_type=Region).copy_to(new_world, spawn_region["x"], spawn_region["z"])
         ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True, region_type=EntitiesRegion).copy_to(new_world, spawn_region["x"], spawn_region["z"])
 
         ################ Copy the template world that instances will be created from
-        copy_paths(dungeon_path, new_shard_path, [dungeon["world"],])
+        source_template_world = World(os.path.join(dungeon_path, dungeon["world"]))
+        dest_template_world = source_template_world.copy_to(os.path.join(new_shard_path, dungeon["world"]), clear_world_uuid=True)
+
+        # Set copied world to normal mode
+        dest_template_world.level_dat.difficulty = 2
+        dest_template_world.level_dat.save()
 
         timings.nextStep(f"{name}: world copied")
 

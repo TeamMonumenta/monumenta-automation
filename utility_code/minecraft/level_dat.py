@@ -37,6 +37,10 @@ class LevelDat():
             self.nbt.at_path('Data.DataPacks').value['Disabled'] = nbt.TagList([])
 
     def enable_datapack(self, datapack):
+        """
+        Enables a datapack (only relevant to the "main" world)
+        """
+
         # Initialize values
         self._init_datapack_tags()
         enabled_tags = self.nbt.at_path('Data.DataPacks.Enabled').value
@@ -51,6 +55,10 @@ class LevelDat():
             enabled_tags.append(datapack_tag)
 
     def disable_datapack(self, datapack):
+        """
+        Disables a datapack (only relevant to the "main" world)
+        """
+
         # Initialize values
         self._init_datapack_tags()
         enabled_tags = self.nbt.at_path('Data.DataPacks.Enabled').value
@@ -65,17 +73,48 @@ class LevelDat():
             self.sort_disabled()
 
     @property
+    def difficulty(self):
+        """
+        Gets the world's current difficulty
+        """
+        return self.nbt.at_path('Data.Difficulty').value
+
+    @difficulty.setter
+    def difficulty(self, new_difficulty):
+        """
+        Sets the world's current difficulty
+
+        NOTE: Caller must save this level.dat after updating it!
+        """
+
+        self.nbt.at_path('Data.Difficulty').value = new_difficulty
+
+    @property
     def enabled_datapacks(self):
+        """
+        Gets the world's current enabled datapacks (only relevant to the "main" world)
+        """
+
         for datapack_tag in self.nbt.iter_multipath('Data.DataPacks.Enabled[]'):
             yield datapack_tag.value
 
     @property
     def disabled_datapacks(self):
+        """
+        Gets the world's current disabled datapacks (only relevant to the "main" world)
+        """
+
         for datapack_tag in self.nbt.iter_multipath('Data.DataPacks.Disabled[]'):
             yield datapack_tag.value
 
     @enabled_datapacks.setter
     def enabled_datapacks(self, datapacks):
+        """
+        Sets the world's current enabled datapacks (only relevant to the "main" world)
+
+        NOTE: Caller must save this level.dat after updating it!
+        """
+
         # Initialize values
         self._init_datapack_tags()
         enabled_tags = self.nbt.at_path('Data.DataPacks.Enabled').value
@@ -92,6 +131,12 @@ class LevelDat():
 
     @disabled_datapacks.setter
     def disabled_datapacks(self, datapacks):
+        """
+        Sets the world's current disabled datapacks (only relevant to the "main" world)
+
+        NOTE: Caller must save this level.dat after updating it!
+        """
+
         # Initialize values
         self._init_datapack_tags()
         enabled_tags = self.nbt.at_path('Data.DataPacks.Enabled').value
@@ -107,6 +152,10 @@ class LevelDat():
         self.sort_disabled()
 
     def sort_disabled(self):
+        """
+        Sorts the disabled datapacks by alphanumeric name
+        """
+
         disabled = self.nbt.at_path('Data.DataPacks.Disabled').value
         disabled.sort(key=lambda tag: tag.value)
 
