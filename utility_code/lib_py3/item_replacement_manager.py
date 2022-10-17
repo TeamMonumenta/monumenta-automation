@@ -5,17 +5,18 @@ import traceback
 
 from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
+from lib_py3.common import get_masterwork_level_from_nbt
 from lib_py3.item_replacement_rules import global_rules
 from lib_py3.item_replacement_substitutions import substitution_rules
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 
-class ItemReplacementManager(object):
+class ItemReplacementManager():
     """
     A tool to replace items while preserving certain data.
     """
-    def __init__(self,item_map):
+    def __init__(self, item_map):
         # Master copies
         self.item_map = item_map
 
@@ -38,14 +39,15 @@ class ItemReplacementManager(object):
         item_meta = {
             'id': item.id,
             'name': None,
+            'masterwork_level': None,
         }
 
-        if item.nbt.has_path('tag.display.Name'):
-            # If a name isn't found, it can still be replaced with a named item.
-            item_meta['name'] = get_item_name_from_nbt(item.tag)
-            if item.nbt.has_path('tag.Monumenta.Masterwork') and item.nbt.at_path('tag.Monumenta.Masterwork').value in ['0', '1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
-                item_meta['name'] = item_meta['name'] + '_m' + item.nbt.at_path('tag.Monumenta.Masterwork').value
+        # Note that include_masterwork_level=False here - we do
+        # substitutions/etc without including the masterwork level
+        item_meta['name'] = get_item_name_from_nbt(item.tag, include_masterwork_level=False)
+        item_meta['masterwork_level'] = get_masterwork_level_from_nbt(item.tag)
 
+        # Note that even if a name isn't found, it can still be replaced with a named item
 
         # Substitute name/id values in case an item changed ID.
         orig_id = item_meta['id']
@@ -60,8 +62,16 @@ class ItemReplacementManager(object):
         item_id = item_meta['id']
         item_name = item_meta['name']
 
+        # Transform the item name by the masterwork level. This is done only
+        # after substitutions have run, because the substitutions may change
+        # the item's name that will be used for replacements
+        if item_meta['masterwork_level'] is not None:
+            item_name = f"{item_name}_m{item_meta['masterwork_level']}"
+
         new_item_tag = self.item_map.get(item_id, {}).get(item_name, None)
         if not new_item_tag:
+            if item_meta["masterwork_level"] is not None:
+                eprint(f"WARNING: Failed to find masterwork item '{item_name}' in loot tables")
             return False
 
         # If the id changed, update the base item

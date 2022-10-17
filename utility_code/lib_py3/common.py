@@ -12,6 +12,9 @@ from quarry.types import nbt
 from quarry.types.chunk import PackedArray
 
 def eprint(*args, **kwargs):
+    """
+    Convenience function identical to print() but to stderr
+    """
     print(*args, file=sys.stderr, **kwargs)
 
 def get_entity_name_from_nbt(entity_nbt: nbt.TagCompound, remove_color=True) -> str:
@@ -22,19 +25,41 @@ def get_entity_name_from_nbt(entity_nbt: nbt.TagCompound, remove_color=True) -> 
         return None
     return parse_name_possibly_json(entity_nbt.at_path('CustomName').value, remove_color)
 
-def get_item_name_from_nbt(item_nbt: nbt.TagCompound, remove_color=True):
+def get_item_name_from_nbt(item_tag: nbt.TagCompound, remove_color=True, include_masterwork_level=False) -> str:
     """
     Parses a color-removed name out of an item's NBT. Returns a string or None if no name exists
+    if include_masterwork_level is True, _m{masterwork_level} will be appended to the item's name if both name and masterwork level exist
     """
-    if not item_nbt.has_path("display.Name"):
-        if item_nbt.has_path("title"):
-            title = item_nbt.at_path("title").value
+    if not item_tag.has_path("display.Name"):
+        if item_tag.has_path("title"):
+            title = item_tag.at_path("title").value
             if remove_color:
                 title = unformat_text(title)
             return title
         return None
 
-    return parse_name_possibly_json(item_nbt.at_path("display.Name").value, remove_color)
+    item_name = parse_name_possibly_json(item_tag.at_path("display.Name").value, remove_color)
+    if include_masterwork_level:
+        masterwork_level = get_masterwork_level_from_nbt(item_tag)
+        if masterwork_level is not None:
+            item_name = f"{item_name}_m{masterwork_level}"
+
+    return item_name
+
+# Returns
+def get_masterwork_level_from_nbt(item_tag: nbt.TagCompound, err_print_on_inval=True) -> str:
+    """
+    Gets the masterwork level from the item's NBT. Returns the string level if present, otherwise None
+    If the value is invalid it is still returned, and an error is printed to stderr if err_print_on_inval is True
+    """
+    if item_tag.has_path('Monumenta.Masterwork'):
+        masterwork_level = item_tag.at_path('Monumenta.Masterwork').value
+        if err_print_on_inval and masterwork_level not in ['0', '1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
+            eprint(f"WARNING: Item has invalid masterwork value '{masterwork_level}'")
+            eprint(item_tag.to_mojangson(sort=False, highlight=True))
+        return masterwork_level
+
+    return None
 
 def get_entity_uuid(entity: nbt.TagCompound) -> uuid.UUID:
     """Returns UUID or None for any entity with a UUID, including 1.16"""
@@ -65,7 +90,7 @@ def get_entity_uuid(entity: nbt.TagCompound) -> uuid.UUID:
 
 def uuid_to_mc_uuid_tag_int_array(uuid: uuid):
     int_uuid = int(uuid)
-    uuid_components = [ (int_uuid>>96) & ((1<<32)-1), (int_uuid>>64) & ((1<<32)-1), (int_uuid>>32) & ((1<<32)-1), int_uuid & ((1<<32)-1) ]
+    uuid_components = [(int_uuid>>96) & ((1<<32)-1), (int_uuid>>64) & ((1<<32)-1), (int_uuid>>32) & ((1<<32)-1), int_uuid & ((1<<32)-1)]
     uuid_components_centered = []
     for uuid_component in uuid_components:
         if uuid_component >= (1<<31):
@@ -132,14 +157,14 @@ def get_item_ids(entity: nbt.TagCompound, path: str, expected_len: int) -> [str]
     items = []
 
     if not entity.has_path(path):
-        for x in range(expected_len):
+        for _ in range(expected_len):
             items.append(None)
     else:
         items_nbt = entity.at_path(path)
 
         if len(items_nbt.value) != expected_len:
             eprint("Entity has weird {} length! Got {}, expected {}: {}".format(path, len(items_nbt.value), expected_len, entity.to_mojangson()))
-            for x in range(expected_len):
+            for _ in range(expected_len):
                 items.append(None)
         else:
             for item in items_nbt.value:
@@ -154,14 +179,14 @@ def get_named_items(entity: nbt.TagCompound, path: str, expected_len: int) -> [s
     items = []
 
     if not entity.has_path(path):
-        for x in range(expected_len):
+        for _ in range(expected_len):
             items.append(None)
     else:
         items_nbt = entity.at_path(path)
 
         if len(items_nbt.value) != expected_len:
             eprint("Entity has weird {} length! Got {}, expected {}: {}".format(path, len(items_nbt.value), expected_len, entity.to_mojangson()))
-            for x in range(expected_len):
+            for _ in range(expected_len):
                 items.append(None)
         else:
             for item in items_nbt.value:
@@ -185,21 +210,21 @@ def get_named_hand_items(entity):
 def get_named_armor_items(entity):
     return get_named_items(entity, "ArmorItems", 4)
 
-class AlwaysEqual(object):
+class AlwaysEqual():
     def __init__(self):
         pass
     def __hash__(self):
         return True
-    def __eq__(self,other):
+    def __eq__(self, other):
         return True
 always_equal = AlwaysEqual()
 
-class NeverEqual(object):
+class NeverEqual():
     def __init__(self):
         pass
     def __hash__(self):
         return False
-    def __eq__(self,other):
+    def __eq__(self, other):
         return False
 never_equal = NeverEqual()
 
@@ -280,14 +305,14 @@ def copy_path(old, new, path):
 def move_paths(old, new, paths):
     for path in paths:
         try:
-            move_path(old, new, path);
+            move_path(old, new, path)
         except Exception:
             eprint("*** " + path + " could not be moved, may not exist.")
 
 def copy_paths(old, new, paths):
     for path in paths:
         try:
-            copy_path(old, new, path);
+            copy_path(old, new, path)
         except Exception:
             eprint("*** " + path + " could not be copied, may not exist.")
 
@@ -304,10 +329,10 @@ def bounded_range(min_in, max_in, range_start, range_length, divide=1):
     min_out = min_in//divide - range_start
     max_out = max_in//divide - range_start + 1
 
-    min_out = max( 0, min( min_out, range_length ) )
-    max_out = max( 0, min( max_out, range_length ) )
+    min_out = max(0, min(min_out, range_length))
+    max_out = max(0, min(max_out, range_length))
 
-    return range( min_out, max_out )
+    return range(min_out, max_out)
 
 class DictWithDefault(dict):
     def __init__(self, init={}, default=0):
@@ -328,7 +353,7 @@ class DictWithDefault(dict):
 
 # https://catonmat.net/my-favorite-regex
 # Matches all printable ascii characters, from ' ' to '~'
-NON_PLAIN_REGEX=re.compile('[^ -~]')
+NON_PLAIN_REGEX = re.compile('[^ -~]')
 
 def update_plain_tag(item_nbt: nbt.TagCompound) -> None:
     """Given a Minecraft item's tag, (re)generate tag.plain.
@@ -336,9 +361,9 @@ def update_plain_tag(item_nbt: nbt.TagCompound) -> None:
     tag.plain stores the unformatted version of formatted text on items.
     """
     for formatted_path, plain_subpath_parts, is_multipath in (
-        ('display.Name', ['display', 'Name'], False),
-        ('display.Lore[]', ['display', 'Lore'], True),
-        #('pages[]', ['pages'], True),
+            ('display.Name', ['display', 'Name'], False),
+            ('display.Lore[]', ['display', 'Lore'], True),
+            #('pages[]', ['pages'], True),
     ):
         if item_nbt.count_multipath(formatted_path) > 0:
             if item_nbt.has_path("id") and "command_block" in item_nbt.at_path("id").value:
