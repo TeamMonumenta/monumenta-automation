@@ -54,9 +54,16 @@ def get_masterwork_level_from_nbt(item_tag: nbt.TagCompound, err_print_on_inval=
     """
     if item_tag.has_path('Monumenta.Masterwork'):
         masterwork_level = item_tag.at_path('Monumenta.Masterwork').value
+
+        # Special cases that map to None
+        if masterwork_level in ['error', 'none']:
+            return None
+
+        # Check for other invalid cases and print an error if configured to do so
         if err_print_on_inval and masterwork_level not in ['0', '1', '2', '3', '4', '5', '6', '7a', '7b', '7c']:
             eprint(f"WARNING: Item has invalid masterwork value '{masterwork_level}'")
             eprint(item_tag.to_mojangson(sort=False, highlight=True))
+
         return masterwork_level
 
     return None
