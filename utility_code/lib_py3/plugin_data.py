@@ -157,7 +157,10 @@ class MonumentaCharms(NbtPathDebug):
     def iter_items(self):
         """Iterates charm items"""
         if isinstance(self._items, list):
-            yield from self._items
+            for i in range(len(self._items)):
+                item = self._items[i]
+                yield item
+                item.serialize()
 
     def recursive_iter_all_types(self):
         yield self
@@ -186,7 +189,7 @@ class MonumentaCharms(NbtPathDebug):
     def __repr__(self):
         return f'Charms'
 
-class JsonWrappedCharmItem(Item, NbtPathDebug):
+class JsonWrappedCharmItem(Item):
     """A JSON charm object containing an 'item' field describing an item
 
     Can be instantiated, edited, and re-serialized, which will change the nbt data but keep the other JSON object fields intact.
