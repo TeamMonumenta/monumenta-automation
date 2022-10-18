@@ -46,6 +46,11 @@ def process_plugin_data(plugin_data):
         if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
             num_replacements += 1
 
+    # TODO: Eventually should refactor plugin data so it has a top-level iterator interface to eliminate the need to call charms() directly
+    for item in plugin_data.charms().recursive_iter_items():
+        if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+            num_replacements += 1
+
     return (num_replacements, replacements_log)
 
 def err_func(ex, args):

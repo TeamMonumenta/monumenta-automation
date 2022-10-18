@@ -3,11 +3,10 @@
 import json
 import os
 import sys
-import concurrent.futures
 
 from minecraft.player_dat_format.item import Item
 from minecraft.util.debug_util import NbtPathDebug
-from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap, process_in_parallel
+from minecraft.util.iter_util import process_in_parallel
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
@@ -108,8 +107,107 @@ class PluginData(NbtPathDebug):
         """Get the graves stored on a player, if they exist."""
         return MonumentaGraves(self._data.get("MonumentaGravesV2", {}), self)
 
+    def charms(self):
+        """Get the charms stored on a player, if they exist."""
+        return MonumentaCharms(self._data.get("R3Charms", {}), self)
+
     def __repr__(self):
         return f'PluginData({os.path.basename(self._path)!r})'
+
+    @property
+    def pos(self):
+        return None
+
+class MonumentaCharms(NbtPathDebug):
+    """A collection of items in charm slots."""
+
+    def __init__(self, json_data, parent):
+        self._data = json_data
+
+        self.nbt_path_init(None, parent, parent.root if parent is not None and parent.root is not None else self, None)
+
+        self._items = None
+        charms_array = self._data.get("charms", None)
+        if charms_array is not None:
+            self._items = []
+            for item_json in charms_array:
+                self._items.append(JsonWrappedCharmItem(item_json, self))
+
+    def get_debug_str(self):
+        return str(self)
+
+    def serialize(self):
+        if isinstance(self._items, list):
+            self._data["charms"] = [charm_item.serialize() for charm_item in self._items]
+
+        return self._data
+
+    def iter_all_types(self):
+        """Iterates charm items"""
+        yield from self.iter_items()
+
+    def iter_block_entities(self):
+        """Iterates charm block entities (none)"""
+        return
+
+    def iter_entities(self):
+        """Iterates charm entities (none)"""
+        return
+
+    def iter_items(self):
+        """Iterates charm items"""
+        if isinstance(self._items, list):
+            yield from self._items
+
+    def recursive_iter_all_types(self):
+        yield self
+        for obj in self.iter_all_types():
+            yield from obj.recursive_iter_all_types()
+
+    def recursive_iter_block_entities(self):
+        for obj in self.iter_all_types():
+            yield from obj.recursive_iter_block_entities()
+
+    def recursive_iter_entities(self):
+        for obj in self.iter_all_types():
+            yield from obj.recursive_iter_entities()
+
+    def recursive_iter_items(self):
+        for obj in self.iter_all_types():
+            yield from obj.recursive_iter_items()
+
+    @property
+    def pos(self):
+        """Gets charm position, which is same as the parent player"""
+        if self.parent is not None:
+            return self.parent.pos
+        return None
+
+    def __repr__(self):
+        return f'Charms'
+
+class JsonWrappedCharmItem(Item, NbtPathDebug):
+    """A JSON charm object containing an 'item' field describing an item
+
+    Can be instantiated, edited, and re-serialized, which will change the nbt data but keep the other JSON object fields intact.
+
+    Otherwise has all the methods a regular Item has (iterating, etc.)
+    """
+
+    def __init__(self, json_data, parent=None):
+        self._data = json_data
+        item_nbt = nbt.TagCompound.from_mojangson(self._data["item"])
+        super().__init__(item_nbt, parent, None)
+
+    def serialize(self):
+        self._data["item"] = self.nbt.to_mojangson()
+        return self._data
+
+    @property
+    def pos(self):
+        if self.parent is not None:
+            return self.parent.pos
+        return None
 
 class MonumentaGraves(NbtPathDebug):
     """A collection of items preserved from death or carelessness."""
@@ -283,6 +381,6 @@ class JsonWrappedItem(Item, NbtPathDebug):
         """Returns the items's coordinates as (x, y, z) or None"""
         if "location" in self._data:
             return (self._data["location"]["x"], self._data["location"]["y"], self._data["location"]["z"])
-        elif self.parent is not None:
+        if self.parent is not None:
             return self.parent.pos
         return None
