@@ -160,7 +160,7 @@ class MonumentaCharms(NbtPathDebug):
             for i in range(len(self._items)):
                 item = self._items[i]
                 yield item
-                item.serialize()
+                self._items[i] = item.serialize()
 
     def recursive_iter_all_types(self):
         yield self
