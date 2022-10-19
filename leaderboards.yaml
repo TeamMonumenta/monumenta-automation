@@ -14,6 +14,10 @@
 - Cyan
 - Purple
 - Teal
+- Blue
+- SKT
+- SKTH
+- SKTS
 # Bonus Dungeons
 - OldLab
 - R1Bonus
@@ -32,6 +36,11 @@
 - Forum
 - SealedRemorse
 - SRHigh
+- GallerySanguineHallsHighGroup
+- GallerySanguineHallsHighSolo
+- GallerySanguineHallsEasterEgg
+- Portal
+- MasqueradersRuin
 # Bosses
 - KaulWins
 - FGWins
@@ -53,6 +62,7 @@
 # Bounties
 - DailyCompleted
 - Daily2Completed
+- Daily3Completed
 # Races
 - Race00
 - Race01
@@ -75,6 +85,9 @@
 - OldTutorialRace
 - Velaraocity
 - Race2-03New
+- Race3-CityTour
+- Race3-CoastalCircuit
+- Race3-RapidAscent
 # Arena
 - Arena
 # Trickster Spirit
