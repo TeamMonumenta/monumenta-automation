@@ -64,8 +64,9 @@ shard_config = {
         "play" : { "node": "m11", "memGB": 5, },
     },
 
-    # R3 (Testing)
+    # R3
     "ring": {
+        "play":  { "node": "m13", "memGB": 7   , },
         "build": { "node": "m12", "memGB": 3   , },
         "stage": { "node": "m12", "memGB": 3   , },
     },
@@ -199,22 +200,27 @@ shard_config = {
     },
 
     "gallery": {
+        "play" : { "node": "m8", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
 
     "blue": {
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
 
     "portal": {
+        "play" : { "node": "m11", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
 
     "ruin": {
+        "play" : { "node": "m8", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
 
     "skt": {
+        "play" : { "node": "m11", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
 }
