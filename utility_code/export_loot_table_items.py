@@ -151,6 +151,7 @@ max_z = 2811
 items_at_warp_items = {}
 load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/valley/Project_Epic-valley'), min_x, min_y, min_z, max_x, max_y, max_z)
 load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/isles/Project_Epic-isles'), min_x, min_y, min_z, max_x, max_y, max_z)
+load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/ring/Project_Epic-ring'), min_x, min_y, min_z, max_x, max_y, max_z)
 
 # Merge this into the out_map, marking things as public if above glowstone or mod if above lapis
 for item_name in items_at_warp_items:
