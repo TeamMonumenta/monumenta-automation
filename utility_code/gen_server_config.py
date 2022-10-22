@@ -444,7 +444,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + [
+            'linked':server_config + base_plugins + dynmap + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
             ],
         },
