@@ -88,7 +88,7 @@ if __name__ == '__main__':
 #                    for entity in struct.recursive_iter_entities():
 #                        process_entity(entity, struct.name)
 
-    for basedir in ["/home/epic/project_epic/server_config/data/structures/valley", "/home/epic/project_epic/server_config/data/structures/isles"]:
+    for basedir in ["/home/epic/project_epic/server_config/data/structures/valley", "/home/epic/project_epic/server_config/data/structures/isles", "/home/epic/project_epic/server_config/data/structures/ring"]:
         for root, subdirs, files in os.walk(basedir):
             for fname in files:
                 if fname.endswith(".schematic"):
