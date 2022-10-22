@@ -141,6 +141,16 @@ sub = [
 
     # Squid to kid
     ("Star Spitter", match_name('Star Spitter', match_id('minecraft:squid'))),
+
+    # Cathedral
+    ("Warped Follower", match_name('Starseeker', match_id('minecraft:zombie'))),
+
+    # Fixed R3 mob errors
+    ("Living Lightning", match_name('Living Lighting', match_id('minecraft:bee'))),
+    ("Waterflight", match_name('Waterflight', match_id('minecraft:bee'))),
+    ("Whaleflight", match_name('Sky Whale', match_id('minecraft:bee'))),
+    ("Masked Enchanter", match_name('6Masked Enchanter', match_id('minecraft:wither_skeleton'))),
+    ("Flying Cannon", match_name('6Flying Cannon', match_id('minecraft:ghast'))),
 ]
 
 def usage():
@@ -195,7 +205,7 @@ def process_entity(entity, replacements_log) -> None:
 
         return changed_something, msgs
 
-    elif is_entity_in_spawner(entity):
+    if is_entity_in_spawner(entity):
         remove_unwanted_spawner_tags(nbt)
         return replace_mgr.replace_mob(nbt, replacements_log, entity.get_path_str()), []
 
