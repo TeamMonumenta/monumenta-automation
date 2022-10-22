@@ -891,7 +891,7 @@ Must be run before starting the update on the play server
             await self.run(['git', 'tag', version])
 
         if not skip_replacements:
-            await self.run_replacements_internal(["valley", "isles", "dungeon", "structures"], do_prune=True)
+            await self.run_replacements_internal(["valley", "isles", "ring", "dungeon", "structures"], do_prune=True)
 
         if not skip_generation:
             await self.generate_instances_internal(debug=debug)
