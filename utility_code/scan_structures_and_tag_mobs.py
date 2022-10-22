@@ -131,6 +131,7 @@ if __name__ == '__main__':
         "lightgray":{"world": "lightgray"},
         "purple":{"world": "purple"},
         "blue":{"world": "blue"},
+        "brown":{"world": "brown"},
         "teal":{"world": "teal"},
         "forum":{"world": "forum"},
 
