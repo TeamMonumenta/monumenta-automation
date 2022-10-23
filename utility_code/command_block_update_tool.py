@@ -19,6 +19,12 @@ def out_region_iter(region):
         for block_entity in chunk.recursive_iter_block_entities():
             if block_entity.nbt.has_path('Command'):
                 block = chunk.get_block(block_entity.pos)
+
+                # Check that we're actually exactly within the bounding box (inclusive)
+                bpos = block_entity.pos
+                if bpos[0] < min_x or bpos[1] < min_y or bpos[2] < min_z or bpos[0] > max_x or bpos[1] > max_y or bpos[2] > max_z:
+                    continue
+
                 block_name = block['name']
 
                 entry = {}
@@ -103,8 +109,15 @@ if __name__ == '__main__':
 
     output_mode = (input_path is None)
 
+    min_x = min(pos1[0], pos2[0])
+    min_y = min(pos1[1], pos2[1])
+    min_z = min(pos1[2], pos2[2])
+    max_x = max(pos1[0], pos2[0])
+    max_y = max(pos1[1], pos2[1])
+    max_z = max(pos1[2], pos2[2])
+
     if output_mode:
-        results = world.iter_regions_parallel(out_region_iter, err_func, num_processes=num_threads, min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2])
+        results = world.iter_regions_parallel(out_region_iter, err_func, num_processes=num_threads, min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z)
         out = []
         for result in results:
             for item in result:
@@ -133,8 +146,8 @@ if __name__ == '__main__':
         # Iterate the world and update things from the map
         # Not much reason to do this in parallel, but could be done with a little work
         num_replaced = 0
-        for region in world.iter_regions(min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2]):
-            for chunk in region.iter_chunks(min_x=pos1[0], min_y=pos1[1], min_z=pos1[2], max_x=pos2[0], max_y=pos2[1], max_z=pos2[2], autosave=False):
+        for region in world.iter_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z):
+            for chunk in region.iter_chunks(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, autosave=False):
                 changed = False
                 for block_entity in chunk.recursive_iter_block_entities():
                     if block_entity.nbt.has_path('Command'):
