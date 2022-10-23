@@ -474,6 +474,14 @@ class SubtituteItems(SubstitutionRule):
                 # ["minecraft:potion", None, "minecraft:potion", "Bygone Brew"], //TODO: Fix Water bottles and uncomment this line
                 ["minecraft:splash_potion", None, "minecraft:potion", "Bygone Brew"],
                 ["minecraft:lingering_potion", None, "minecraft:potion", "Bygone Brew"],
+                ["minecraft:zombie_head", "Rebooting Lesser Charm", "minecraft:zombie_head", "Lesser Rebooting Charm"],
+                ["minecraft:zombie_head", "Rebooting Greater Charm", "minecraft:zombie_head", "Greater Rebooting Charm"],
+                ["minecraft:ice", "Hailing Lesser Charm", "minecraft:ice", "Lesser Hailing Charm"],
+                ["minecraft:ice", "Hailing Greater Charm", "minecraft:ice", "Greater Hailing Charm"],
+                ["minecraft:ice", "Hailing Swift Charm", "minecraft:ice", "Swift Hailing Charm"],
+                ["minecraft:ice", "Hailing Distant Charm", "minecraft:ice", "Distant Hailing Charm"],
+                ["minecraft:ice", "Hailing Sedated Charm", "minecraft:ice", "Sedated Hailing Charm"],
+
         ]:
 
             old_id, old_name, new_id, new_name = substitution
