@@ -44,12 +44,14 @@ fn main() -> BoxResult<()> {
     let mut con : redis::Connection = client.get_connection()?;
 
     println!("Exporting advancements...");
-    for (uuid, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {
+    // Iterate while at the same time removing the elements from the returned map
+    Player::get_redis_players(&domain, &mut con)?.retain(|uuid, player| {
         let uuidstr = uuid.to_hyphenated().to_string();
-        player.load_redis_advancements(&domain, &mut con)?;
-        player.save_file_advancements(basedir.join(format!("{}.json", uuidstr)).to_str().unwrap())?;
+        player.load_redis_advancements(&domain, &mut con).unwrap();
+        player.save_file_advancements(basedir.join(format!("{}.json", uuidstr)).to_str().unwrap()).unwrap();
         drop(player);
-    }
+        false
+    });
     println!("Done");
 
     Ok(())
