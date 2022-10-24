@@ -70,6 +70,15 @@ shard_config = {
         "build": { "node": "m12", "memGB": 3   , },
         "stage": { "node": "m12", "memGB": 3   , },
     },
+    "ring-2": { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-3": { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-4": { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-5": { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-6": { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-7": { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-8": { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-9": { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-10": { "play" : { "node": "m13", "memGB": 7, }, },
 
     # Plots
     "plots": {
