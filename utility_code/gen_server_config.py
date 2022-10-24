@@ -432,8 +432,6 @@ if __name__ == '__main__':
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
             'linked':server_config + base_plugins + dynmap + [
-                ('plugins/Roguelite', '../../server_config/data/Roguelite'),
-                ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/isles/Monumenta/bounties'),
             ],
         },
@@ -474,6 +472,8 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 12'),
             ],
             'linked':server_config + base_plugins + dynmap + [
+                ('plugins/Roguelite', '../../server_config/data/Roguelite'),
+                ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
                 ('plugins/ScriptedQuests/npcs/tutorial', '../../../../server_config/data/scriptedquests/npcs/tutorial'),
                 ('plugins/ScriptedQuests/npcs/labs', '../../../../server_config/data/scriptedquests/npcs/labs'),
             ],
