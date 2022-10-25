@@ -31,7 +31,7 @@ spec:
           volumes:
           - name: secret-config
             secret:
-              secretName: automation-bot-config
+              secretName: automated-restart
           - name: nfs-data
             hostPath:
               type: Directory
