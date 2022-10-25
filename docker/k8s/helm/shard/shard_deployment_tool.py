@@ -214,7 +214,7 @@ shard_config = {
     },
 
     "blue": {
-        "play" : { "node": "m13", "memGB": 5   , },
+        "play" : { "node": "m14", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
 
@@ -248,6 +248,8 @@ abbrev_node_to_full = {
     "m11": "monumenta-11",
     "m12": "monumenta-12",
     "m13": "monumenta-13",
+    "m14": "monumenta-14",
+    "m15": "monumenta-15",
 }
 
 
