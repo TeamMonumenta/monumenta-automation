@@ -309,6 +309,8 @@ if __name__ == '__main__':
         ('plugins/ScriptedQuests/zone_layers/{servername}', '../../../../server_config/data/scriptedquests/zone_layers/{servername}'),
         ('plugins/ScriptedQuests/zone_properties/common', '../../../../server_config/data/scriptedquests/zone_properties/common'),
         ('plugins/ScriptedQuests/zone_properties/{servername}', '../../../../server_config/data/scriptedquests/zone_properties/{servername}'),
+        ('plugins/ScriptedQuests/zone_property_groups/common', '../../../../server_config/data/scriptedquests/zone_property_groups/common'),
+        ('plugins/ScriptedQuests/zone_property_groups/{servername}', '../../../../server_config/data/scriptedquests/zone_property_groups/{servername}'),
         ('plugins/StructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
         ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
