@@ -4,7 +4,19 @@ RUN apt-get update && \
 	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy && \
 	pip3 install wheel && \
 	pip3 install bitstring mutf8 && \
-	pip3 install -U pyyaml
+	pip3 install -U pyyaml && \
+	cd /opt && \
+	wget https://downloads.python.org/pypy/pypy3.8-v7.3.9-linux64.tar.bz2 && \
+	tar xjf pypy3.8-v7.3.9-linux64.tar.bz2 && \
+	rm -f pypy3.8-v7.3.9-linux64.tar.bz2 && \
+	ln -s /opt/pypy3.8-v7.3.9-linux64/bin/pypy3 /usr/local/bin/pypy3 && \
+	ln -s /opt/pypy3.8-v7.3.9-linux64/bin/pypy /usr/local/bin/pypy && \
+	wget https://bootstrap.pypa.io/get-pip.py && \
+	pypy3 get-pip.py && \
+	rm -f get-pip.py && \
+	pypy3 -m pip install wheel && \
+	pypy3 -m pip install bitstring mutf8 && \
+	pypy3 -m pip install -U pyyaml
 
 COPY quarry /automation/quarry
 COPY utility_code /automation/utility_code
