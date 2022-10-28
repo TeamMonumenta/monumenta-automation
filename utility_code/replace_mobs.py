@@ -151,6 +151,10 @@ sub = [
     ("Whaleflight", match_name('Sky Whale', match_id('minecraft:bee'))),
     ("Masked Enchanter", match_name('6Masked Enchanter', match_id('minecraft:wither_skeleton'))),
     ("Flying Cannon", match_name('6Flying Cannon', match_id('minecraft:ghast'))),
+    ("Molldyer's Pyromancer", match_name('Rumall\'s Pyromancer', match_id('minecraft:witch'))),
+    ("Molldyer's Punisher", match_name('Rumall\'s Punisher', match_id('minecraft:pillager'))),
+    ("Molldyer's Legionary", match_name('Rumall\'s Legionary', match_id('minecraft:vindicator'))),
+    ("The Vedha's Sentinels", match_name('Obaria\'s Sentinels', match_id('minecraft:pillager'))),
 ]
 
 def usage():

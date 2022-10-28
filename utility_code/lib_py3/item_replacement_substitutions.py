@@ -481,6 +481,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:ice", "Hailing Swift Charm", "minecraft:ice", "Swift Hailing Charm"],
                 ["minecraft:ice", "Hailing Distant Charm", "minecraft:ice", "Distant Hailing Charm"],
                 ["minecraft:ice", "Hailing Sedated Charm", "minecraft:ice", "Sedated Hailing Charm"],
+                ["minecraft:yellow_stained_glass", "Tesseract of Elements (u)", "minecraft:yellow_stained_glass", "Tesseract of the Elements (u)"],
 
         ]:
 
