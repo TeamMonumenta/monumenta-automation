@@ -74,6 +74,18 @@ ignored_reaction_channels = [
         481866909097132043,
         # mod-chat
         313404419628859394,
+        # mod-log
+        359117671947567124,
+        # mod-alerts
+        997610883884789951,
+        # mod-punish-system-chat
+        919735195186368522,
+        # mod-bot
+        467361088460029954,
+        # mod-audit-log
+        651674581148368927,
+        # admin-notices
+        934119833967161424,
 ]
 
 try:
