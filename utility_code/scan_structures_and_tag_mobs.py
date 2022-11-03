@@ -69,7 +69,7 @@ if __name__ == '__main__':
     not_found_unique_mobs = {}
     not_found_unique_low_count_mobs = set()
     mob_counts = {}
-    forbidden_ids = ["minecraft:armor_stand", "minecraft:painting", "minecraft:villager", "minecraft:potion", "minecraft:trident", "minecraft:boat",
+    forbidden_ids = ["minecraft:painting", "minecraft:potion", "minecraft:trident", "minecraft:boat",
                      "minecraft:minecart", "minecraft:falling_block", "minecraft:firework_rocket", "minecraft:item_frame", "minecraft:end_crystal",
                      "minecraft:area_effect_cloud", "minecraft:command", "minecraft:command_block", "minecraft:chain_command_block", "minecraft:repeating_command_block"]
 
