@@ -211,13 +211,6 @@ if __name__ == '__main__':
         "datapacks":datapacks_dungeon + ['file/ruin'],
     }
 
-    skt = {
-        "server":"skt",
-        "copy_base_from":"build",
-        "move_previous_paths":["Project_Epic-skt/stats", "Project_Epic-skt/data/scoreboard.dat"],
-        "datapacks":datapacks_dungeon + ['file/skt'],
-    }
-
     valley = {
         "server":"valley",
         "copy_base_from":"build",
@@ -269,6 +262,7 @@ if __name__ == '__main__':
         "cyan": get_dungeon_config("cyan", "D10Access"),
         "purple": get_dungeon_config("purple", "D11Access"),
         "blue": get_dungeon_config("blue", "D12Access"),
+        "brown": get_dungeon_config("brown", "D13Access"),
         "willows": get_dungeon_config("willows", "DB1Access"),
         "reverie": get_dungeon_config("reverie", "DCAccess"),
         "sanctum": get_dungeon_config("sanctum", "DFSAccess"),
@@ -276,12 +270,12 @@ if __name__ == '__main__':
         "teal": get_dungeon_config("teal", "DTLAccess"),
         "forum": get_dungeon_config("forum", "DFFAccess"),
         "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
+        "skt": get_dungeon_config("shiftingcity", "DRL2Access"),
 
 
         "gallery": gallery,
         "portal": portal,
         "ruin": ruin,
-        "skt": skt,
         "corridors": corridors,
         "verdant": verdant,
         "rush": rush,
