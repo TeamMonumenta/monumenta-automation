@@ -7,6 +7,7 @@ import os
 import sys
 import traceback
 import yaml
+import copy
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
@@ -233,7 +234,7 @@ if __name__ == '__main__':
 
         if shard_name in available_configs:
             if available_configs[shard_name] is not None:
-                config = available_configs[shard_name]
+                config = copy.deepcopy(available_configs[shard_name])
                 config["shard_name"] = shard_name
                 config["build_path"] = os.path.join(build_template_dir, shard_name) # Build path is the base, without the -#
                 config["output_path"] = os.path.join(output_dir, server) # output path is the full specified name
