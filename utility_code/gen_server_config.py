@@ -688,6 +688,21 @@ if __name__ == '__main__':
         "ring-10": "ring",
         "depths-2": "depths",
         "depths-3": "depths",
+        "blue-2": "blue",
+        "blue-3": "blue",
+        "blue-4": "blue",
+        "gallery-2": "gallery",
+        "gallery-3": "gallery",
+        "portal-2": "portal",
+        "portal-3": "portal",
+        "ruin-2": "ruin",
+        "skt-2": "skt",
+        "skt-3": "skt",
+        "skt-4": "skt",
+        "skt-5": "skt",
+        "skt-6": "skt",
+        "skt-7": "skt",
+        "skt-8": "skt",
     }
 
     for key in copied_shard_config:
