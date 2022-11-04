@@ -886,10 +886,15 @@ Must be run before starting the update on the play server
             await self.cd('/home/epic/project_epic/server_config/data')
             await self.run('git add .')
             await self.run(['git', 'commit', '-m', "Update bundle post autoformat", '-s'], ret=[0, 1])
-            await self.run(['git', 'tag', version])
 
         if not skip_replacements:
             await self.run_replacements_internal(["valley", "isles", "ring", "dungeon", "structures"], do_prune=True)
+
+        if not skip_commit:
+            await self.cd('/home/epic/project_epic/server_config/data')
+            await self.run('git add .')
+            await self.run(['git', 'commit', '-m', "Update bundle post replacements", '-s'], ret=[0, 1])
+            await self.run(['git', 'tag', version])
 
         if not skip_generation:
             await self.generate_instances_internal(debug=debug)
