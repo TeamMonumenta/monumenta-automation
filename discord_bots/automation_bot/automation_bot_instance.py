@@ -573,14 +573,12 @@ Examples:
     async def action_list_instances(self, cmd, message):
         rboard = RedisRBoard("play", redis_host="redis")
         inst_str = '```'
-        inst_str += f"{'Dungeons' : <15}{'Used' : <15}{'Remaining' : <15}{'Total' : <15}"
+        inst_str += f"{'Dungeons' : <15}{'Used' : <15}"
         inst_str += "\n"
         for dungeon in self._dungeons:
             used = rboard.get("$Last", self._dungeons[dungeon])
-            instances = rboard.get("$Instances", self._dungeons[dungeon])
-            if used is not None and instances is not None:
-                remaining = instances - used
-                inst_str += f"{dungeon : <15}{used : <15}{remaining : <15}{instances : <15}"
+            if used is not None:
+                inst_str += f"{dungeon : <15}{used : <15}"
                 inst_str += "\n"
             else:
                 self.display(f"Warning: Failed to load rboard values for {dungeon}")
