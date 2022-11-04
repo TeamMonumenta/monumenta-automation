@@ -91,6 +91,10 @@ if __name__ == '__main__':
                 "world": "blue",
                 "objective":"D12Access"
             },
+            "brown":{
+                "world": "brown",
+                "objective":"D13Access"
+            },
             "willows":{
                 "world": "willows",
                 "objective":"DB1Access"

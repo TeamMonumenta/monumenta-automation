@@ -64,6 +64,7 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         update_instance_scores(scores, days_since_epoch, "D10StartDate", 28, &["D10Access", "D10Finished"]);
         update_instance_scores(scores, days_since_epoch, "D11StartDate", 28, &["D11Access", "D11Finished"]);
         update_instance_scores(scores, days_since_epoch, "D12StartDate", 28, &["D12Access", "D12Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D13StartDate", 28, &["D13Access", "D13Finished"]);
         update_instance_scores(scores, days_since_epoch, "DTLStartDate", 28, &["DTLAccess", "DTLFinished"]);
         update_instance_scores(scores, days_since_epoch, "DMRStartDate", 28, &["DCAccess", "DCFinished"]);
         update_instance_scores(scores, days_since_epoch, "DBWStartDate", 28, &["DB1Access", "DB1Finished"]);
