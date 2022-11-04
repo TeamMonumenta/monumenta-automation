@@ -33,6 +33,14 @@ def get_dungeon_config(name, objective):
         },
     }
 
+def get_non_preserved_dungeon_config(name):
+    return {
+        "server":f"{name}",
+        "copy_base_from":"build",
+        "move_previous_paths":[f"Project_Epic-{name}/stats", f"Project_Epic-{name}/data/scoreboard.dat", "plugins/CoreProtect"],
+        "datapacks":datapacks_dungeon + [f'file/{name}'],
+    }
+
 def process_init(mgr):
     global item_replace_manager
     item_replace_manager = mgr
@@ -148,69 +156,6 @@ if __name__ == '__main__':
         "datapacks":datapacks_dungeon + ['file/tutorial'],
     }
 
-    corridors = {
-        "server":"corridors",
-        "move_base_from":"build",
-        "move_previous_paths":["Project_Epic-corridors/stats", "Project_Epic-corridors/data/scoreboard.dat"],
-        "datapacks":datapacks_dungeon + ['file/corridors'],
-    }
-
-    verdant = {
-        "server":"verdant",
-        "move_base_from":"build",
-        "move_previous_paths":["Project_Epic-verdant/stats", "Project_Epic-verdant/data/scoreboard.dat"],
-        "datapacks":datapacks_dungeon + ['file/verdant'],
-    }
-
-    rush = {
-        "server":"rush",
-        "move_base_from":"build",
-        "move_previous_paths":["Project_Epic-rush/stats", "Project_Epic-rush/data/scoreboard.dat"],
-        "datapacks":datapacks_dungeon + ['file/rush'],
-    }
-
-    mist = {
-        "server":"mist",
-        "move_base_from":"build",
-        "move_previous_paths":["Project_Epic-mist/stats", "Project_Epic-mist/data/scoreboard.dat"],
-        "datapacks":datapacks_dungeon + ['file/mist'],
-    }
-
-    remorse = {
-        "server":"remorse",
-        "move_base_from":"build",
-        "move_previous_paths":["Project_Epic-remorse/stats", "Project_Epic-remorse/data/scoreboard.dat"],
-        "datapacks":datapacks_dungeon + ['file/remorse'],
-    }
-
-    depths = {
-        "server":"depths",
-        "copy_base_from":"build",
-        "move_previous_paths":["Project_Epic-depths/stats", "Project_Epic-depths/data/scoreboard.dat"],
-        "datapacks":datapacks_dungeon + ['file/depths'],
-    }
-
-    gallery = {
-        "server":"gallery",
-        "copy_base_from":"build",
-        "move_previous_paths":["Project_Epic-gallery/stats", "Project_Epic-gallery/data/scoreboard.dat"],
-        "datapacks":datapacks_dungeon + ['file/gallery'],
-    }
-
-    portal = {
-        "server":"portal",
-        "copy_base_from":"build",
-        "move_previous_paths":["Project_Epic-portal/stats", "Project_Epic-portal/data/scoreboard.dat"],
-        "datapacks":datapacks_dungeon + ['file/portal'],
-    }
-
-    ruin = {
-        "server":"ruin",
-        "copy_base_from":"build",
-        "move_previous_paths":["Project_Epic-ruin/stats", "Project_Epic-ruin/data/scoreboard.dat"],
-        "datapacks":datapacks_dungeon + ['file/ruin'],
-    }
-
     valley = {
         "server":"valley",
         "copy_base_from":"build",
@@ -228,6 +173,7 @@ if __name__ == '__main__':
     ring = {
         "server":"ring",
         "copy_base_from":"build",
+        "move_previous_paths":["Project_Epic-ring/stats", "Project_Epic-ring/data/scoreboard.dat"],
         "datapacks":datapacks_base + ['file/ring'],
     }
 
@@ -260,15 +206,15 @@ if __name__ == '__main__':
         "skt": get_dungeon_config("shiftingcity", "DRL2Access"),
 
 
-        "gallery": gallery,
-        "portal": portal,
-        "ruin": ruin,
-        "corridors": corridors,
-        "verdant": verdant,
-        "rush": rush,
-        "mist": mist,
-        "remorse": remorse,
-        "depths": depths,
+        "gallery": get_non_preserved_dungeon_config("gallery"),
+        "portal": get_non_preserved_dungeon_config("portal"),
+        "ruin": get_non_preserved_dungeon_config("ruin"),
+        "corridors": get_non_preserved_dungeon_config("corridors"),
+        "verdant": get_non_preserved_dungeon_config("verdant"),
+        "rush": get_non_preserved_dungeon_config("rush"),
+        "mist": get_non_preserved_dungeon_config("mist"),
+        "remorse": get_non_preserved_dungeon_config("remorse"),
+        "depths": get_non_preserved_dungeon_config("depths"),
         "tutorial": tutorial,
         "build": None,
         "bungee": None,
