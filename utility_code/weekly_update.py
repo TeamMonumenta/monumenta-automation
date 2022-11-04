@@ -203,7 +203,7 @@ if __name__ == '__main__':
         "teal": get_dungeon_config("teal", "DTLAccess"),
         "forum": get_dungeon_config("forum", "DFFAccess"),
         "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
-        "skt": get_dungeon_config("shiftingcity", "DRL2Access"),
+        "skt": get_dungeon_config("skt", "DSKTAccess"),
 
 
         "gallery": get_non_preserved_dungeon_config("gallery"),
