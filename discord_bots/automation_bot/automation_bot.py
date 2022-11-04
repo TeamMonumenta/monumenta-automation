@@ -86,6 +86,10 @@ ignored_reaction_channels = [
         651674581148368927,
         # admin-notices
         934119833967161424,
+        # build-mod-alerts
+        1037060288945586186,
+        # build-admin-notices
+        1037060429186342932,
 ]
 
 try:
