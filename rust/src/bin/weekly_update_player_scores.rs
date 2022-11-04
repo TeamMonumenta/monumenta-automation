@@ -63,14 +63,16 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         update_instance_scores(scores, days_since_epoch, "D9StartDate", 28, &["D9Access", "D9Finished"]);
         update_instance_scores(scores, days_since_epoch, "D10StartDate", 28, &["D10Access", "D10Finished"]);
         update_instance_scores(scores, days_since_epoch, "D11StartDate", 28, &["D11Access", "D11Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D12StartDate", 28, &["D12Access", "D12Finished"]);
+        // TODO: UNCOMMENT!
+        //update_instance_scores(scores, days_since_epoch, "D12StartDate", 28, &["D12Access", "D12Finished"]);
         update_instance_scores(scores, days_since_epoch, "D13StartDate", 28, &["D13Access", "D13Finished"]);
         update_instance_scores(scores, days_since_epoch, "DTLStartDate", 28, &["DTLAccess", "DTLFinished"]);
         update_instance_scores(scores, days_since_epoch, "DMRStartDate", 28, &["DCAccess", "DCFinished"]);
         update_instance_scores(scores, days_since_epoch, "DBWStartDate", 28, &["DB1Access", "DB1Finished"]);
         update_instance_scores(scores, days_since_epoch, "DCSStartDate", 28, &["DRL2Access", "DRL2Finished"]);
         update_instance_scores(scores, days_since_epoch, "DFFStartDate", 28, &["DFFAccess", "DFFFinished"]);
-        update_instance_scores(scores, days_since_epoch, "DSKTStartDate", 14, &["DSKTAccess", "DSKTFinished"]);
+        // TODO: UNCOMMENT!
+        //update_instance_scores(scores, days_since_epoch, "DSKTStartDate", 14, &["DSKTAccess", "DSKTFinished"]);
 
         /* DelveDungeon score also resets as if it was a dungeon score */
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
@@ -85,6 +87,13 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("DGAccess".to_string(), 0);
         scores.insert("DPSAccess".to_string(), 0);
         scores.insert("DMASAccess".to_string(), 0);
+        // TODO: DELETE THESE!
+        scores.insert("DSKTStartDate".to_string(), 0);
+        scores.insert("DSKTAccess".to_string(), 0);
+        scores.insert("DSKTFinished".to_string(), 0);
+        scores.insert("D12StartDate".to_string(), 0);
+        scores.insert("D12Access".to_string(), 0);
+        scores.insert("D12Finished".to_string(), 0);
 
         fix_total_level(scores);
     }
