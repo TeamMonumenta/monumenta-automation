@@ -482,6 +482,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:ice", "Hailing Distant Charm", "minecraft:ice", "Distant Hailing Charm"],
                 ["minecraft:ice", "Hailing Sedated Charm", "minecraft:ice", "Sedated Hailing Charm"],
                 ["minecraft:yellow_stained_glass", "Tesseract of Elements (u)", "minecraft:yellow_stained_glass", "Tesseract of the Elements (u)"],
+                ["minecraft:nether_star", "Harrakafar's Roar", "minecraft:nether_star", "Harrakfar's Roar"],
 
         ]:
 
