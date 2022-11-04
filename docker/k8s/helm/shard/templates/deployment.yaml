@@ -193,7 +193,8 @@ spec:
             # Set this to 1Gi
             # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
             # It should not need much/any...
-            memory: 1Gi
+            # TEMP: Set to 4GB to avoid OOMkilling the copy_world on blue
+            memory: 4Gi
             # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
             # Tried making this 64 extra, low-memory shards still crash with this
             hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 192 }}Mi
