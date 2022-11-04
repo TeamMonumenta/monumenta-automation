@@ -235,21 +235,8 @@ if __name__ == '__main__':
         "plots": plots,
         "playerplots": playerplots,
         "valley": valley,
-        "valley-2": {**valley, **{"shard_name": "valley"}},
-        "valley-3": {**valley, **{"shard_name": "valley"}},
         "isles": isles,
-        "isles-2": {**isles, **{"shard_name": "isles"}},
-        "isles-3": {**isles, **{"shard_name": "isles"}},
         "ring": ring,
-        "ring-2": {**ring, **{"shard_name": "ring"}},
-        "ring-3": {**ring, **{"shard_name": "ring"}},
-        "ring-4": {**ring, **{"shard_name": "ring"}},
-        "ring-5": {**ring, **{"shard_name": "ring"}},
-        "ring-6": {**ring, **{"shard_name": "ring"}},
-        "ring-7": {**ring, **{"shard_name": "ring"}},
-        "ring-8": {**ring, **{"shard_name": "ring"}},
-        "ring-9": {**ring, **{"shard_name": "ring"}},
-        "ring-10": {**ring, **{"shard_name": "ring"}},
         "white": get_dungeon_config("white", "D1Access"),
         "orange": get_dungeon_config("orange", "D2Access"),
         "magenta": get_dungeon_config("magenta", "D3Access"),
@@ -282,29 +269,30 @@ if __name__ == '__main__':
         "mist": mist,
         "remorse": remorse,
         "depths": depths,
-        "depths-2": {**depths, **{"shard_name": "depths"}},
-        "depths-3": {**depths, **{"shard_name": "depths"}},
         "tutorial": tutorial,
         "build": None,
         "bungee": None,
-        "bungee-11": None,
-        "bungee-13": None,
-        "bungee-14": None,
-        "bungee-15": None,
         "purgatory": None,
     }
 
     # Parse additional non-option arguments and copy those configs to the list of servers to update
     config_list = []
     for server in args:
-        if server in available_configs:
-            if available_configs[server] is not None:
-                config = available_configs[server]
-                shard_name = config.get("shard_name", server)
-                config["build_path"] = os.path.join(build_template_dir, shard_name)
-                config["output_path"] = os.path.join(output_dir, server)
-                config["previous_path"] = os.path.join(last_week_dir, server)
-                config_list.append(available_configs[server])
+        shard_name = server
+
+        # This server is a copy of one that is in the config (i.e. its name ends with -#)
+        # Set the shard_name to be the base name for that shard (i.e. 'blue' if server was 'blue-5')
+        if server.rfind("-") > 0 and server[:server.rfind("-")] in available_configs:
+            shard_name = server[:server.rfind("-")]
+
+        if shard_name in available_configs:
+            if available_configs[shard_name] is not None:
+                config = available_configs[shard_name]
+                config["shard_name"] = shard_name
+                config["build_path"] = os.path.join(build_template_dir, shard_name) # Build path is the base, without the -#
+                config["output_path"] = os.path.join(output_dir, server) # output path is the full specified name
+                config["previous_path"] = os.path.join(last_week_dir, server) # previous path is the full specified name
+                config_list.append(config)
         else:
             print("ERROR: Unknown shard {} specified!".format(server))
             usage()
