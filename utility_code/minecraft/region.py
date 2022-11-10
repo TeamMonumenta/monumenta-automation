@@ -1,6 +1,7 @@
-import os
-import sys
 import math
+import os
+import shutil
+import sys
 import uuid
 
 from collections.abc import MutableMapping
@@ -160,25 +161,49 @@ class BaseRegion(MutableMapping, NbtPathDebug):
 
         self._region.delete_chunk(local_cx, local_cz)
 
-    def defragment_to(self, world, overwrite=False, regenerate_uuids=False, clear_world_uuid=False):
+    def defragment(self):
         """
-        Copies and defragments this region file to a new location and returns that new Region
-
-        Throws an exception and does nothing if overwrite is False but the destination file exists
+        Defragments unused space in this region file
         """
-        new_path = os.path.join(world.path, self.folder_name(), f'r.{self.rx}.{self.rz}.mca')
+        self_path = Path(self.path).absolute()
+        self_name = self_path.name
+        parent_path = self_path.parent
+        work_path = Path(str(self_path) + ".defragmenting")
+        done_path = Path(str(self_path) + ".defragmented")
 
-        if os.path.exists(new_path) and not overwrite:
-            raise Exception(f"Destination region already exists: {new_path}")
-        Path(new_path).parent.mkdir(mode=0o755, parents=True, exist_ok=True)
+        # Skip ahead if resuming completed defragment job
+        if not done_path.is_dir():
+            # Delete partially completed work; start again
+            if work_path.exists():
+                shutil.rmtree(work_path)
+            Path(work_path).mkdir(mode=0o755, parents=True, exist_ok=True)
 
-        with open(new_path, 'wb') as fp:
-            fp.write(b'\x00' * 4096)
-        new_region = type(self)(new_path, self.rx, self.rz)
-        for chunk in self.iter_chunks():
-            new_region._region.save_chunk(nbt.TagRoot.from_body(chunk.nbt))
+            # Create copy of self without unused space
+            new_path = str(work_path / self_name)
+            with open(new_path, 'wb') as fp:
+                fp.write(b'\x00' * 4096)
+            new_region = type(self)(new_path, self.rx, self.rz)
+            for chunk in self.iter_chunks():
+                new_region._region.save_chunk(nbt.TagRoot.from_body(chunk.nbt))
+            new_region._region.fd.close()
+            del new_region
 
-        return new_region
+            work_path.rename(done_path)
+
+        # Delete existing region file contents, including oversized chunk files
+        for cx, cz in self.iter_chunk_coordinates():
+            self.delete_chunk(cx, cz)
+        self._region.close()
+        self_path.unlink()
+
+        # Move done folder contents to this directory
+        for child in list(done_path.iterdir()):
+            child_name = child.name
+            child.rename(parent_path / child_name)
+        done_path.rmdir()
+
+        # Reopen the region file in place (this point cannot be reached in read only mode)
+        self._region = nbt.RegionFile(self.path, read_only=False)
 
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
         """
