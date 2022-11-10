@@ -4,6 +4,7 @@ import math
 import uuid
 
 from collections.abc import MutableMapping
+from pathlib import Path
 
 from lib_py3.common import copy_file, uuid_to_mc_uuid_tag_int_array
 
@@ -159,6 +160,26 @@ class BaseRegion(MutableMapping, NbtPathDebug):
 
         self._region.delete_chunk(local_cx, local_cz)
 
+    def defragment_to(self, world, overwrite=False, regenerate_uuids=False, clear_world_uuid=False):
+        """
+        Copies and defragments this region file to a new location and returns that new Region
+
+        Throws an exception and does nothing if overwrite is False but the destination file exists
+        """
+        new_path = os.path.join(world.path, self.folder_name(), f'r.{self.rx}.{self.rz}.mca')
+
+        if os.path.exists(new_path) and not overwrite:
+            raise Exception(f"Destination region already exists: {new_path}")
+        Path(new_path).parent.mkdir(mode=0o755, parents=True, exist_ok=True)
+
+        with open(new_path, 'wb') as fp:
+            fp.write(b'\x00' * 4096)
+        new_region = type(self)(new_path, self.rx, self.rz)
+        for chunk in self.iter_chunks():
+            new_region._region.save_chunk(nbt.TagRoot.from_body(chunk.nbt))
+
+        return new_region
+
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
         """
         Copies this region file to a new location and returns that new Region
@@ -197,10 +218,10 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         """
         for cx, cz in self.iter_chunk_coordinates():
             if (
-                    16*cx + 16 <= min_x or
-                    16*cx > max_x or
-                    16*cz + 16 <= min_z or
-                    16*cz > max_z
+                    16 * cx + 16 <= min_x or
+                    16 * cx > max_x or
+                    16 * cz + 16 <= min_z or
+                    16 * cz > max_z
             ):
                 continue
 
