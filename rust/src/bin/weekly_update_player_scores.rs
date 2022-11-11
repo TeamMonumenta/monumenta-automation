@@ -64,15 +64,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         update_instance_scores(scores, days_since_epoch, "D10StartDate", 28, &["D10Access", "D10Finished"]);
         update_instance_scores(scores, days_since_epoch, "D11StartDate", 28, &["D11Access", "D11Finished"]);
         update_instance_scores(scores, days_since_epoch, "D12StartDate", 28, &["D12Access", "D12Finished"]);
-        // TODO: Remove this customization when Blue fully supported
-        if let Some(finished) = scores.get("D12Finished") {
-            if *finished > 0 {
-                scores.insert("D12Access".to_string(), 0);
-                scores.insert("D12Finished".to_string(), 0);
-                scores.insert("D12StartDate".to_string(), 0);
-            }
-        }
-
         update_instance_scores(scores, days_since_epoch, "D13StartDate", 28, &["D13Access", "D13Finished"]);
         update_instance_scores(scores, days_since_epoch, "DTLStartDate", 28, &["DTLAccess", "DTLFinished"]);
         update_instance_scores(scores, days_since_epoch, "DMRStartDate", 28, &["DCAccess", "DCFinished"]);
