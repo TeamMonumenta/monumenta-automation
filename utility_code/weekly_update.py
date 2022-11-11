@@ -25,7 +25,7 @@ def usage():
 def get_dungeon_config(name, objective):
     return {
         "server":f"{name}",
-        "move_base_from":"build",
+        "copy_base_from":"build",
         "move_previous_paths":[f"Project_Epic-{name}/stats", f"Project_Epic-{name}/data/scoreboard.dat", "plugins/CoreProtect"],
         "datapacks":datapacks_dungeon + [f'file/{name}'],
         "replace_items_globally": True,
