@@ -371,31 +371,30 @@ class AutomationBotInstance():
             # For complicated stuff, the caller must split appropriately
             splitCmd = cmd
         await self.debug("Executing: ```" + str(splitCmd) + "```")
-        async with self._channel.typing():
-            process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = await process.communicate()
-            rc = process.returncode
+        process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = await process.communicate()
+        rc = process.returncode
 
-            await self.debug("Result: {}".format(rc))
+        await self.debug("Result: {}".format(rc))
 
-            stdout = stdout.decode('utf-8')
-            if stdout:
-                await self.debug("stdout from command {!r}:".format(cmd))
-                logger.debug(stdout)
+        stdout = stdout.decode('utf-8')
+        if stdout:
+            await self.debug("stdout from command {!r}:".format(cmd))
+            logger.debug(stdout)
 
-                if self._debug or displayOutput:
-                    await self.display_verbatim(stdout)
+            if self._debug or displayOutput:
+                await self.display_verbatim(stdout)
 
-            stderr = stderr.decode('utf-8')
-            if stderr:
-                await self._channel.send("stderr from command {!r}:".format(cmd))
-                await self.display_verbatim(stderr)
+        stderr = stderr.decode('utf-8')
+        if stderr:
+            await self._channel.send("stderr from command {!r}:".format(cmd))
+            await self.display_verbatim(stderr)
 
-            if isinstance(ret, int) and rc != ret:
-                raise ValueError(f"Expected result {ret}, got result {rc} while processing {cmd!r}")
+        if isinstance(ret, int) and rc != ret:
+            raise ValueError(f"Expected result {ret}, got result {rc} while processing {cmd!r}")
 
-            if isinstance(ret, (list, tuple, set)) and rc not in ret:
-                raise ValueError(f"Expected result in {ret}, got result {rc} while processing {cmd!r}")
+        if isinstance(ret, (list, tuple, set)) and rc not in ret:
+            raise ValueError(f"Expected result in {ret}, got result {rc} while processing {cmd!r}")
 
         return stdout
 
