@@ -1,9 +1,11 @@
-import os
-import sys
 import math
+import os
+import shutil
+import sys
 import uuid
 
 from collections.abc import MutableMapping
+from pathlib import Path
 
 from lib_py3.common import copy_file, uuid_to_mc_uuid_tag_int_array
 
@@ -159,6 +161,50 @@ class BaseRegion(MutableMapping, NbtPathDebug):
 
         self._region.delete_chunk(local_cx, local_cz)
 
+    def defragment(self):
+        """
+        Defragments unused space in this region file
+        """
+        self_path = Path(self.path).absolute()
+        self_name = self_path.name
+        parent_path = self_path.parent
+        work_path = Path(str(self_path) + ".defragmenting")
+        done_path = Path(str(self_path) + ".defragmented")
+
+        # Skip ahead if resuming completed defragment job
+        if not done_path.is_dir():
+            # Delete partially completed work; start again
+            if work_path.exists():
+                shutil.rmtree(work_path)
+            Path(work_path).mkdir(mode=0o755, parents=True, exist_ok=True)
+
+            # Create copy of self without unused space
+            new_path = str(work_path / self_name)
+            with open(new_path, 'wb') as fp:
+                fp.write(b'\x00' * 4096)
+            new_region = type(self)(new_path, self.rx, self.rz)
+            for chunk in self.iter_chunks():
+                new_region._region.save_chunk(nbt.TagRoot.from_body(chunk.nbt))
+            new_region._region.fd.close()
+            del new_region
+
+            work_path.rename(done_path)
+
+        # Delete existing region file contents, including oversized chunk files
+        for cx, cz in self.iter_chunk_coordinates():
+            self.delete_chunk(cx, cz)
+        self._region.close()
+        self_path.unlink()
+
+        # Move done folder contents to this directory
+        for child in list(done_path.iterdir()):
+            child_name = child.name
+            child.rename(parent_path / child_name)
+        done_path.rmdir()
+
+        # Reopen the region file in place (this point cannot be reached in read only mode)
+        self._region = nbt.RegionFile(self.path, read_only=False)
+
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
         """
         Copies this region file to a new location and returns that new Region
@@ -197,10 +243,10 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         """
         for cx, cz in self.iter_chunk_coordinates():
             if (
-                    16*cx + 16 <= min_x or
-                    16*cx > max_x or
-                    16*cz + 16 <= min_z or
-                    16*cz > max_z
+                    16 * cx + 16 <= min_x or
+                    16 * cx > max_x or
+                    16 * cz + 16 <= min_z or
+                    16 * cz > max_z
             ):
                 continue
 

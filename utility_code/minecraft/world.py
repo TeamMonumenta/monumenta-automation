@@ -52,6 +52,14 @@ class World():
         return [o for o in os.listdir(dir)
                     if os.path.isdir(os.path.join(dir, o)) and os.path.isfile(os.path.join(dir, o, "level.dat"))]
 
+    def defragment(self):
+        for region in self.iter_regions():
+            try:
+                region.defragment()
+            except Exception as e:
+                print(f'Exception defragmenting {region!r}')
+                raise
+
     def copy_to(self, path, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, regenerate_uuids=True, clear_world_uuid=False):
         os.makedirs(path)
         if self.level_dat is not None:
