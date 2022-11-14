@@ -636,7 +636,7 @@ if __name__ == '__main__':
         'cyan': 8,
         'purple': 10,
         'blue': 8,
-        'brown': 8,
+        'brown': 11,
         'teal': 9,
         'forum': 8,
         'remorse': 8,
