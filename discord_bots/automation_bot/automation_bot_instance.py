@@ -1771,6 +1771,8 @@ Syntax:
                 if do_prune:
                     await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                     await self.run(os.path.join(_top_level, f"utility_code/prune_empty_regions.py {shard}"))
+                    await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up - change again in case something else changed bot's directory
+                    await self.run(os.path.join(_top_level, f"utility_code/defragment.py {shard}"))
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard} --logfile {base_backup_name}_items.yml"), displayOutput=True)
                 await self.cd(os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
