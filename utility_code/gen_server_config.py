@@ -686,6 +686,8 @@ if __name__ == '__main__':
         "ring-8": "ring",
         "ring-9": "ring",
         "ring-10": "ring",
+        "ring-11": "ring",
+        "ring-12": "ring",
         "depths-2": "depths",
         "depths-3": "depths",
         "blue-2": "blue",
