@@ -841,6 +841,8 @@ Must be run before starting the update on the play server
         version = None
         args = message.content[len(self._prefix + cmd) + 1:].strip().split(" ")
 
+        await self.display("Update bundling started")
+
         if "--debug" in args:
             debug = True
             skip_commit = True
