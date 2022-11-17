@@ -7,11 +7,12 @@ import json
 import multiprocessing
 import os
 import sys
+import traceback
 
 from datetime import datetime
 from pathlib import Path
+from lib_py3.common import eprint
 from lib_py3.scoreboard import Scoreboard
-from minecraft.region import Region
 from minecraft.world import World
 
 
@@ -19,11 +20,16 @@ def get_region_entity_uuids(arg):
     full_path, world_name, rx, rz, region_type = arg
     region = region_type(full_path, rx, rz, read_only=True)
     entity_uuids = set()
-    for chunk in region.iter_chunks():
-        for entity in chunk.recursive_iter_entities():
-            entity_uuid = entity.uuid
-            if entity_uuid is not None:
-                entity_uuids.add(str(entity_uuid))
+    try:
+        for chunk in region.iter_chunks():
+            for entity in chunk.recursive_iter_entities():
+                entity_uuid = entity.uuid
+                if entity_uuid is not None:
+                    entity_uuids.add(str(entity_uuid))
+    except Exception as ex:
+        eprint(f"Caught exception iterating {region}: {ex}")
+        eprint(traceback.format_exc())
+
     return {world_name: entity_uuids}
 
 
@@ -152,12 +158,12 @@ def main():
 
     if not args.export and not args.import_:
         print('Must specify if exporting or importing')
-        argparser.print_usage()
+        arg_parser.print_usage()
         sys.exit(1)
 
     if args.export and args.import_:
         print('Must specify only one of exporting or importing')
-        argparser.print_usage()
+        arg_parser.print_usage()
         sys.exit(1)
 
     exporting = args.export
