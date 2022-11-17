@@ -241,11 +241,6 @@ shard_config = {
     },
     "skt-2": { "play" : { "node": "m13", "memGB": 4, }, },
     "skt-3": { "play" : { "node": "m13", "memGB": 4, }, },
-    "skt-4": { "play" : { "node": "m13", "memGB": 4, }, },
-    "skt-5": { "play" : { "node": "m11", "memGB": 4, }, },
-    "skt-6": { "play" : { "node": "m14", "memGB": 4, }, },
-    "skt-7": { "play" : { "node": "m14", "memGB": 4, }, },
-    "skt-8": { "play" : { "node": "m15", "memGB": 4, }, },
 }
 
 # Defaults for each namespace

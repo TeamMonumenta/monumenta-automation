@@ -700,11 +700,6 @@ if __name__ == '__main__':
         "ruin-2": "ruin",
         "skt-2": "skt",
         "skt-3": "skt",
-        "skt-4": "skt",
-        "skt-5": "skt",
-        "skt-6": "skt",
-        "skt-7": "skt",
-        "skt-8": "skt",
     }
 
     for key in copied_shard_config:
