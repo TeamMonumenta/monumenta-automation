@@ -162,6 +162,7 @@ class AutomationBotInstance():
             "cyan": "D10Access",
             "purple": "D11Access",
             "blue": "D12Access",
+            "brown": "D13Access",
             "willows": "DB1Access",
             "corridors": "DRAccess",
             "verdant": "DVAccess",
