@@ -70,7 +70,7 @@ shard_config = {
         "build": { "node": "m12", "memGB": 3   , },
         "stage": { "node": "m12", "memGB": 3   , },
     },
-    "ring-2":  { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-2":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-3":  { "play" : { "node": "m11", "memGB": 7, }, },
     "ring-4":  { "play" : { "node": "m11", "memGB": 7, }, },
     "ring-5":  { "play" : { "node": "m8" , "memGB": 7, }, },
@@ -78,9 +78,6 @@ shard_config = {
     "ring-7":  { "play" : { "node": "m14", "memGB": 7, }, },
     "ring-8":  { "play" : { "node": "m14", "memGB": 7, }, },
     "ring-9":  { "play" : { "node": "m15", "memGB": 7, }, },
-    "ring-10": { "play" : { "node": "m15", "memGB": 7, }, },
-    "ring-11": { "play" : { "node": "m15", "memGB": 7, }, },
-    "ring-12": { "play" : { "node": "m15", "memGB": 7, }, },
 
     # Plots
     "plots": {
@@ -89,7 +86,7 @@ shard_config = {
     },
 
     "playerplots": {
-        "play":  { "node": "m11", "memGB": 8, },
+        "play":  { "node": "m13", "memGB": 8, },
         "build": { "node": "m12", "memMB": 1536, },
         "stage": { "node": "m12", "memGB": 4, },
     },
@@ -119,7 +116,7 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "labs": {
-        "play" : { "node": "m13", "memGB": 6   , },
+        "play" : { "node": "m11", "memGB": 6   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "lightblue": {
@@ -187,7 +184,7 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "tutorial": {
-        "play" : { "node": "m13", "memGB": 5   , },
+        "play" : { "node": "m11", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "white": {
@@ -208,7 +205,6 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "gallery-2": { "play" : { "node": "m8", "memGB": 4, }, },
-    "gallery-3": { "play" : { "node": "m8", "memGB": 4, }, },
 
     "blue": {
         "play" : { "node": "m14", "memGB": 5   , },
@@ -219,21 +215,28 @@ shard_config = {
     "blue-4": { "play" : { "node": "m15", "memGB": 5, }, },
 
     "brown": {
+        "play" : { "node": "m8" , "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
+    "brown-2":  { "play" : { "node": "m11", "memGB": 5, }, },
+    "brown-3":  { "play" : { "node": "m11", "memGB": 5, }, },
+    "brown-4":  { "play" : { "node": "m13", "memGB": 5, }, },
+    "brown-5":  { "play" : { "node": "m13", "memGB": 5, }, },
+    "brown-6":  { "play" : { "node": "m14", "memGB": 5, }, },
+    "brown-7":  { "play" : { "node": "m14", "memGB": 5, }, },
+    "brown-8":  { "play" : { "node": "m14", "memGB": 5, }, },
+    "brown-9":  { "play" : { "node": "m15", "memGB": 5, }, },
+    "brown-10": { "play" : { "node": "m15", "memGB": 5, }, },
 
     "portal": {
         "play" : { "node": "m11", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
-    "portal-2": { "play" : { "node": "m11", "memGB": 4, }, },
-    "portal-3": { "play" : { "node": "m11", "memGB": 4, }, },
 
     "ruin": {
         "play" : { "node": "m8", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
-    "ruin-2": { "play" : { "node": "m8", "memGB": 4, }, },
 
     "skt": {
         "play" : { "node": "m13", "memGB": 4   , },
