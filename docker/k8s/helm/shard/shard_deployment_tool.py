@@ -76,7 +76,7 @@ shard_config = {
     "ring-5":  { "play" : { "node": "m8" , "memGB": 7, }, },
     "ring-6":  { "play" : { "node": "m8" , "memGB": 7, }, },
     "ring-7":  { "play" : { "node": "m14", "memGB": 7, }, },
-    "ring-8":  { "play" : { "node": "m14", "memGB": 7, }, },
+    "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-9":  { "play" : { "node": "m15", "memGB": 7, }, },
 
     # Plots
