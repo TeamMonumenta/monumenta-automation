@@ -695,8 +695,6 @@ if __name__ == '__main__':
         "brown-6": "brown",
         "brown-7": "brown",
         "brown-8": "brown",
-        "brown-9": "brown",
-        "brown-10": "brown",
         "gallery-2": "gallery",
         "skt-2": "skt",
         "skt-3": "skt",

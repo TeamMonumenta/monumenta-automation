@@ -210,23 +210,21 @@ shard_config = {
         "play" : { "node": "m14", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
-    "blue-2": { "play" : { "node": "m14", "memGB": 5, }, },
+    "blue-2": { "play" : { "node": "m8" , "memGB": 5, }, },
     "blue-3": { "play" : { "node": "m15", "memGB": 5, }, },
-    "blue-4": { "play" : { "node": "m15", "memGB": 5, }, },
+    "blue-4": { "play" : { "node": "m11", "memGB": 5, }, },
 
     "brown": {
-        "play" : { "node": "m8" , "memGB": 5   , },
+        "play" : { "node": "m15", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
-    "brown-2":  { "play" : { "node": "m11", "memGB": 5, }, },
+    "brown-2":  { "play" : { "node": "m15", "memGB": 5, }, },
     "brown-3":  { "play" : { "node": "m11", "memGB": 5, }, },
     "brown-4":  { "play" : { "node": "m13", "memGB": 5, }, },
     "brown-5":  { "play" : { "node": "m13", "memGB": 5, }, },
     "brown-6":  { "play" : { "node": "m14", "memGB": 5, }, },
     "brown-7":  { "play" : { "node": "m14", "memGB": 5, }, },
     "brown-8":  { "play" : { "node": "m14", "memGB": 5, }, },
-    "brown-9":  { "play" : { "node": "m15", "memGB": 5, }, },
-    "brown-10": { "play" : { "node": "m15", "memGB": 5, }, },
 
     "portal": {
         "play" : { "node": "m11", "memGB": 4   , },
