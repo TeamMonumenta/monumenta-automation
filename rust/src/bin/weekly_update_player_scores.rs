@@ -70,13 +70,7 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         update_instance_scores(scores, days_since_epoch, "DBWStartDate", 28, &["DB1Access", "DB1Finished"]);
         update_instance_scores(scores, days_since_epoch, "DCSStartDate", 28, &["DRL2Access", "DRL2Finished"]);
         update_instance_scores(scores, days_since_epoch, "DFFStartDate", 28, &["DFFAccess", "DFFFinished"]);
-        update_instance_scores(scores, days_since_epoch, "DSKTStartDate", 14, &["DSKTAccess", "DSKTFinished", "DSKTChests"]);
-
-        // TODO: Remove this after one weekly update (after nov 24)
-        let sktfinished = *scores.get("DSKTFinished").unwrap_or(&0);
-        if sktfinished > 0 {
-            scores.insert("DSKTChests".to_string(), sktfinished);
-        }
+        update_instance_scores(scores, days_since_epoch, "DSKTStartDate", 14, &["DSKTAccess", "DSKTChests"]);
 
         /* DelveDungeon score also resets as if it was a dungeon score */
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
