@@ -770,7 +770,7 @@ This will roll a player back to the most recent weekly update data.
             return
 
         playername = commandArgs[0]
-        rollbackpath = f"/home/epic/play/m8/server_config/redis_data_initial"
+        rollbackpath = f"/home/epic/play/m13/server_config/redis_data_initial"
         backuppath = f"/home/epic/0_OLD_BACKUPS/rollback_player_{playername}_{datestr()}"
 
         await self.run([os.path.join(_top_level, "rust/bin/player_backup_and_rollback"), "redis://redis/", "play", playername, rollbackpath, backuppath], displayOutput=True)
