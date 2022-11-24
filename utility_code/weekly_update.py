@@ -333,7 +333,7 @@ if __name__ == '__main__':
                 if os.path.exists(from_world_path):
                     move_folder(from_world_path, output_world_path)
                 else:
-                    eprint(f"WARNING: Unable to preserve {world_name} - previous world folder does not exist")
+                    print(f"WARNING: Unable to preserve {world_name} - previous world folder does not exist")
 
         # Move any overworld subfolders that need to be preserved
         if "move_previous_paths" in config:
