@@ -806,7 +806,7 @@ If --debug argument is specified, will not stop dungeon shard before copying
 
         if not debug:
             await self.display("Restarting the dungeon shard...")
-            await self.start("dungeon")
+            await self.start("dungeon", wait=False)
 
         await self.display("Generating dungeon instances (this may take a while)...")
         instance_gen_arg = " --dungeon-path /home/epic/5_SCRATCH/tmpreset/dungeon/ --out-folder /home/epic/5_SCRATCH/tmpreset/dungeons-out/"
@@ -911,7 +911,7 @@ Must be run before starting the update on the play server
 
         if not debug:
             await self.display("Restarting the valley shard...")
-            await self.start("valley")
+            await self.start("valley", wait=False)
 
         await self.display("Copying isles...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles")
@@ -919,7 +919,7 @@ Must be run before starting the update on the play server
 
         if not debug:
             await self.display("Restarting the isles shard...")
-            await self.start("isles")
+            await self.start("isles", wait=False)
 
         await self.display("Copying ring...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring")
@@ -927,7 +927,7 @@ Must be run before starting the update on the play server
 
         if not debug:
             await self.display("Restarting the ring shard...")
-            await self.start("ring")
+            await self.start("ring", wait=False)
 
         await self.display("Copying purgatory...")
         await self.run("cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
