@@ -1202,7 +1202,7 @@ old coreprotect data will be removed at the 5 minute mark.
         now = datetime.now(tz)
         stop_time = datetime(now.year, now.month, now.day, now.hour, target_minute, tzinfo=tz)
         if stop_time < now:
-            stop_time = datetime(now.year, now.month, now.day, now.hour + 1, target_minute, tzinfo=tz)
+            stop_time += timedelta(hours=1)
 
         countdown_targets = sorted([
             60 * 50,
