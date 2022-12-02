@@ -78,6 +78,9 @@ shard_config = {
     "ring-7":  { "play" : { "node": "m14", "memGB": 7, }, },
     "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-9":  { "play" : { "node": "m15", "memGB": 7, }, },
+    "ring-10":  { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-11":  { "play" : { "node": "m14", "memGB": 7, }, },
+    "ring-12":  { "play" : { "node": "m14", "memGB": 7, }, },
 
     # Plots
     "plots": {
@@ -220,11 +223,6 @@ shard_config = {
     },
     "brown-2":  { "play" : { "node": "m15", "memGB": 5, }, },
     "brown-3":  { "play" : { "node": "m11", "memGB": 5, }, },
-    "brown-4":  { "play" : { "node": "m13", "memGB": 5, }, },
-    "brown-5":  { "play" : { "node": "m13", "memGB": 5, }, },
-    "brown-6":  { "play" : { "node": "m14", "memGB": 5, }, },
-    "brown-7":  { "play" : { "node": "m14", "memGB": 5, }, },
-    "brown-8":  { "play" : { "node": "m14", "memGB": 5, }, },
 
     "portal": {
         "play" : { "node": "m11", "memGB": 4   , },
