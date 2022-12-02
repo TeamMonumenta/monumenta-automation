@@ -924,6 +924,7 @@ Must be run before starting the update on the play server
         await self.display("Copying ring...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring")
         await self.run("cp -a /home/epic/project_epic/ring/Project_Epic-ring /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run("cp -a /home/epic/project_epic/ring/godspore /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
 
         if not debug:
             await self.display("Restarting the ring shard...")
