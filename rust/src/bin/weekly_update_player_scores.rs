@@ -85,6 +85,7 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("DGAccess".to_string(), 0);
         scores.insert("DPSAccess".to_string(), 0);
         scores.insert("DMASAccess".to_string(), 0);
+        scores.insert("GodsporeAccess".to_string(), 0);
 
         fix_total_level(scores);
     }
