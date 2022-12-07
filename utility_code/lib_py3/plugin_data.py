@@ -111,6 +111,10 @@ class PluginData(NbtPathDebug):
         """Get the charms stored on a player, if they exist."""
         return MonumentaCharms(self._data.get("R3Charms", {}), self)
 
+    def wallet(self):
+        """Get the wallet stored on a player, if it exists."""
+        return MonumentaWallet(self._data.get("Wallet", {}), self)
+
     def __repr__(self):
         return f'PluginData({os.path.basename(self._path)!r})'
 
@@ -211,6 +215,101 @@ class JsonWrappedCharmItem(Item):
         if self.parent is not None:
             return self.parent.pos
         return None
+
+
+class MonumentaWallet(NbtPathDebug):
+    """A wallet with currency items in it."""
+
+    def __init__(self, json_data, parent):
+        self._data = json_data
+
+        self.nbt_path_init(None, parent, parent.root if parent is not None and parent.root is not None else self, None)
+
+        self._items = None
+        items_array = self._data.get("items", None)
+        if items_array is not None:
+            self._items = []
+            for item_json in items_array:
+                self._items.append(JsonWrappedWalletItem(item_json, self))
+
+    def get_debug_str(self):
+        return str(self)
+
+    def serialize(self):
+        if isinstance(self._items, list):
+            self._data["items"] = [wallet_item.serialize() for wallet_item in self._items]
+
+        return self._data
+
+    def iter_all_types(self):
+        """Iterates wallet items"""
+        yield from self.iter_items()
+
+    def iter_block_entities(self):
+        return
+
+    def iter_entities(self):
+        return
+
+    def iter_items(self):
+        """Iterates wallet items"""
+        if isinstance(self._items, list):
+            for i in range(len(self._items)):
+                item = self._items[i]
+                yield item
+                self._items[i] = item.serialize()
+
+    def recursive_iter_all_types(self):
+        yield self
+        for obj in self.iter_all_types():
+            yield from obj.recursive_iter_all_types()
+
+    def recursive_iter_block_entities(self):
+        for obj in self.iter_all_types():
+            yield from obj.recursive_iter_block_entities()
+
+    def recursive_iter_entities(self):
+        for obj in self.iter_all_types():
+            yield from obj.recursive_iter_entities()
+
+    def recursive_iter_items(self):
+        for obj in self.iter_all_types():
+            yield from obj.recursive_iter_items()
+
+    @property
+    def pos(self):
+        """Gets wallet position, which is same as the parent player"""
+        if self.parent is not None:
+            return self.parent.pos
+        return None
+
+    def __repr__(self):
+        return f'Wallet'
+
+
+class JsonWrappedWalletItem(Item):
+    """A JSON wallet item object containing an 'item' field describing an item (and an 'amount' field for the amount)
+
+    Can be instantiated, edited, and re-serialized, which will change the nbt data but keep the other JSON object fields intact.
+
+    Otherwise has all the methods a regular Item has (iterating, etc.)
+    """
+
+    def __init__(self, json_data, parent=None):
+        self._data = json_data
+        item_nbt = nbt.TagCompound.from_mojangson(self._data["item"])
+        super().__init__(item_nbt, parent, None)
+
+    def serialize(self):
+        self._data["item"] = self.nbt.to_mojangson()
+        return self._data
+
+    @property
+    def pos(self):
+        if self.parent is not None:
+            return self.parent.pos
+        return None
+
 
 class MonumentaGraves(NbtPathDebug):
     """A collection of items preserved from death or carelessness."""
