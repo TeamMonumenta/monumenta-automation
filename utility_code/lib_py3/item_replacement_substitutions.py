@@ -469,6 +469,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:yellow_stained_glass", "Tesseract of Elements (u)", "minecraft:yellow_stained_glass", "Tesseract of the Elements (u)"],
                 ["minecraft:nether_star", "Harrakafar's Roar", "minecraft:nether_star", "Harrakfar's Roar"],
                 ["minecraft:blaze_rod", "C.A.L.D.E.R Non-Dimensional Wand", "minecraft:blaze_rod", "C.A.L.D.E.R. Non-Dimensional Wand"],
+                ["minecraft:white_stained_glass", "Tesseract of Festivity", "minecraft:ice", "Tesseract of Festivity"],
+                ["minecraft:white_stained_glass", "Tesseract of Festivity (u)", "minecraft:ice", "Tesseract of Festivity (u)"],
 
         ]:
 
