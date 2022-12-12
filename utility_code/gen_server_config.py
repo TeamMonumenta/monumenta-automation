@@ -674,7 +674,7 @@ if __name__ == '__main__':
         elif key == 'depths':
             linked.append(('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit_depths.jar'))
         else:
-            linked.append(worldedit_default)
+            linked += worldedit_default
         config[key] = {
             'config': server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance={}'.format(distance)),
