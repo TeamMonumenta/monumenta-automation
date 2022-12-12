@@ -325,8 +325,13 @@ if __name__ == '__main__':
         ('plugins/CoreProtect.jar', '../../server_config/plugins/CoreProtect.jar'),
     ]
 
-    worldedit = [
-        ('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit.jar'),
+    worldedit_default = []
+    if SERVER_TYPE == 'build':
+        worldedit_default.append(('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit_build.jar'))
+    else:
+        worldedit_default.append(('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit_play.jar'))
+
+    worldedit_schematics = [
         ('plugins/FastAsyncWorldEdit/schematics', '/home/epic/4_SHARED/schematics'),
     ]
 
@@ -392,7 +397,7 @@ if __name__ == '__main__':
     #   server_config
     #   structures
 
-    base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
+    base_plugins = luckperms + monumenta + openinv + worldedit_schematics + coreprotect + nbteditor + network_chat
     if SERVER_TYPE == 'build':
         base_plugins += speedchanger + voxelsniper + gobrush + metatools
     else:
@@ -421,7 +426,7 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + worldedit_default + dynmap + [
                 ('plugins/Monumenta/InfinityTower/InfinityFloors.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityFloors.json'),
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/valley/Monumenta/bounties'),
             ],
@@ -433,7 +438,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + worldedit_default + dynmap + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/isles/Monumenta/bounties'),
             ],
         },
@@ -444,7 +449,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + worldedit_default + dynmap + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
             ],
         },
@@ -455,7 +460,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + [
+            'linked':server_config + base_plugins + worldedit_default + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
             ],
         },
@@ -465,7 +470,7 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=12'),
                 ('spigot.yml', 'view-distance', '    view-distance: 12'),
             ],
-            'linked':server_config + base_plugins + dynmap,
+            'linked':server_config + base_plugins + worldedit_default + dynmap,
         },
 
         'dungeon':{
@@ -473,7 +478,7 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=12'),
                 ('spigot.yml', 'view-distance', '    view-distance: 12'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + worldedit_default + dynmap + [
                 ('plugins/Roguelite', '../../server_config/data/Roguelite'),
                 ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
                 ('plugins/ScriptedQuests/npcs/tutorial', '../../../../server_config/data/scriptedquests/npcs/tutorial'),
@@ -486,7 +491,7 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=12'),
                 ('spigot.yml', 'view-distance', '    view-distance: 12'),
             ],
-            'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
+            'linked':server_config_min + luckperms_standalone + monumenta + worldedit_default + worldedit_schematics + speedchanger + nbteditor + voxelsniper + coreprotect,
         },
 
         'pvp_do_not_use':{
@@ -494,7 +499,7 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ],
-            'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + nbteditor + voxelsniper + coreprotect,
+            'linked':server_config_min + luckperms_standalone + monumenta + worldedit_default + worldedit_schematics + speedchanger + nbteditor + voxelsniper + coreprotect,
         },
 
         'build':{
@@ -509,7 +514,7 @@ if __name__ == '__main__':
                 ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
                 ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
             ],
-            'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + vanish + [
+            'linked':server_config_min + luckperms_standalone + monumenta + worldedit_default + worldedit_schematics + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + vanish + [
                 ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
                 ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/build/MonumentaNetworkChat/config.yml'),
                 ('plugins/MonumentaNetworkChat/help', '../../../server_config/data/plugins/all/MonumentaNetworkChat/help'),
@@ -525,7 +530,7 @@ if __name__ == '__main__':
                 ('server.properties', 'difficulty', 'difficulty=normal'),
                 ('plugins/LibraryOfSouls/config.yml', 'read_only', 'read_only: false'),
             ],
-            'linked':server_config + base_plugins + dynmap,
+            'linked':server_config + base_plugins + worldedit_default + dynmap,
         },
 
         'event':{
@@ -533,7 +538,7 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ],
-            'linked':server_config + base_plugins + dynmap,
+            'linked':server_config + base_plugins + worldedit_default + dynmap,
         },
 
         'dev1':{
@@ -542,7 +547,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
-            'linked':server_config + base_plugins + dynmap,
+            'linked':server_config + base_plugins + worldedit_default + dynmap,
         },
 
         'dev2':{
@@ -551,7 +556,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
-            'linked':server_config + base_plugins + dynmap,
+            'linked':server_config + base_plugins + worldedit_default + dynmap,
         },
 
         'dev3':{
@@ -560,7 +565,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
-            'linked':server_config + base_plugins + dynmap,
+            'linked':server_config + base_plugins + worldedit_default + dynmap,
         },
 
         'dev4':{
@@ -569,7 +574,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
-            'linked':server_config + base_plugins,
+            'linked':server_config + base_plugins + worldedit_default,
         },
 
         'plots':{
@@ -577,7 +582,7 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=6'),
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
             ],
-            'linked':server_config + base_plugins + dynmap,
+            'linked':server_config + base_plugins + worldedit_default + dynmap,
         },
 
         'shiftingcity':{
@@ -586,6 +591,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 15'),
             ],
             'linked':server_config + base_plugins + [
+                ('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit_shiftingcity.jar'),
                 ('plugins/Roguelite', '../../server_config/data/Roguelite'),
                 ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
             ],
@@ -662,12 +668,19 @@ if __name__ == '__main__':
 
     for key in simple_view_distance_config:
         distance = simple_view_distance_config[key]
+        linked = server_config + base_plugins
+        if key == 'corridors':
+            linked.append(('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit_corridors.jar'))
+        elif key == 'depths':
+            linked.append(('plugins/FastAsyncWorldEdit.jar', '../../server_config/plugins/FastAsyncWorldEdit_depths.jar'))
+        else:
+            linked.append(worldedit_default)
         config[key] = {
-            'config':server_config_to_copy + [
+            'config': server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance={}'.format(distance)),
                 ('spigot.yml', 'view-distance', '    view-distance: {}'.format(distance)),
             ],
-            'linked':server_config + base_plugins,
+            'linked': linked,
         }
 
 
