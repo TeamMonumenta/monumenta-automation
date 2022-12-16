@@ -1,19 +1,20 @@
 #!/usr/bin/env pypy3
 
-import os
 import getopt
 import multiprocessing
+import os
 import sys
 import traceback
 import yaml
 
+from lib_py3.common import eprint
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.common import eprint
 from lib_py3.plugin_data import iter_plugin_data_parallel
-from lib_py3.upgrade import upgrade_entity
 from lib_py3.timing import Timings
+from lib_py3.upgrade import upgrade_entity
 from minecraft.world import World
+
 
 def usage():
     sys.exit("Usage: {} <--world /path/to/world> <--datapacks /path/to/datapacks> [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
@@ -48,6 +49,10 @@ def process_plugin_data(plugin_data):
 
     # TODO: Eventually should refactor plugin data so it has a top-level iterator interface to eliminate the need to call charms() directly
     for item in plugin_data.charms().recursive_iter_items():
+        if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+            num_replacements += 1
+
+    for item in plugin_data.wallet().recursive_iter_items():
         if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
             num_replacements += 1
 
