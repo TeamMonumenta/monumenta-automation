@@ -204,6 +204,10 @@ class FixPlainTag(SubstitutionRule):
         if item.nbt.has_path("tag"):
             update_plain_tag(item.nbt.at_path("tag"))
 
+
+PLAIN_SHULKER_REGEX = re.compile(r'[a-zA-Z0-9_]{3,16}')
+PLAYER_LOADOUT_REGEX = re.compile(r"[a-zA-Z0-9_]{3,16}'s Lockbox")
+
 class UpdateRenamedShulkers(SubstitutionRule):
     """Note: To be deleted after one week!"""
     name = "Update renamed Shulker Boxes"
@@ -214,13 +218,13 @@ class UpdateRenamedShulkers(SubstitutionRule):
             return
         new_name = None
         new_custom_name = None
-        if re.fullmatch(r'[a-zA-Z0-9_]{3,16}', old_name):  # MC account name, or any of the selectable names at Johnny Hammer
+        if PLAIN_SHULKER_REGEX.fullmatch(old_name):  # MC account name, or any of the selectable names at Johnny Hammer
             new_name = None
             new_custom_name = old_name
         elif old_name.startswith('Loadout: '):
             new_name = "Loadout Lockbox"
             new_custom_name = old_name[9:]
-        elif re.fullmatch(r"[a-zA-Z0-9_]{3,16}'s Lockbox", old_name):
+        elif PLAYER_LOADOUT_REGEX.fullmatch(old_name):
             new_name = "Loadout Lockbox"
             new_custom_name = old_name[:-10]
         if new_custom_name is not None:
