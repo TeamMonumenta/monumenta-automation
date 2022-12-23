@@ -908,6 +908,7 @@ Must be run before starting the update on the play server
         await self.display("Copying valley...")
         await self.run("mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley")
         await self.run("cp -a /home/epic/project_epic/valley/Project_Epic-valley /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
+        await self.run("cp -a /home/epic/project_epic/valley/azacor /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
 
         if not debug:
             await self.display("Restarting the valley shard...")
