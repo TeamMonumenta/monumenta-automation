@@ -1,5 +1,4 @@
 import os
-import re
 import sys
 from lib_py3.common import always_equal
 from lib_py3.common import get_item_name_from_nbt
@@ -206,48 +205,38 @@ class FixPlainTag(SubstitutionRule):
             update_plain_tag(item.nbt.at_path("tag"))
 
 
-PLAIN_SHULKER_REGEX = re.compile(r'[a-zA-Z0-9_]{3,16}')
-PLAYER_LOADOUT_REGEX = re.compile(r"[a-zA-Z0-9_]{3,16}'s Lockbox")
-
-class UpdateRenamedShulkers(SubstitutionRule):
-    """Note: To be deleted after one week!"""
-    name = "Update renamed Shulker Boxes"
+class FixBrokenShulkers(SubstitutionRule):
+    """Note: only to be run once!"""
+    name = "Fix Firmament, LOOTBOX, and Omnilockbox broken last update"
 
     def process(self, item_meta, item):
-        old_name = item_meta['name']
-        if old_name is None or not item_meta['id'].endswith('shulker_box'):
+        if (not item_meta['id'].endswith('shulker_box')
+                or item_meta['name'] is not None
+                or not item.tag.has_path('Monumenta.Tier')
+                or not item.tag.has_path('Monumenta.Region')
+                or not item.tag.has_path('Monumenta.Location')
+                or not item.tag.has_path('plain.display.Lore')):
             return
-        new_name = None
-        new_custom_name = None
-        if PLAIN_SHULKER_REGEX.fullmatch(old_name):  # MC account name, or any of the selectable names at Johnny Hammer
-            new_name = None
-            new_custom_name = old_name
-        elif old_name.startswith('Loadout: '):
-            new_name = "Loadout Lockbox"
-            new_custom_name = old_name[9:]
-        elif PLAYER_LOADOUT_REGEX.fullmatch(old_name):
-            new_name = "Loadout Lockbox"
-            new_custom_name = old_name[:-10]
-        if new_custom_name is not None:
-            item_meta['name'] = new_name
+        tier = item.tag.at_path('Monumenta.Tier').value
+        region = item.tag.at_path('Monumenta.Region').value
+        location = item.tag.at_path('Monumenta.Location').value
+        lore = item.tag.at_path('plain.display.Lore').value
+        if (tier == 'epic'
+                and region == 'isles'
+                and location == 'shifting'
+                and "50% of the time, the Firmament will place Prismarine" in lore):
+            item_meta['name'] = 'Firmament'
+        elif (tier == 'unique'
+                and region == 'valley'
+                and location == 'overworld1'
+                and "of any nearby opened loot chest." in lore):
+            item_meta['name'] = 'LOOTBOX'
+        elif (tier == 'epic'
+                and region == 'ring'
+                and location == 'science'
+                and "the Omnilockbox swaps all of the user's" in lore):
+            item_meta['name'] = 'Omnilockbox'
 
-            if new_name is None:
-                del item.tag.at_path('display').value['Name']
-                if len(item.tag.at_path('display').value) == 0:
-                    item.tag.value.pop('display')
-                del item.tag.at_path('plain.display').value['Name']
-                if len(item.tag.at_path('plain.display').value) == 0:
-                    item.tag.at_path('plain').value.pop('display')
-                if len(item.tag.at_path('plain').value) == 0:
-                    item.tag.value.pop('plain')
-
-            if not item.nbt.has_path('tag'):
-                item.nbt.value['tag'] = nbt.TagCompound({})
-            if not item.tag.has_path('Monumenta'):
-                item.tag.value['Monumenta'] = nbt.TagCompound({})
-            if not item.tag.has_path('Monumenta.PlayerModified'):
-                item.tag.at_path('Monumenta').value['PlayerModified'] = nbt.TagCompound({})
-            item.tag.at_path('Monumenta.PlayerModified').value['PlayerCustomName'] = nbt.TagString(new_custom_name)
 
 class SubtituteItems(SubstitutionRule):
     name = "Substitute the ID and name of items, ignoring other NBT"
