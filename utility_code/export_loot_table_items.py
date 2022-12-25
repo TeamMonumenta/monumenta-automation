@@ -134,7 +134,7 @@ for item_type in mgr.item_map:
                 nbt_ = item["nbt"]
 
         if nbt_ is not None:
-            items[item_name] = {"files": locs, "nbt": nbt_.to_mojangson(), "release_status": "unreleased"}
+            items[item_name] = {"files": locs, "nbt": nbt_.to_mojangson(), "nbt_as_json": nbt_.to_json(), "release_status": "unreleased"}
     if len(items) > 0:
         out_map[item_type] = items
 
