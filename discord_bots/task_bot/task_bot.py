@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 import logging
 import traceback
 import signal
 import asyncio
-from pprint import pformat
-import yaml
 import kanboard
 
 logging.basicConfig(level=logging.DEBUG) # TODO INFO
@@ -15,45 +12,27 @@ logging.basicConfig(level=logging.DEBUG) # TODO INFO
 import discord
 from discord.ext import commands
 
-from task_database import TaskDatabase
+import config
 from common import split_string
 from kanboard_webhooks import start_webhook_server
-
-################################################################################
-# Config / Environment
-
-bot_config = {}
-
-config_dir = os.environ.get("TASK_HOME", os.path.expanduser("~/.task_bot/"))
-config_path = os.path.join(config_dir, "config.yml")
-
-# Read the bot's config file
-with open(config_path, 'r') as ymlfile:
-    bot_config = yaml.load(ymlfile, Loader=yaml.FullLoader)
-
-logging.info("\nBot Configuration: %s\n", pformat(bot_config))
-
-if "login" not in bot_config is None:
-    sys.exit('No login info is provided')
+from task_database import TaskDatabase
 
 kanboard_client = None
 kanboard_webhook_queue = None
 kanboard_webhook_process = None
-if 'kanboard' in bot_config:
-    kanboard_client = kanboard.Client(bot_config['kanboard']['url'], 'jsonrpc', bot_config['kanboard']['token'])
+if config.KANBOARD is not None:
+    kanboard_client = kanboard.Client(config.KANBOARD['url'], 'jsonrpc', config.KANBOARD['token'])
     if kanboard_client is None:
         sys.exit("Kanboard specified but failed to connect")
 
     kanboard_webhook_process, kanboard_webhook_queue = start_webhook_server()
 
-
 class GracefulKiller:
     """Class to catch signals (CTRL+C, SIGTERM) and gracefully save databases and stop the bot"""
 
-    def __init__(self, bot, facet_channels):
+    def __init__(self, bot):
         self._bot = bot
         self.stopping = False
-        self._facet_channels = facet_channels
 
     def register(self):
         """Register signals that cause shutdown"""
@@ -64,10 +43,9 @@ class GracefulKiller:
         """Exit gracefully on signal"""
         self.stopping = True
         logging.info("Received signal; shutting down...")
-        for _, db in facet_channels:
-            logging.info("Saving %s...", db._descriptor_plural)
-            db._stopping = True
-            db.save()
+        logging.info("Saving %s...", self._bot.db._descriptor_plural)
+        self._bot.db._stopping = True
+        self._bot.db.save()
         logging.info("All saved. Handing off to discord client...")
         # TODO: This is not the right way to do this. Kills the process at least... but really jank
         asyncio.run(self._bot.close())
@@ -79,7 +57,9 @@ class TaskBot(commands.Bot):
         super().__init__(
             command_prefix='.',
             intents=intents,
-            application_id=bot_config["application_id"])
+            application_id=config.APPLICATION_ID)
+
+        self.db = None
 
     async def on_ready(self):
         """Bot ready"""
@@ -91,17 +71,18 @@ class TaskBot(commands.Bot):
 
         # On ready can happen multiple times when the bot automatically reconnects
         # Don't re-create the per-channel listeners when this happens
-        if len(facet_channels) == 0:
-            for facet in bot_config["facets"]:
-                db = TaskDatabase(self, kanboard_client, facet, config_dir)
-                await bot.add_cog(db, guilds=[discord.Object(id=bot_config["guild_id"])])
-                for input_channel in facet["bot_input_channels"]:
-                    facet_channels.append((input_channel, db))
+        if self.db is None:
+            self.db = TaskDatabase(self, kanboard_client)
+            await bot.add_cog(self.db, guilds=[discord.Object(id=config.GUILD_ID)])
 
     async def on_message(self, message):
         """Bot received message"""
 
         logging.debug("Received message in channel %s: %s", message.channel, message.content)
+
+        if self.db is None:
+            logging.info('Ignoring message during init')
+            return
 
         # Don't process messages while stopping
         if killer.stopping:
@@ -111,31 +92,26 @@ class TaskBot(commands.Bot):
         if kanboard_webhook_queue is not None:
             while not kanboard_webhook_queue.empty():
                 json_msg = kanboard_webhook_queue.get()
-                for _, db in facet_channels:
-                    await db.on_webhook_post(json_msg)
+                await self.db.on_webhook_post(json_msg)
 
-
-        for facet_channel, db in facet_channels:
-            if message.channel.id == facet_channel:
-                try:
-                    await db.handle_message(message)
-                except Exception as e:
-                    await message.channel.send(message.author.mention)
-                    await message.channel.send("**ERROR**: ```" + str(e) + "```")
-                    for chunk in split_string(traceback.format_exc()):
-                        await message.channel.send("```" + chunk + "```")
+        if message.channel.id == config.BOT_INPUT_CHANNEL:
+            try:
+                await self.db.handle_message(message)
+            except Exception as e:
+                await message.channel.send(message.author.mention)
+                await message.channel.send("**ERROR**: ```" + str(e) + "```")
+                for chunk in split_string(traceback.format_exc()):
+                    await message.channel.send("```" + chunk + "```")
 
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 
-facet_channels = []
-
 bot = TaskBot()
-killer = GracefulKiller(bot, facet_channels)
+killer = GracefulKiller(bot)
 
 async def main():
     """Asyncio entrypoint"""
-    await bot.start(bot_config["login"])
+    await bot.start(config.LOGIN)
 
 asyncio.run(main())

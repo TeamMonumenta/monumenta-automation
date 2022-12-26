@@ -8,6 +8,7 @@ from functools import cmp_to_key
 import discord
 from discord.ext import commands
 
+import config
 from interactive_search import InteractiveSearch
 from common import get_list_match, split_string
 from task_kanboard import TaskKanboard
@@ -15,26 +16,18 @@ from task_kanboard import TaskKanboard
 class TaskDatabase(commands.Cog):
     """A specific instance of the task bot (bugs, suggestions, etc.)"""
 
-    def __init__(self, bot, kanboard_client, config, config_dir):
+    def __init__(self, bot, kanboard_client):
         self._bot = bot
         self._kanboard_client = kanboard_client
         self._kanboard = None
         self._stopping = False
 
         try:
-            self._user_privileges = config["user_privileges"]
-            self._group_privileges = config["group_privileges"]
-            self._channel_id = config["channel_id"]
-            self._prefix = config["prefix"]
-            self._descriptor_single = config["descriptor_single"]
-            self._descriptor_plural = config["descriptor_plural"]
-            self._descriptor_proper = config["descriptor_proper"]
-            self._reactions = config["reactions"]
-            logging.debug("Attempting to get channel %s", self._channel_id)
-            self._channel = self._bot.get_channel(self._channel_id)
+            logging.debug("Attempting to get channel %s", config.CHANNEL_ID)
+            self._channel = self._bot.get_channel(config.CHANNEL_ID)
             if self._channel is None:
                 raise Exception("Error getting bot channel!")
-            self._database_path = os.path.join(config_dir, config["database_path"])
+            self._database_path = os.path.join(config.CONFIG_DIR, config.DATABASE_PATH)
             self._interactive_sessions = []
             self.load()
         except KeyError as e:
@@ -79,7 +72,7 @@ class TaskDatabase(commands.Cog):
             }
             self._notifications_disabled = set([])
             self.save()
-            print("Initialized new {} database".format(self._descriptor_single), flush=True)
+            print("Initialized new {} database".format(config.DESCRIPTOR_SINGLE), flush=True)
         else:
             with open(self._database_path, 'r') as f:
                 data = json.load(f)
@@ -139,7 +132,7 @@ class TaskDatabase(commands.Cog):
             if changed:
                 self.save()
 
-            print("Loaded {} database".format(self._descriptor_single), flush=True)
+            print("Loaded {} database".format(config.DESCRIPTOR_SINGLE), flush=True)
 
     async def on_webhook_post(self, json_msg):
         if self._kanboard is not None:
@@ -161,7 +154,7 @@ class TaskDatabase(commands.Cog):
         index = str(index)
 
         if index not in self._entries:
-            raise ValueError('{proper} #{index} not found!'.format(proper=self._descriptor_proper, index=index))
+            raise ValueError('{proper} #{index} not found!'.format(proper=config.DESCRIPTOR_PROPER, index=index))
 
         return index, self._entries[index]
 
@@ -237,11 +230,11 @@ class TaskDatabase(commands.Cog):
         priv = 0; # Everyone has this level
 
         # Get privilege based on user list
-        priv = max(priv, self._user_privileges.get(author.id, 0))
+        priv = max(priv, config.USER_PRIVILEGES.get(author.id, 0))
 
         # Get privilege based on group role
         for role in author.roles:
-            priv = max(priv, self._group_privileges.get(role.id, 0))
+            priv = max(priv, config.GROUP_PRIVILEGES.get(role.id, 0))
 
         # Get privilege based on entry ownership
         if index is not None:
@@ -353,7 +346,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         if needs_save:
             self.save()
 
-        for reaction in self._reactions:
+        for reaction in config.REACTIONS:
             await msg.add_reaction(reaction)
 
     async def print_search_results(self, channel, match_entries, limit=15, sort_entries=True, mention_assigned=False, include_reactions=True):
@@ -425,7 +418,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         if (not message.content) or (len(part) < 1):
             return
 
-        match = get_list_match(part[0].strip(), [self._prefix, ])
+        match = get_list_match(part[0].strip(), [config.PREFIX, ])
         if match is None:
             return
 
@@ -502,7 +495,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} append <number> text`
     Appends text to an existing {single}'s description
-'''.format(prefix=self._prefix, single=self._descriptor_single, plural=self._descriptor_plural, labels=" ".join(self._labels))
+'''.format(prefix=config.PREFIX, single=config.DESCRIPTOR_SINGLE, plural=config.DESCRIPTOR_PLURAL, labels=" ".join(self._labels))
 
         if self.has_privilege(2, message.author):
             usage += '''
@@ -533,7 +526,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} sync`
     Synchronizes bot /commands with Discord
-'''.format(prefix=self._prefix, single=self._descriptor_single, plural=self._descriptor_plural, labels=" ".join(self._labels))
+'''.format(prefix=config.PREFIX, single=config.DESCRIPTOR_SINGLE, plural=config.DESCRIPTOR_PLURAL, labels=" ".join(self._labels))
 
         if self.has_privilege(3, message.author):
             usage += '''
@@ -549,7 +542,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} ping_assigned channel_id`
     Prints out all open {plural} in specified channel, pinging assigned people
-'''.format(prefix=self._prefix, plural=self._descriptor_plural)
+'''.format(prefix=config.PREFIX, plural=config.DESCRIPTOR_PLURAL)
 
         if self.has_privilege(4, message.author):
             usage += '''
@@ -565,7 +558,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} kanboard_update_all`
     Updates all {plural} on an existing kanboard project
-'''.format(prefix=self._prefix, plural=self._descriptor_plural)
+'''.format(prefix=config.PREFIX, plural=config.DESCRIPTOR_PLURAL)
 
         for chunk in split_string(usage):
             await self.reply(message, chunk)
@@ -598,13 +591,13 @@ Example:```
 {prefix} add quest Bihahiahihaaravi refuses to talk to me when I'm wearing a fedora
 ```
 You can also attach an image to your message to include it in the {single}
-'''.format(prefix=self._prefix, single=self._descriptor_single))
+'''.format(prefix=config.PREFIX, single=config.DESCRIPTOR_SINGLE))
 
         if len(args.split()) < 5:
             raise ValueError('Description must contain at least 5 words')
 
         if len(args) != len(discord.utils.escape_mentions(args)):
-            raise ValueError('Please do not include pings in your {single}'.format(single=self._descriptor_single))
+            raise ValueError('Please do not include pings in your {single}'.format(single=config.DESCRIPTOR_SINGLE))
 
         part = args.split(maxsplit=1)
 
@@ -613,7 +606,7 @@ You can also attach an image to your message to include it in the {single}
 
         if len(description) > 1600:
             raise ValueError('Please limit your {single} to 1600 characters to allow for formatting and close info (currently {} characters)'
-                    .format(len(description), single=self._descriptor_single))
+                    .format(len(description), single=config.DESCRIPTOR_SINGLE))
 
         good_labels = []
         failed_labels = False
@@ -662,7 +655,7 @@ You can also attach an image to your message to include it in the {single}
 For example:```
 {prefix} edit 5 description Much more detail here
 ```
-'''.format(prefix=self._prefix, single=self._descriptor_single))
+'''.format(prefix=config.PREFIX, single=config.DESCRIPTOR_SINGLE))
 
         index, entry = self.get_entry(part[0].strip())
 
@@ -686,7 +679,7 @@ For example:```
             description = part[2].strip()
             if len(description) > 1600:
                 raise ValueError('Please limit your {single} to 1600 characters to allow for formatting and close info (currently {} characters)'
-                        .format(len(description), single=self._descriptor_single))
+                        .format(len(description), single=config.DESCRIPTOR_SINGLE))
 
             entry["description"] = description
 
@@ -773,14 +766,14 @@ __Available Priorities:__
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await message.channel.send(entry_text, embed=embed)
-        await(self.reply(message, "{proper} #{index} updated successfully".format(proper=self._descriptor_proper, index=index)))
+        await(self.reply(message, "{proper} #{index} updated successfully".format(proper=config.DESCRIPTOR_PROPER, index=index)))
 
     ################################################################################
     # append
     async def cmd_append(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 2):
-            raise ValueError('''Usage: {prefix} append <number> [additional description text]'''.format(prefix=self._prefix))
+            raise ValueError('''Usage: {prefix} append <number> [additional description text]'''.format(prefix=config.PREFIX))
 
         index, entry = self.get_entry(part[0].strip())
 
@@ -805,13 +798,13 @@ __Available Priorities:__
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await message.channel.send(entry_text, embed=embed)
-        await(self.reply(message, "{proper} #{index} edited".format(proper=self._descriptor_proper, index=index)))
+        await(self.reply(message, "{proper} #{index} edited".format(proper=config.DESCRIPTOR_PROPER, index=index)))
 
     ################################################################################
     # get
     async def cmd_get(self, message, args):
         if not args:
-            raise ValueError("Usage: {prefix} get <number>".format(prefix=self._prefix))
+            raise ValueError("Usage: {prefix} get <number>".format(prefix=config.PREFIX))
 
         match_entries = [(self.get_entry(args.strip()))]
         await self.print_search_results(message.channel, match_entries)
@@ -830,7 +823,7 @@ __Available Priorities:__
                 if "close_reason" not in entry:
                     match_entries.append((index, entry))
         if not match_entries:
-            await self.reply(message, "No {plural} found matching those search terms".format(plural=self._descriptor_plural))
+            await self.reply(message, "No {plural} found matching those search terms".format(plural=config.DESCRIPTOR_PLURAL))
         else:
             await self.print_search_results(message.channel, [random.choice(match_entries)])
 
@@ -849,7 +842,7 @@ __Available Priorities:__
                     match_entries.append((index, entry))
 
         if not match_entries:
-            await self.reply(message, "No {plural} found matching those search terms".format(plural=self._descriptor_plural))
+            await self.reply(message, "No {plural} found matching those search terms".format(plural=config.DESCRIPTOR_PLURAL))
         else:
             random.shuffle(match_entries)
             inter = InteractiveSearch(self, message.author, match_entries)
@@ -879,7 +872,7 @@ __Available Priorities:__
                 stats[entry["priority"]][entry["complexity"]] += 1
                 total_open += 1
 
-        stats_text = '''Current {single} stats:```'''.format(single=self._descriptor_single)
+        stats_text = '''Current {single} stats:```'''.format(single=config.DESCRIPTOR_SINGLE)
         stats_text += f"{'' : <13}"
         for comp in self._complexities:
             stats_text += f"{comp.capitalize() : <10}"
@@ -910,7 +903,7 @@ Closed     : {}```'''.format(total_open, total_closed)
                 else:
                     stats[author] = 1
 
-        await self.reply(message, '''Current {single} author stats:'''.format(single=self._descriptor_single))
+        await self.reply(message, '''Current {single} author stats:'''.format(single=config.DESCRIPTOR_SINGLE))
         stats_text = ''
         for author_id, count in sorted(stats.items(), key=lambda kv: kv[1], reverse=True):
             author = self.get_user_by_id(author_id)
@@ -942,7 +935,7 @@ If using multiple priorities or complexities, at least one must match
 
 Available labels: {labels}
 Available priorities: {priorities}
-Available complexities: {complexities}'''.format(prefix=self._prefix, labels=self._labels, priorities=self._priorities, complexities=self._complexities.keys()))
+Available complexities: {complexities}'''.format(prefix=config.PREFIX, labels=self._labels, priorities=self._priorities, complexities=self._complexities.keys()))
 
         match_labels = []
         match_priorities = []
@@ -1016,7 +1009,7 @@ Available complexities: {complexities}'''.format(prefix=self._prefix, labels=sel
         await self.print_search_results(message.channel, match_entries, limit=max_count)
 
         await self.reply(message, "{} {} found matching labels={} priorities={} complexities={}".format(
-            len(match_entries), self._descriptor_plural,
+            len(match_entries), config.DESCRIPTOR_PLURAL,
             ",".join(match_labels), ",".join(match_priorities), ",".join(match_complexities)))
 
     ################################################################################
@@ -1024,7 +1017,7 @@ Available complexities: {complexities}'''.format(prefix=self._prefix, labels=sel
     async def cmd_dsearch(self, message, args):
         part = args.replace(","," ").split()
         if (not args) or (len(part) < 1):
-            raise ValueError('''Usage: {prefix} dsearch <search terms, count>'''.format(prefix=self._prefix))
+            raise ValueError('''Usage: {prefix} dsearch <search terms, count>'''.format(prefix=config.PREFIX))
 
         # Try to parse each argument as an integer - and if so, use that as the limit
         limit = 15
@@ -1037,7 +1030,7 @@ Available complexities: {complexities}'''.format(prefix=self._prefix, labels=sel
                 search_terms.append(term)
 
         if len(search_terms) < 1:
-            raise ValueError('''Usage: {prefix} dsearch <search terms, count>'''.format(prefix=self._prefix))
+            raise ValueError('''Usage: {prefix} dsearch <search terms, count>'''.format(prefix=config.PREFIX))
 
         match_entries = []
         count = 0
@@ -1055,7 +1048,7 @@ Available complexities: {complexities}'''.format(prefix=self._prefix, labels=sel
 
         await self.print_search_results(message.channel, match_entries, limit=limit)
 
-        await(self.reply(message, "{} {} found matching {}".format(count, self._descriptor_plural, ",".join(part))))
+        await(self.reply(message, "{} {} found matching {}".format(count, config.DESCRIPTOR_PLURAL, ",".join(part))))
 
     ################################################################################
     # isearch
@@ -1089,13 +1082,13 @@ Available complexities: {complexities}'''.format(prefix=self._prefix, labels=sel
 
         await self.print_search_results(message.channel, match_entries)
 
-        await(self.reply(message, "{} open {} of {} total from author {}".format(open_count, self._descriptor_plural, total_count, author.display_name)))
+        await(self.reply(message, "{} open {} of {} total from author {}".format(open_count, config.DESCRIPTOR_PLURAL, total_count, author.display_name)))
 
     ################################################################################
     # rsearch
     async def cmd_rsearch(self, message, args):
         if (not args) or (" " in args):
-            raise ValueError('''Usage: {prefix} rsearch <:reaction:>'''.format(prefix=self._prefix))
+            raise ValueError('''Usage: {prefix} rsearch <:reaction:>'''.format(prefix=config.PREFIX))
 
         await self.reply(message, "Getting a list of most-reacted entries. This will take some time...")
 
@@ -1139,7 +1132,7 @@ Available complexities: {complexities}'''.format(prefix=self._prefix, labels=sel
 
         if (not args) or re.search("[^a-z]", args):
             raise ValueError('''Usage: {prefix} addlabel <label>
-Labels can only contain a-z characters'''.format(prefix=self._prefix))
+Labels can only contain a-z characters'''.format(prefix=config.PREFIX))
 
         match = get_list_match(args, self._labels)
         if match is not None:
@@ -1160,7 +1153,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         if (not args) or re.search("[^a-z]", args):
             raise ValueError('''Usage: {prefix} dellabel <label>
-Labels can only contain a-z characters'''.format(prefix=self._prefix))
+Labels can only contain a-z characters'''.format(prefix=config.PREFIX))
 
         match = get_list_match(args, self._labels)
         if match is None:
@@ -1192,14 +1185,14 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         self.save()
 
-        await(self.reply(message, "Label {} removed successfully from {} {plural}".format(match, count, plural=self._descriptor_plural)))
+        await(self.reply(message, "Label {} removed successfully from {} {plural}".format(match, count, plural=config.DESCRIPTOR_PLURAL)))
 
     ################################################################################
     # reject
     async def cmd_reject(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 2):
-            raise ValueError('''Usage: {prefix} reject <number> <required explanation>'''.format(prefix=self._prefix))
+            raise ValueError('''Usage: {prefix} reject <number> <required explanation>'''.format(prefix=config.PREFIX))
 
         index, entry = self.get_entry(part[0].strip())
 
@@ -1223,7 +1216,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await message.channel.send(entry_text, embed=embed)
-        await(self.reply(message, "{proper} #{index} rejected".format(proper=self._descriptor_proper, index=index)))
+        await(self.reply(message, "{proper} #{index} rejected".format(proper=config.DESCRIPTOR_PROPER, index=index)))
 
     ################################################################################
     # fix
@@ -1231,7 +1224,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
     async def cmd_fix(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 1):
-            raise ValueError('''Usage: {prefix} fix <number> [optional explanation]'''.format(prefix=self._prefix))
+            raise ValueError('''Usage: {prefix} fix <number> [optional explanation]'''.format(prefix=config.PREFIX))
 
         index, entry = self.get_entry(part[0].strip())
 
@@ -1258,14 +1251,14 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await message.channel.send(entry_text, embed=embed)
-        await(self.reply(message, "{proper} #{index} marked as fixed".format(proper=self._descriptor_proper, index=index)))
+        await(self.reply(message, "{proper} #{index} marked as fixed".format(proper=config.DESCRIPTOR_PROPER, index=index)))
 
     ################################################################################
     # unfix
     async def cmd_unfix(self, message, args):
         part = args.split(maxsplit=2)
         if (not args) or (len(part) != 1):
-            raise ValueError('''Usage: {prefix} unfix <number>'''.format(prefix=self._prefix))
+            raise ValueError('''Usage: {prefix} unfix <number>'''.format(prefix=config.PREFIX))
 
         index, entry = self.get_entry(part[0].strip())
 
@@ -1287,7 +1280,7 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await message.channel.send(entry_text, embed=embed)
-        await(self.reply(message, "{proper} #{index} unmarked as fixed".format(proper=self._descriptor_proper, index=index)))
+        await(self.reply(message, "{proper} #{index} unmarked as fixed".format(proper=config.DESCRIPTOR_PROPER, index=index)))
 
     ################################################################################
     # prune
@@ -1332,16 +1325,16 @@ Labels can only contain a-z characters'''.format(prefix=self._prefix))
         if not args:
             if message.author.id in self._notifications_disabled:
                 await(self.reply(message, '''You will __not__ be notified of changes to your {plural}.
-To change this, `{prefix} notify on`'''.format(plural=self._descriptor_plural, prefix=self._prefix)))
+To change this, `{prefix} notify on`'''.format(plural=config.DESCRIPTOR_PLURAL, prefix=config.PREFIX)))
             else:
                 await(self.reply(message, '''You **will** be notified of changes to your {plural}.
 Notifications are on by default.
-To change this, `{prefix} notify off`'''.format(plural=self._descriptor_plural, prefix=self._prefix)))
+To change this, `{prefix} notify off`'''.format(plural=config.DESCRIPTOR_PLURAL, prefix=config.PREFIX)))
             return
 
         match = get_list_match(args.strip(), ["on", "off"])
         if match is None:
-            raise ValueError("Argument to {prefix} notify must be 'on' or 'off'".format(prefix=self._prefix))
+            raise ValueError("Argument to {prefix} notify must be 'on' or 'off'".format(prefix=config.PREFIX))
 
         if match == "on":
             if message.author.id in self._notifications_disabled:
@@ -1353,11 +1346,11 @@ To change this, `{prefix} notify off`'''.format(plural=self._descriptor_plural, 
 
         if message.author.id in self._notifications_disabled:
             await(self.reply(message, '''You will __not__ be notified of changes to your {plural}.
-To change this, {prefix} notify on'''.format(plural=self._descriptor_plural, prefix=self._prefix)))
+To change this, {prefix} notify on'''.format(plural=config.DESCRIPTOR_PLURAL, prefix=config.PREFIX)))
         else:
             await(self.reply(message, '''You **will** be notified of changes to your {plural}.
 Notifications are on by default.
-To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, prefix=self._prefix)))
+To change this, {prefix} notify off'''.format(plural=config.DESCRIPTOR_PLURAL, prefix=config.PREFIX)))
 
 
     ################################################################################
@@ -1388,7 +1381,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
                         else:
                             entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
                             entry_text = '''{mention} Your {single} was updated:
-    {entry}'''.format(mention=user.mention, single=self._descriptor_single, entry=entry_text)
+    {entry}'''.format(mention=user.mention, single=config.DESCRIPTOR_SINGLE, entry=entry_text)
                             msg = await message.channel.send(entry_text, embed=embed)
                     else:
                         no_user += 1
@@ -1410,7 +1403,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         await(self.reply(message, "Repost started, this will take some time..."))
 
-        await(self.reply(message, "Building a set of all valid {single} message ids...".format(single=self._descriptor_single)))
+        await(self.reply(message, "Building a set of all valid {single} message ids...".format(single=config.DESCRIPTOR_SINGLE)))
 
         valid = set()
         # Iterate a shallow copy of the entries table so new reports don't break it
@@ -1471,7 +1464,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         part = args.split(maxsplit=2)
         if len(part) != 1 or len(part[0].strip()) < 10:
-            raise ValueError("Usage: import #channel".format(self._prefix))
+            raise ValueError("Usage: import #channel".format(config.PREFIX))
 
         channel_id = part[0].strip()
         channel_id = channel_id[2:-1]
@@ -1521,7 +1514,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         part = args.split(maxsplit=1)
         if (not args) or (not part):
-            raise ValueError('''Usage: {prefix} assign <number> [user]'''.format(prefix=self._prefix))
+            raise ValueError('''Usage: {prefix} assign <number> [user]'''.format(prefix=config.PREFIX))
 
         index, entry = self.get_entry(part[0].strip())
 
@@ -1538,7 +1531,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await message.channel.send(entry_text, embed=embed)
-        await(self.reply(message, "{proper} #{index} assigned to {name}".format(proper=self._descriptor_proper, index=index, name=assignee.display_name)))
+        await(self.reply(message, "{proper} #{index} assigned to {name}".format(proper=config.DESCRIPTOR_PROPER, index=index, name=assignee.display_name)))
 
     ################################################################################
     # unassign
@@ -1548,12 +1541,12 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         part = args.split(maxsplit=1)
         if (not args) or (not part):
-            raise ValueError('''Usage: {prefix} unassign <number>'''.format(prefix=self._prefix))
+            raise ValueError('''Usage: {prefix} unassign <number>'''.format(prefix=config.PREFIX))
 
         index, entry = self.get_entry(part[0].strip())
 
         if "assignee" not in entry:
-            raise ValueError('{proper} #{index} is already unassigned'.format(proper=self._descriptor_proper, index=index))
+            raise ValueError('{proper} #{index} is already unassigned'.format(proper=config.DESCRIPTOR_PROPER, index=index))
 
         entry.pop("assignee")
         self.save()
@@ -1563,7 +1556,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         entry_text, embed = await self.format_entry(index, entry, include_reactions=True)
         msg = await message.channel.send(entry_text, embed=embed)
-        await(self.reply(message, "{proper} #{index} unassigned".format(proper=self._descriptor_proper, index=index)))
+        await(self.reply(message, "{proper} #{index} unassigned".format(proper=config.DESCRIPTOR_PROPER, index=index)))
 
     ################################################################################
     # list_assigned
@@ -1594,9 +1587,9 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         await self.print_search_results(message.channel, match_entries, limit=9999)
 
         if match_assignee is None:
-            await self.reply(message, "{} total assigned {} found".format(count, self._descriptor_plural))
+            await self.reply(message, "{} total assigned {} found".format(count, config.DESCRIPTOR_PLURAL))
         else:
-            await self.reply(message, "{} assigned {} found for user {}".format(count, self._descriptor_plural, match_assignee.display_name))
+            await self.reply(message, "{} assigned {} found for user {}".format(count, config.DESCRIPTOR_PLURAL, match_assignee.display_name))
 
     ################################################################################
     # ping_assigned
@@ -1626,7 +1619,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         await self.print_search_results(channel, match_entries, limit=9999, mention_assigned=True)
 
-        await self.reply(message, "{} total assigned {} mentioned in channel {}".format(count, self._descriptor_plural, channel.name))
+        await self.reply(message, "{} total assigned {} mentioned in channel {}".format(count, config.DESCRIPTOR_PLURAL, channel.name))
 
 
     def get_flattened_priority(cls, entry):
@@ -1677,7 +1670,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
             if "kanboard_id" in entry:
                 entry.pop("kanboard_id")
 
-        self._kanboard = await TaskKanboard.create_kanboard(self, self._kanboard_client, self._descriptor_plural)
+        self._kanboard = await TaskKanboard.create_kanboard(self, self._kanboard_client, config.DESCRIPTOR_PLURAL)
         await self._kanboard.update_all_entries()
         self.save()
 
