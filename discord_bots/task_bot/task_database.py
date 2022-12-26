@@ -1,91 +1,24 @@
-import asyncio
-import discord
 import os
 import json
 import sys
 import re
 import random
+import logging
 from functools import cmp_to_key
-from collections import OrderedDict
-from pprint import pprint
+import discord
+from discord.ext import commands
 
 from interactive_search import InteractiveSearch
-from common import get_list_match, datestr, split_string
+from common import get_list_match, split_string
 from task_kanboard import TaskKanboard
 
-# Data Schema
+class TaskDatabase(commands.Cog):
+    """A specific instance of the task bot (bugs, suggestions, etc.)"""
 
-# noinspection PyInterpreter
-'''
-{
-    "entries" = {
-        # Key is entry number - fixed forever. Key is a string representation of an integer... for reasons.
-        "42" : {
-            "author": 302298391969267712, # Must be non-empty and a valid discord user
-            "assignee": 302298391969267712, # Optional - who is currently assigned to this bug
-            "description": "Stuff", # Must be non-empty, escape input strings/etc.
-            "labels": ["misc"], # Must be non-empty
-            # Automatically set to "N/A" on creation
-            "priority": "High", # Case sensitive for matching, do case insensitive compare for input
-
-            # Optional. If set, the corresponding kanboard database ID
-            "kanboard_id": 5
-
-            # Automatically set to "unknown" on creation
-            "complexity": "easy",
-
-            # Optional:
-            "image": None, # Might be None OR not present at all
-
-            # If this is present, the item is closed
-            "close_reason": "string"
-
-            # Automatically added/managed
-            "message_id": <discord message ID>
-
-            # Pending notification
-            # True if there has been an update to this item that the poster needs to be pinged about
-            "pending_notification": True/False
-        },
-    },
-
-    "kanboard": {
-        # Kanboard stuff defined in task_kanboard
-    }
-
-
-    "next_index": 985,
-    "labels": [
-        "...",
-        "misc"
-    ],
-    "complexities": {
-        "easy":     ":green_circle:",
-        "moderate": ":orange_circle:",
-        "hard":     ":red_circle:",
-        "unknown":  ":white_circle:"
-    },
-    "priorities": [
-        "N/A",
-        "Critical",
-        "High",
-        "Medium",
-        "Low",
-        "Zero"
-    ],
-    "notifications_disabled": [
-        "302298391969267712",
-        ...
-    ]
-}
-'''
-
-class TaskDatabase(object):
-    def __init__(self, client, kanboard_client, config, config_dir):
-        """
-        """
-        self._client = client
+    def __init__(self, bot, kanboard_client, config, config_dir):
+        self._bot = bot
         self._kanboard_client = kanboard_client
+        self._kanboard = None
         self._stopping = False
 
         try:
@@ -96,8 +29,9 @@ class TaskDatabase(object):
             self._descriptor_single = config["descriptor_single"]
             self._descriptor_plural = config["descriptor_plural"]
             self._descriptor_proper = config["descriptor_proper"]
-            self._reactions  = config["reactions"]
-            self._channel = self._client.get_channel(self._channel_id)
+            self._reactions = config["reactions"]
+            logging.debug("Attempting to get channel %s", self._channel_id)
+            self._channel = self._bot.get_channel(self._channel_id)
             if self._channel is None:
                 raise Exception("Error getting bot channel!")
             self._database_path = os.path.join(config_dir, config["database_path"])
@@ -184,7 +118,6 @@ class TaskDatabase(object):
                     "unknown":  ":white_circle:"
                 }
 
-            self._kanboard = None
             if 'kanboard' in data:
                 self._kanboard = TaskKanboard.load_kanboard(self, self._kanboard_client, data['kanboard'])
 
@@ -254,7 +187,7 @@ class TaskDatabase(object):
             except:
                 raise ValueError("{!r} is not a number".format(user_id))
 
-        user = self._client.get_user(user_id)
+        user = self._bot.get_user(user_id)
 
         return user
 
@@ -292,7 +225,7 @@ class TaskDatabase(object):
 
                 user = matches[0].id
 
-        return self._client.get_user(user)
+        return self._bot.get_user(user)
 
     async def reply(self, message, response):
         """
@@ -460,6 +393,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "prune": self.cmd_prune,
             "notify": self.cmd_notify,
             "send_notifications": self.cmd_send_notifications,
+            "sync": self.cmd_sync,
             "import": self.cmd_import,
             "repost": self.cmd_repost,
             "stats": self.cmd_stats,
@@ -596,6 +530,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
 `{prefix} list_assigned [user | all]`
     Prints out open {plural} that are assigned to you, the specified user, or "all"
+
+`{prefix} sync`
+    Synchronizes bot /commands with Discord
 '''.format(prefix=self._prefix, single=self._descriptor_single, plural=self._descriptor_plural, labels=" ".join(self._labels))
 
         if self.has_privilege(3, message.author):
@@ -1518,6 +1455,15 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         await(self.reply(message, "{} entries reposted successfully".format(count)))
 
     ################################################################################
+    # sync
+    async def cmd_sync(self, message, args):
+        if not self.has_privilege(2, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        fmt = await self._bot.tree.sync(guild=message.guild)
+        await self.reply(message, f'Synced {len(fmt)} commands.')
+
+    ################################################################################
     # import
     async def cmd_import(self, message, args):
         if not self.has_privilege(4, message.author):
@@ -1529,14 +1475,14 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
 
         channel_id = part[0].strip()
         channel_id = channel_id[2:-1]
-        import_channel = self._client.get_channel(channel_id)
+        import_channel = self._bot.get_channel(channel_id)
         if import_channel is None:
             raise ValueError("Can not find channel {!r}".format(channel_id))
 
         await(self.reply(message, "Import started, this will take some time..."))
 
         to_import = []
-        async for msg in self._client.logs_from(import_channel, limit=1000, reverse=True):
+        async for msg in self._bot.logs_from(import_channel, limit=1000, reverse=True):
             if not msg.content:
                 continue
 
@@ -1663,7 +1609,7 @@ To change this, {prefix} notify off'''.format(plural=self._descriptor_plural, pr
         except:
             raise ValueError("{!r} is not a number".format(args))
 
-        channel = self._client.get_channel(channel_id)
+        channel = self._bot.get_channel(channel_id)
         if self._channel is None:
             raise Exception("Error getting channel!")
 
