@@ -7,6 +7,7 @@ import logging
 from functools import cmp_to_key
 import discord
 from discord.ext import commands
+from discord import app_commands
 
 import config
 from interactive_search import InteractiveSearch
@@ -349,7 +350,11 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         for reaction in config.REACTIONS:
             await msg.add_reaction(reaction)
 
-    async def print_search_results(self, channel, match_entries, limit=15, sort_entries=True, mention_assigned=False, include_reactions=True):
+    async def print_search_results(self, responder, match_entries, limit=15, sort_entries=True, mention_assigned=False, include_reactions=True, ephemeral=False):
+        """
+        Calls responder.send() with matching entries up to limit
+        If ephemeral=true, will append epmeheral=true to call
+        """
         # Sort the returned entries
         if sort_entries:
             print_entries = self.sort_entries_by_priority(match_entries)
@@ -358,12 +363,18 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         # Limit to specified number of replies at a time
         if len(print_entries) > limit:
-            await channel.send('Limiting to top {} results'.format(limit))
+            if ephemeral:
+                await responder.send(f'Limiting to top {limit} results', ephemeral=True)
+            else:
+                await responder.send(f'Limiting to top {limit} results')
             print_entries = print_entries[:limit]
 
         for index, entry in print_entries:
             entry_text, embed = await self.format_entry(index, entry, include_reactions=include_reactions, mention_assigned=mention_assigned)
-            msg = await channel.send(entry_text, embed=embed)
+            if ephemeral:
+                await responder.send(entry_text, embed=embed, ephemeral=True)
+            else:
+                await responder.send(entry_text, embed=embed)
 
 
     async def handle_message(self, message):
@@ -1015,17 +1026,33 @@ Available complexities: {complexities}'''.format(prefix=config.PREFIX, labels=se
     ################################################################################
     # dsearch
     async def cmd_dsearch(self, message, args):
-        part = args.replace(","," ").split()
-        if (not args) or (len(part) < 1):
+        """Description search ~command"""
+        match_entries, limit = await self.dsearch_internal(args, 15)
+        await message.channel.send(f"{len(match_entries)} {config.DESCRIPTOR_PLURAL} found matching {args}")
+        await self.print_search_results(message.channel, match_entries, limit=limit)
+
+    @app_commands.command(name=f'{config.DESCRIPTOR_SINGLE}_description_search',
+                          description=f'Searches all {config.DESCRIPTOR_SINGLE} descriptions for ones that contain all the specified search terms')
+    @app_commands.describe(search_terms='Text to search for',
+                           limit='Maximum number of matches to return')
+    async def slash_dsearch(self, message, search_terms: str, limit: int = 99):
+        """Description search /command"""
+        match_entries, limit = await self.dsearch_internal(search_terms, limit)
+        await message.response.send_message(f"{len(match_entries)} {config.DESCRIPTOR_PLURAL} found matching {search_terms}", ephemeral=True)
+        await self.print_search_results(message.followup, match_entries, limit=limit, ephemeral=True)
+
+    async def dsearch_internal(self, search_terms: str, limit: int):
+        """Description search terms parser"""
+        part = search_terms.replace(",", " ").split()
+        if (not search_terms) or (len(part) < 1):
             raise ValueError('''Usage: {prefix} dsearch <search terms, count>'''.format(prefix=config.PREFIX))
 
         # Try to parse each argument as an integer - and if so, use that as the limit
-        limit = 15
         search_terms = []
         for term in part:
             try:
                 limit = int(term)
-            except:
+            except Exception:
                 # Don't search for numbers
                 search_terms.append(term)
 
@@ -1033,7 +1060,6 @@ Available complexities: {complexities}'''.format(prefix=config.PREFIX, labels=se
             raise ValueError('''Usage: {prefix} dsearch <search terms, count>'''.format(prefix=config.PREFIX))
 
         match_entries = []
-        count = 0
         for index in self._entries:
             entry = self._entries[index]
             if "close_reason" not in entry:
@@ -1043,12 +1069,10 @@ Available complexities: {complexities}'''.format(prefix=config.PREFIX, labels=se
                         matches = False
 
                 if matches:
-                    count += 1
                     match_entries.append((index, entry))
 
-        await self.print_search_results(message.channel, match_entries, limit=limit)
+        return match_entries, limit
 
-        await(self.reply(message, "{} {} found matching {}".format(count, config.DESCRIPTOR_PLURAL, ",".join(part))))
 
     ################################################################################
     # isearch
