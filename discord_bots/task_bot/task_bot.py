@@ -4,15 +4,16 @@ import os
 import sys
 import logging
 import traceback
-import yaml
-import asyncio
 import signal
-import kanboard
+import asyncio
 from pprint import pformat
+import yaml
+import kanboard
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG) # TODO INFO
 
 import discord
+from discord.ext import commands
 
 from task_database import TaskDatabase
 from common import split_string
@@ -23,14 +24,14 @@ from kanboard_webhooks import start_webhook_server
 
 bot_config = {}
 
-config_dir = os.path.expanduser("~/.task_bot/")
+config_dir = os.environ.get("TASK_HOME", os.path.expanduser("~/.task_bot/"))
 config_path = os.path.join(config_dir, "config.yml")
 
 # Read the bot's config file
 with open(config_path, 'r') as ymlfile:
     bot_config = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
-logging.info("\nBot Configuration: {}\n".format(pformat(bot_config)))
+logging.info("\nBot Configuration: %s\n", pformat(bot_config))
 
 if "login" not in bot_config is None:
     sys.exit('No login info is provided')
@@ -47,42 +48,44 @@ if 'kanboard' in bot_config:
 
 
 class GracefulKiller:
+    """Class to catch signals (CTRL+C, SIGTERM) and gracefully save databases and stop the bot"""
 
-    def __init__(self, client, facet_channels):
+    def __init__(self, bot, facet_channels):
+        self._bot = bot
         self.stopping = False
-        self._client = client
         self._facet_channels = facet_channels
 
     def register(self):
+        """Register signals that cause shutdown"""
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
-    def exit_gracefully(self,signum, frame):
+    def exit_gracefully(self, _, __):
+        """Exit gracefully on signal"""
         self.stopping = True
         logging.info("Received signal; shutting down...")
-        for facet_channel, db in facet_channels:
-            logging.info(f"Saving {db._descriptor_plural}...")
+        for _, db in facet_channels:
+            logging.info("Saving %s...", db._descriptor_plural)
             db._stopping = True
             db.save()
         logging.info("All saved. Handing off to discord client...")
+        # TODO: This is not the right way to do this. Kills the process at least... but really jank
+        asyncio.run(self._bot.close())
 
-intents = discord.Intents.default()
-intents.members = True
+class TaskBot(commands.Bot):
+    """Top-level discord bot object"""
 
-try:
-    client = discord.Client(intents=intents)
-    facet_channels = []
+    def __init__(self):
+        super().__init__(
+            command_prefix='.',
+            intents=intents,
+            application_id=bot_config["application_id"])
 
-    killer = GracefulKiller(client, facet_channels)
-
-    ################################################################################
-    # Discord event handlers
-
-    @client.event
-    async def on_ready():
+    async def on_ready(self):
+        """Bot ready"""
         logging.info('Logged in as')
-        logging.info(client.user.name)
-        logging.info(client.user.id)
+        logging.info(self.user.name)
+        logging.info(self.user.id)
 
         killer.register()
 
@@ -90,12 +93,16 @@ try:
         # Don't re-create the per-channel listeners when this happens
         if len(facet_channels) == 0:
             for facet in bot_config["facets"]:
-                db = TaskDatabase(client, kanboard_client, facet, config_dir)
+                db = TaskDatabase(self, kanboard_client, facet, config_dir)
+                await bot.add_cog(db, guilds=[discord.Object(id=bot_config["guild_id"])])
                 for input_channel in facet["bot_input_channels"]:
                     facet_channels.append((input_channel, db))
 
-    @client.event
-    async def on_message(message):
+    async def on_message(self, message):
+        """Bot received message"""
+
+        logging.debug("Received message in channel %s: %s", message.channel, message.content)
+
         # Don't process messages while stopping
         if killer.stopping:
             logging.info('Ignoring message during shutdown')
@@ -118,11 +125,17 @@ try:
                     for chunk in split_string(traceback.format_exc()):
                         await message.channel.send("```" + chunk + "```")
 
-    ################################################################################
-    # Entry point
+intents = discord.Intents.default()
+intents.members = True
+intents.message_content = True
 
-    client.run(bot_config["login"])
+facet_channels = []
 
-except Exception as e:
-    logging.error("The following error was visible from outside the client, and may be used to restart or fix it:")
-    logging.error(traceback.format_exc())
+bot = TaskBot()
+killer = GracefulKiller(bot, facet_channels)
+
+async def main():
+    """Asyncio entrypoint"""
+    await bot.start(bot_config["login"])
+
+asyncio.run(main())
