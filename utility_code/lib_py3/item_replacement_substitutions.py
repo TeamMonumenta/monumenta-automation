@@ -220,7 +220,7 @@ class FixBrokenShulkers(SubstitutionRule):
         tier = item.tag.at_path('Monumenta.Tier').value
         region = item.tag.at_path('Monumenta.Region').value
         location = item.tag.at_path('Monumenta.Location').value
-        lore = item.tag.at_path('plain.display.Lore').value
+        lore = item.tag.at_path('plain.display.Lore').to_obj()
         if (tier == 'epic'
                 and region == 'isles'
                 and location == 'shifting'
