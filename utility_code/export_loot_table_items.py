@@ -200,7 +200,6 @@ for item_type in out_map:
     out_types = out_map[item_type]
     for item_name in out_types:
         item_entry = out_types[item_name]
-        print(item_entry.get("release_status", ""))
         if release_status_filter(item_entry.get("release_status", "")):
             # Filter matches, add to json_out_map
             item_type_out[item_name] = item_entry
