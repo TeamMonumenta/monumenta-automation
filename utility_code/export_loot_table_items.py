@@ -24,6 +24,11 @@ RELEASE_STATUSES = (
     "unreleased",
 )
 
+# if enabled, prints all the places that the debug item has been found at
+# (checks if the item name contains the substring DEBUG_ITEM_CONTAINS)
+# this includes the blocks that the item is above, and the world it was found at
+DEBUG = False
+DEBUG_ITEM_CONTAINS = "Morphic Breaker"
 
 def load_world_warp_items(items, world, min_x, min_y, min_z, max_x, max_y, max_z):
     for rz in range(min_z//512, (max_z - 1)//512 + 1):
@@ -49,11 +54,20 @@ def load_world_warp_items(items, world, min_x, min_y, min_z, max_x, max_y, max_z
                         if item.tag is not None:
                             item_name = get_item_name_from_nbt(item.tag, remove_color=True)
                             if item_name is not None:
+                                if item.tag.has_path('Monumenta.Masterwork'):
+                                    masterwork = item.tag.at_path('Monumenta.Masterwork').value
+                                    item_name += f'_m{masterwork}'
+
                                 item_data = items.get(item_name, {})
 
                                 above_blocks = item_data.get("above_blocks", set())
                                 above_blocks.add(column_y0_type[f"{int(item.pos[0])}-{int(item.pos[2])}"])
                                 item_data["above_blocks"] = above_blocks
+
+                                # Debug to easily find midplaced copies of certain items
+                                if DEBUG and DEBUG_ITEM_CONTAINS in item_name:
+                                    print(f'Found {item_name} at: {int(item.pos[0])}, {int(item.pos[1])}, {int(item.pos[2])}')
+                                    print(f'It is above: {above_blocks}, in world {world.path}')
 
                                 types = item_data.get("types", set())
                                 types.add(item.id)
@@ -159,12 +173,13 @@ for item_name in items_at_warp_items:
     for item_type in item["types"]:
         if item_type in out_map and item_name in out_map[item_type]:
             out_dict = out_map[item_type][item_name]
-
             above_blocks = item["above_blocks"]
             if "minecraft:glowstone" in above_blocks:
                 out_dict["release_status"] = "public"
             elif "minecraft:lapis_block" in above_blocks:
                 out_dict["release_status"] = "mod"
+            if DEBUG and DEBUG_ITEM_CONTAINS in item_name:
+                print(f'Finally, {item_name} has been declared {out_dict["release_status"]}')
 
 with open(out_name, 'w') as outfile:
     json.dump(out_map, outfile, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
