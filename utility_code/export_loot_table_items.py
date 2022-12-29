@@ -125,6 +125,18 @@ def get_refined_creative_tab_flags(item_tag):
 
 out_name = sys.argv[1]
 refined_creative_inventory_folder = sys.argv[2]
+release_status_filter = lambda status: True
+if len(sys.argv) == 4:
+    release_status_filter_regex = re.compile(sys.argv[3])
+    release_status_filter = lambda status: bool(release_status_filter_regex.search(status))
+
+print(f"Will output the following types of items to {out_name}")
+print("undefined :", release_status_filter(""))
+print("public    :", release_status_filter("public"))
+print("mod       :", release_status_filter("mod"))
+print("unreleased:", release_status_filter("unreleased"))
+
+
 out_map = {}
 
 mgr = LootTableManager()
@@ -181,8 +193,23 @@ for item_name in items_at_warp_items:
             if DEBUG and DEBUG_ITEM_CONTAINS in item_name:
                 print(f'Finally, {item_name} has been declared {out_dict["release_status"]}')
 
+# Filter the actual json output map that gets written based on the release status filter specified on the command line
+json_out_map = {}
+for item_type in out_map:
+    item_type_out = {}
+    out_types = out_map[item_type]
+    for item_name in out_types:
+        item_entry = out_types[item_name]
+        print(item_entry.get("release_status", ""))
+        if release_status_filter(item_entry.get("release_status", "")):
+            # Filter matches, add to json_out_map
+            item_type_out[item_name] = item_entry
+    if len(item_type_out) > 0:
+        json_out_map[item_type] = item_type_out
+
+
 with open(out_name, 'w') as outfile:
-    json.dump(out_map, outfile, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
+    json.dump(json_out_map, outfile, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
 
 # If exporting refined creative inventory files is desired, do so
 if refined_creative_inventory_folder:
