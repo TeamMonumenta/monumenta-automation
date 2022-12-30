@@ -941,6 +941,8 @@ Must be run before starting the update on the play server
         await self.run(os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/Project_Epic-valley --pos1 1140,0,2564 --pos2 1275,123,2811")
         await self.display("Sanitizing R2's items area...")
         await self.run(os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/Project_Epic-isles --pos1 1140,0,2564 --pos2 1275,123,2811")
+        await self.display("Sanitizing R3's items area...")
+        await self.run(os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/Project_Epic-ring --pos1 1140,0,2564 --pos2 1275,123,2811")
 
         await self.display("Packaging up update bundle...")
         await self.cd("/home/epic/5_SCRATCH/tmpreset")
