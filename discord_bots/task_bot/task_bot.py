@@ -22,10 +22,12 @@ class GracefulKiller:
 
     def __init__(self, bot):
         self._bot = bot
+        self._event_loop = None
         self.stopping = False
 
-    def register(self):
+    def register(self, event_loop):
         """Register signals that cause shutdown"""
+        self._event_loop = event_loop
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
@@ -37,8 +39,8 @@ class GracefulKiller:
         self._bot.db._stopping = True
         self._bot.db.save()
         logging.info("All saved. Handing off to discord client...")
-        # TODO: This is not the right way to do this. Kills the process at least... but really jank
-        asyncio.run(self._bot.close())
+        if self._event_loop is not None:
+            asyncio.run_coroutine_threadsafe(self._bot.close(), self._event_loop)
 
 class TaskBot(commands.Bot):
     """Top-level discord bot object"""
@@ -60,7 +62,7 @@ class TaskBot(commands.Bot):
         logging.info(self.user.name)
         logging.info(self.user.id)
 
-        killer.register()
+        killer.register(asyncio.get_running_loop())
 
         if config.KANBOARD is not None:
             self.kanboard_client = kanboard.Client(config.KANBOARD['url'], 'jsonrpc', config.KANBOARD['token'])

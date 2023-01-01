@@ -4,6 +4,7 @@ import re
 import logging
 import traceback
 import datetime
+import signal
 import asyncio
 from pprint import pformat
 
@@ -15,6 +16,27 @@ from discord.ext import commands
 import config
 from automation_bot_lib import split_string
 from automation_bot_instance import AutomationBotInstance
+
+class GracefulKiller:
+    """Class to catch signals (CTRL+C, SIGTERM) and gracefully save databases and stop the bot"""
+
+    def __init__(self, bot):
+        self._bot = bot
+        self._event_loop = None
+        self.stopping = False
+
+    def register(self, event_loop):
+        """Register signals that cause shutdown"""
+        self._event_loop = event_loop
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+    def exit_gracefully(self, _, __):
+        """Exit gracefully on signal"""
+        self.stopping = True
+        logging.info("Received signal; shutting down...")
+        if self._event_loop is not None:
+            asyncio.run_coroutine_threadsafe(self._bot.close(), self._event_loop)
 
 class AutomationBot(commands.Bot):
     """Top-level discord bot object"""
@@ -50,6 +72,8 @@ class AutomationBot(commands.Bot):
         logging.info(self.user.name)
         logging.info(self.user.id)
 
+        killer.register(asyncio.get_running_loop())
+
         # On ready can happen multiple times when the bot automatically reconnects
         # Don't re-create the per-channel listeners when this happens
         if len(self.channels) == 0:
@@ -67,6 +91,12 @@ class AutomationBot(commands.Bot):
 
     async def on_message(self, message):
         """Bot received message"""
+
+        # Don't process messages while stopping
+        if killer.stopping:
+            logging.info('Ignoring message during shutdown')
+            return
+
         if message.channel.id in self.channels:
             try:
                 ctx = await self.get_context(message)
@@ -213,6 +243,7 @@ intents.members = True
 intents.message_content = True
 
 bot = AutomationBot()
+killer = GracefulKiller(bot)
 
 async def main():
     """Asyncio entrypoint"""

@@ -195,16 +195,16 @@ class AutomationBotInstance(commands.Cog):
                     # Get the event loop on the main thread
                     loop = asyncio.get_event_loop()
 
-                    async def send_message_to_channel(message, channel):
+                    def send_message_to_channel(message, channel):
                         # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
                         # Probably hard to fix though
+                        logger.debug('Attempting to send %s to %s', message, channel.name)
                         asyncio.run_coroutine_threadsafe(self.display_verbatim(channel, message), loop)
 
                     def socket_callback(message):
                         if "channel" in message:
                             if "Heartbeat" in message["channel"]:
                                 return
-
 
                             logger.info("Got socket message: %s", pformat(message))
                             if self._audit_channel:
@@ -243,24 +243,29 @@ class AutomationBotInstance(commands.Cog):
                     if "audit_channel" in conf:
                         try:
                             self._audit_channel = self._bot.get_channel(conf["audit_channel"])
+                            logging.info("Found audit channel: %s", conf["audit_channel"])
                         except Exception:
                             logging.error("Cannot connect to audit channel: %s", conf["audit_channel"])
                     self._audit_severe_channel = None
                     if "audit_severe_channel" in conf:
                         try:
                             self._audit_severe_channel = self._bot.get_channel(conf["audit_severe_channel"])
+                            logging.info("Found audit severe channel: %s", conf["audit_severe_channel"])
                         except Exception:
                             logging.error("Cannot connect to audit severe channel: %s", conf["audit_severe_channel"])
                     self._admin_channel = None
                     if "admin_channel" in conf:
                         try:
                             self._admin_channel = self._bot.get_channel(conf["admin_channel"])
+                            logging.info("Found admin channel: %s", conf["admin_channel"])
                         except Exception:
                             logging.error("Cannot connect to admin channel: %s", conf["admin_channel"])
+
                     self._stage_notify_channel = None
                     if "stage_notify_channel" in conf:
                         try:
-                            self._admin_channel = self._bot.get_channel(conf["stage_notify_channel"])
+                            self._stage_notify_channel = self._bot.get_channel(conf["stage_notify_channel"])
+                            logging.info("Found stage notify channel: %s", conf["stage_notify_channel"])
                         except Exception:
                             logging.error("Cannot connect to stage notify channel channel: %s", conf["stage_notify_channel"])
                 except Exception as e:
@@ -1846,10 +1851,14 @@ Syntax:
     async def action_list_world_loot(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Lists all loot tables and items in a world, with optional coordinates
 Syntax:
-`{cmdPrefix}list world loot dungeon`
-`{cmdPrefix}list world loot dungeon 512 0 0 1023 255 511`'''
+{cmdPrefix}list world loot dungeon
+{cmdPrefix}list world loot dungeon 512 0 0 1023 255 511'''
 
         commandArgs = message.content[len(config.PREFIX + cmd)+1:].split()
+
+        if len(commandArgs) == 0:
+            await self.help_internal(ctx, ["list world loot"], message.author)
+            return
 
         shard = commandArgs[0]
         if shard not in commandArgs:
