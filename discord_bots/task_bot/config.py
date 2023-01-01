@@ -24,6 +24,6 @@ USER_PRIVILEGES = bot_config["user_privileges"]
 GROUP_PRIVILEGES = bot_config["group_privileges"]
 REACTIONS = bot_config["reactions"]
 
-KANBOARD = None
+KANBOARD = bot_config.get("kanboard", None)
 
 logging.info("\nBot Configuration: %s\n", pformat(bot_config))

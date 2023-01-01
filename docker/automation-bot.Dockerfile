@@ -21,7 +21,7 @@ RUN apt-get update && \
 	rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install wheel && \
-	pip3 install "discord.py<2.0.0" kubernetes pika "redis<4.2.0" bitstring kanboard flask mutf8 && \
+	pip3 install discord.py kubernetes pika "redis<4.2.0" bitstring kanboard flask mutf8 && \
 	pip3 install -U pyyaml
 
 # Install rclone

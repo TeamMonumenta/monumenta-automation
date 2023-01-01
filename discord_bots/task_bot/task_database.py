@@ -112,7 +112,7 @@ class TaskDatabase(commands.Cog):
                     "unknown":  ":white_circle:"
                 }
 
-            if 'kanboard' in data:
+            if 'kanboard' in data and not self._kanboard_client is None:
                 self._kanboard = TaskKanboard.load_kanboard(self, self._kanboard_client, data['kanboard'])
 
             self._notifications_disabled = set([])
@@ -1421,7 +1421,7 @@ To change this, {prefix} notify off'''.format(plural=config.DESCRIPTOR_PLURAL, p
 
     ################################################################################
     # repost
-    async def cmd_repost(self, message, args):
+    async def cmd_repost(self, message, _):
         if not self.has_privilege(4, message.author):
             raise ValueError("You do not have permission to use this command")
 
@@ -1439,7 +1439,8 @@ To change this, {prefix} notify off'''.format(plural=config.DESCRIPTOR_PLURAL, p
         await(self.reply(message, "Searching the channel for untracked messages..."))
 
         def predicate(iter_msg):
-            return iter_msg.author.bot and iter_msg.id not in valid
+            # Delete messages written by a bot that either wasn't this bot OR wasn't a valid message
+            return iter_msg.author.bot and (iter_msg.author.id != self._bot.application_id or iter_msg.id not in valid)
 
         deleted = await self._channel.purge(limit=9999, check=predicate)
         count = 0
@@ -1687,6 +1688,10 @@ To change this, {prefix} notify off'''.format(plural=config.DESCRIPTOR_PLURAL, p
             raise ValueError("You do not have permission to use this command")
 
         await self.reply(message, "Starting kanboard create...")
+
+        if self._kanboard_client is None:
+            await self.reply(message, "Kanboard is not configured for this bot")
+            return
 
         # Disassociate the existing entries with existing kanboard
         for index in self._entries:
