@@ -1024,7 +1024,7 @@ Examples:
             for shard in main_shards:
                 if not debug:
                     await self.display(ctx, f"Stopping {shard}...")
-                    await self.stop(ctx, ctx, shard)
+                    await self.stop(ctx, shard)
 
                 await self.run(ctx, f"mkdir -p /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}")
                 worlds = World.enumerate_worlds(f"/home/epic/project_epic/{shard}")
@@ -1050,7 +1050,7 @@ Examples:
             # Need to generate instances
             if not debug:
                 await self.display(ctx, "Stopping the dungeon shard...")
-                await self.stop(ctx, ctx, "dungeon")
+                await self.stop(ctx, "dungeon")
 
             await self.display(ctx, "Copying the dungeon master copies...")
             await self.run(ctx, "cp -a /home/epic/project_epic/dungeon /home/epic/5_SCRATCH/tmpstage/dungeon")
@@ -1123,7 +1123,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         # Stop all shards
         await self.display(ctx, "Stopping all shards...")
         shards = await self._k8s.list()
-        await self.stop(ctx, ctx, [shard for shard in self._shards if shard.replace('_', '') in shards])
+        await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards])
         for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
                 await self.display(ctx, f"ERROR: shard {shard} is still running!")
@@ -1302,7 +1302,7 @@ old coreprotect data will be removed at the 5 minute mark.
             await send_broadcast_msg(seconds_to_string(next_target))
 
         # Stop bungee
-        await self.stop(ctx, ctx, ["bungee", "bungee-11", "bungee-13", "bungee-14", "bungee-15"])
+        await self.stop(ctx, ["bungee", "bungee-11", "bungee-13", "bungee-14", "bungee-15"])
 
         await self.display(ctx, message.author.mention)
 
@@ -1321,7 +1321,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         shards = await self._k8s.list()
 
         # Stop all shards
-        await self.stop(ctx, ctx, [shard for shard in self._shards if shard.replace('_', '') in shards])
+        await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards])
 
         # Fail if any shards are still running
         await self.display(ctx, "Checking that all shards are stopped...")
@@ -1629,7 +1629,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         # Stop all shards
         await self.display(ctx, "Stopping all stage server shards...")
         shards = await self._k8s.list()
-        await self.stop(ctx, ctx, [shard for shard in self._shards if shard in shards])
+        await self.stop(ctx, [shard for shard in self._shards if shard in shards])
 
         # Delete and re-create all the 0_PREVIOUS directories, wherever they might be at one level above the shard folders
         await self.display(ctx, "Removing previous 0_PREVIOUS directories")
