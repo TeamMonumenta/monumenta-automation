@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 RUN apt-get update && \
 	apt-get install -y build-essential curl
@@ -11,7 +11,7 @@ RUN cd /tmp && \
 	make -j 4 && \
 	make install
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 RUN apt-get update && \
 	apt-get install -y software-properties-common && \
