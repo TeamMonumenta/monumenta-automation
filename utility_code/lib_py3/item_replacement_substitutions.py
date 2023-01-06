@@ -492,7 +492,10 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:blaze_rod", "C.A.L.D.E.R Non-Dimensional Wand", "minecraft:blaze_rod", "C.A.L.D.E.R. Non-Dimensional Wand"],
                 ["minecraft:white_stained_glass", "Tesseract of Festivity", "minecraft:ice", "Tesseract of Festivity"],
                 ["minecraft:white_stained_glass", "Tesseract of Festivity (u)", "minecraft:ice", "Tesseract of Festivity (u)"],
-
+                ["minecraft:iron_boots", "Pelias’ Last Step", "minecraft:iron_boots", "Pelias' Last Step"],
+                ["minecraft:iron_boots", "Pelias‘ Last Step", "minecraft:iron_boots", "Pelias' Last Step"],
+                ["minecraft:slime_ball", "Hycenea’s Vinelash", "minecraft:slime_ball", "Hycenea's Vinelash"],
+                ["minecraft:slime_ball", "Hycenea‘s Vinelash", "minecraft:slime_ball", "Hycenea's Vinelash"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
