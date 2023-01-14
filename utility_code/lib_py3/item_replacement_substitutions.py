@@ -205,37 +205,38 @@ class FixPlainTag(SubstitutionRule):
             update_plain_tag(item.nbt.at_path("tag"))
 
 
-class FixBrokenShulkers(SubstitutionRule):
-    """Note: only to be run once!"""
-    name = "Fix Firmament, LOOTBOX, and Omnilockbox broken last update"
+class UpdateQuivers(SubstitutionRule):
+    """Note: only has to be run once"""
+    name = "Update quivers to new format as arrows"
 
     def process(self, item_meta, item):
         if (not item_meta['id'].endswith('shulker_box')
-                or item_meta['name'] is not None
-                or not item.tag.has_path('Monumenta.Tier')
-                or not item.tag.has_path('Monumenta.Region')
-                or not item.tag.has_path('Monumenta.Location')
-                or not item.tag.has_path('plain.display.Lore')):
+                or item_meta['name'] is None
+                or not item_meta['name'].endswith(' Quiver')):
             return
-        tier = item.tag.at_path('Monumenta.Tier').value
-        region = item.tag.at_path('Monumenta.Region').value
-        location = item.tag.at_path('Monumenta.Location').value
-        lore = item.tag.at_path('plain.display.Lore').to_obj()
-        if (tier == 'epic'
-                and region == 'isles'
-                and location == 'shifting'
-                and "50% of the time, the Firmament will place Prismarine" in lore):
-            item_meta['name'] = 'Firmament'
-        elif (tier == 'unique'
-                and region == 'valley'
-                and location == 'overworld1'
-                and "of any nearby opened loot chest." in lore):
-            item_meta['name'] = 'LOOTBOX'
-        elif (tier == 'epic'
-                and region == 'ring'
-                and location == 'science'
-                and "the Omnilockbox swaps all of the user's" in lore):
-            item_meta['name'] = 'Omnilockbox'
+
+        item_meta['id'] = 'minecraft:tipped_arrow'
+        if item_meta['name'] == "Novice's Quiver":
+            item_meta['name'] = "Scout's Quiver"
+
+        if item.tag.has_path('BlockEntityTag.Items'):
+            arrows = item.tag.at_path('BlockEntityTag.Items')
+            for arrow in arrows.value:
+                count = arrow.at_path('Count').value
+                arrow.at_path('Count').value = 1
+                if not arrow.has_path('tag'):
+                    arrow.value['tag'] = nbt.TagCompound({})
+                if not arrow.has_path('tag.Monumenta'):
+                    arrow.at_path('tag').value['Monumenta'] = nbt.TagCompound({})
+                if not arrow.has_path('tag.Monumenta.PlayerModified'):
+                    arrow.at_path('tag.Monumenta').value['PlayerModified'] = nbt.TagCompound({})
+                arrow.at_path('tag.Monumenta.PlayerModified').value['AmountInContainer'] = nbt.TagLong(count)
+            if not item.tag.has_path('Monumenta'):
+                item.tag.value['Monumenta'] = nbt.TagCompound({})
+            if not item.tag.has_path('Monumenta.PlayerModified'):
+                item.tag.at_path('Monumenta').value['PlayerModified'] = nbt.TagCompound({})
+            item.tag.at_path('Monumenta.PlayerModified').value['Items'] = arrows
+            del item.tag.value['BlockEntityTag']
 
 
 class SubtituteItems(SubstitutionRule):
