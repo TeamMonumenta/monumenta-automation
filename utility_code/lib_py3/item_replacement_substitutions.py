@@ -497,6 +497,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:iron_boots", "Pelias‘ Last Step", "minecraft:iron_boots", "Pelias' Last Step"],
                 ["minecraft:slime_ball", "Hycenea’s Vinelash", "minecraft:slime_ball", "Hycenea's Vinelash"],
                 ["minecraft:slime_ball", "Hycenea‘s Vinelash", "minecraft:slime_ball", "Hycenea's Vinelash"],
+                ["minecraft:compass", "True North", "minecraft:compass", "Corroded True North"],
+                ["minecraft:compass", "Truer North", "minecraft:compass", "Corroded Truer North"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
