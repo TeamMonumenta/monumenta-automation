@@ -225,7 +225,7 @@ class AutomationBotInstance(commands.Cog):
                                     # Schedule the display coroutine back on the main event loop
                                     # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
                                     # Probably hard to fix though
-                                    asyncio.run_coroutine_threadsafe(self.stage_data_request(message.channel, message["data"]), loop)
+                                    asyncio.run_coroutine_threadsafe(self.stage_data_request(self._stage_notify_channel, message["data"]), loop)
 
                     if "log_level" in conf:
                         log_level = conf["log_level"]
