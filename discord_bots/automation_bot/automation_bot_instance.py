@@ -220,6 +220,11 @@ class AutomationBotInstance(commands.Cog):
                                 if message["channel"] == "Monumenta.Automation.AuditLogSevere":
                                     send_message_to_channel(message["data"]["message"], self._audit_severe_channel)
 
+                            if self._death_audit_channel:
+                                if message["channel"] == "Monumenta.Automation.DeathAuditLog":
+                                    # Schedule the display coroutine back on the main event loop
+                                    send_message_to_channel(message["data"]["message"], self._death_audit_channel)
+
                             if self._stage_notify_channel:
                                 if message["channel"] == "Monumenta.Automation.stage":
                                     # Schedule the display coroutine back on the main event loop
@@ -253,6 +258,13 @@ class AutomationBotInstance(commands.Cog):
                             logging.info("Found audit severe channel: %s", conf["audit_severe_channel"])
                         except Exception:
                             logging.error("Cannot connect to audit severe channel: %s", conf["audit_severe_channel"])
+                    self._death_audit_channel = None
+                    if "death_audit_channel" in conf:
+                        try:
+                            self._death_audit_channel = self._bot.get_channel(conf["death_audit_channel"])
+                            logging.info("Found audit channel: %s", conf["death_audit_channel"])
+                        except Exception:
+                            logging.error("Cannot connect to audit channel: %s", conf["death_audit_channel"])
                     self._admin_channel = None
                     if "admin_channel" in conf:
                         try:
