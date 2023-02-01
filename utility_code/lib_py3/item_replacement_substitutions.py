@@ -497,6 +497,23 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:iron_boots", "Pelias‘ Last Step", "minecraft:iron_boots", "Pelias' Last Step"],
                 ["minecraft:slime_ball", "Hycenea’s Vinelash", "minecraft:slime_ball", "Hycenea's Vinelash"],
                 ["minecraft:slime_ball", "Hycenea‘s Vinelash", "minecraft:slime_ball", "Hycenea's Vinelash"],
+                ["minecraft:splash_potion", "Alchemist's Bag (0)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (1)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (2)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (3)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (4)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (5)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (6)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (7)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (8)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (9)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (10)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (11)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (12)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (13)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (14)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (15)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:splash_potion", "Alchemist's Bag (16)", "minecraft:splash_potion", "Alchemist's Bag"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
