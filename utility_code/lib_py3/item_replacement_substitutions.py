@@ -1,5 +1,6 @@
 import os
 import sys
+
 from lib_py3.common import always_equal
 from lib_py3.common import get_item_name_from_nbt
 from lib_py3.common import parse_name_possibly_json
@@ -514,6 +515,39 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:splash_potion", "Alchemist's Bag (14)", "minecraft:splash_potion", "Alchemist's Bag"],
                 ["minecraft:splash_potion", "Alchemist's Bag (15)", "minecraft:splash_potion", "Alchemist's Bag"],
                 ["minecraft:splash_potion", "Alchemist's Bag (16)", "minecraft:splash_potion", "Alchemist's Bag"],
+                ["minecraft:diamond_sword", "Inflation I", "minecraft:golden_sword", "Inflation I"],
+                ["minecraft:diamond_sword", "Inflation II", "minecraft:golden_sword", "Inflation II"],
+                ["minecraft:diamond_sword", "Inflation II", "minecraft:golden_sword", "Inflation II"],
+                ["minecraft:diamond_sword", "Inflation III", "minecraft:golden_sword", "Inflation III"],
+                ["minecraft:diamond_sword", "Inflation IV", "minecraft:golden_sword", "Inflation IV"],
+                ["minecraft:diamond_sword", "Inflation V", "minecraft:golden_sword", "Inflation V"],
+                ["minecraft:diamond_sword", "Inflation VI", "minecraft:golden_sword", "Inflation VI"],
+                ["minecraft:diamond_sword", "Inflation VII", "minecraft:golden_sword", "Inflation VII"],
+                ["minecraft:diamond_sword", "Inflation VIII", "minecraft:golden_sword", "Inflation VIII"],
+                ["minecraft:diamond_sword", "Inflation IX", "minecraft:golden_sword", "Inflation IX"],
+                ["minecraft:diamond_sword", "Inflation X", "minecraft:golden_sword", "Inflation X"],
+                ["minecraft:diamond_sword", "Inflation XI", "minecraft:golden_sword", "Inflation XI"],
+                ["minecraft:diamond_sword", "Inflation XII", "minecraft:golden_sword", "Inflation XII"],
+                ["minecraft:diamond_sword", "Inflation XIII", "minecraft:golden_sword", "Inflation XIII"],
+                ["minecraft:diamond_sword", "Inflation XIV", "minecraft:golden_sword", "Inflation XIV"],
+                ["minecraft:diamond_sword", "Inflation XV", "minecraft:golden_sword", "Inflation XV"],
+                ["minecraft:diamond_sword", "Inflation XVI", "minecraft:golden_sword", "Inflation XVI"],
+                ["minecraft:diamond_sword", "Inflation XVII", "minecraft:golden_sword", "Inflation XVII"],
+                ["minecraft:diamond_sword", "Inflation XVIII", "minecraft:golden_sword", "Inflation XVIII"],
+                ["minecraft:diamond_sword", "Inflation XIX", "minecraft:golden_sword", "Inflation XIX"],
+                ["minecraft:diamond_sword", "Inflation XX", "minecraft:golden_sword", "Inflation XX"],
+                ["minecraft:diamond_sword", "Inflation XXI", "minecraft:golden_sword", "Inflation XXI"],
+                ["minecraft:diamond_sword", "Inflation XXII", "minecraft:golden_sword", "Inflation XXII"],
+                ["minecraft:diamond_sword", "Inflation XXIII", "minecraft:golden_sword", "Inflation XXIII"],
+                ["minecraft:diamond_sword", "Inflation XXIV", "minecraft:golden_sword", "Inflation XXIV"],
+                ["minecraft:diamond_sword", "Inflation XXV", "minecraft:golden_sword", "Inflation XXV"],
+                ["minecraft:diamond_sword", "Inflation XXVI", "minecraft:golden_sword", "Inflation XXVI"],
+                ["minecraft:diamond_sword", "Inflation XXVII", "minecraft:golden_sword", "Inflation XXVII"],
+                ["minecraft:diamond_sword", "Inflation XXVIII", "minecraft:golden_sword", "Inflation XXVIII"],
+                ["minecraft:diamond_sword", "Inflation XXIX", "minecraft:golden_sword", "Inflation XXIX"],
+                ["minecraft:diamond_sword", "Inflation XXX", "minecraft:golden_sword", "Inflation XXX"],
+                ["minecraft:diamond_sword", "Inflation XXXI", "minecraft:golden_sword", "Inflation XXXI"],
+                ["minecraft:diamond_sword", "Hyperinflation", "minecraft:golden_sword", "Hyperinflation"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
