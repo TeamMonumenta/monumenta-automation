@@ -38,142 +38,206 @@ if __name__ == '__main__':
         #
         # All dungeons fit in a region file; even corrupted sierhaven is only 30x24 chunks
 
-        "dungeons":{
-            "labs":{
-                "world": "labs",
+        "dungeons": {
+            "labs": {
+                "world": [
+                    "labs",
+                ],
                 "objective":"D0Access"
             },
-            "white":{
-                "world": "white",
+            "white": {
+                "world": [
+                    "white",
+                    "whiteexalted",
+                ],
                 "objective":"D1Access"
             },
-            "orange":{
-                "world": "orange",
+            "orange": {
+                "world": [
+                    "orange",
+                    "orangeexalted",
+                ],
                 "objective":"D2Access"
             },
-            "magenta":{
-                "world": "magenta",
+            "magenta": {
+                "world": [
+                    "magenta",
+                ],
                 "objective":"D3Access"
             },
-            "lightblue":{
-                "world": "lightblue",
+            "lightblue": {
+                "world": [
+                    "lightblue",
+                ],
                 "objective":"D4Access"
             },
-            "yellow":{
-                "world": "yellow",
+            "yellow": {
+                "world": [
+                    "yellow",
+                ],
                 "objective":"D5Access"
             },
-            "lime":{
-                "world": "lime",
+            "lime": {
+                "world": [
+                    "lime",
+                ],
                 "objective":"D6Access"
             },
-            "pink":{
-                "world": "pink",
+            "pink": {
+                "world": [
+                    "pink",
+                ],
                 "objective":"D7Access"
             },
-            "gray":{
-                "world": "gray",
+            "gray": {
+                "world": [
+                    "gray",
+                ],
                 "objective":"D8Access"
             },
-            "lightgray":{
-                "world": "lightgray",
+            "lightgray": {
+                "world": [
+                    "lightgray",
+                ],
                 "objective":"D9Access"
             },
-            "cyan":{
-                "world": "cyan",
+            "cyan": {
+                "world": [
+                    "cyan",
+                ],
                 "objective":"D10Access"
             },
-            "purple":{
-                "world": "purple",
+            "purple": {
+                "world": [
+                    "purple",
+                ],
                 "objective":"D11Access"
             },
-            "blue":{
-                "world": "blue",
+            "blue": {
+                "world": [
+                    "blue",
+                ],
                 "objective":"D12Access"
             },
-            "brown":{
-                "world": "brown",
+            "brown": {
+                "world": [
+                    "brown",
+                ],
                 "objective":"D13Access"
             },
-            "willows":{
-                "world": "willows",
+            "willows": {
+                "world": [
+                    "willows",
+                ],
                 "objective":"DB1Access"
             },
-            "verdant":{
-                "world": "verdant",
+            "verdant": {
+                "world": [
+                    "verdant",
+                ],
                 "objective":"DVAccess"
             },
-            "corridors":{
-                "world": "corridors",
+            "corridors": {
+                "world": [
+                    "corridors",
+                ],
                 "objective":"DRAccess"
             },
-            "reverie":{
-                "world": "reverie",
+            "reverie": {
+                "world": [
+                    "reverie",
+                ],
                 "objective":"DCAccess"
             },
-            "tutorial":{
-                "world": "tutorial",
+            "tutorial": {
+                "world": [
+                    "tutorial",
+                ],
                 "objective":"DTAccess"
             },
-            "sanctum":{
-                "world": "sanctum",
+            "sanctum": {
+                "world": [
+                    "sanctum",
+                ],
                 "objective":"DFSAccess"
             },
-            "shiftingcity":{
-                "world": "shiftingcity",
+            "shiftingcity": {
+                "world": [
+                    "shiftingcity",
+                ],
                 "objective":"DRL2Access"
             },
-            "teal":{
-                "world": "teal",
+            "teal": {
+                "world": [
+                    "teal",
+                ],
                 "objective":"DTLAccess"
             },
-            "forum":{
-                "world": "forum",
+            "forum": {
+                "world": [
+                    "forum",
+                ],
                 "objective":"DFFAccess"
             },
-            "remorse":{
-                "world": "remorse",
+            "remorse": {
+                "world": [
+                    "remorse",
+                ],
                 "objective":"DSRAccess"
             },
-            "rush":{
-                "world": "rush",
+            "rush": {
+                "world": [
+                    "rush",
+                ],
                 "objective":"DRDAccess"
             },
-            "mist":{
-                "world": "mist",
+            "mist": {
+                "world": [
+                    "mist",
+                ],
                 "objective":"DBMAccess"
             },
-            "depths":{
-                "world": "depths",
+            "depths": {
+                "world": [
+                    "depths",
+                ],
                 "objective":"DDAccess"
             },
 
-            "gallery":{
-                "world": "gallery",
+            "gallery": {
+                "world": [
+                    "gallery",
+                ],
                 "objective":"DGAccess"
             },
-            "portal":{
-                "world": "portal",
+            "portal": {
+                "world": [
+                    "portal",
+                ],
                 "objective":"DPSAccess"
             },
-            "ruin":{
-                "world": "bluestrike",
+            "ruin": {
+                "world": [
+                    "bluestrike",
+                ],
                 "objective":"DMASAccess"
             },
-            "skt":{
-                "world": "SKT",
+            "skt": {
+                "world": [
+                    "SKT",
+                ],
                 "objective":"DSKTAccess"
             },
         },
 
         # Chunk to copy directly from the reference folder
-        "spawn_region":{"x":-3, "z":-3},
+        "spawn_region": {"x":-3, "z":-3},
 
         # Dungeon instances start nn region -3,-2 and move in +z - a region is 32x32 chunks
-        "target_region":{"x":-3, "z":-2},
+        "target_region": {"x":-3, "z":-2},
 
         # Files/directories to copy from reference
-        "copy_paths":[
+        "copy_paths": [
             "level.dat",
         ],
     }
@@ -256,12 +320,13 @@ if __name__ == '__main__':
         ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True, region_type=EntitiesRegion).copy_to(new_world, spawn_region["x"], spawn_region["z"])
 
         ################ Copy the template world that instances will be created from
-        source_template_world = World(os.path.join(dungeon_path, dungeon["world"]))
-        dest_template_world = source_template_world.copy_to(os.path.join(new_shard_path, dungeon["world"]), clear_world_uuid=True)
+        for template_world in dungeon["world"]:
+            source_template_world = World(os.path.join(dungeon_path, template_world))
+            dest_template_world = source_template_world.copy_to(os.path.join(new_shard_path, template_world), clear_world_uuid=True)
 
-        # Set copied world to normal mode
-        dest_template_world.level_dat.difficulty = 2
-        dest_template_world.level_dat.save()
+            # Set copied world to normal mode
+            dest_template_world.level_dat.difficulty = 2
+            dest_template_world.level_dat.save()
 
         timings.nextStep(f"{name}: world copied")
 
