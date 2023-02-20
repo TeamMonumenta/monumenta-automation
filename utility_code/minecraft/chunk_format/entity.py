@@ -73,7 +73,7 @@ class Entity(RecursiveMinecraftIterator, NbtPathDebug):
         id_part = self.id.replace("minecraft:","")
         pos_part = ""
         if self.pos is not None:
-            pos_part = " " + " ".join(str(x) for x in self.pos)
+            pos_part = " " + " ".join(f'{x:4.2f}' for x in self.pos)
 
         return id_part + pos_part + name_part
 

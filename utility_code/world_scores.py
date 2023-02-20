@@ -12,7 +12,7 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 from lib_py3.common import eprint
-from lib_py3.scoreboard import Scoreboard
+from lib_py3.scoreboard import get_main_scoreboard
 from minecraft.world import World
 
 
@@ -118,22 +118,6 @@ def import_shard_scores(shard_path, num_threads, dry_run):
     print(f'Found {score_count} scores in {len(score_counts_by_world)} worlds for {shard_path}', flush=True)
     for world, count in sorted(score_counts_by_world.items()):
         print(f'- {world}: {count}')
-
-
-def get_main_scoreboard(shard_path):
-    level_name_prefix = 'level-name='
-    server_properties_path = shard_path / 'server.properties'
-
-    main_world = None
-    with open(server_properties_path, 'r') as fp:
-        for line in fp:
-            if line.startswith(level_name_prefix):
-                main_world = shard_path / line[len(level_name_prefix):].rstrip()
-                break
-    if main_world is None:
-        raise Exception(f'Could not find main world for shard {shard_path}')
-
-    return Scoreboard(main_world / 'data' / 'scoreboard.dat')
 
 
 def main():

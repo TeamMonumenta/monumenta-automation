@@ -8,6 +8,7 @@ from collections.abc import MutableMapping
 from pathlib import Path
 
 from lib_py3.common import copy_file, uuid_to_mc_uuid_tag_int_array
+from lib_py3.entity_scores import set_entity_scores
 
 from minecraft.chunk_format.chunk import Chunk, EntitiesChunk, PoiChunk
 from minecraft.util.debug_util import NbtPathDebug
@@ -23,7 +24,7 @@ def shorten_path(path):
             return "/".join(split[-3:])
     return path
 
-def _fixEntity(dx, dz, entity, regenerate_uuids, clear_world_uuid=False):
+def _fixEntity(dx, dz, entity, regenerate_uuids, clear_world_uuid=False, clear_score_data=False):
     nbtPaths = (
         ('x', 'z'),
         ('AX', 'AZ'),
@@ -53,6 +54,10 @@ def _fixEntity(dx, dz, entity, regenerate_uuids, clear_world_uuid=False):
                 xTag.value += dx
             for zTag in entity.iter_multipath(nbtPath[1]):
                 zTag.value += dz
+
+    # Clear entity scores
+    if clear_score_data:
+        set_entity_scores(entity, {})
 
     # Generate new UUIDs
     if regenerate_uuids and (entity.has_path("UUIDMost") or entity.has_path("UUIDLeast") or entity.has_path("UUID")):
@@ -205,7 +210,7 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         # Reopen the region file in place (this point cannot be reached in read only mode)
         self._region = nbt.RegionFile(self.path, read_only=False)
 
-    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
         """
         Copies this region file to a new location and returns that new Region
 
@@ -225,8 +230,8 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         # Create the same type region object as the calling class (Region, EntitiesRegion, etc.)
         return type(self)(new_path, rx, rz)
 
-    def move_to(self, world, rx, rz, overwrite=False, clear_world_uuid=False):
-        region = self.copy_to(world, rx, rz, overwrite=overwrite, regenerate_uuids=False, clear_world_uuid=clear_world_uuid)
+    def move_to(self, world, rx, rz, overwrite=False, clear_world_uuid=False, clear_score_data=False):
+        region = self.copy_to(world, rx, rz, overwrite=overwrite, regenerate_uuids=False, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
         self._region.close()
         os.remove(self.path)
         return region
@@ -346,9 +351,9 @@ class Region(BaseRegion):
     def folder_name(cls):
         return "region"
 
-    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
         # Copy the file itself which is common to all region types
-        region = super().copy_to(world, rx, rz, overwrite, regenerate_uuids)
+        region = super().copy_to(world, rx, rz, overwrite, regenerate_uuids, clear_score_data=clear_score_data)
         dx = (rx - self.rx) * 512
         dz = (rz - self.rz) * 512
 
@@ -365,7 +370,7 @@ class Region(BaseRegion):
             for path in ['block_entities', 'Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
                 if chunk.nbt.has_path(path):
                     for entity in chunk.nbt.iter_multipath(path + '[]'):
-                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
+                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
 
         return region
 
@@ -440,7 +445,7 @@ class EntitiesRegion(BaseRegion):
     def folder_name(cls):
         return "entities"
 
-    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
         # Copy the file itself which is common to all region types
         region = super().copy_to(world, rx, rz, overwrite, regenerate_uuids)
         dx = (rx - self.rx) * 512
@@ -452,7 +457,7 @@ class EntitiesRegion(BaseRegion):
             for path in ['Entities', 'block_entities']:
                 if chunk.nbt.has_path(path):
                     for entity in chunk.nbt.iter_multipath(path + '[]'):
-                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
+                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
         return region
 
     def __repr__(self):
@@ -465,7 +470,7 @@ class PoiRegion(BaseRegion):
     def folder_name(cls):
         return "poi"
 
-    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False):
+    def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
         raise NotImplementedError
 
     def __repr__(self):

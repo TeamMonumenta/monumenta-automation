@@ -222,7 +222,7 @@ class AlwaysEqual():
     def __init__(self):
         pass
     def __hash__(self):
-        return True
+        return hash(True)
     def __eq__(self, other):
         return True
 always_equal = AlwaysEqual()
@@ -231,10 +231,23 @@ class NeverEqual():
     def __init__(self):
         pass
     def __hash__(self):
-        return False
+        return hash(False)
     def __eq__(self, other):
         return False
 never_equal = NeverEqual()
+
+UUID_REGEX = re.compile('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+
+class EqualIfUuidStr(str):
+    def __init__(self):
+        pass
+    def __hash__(self):
+        return hash('xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx')
+    def __eq__(self, other):
+        if not isinstance(other, str):
+            return False
+        return UUID_REGEX.fullmatch(other) is not None
+equal_if_uuid_str = EqualIfUuidStr()
 
 def move_file(old, new):
     if not os.path.exists(old):
@@ -415,3 +428,22 @@ def decode_escapes(s):
         return codecs.decode(match.group(0), 'unicode-escape')
 
     return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
+
+def get_main_world(shard_path):
+    """Gets the primary world of a shard
+
+    shard_path must be a pathlib.Path object or compatible
+    """
+    level_name_prefix = 'level-name='
+    server_properties_path = shard_path / 'server.properties'
+
+    main_world = None
+    with open(server_properties_path, 'r') as fp:
+        for line in fp:
+            if line.startswith(level_name_prefix):
+                main_world = shard_path / line[len(level_name_prefix):].rstrip()
+                break
+    if main_world is None:
+        raise Exception(f'Could not find main world for shard {shard_path}')
+
+    return main_world

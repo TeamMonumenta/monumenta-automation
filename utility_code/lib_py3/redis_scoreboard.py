@@ -136,7 +136,7 @@ class RedisScoreboard(object):
         # TODO
         pass
 
-    def search_scores(self, Conditions={}, Name=None, Objective=None, Score=None, Locked=None, Cache=None):
+    def search_scores(self, Conditions={}, Name=None, Objective=None, Score=None, Locked=None):
         """
         Return a list of scores that match specified criteria.
 
@@ -225,9 +225,6 @@ class RedisScoreboard(object):
 
         return matching_scores
 
-    def get_cache(self, Conditions={}, Name=None, Objective=None, Score=None, Locked=None, Cache=None):
-        return None
-
     def reset_scores(self, Conditions={}, Name=None, Objective=None, Score=None, Locked=None):
         """
         Reset all scores matching the specified criteria, and return True.
@@ -252,7 +249,7 @@ class RedisScoreboard(object):
             Score = score.at_path("Score").value
             self.set_score(Name, Objective, Score)
 
-    def get_score(self, Name, Objective, Fallback=None, Cache=None):
+    def get_score(self, Name, Objective, Fallback=None):
         """
         Return Name's score for Objective;
         if not found, return Fallback (default is None)
@@ -262,7 +259,7 @@ class RedisScoreboard(object):
         except KeyError:
             return Fallback
 
-    def set_score(self, Name, Objective, Score, Cache=None):
+    def set_score(self, Name, Objective, Score):
         """
         Set Name's Objective score to Score
         """
@@ -273,18 +270,16 @@ class RedisScoreboard(object):
             self._players[self.get_uuid(Name)][Objective] = Score
 
 
-    def add_score(self, Name, Objective, Score, Cache=None):
+    def add_score(self, Name, Objective, Score):
         """
         Add Score to Name's Objective score
-
-        A Cache can be provided to speed up the search for this score.
         """
         current = self._players[self.get_uuid(Name)].get(Objective, 0)
         self.set_score(Name, Objective, current + Score)
 
     def batch_score_changes(self, rules):
         """
-        Edit scores in bulk; uses an internal cache to speed up edits.
+        Edit scores in bulk.
 
         Example:
         Scoreboard.batch_score_changes(
@@ -328,29 +323,10 @@ class RedisScoreboard(object):
             ]
         )
         """
-        # Generate a cache
-        Objectives = set()
-        all_rule_objectives = []
-        for rule in rules:
-            rule_objectives = set()
-            rule_objectives.add(rule["condition"]["Objective"])
-            if "set" in rule["actions"]:
-                for to_change in rule["actions"]["set"]:
-                    rule_objectives.add(to_change["Objective"])
-            if "add" in rule["actions"]:
-                for to_change in rule["actions"]["add"]:
-                    rule_objectives.add(to_change["Objective"])
-            all_rule_objectives.append(rule_objectives)
-            Objectives.update(rule_objectives)
-        batch_cache = self.get_cache(Objective=list(Objectives))
-
-        # Now modify the Scoreboard as needed
         for i in range(len(rules)):
             rule = rules[i]
-            rule_objectives = all_rule_objectives[i]
-            rule_cache = self.get_cache(Objective=list(rule_objectives), Cache=batch_cache)
 
-            matched_conditions = self.search_scores(Conditions=rule["condition"], Cache=rule_cache)
+            matched_conditions = self.search_scores(Conditions=rule["condition"])
             for matching_score in matched_conditions:
                 Name = matching_score.at_path("Name").value
 
@@ -358,13 +334,13 @@ class RedisScoreboard(object):
                     for to_change in rule["actions"]["set"]:
                         Objective = to_change["Objective"]
                         Score = to_change["Score"]
-                        self.set_score(Name, Objective, Score, Cache=rule_cache)
+                        self.set_score(Name, Objective, Score)
 
                 if "add" in rule["actions"]:
                     for to_change in rule["actions"]["add"]:
                         Objective = to_change["Objective"]
                         Score = to_change["Score"]
-                        self.add_score(Name, Objective, Score, Cache=rule_cache)
+                        self.add_score(Name, Objective, Score)
 
 class RedisRBoard(object):
     """

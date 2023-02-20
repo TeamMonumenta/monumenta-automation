@@ -44,36 +44,23 @@ class ScoreboardTest(BaseTest):
 
 
         self.scoreboard = Scoreboard(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../test_files/Project_Epic-valley/data/scoreboard.dat"))
-        self.cache = self.scoreboard.get_cache(
-            Name=[
-                self.name_instance_last,
-                self.name_no_instance,
-                self.name_new_instance,
-                self.name_old_instance,
-                self.name_done_instance,
-            ],
-            Objective=[
-                self.objective_access,
-                self.objective_finished
-            ]
-        )
 
 
         self.last_week = {}
 
-        self.last_week["instance_last"] = self.scoreboard.get_score(self.name_instance_last, self.objective_access, Cache=self.cache)
+        self.last_week["instance_last"] = self.scoreboard.get_score(self.name_instance_last, self.objective_access)
 
-        self.last_week["no_instance"] = self.scoreboard.get_score(self.name_no_instance, self.objective_access, Cache=self.cache)
-        self.last_week["no_instance_finished"] = self.scoreboard.get_score(self.name_no_instance, self.objective_finished, Cache=self.cache)
+        self.last_week["no_instance"] = self.scoreboard.get_score(self.name_no_instance, self.objective_access)
+        self.last_week["no_instance_finished"] = self.scoreboard.get_score(self.name_no_instance, self.objective_finished)
 
-        self.last_week["new_instance"] = self.scoreboard.get_score(self.name_new_instance, self.objective_access, Cache=self.cache)
-        self.last_week["new_instance_finished"] = self.scoreboard.get_score(self.name_new_instance, self.objective_finished, Cache=self.cache)
+        self.last_week["new_instance"] = self.scoreboard.get_score(self.name_new_instance, self.objective_access)
+        self.last_week["new_instance_finished"] = self.scoreboard.get_score(self.name_new_instance, self.objective_finished)
 
-        self.last_week["old_instance"] = self.scoreboard.get_score(self.name_old_instance, self.objective_access, Cache=self.cache)
-        self.last_week["old_instance_finished"] = self.scoreboard.get_score(self.name_old_instance, self.objective_finished, Cache=self.cache)
+        self.last_week["old_instance"] = self.scoreboard.get_score(self.name_old_instance, self.objective_access)
+        self.last_week["old_instance_finished"] = self.scoreboard.get_score(self.name_old_instance, self.objective_finished)
 
-        self.last_week["done_instance"] = self.scoreboard.get_score(self.name_done_instance, self.objective_access, Cache=self.cache)
-        self.last_week["done_instance_finished"] = self.scoreboard.get_score(self.name_done_instance, self.objective_finished, Cache=self.cache)
+        self.last_week["done_instance"] = self.scoreboard.get_score(self.name_done_instance, self.objective_access)
+        self.last_week["done_instance_finished"] = self.scoreboard.get_score(self.name_done_instance, self.objective_finished)
 
 
         if self.last_week["instance_last"] == 0:
@@ -103,19 +90,19 @@ class ScoreboardTest(BaseTest):
 
         self.this_week = {}
 
-        self.this_week["instance_last"] = self.scoreboard.get_score(self.name_instance_last, self.objective_access, Cache=self.cache)
+        self.this_week["instance_last"] = self.scoreboard.get_score(self.name_instance_last, self.objective_access)
 
-        self.this_week["no_instance"] = self.scoreboard.get_score(self.name_no_instance, self.objective_access, Cache=self.cache)
-        self.this_week["no_instance_finished"] = self.scoreboard.get_score(self.name_no_instance, self.objective_finished, Cache=self.cache)
+        self.this_week["no_instance"] = self.scoreboard.get_score(self.name_no_instance, self.objective_access)
+        self.this_week["no_instance_finished"] = self.scoreboard.get_score(self.name_no_instance, self.objective_finished)
 
-        self.this_week["new_instance"] = self.scoreboard.get_score(self.name_new_instance, self.objective_access, Cache=self.cache)
-        self.this_week["new_instance_finished"] = self.scoreboard.get_score(self.name_new_instance, self.objective_finished, Cache=self.cache)
+        self.this_week["new_instance"] = self.scoreboard.get_score(self.name_new_instance, self.objective_access)
+        self.this_week["new_instance_finished"] = self.scoreboard.get_score(self.name_new_instance, self.objective_finished)
 
-        self.this_week["old_instance"] = self.scoreboard.get_score(self.name_old_instance, self.objective_access, Cache=self.cache)
-        self.this_week["old_instance_finished"] = self.scoreboard.get_score(self.name_old_instance, self.objective_finished, Cache=self.cache)
+        self.this_week["old_instance"] = self.scoreboard.get_score(self.name_old_instance, self.objective_access)
+        self.this_week["old_instance_finished"] = self.scoreboard.get_score(self.name_old_instance, self.objective_finished)
 
-        self.this_week["done_instance"] = self.scoreboard.get_score(self.name_done_instance, self.objective_access, Cache=self.cache)
-        self.this_week["done_instance_finished"] = self.scoreboard.get_score(self.name_done_instance, self.objective_finished, Cache=self.cache)
+        self.this_week["done_instance"] = self.scoreboard.get_score(self.name_done_instance, self.objective_access)
+        self.this_week["done_instance_finished"] = self.scoreboard.get_score(self.name_done_instance, self.objective_finished)
 
 
         if self.this_week["instance_last"] != 0:
@@ -142,19 +129,19 @@ class ScoreboardTest(BaseTest):
 
         self.next_week = {}
 
-        self.next_week["instance_last"] = self.scoreboard.get_score(self.name_instance_last, self.objective_access, Cache=self.cache)
+        self.next_week["instance_last"] = self.scoreboard.get_score(self.name_instance_last, self.objective_access)
 
-        self.next_week["no_instance"] = self.scoreboard.get_score(self.name_no_instance, self.objective_access, Cache=self.cache)
-        self.next_week["no_instance_finished"] = self.scoreboard.get_score(self.name_no_instance, self.objective_finished, Cache=self.cache)
+        self.next_week["no_instance"] = self.scoreboard.get_score(self.name_no_instance, self.objective_access)
+        self.next_week["no_instance_finished"] = self.scoreboard.get_score(self.name_no_instance, self.objective_finished)
 
-        self.next_week["new_instance"] = self.scoreboard.get_score(self.name_new_instance, self.objective_access, Cache=self.cache)
-        self.next_week["new_instance_finished"] = self.scoreboard.get_score(self.name_new_instance, self.objective_finished, Cache=self.cache)
+        self.next_week["new_instance"] = self.scoreboard.get_score(self.name_new_instance, self.objective_access)
+        self.next_week["new_instance_finished"] = self.scoreboard.get_score(self.name_new_instance, self.objective_finished)
 
-        self.next_week["old_instance"] = self.scoreboard.get_score(self.name_old_instance, self.objective_access, Cache=self.cache)
-        self.next_week["old_instance_finished"] = self.scoreboard.get_score(self.name_old_instance, self.objective_finished, Cache=self.cache)
+        self.next_week["old_instance"] = self.scoreboard.get_score(self.name_old_instance, self.objective_access)
+        self.next_week["old_instance_finished"] = self.scoreboard.get_score(self.name_old_instance, self.objective_finished)
 
-        self.next_week["done_instance"] = self.scoreboard.get_score(self.name_done_instance, self.objective_access, Cache=self.cache)
-        self.next_week["done_instance_finished"] = self.scoreboard.get_score(self.name_done_instance, self.objective_finished, Cache=self.cache)
+        self.next_week["done_instance"] = self.scoreboard.get_score(self.name_done_instance, self.objective_access)
+        self.next_week["done_instance_finished"] = self.scoreboard.get_score(self.name_done_instance, self.objective_finished)
 
 
         if self.next_week["instance_last"] != 0:
