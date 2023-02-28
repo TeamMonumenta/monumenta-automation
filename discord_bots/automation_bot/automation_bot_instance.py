@@ -1688,7 +1688,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             "plots",
         ]
         with open(f"{self._shards['bungee']}/config.yml", "w") as f:
-            yaml.dump(config, f, width=2147483647, allow_unicode=True)
+            yaml.dump(bungeeconfig, f, width=2147483647, allow_unicode=True)
 
         await self.display(ctx, "Stage server loaded with current play server data")
         await self.display(ctx, message.author.mention)
