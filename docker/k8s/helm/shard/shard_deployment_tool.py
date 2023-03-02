@@ -106,7 +106,7 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "depths": {
-        "play" : { "node": "m11", "memGB": 3   , },
+        "play" : { "node": "m11", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "clash": { "node": "m12", "memMB": 1536, },
     },
@@ -143,8 +143,11 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "orange": {
-        "play" : { "node": "m13" , "memGB": 3   , },
+        "play" : { "node": "m13" , "memGB": 6   , },
         "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "orange-2": {
+        "play" : { "node": "m15" , "memGB": 6   , },
     },
     "pink": {
         "play" : { "node": "m14", "memGB": 3   , },
@@ -191,8 +194,11 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "white": {
-        "play" : { "node": "m13", "memGB": 3   , },
+        "play" : { "node": "m13", "memGB": 6   , },
         "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "white-2": {
+        "play" : { "node": "m14", "memGB": 6   , },
     },
     "willows": {
         "play" : { "node": "m13", "memGB": 3   , },
