@@ -452,6 +452,17 @@ class AutomationBotInstance(commands.Cog):
             await self._k8s.restart(shards, wait=wait)
             await self.debug(ctx, f"Restarted shards [{','.join(shards)}]")
 
+    async def get_raffle_seed(self, ctx: discord.ext.commands.Context):
+        '''Returns a raffle seed'''
+
+        tz = timezone.utc
+        now = datetime.now(tz)
+        raffle_seed = "Default raffle seed for " + now.strftime('%Y-%m-%dT%H:%M:%S+00:00')
+        if self._rreact["msg_contents"] is not None:
+            raffle_seed = self._rreact["msg_contents"]
+
+        return raffle_seed
+
     # Infrastructure
     ################################################################################
 
@@ -1409,9 +1420,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         '''Runs a test raffle (does not save results)'''
 
         await self.display(ctx, "Test raffle results:")
-        raffle_seed = "Default raffle seed"
-        if self._rreact["msg_contents"] is not None:
-            raffle_seed = self._rreact["msg_contents"]
+        raffle_seed = await self.get_raffle_seed(ctx)
 
         raffle_results = tempfile.mktemp()
         vote_raffle(raffle_seed, 'redis', raffle_results, dry_run=True)
@@ -1506,7 +1515,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 13 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Raffle results:")
-            raffle_seed = "Default raffle seed"
+            raffle_seed = await self.get_raffle_seed(ctx)
             if self._rreact["msg_contents"] is not None:
                 raffle_seed = self._rreact["msg_contents"]
 
