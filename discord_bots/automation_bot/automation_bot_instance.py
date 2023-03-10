@@ -32,6 +32,7 @@ _file = os.path.abspath(__file__)
 _top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
+from lib_py3.common import decode_escapes
 from lib_py3.raffle import vote_raffle
 from lib_py3.lib_k8s import KubernetesManager
 from lib_py3.lib_sockets import SocketManager
@@ -146,6 +147,9 @@ class AutomationBotInstance(commands.Cog):
             "broadcastcommand": self.action_dummy,
             "broadcastbungeecommand": self.action_dummy,
             "broadcastminecraftcommand": self.action_dummy,
+
+            "get timestamp": self.action_get_timestamp,
+            "remind": self.action_remind,
         }
         self._all_commands = set(self._commands.keys())
 
@@ -370,7 +374,7 @@ class AutomationBotInstance(commands.Cog):
     async def display_verbatim(self, ctx: discord.ext.commands.Context, text: str):
         """Respond with verbatim text split into chunks that fit the message size"""
         for chunk in split_string(text):
-            await ctx.send("```" + chunk + "```")
+            await ctx.send("```\n" + chunk + "\n```")
 
     async def debug(self, ctx: discord.ext.commands.Context, text: str):
         """Log debug text to the console, and if verbose mode is on, respond with it also"""
@@ -397,7 +401,7 @@ class AutomationBotInstance(commands.Cog):
         else:
             # For complicated stuff, the caller must split appropriately
             splitCmd = cmd
-        await self.debug(ctx, "Executing: ```" + str(splitCmd) + "```")
+        await self.debug(ctx, "Executing: ```\n" + str(splitCmd) + "\n```")
         process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = await process.communicate()
         rc = process.returncode
@@ -504,7 +508,7 @@ class AutomationBotInstance(commands.Cog):
                     helptext += "\n**" + config.PREFIX + command + "**"
                 else:
                     helptext += "\n~~" + config.PREFIX + command + "~~"
-                helptext += "```" + self._commands[command].__doc__.replace('{cmdPrefix}', config.PREFIX) + "```"
+                helptext += "```\n" + self._commands[command].__doc__.replace('{cmdPrefix}', config.PREFIX) + "\n```"
 
             if helptext is None:
                 helptext = '''Command {!r} does not exist!'''.format(target_command)
@@ -609,7 +613,7 @@ Examples:
     async def action_list_instances(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         """List player dungeon instances"""
         rboard = RedisRBoard("play", redis_host="redis")
-        inst_str = '```'
+        inst_str = '```\n'
         inst_str += f"{'Dungeons' : <15}{'Used' : <15}"
         inst_str += "\n"
         for dungeon in self._dungeons:
@@ -619,7 +623,7 @@ Examples:
                 inst_str += "\n"
             else:
                 self.display(ctx, f"Warning: Failed to load rboard values for {dungeon}")
-        inst_str += "```"
+        inst_str += "\n```"
         await self.display(ctx, inst_str)
 
     # pylint: disable=comparison-with-callable
@@ -793,7 +797,7 @@ After transferring, source player data is backed up and then deleted. The source
         await self.display(ctx, f"{fromplayer} has been wiped and moved to the tutorial. If this was a mistake, you can ask an operator to restore it from the backup in {backuppath}.")
         await self.display(ctx, f"{toplayer} has had their data overwritten by the data from {fromplayer}. If this was a mistake, you can roll the player back to before the transfer using the in-game /rollback command")
         await self.display(ctx, f"**You still have to fix the player's guilds.**")
-        await self.display(ctx, f"To do this, go in-game and run ```/lp user {fromplayer} parent info``` Take note of the guild group. Then remove the original player from that guild via ```/lp user {fromplayer} parent remove <guild>``` and add the new player to the guild via ```/lp user {toplayer} parent add <guild>```")
+        await self.display(ctx, f"To do this, go in-game and run ```\n/lp user {fromplayer} parent info\n``` Take note of the guild group. Then remove the original player from that guild via ```\n/lp user {fromplayer} parent remove <guild>\n``` and add the new player to the guild via ```\n/lp user {toplayer} parent add <guild>\n```")
 
     async def action_rollback_playerdata(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Rolls a player back to the most recent weekly update
@@ -1412,7 +1416,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         '''Gets the current raffle seed based on reactions'''
 
         if self._rreact["msg_contents"] is not None:
-            await self.display(ctx, "Current raffle seed is: ```{}```".format(self._rreact["msg_contents"]))
+            await self.display(ctx, "Current raffle seed is: ```\n{}\n```".format(self._rreact["msg_contents"]))
         else:
             await self.display(ctx, "No current raffle seed")
 
@@ -2036,3 +2040,143 @@ Usage:
             await self.display(ctx, "https://discordpy.readthedocs.io/en/stable/api.html#discord.ClientUser.edit")
             return
         await self.display(ctx, "Success")
+
+    @staticmethod
+    def preprocess_time_description(time_description):
+        for ignored_prefix in (
+                'in ',
+                'after ',
+                'at ',
+        ):
+            if time_description.startswith(ignored_prefix):
+                time_description = time_description[len(ignored_prefix):]
+
+        for ignored_suffix in (
+                ' later',
+        ):
+            if time_description.endswith(ignored_suffix):
+                time_description = time_description[:-len(ignored_suffix)]
+
+        return time_description
+
+    async def time_from_description(self, ctx: discord.ext.commands.Context, time_description):
+        '''Gets a DateTime from a time description'''
+        time_description = self.preprocess_time_description(time_description)
+        unix_timestamp = int(await self.run(ctx, ["date", "-u", "--date", time_description, "+%s"]))
+        tz = timezone.utc
+        return datetime.fromtimestamp(unix_timestamp, tz)
+
+    @staticmethod
+    def get_discord_timestamp(datetime_: datetime, fmt: str = ":f"):
+        '''Get a Discord timestamp code
+
+Available formats are:
+""   - Default              - "June 24, 2021 3:49 AM"
+":t" - Short time           - "3:49 AM"
+":T" - Long Time            - "3:49:19 AM"
+":d" - Short date           - "06/24/2021"
+":D" - Long Date            - "June 24, 2021"
+":f" - Short full (default) - "June 24, 2021 3:49 AM"
+":F" - Long Full            - "Thursday, June 24, 2021 3:49 AM"
+":R" - Relative             - "2 years ago", "in 5 seconds"
+'''
+        return f"<t:{int(datetime_.timestamp())}{fmt}>"
+
+    async def action_get_timestamp(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Converts a human readable time to a Discord timestamp
+
+The input format is very flexible, using the Linux date command set to UTC. For instance:
+"5 minutes" - 5 minutes from now
+"yesterday" - midnight yesterday, UTC
+"10:35 PM EST"
+"5:00 PM Friday" - when a new week begins (for dungeons etc, as of March 3rd, 2023)
+"8:00 PM Thursday +2 weeks" - 3 weekly updates from now
+
+And the first message on the developer server is:
+"5:15 PM May 28 2016 EDT", "May 28 5:15 PM EDT 2016", or a number of variations on this
+'''
+
+        time_description = message.content[len(config.PREFIX + cmd) + 1:].strip()
+        time_description = self.preprocess_time_description(time_description)
+
+        if len(time_description) == 0:
+            await self.help_internal(ctx, ["get timestamp"], message.author)
+            return
+
+        selected_time = await self.time_from_description(ctx, time_description)
+
+        def get_output_line(timestamp, fmt):
+            '''Internal method to show timestamp code and its result'''
+            code = self.get_discord_timestamp(timestamp, fmt)
+            return f'\n`{code}`: {code}'
+
+        output_message = f"**{time_description}:**"
+        output_message += get_output_line(selected_time, "")
+        for fmt_char in 'tTdDfFR':
+            output_message += get_output_line(selected_time, f":{fmt_char}")
+
+        await self.display(ctx, output_message)
+
+    RE_REMINDER_ARGS = re.compile(r'(me|@.{3,32}#[0-9]{4}|\<@\d{1,32}\>|`@.{3,32}#[0-9]{4}`|`\<@\d{1,32}\>`)\s\"((?:[^\\\"]+|\\.)+)\"\s(.*)')
+
+    async def action_remind(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Sets a reminder
+
+Examples:
+~remind me "in 3 seconds" Do the stuff!
+~remind @NickNackGus#2442 "5 PM tomorrow EST" Play the thing!
+~remind `@NickNackGus#2442` "8:20 PM EST" Delayed surprise ping!
+
+See `~help get timestamp` for valid time formats
+'''
+
+        arg_string = message.content[len(config.PREFIX + cmd) + 1:].strip()
+        args_match = self.RE_REMINDER_ARGS.fullmatch(arg_string)
+        if not args_match:
+            await self.help_internal(ctx, ["remind"], message.author)
+            return
+
+        mention = args_match[1]
+        escaped_time_description = args_match[2]
+        reminder = args_match[3]
+
+        if mention.startswith('`') and mention.endswith('`'):
+            mention = mention[1:-1]
+        if mention == "me":
+            mention = message.author.mention
+
+        target_member = None
+        if mention.startswith('@'):
+            has_discriminator = '#' in mention
+            for member in message.channel.members:
+                if has_discriminator:
+                    member_mention = f"@{member.name}#{member.discriminator}"
+                else:
+                    member_mention = f"@{member.name}"
+                if member_mention == mention:
+                    mention = f"<@{member.id}>"
+                    target_member = member
+                    break
+        else:
+            for member in message.channel.members:
+                if mention == f"<@{member.id}>":
+                    target_member = member
+                    break
+
+        if target_member is None:
+            await self.display(ctx, f"`{mention}` won't ping anyone in this channel.")
+            return
+
+        time_description = decode_escapes(escaped_time_description)
+
+        selected_time = await self.time_from_description(ctx, time_description)
+        discord_timestamp = self.get_discord_timestamp(selected_time, ":R")
+
+        await self.display(ctx, f"Ok, {discord_timestamp} I'll send `@{target_member.name}#{target_member.discriminator}` this message:")
+        await self.display(ctx, f"```md\n{reminder}\n```")
+
+        remaining_seconds = (selected_time - datetime.now(timezone.utc)) / timedelta(seconds=1)
+        if remaining_seconds > 0:
+            await asyncio.sleep(remaining_seconds)
+
+        await self.display(ctx, f'{reminder}\n{mention}')

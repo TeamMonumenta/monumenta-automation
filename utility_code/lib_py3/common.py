@@ -1,3 +1,4 @@
+import codecs
 import copy
 import json
 import os
@@ -399,3 +400,18 @@ def update_plain_tag(item_nbt: nbt.TagCompound) -> None:
                 plain_str = parse_name_possibly_json(formatted_str, remove_color=True)
                 plain_str = NON_PLAIN_REGEX.sub('', plain_str).strip()
                 plain_subtag.value[plain_subpath] = nbt.TagString(plain_str)
+
+ESCAPE_SEQUENCE_RE = re.compile(r'''
+    ( \\U........      # 8-digit hex escapes
+    | \\u....          # 4-digit hex escapes
+    | \\x..            # 2-digit hex escapes
+    | \\[0-7]{1,3}     # Octal escapes
+    | \\N\{[^}]+\}     # Unicode characters by name
+    | \\[\\'"abfnrtv]  # Single-character escapes
+    )''', re.UNICODE | re.VERBOSE)
+
+def decode_escapes(s):
+    def decode_match(match):
+        return codecs.decode(match.group(0), 'unicode-escape')
+
+    return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
