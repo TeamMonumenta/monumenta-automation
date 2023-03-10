@@ -130,6 +130,8 @@ spec:
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
           value: {{ .Values.name }}
+        - name: "NETWORK_RELAY_SERVER_ADDRESS"
+          value: "{{ .Values.name }}:25566"
         - name: "MONUMENTA_IS_PLAY"
 {{- if eq .Values.namespace "play" }}
           value: "1"
