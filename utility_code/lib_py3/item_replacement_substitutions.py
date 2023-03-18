@@ -548,6 +548,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:diamond_sword", "Inflation XXX", "minecraft:golden_sword", "Inflation XXX"],
                 ["minecraft:diamond_sword", "Inflation XXXI", "minecraft:golden_sword", "Inflation XXXI"],
                 ["minecraft:diamond_sword", "Hyperinflation", "minecraft:golden_sword", "Hyperinflation"],
+                ["minecraft:player_head", "Thread of Fate - Masqueraider's Ruin", "minecraft:player_head", "Thread of Fate - Masquerader's Ruin"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
