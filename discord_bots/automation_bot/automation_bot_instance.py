@@ -150,6 +150,7 @@ class AutomationBotInstance(commands.Cog):
 
             "get timestamp": self.action_get_timestamp,
             "remind": self.action_remind,
+            "remind me": self.action_remind,
         }
         self._all_commands = set(self._commands.keys())
 
@@ -2129,6 +2130,9 @@ Examples:
 
 See `~help get timestamp` for valid time formats
 '''
+
+        if cmd.endswith(' me'):
+            cmd = cmd[:-3]
 
         arg_string = message.content[len(config.PREFIX + cmd) + 1:].strip()
         args_match = self.RE_REMINDER_ARGS.fullmatch(arg_string)
