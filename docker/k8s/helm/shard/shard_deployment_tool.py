@@ -79,8 +79,6 @@ shard_config = {
     "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-9":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-10":  { "play" : { "node": "m13", "memGB": 7, }, },
-    "ring-11":  { "play" : { "node": "m14", "memGB": 7, }, },
-    "ring-12":  { "play" : { "node": "m14", "memGB": 7, }, },
 
     # Plots
     "plots": {
@@ -123,8 +121,14 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "lightblue": {
-        "play" : { "node": "m13", "memGB": 3   , },
+        "play" : { "node": "m13", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "lightblue-2": {
+        "play" : { "node": "m14", "memGB": 5   , },
+    },
+    "lightblue-3": {
+        "play" : { "node": "m15", "memGB": 5   , },
     },
     "lightgray": {
         "play" : { "node": "m14" , "memGB": 3   , },
@@ -135,19 +139,22 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "magenta": {
-        "play" : { "node": "m13", "memGB": 3   , },
+        "play" : { "node": "m13", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "magenta-2": {
+        "play" : { "node": "m14", "memGB": 5   , },
+    },
+    "magenta-3": {
+        "play" : { "node": "m14", "memGB": 5   , },
     },
     "mist": {
         "play" : { "node": "m11", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "orange": {
-        "play" : { "node": "m13", "memMB": 5632, },
+        "play" : { "node": "m13", "memGB": 3, },
         "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "orange-2": {
-        "play" : { "node": "m15", "memMB": 5632, },
     },
     "pink": {
         "play" : { "node": "m14", "memGB": 3   , },
@@ -194,11 +201,8 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "white": {
-        "play" : { "node": "m13", "memMB": 5632, },
+        "play" : { "node": "m13", "memGB": 3, },
         "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "white-2": {
-        "play" : { "node": "m14", "memMB": 5632, },
     },
     "willows": {
         "play" : { "node": "m13", "memMB": 4608, },
@@ -252,7 +256,7 @@ shard_config = {
 namespace_defaults = {
     "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true" },
     "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
-    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
+    "stage": { "gsheetCredentials": "true", "fastMetrics": "false", "maps": "true" },
     "clash": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "false" },
 }
 
