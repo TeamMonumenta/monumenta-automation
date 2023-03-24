@@ -62,12 +62,14 @@ if __name__ == '__main__':
             "magenta": {
                 "world": [
                     "magenta",
+                    "magentaexalted",
                 ],
                 "objective":"D3Access"
             },
             "lightblue": {
                 "world": [
                     "lightblue",
+                    "lightblueexalted",
                 ],
                 "objective":"D4Access"
             },
