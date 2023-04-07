@@ -267,6 +267,7 @@ if __name__ == '__main__':
         ('plugins/MonumentaWorldManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaWorldManagement/config.yml'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
         ('plugins/Monumenta/experiencinator_config.json', '../../../server_config/data/plugins/all/Monumenta/experiencinator_config.json'),
+        ('plugins/Monumenta/mmquest.json', '../../../server_config/data/plugins/all/Monumenta/mmquest.json'),
         ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
         ('plugins/Monumenta/seasonalevents', '../../../server_config/data/plugins/all/Monumenta/seasonalevents'),
         ('plugins/Monumenta/InfinityTower/TowerMobs.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/TowerMobs.json'),
