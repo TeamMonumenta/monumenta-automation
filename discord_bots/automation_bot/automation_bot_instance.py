@@ -956,6 +956,8 @@ Must be run before starting the update on the play server
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/Project_Epic-valley /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/azacor /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/valley/sanctum /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/valley/verdant /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
 
         if not debug:
             await self.display(ctx, "Restarting the valley shard...")
