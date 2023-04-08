@@ -966,6 +966,8 @@ Must be run before starting the update on the play server
         await self.display(ctx, "Copying isles...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles")
         await self.run(ctx, "cp -a /home/epic/project_epic/isles/Project_Epic-isles /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/isles/mist /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/isles/remorse /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
 
         if not debug:
             await self.display(ctx, "Restarting the isles shard...")
