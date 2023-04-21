@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
 
-import json
-import os
-import sys
 import asyncio
-import subprocess
+import json
+import logging
+import os
 import re
+import subprocess
+import sys
 import tempfile
 import time
 import traceback
-import logging
-from pprint import pformat
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from pathlib import Path
+from pprint import pformat
 
-import redis
 import discord
-from discord.ext import commands
-import yaml
 import git
+import redis
+import yaml
+from discord.ext import commands
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -227,8 +227,11 @@ class AutomationBotInstance(commands.Cog):
 
                             if self._death_audit_channel:
                                 if message["channel"] == "Monumenta.Automation.DeathAuditLog":
-                                    # Schedule the display coroutine back on the main event loop
                                     send_message_to_channel(message["data"]["message"], self._death_audit_channel)
+
+                            if self._player_audit_channel:
+                                if message["channel"] == "Monumenta.Automation.PlayerAuditLog":
+                                    send_message_to_channel(message["data"]["message"], self._player_audit_channel)
 
                             if self._stage_notify_channel:
                                 if message["channel"] == "Monumenta.Automation.stage":
@@ -267,9 +270,16 @@ class AutomationBotInstance(commands.Cog):
                     if "death_audit_channel" in conf:
                         try:
                             self._death_audit_channel = self._bot.get_channel(conf["death_audit_channel"])
-                            logging.info("Found audit channel: %s", conf["death_audit_channel"])
+                            logging.info("Found death audit channel: %s", conf["death_audit_channel"])
                         except Exception:
-                            logging.error("Cannot connect to audit channel: %s", conf["death_audit_channel"])
+                            logging.error("Cannot connect to death audit channel: %s", conf["death_audit_channel"])
+                    self._player_audit_channel = None
+                    if "player_audit_channel" in conf:
+                        try:
+                            self._player_audit_channel = self._bot.get_channel(conf["player_audit_channel"])
+                            logging.info("Found player audit channel: %s", conf["player_audit_channel"])
+                        except Exception:
+                            logging.error("Cannot connect to player audit channel: %s", conf["player_audit_channel"])
                     self._admin_channel = None
                     if "admin_channel" in conf:
                         try:
