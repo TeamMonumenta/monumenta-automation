@@ -140,6 +140,12 @@ spec:
 {{- else }}
           value: "0"
 {{- end }}
+        - name: "MONUMENTA_ENABLE_TIME_WARP"
+{{- if eq .Values.namespace "play" }}
+          value: "0"
+{{- else }}
+          value: "1"
+{{- end }}
 {{- if .Values.useHTTPForProbes }}
         readinessProbe:
           httpGet:
