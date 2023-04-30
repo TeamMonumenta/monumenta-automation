@@ -1,13 +1,12 @@
 #!/usr/bin/env pypy3
 
-import sys
-import os
 import math
+import os
+import sys
+
 from lib_py3.common import parse_name_possibly_json
 from lib_py3.library_of_souls import LibraryOfSouls
-
 from minecraft.chunk_format.schematic import Schematic
-from minecraft.chunk_format.structure import Structure
 from minecraft.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
@@ -117,9 +116,13 @@ if __name__ == '__main__':
 
     dungeons = {
         "white":{"world": "white"},
+        "whiteexalted":{"world": "whiteexalted"},
         "orange":{"world": "orange"},
+        "orangeexalted":{"world": "orangeexalted"},
         "magenta":{"world": "magenta"},
+        "magentaexalted":{"world": "magentaexalted"},
         "lightblue":{"world": "lightblue"},
+        "lightblueexalted":{"world": "lightblueexalted"},
         "yellow":{"world": "yellow"},
         "willows":{"world": "willows"},
         "reverie":{"world": "reverie"},
@@ -136,12 +139,12 @@ if __name__ == '__main__':
         "forum":{"world": "forum"},
 
         "tutorial":{"world": "tutorial"},
-        "verdantstrike":{"world": "verdant", "min": (-1024, 0, 2815), "max": (-768, 255, 3071)},
-        "verdantstory":{"world": "verdant", "min": (-767, 0, 2560), "max": (-513, 255, 2815)},
-        "sanctum":{"world": "sanctum"},
+        "verdantstrike":{"path": "valley/verdant", "min": (-1024, 0, 2815), "max": (-768, 255, 3071)},
+        "verdantstory":{"path": "valley/verdant", "min": (-767, 0, 2560), "max": (-513, 255, 2815)},
+        "sanctum":{"path": "valley/sanctum"},
         "rush":{"world": "rush"},
-        "mist":{"world": "mist"},
-        "remorse":{"world": "remorse"},
+        "mist":{"path": "isles/mist"},
+        "remorse":{"path": "isles/remorse"},
         "depths":{"world": "depths"},
         "gallery":{"world": "gallery"},
         "portal":{"world": "portal"},
@@ -155,6 +158,8 @@ if __name__ == '__main__':
 
         if "world" in dungeon_config:
             dungeonWorld = World(f'/home/epic/project_epic/dungeon/{dungeon_config["world"]}')
+        elif "path" in dungeon_config:
+            dungeonWorld = World(f'/home/epic/project_epic/{dungeon_config["path"]}')
         else:
             dungeonWorld = World('/home/epic/project_epic/dungeon/Project_Epic-dungeon')
 
