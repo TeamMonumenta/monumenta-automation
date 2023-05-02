@@ -554,8 +554,6 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:bread", "Prets’ Homemade Bread", "minecraft:bread", "Prets' Homemade Bread"],
                 ["minecraft:stone_sword", "Soulvenom Dagger", "minecraft:golden_sword", "Soulvenom Dagger"],
                 ["minecraft:chainmail_leggings", "Venemous Folly", "minecraft:chainmail_leggings", "Venomous Folly"],
-                ["minecraft:slime_ball", "Hycenea‘s Vinelash", "minecraft:slime_ball", "Hycenea's Vinelash"],
-                ["minecraft:slime_ball", "Hycenea’s Vinelash", "minecraft:slime_ball", "Hycenea's Vinelash"],
                 ["minecraft:stone_pickaxe", "Resiliant Pickaxe", "minecraft:stone_pickaxe", "Resilient Pickaxe"],
                 ["minecraft:leather_helmet", "Resiliant Growth", "minecraft:leather_helmet", "Resilient Growth"],
         ]:
