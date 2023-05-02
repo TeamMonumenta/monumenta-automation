@@ -81,6 +81,9 @@ fn main() -> BoxResult<()> {
         if !Path::new(&inargs.path).is_dir() {
             bail!("Supplied input directory does not exist");
         }
+        if inargs.history_amount_to_keep < 1 {
+            bail!("History amount to keep must be at least 1");
+        }
     }
 
     // Open the top-level redis client, and a connection for initial use
