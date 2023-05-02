@@ -549,6 +549,15 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:diamond_sword", "Inflation XXXI", "minecraft:golden_sword", "Inflation XXXI"],
                 ["minecraft:diamond_sword", "Hyperinflation", "minecraft:golden_sword", "Hyperinflation"],
                 ["minecraft:player_head", "Thread of Fate - Masqueraider's Ruin", "minecraft:player_head", "Thread of Fate - Masquerader's Ruin"],
+                ["minecraft:wither_skeleton_spawn_egg", "Xeno Dummy", "minecraft:wither_skeleton_spawn_egg", "Xeno, Shattered Scallawag Dummy"],
+                ["minecraft:bread", "Prets‘ Homemade Bread", "minecraft:bread", "Prets' Homemade Bread"],
+                ["minecraft:bread", "Prets’ Homemade Bread", "minecraft:bread", "Prets' Homemade Bread"],
+                ["minecraft:stone_sword", "Soulvenom Dagger", "minecraft:golden_sword", "Soulvenom Dagger"],
+                ["minecraft:chainmail_leggings", "Venemous Folly", "minecraft:chainmail_leggings", "Venomous Folly"],
+                ["minecraft:slime_ball", "Hycenea‘s Vinelash", "minecraft:slime_ball", "Hycenea's Vinelash"],
+                ["minecraft:slime_ball", "Hycenea’s Vinelash", "minecraft:slime_ball", "Hycenea's Vinelash"],
+                ["minecraft:stone_pickaxe", "Resiliant Pickaxe", "minecraft:stone_pickaxe", "Resilient Pickaxe"],
+                ["minecraft:leather_helmet", "Resiliant Growth", "minecraft:leather_helmet", "Resilient Growth"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
