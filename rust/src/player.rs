@@ -61,6 +61,13 @@ impl Player {
         Player{uuid, name: None, playerdata: None, advancements: None, scores: None, plugindata: None, sharddata: None, remotedata: None, history: None}
     }
 
+    pub fn from_name(name: &str, con: &mut redis::Connection) -> BoxResult<Player> {
+        let player_uuid_str: String = con.hget("name2uuid", name)?;
+        let uuid = Uuid::parse_str(&player_uuid_str)?;
+
+        Ok(Player{uuid, name: None, playerdata: None, advancements: None, scores: None, plugindata: None, sharddata: None, remotedata: None, history: None})
+    }
+
     pub fn get_redis_players(domain: &str, con: &mut redis::Connection) -> BoxResult<HashMap<Uuid, Player>> {
         let mut uuid: HashSet<Uuid> = HashSet::new();
 
