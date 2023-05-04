@@ -76,6 +76,7 @@ if __name__ == '__main__':
             "yellow": {
                 "world": [
                     "yellow",
+                    "yellowexalted",
                 ],
                 "objective":"D5Access"
             },
@@ -130,6 +131,7 @@ if __name__ == '__main__':
             "willows": {
                 "world": [
                     "willows",
+                    "willowsexalted",
                 ],
                 "objective":"DB1Access"
             },
