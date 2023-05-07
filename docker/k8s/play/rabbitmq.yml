@@ -48,13 +48,14 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-8
+                - monumenta-13
       hostAliases:
       - ip: "127.0.0.1"
         hostnames:
         - "monumenta-rabbit"
       containers:
-      - image: rabbitmq:3-management
+      # TODO: This needs updating!
+      - image: rabbitmq:3.8-management
         name: rabbitmq
         env:
         - name: RABBITMQ_VM_MEMORY_HIGH_WATERMARK
