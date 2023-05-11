@@ -91,9 +91,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("DMASAccess".to_string(), 0);
         scores.insert("GodsporeAccess".to_string(), 0);
         scores.insert("AzacorAccess".to_string(), 0);
-        scores.insert("MusicID".to_string(), 0);
-        scores.insert("MusicNextID".to_string(), 0);
-        scores.insert("MusicCooldown".to_string(), 0);
 
         // Temporary score changes for Shaman's release
         scores.insert("Quest103o".to_string(), 0);
