@@ -210,7 +210,6 @@ if __name__ == '__main__':
         "portal": get_non_preserved_dungeon_config("portal"),
         "ruin": get_non_preserved_dungeon_config("ruin"),
         "corridors": get_non_preserved_dungeon_config("corridors"),
-        "verdant": get_non_preserved_dungeon_config("verdant"),
         "rush": get_non_preserved_dungeon_config("rush"),
         "depths": get_non_preserved_dungeon_config("depths"),
         "tutorial": tutorial,

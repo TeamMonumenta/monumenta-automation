@@ -135,12 +135,6 @@ if __name__ == '__main__':
                 ],
                 "objective":"DB1Access"
             },
-            "verdant": {
-                "world": [
-                    "verdant",
-                ],
-                "objective":"DVAccess"
-            },
             "corridors": {
                 "world": [
                     "corridors",

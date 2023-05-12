@@ -164,10 +164,6 @@ shard_config = {
         "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
-    "verdant": {
-        "play" : { "node": "m11", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
     "corridors": {
         "play" : { "node": "m14", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
