@@ -650,7 +650,6 @@ if __name__ == '__main__':
         'sanctum': 10,
         'reverie': 10,
         'rush': 5,
-        'mist': 8,
         'depths': 5,
         'test': 8,
         'playerplots': 6,

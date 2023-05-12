@@ -195,12 +195,6 @@ if __name__ == '__main__':
                 ],
                 "objective":"DRDAccess"
             },
-            "mist": {
-                "world": [
-                    "mist",
-                ],
-                "objective":"DBMAccess"
-            },
             "depths": {
                 "world": [
                     "depths",
