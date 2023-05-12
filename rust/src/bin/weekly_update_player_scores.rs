@@ -89,10 +89,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("GodsporeAccess".to_string(), 0);
         scores.insert("AzacorAccess".to_string(), 0);
 
-        // Temporary score changes for Shaman's release
-        scores.insert("Quest103o".to_string(), 0);
-        scores.insert("Quest103p".to_string(), 0);
-
         fix_total_level(scores);
     }
 }
