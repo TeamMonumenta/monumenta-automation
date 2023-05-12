@@ -199,7 +199,6 @@ if __name__ == '__main__':
         "brown": get_dungeon_config("brown", "D13Access"),
         "willows": get_dungeon_config("willows", "DB1Access"),
         "reverie": get_dungeon_config("reverie", "DCAccess"),
-        "sanctum": get_dungeon_config("sanctum", "DFSAccess"),
         "labs": get_dungeon_config("labs", "D0Access"),
         "teal": get_dungeon_config("teal", "DTLAccess"),
         "forum": get_dungeon_config("forum", "DFFAccess"),

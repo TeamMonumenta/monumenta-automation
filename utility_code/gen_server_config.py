@@ -646,7 +646,6 @@ if __name__ == '__main__':
         'willows': 8,
         'corridors': 8,
         'verdant': 9,
-        'sanctum': 10,
         'reverie': 10,
         'rush': 5,
         'depths': 5,

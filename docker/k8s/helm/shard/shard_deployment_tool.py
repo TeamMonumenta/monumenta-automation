@@ -176,10 +176,6 @@ shard_config = {
         "play" : { "node": "m15", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
-    "sanctum": {
-        "play" : { "node": "m13", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
     "shiftingcity": {
         "play" : { "node": "m11", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },

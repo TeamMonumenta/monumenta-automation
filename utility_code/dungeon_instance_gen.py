@@ -159,12 +159,6 @@ if __name__ == '__main__':
                 ],
                 "objective":"DTAccess"
             },
-            "sanctum": {
-                "world": [
-                    "sanctum",
-                ],
-                "objective":"DFSAccess"
-            },
             "shiftingcity": {
                 "world": [
                     "shiftingcity",

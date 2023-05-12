@@ -78,7 +78,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
         scores.insert("DRDAccess".to_string(), 0);
-        scores.insert("DFSAccess".to_string(), 0);
         // Sanctum & Verdant
         scores.insert("R1Access".to_string(), 0);
         // Remorse & Mist
