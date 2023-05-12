@@ -640,7 +640,6 @@ if __name__ == '__main__':
         'brown': 11,
         'teal': 9,
         'forum': 8,
-        'remorse': 8,
 
         'tutorial': 9,
         'labs': 10,

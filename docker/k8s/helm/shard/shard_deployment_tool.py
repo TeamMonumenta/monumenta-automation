@@ -160,10 +160,6 @@ shard_config = {
         "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
-    "remorse": {
-        "play" : { "node": "m11", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
     "reverie": {
         "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },

@@ -213,7 +213,6 @@ if __name__ == '__main__':
         "corridors": get_non_preserved_dungeon_config("corridors"),
         "verdant": get_non_preserved_dungeon_config("verdant"),
         "rush": get_non_preserved_dungeon_config("rush"),
-        "remorse": get_non_preserved_dungeon_config("remorse"),
         "depths": get_non_preserved_dungeon_config("depths"),
         "tutorial": tutorial,
         "build": None,

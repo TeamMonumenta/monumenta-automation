@@ -183,12 +183,6 @@ if __name__ == '__main__':
                 ],
                 "objective":"DFFAccess"
             },
-            "remorse": {
-                "world": [
-                    "remorse",
-                ],
-                "objective":"DSRAccess"
-            },
             "rush": {
                 "world": [
                     "rush",
