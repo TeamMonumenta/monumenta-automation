@@ -21,12 +21,26 @@ def usage():
     sys.exit("Usage: {} <--worlds /path/to/folder_containing_worlds | --world /path/to/world | --schematics /path/to/schematics | --structures /path/to/structures> [--pos1 x,y,z --pos2 x,y,z] [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run] [--force]".format(sys.argv[0]))
 
 def set_spawn_range(spawner, spawn_range):
-    spawner.nbt.at_path("SpawnRange").value = 1
+    spawner.nbt.at_path("SpawnRange").value = spawn_range
+    return spawner
+
+def set_count(spawner, count):
+    spawner.nbt.at_path("SpawnCount").value = count
+    return spawner
+
+def set_delay(spawner, delay):
+    spawner.nbt.at_path("MinSpawnDelay").value = delay
+    spawner.nbt.at_path("MaxSpawnDelay").value = delay
+    return spawner
+
+def print_spawner(spawner):
+    spawner.nbt.tree()
+    return spawner
 
 # A rule matches a mob in the spawner, the lambda takes the spawner itself
 rules = [
-    (match_name('Vinelacquer Cluster'), lambda spawner: set_spawn_range(spawner, 1)),
-    (match_name('Nightmare Cluster'), lambda spawner: set_spawn_range(spawner, 1)),
+    (match_name('Vernal Marksman'), lambda spawner: set_count(set_delay(spawner, 1000), 1)),
+    (match_name('Nightmare Watcher'), lambda spawner: set_count(set_delay(spawner, 1000), 1)),
 ]
 
 # This is handy here because it has direct access to previously defined globals
