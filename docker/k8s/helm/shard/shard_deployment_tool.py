@@ -121,14 +121,8 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "lightblue": {
-        "play" : { "node": "m13", "memGB": 5   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "lightblue-2": {
-        "play" : { "node": "m14", "memGB": 5   , },
-    },
-    "lightblue-3": {
-        "play" : { "node": "m15", "memGB": 5   , },
     },
     "lightgray": {
         "play" : { "node": "m14" , "memGB": 3   , },
@@ -139,14 +133,8 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "magenta": {
-        "play" : { "node": "m13", "memGB": 5   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "magenta-2": {
-        "play" : { "node": "m14", "memGB": 5   , },
-    },
-    "magenta-3": {
-        "play" : { "node": "m14", "memGB": 5   , },
     },
     "orange": {
         "play" : { "node": "m13", "memGB": 3, },
@@ -189,12 +177,24 @@ shard_config = {
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "willows": {
-        "play" : { "node": "m13", "memMB": 4608, },
+        "play" : { "node": "m13", "memGB": 5,    },
         "stage": { "node": "m12", "memMB": 1536, },
     },
+    "willows-2": {
+        "play" : { "node": "m14", "memGB": 5   , },
+    },
+    "willows-3": {
+        "play" : { "node": "m14", "memGB": 5   , },
+    },
     "yellow": {
-        "play" : { "node": "m14", "memGB": 3   , },
+        "play" : { "node": "m14", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
+    },
+    "yellow-2": {
+        "play" : { "node": "m14", "memGB": 5   , },
+    },
+    "yellow-3": {
+        "play" : { "node": "m15", "memGB": 5   , },
     },
 
     "gallery": {
