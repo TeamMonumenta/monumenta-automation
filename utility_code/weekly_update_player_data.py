@@ -17,7 +17,7 @@ from minecraft.world import World
 
 
 def usage():
-    sys.exit("Usage: {} <--world /path/to/world> <--datapacks /path/to/datapacks> [--logfile <stdout|stderr|path>] [--num-threads num] [--dry-run]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--world /path/to/world> <--datapacks /path/to/datapacks> [--num-threads num] [--dry-run]".format(sys.argv[0]))
 
 def process_init(mgr):
     global item_replace_manager
@@ -25,7 +25,6 @@ def process_init(mgr):
 
 def process_player(player):
     num_replacements = 0
-    replacements_log = {}
 
     player.full_heal()
     tags = set(player.tags)
@@ -34,48 +33,46 @@ def process_player(player):
     upgrade_entity(player.nbt)
 
     for item in player.recursive_iter_items():
-        if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+        if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
             num_replacements += 1
 
-    return (num_replacements, replacements_log)
+    return num_replacements
 
 def process_plugin_data(plugin_data):
     num_replacements = 0
-    replacements_log = {}
 
     for item in plugin_data.graves().recursive_iter_items():
-        if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+        if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
             num_replacements += 1
 
     # TODO: Eventually should refactor plugin data so it has a top-level iterator interface to eliminate the need to call charms() directly
     for item in plugin_data.charms().recursive_iter_items():
-        if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+        if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
             num_replacements += 1
 
     for item in plugin_data.wallet().recursive_iter_items():
-        if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+        if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
             num_replacements += 1
 
-    return (num_replacements, replacements_log)
+    return num_replacements
 
 def err_func(ex, args):
     eprint(f"Caught exception: {ex}")
     eprint(f"While iterating: {args}")
     eprint(traceback.format_exc())
-    return (0, {})
+    return 0
 
 if __name__ == '__main__':
     multiprocessing.set_start_method("spawn")
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "w:p:l:j:d", ["world=", "datapacks=", "logfile=", "num-threads=", "dry-run"])
+        opts, args = getopt.getopt(sys.argv[1:], "w:p:l:j:d", ["world=", "datapacks=", "num-threads=", "dry-run"])
     except getopt.GetoptError as err:
         eprint(str(err))
         usage()
 
     world_path = None
     datapacks = None
-    logfile = None
     dry_run = False
     num_threads = 4
 
@@ -84,8 +81,6 @@ if __name__ == '__main__':
             world_path = a
         elif o in ("-p", "--datapacks"):
             datapacks = a
-        elif o in ("-l", "--logfile"):
-            logfile = a
         elif o in ("-j", "--num-threads"):
             num_threads = int(a)
         elif o in ("-d", "--dry-run"):
@@ -110,36 +105,24 @@ if __name__ == '__main__':
     world = World(world_path)
     timings.nextStep("Loaded world")
 
-    log_handle = None
-    if logfile == "stdout":
-        log_handle = sys.stdout
-    elif logfile == "stderr":
-        log_handle = sys.stderr
-    elif logfile is not None:
-        log_handle = open(logfile, 'w')
-
     # Note that these iterators are really generators - and will produce results as they come in
     # They are consumed here as they come in to avoid having to store the entire log in RAM all at once
     num_replacements = 0
-    replacements_log = {}
 
     generator = world.iter_players_parallel(process_player, err_func, num_processes=num_threads, autosave=(not dry_run), initializer=process_init, initargs=(item_replace_manager,))
-    replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
+    replacements = 0
+    for x in generator:
+        replacements += x
     num_replacements += replacements
 
     timings.nextStep(f"Player replacements done: {replacements} replacements")
 
     generator = iter_plugin_data_parallel(os.path.join(world_path, "plugindata"), process_plugin_data, err_func, num_processes=num_threads, autosave=(not dry_run), initializer=process_init, initargs=(item_replace_manager,))
-    replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, replacements_log)
+    replacements = 0
+    for x in generator:
+        replacements += x
     num_replacements += replacements
 
     timings.nextStep(f"Plugin data replacements done: {replacements} replacements")
-
-    if log_handle is not None:
-        yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
-        timings.nextStep("Logs written")
-
-    if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
-        log_handle.close()
 
     print("Replaced {} items".format(num_replacements))

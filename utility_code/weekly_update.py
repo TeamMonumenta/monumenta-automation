@@ -20,7 +20,7 @@ from minecraft.region import BaseRegion
 from minecraft.util.iter_util import process_in_parallel
 
 def usage():
-    sys.exit("Usage: {} <--last_week_dir dir> <--build_template_dir dir> <--output_dir dir> [--redis_host host] [--num-threads #] [--logfile <stdout|stderr|path>] <server1> [server2] [...]".format(sys.argv[0]))
+    sys.exit("Usage: {} <--last_week_dir dir> <--build_template_dir dir> <--output_dir dir> [--redis_host host] [--num-threads #] <server1> [server2] [...]".format(sys.argv[0]))
 
 def get_dungeon_config(name, objective):
     return {
@@ -59,7 +59,7 @@ def process_region(region_config):
     region_type = BaseRegion.get_region_type(region_folder_name)
     if region_type is None:
         eprint(f"ERROR: Skipping {world_name} region {rx}.{rz} because region_folder_name '{region_folder_name}' is invalid")
-        return (0, {})
+        return 0
 
     region = world.get_region(rx, rz, region_type=region_type)
 
@@ -71,16 +71,16 @@ def process_region(region_config):
     num_replacements = 0
     for chunk in region.iter_chunks(autosave=True, on_exception=on_chunk_exception):
         for item in chunk.recursive_iter_items():
-            if item_replace_manager.replace_item(item, log_dict=replacements_log, debug_path=item.get_path_str()):
+            if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
                 num_replacements += 1
 
-    return (num_replacements, replacements_log)
+    return num_replacements
 
 def err_func(ex, args):
     eprint(f"Caught exception: {ex}")
     eprint(f"While iterating: {args}")
     eprint(traceback.format_exc())
-    return (0, {})
+    return 0
 
 if __name__ == '__main__':
     multiprocessing.set_start_method("spawn")
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     datapacks_dungeon = datapacks_base + ['file/dungeon']
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "j:", ["last_week_dir=", "build_template_dir=", "output_dir=", "redis_host=", "logfile=", "num-threads="])
+        opts, args = getopt.getopt(sys.argv[1:], "j:", ["last_week_dir=", "build_template_dir=", "output_dir=", "redis_host=", "num-threads="])
     except getopt.GetoptError as err:
         eprint(str(err))
         usage()
@@ -98,7 +98,6 @@ if __name__ == '__main__':
     last_week_dir = None
     build_template_dir = None
     output_dir = None
-    logfile = None
     num_threads = 4
     redis_host = 'redis'
 
@@ -117,8 +116,6 @@ if __name__ == '__main__':
                 output_dir = output_dir[:-1]
         elif o in ("--redis_host",):
             redis_host = a
-        elif o in ("-l", "--logfile"):
-            logfile = a
         elif o in ("-j", "--num-threads"):
             num_threads = int(a)
         else:
@@ -414,31 +411,10 @@ if __name__ == '__main__':
         parallel_args.append((_create_region_lambda, (region_config,), None, None, process_region, err_func, ()))
 
     generator = process_in_parallel(parallel_args, num_processes=num_threads, initializer=process_init, initargs=(item_replace_manager, ))
-    num_global_replacements, replacements_log = item_replace_manager.merge_log_tuples(generator, {})
+    num_global_replacements = 0
+    for x in generator:
+        num_global_replacements += x
 
     timings.nextStep(f"Processed regions and merged logs: {num_global_replacements} replacements")
-
-    ##################################################################################
-    # Writing logs
-
-    print(f"Writing replacements logs...")
-
-    log_handle = None
-    if logfile == "stdout":
-        log_handle = sys.stdout
-    elif logfile == "stderr":
-        log_handle = sys.stderr
-    elif logfile is not None:
-        if os.path.dirname(logfile) and not os.path.isdir(os.path.dirname(logfile)):
-            os.makedirs(os.path.dirname(logfile), mode=0o775)
-        log_handle = open(logfile, 'w')
-
-    if log_handle is not None:
-        yaml.dump(replacements_log, log_handle, width=2147483647, allow_unicode=True)
-
-    if log_handle is not None and log_handle is not sys.stdout and log_handle is not sys.stderr:
-        log_handle.close()
-
-    timings.nextStep("Logs written")
 
     print("Finished")

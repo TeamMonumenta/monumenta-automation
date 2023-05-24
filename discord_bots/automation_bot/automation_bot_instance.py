@@ -1519,7 +1519,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 11 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Running item replacements for players...")
-            await self.run(ctx, os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks --logfile {self._server_dir}/server_config/redis_data_initial/replacements.yml -j {config.CPU_COUNT}")
+            await self.run(ctx, os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks -j {config.CPU_COUNT}")
 
         if min_phase <= 12 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Loading player data back into redis...")
@@ -1566,8 +1566,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 18:
             await self.display(ctx, "Running actual weekly update (this will take a while!)...")
-            logfile = f"/home/epic/0_OLD_BACKUPS/terrain_reset_item_replacements_log_{self._name}_{date.today().strftime('%Y-%m-%d')}.log"
-            await self.run(ctx, os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ --logfile {logfile} -j {config.CPU_COUNT} " + " ".join(self._shards)))
+            await self.run(ctx, os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j {config.CPU_COUNT} " + " ".join(self._shards)))
 
         if min_phase <= 19:
             await self.display(ctx, "Pruning scores from expired instances...")
@@ -1818,7 +1817,7 @@ Syntax:
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
                 await self.run(ctx, ["tar", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", "structures"])
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
-                await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --schematics structures --structures generated --logfile {base_backup_name}_items.yml"), displayOutput=True)
+                await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --schematics structures --structures generated"), displayOutput=True)
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --structures generated --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
 
@@ -1838,7 +1837,7 @@ Syntax:
                     await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up - change again in case something else changed bot's directory
                     await self.run(ctx, os.path.join(_top_level, f"utility_code/defragment.py {shard}"))
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
-                await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard} --logfile {base_backup_name}_items.yml"), displayOutput=True)
+                await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard}"), displayOutput=True)
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_mobs.py --worlds {shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
                 await self.start(ctx, shard)
