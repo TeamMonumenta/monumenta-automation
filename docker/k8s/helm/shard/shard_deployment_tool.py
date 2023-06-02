@@ -88,7 +88,6 @@ shard_config = {
 
     "playerplots": {
         "play":  { "node": "m13", "memGB": 8, },
-        "build": { "node": "m12", "memMB": 1536, },
         "stage": { "node": "m12", "memGB": 4, },
     },
 

@@ -96,8 +96,12 @@ spec:
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
           value: m119
+        - name: "NETWORK_RELAY_SERVER_ADDRESS"
+          value: "m119:25566"
         - name: "MONUMENTA_IS_PLAY"
           value: "0"
+        - name: "MONUMENTA_ENABLE_TIME_WARP"
+          value: "1"
         readinessProbe:
           tcpSocket:
             port: 25566
