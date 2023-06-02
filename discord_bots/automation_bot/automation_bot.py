@@ -117,8 +117,6 @@ class AutomationBot(commands.Bot):
             if config.REACTIONS_ENABLED:
                 self.rlogger.debug("Processing added reaction")
 
-                time_cutoff = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
-
                 if payload.channel_id in config.IGNORED_REACTION_CHANNELS:
                     return
 
@@ -133,6 +131,12 @@ class AutomationBot(commands.Bot):
                 msg_contents = re.sub("''*", "'", msg.clean_content).replace('\\', '')
                 if len(msg_contents) < 1:
                     return
+
+                # Conditionally timezone aware cutoff time
+                if msg.created_at.tzinfo is None:
+                    time_cutoff = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
+                else:
+                    time_cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=24)
 
                 self.rlogger.debug("time_cutoff=%s      msg.created_at=%s", time_cutoff, msg.created_at)
                 if msg.created_at > time_cutoff:
@@ -156,6 +160,13 @@ class AutomationBot(commands.Bot):
 
                     if (highest_reaction_count > self.rreact["count"] or (time_cutoff > self.rreact["timestamp"])):
 
+                        # If the bot can't react to a message due to permission issues, don't mark it as the winning message
+                        try:
+                            await msg.add_reaction('\U0001f441')
+                        except Exception:
+                            self.rlogger.warning("Permission denied adding reaction in channel %s", channel.name)
+                            return
+
                         if self.rreact["msg"] is not None:
                             await self.rreact["msg"].remove_reaction('\U0001f441', self.user)
 
@@ -166,12 +177,6 @@ class AutomationBot(commands.Bot):
                         self.rreact["timestamp"] = msg.created_at
                         self.rreact["msg"] = msg
                         self.rlogger.debug("Current rreact = %s", pformat(self.rreact))
-
-                        try:
-                            await msg.add_reaction('\U0001f441')
-                        except Exception:
-                            self.rlogger.warning("Permission denied adding reaction in channel %s", channel.name)
-                            return
 
         except Exception:
             self.rlogger.error("Failed to handle adding reaction")
