@@ -10,12 +10,15 @@ from pathlib import Path
 from lib_py3.common import copy_file, uuid_to_mc_uuid_tag_int_array
 from lib_py3.entity_scores import set_entity_scores
 
+from minecraft.chunk_format.block_entity import BlockEntity
 from minecraft.chunk_format.chunk import Chunk, EntitiesChunk, PoiChunk
+from minecraft.chunk_format.entity import Entity
 from minecraft.util.debug_util import NbtPathDebug
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
 from quarry.types.buffer import Buffer, BufferUnderrun
+
 
 def shorten_path(path):
     if "/" in path:
@@ -24,7 +27,8 @@ def shorten_path(path):
             return "/".join(split[-3:])
     return path
 
-def _fixEntity(dx, dz, entity, regenerate_uuids, clear_world_uuid=False, clear_score_data=False):
+
+def _fix_entity_nbt(dx, dz, entity, regenerate_uuids, clear_world_uuid=False):
     nbtPaths = (
         ('x', 'z'),
         ('AX', 'AZ'),
@@ -55,10 +59,6 @@ def _fixEntity(dx, dz, entity, regenerate_uuids, clear_world_uuid=False, clear_s
             for zTag in entity.iter_multipath(nbtPath[1]):
                 zTag.value += dz
 
-    # Clear entity scores
-    if clear_score_data:
-        set_entity_scores(entity, {})
-
     # Generate new UUIDs
     if regenerate_uuids and (entity.has_path("UUIDMost") or entity.has_path("UUIDLeast") or entity.has_path("UUID")):
         entity.value.pop("UUIDMost", None)
@@ -70,8 +70,10 @@ def _fixEntity(dx, dz, entity, regenerate_uuids, clear_world_uuid=False, clear_s
         entity.value.pop("WorldUUIDMost", None)
         entity.value.pop("WorldUUIDLeast", None)
 
+
 class BaseRegion(MutableMapping, NbtPathDebug):
     """A base region file that is common to all types"""
+
 
     def __init__(self, path, rx, rz, read_only=False):
         """Load a region file from the path provided, and allow saving."""
@@ -82,6 +84,7 @@ class BaseRegion(MutableMapping, NbtPathDebug):
 
         self.nbt_path_init(None, None, self, None)
 
+
     @classmethod
     def get_region_type(cls, folder_name: str) -> object:
         for region_type in (Region, EntitiesRegion, PoiRegion):
@@ -89,13 +92,16 @@ class BaseRegion(MutableMapping, NbtPathDebug):
                 return region_type
         return None
 
+
     def get_debug_str(self):
         return str(self)
+
 
     def has_chunk(self, cx, cz):
         """Return True if this region contains chunk cx, cz (global coordinates)."""
         entry = self._get_entry(cx, cz) & 0xffffffff
         return self._entry_valid(entry)
+
 
     def load_chunk(self, cx, cz):
         """Return the Chunk for a given cx, cz coordinate.
@@ -120,6 +126,7 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         if isinstance(self, PoiRegion):
             return PoiChunk(chunk_tag, self)
         raise Exception(f"Unable to load chunk for region of type {type(self)}")
+
 
     def save_chunk(self, chunk, cx=None, cz=None):
         """Save the Chunk at cx, cz.
@@ -150,6 +157,7 @@ class BaseRegion(MutableMapping, NbtPathDebug):
 
         self._region.save_chunk(chunk)
 
+
     def delete_chunk(self, cx, cz):
         """Save the Chunk at cx, cz.
 
@@ -166,10 +174,9 @@ class BaseRegion(MutableMapping, NbtPathDebug):
 
         self._region.delete_chunk(local_cx, local_cz)
 
+
     def defragment(self):
-        """
-        Defragments unused space in this region file
-        """
+        """Defragments unused space in this region file"""
         self_path = Path(self.path).absolute()
         self_name = self_path.name
         parent_path = self_path.parent
@@ -210,9 +217,9 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         # Reopen the region file in place (this point cannot be reached in read only mode)
         self._region = nbt.RegionFile(self.path, read_only=False)
 
+
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
-        """
-        Copies this region file to a new location and returns that new Region
+        """Copies this region file to a new location and returns that new Region
 
         Also fixes entity positions after copying.
 
@@ -230,19 +237,22 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         # Create the same type region object as the calling class (Region, EntitiesRegion, etc.)
         return type(self)(new_path, rx, rz)
 
+
     def move_to(self, world, rx, rz, overwrite=False, clear_world_uuid=False, clear_score_data=False):
         region = self.copy_to(world, rx, rz, overwrite=overwrite, regenerate_uuids=False, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
         self._region.close()
         os.remove(self.path)
         return region
 
+
     def iter_chunk_coordinates(self):
         """Iterate over chunk coordinates `tuple(cx, cz)` in this region file."""
         yield from iter(self)
 
+
     def iter_chunks(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, autosave=False, on_exception=None):
-        """
-        Iterates chunks in this region
+        """Iterates chunks in this region
+
         on_exception(exception) can be set to a lambda that handles exceptions on chunk load or save.
         If this function is defined this iterator will not throw exceptions, it will pass them to this function (which could then itself throw the exception)
         """
@@ -275,6 +285,7 @@ class BaseRegion(MutableMapping, NbtPathDebug):
                     else:
                         raise ex
 
+
     def _get_entry(self, cx, cz):
         local_cx = cx - 32 * self.rx
         local_cz = cz - 32 * self.rz
@@ -292,10 +303,12 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         except BufferUnderrun:
             return False
 
+
     def _entry_valid(self, entry):
         entry = entry & 0xffffffff
         offset, length = entry >> 8, entry & 0xff
         return offset > 0 and length > 0
+
 
     def __len__(self):
         count = 0
@@ -307,24 +320,29 @@ class BaseRegion(MutableMapping, NbtPathDebug):
                 count += 1
         return count
 
+
     def __length_hint__(self):
         # Typical case is 1024 chunks/region, hint may be over/under actual value.
         return 1024
+
 
     def __getitem__(self, chunk_coord_pair):
         """Get a chunk using a dict-style key access, ex: `return region[(5, 4)]`."""
         cx, cz = chunk_coord_pair
         return self.load_chunk(cx, cz)
 
+
     def __setitem__(self, chunk_coord_pair, chunk):
         """Set a chunk using a dict-style key access, ex: `region[(5, 4)] = chunk`."""
         cx, cz = chunk_coord_pair
         return self.save_chunk(chunk, cx, cz)
 
+
     def __delitem__(self, chunk_coord_pair):
         """Delete a chunk using a dict-style key access, ex: `del region[(5, 4)]`."""
         cx, cz = chunk_coord_pair
         return self.delete_chunk(cx, cz)
+
 
     def __iter__(self):
         """Iterate over chunk coordinates `tuple(cx, cz)` in this region file."""
@@ -339,17 +357,21 @@ class BaseRegion(MutableMapping, NbtPathDebug):
                 if self.has_chunk(cx, cz):
                     yield (cx, cz)
 
+
     def __contains__(self, chunk_coord_pair):
         """Return true if chunk_coord_pair = (cx, cz) in this region file."""
         cx, cz = chunk_coord_pair
         return self.has_chunk(cx, cz)
 
+
 class Region(BaseRegion):
     """A 'region' type region file"""
+
 
     @classmethod
     def folder_name(cls):
         return "region"
+
 
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
         # Copy the file itself which is common to all region types
@@ -367,16 +389,28 @@ class Region(BaseRegion):
             chunk.nbt.at_path(f'{prefix}zPos').value = rz * 32 + (chunk.nbt.at_path(f'{prefix}zPos').value & 0x1f)
 
             # Level.* are in 1.17 and below - block_entities is in region files in 1.18+ but Entities are not
-            for path in ['block_entities', 'Level.Entities', 'Level.TileEntities', 'Level.TileTicks', 'Level.LiquidTicks']:
+            for path in ['Level.TileTicks', 'Level.LiquidTicks']:
                 if chunk.nbt.has_path(path):
                     for entity in chunk.nbt.iter_multipath(path + '[]'):
-                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
+                        _fix_entity_nbt(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
+
+            for thing in chunk.recursive_iter_all_types():
+                if isinstance(thing, BlockEntity):
+                    _fix_entity_nbt(dx, dz, thing.nbt, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
+
+                if isinstance(thing, Entity):
+                    _fix_entity_nbt(dx, dz, thing.nbt, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
+
+                    # Clear entity scores
+                    if clear_score_data:
+                        set_entity_scores(thing, {})
 
         return region
 
+
     def get_block(self, pos: [int, int, int]):
-        """
-        Get the block at position (x, y, z).
+        """Get the block at position (x, y, z).
+
         Example block:
         {'facing': 'north', 'waterlogged': 'false', 'name': 'minecraft:wall_sign'}
 
@@ -388,9 +422,10 @@ class Region(BaseRegion):
 
         return self.load_chunk(x // 16, z // 16).get_block(pos)
 
+
     def set_block(self, pos: [int, int, int], block):
-        """
-        Set a block at position (x, y, z).
+        """Set a block at position (x, y, z).
+
         Example block:
         {'snowy': 'false', 'name': 'minecraft:grass_block'}
 
@@ -409,9 +444,10 @@ class Region(BaseRegion):
         self.save_chunk(chunk)
 
 
+
     def fill_blocks(self, pos1, pos2, block):
-        """
-        Set a block at position (x, y, z).
+        """Set a block at position (x, y, z).
+
         Example block:
         {'snowy': 'false', 'name': 'minecraft:grass_block'}
 
@@ -435,15 +471,19 @@ class Region(BaseRegion):
                 chunk.fill_blocks(pos1, pos2, block)
                 self.save_chunk(chunk)
 
+
     def __repr__(self):
         return f'Region({shorten_path(self.path)!r}, {self.rx!r}, {self.rz!r})'
+
 
 class EntitiesRegion(BaseRegion):
     """An 'entities' type region file"""
 
+
     @classmethod
     def folder_name(cls):
         return "entities"
+
 
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
         # Copy the file itself which is common to all region types
@@ -454,24 +494,36 @@ class EntitiesRegion(BaseRegion):
         for chunk in region.iter_chunks(autosave=True):
             # entities chunk format already has relative cx/cz values, so don't need to update Position here
             # Still need to fix the entities though
-            for path in ['Entities', 'block_entities']:
-                if chunk.nbt.has_path(path):
-                    for entity in chunk.nbt.iter_multipath(path + '[]'):
-                        _fixEntity(dx, dz, entity, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
+            for thing in chunk.recursive_iter_all_types():
+                if isinstance(thing, BlockEntity):
+                    _fix_entity_nbt(dx, dz, thing.nbt, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
+
+                if isinstance(thing, Entity):
+                    _fix_entity_nbt(dx, dz, thing.nbt, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid)
+
+                    # Clear entity scores
+                    if clear_score_data:
+                        set_entity_scores(thing, {})
+
         return region
+
 
     def __repr__(self):
         return f'EntitiesRegion({shorten_path(self.path)!r}, {self.rx!r}, {self.rz!r})'
 
+
 class PoiRegion(BaseRegion):
     """An 'poi' type region file"""
+
 
     @classmethod
     def folder_name(cls):
         return "poi"
 
+
     def copy_to(self, world, rx, rz, overwrite=False, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
         raise NotImplementedError
+
 
     def __repr__(self):
         return f'PoiRegion({shorten_path(self.path)!r}, {self.rx!r}, {self.rz!r})'
