@@ -10,11 +10,12 @@ logger = logging.getLogger(__name__)
 
 class SocketManager(object):
     # Default log level is INFO
-    def __init__(self, rabbit_host, queue_name, durable=False, callback=None, log_level=20):
+    def __init__(self, rabbit_host, queue_name, durable=False, callback=None, log_level=20, server_type="bot"):
         self._queue_name = queue_name
         self._callback = callback
         self._rabbit_host = rabbit_host
         self._durable_queue = durable
+        self._server_type = server_type
         logger.setLevel(log_level);
 
         # Create a thread to connect to the queue and block / consume messages
@@ -58,7 +59,7 @@ class SocketManager(object):
             logger.warn('Attempting to reconnect rabbitmq consumer...')
             time.sleep(10)
 
-    def send_packet(self, destination, operation, data, heartbeat_server_type=None):
+    def send_packet(self, destination, operation, data, heartbeat_data=None, online=None):
         if destination is None or len(destination) == 0:
             logger.warn("destination can not be None!")
         if operation is None or len(operation) == 0:
@@ -72,22 +73,21 @@ class SocketManager(object):
         if channel.is_closed:
             raise Exception("Failed to send message to rabbitmq despite attempting to reconnect")
 
-        packet = {
-            "source": self._queue_name,
-            "dest": destination,
-            "channel": operation,
-            "data": data,
-        }
+        network_relay_data = heartbeat_data.get("monumentanetworkrelay", None)
+        if network_relay_data is None:
+            network_relay_data = {}
+            heartbeat_data["monumentanetworkrelay"] = network_relay_data
+        network_relay_data["server-type"] = self._server_type
 
-        if heartbeat_server_type is None:
-            heartbeat_server_type = self._queue_name
-
-        packet["online"] = True
-        packet["pluginData"] = {
-            "monumentanetworkrelay":{
-                "server-type":heartbeat_server_type
-            }
-        }
+        packet = {}
+        packet["source"] = self._queue_name
+        packet["dest"] = destination
+        packet["channel"] = operation
+        packet["data"] = data
+        if heartbeat_data is not None:
+            packet["pluginData"] = heartbeat_data
+        if online is not None:
+            packet["online"] = online
 
         encoded = json.dumps(packet, ensure_ascii=False).encode("utf-8")
         logger.debug("Sending Packet: {}".format(pformat(encoded)))

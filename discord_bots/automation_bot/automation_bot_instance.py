@@ -190,6 +190,7 @@ class AutomationBotInstance(commands.Cog):
             self._shards = config.SHARDS
             self._server_dir = config.SERVER_DIR
 
+            self.heartbeat_task = None
             if config.RABBITMQ:
                 try:
                     conf = config.RABBITMQ
@@ -243,6 +244,8 @@ class AutomationBotInstance(commands.Cog):
                         log_level = 20
 
                     self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level)
+
+                    self.heartbeat_task = asyncio.create_task(self.heartbeat_task_method(config.RABBITMQ_HEARTBEAT_INTERVAL))
 
                     # Add commands that require the sockets here!
                     self._commands["broadcastcommand"] = self.action_broadcastcommand
@@ -310,6 +313,22 @@ class AutomationBotInstance(commands.Cog):
             self._k8s = KubernetesManager(config.K8S_NAMESPACE)
         except KeyError as e:
             sys.exit(f'Config missing key: {e}')
+
+    async def heartbeat_task_method(self, heartbeat_interval):
+        try:
+            while True:
+                await self.send_heartbeat(online=True)
+                await asyncio.sleep(heartbeat_interval)
+        except asyncio.CancelledError:
+            await self.send_heartbeat(online=False)
+
+    async def send_heartbeat(self, online=True):
+        """Send a heartbeat packet over RabbitMQ"""
+        self._socket.send_packet("*", "monumentanetworkrelay.heartbeat", {}, heartbeat_data={
+            "monumentanetworkrelay": {
+                "server-type": "bot"
+            }
+        }, online=online)
 
     async def handle_message(self, ctx: discord.ext.commands.Context, message):
         """Called by parent bot on receiving a message"""
