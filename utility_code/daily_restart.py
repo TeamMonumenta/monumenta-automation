@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 
-import shutil
 import sys
 import os
-import yaml
 import asyncio
 import traceback
 from pprint import pprint
+import yaml
 
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.lib_k8s import KubernetesManager
 
 def send_broadcast_msg(time_left):
     socket.send_packet("*", "monumentanetworkrelay.command",
-            {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". This helps reduce lag! The server will be down for ~90 seconds."}]'''}
-    )
+                       {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". This helps reduce lag! The server will be down for ~90 seconds."}]'''},
+                       heartbeat_server_type="daily-restart")
 
 async def main():
     # Short wait to make sure socket connects correctly
@@ -24,8 +23,8 @@ async def main():
         # Set all shards to restart the next time they are empty (many will restart immediately)
         print("Broadcasting restart-empty command to all shards...")
         socket.send_packet("*", "monumentanetworkrelay.command",
-                {"command": 'restart-empty'}
-        )
+                           {"command": 'restart-empty'},
+                           heartbeat_server_type="daily-restart")
 
         send_broadcast_msg("5 minutes")
         await asyncio.sleep(120)
