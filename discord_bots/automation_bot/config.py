@@ -26,6 +26,7 @@ GUILD_ID = bot_config["guild_id"]
 
 PREFIX = bot_config["prefix"]
 RABBITMQ = bot_config.get("rabbitmq", None)
+RABBITMQ_HEARTBEAT_INTERVAL = bot_config.get("rabbitmq_heartbeat_interval", 1.0)
 K8S_NAMESPACE = bot_config["k8s_namespace"]
 REACTIONS_ENABLED = bot_config["reactions_enabled"]
 REACTIONS_LOG_LEVEL = logging.DEBUG # TODO configurable

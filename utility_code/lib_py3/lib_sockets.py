@@ -58,7 +58,7 @@ class SocketManager(object):
             logger.warn('Attempting to reconnect rabbitmq consumer...')
             time.sleep(10)
 
-    def send_packet(self, destination, operation, data):
+    def send_packet(self, destination, operation, data, heartbeat_data=None, online=None):
         if destination is None or len(destination) == 0:
             logger.warn("destination can not be None!")
         if operation is None or len(operation) == 0:
@@ -77,6 +77,10 @@ class SocketManager(object):
         packet["dest"] = destination
         packet["channel"] = operation
         packet["data"] = data
+        if heartbeat_data is not None:
+            packet["pluginData"] = heartbeat_data
+        if online is not None:
+            packet["online"] = online
 
         encoded = json.dumps(packet, ensure_ascii=False).encode("utf-8")
         logger.debug("Sending Packet: {}".format(pformat(encoded)))
