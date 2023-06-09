@@ -58,7 +58,7 @@ class SocketManager(object):
             logger.warn('Attempting to reconnect rabbitmq consumer...')
             time.sleep(10)
 
-    def send_packet(self, destination, operation, data):
+    def send_packet(self, destination, operation, data, heartbeat_server_type=None):
         if destination is None or len(destination) == 0:
             logger.warn("destination can not be None!")
         if operation is None or len(operation) == 0:
@@ -72,11 +72,20 @@ class SocketManager(object):
         if channel.is_closed:
             raise Exception("Failed to send message to rabbitmq despite attempting to reconnect")
 
-        packet = {}
-        packet["source"] = self._queue_name
-        packet["dest"] = destination
-        packet["channel"] = operation
-        packet["data"] = data
+        packet = {
+            "source": self._queue_name,
+            "dest": destination,
+            "channel": operation,
+            "data": data,
+        }
+
+        if heartbeat_server_type is not None:
+            packet["online"] = True
+            packet["pluginData"] = {
+                "monumentanetworkrelay":{
+                    "server-type":heartbeat_server_type
+                }
+            }
 
         encoded = json.dumps(packet, ensure_ascii=False).encode("utf-8")
         logger.debug("Sending Packet: {}".format(pformat(encoded)))
