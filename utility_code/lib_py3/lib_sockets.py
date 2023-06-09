@@ -79,13 +79,15 @@ class SocketManager(object):
             "data": data,
         }
 
-        if heartbeat_server_type is not None:
-            packet["online"] = True
-            packet["pluginData"] = {
-                "monumentanetworkrelay":{
-                    "server-type":heartbeat_server_type
-                }
+        if heartbeat_server_type is None:
+            heartbeat_server_type = self._queue_name
+
+        packet["online"] = True
+        packet["pluginData"] = {
+            "monumentanetworkrelay":{
+                "server-type":heartbeat_server_type
             }
+        }
 
         encoded = json.dumps(packet, ensure_ascii=False).encode("utf-8")
         logger.debug("Sending Packet: {}".format(pformat(encoded)))
