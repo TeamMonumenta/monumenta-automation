@@ -14,4 +14,6 @@ if __name__ == '__main__':
     else:
         schematic = Schematic(args[1])
 
-        schematic.root_tag.body.tree()
+        schematic.root_tag.tree()
+        #schematic.root_tag.at_path("Schematic.BlockEntities").tree()
+        #print(schematic.root_tag.at_path("Schematic.BlockEntities").value)
