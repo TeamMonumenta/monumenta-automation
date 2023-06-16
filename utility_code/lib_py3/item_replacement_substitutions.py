@@ -556,6 +556,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:chainmail_leggings", "Venemous Folly", "minecraft:chainmail_leggings", "Venomous Folly"],
                 ["minecraft:stone_pickaxe", "Resiliant Pickaxe", "minecraft:stone_pickaxe", "Resilient Pickaxe"],
                 ["minecraft:leather_helmet", "Resiliant Growth", "minecraft:leather_helmet", "Resilient Growth"],
+                ["minecraft:snowball", "Orb of Harrakafar", "minecraft:snowball", "Orb of Harrakfar"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
