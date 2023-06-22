@@ -7,6 +7,16 @@ import copy
 
 from pathlib import Path
 
+# yml parsing
+from types import SimpleNamespace
+from yamlpath.common import Parsers
+from yamlpath.wrappers import ConsolePrinter
+from yamlpath import Processor
+from yamlpath import YAMLPath
+
+log = ConsolePrinter(SimpleNamespace(quiet=False, verbose=False, debug=False))
+yaml = Parsers.get_yaml_editor(explicit_start=False) # spigot doesn't handle start-of-document marker
+
 def get_alt_version(alt_version, original_path_str, relative_to=Path('.')):
     """Returns alternate versions of a path, or the original if not found.
 
@@ -135,6 +145,23 @@ def gen_server_config(servername):
                     fout.close()
                 fin.close()
             os.remove(filename + ".old")
+        elif len(replacement) == 4 and replacement[3] == "yaml":
+            # load the file
+            (yaml_data, loaded) = Parsers.get_yaml_data(yaml, log, Path(filename))
+            # if file failed to load
+            if not loaded:
+                continue
+
+            processor = Processor(log, yaml_data)
+            # set that key to the value
+            key = YAMLPath(replacement[1])
+            value = replacement[2]
+            processor.set_value(key, value)
+
+            # write to file with new values
+            with open(filename, "w") as fin:
+                yaml.dump(yaml_data, fin)
+                fin.close()
 
     ################################################################################
     # Remove plugin directory symlinks if they exist
@@ -578,13 +605,11 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=6'),
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 # plots optimization for players with bad PCs
-                # TODO: this is hardcoded to the defaults - if they change, this will break
-                # TODO: you'll know this breaks when players complain about lag in market again :suffer:
-                # refer to https://discord.com/channels/186225508562763776/447933054317494283/1121326813990367294
-                ('spigot.yml', '      animals: 48', '      animals: 12'),
-                ('spigot.yml', '      monsters: 48', '      monsters: 12'),
-                ('spigot.yml', '      misc: 32', '      misc: 12'),
-                ('spigot.yml', '      other: 64', '      other: 12'),
+                # uses yaml parser because duplicate keys
+                ('spigot.yml', 'world-settings.default.entity-tracking-range.animals', 12, 'yaml'),
+                ('spigot.yml', 'world-settings.default.entity-tracking-range.monsters', 12, 'yaml'),
+                ('spigot.yml', 'world-settings.default.entity-tracking-range.misc', 12, 'yaml'),
+                ('spigot.yml', 'world-settings.default.entity-tracking-range.other', 12, 'yaml')
             ],
             'linked':server_config + base_plugins + dynmap,
         },
