@@ -577,6 +577,14 @@ if __name__ == '__main__':
             'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=6'),
                 ('spigot.yml', 'view-distance', '    view-distance: 6'),
+                # plots optimization for players with bad PCs
+                # TODO: this is hardcoded to the defaults - if they change, this will break
+                # TODO: you'll know this breaks when players complain about lag in market again :suffer:
+                # refer to https://discord.com/channels/186225508562763776/447933054317494283/1121326813990367294
+                ('spigot.yml', '      animals: 48', '      animals: 12'),
+                ('spigot.yml', '      monsters: 48', '      monsters: 12'),
+                ('spigot.yml', '      misc: 32', '      misc: 12'),
+                ('spigot.yml', '      other: 64', '      other: 12'),
             ],
             'linked':server_config + base_plugins + dynmap,
         },
