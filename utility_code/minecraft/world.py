@@ -1,8 +1,9 @@
 import os
+import math
+from pathlib import Path
 import sys
 import time
 import zlib
-import math
 
 from lib_py3.common import bounded_range
 
@@ -45,12 +46,15 @@ class World():
         return self._level_dat
 
     @classmethod
-    def enumerate_worlds(cls, dir) -> [str]:
+    def enumerate_worlds(cls, dir_) -> [str]:
         """Returns the folder/world names of all folders in the specified directory that contain a level.dat"""
-        if not os.path.isdir(dir):
-            return []
-        return [o for o in os.listdir(dir)
-                    if os.path.isdir(os.path.join(dir, o)) and os.path.isfile(os.path.join(dir, o, "level.dat"))]
+        results = []
+        for level_dat in Path(dir_).glob('**/level.dat'):
+            if not level_dat.is_file():
+                continue
+            # TODO Return the original Path object when we're confident none of our other code will break because of it
+            results.append(str(level_dat.parent))
+        return results
 
     def defragment(self):
         for region in self.iter_regions():

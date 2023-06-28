@@ -183,12 +183,12 @@ def main():
 
 
     world_paths = []
-    for world_path in args.world:
-        if (world_path / 'level.dat').is_file():
-            world_paths.append(world_path)
-        else:
-            eprint(f'World path is not a world: {world_path}')
+    for worlds_path in args.world:
+        for world_path in World.enumerate_worlds(worlds_path):
+            print(world_path)
+            world_paths.append(Path(world_path))
     if not world_paths:
+        eprint(f'No worlds found')
         sys.exit()
 
 
