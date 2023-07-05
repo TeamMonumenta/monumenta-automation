@@ -1,6 +1,9 @@
 use anyhow::{self, bail};
-use std::fs::File;
-use std::io::Read;
+
+use std::{
+    fs::File,
+    io::Read
+};
 
 type BoxResult<T> = Result<T, anyhow::Error>;
 

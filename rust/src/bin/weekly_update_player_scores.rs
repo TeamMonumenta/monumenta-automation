@@ -1,17 +1,19 @@
-use anyhow::{self, bail};
-type BoxResult<T> = Result<T, anyhow::Error>;
+use monumenta::player::Player;
 
+use anyhow::{self, bail};
 use chrono::prelude::*;
 use rayon::prelude::*;
 use simplelog::*;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::env;
-use std::fs;
-use std::path::Path;
 use uuid::Uuid;
 
-use monumenta::player::Player;
+use std::{
+    collections::{HashMap, HashSet},
+    env,
+    fs,
+    path::Path
+};
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn usage() {
     println!("Usage: weekly_update_players path/to/directory");

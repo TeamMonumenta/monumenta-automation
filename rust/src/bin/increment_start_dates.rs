@@ -1,11 +1,11 @@
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
+use monumenta::player::Player;
 
+use anyhow;
 use log::warn;
 use simplelog::*;
-use std::env;
 
-use monumenta::player::Player;
+use std::env;
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn increment_player_start_dates(
     con: &mut redis::Connection,

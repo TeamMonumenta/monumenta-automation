@@ -1,14 +1,18 @@
+use monumenta::player::Player;
+
 use anyhow::{self, bail};
-type BoxResult<T> = Result<T, anyhow::Error>;
 use clap::{Args, Parser, Subcommand};
 use rayon::prelude::*;
 use simplelog::*;
-use std::cell::RefCell;
-use std::fs;
-use std::path::Path;
 use uuid::Uuid;
 
-use monumenta::player::Player;
+use std::{
+    cell::RefCell,
+    fs,
+    path::Path
+};
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 #[derive(Parser, Debug)]
 /// Tool to move playerdata between redis to and from a local directory

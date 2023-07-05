@@ -1,13 +1,13 @@
-use anyhow::{self, bail};
-type BoxResult<T> = Result<T, anyhow::Error>;
+use monumenta::player::Player;
 
+use anyhow::{self, bail};
 use redis::Commands;
 use simplelog::*;
-use std::env;
-use std::path::Path;
 use uuid::Uuid;
 
-use monumenta::player::Player;
+use std::{env, path::Path};
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn main() -> BoxResult<()> {
     let mut multiple = vec![];

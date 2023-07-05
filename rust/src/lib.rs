@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate log;
-
 pub mod advancements;
 pub mod player;
 pub mod scoreboard;

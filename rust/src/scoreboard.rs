@@ -1,12 +1,14 @@
-use anyhow::{self, bail};
-
 use crate::player::Player;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::fs::File;
-use std::io::Read;
 
+use anyhow::{self, bail};
+use log::warn;
 use nbt;
+
+use std::{
+    collections::{HashMap, HashSet},
+    fs::File,
+    io::Read
+};
 
 type BoxResult<T> = Result<T, anyhow::Error>;
 

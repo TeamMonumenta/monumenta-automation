@@ -1,10 +1,12 @@
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
-
+use anyhow;
 use redis::Commands;
-use std::collections::BTreeMap;
-use std::collections::HashSet;
-use std::env;
+
+use std::{
+    collections::{BTreeMap, HashSet},
+    env
+};
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn usage() {
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> get <player_name>");

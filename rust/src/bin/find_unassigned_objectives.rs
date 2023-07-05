@@ -1,9 +1,12 @@
-use std::env;
-
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
 
 use monumenta::scoreboard;
+
+use anyhow;
+
+use std::env;
+
+type BoxResult<T> = Result<T, anyhow::Error>;
+
 
 fn usage() {
     println!("Usage: find_unassigned_objectives <domain>");

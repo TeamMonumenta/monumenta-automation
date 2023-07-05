@@ -1,15 +1,14 @@
-#[macro_use]
-extern crate log;
+use monumenta::player::Player;
 
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
-
+use anyhow;
+use log::warn;
 use redis::Commands;
 use simplelog::*;
-use std::env;
 use uuid::Uuid;
 
-use monumenta::player::Player;
+use std::env;
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn usage() {
     println!("Usage: leaderboard_update_redis 'redis://127.0.0.1/' <domain> leaderboards.yaml");

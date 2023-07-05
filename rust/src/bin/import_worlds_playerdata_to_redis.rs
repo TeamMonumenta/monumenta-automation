@@ -1,17 +1,18 @@
-#[macro_use]
-extern crate log;
-
-use anyhow::{self, bail};
-type BoxResult<T> = Result<T, anyhow::Error>;
-
-use simplelog::*;
-use std::collections::HashMap;
-use std::env;
-use std::path::Path;
-use uuid::Uuid;
-
 use monumenta::player::Player;
 use monumenta::world::World;
+
+use anyhow::{self, bail};
+use log::warn;
+use simplelog::*;
+use uuid::Uuid;
+
+use std::{
+    collections::HashMap,
+    env,
+    path::Path
+};
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn main() -> BoxResult<()> {
     let mut multiple = vec![];

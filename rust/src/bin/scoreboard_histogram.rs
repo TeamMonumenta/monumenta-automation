@@ -1,10 +1,13 @@
-use std::collections::HashMap;
-use std::env;
-
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
-
 use monumenta::scoreboard;
+
+use anyhow;
+
+use std::{
+    collections::HashMap,
+    env
+};
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn main() -> BoxResult<()> {
     /* Load all the arguments as datapacks */

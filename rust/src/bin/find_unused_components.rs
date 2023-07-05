@@ -1,18 +1,19 @@
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate lazy_static;
-
-use anyhow::{self, bail};
 use monumenta::scoreboard::Scoreboard;
 use monumenta::scoreboard::ScoreboardCollection;
+
+use anyhow::{self, bail};
+use lazy_static::lazy_static;
+use log::{info, error, warn};
 use regex::Regex;
 use simplelog::*;
-use std::collections::HashMap;
-use std::env;
-use std::fmt;
-use std::fs;
 use walkdir::WalkDir;
+
+use std::{
+    collections::HashMap,
+    env,
+    fmt,
+    fs
+};
 
 type BoxResult<T> = Result<T, anyhow::Error>;
 

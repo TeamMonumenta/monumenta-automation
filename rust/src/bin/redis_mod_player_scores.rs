@@ -1,14 +1,14 @@
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
+use monumenta::player::Player;
 
+use anyhow;
 use redis::Commands;
 use redis::RedisError;
 use simplelog::*;
-use std::env;
-use std::thread;
 use uuid::Uuid;
 
-use monumenta::player::Player;
+use std::{env, thread};
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 macro_rules! map(
     { $($key:expr => $value:expr),+ } => {

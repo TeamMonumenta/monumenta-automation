@@ -1,14 +1,14 @@
-#[macro_use]
-extern crate log;
-use anyhow::{self, bail};
-type BoxResult<T> = Result<T, anyhow::Error>;
+use monumenta::player::Player;
 
+use anyhow::{self, bail};
+use log::{info, warn};
 use redis::Commands;
 use simplelog::*;
-use std::env;
 use uuid::Uuid;
 
-use monumenta::player::Player;
+use std::env;
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn main() -> BoxResult<()> {
     let mut multiple = vec![];

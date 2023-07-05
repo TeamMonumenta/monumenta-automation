@@ -1,15 +1,19 @@
 use crate::advancements::Advancements;
 use crate::world::World;
+
 use anyhow::{self, bail};
+use log::warn;
 use redis::Commands;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::fmt;
-use std::fs;
-use std::io::Read;
-use std::path::Path;
-use std::time::{SystemTime, UNIX_EPOCH};
 use uuid::Uuid;
+
+use std::{
+    collections::{HashMap, HashSet},
+    fmt,
+    fs,
+    io::Read,
+    path::Path,
+    time::{SystemTime, UNIX_EPOCH}
+};
 
 type BoxResult<T> = Result<T, anyhow::Error>;
 

@@ -1,10 +1,13 @@
+use crate::scoreboard::Scoreboard;
+
 use anyhow::{self, bail};
-use std::collections::HashMap;
-use std::fs::File;
-use std::path::Path;
 use uuid::Uuid;
 
-use crate::scoreboard::Scoreboard;
+use std::{
+    collections::HashMap,
+    fs::File,
+    path::Path
+};
 
 type BoxResult<T> = Result<T, anyhow::Error>;
 

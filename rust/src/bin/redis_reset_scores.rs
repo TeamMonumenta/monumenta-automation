@@ -1,10 +1,11 @@
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
+use monumenta::player::Player;
 
+use anyhow;
 use simplelog::*;
+
 use std::env;
 
-use monumenta::player::Player;
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn main() -> BoxResult<()> {
     let mut multiple = vec![];

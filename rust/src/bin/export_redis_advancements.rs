@@ -1,12 +1,15 @@
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
-
-use simplelog::*;
-use std::env;
-use std::fs;
-use std::path::Path;
-
 use monumenta::player::Player;
+
+use anyhow;
+use simplelog::*;
+
+use std::{
+    env,
+    fs,
+    path::Path
+};
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn usage() {
     println!("Usage: export_redis_advancements 'redis://127.0.0.1/' <domain> path/to/advancements");

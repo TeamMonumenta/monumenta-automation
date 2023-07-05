@@ -1,12 +1,15 @@
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
+use monumenta::player::Player;
 
+use anyhow;
 use redis::Commands;
 use simplelog::*;
-use std::collections::HashMap;
-use std::env;
 
-use monumenta::player::Player;
+use std::{
+    collections::HashMap,
+    env
+};
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn main() -> BoxResult<()> {
     let mut multiple = vec![];
