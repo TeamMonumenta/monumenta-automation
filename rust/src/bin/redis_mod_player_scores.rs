@@ -8,8 +8,6 @@ use uuid::Uuid;
 
 use std::{env, thread};
 
-type BoxResult<T> = Result<T, anyhow::Error>;
-
 macro_rules! map(
     { $($key:expr => $value:expr),+ } => {
         {
@@ -22,7 +20,7 @@ macro_rules! map(
      };
 );
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let changes = map!(
         "0x26e" => 4,
         "1n10" => 37,

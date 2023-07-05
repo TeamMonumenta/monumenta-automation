@@ -5,20 +5,18 @@ use std::{
     io::Read
 };
 
-type BoxResult<T> = Result<T, anyhow::Error>;
-
 #[derive(Clone)]
 pub struct Advancements(serde_json::Map<String, serde_json::Value>);
 
 impl Advancements {
-    pub fn load_from_file(file: &mut File) -> BoxResult<Advancements> {
+    pub fn load_from_file(file: &mut File) -> anyhow::Result<Advancements> {
         let mut contents = String::new();
         file.read_to_string(&mut contents)?;
 
         Advancements::load_from_string(&contents)
     }
 
-    pub fn load_from_string(data: &str) -> BoxResult<Advancements> {
+    pub fn load_from_string(data: &str) -> anyhow::Result<Advancements> {
         if let Ok(serde_json::Value::Object(advancements)) = serde_json::from_str(data) {
             Ok(Advancements(advancements))
         } else {

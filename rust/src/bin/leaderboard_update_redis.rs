@@ -8,8 +8,6 @@ use uuid::Uuid;
 
 use std::env;
 
-type BoxResult<T> = Result<T, anyhow::Error>;
-
 fn usage() {
     println!("Usage: leaderboard_update_redis 'redis://127.0.0.1/' <domain> leaderboards.yaml");
 }
@@ -20,7 +18,7 @@ fn update_player_leaderboards(
     leaderboards: &Vec<String>,
     con: &mut redis::Connection,
     domain: &str,
-) -> BoxResult<()> {
+) -> anyhow::Result<()> {
     player.load_redis_scores(&domain, con)?;
 
     let name: String = con.hget("uuid2name", uuid.to_hyphenated().to_string())?;
@@ -40,7 +38,7 @@ fn update_player_leaderboards(
     Ok(())
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

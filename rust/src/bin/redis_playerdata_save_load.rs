@@ -12,8 +12,6 @@ use std::{
     path::Path
 };
 
-type BoxResult<T> = Result<T, anyhow::Error>;
-
 #[derive(Parser, Debug)]
 /// Tool to move playerdata between redis to and from a local directory
 pub struct Opts {
@@ -61,7 +59,7 @@ enum Commands {
 // connection per thread in the pool
 thread_local!(static THREAD_CONNECTIONS: RefCell<Option<redis::Connection>> = RefCell::new(None));
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

@@ -15,8 +15,6 @@ use std::{
     fs
 };
 
-type BoxResult<T> = Result<T, anyhow::Error>;
-
 #[derive(PartialEq, Eq, Hash, Clone)]
 enum NamespaceType {
     Advancement,
@@ -33,7 +31,7 @@ struct NamespacedKey {
 }
 
 impl NamespacedKey {
-    fn from_path(path: &str) -> BoxResult<NamespacedKey> {
+    fn from_path(path: &str) -> anyhow::Result<NamespacedKey> {
         let path = path.trim_start_matches("/");
 
         if path.starts_with("data") {
@@ -84,7 +82,7 @@ impl NamespacedKey {
         bail!("Failed to convert path {} to NamespacedKey", path);
     }
 
-    fn from_str(path: &str, key_type: NamespaceType) -> BoxResult<NamespacedKey> {
+    fn from_str(path: &str, key_type: NamespaceType) -> anyhow::Result<NamespacedKey> {
         let split: Vec<&str> = path.splitn(2, ":").collect();
         if split.len() == 2 {
             return Ok(NamespacedKey {
@@ -271,7 +269,7 @@ fn get_function<'c>(advancement: &'c serde_json::Value) -> Option<NamespacedKey>
 fn load_datapack_file(
     path: String,
     datapacks_path: &str,
-) -> BoxResult<Option<(NamespacedKey, NamespacedItem)>> {
+) -> anyhow::Result<Option<(NamespacedKey, NamespacedItem)>> {
     if path.ends_with(".json") | path.ends_with(".mcfunction") {
         let file = fs::read_to_string(&path)?;
         if path.ends_with(".json") {
@@ -322,7 +320,7 @@ fn load_datapack_file(
     Ok(None)
 }
 
-fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> BoxResult<()> {
+fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> anyhow::Result<()> {
     for entry in WalkDir::new(dir).follow_links(true) {
         if let Ok(entry) = entry {
             let path = entry.path().to_str().unwrap();
@@ -353,7 +351,7 @@ fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) ->
     Ok(())
 }
 
-fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> BoxResult<()> {
+fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> anyhow::Result<()> {
     for entry in WalkDir::new(dir).follow_links(true) {
         if let Ok(entry) = entry {
             if entry.path().is_file() {
@@ -419,7 +417,7 @@ fn link_quest_file_recursive(
 fn load_commands_file(
     items: &mut HashMap<NamespacedKey, NamespacedItem>,
     path: &str,
-) -> BoxResult<()> {
+) -> anyhow::Result<()> {
     let file = fs::read_to_string(&path)?;
     if let Ok(json) = serde_json::from_str(&file) {
         if let serde_json::value::Value::Array(array) = json {
@@ -588,7 +586,7 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
 fn find_unused_scoreboards(
     scoreboards: &ScoreboardCollection,
     items: &HashMap<NamespacedKey, NamespacedItem>,
-) -> BoxResult<()> {
+) -> anyhow::Result<()> {
     let mut used_objectives: HashMap<&String, Vec<&NamespacedKey>> = HashMap::new();
 
     for objective in scoreboards.objectives() {
@@ -665,7 +663,7 @@ fn usage() {
     );
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

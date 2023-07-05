@@ -9,13 +9,11 @@ use std::{
     path::Path
 };
 
-type BoxResult<T> = Result<T, anyhow::Error>;
-
 fn usage() {
     println!("Usage: export_redis_advancements 'redis://127.0.0.1/' <domain> path/to/advancements");
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

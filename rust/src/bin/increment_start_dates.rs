@@ -5,7 +5,6 @@ use log::warn;
 use simplelog::*;
 
 use std::env;
-type BoxResult<T> = Result<T, anyhow::Error>;
 
 fn increment_player_start_dates(
     con: &mut redis::Connection,
@@ -13,7 +12,7 @@ fn increment_player_start_dates(
     player: &mut Player,
     amount: i32,
     history: &str,
-) -> BoxResult<()> {
+) -> anyhow::Result<()> {
     player.load_redis_scores(&domain, con)?;
     if let Some(scores) = &mut player.scores {
         for (objective, value) in scores.iter_mut() {
@@ -32,7 +31,7 @@ fn increment_player_start_dates(
     Ok(())
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

@@ -6,8 +6,6 @@ use std::{
     env
 };
 
-type BoxResult<T> = Result<T, anyhow::Error>;
-
 fn usage() {
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> get <player_name>");
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> histogram");
@@ -15,7 +13,7 @@ fn usage() {
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> bulk_transfer <comma_separated_sources> <comma_separated_destinations>");
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut args: Vec<String> = env::args().collect();
 
     if args.len() < 4 {
@@ -56,7 +54,7 @@ fn get(
     con: &mut redis::Connection,
     locations_key: &String,
     args: &mut Vec<String>,
-) -> BoxResult<()> {
+) -> anyhow::Result<()> {
     if args.len() != 1 {
         usage();
         return Ok(());
@@ -76,7 +74,7 @@ fn histogram(
     con: &mut redis::Connection,
     locations_key: &String,
     args: &mut Vec<String>,
-) -> BoxResult<()> {
+) -> anyhow::Result<()> {
     if args.len() != 0 {
         usage();
         return Ok(());
@@ -160,7 +158,7 @@ fn transfer(
     con: &mut redis::Connection,
     locations_key: &String,
     args: &mut Vec<String>,
-) -> BoxResult<()> {
+) -> anyhow::Result<()> {
     if args.len() != 2 {
         usage();
         return Ok(());
@@ -181,7 +179,7 @@ fn bulk_transfer(
     con: &mut redis::Connection,
     locations_key: &String,
     args: &mut Vec<String>,
-) -> BoxResult<()> {
+) -> anyhow::Result<()> {
     if args.len() != 2 {
         usage();
         return Ok(());

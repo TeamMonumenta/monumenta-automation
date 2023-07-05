@@ -7,9 +7,7 @@ use uuid::Uuid;
 
 use std::env;
 
-type BoxResult<T> = Result<T, anyhow::Error>;
-
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

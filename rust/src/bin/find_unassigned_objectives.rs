@@ -5,14 +5,11 @@ use anyhow;
 
 use std::env;
 
-type BoxResult<T> = Result<T, anyhow::Error>;
-
-
 fn usage() {
     println!("Usage: find_unassigned_objectives <domain>");
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     /* Load all the arguments as datapacks */
     let mut args: Vec<String> = env::args().collect();
 
