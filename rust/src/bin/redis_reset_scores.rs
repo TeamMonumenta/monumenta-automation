@@ -1,8 +1,8 @@
 use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+type BoxResult<T> = Result<T, Box<dyn Error>>;
 
-use std::env;
 use simplelog::*;
+use std::env;
 
 use monumenta::player::Player;
 
@@ -27,7 +27,7 @@ fn main() -> BoxResult<()> {
     let objective = args.remove(0);
 
     let client = redis::Client::open("redis://127.0.0.1/")?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     for (_, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {
         player.load_redis(&domain, &mut con)?;

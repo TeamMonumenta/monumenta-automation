@@ -1,17 +1,19 @@
-#[macro_use] extern crate simple_error;
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate simple_error;
+#[macro_use]
+extern crate log;
 
 use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+type BoxResult<T> = Result<T, Box<dyn Error>>;
 
-use std::env;
+use simplelog::*;
 use std::collections::HashMap;
+use std::env;
 use std::path::Path;
 use uuid::Uuid;
-use simplelog::*;
 
-use monumenta::world::World;
 use monumenta::player::Player;
+use monumenta::world::World;
 
 fn main() -> BoxResult<()> {
     let mut multiple = vec![];
@@ -35,7 +37,17 @@ fn main() -> BoxResult<()> {
     let locations = std::fs::File::open(locations)?;
     let locations: HashMap<String, String> = serde_yaml::from_reader(locations)?;
     // Convert the string/string map to uuid/string, dropping any keys that are not uuids
-    let locations: HashMap<Uuid, &String> = locations.iter().map(|(k, v)| (Uuid::parse_str(k), v)).filter_map(|(k, v)| if let Ok(res) = k {Some((res, v))} else {None}).collect();
+    let locations: HashMap<Uuid, &String> = locations
+        .iter()
+        .map(|(k, v)| (Uuid::parse_str(k), v))
+        .filter_map(|(k, v)| {
+            if let Ok(res) = k {
+                Some((res, v))
+            } else {
+                None
+            }
+        })
+        .collect();
 
     // Get the path to the project_epic directory
     let basedir = args.remove(0);
@@ -48,7 +60,7 @@ fn main() -> BoxResult<()> {
     let mut uuid2name: HashMap<Uuid, String> = HashMap::new();
 
     let client = redis::Client::open("redis://127.0.0.1/")?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     for (uuid, world_name) in locations {
         if !worlds.contains_key(world_name) {
@@ -76,7 +88,10 @@ fn main() -> BoxResult<()> {
             let domain = "play";
             player.update_history("Player File Import");
             if let Err(err) = player.save_redis(domain, &mut con) {
-                warn!("Failed to save player {} domain {} to redis: {}", uuid, domain, err);
+                warn!(
+                    "Failed to save player {} domain {} to redis: {}",
+                    uuid, domain, err
+                );
                 continue;
             }
 

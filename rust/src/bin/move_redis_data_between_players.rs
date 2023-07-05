@@ -1,13 +1,15 @@
-#[macro_use] extern crate log;
-#[macro_use] extern crate simple_error;
+#[macro_use]
+extern crate log;
+#[macro_use]
+extern crate simple_error;
 
 use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+type BoxResult<T> = Result<T, Box<dyn Error>>;
 
-use std::env;
-use uuid::Uuid;
 use redis::Commands;
 use simplelog::*;
+use std::env;
+use uuid::Uuid;
 
 use monumenta::player::Player;
 
@@ -29,7 +31,7 @@ fn main() -> BoxResult<()> {
 
     let redis_uri = args.remove(0);
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     let domain = args.remove(0);
 
@@ -50,7 +52,10 @@ fn main() -> BoxResult<()> {
     let inputlocation: String = con.hget(&bungeelocs, inputuuid.to_hyphenated().to_string())?;
 
     if let Err(err) = inputplayer.save_dir(&backupdir) {
-        warn!("Failed to save player {} domain {} to backup directory {}: {}", inputname, domain, backupdir, err);
+        warn!(
+            "Failed to save player {} domain {} to backup directory {}: {}",
+            inputname, domain, backupdir, err
+        );
         return Err(err);
     }
 
@@ -62,24 +67,39 @@ fn main() -> BoxResult<()> {
     outputplayer.update_history(&format!("Import from {}", &inputname));
 
     if let Err(err) = outputplayer.save_redis(&domain, &mut con) {
-        warn!("Failed to save player {} domain {} to redis: {}", outputuuid, domain, err);
+        warn!(
+            "Failed to save player {} domain {} to redis: {}",
+            outputuuid, domain, err
+        );
         return Err(err);
     }
 
-    info!("Successfully copied player data from {} to {} for domain {}", &inputname, &outputname, &domain);
+    info!(
+        "Successfully copied player data from {} to {} for domain {}",
+        &inputname, &outputname, &domain
+    );
 
     if let Err(err) = inputplayer.del(&domain, &mut con) {
-        warn!("Failed to delete original player {} domain {}: {}", inputuuid, domain, err);
+        warn!(
+            "Failed to delete original player {} domain {}: {}",
+            inputuuid, domain, err
+        );
         return Err(err);
     }
 
     // Delete the location record for bungee, moving the player back to the default
     con.hdel(&bungeelocs, inputuuid.to_hyphenated().to_string())?;
     // Move the new player to the location of the old player
-    con.hset(&bungeelocs, outputuuid.to_hyphenated().to_string(), inputlocation)?;
+    con.hset(
+        &bungeelocs,
+        outputuuid.to_hyphenated().to_string(),
+        inputlocation,
+    )?;
 
-    info!("Successfully deleted original player data for user {} domain {}", &inputname, &domain);
-
+    info!(
+        "Successfully deleted original player data for user {} domain {}",
+        &inputname, &domain
+    );
 
     Ok(())
 }

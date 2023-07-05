@@ -1,8 +1,8 @@
 use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+type BoxResult<T> = Result<T, Box<dyn Error>>;
 
-use std::env;
 use simplelog::*;
+use std::env;
 use std::fs::File;
 use std::io::{prelude::*, BufReader};
 
@@ -27,7 +27,7 @@ fn main() -> BoxResult<()> {
 
     let domain = args.remove(0);
     let objectives_file = args.remove(0);
-    let mut objectives = vec!();
+    let mut objectives = vec![];
 
     let file = File::open(objectives_file)?;
     let reader = BufReader::new(file);
@@ -44,7 +44,7 @@ fn main() -> BoxResult<()> {
     }
 
     let client = redis::Client::open("redis://127.0.0.1/")?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     println!("Removing objectives...");
 
@@ -55,13 +55,20 @@ fn main() -> BoxResult<()> {
             for objective in &objectives {
                 scores.remove(objective);
             }
-            player.update_history(&format!("Removed {} scoreboard objectives", objectives.len()));
+            player.update_history(&format!(
+                "Removed {} scoreboard objectives",
+                objectives.len()
+            ));
             player.save_redis(&domain, &mut con)?;
             num_players = num_players + 1;
         }
     }
 
-    println!("Removed {} objectives from {} players", objectives.len(), num_players);
+    println!(
+        "Removed {} objectives from {} players",
+        objectives.len(),
+        num_players
+    );
 
     Ok(())
 }

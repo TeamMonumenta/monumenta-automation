@@ -1,9 +1,9 @@
 use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+type BoxResult<T> = Result<T, Box<dyn Error>>;
 
-use std::path::Path;
-use std::fs::File;
 use std::collections::HashMap;
+use std::fs::File;
+use std::path::Path;
 use uuid::Uuid;
 
 use crate::scoreboard::Scoreboard;
@@ -15,7 +15,10 @@ pub struct World {
 
 impl World {
     pub fn new(basepath: &str) -> BoxResult<World> {
-        Ok(World{basepath: basepath.to_string(), scoreboard: None})
+        Ok(World {
+            basepath: basepath.to_string(),
+            scoreboard: None,
+        })
     }
 
     pub fn load_scoreboard(&mut self) -> BoxResult<()> {
@@ -43,7 +46,12 @@ impl World {
     }
 
     pub fn get_name(&self) -> String {
-        Path::new(&self.basepath).file_name().unwrap().to_str().unwrap().to_string()
+        Path::new(&self.basepath)
+            .file_name()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string()
     }
 
     pub fn get_player_scores(&self, player_name: &str) -> BoxResult<HashMap<String, i32>> {
@@ -51,15 +59,24 @@ impl World {
     }
 
     pub fn get_player_data_file(&self, uuid: &Uuid) -> BoxResult<File> {
-        World::get_file_common(&Path::new(&self.basepath).join(format!("playerdata/{}.dat", uuid.to_hyphenated().to_string())))
+        World::get_file_common(&Path::new(&self.basepath).join(format!(
+            "playerdata/{}.dat",
+            uuid.to_hyphenated().to_string()
+        )))
     }
 
     pub fn get_player_advancements_file(&self, uuid: &Uuid) -> BoxResult<File> {
-        World::get_file_common(&Path::new(&self.basepath).join(format!("advancements/{}.json", uuid.to_hyphenated().to_string())))
+        World::get_file_common(&Path::new(&self.basepath).join(format!(
+            "advancements/{}.json",
+            uuid.to_hyphenated().to_string()
+        )))
     }
 
     pub fn get_player_stats_file(&self, uuid: &Uuid) -> BoxResult<File> {
-        World::get_file_common(&Path::new(&self.basepath).join(format!("stats/{}.json", uuid.to_hyphenated().to_string())))
+        World::get_file_common(
+            &Path::new(&self.basepath)
+                .join(format!("stats/{}.json", uuid.to_hyphenated().to_string())),
+        )
     }
 
     pub fn get_file_common(path: &Path) -> BoxResult<File> {

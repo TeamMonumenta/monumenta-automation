@@ -1,8 +1,8 @@
-use std::env;
 use std::collections::HashMap;
+use std::env;
 
 use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+type BoxResult<T> = Result<T, Box<dyn Error>>;
 
 use monumenta::scoreboard;
 
@@ -32,7 +32,10 @@ fn main() -> BoxResult<()> {
     let mut count_vec: Vec<(&i32, &i32)> = freq_map.iter().collect();
     count_vec.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
 
-    println!("Distribution of objective {} for scoreboard {}:", objective_name, scoreboard_path);
+    println!(
+        "Distribution of objective {} for scoreboard {}:",
+        objective_name, scoreboard_path
+    );
     for (value, amount) in count_vec.iter() {
         println!("{0: <10}{1}", value, amount);
     }

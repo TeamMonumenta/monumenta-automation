@@ -1,9 +1,9 @@
 use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+type BoxResult<T> = Result<T, Box<dyn Error>>;
 
-use std::env;
-use simplelog::*;
 use redis::Commands;
+use simplelog::*;
+use std::env;
 
 fn usage() {
     println!("Usage: redis_playerdata_save_load 'redis://127.0.0.1/' <pattern>");
@@ -38,7 +38,7 @@ fn main() -> BoxResult<()> {
     }
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     println!("Removing data matching '{}'", pattern);
     let keys: Vec<String> = con.keys(pattern)?;
@@ -59,7 +59,10 @@ fn main() -> BoxResult<()> {
     if keys.len() == 0 {
         println!("No matching data found");
     } else if !confirm {
-        println!("Matched {} keys\nTo actually execute this operation, add --confirm", keys.len());
+        println!(
+            "Matched {} keys\nTo actually execute this operation, add --confirm",
+            keys.len()
+        );
     } else {
         println!("Removed {} keys", keys.len());
     }

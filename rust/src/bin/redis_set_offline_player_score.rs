@@ -1,15 +1,14 @@
 use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+type BoxResult<T> = Result<T, Box<dyn Error>>;
 
-use std::env;
-use simplelog::*;
 use redis::Commands;
+use simplelog::*;
+use std::env;
 use uuid::Uuid;
 
 use monumenta::player::Player;
 
 fn main() -> BoxResult<()> {
-
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),
@@ -36,7 +35,7 @@ fn main() -> BoxResult<()> {
     let history = args.remove(0);
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     println!("Loading {}", playername);
     let uuid_str: String = con.hget("name2uuid", playername.to_string())?;

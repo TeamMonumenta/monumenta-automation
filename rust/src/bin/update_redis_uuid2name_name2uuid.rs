@@ -1,10 +1,10 @@
 use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+type BoxResult<T> = Result<T, Box<dyn Error>>;
 
 use redis::Commands;
-use std::env;
-use std::collections::HashMap;
 use simplelog::*;
+use std::collections::HashMap;
+use std::env;
 
 use monumenta::player::Player;
 
@@ -31,7 +31,7 @@ fn main() -> BoxResult<()> {
     let mut uuid2name: HashMap<String, String> = HashMap::new();
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     for (uuid, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {
         player.load_redis(&domain, &mut con)?;
