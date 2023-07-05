@@ -1,5 +1,4 @@
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
+use anyhow::{self, bail};
 
 use crate::player::Player;
 use std::collections::HashMap;
@@ -8,6 +7,8 @@ use std::fs::File;
 use std::io::Read;
 
 use nbt;
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 #[derive(Debug)]
 pub struct Scoreboard {

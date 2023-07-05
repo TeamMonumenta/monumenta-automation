@@ -1,8 +1,8 @@
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
-
+use anyhow::{self, bail};
 use std::fs::File;
 use std::io::Read;
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 #[derive(Clone)]
 pub struct Advancements(serde_json::Map<String, serde_json::Value>);

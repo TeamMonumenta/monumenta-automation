@@ -1,8 +1,6 @@
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
-
 use crate::advancements::Advancements;
 use crate::world::World;
+use anyhow::{self, bail};
 use redis::Commands;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -12,6 +10,8 @@ use std::io::Read;
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 use uuid::Uuid;
+
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 #[derive(Clone)]
 pub struct Player {

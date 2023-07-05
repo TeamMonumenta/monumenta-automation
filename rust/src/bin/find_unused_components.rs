@@ -1,10 +1,9 @@
 #[macro_use]
-extern crate simple_error;
-#[macro_use]
 extern crate log;
 #[macro_use]
 extern crate lazy_static;
 
+use anyhow::{self, bail};
 use monumenta::scoreboard::Scoreboard;
 use monumenta::scoreboard::ScoreboardCollection;
 use regex::Regex;
@@ -15,8 +14,7 @@ use std::fmt;
 use std::fs;
 use walkdir::WalkDir;
 
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 #[derive(PartialEq, Eq, Hash, Clone)]
 enum NamespaceType {

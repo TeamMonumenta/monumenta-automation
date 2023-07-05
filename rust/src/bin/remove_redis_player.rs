@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate log;
 
-use std::error::Error;
-type BoxResult<T> = Result<T, Box<dyn Error>>;
+use anyhow::{self, bail};
+type BoxResult<T> = Result<T, anyhow::Error>;
 
 use redis::Commands;
 use simplelog::*;
