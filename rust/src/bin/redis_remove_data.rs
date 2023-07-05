@@ -37,7 +37,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con: redis::Connection = client.get_connection()?;
+    let mut con : redis::Connection = client.get_connection()?;
 
     println!("Removing data matching '{}'", pattern);
     let keys: Vec<String> = con.keys(pattern)?;
@@ -58,10 +58,7 @@ fn main() -> anyhow::Result<()> {
     if keys.len() == 0 {
         println!("No matching data found");
     } else if !confirm {
-        println!(
-            "Matched {} keys\nTo actually execute this operation, add --confirm",
-            keys.len()
-        );
+        println!("Matched {} keys\nTo actually execute this operation, add --confirm", keys.len());
     } else {
         println!("Removed {} keys", keys.len());
     }

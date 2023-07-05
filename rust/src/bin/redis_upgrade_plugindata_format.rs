@@ -34,16 +34,12 @@ fn main() -> anyhow::Result<()> {
     let domain = args.remove(0);
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con: redis::Connection = client.get_connection()?;
+    let mut con : redis::Connection = client.get_connection()?;
 
     for (uuid, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {
-        if let Ok(oldplugindata) = con.hgetall(format!(
-            "{}:playerdata:{}:plugindata",
-            domain,
-            uuid.to_hyphenated().to_string()
-        )) {
+        if let Ok(oldplugindata) = con.hgetall(format!("{}:playerdata:{}:plugindata", domain, uuid.to_hyphenated().to_string())) {
             /* There is plugindata here */
-            let oldplugindata: HashMap<String, String> = oldplugindata;
+            let oldplugindata : HashMap<String, String> = oldplugindata;
             let mut newplugindata = HashMap::new();
             for (key, value) in oldplugindata.iter() {
                 let value: serde_json::Value = serde_json::from_str(&value)?;
@@ -51,11 +47,7 @@ fn main() -> anyhow::Result<()> {
             }
             player.plugindata = Some(newplugindata);
             /* Clear out the old style data */
-            let _: () = con.del(format!(
-                "{}:playerdata:{}:plugindata",
-                domain,
-                uuid.to_hyphenated().to_string()
-            ))?;
+            let _: () = con.del(format!("{}:playerdata:{}:plugindata", domain, uuid.to_hyphenated().to_string()))?;
         } else {
             /* No plugindata found - try the new format */
             if let Err(_) = player.load_redis_plugindata(&domain, &mut con) {

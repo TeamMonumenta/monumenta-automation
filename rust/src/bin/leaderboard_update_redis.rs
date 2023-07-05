@@ -12,13 +12,9 @@ fn usage() {
     println!("Usage: leaderboard_update_redis 'redis://127.0.0.1/' <domain> leaderboards.yaml");
 }
 
-fn update_player_leaderboards(
-    uuid: &Uuid,
-    player: &mut Player,
-    leaderboards: &Vec<String>,
-    con: &mut redis::Connection,
-    domain: &str,
-) -> anyhow::Result<()> {
+fn update_player_leaderboards(uuid: &Uuid, player: &mut Player,
+                              leaderboards: &Vec<String>, con: &mut redis::Connection,
+                              domain: &str) -> anyhow::Result<()> {
     player.load_redis_scores(&domain, con)?;
 
     let name: String = con.hget("uuid2name", uuid.to_hyphenated().to_string())?;
@@ -26,11 +22,7 @@ fn update_player_leaderboards(
     for leaderboard in leaderboards.iter() {
         if let Some(score) = player.scores.as_ref().unwrap().get(leaderboard) {
             if *score > 0 {
-                let _: () = con.zadd(
-                    format!("{}:leaderboard:{}", domain, leaderboard),
-                    &name,
-                    *score as f32,
-                )?;
+                let _: () = con.zadd(format!("{}:leaderboard:{}", domain, leaderboard), &name, *score as f32)?;
             }
         }
     }
@@ -80,12 +72,8 @@ fn main() -> anyhow::Result<()> {
     /* Add all current non-zero player scores to the leaderboards */
     println!("\nUpdating player scores on leaderboards...");
     for (uuid, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {
-        if let Err(err) = update_player_leaderboards(uuid, player, &leaderboards, &mut con, &domain)
-        {
-            warn!(
-                "Player {} failed - their leaderboards will not be updated: {}",
-                uuid, err
-            );
+        if let Err(err) = update_player_leaderboards(uuid, player, &leaderboards, &mut con, &domain) {
+            warn!("Player {} failed - their leaderboards will not be updated: {}", uuid, err);
         }
     }
 

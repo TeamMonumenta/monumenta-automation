@@ -44,6 +44,7 @@ pub struct OutputOpts {
     player_name: Option<String>,
 }
 
+
 #[derive(Subcommand, Debug, Clone)]
 enum Commands {
     #[command(name = "--input")]
@@ -86,7 +87,7 @@ fn main() -> anyhow::Result<()> {
 
     // Open the top-level redis client, and a connection for initial use
     let client = redis::Client::open(args.redis_uri.clone())?;
-    let mut con: redis::Connection = client.get_connection()?;
+    let mut con : redis::Connection = client.get_connection()?;
 
     match &args.command {
         Commands::OUTPUT(outargs) => {
@@ -96,30 +97,23 @@ fn main() -> anyhow::Result<()> {
                 output_player(&player, &client, &args.domain, &outargs.path)
             } else {
                 // Caller didn't specify a player to pull - fetch all of them
-                Player::get_redis_players(&args.domain, &mut con)?
-                    .par_iter()
-                    .for_each(|(_, player)| {
-                        output_player(player, &client, &args.domain, &outargs.path)
-                    })
+                Player::get_redis_players(&args.domain, &mut con)?.par_iter().for_each(|(_, player)| {
+                    output_player(player, &client, &args.domain, &outargs.path)
+                })
             }
         }
         Commands::INPUT(inargs) => {
             let basedir = Path::new(&inargs.path);
             /* Need to do more work to figure out what uuids are being loaded */
-            let uuids: Vec<Uuid> = fs::read_dir(Path::new(&basedir).join("playerdata"))?
-                .filter_map(|entry| {
-                    if let Ok(file) = entry {
-                        let path = file.path();
-                        if path.extension().unwrap() == "dat" {
-                            return Some(
-                                Uuid::parse_str(path.file_stem().unwrap().to_str().unwrap())
-                                    .unwrap(),
-                            );
-                        }
+            let uuids: Vec<Uuid> = fs::read_dir(Path::new(&basedir).join("playerdata"))?.filter_map(|entry| {
+                if let Ok(file) = entry {
+                    let path = file.path();
+                    if path.extension().unwrap() == "dat" {
+                        return Some(Uuid::parse_str(path.file_stem().unwrap().to_str().unwrap()).unwrap());
                     }
-                    return None;
-                })
-                .collect();
+                }
+                return None;
+            }).collect();
 
             uuids.par_iter().for_each(|uuid| {
                 THREAD_CONNECTIONS.with(|cell| {
@@ -140,26 +134,14 @@ fn main() -> anyhow::Result<()> {
                     /* Now that we have a UUID, load it from the base path and push it to redis */
                     let mut player = Player::new(uuid.to_owned());
                     if let Err(err) = player.load_dir(basedir.to_str().unwrap()) {
-                        eprintln!(
-                            "Failed to load player {} from dir {}: {}",
-                            player,
-                            basedir.to_str().unwrap(),
-                            err
-                        );
+                        eprintln!("Failed to load player {} from dir {}: {}", player, basedir.to_str().unwrap(), err);
                     } else {
                         if let Err(err) = player.save_redis(&args.domain, &mut con) {
                             eprintln!("Failed to save player {} to redis: {}", player, err);
                         } else {
                             if inargs.history_amount_to_keep < u16::MAX {
-                                if let Err(err) = player.trim_redis_history(
-                                    &args.domain,
-                                    &mut con,
-                                    inargs.history_amount_to_keep as isize,
-                                ) {
-                                    eprintln!(
-                                        "Failed to trim player's redis history {}: {}",
-                                        player, err
-                                    );
+                                if let Err(err) = player.trim_redis_history(&args.domain, &mut con, inargs.history_amount_to_keep as isize) {
+                                    eprintln!("Failed to trim player's redis history {}: {}", player, err);
                                 }
                             }
 

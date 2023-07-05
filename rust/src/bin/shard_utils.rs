@@ -25,7 +25,7 @@ fn main() -> anyhow::Result<()> {
 
     let redis_uri = args.remove(0);
     let client = redis::Client::open(redis_uri)?;
-    let mut con: redis::Connection = client.get_connection()?;
+    let mut con : redis::Connection = client.get_connection()?;
 
     let domain = args.remove(0);
     let locations_key = format!("{}:bungee:locations", domain);
@@ -33,16 +33,16 @@ fn main() -> anyhow::Result<()> {
     match &args.remove(0)[..] {
         "get" => {
             return get(&mut con, &locations_key, &mut args);
-        }
+        },
         "histogram" => {
             return histogram(&mut con, &locations_key, &mut args);
-        }
+        },
         "transfer" => {
             return transfer(&mut con, &locations_key, &mut args);
-        }
+        },
         "bulk_transfer" => {
             return bulk_transfer(&mut con, &locations_key, &mut args);
-        }
+        },
         _ => {
             usage();
             return Ok(());
@@ -50,11 +50,7 @@ fn main() -> anyhow::Result<()> {
     };
 }
 
-fn get(
-    con: &mut redis::Connection,
-    locations_key: &String,
-    args: &mut Vec<String>,
-) -> anyhow::Result<()> {
+fn get(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 1 {
         usage();
         return Ok(());
@@ -70,11 +66,7 @@ fn get(
     return Ok(());
 }
 
-fn histogram(
-    con: &mut redis::Connection,
-    locations_key: &String,
-    args: &mut Vec<String>,
-) -> anyhow::Result<()> {
+fn histogram(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 0 {
         usage();
         return Ok(());
@@ -89,7 +81,7 @@ fn histogram(
         match player_counts.get(&shard) {
             Some(&old_count) => {
                 player_counts.insert(shard, 1 + old_count);
-            }
+            },
             None => {
                 player_counts.insert(shard, 1);
             }
@@ -103,47 +95,40 @@ fn histogram(
     let mut max_shard_width: usize = header_shard.len();
     let mut max_count_width: usize = header_count.len();
     for (shard, count) in &player_counts {
-        let test_size: usize = format!("{shard}", shard = shard).len();
+        let test_size: usize = format!("{shard}", shard=shard).len();
         if test_size > max_shard_width {
             max_shard_width = test_size;
         }
 
-        let test_size: usize = format!("{count}", count = count).len();
+        let test_size: usize = format!("{count}", count=count).len();
         if test_size > max_count_width {
             max_count_width = test_size;
         }
     }
 
-    println!(
-        "{shard:<max_shard_width$} │ {count:>max_count_width$} │ {bar}",
-        shard = header_shard,
-        max_shard_width = max_shard_width,
-        count = header_count,
-        max_count_width = max_count_width,
-        bar = header_histogram
+    println!("{shard:<max_shard_width$} │ {count:>max_count_width$} │ {bar}",
+        shard=header_shard,
+        max_shard_width=max_shard_width,
+        count=header_count,
+        max_count_width=max_count_width,
+        bar=header_histogram
     );
-    println!(
-        "{}─┼─{}─┼─{}",
+    println!("{}─┼─{}─┼─{}",
         "─".repeat(max_shard_width),
         "─".repeat(max_count_width),
         "─".repeat(header_histogram.len())
     );
     for (shard, count) in &player_counts {
-        println!(
-            "{shard:<max_shard_width$} │ {count:>max_count_width$} │ {bar}",
-            shard = shard,
-            max_shard_width = max_shard_width,
-            count = count,
-            max_count_width = max_count_width,
-            bar = "━".repeat(histogram_len(*count))
+        println!("{shard:<max_shard_width$} │ {count:>max_count_width$} │ {bar}",
+            shard=shard,
+            max_shard_width=max_shard_width,
+            count=count,
+            max_count_width=max_count_width,
+            bar="━".repeat(histogram_len(*count))
         );
     }
 
-    println!(
-        "There are {} players across {} shards.",
-        total_players,
-        player_counts.len()
-    );
+    println!("There are {} players across {} shards.", total_players, player_counts.len());
     return Ok(());
 }
 
@@ -154,11 +139,7 @@ fn histogram_len(count: usize) -> usize {
     return (count as f32 + 1.).log2().ceil() as usize;
 }
 
-fn transfer(
-    con: &mut redis::Connection,
-    locations_key: &String,
-    args: &mut Vec<String>,
-) -> anyhow::Result<()> {
+fn transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 2 {
         usage();
         return Ok(());
@@ -175,11 +156,7 @@ fn transfer(
     return Ok(());
 }
 
-fn bulk_transfer(
-    con: &mut redis::Connection,
-    locations_key: &String,
-    args: &mut Vec<String>,
-) -> anyhow::Result<()> {
+fn bulk_transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 2 {
         usage();
         return Ok(());

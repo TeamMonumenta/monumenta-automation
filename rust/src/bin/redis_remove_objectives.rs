@@ -28,7 +28,7 @@ fn main() -> anyhow::Result<()> {
 
     let domain = args.remove(0);
     let objectives_file = args.remove(0);
-    let mut objectives = vec![];
+    let mut objectives = vec!();
 
     let file = File::open(objectives_file)?;
     let reader = BufReader::new(file);
@@ -45,7 +45,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     let client = redis::Client::open("redis://127.0.0.1/")?;
-    let mut con: redis::Connection = client.get_connection()?;
+    let mut con : redis::Connection = client.get_connection()?;
 
     println!("Removing objectives...");
 
@@ -56,20 +56,13 @@ fn main() -> anyhow::Result<()> {
             for objective in &objectives {
                 scores.remove(objective);
             }
-            player.update_history(&format!(
-                "Removed {} scoreboard objectives",
-                objectives.len()
-            ));
+            player.update_history(&format!("Removed {} scoreboard objectives", objectives.len()));
             player.save_redis(&domain, &mut con)?;
             num_players = num_players + 1;
         }
     }
 
-    println!(
-        "Removed {} objectives from {} players",
-        objectives.len(),
-        num_players
-    );
+    println!("Removed {} objectives from {} players", objectives.len(), num_players);
 
     Ok(())
 }
