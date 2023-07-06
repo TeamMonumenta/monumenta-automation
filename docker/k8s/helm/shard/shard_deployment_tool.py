@@ -1,257 +1,18 @@
 #!/usr/bin/env python3
 
-import os
 import sys
 import subprocess
 import tempfile
 import re
-from pprint import pprint
+import yaml
 
-# Required arguments:
-#   node
-#   memGB OR memMB
-# Optional arguments:
-#   gsheetCredentials
-#   fastMetrics
-#   useSocketForProbes
-#   useHTTPForProbes
-#   nodePort
-shard_config = {
-    # Shards that only exist on build
-    "dev1"               : { "build": { "node": "m12", "memMB": 1536, }, },
-    "dev2"               : { "build": { "node": "m12", "memMB": 1536, }, },
-    "dev3"               : { "build": { "node": "m12", "memMB": 1536, }, },
-    "dev4"               : { "build": { "node": "m12", "memMB": 1536, }, },
-    "mobs"               : { "build": { "node": "m12", "memMB": 1536, }, },
-    "dungeon"            : { "build": { "node": "m12", "memGB": 8   , }, },
-    "futurama"           : { "build": { "node": "m12", "memGB": 3   , }, },
-    "test"               : { "build": { "node": "m12", "memGB": 3   , }, },
-    "event"              : { "build": { "node": "m12", "memGB": 3   , }, },
-    "monumenta-sdk"      : { "build": { "node": "m12", "memGB": 3   , "nodePort": 22221, }, },
 
-    # Purgatory
-    "purgatory": {
-        "play" : { "node": "m8" , "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
-        "build": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
-        "stage": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
-    },
+with open("shard_deployment_tool_config.yaml", "r", encoding="utf-8-sig") as fp:
+    tool_config = yaml.load(fp, Loader=yaml.FullLoader)
 
-    # R1
-    "valley": {
-        "play" : { "node": "m8" , "memGB": 6, },
-        "build": { "node": "m12", "memGB": 3, },
-        "stage": { "node": "m12", "memGB": 3, },
-    },
-    "valley-2": {
-        "play" : { "node": "m8" , "memGB": 6, },
-        "stage": { "node": "m12", "memGB": 3, },
-    },
-    "valley-3": {
-        "play" : { "node": "m8" , "memGB": 6, },
-    },
-
-    # R2
-    "isles": {
-        "play" : { "node": "m11", "memGB": 5, },
-        "build": { "node": "m12", "memGB": 3, },
-        "stage": { "node": "m12", "memGB": 4, },
-        "clash": { "node": "m12", "memGB": 4, },
-    },
-    "isles-2": {
-        "play" : { "node": "m14", "memGB": 5, },
-    },
-    "isles-3": {
-        "play" : { "node": "m15", "memGB": 5, },
-    },
-
-    # R3
-    "ring": {
-        "play":  { "node": "m13", "memGB": 7   , },
-        "build": { "node": "m12", "memGB": 3   , },
-        "stage": { "node": "m12", "memGB": 3   , },
-    },
-    "ring-2":  { "play" : { "node": "m15", "memGB": 7, }, },
-    "ring-3":  { "play" : { "node": "m11", "memGB": 7, }, },
-    "ring-4":  { "play" : { "node": "m11", "memGB": 7, }, },
-    "ring-5":  { "play" : { "node": "m8" , "memGB": 7, }, },
-    "ring-6":  { "play" : { "node": "m8" , "memGB": 7, }, },
-    "ring-7":  { "play" : { "node": "m14", "memGB": 7, }, },
-    "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
-    "ring-9":  { "play" : { "node": "m15", "memGB": 7, }, },
-    "ring-10":  { "play" : { "node": "m13", "memGB": 7, }, },
-
-    # Plots
-    "plots": {
-        "play" : { "node": "m14", "memGB": 8, },
-        "stage": { "node": "m12", "memGB": 6, },
-    },
-
-    "playerplots": {
-        "play":  { "node": "m13", "memGB": 8, },
-        "stage": { "node": "m12", "memGB": 4, },
-    },
-
-    # Player build shard
-    "build": {
-        "play" : { "node": "m8" , "memGB": 3   , "gsheetCredentials": "false" },
-        "stage": { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
-    },
-
-    # Dungeons
-    "cyan": {
-        "play" : { "node": "m15", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "depths": {
-        "play" : { "node": "m11", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-        "clash": { "node": "m12", "memMB": 1536, },
-    },
-    "forum": {
-        "play" : { "node": "m15", "memGB": 4   , },
-        "stage": { "node": "m12", "memMB": 2048, },
-    },
-    "gray": {
-        "play" : { "node": "m8" , "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "labs": {
-        "play" : { "node": "m11", "memGB": 6   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "lightblue": {
-        "play" : { "node": "m13", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "lightgray": {
-        "play" : { "node": "m14" , "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "lime": {
-        "play" : { "node": "m14", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "magenta": {
-        "play" : { "node": "m13", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "orange": {
-        "play" : { "node": "m13", "memGB": 3, },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "pink": {
-        "play" : { "node": "m14", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "purple": {
-        "play" : { "node": "m8" , "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "reverie": {
-        "play" : { "node": "m13", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "corridors": {
-        "play" : { "node": "m14", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "rush": {
-        "play" : { "node": "m15", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "shiftingcity": {
-        "play" : { "node": "m11", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "teal": {
-        "play" : { "node": "m15" , "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "tutorial": {
-        "play" : { "node": "m11", "memGB": 5   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "white": {
-        "play" : { "node": "m13", "memGB": 3, },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "willows": {
-        "play" : { "node": "m13", "memGB": 5,    },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "willows-2": {
-        "play" : { "node": "m14", "memGB": 5   , },
-    },
-    "willows-3": {
-        "play" : { "node": "m14", "memGB": 5   , },
-    },
-    "yellow": {
-        "play" : { "node": "m14", "memGB": 5   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "yellow-2": {
-        "play" : { "node": "m14", "memGB": 5   , },
-    },
-    "yellow-3": {
-        "play" : { "node": "m15", "memGB": 5   , },
-    },
-
-    "gallery": {
-        "play" : { "node": "m8", "memGB": 4   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "gallery-2": { "play" : { "node": "m8", "memGB": 4, }, },
-
-    "blue": {
-        "play" : { "node": "m14", "memGB": 5   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "blue-2": { "play" : { "node": "m8" , "memGB": 5, }, },
-    "blue-3": { "play" : { "node": "m15", "memGB": 5, }, },
-    "blue-4": { "play" : { "node": "m11", "memGB": 5, }, },
-
-    "brown": {
-        "play" : { "node": "m15", "memGB": 5   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "brown-2":  { "play" : { "node": "m15", "memGB": 5, }, },
-    "brown-3":  { "play" : { "node": "m11", "memGB": 5, }, },
-
-    "portal": {
-        "play" : { "node": "m11", "memGB": 6   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-
-    "ruin": {
-        "play" : { "node": "m8", "memGB": 4   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-
-    "skt": {
-        "play" : { "node": "m13", "memGB": 4   , },
-        "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "skt-2": { "play" : { "node": "m13", "memGB": 4, }, },
-    "skt-3": { "play" : { "node": "m13", "memGB": 4, }, },
-}
-
-# Defaults for each namespace
-namespace_defaults = {
-    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true" },
-    "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
-    "stage": { "gsheetCredentials": "true", "fastMetrics": "false", "maps": "true" },
-    "clash": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "false" },
-}
-
-# "node" uses abbreviated node names. This is the map back to full names:
-abbrev_node_to_full = {
-    "m8": "monumenta-8",
-    "m11": "monumenta-11",
-    "m12": "monumenta-12",
-    "m13": "monumenta-13",
-    "m14": "monumenta-14",
-    "m15": "monumenta-15",
-}
+shard_config = tool_config["shard_config"]
+namespace_defaults = tool_config["namespace_defaults"]
+abbrev_node_to_full = tool_config["abbrev_node_to_full"]
 
 
 RE_NUMBER = re.compile('''[0-9]+''')
@@ -297,11 +58,11 @@ def perform_shard_action(action, namespace, shard):
 
     # Create a list of all the key=value pairs
     vals = []
-    for key in output_conf:
-        vals.append(f"{key}={output_conf[key]}")
+    for key, value in output_conf.items():
+        vals.append(f"{key}={value}")
 
     # Run helm to generate the new shard template
-    proc = subprocess.run(["helm", "template", ".", "--set", ",".join(vals)], stdout=subprocess.PIPE)
+    proc = subprocess.run(["helm", "template", ".", "--set", ",".join(vals)], stdout=subprocess.PIPE, check=False)
 
     # Handle whatever action the user specified
     if action == "print":
@@ -310,12 +71,12 @@ def perform_shard_action(action, namespace, shard):
         with tempfile.NamedTemporaryFile() as fp:
             fp.write(proc.stdout)
             fp.flush()
-            kubectl = subprocess.run(["kubectl", "apply", "-f", fp.name])
+            subprocess.run(["kubectl", "apply", "-f", fp.name], check=False)
     elif action == "delete":
         with tempfile.NamedTemporaryFile() as fp:
             fp.write(proc.stdout)
             fp.flush()
-            kubectl = subprocess.run(["kubectl", "delete", "-f", fp.name])
+            subprocess.run(["kubectl", "delete", "-f", fp.name], check=False)
 
 
 def natural_sort(key):
@@ -380,7 +141,7 @@ def print_memory_usage():
             namespace_memory_usages[namespace][node] += memGB
 
     header_width = max(len('Total:'), *[len(namespace) for namespace in namespaces])
-    column_width = max(len(' '*7 + ' GB'), *[len(node) for node in node_memory_usages.keys()])
+    column_width = max(len(' '*7 + ' GB'), *[len(node) for node in node_memory_usages])
 
     print(' ' * header_width, end='')
     for node in sorted(node_memory_usages.keys(), key=natural_sort):
