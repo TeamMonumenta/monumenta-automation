@@ -1,17 +1,16 @@
-#[macro_use] extern crate simple_error;
-
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
-use std::path::Path;
-use simplelog::*;
-use rayon::prelude::*;
-use uuid::Uuid;
-use std::fs;
-use std::cell::RefCell;
-use clap::{Args, Parser, Subcommand};
-
 use monumenta::player::Player;
+
+use anyhow::{self, bail};
+use clap::{Args, Parser, Subcommand};
+use rayon::prelude::*;
+use simplelog::*;
+use uuid::Uuid;
+
+use std::{
+    cell::RefCell,
+    fs,
+    path::Path
+};
 
 #[derive(Parser, Debug)]
 /// Tool to move playerdata between redis to and from a local directory
@@ -61,7 +60,7 @@ enum Commands {
 // connection per thread in the pool
 thread_local!(static THREAD_CONNECTIONS: RefCell<Option<redis::Connection>> = RefCell::new(None));
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

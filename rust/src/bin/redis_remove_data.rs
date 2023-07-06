@@ -1,15 +1,14 @@
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+use anyhow;
+use redis::Commands;
+use simplelog::*;
 
 use std::env;
-use simplelog::*;
-use redis::Commands;
 
 fn usage() {
     println!("Usage: redis_playerdata_save_load 'redis://127.0.0.1/' <pattern>");
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

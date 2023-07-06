@@ -1,13 +1,14 @@
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
-use std::fs::File;
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::io::{Read};
 use crate::player::Player;
 
+use anyhow::{self, bail};
+use log::warn;
 use nbt;
+
+use std::{
+    collections::{HashMap, HashSet},
+    fs::File,
+    io::Read
+};
 
 #[derive(Debug)]
 pub struct Scoreboard {
@@ -40,13 +41,13 @@ impl ScoreboardCollection {
         ScoreboardCollection{ scoreboards: HashMap::new(), objectives: HashSet::new() }
     }
 
-    pub fn add_scoreboard(&mut self, filepath: &str) -> BoxResult<()> {
+    pub fn add_scoreboard(&mut self, filepath: &str) -> anyhow::Result<()> {
         let scoreboard = Scoreboard::load(filepath)?;
         self.add_existing_scoreboard(scoreboard)?;
         Ok(())
     }
 
-    pub fn add_existing_scoreboard(&mut self, scoreboard: Scoreboard) -> BoxResult<()> {
+    pub fn add_existing_scoreboard(&mut self, scoreboard: Scoreboard) -> anyhow::Result<()> {
         for objective_name in scoreboard.objectives.keys() {
             self.objectives.insert(objective_name.to_string());
         }
@@ -112,7 +113,7 @@ impl ScoreboardCollection {
 }
 
 impl Scoreboard {
-    pub fn load_redis(domain: &str, con: &mut redis::Connection) -> BoxResult<Scoreboard> {
+    pub fn load_redis(domain: &str, con: &mut redis::Connection) -> anyhow::Result<Scoreboard> {
         let mut scoreboard = Scoreboard{filepath: "TODO REDIS".to_string(), data_version: 0, objectives: HashMap::new()};
 
         for (_, player) in Player::get_redis_players(&domain, con)?.iter_mut() {
@@ -132,7 +133,7 @@ impl Scoreboard {
         Ok(scoreboard)
     }
 
-    pub fn load(filepath: &str) -> BoxResult<Scoreboard> {
+    pub fn load(filepath: &str) -> anyhow::Result<Scoreboard> {
         let mut file = File::open(filepath)?;
         let mut contents = Vec::new();
         file.read_to_end(&mut contents).unwrap();

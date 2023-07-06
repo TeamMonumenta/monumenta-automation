@@ -1,12 +1,13 @@
-use std::env;
-use std::collections::HashMap;
-
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
 use monumenta::scoreboard;
 
-fn main() -> BoxResult<()> {
+use anyhow;
+
+use std::{
+    collections::HashMap,
+    env
+};
+
+fn main() -> anyhow::Result<()> {
     /* Load all the arguments as datapacks */
     let mut args: Vec<String> = env::args().collect();
 

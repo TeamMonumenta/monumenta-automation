@@ -1,10 +1,10 @@
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
-use std::env;
-use std::collections::BTreeMap;
-use std::collections::HashSet;
+use anyhow;
 use redis::Commands;
+
+use std::{
+    collections::{BTreeMap, HashSet},
+    env
+};
 
 fn usage() {
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> get <player_name>");
@@ -13,7 +13,7 @@ fn usage() {
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> bulk_transfer <comma_separated_sources> <comma_separated_destinations>");
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut args: Vec<String> = env::args().collect();
 
     if args.len() < 4 {
@@ -50,7 +50,7 @@ fn main() -> BoxResult<()> {
     };
 }
 
-fn get(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> BoxResult<()> {
+fn get(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 1 {
         usage();
         return Ok(());
@@ -66,7 +66,7 @@ fn get(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<Strin
     return Ok(());
 }
 
-fn histogram(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> BoxResult<()> {
+fn histogram(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 0 {
         usage();
         return Ok(());
@@ -139,7 +139,7 @@ fn histogram_len(count: usize) -> usize {
     return (count as f32 + 1.).log2().ceil() as usize;
 }
 
-fn transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> BoxResult<()> {
+fn transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 2 {
         usage();
         return Ok(());
@@ -156,7 +156,7 @@ fn transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<
     return Ok(());
 }
 
-fn bulk_transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> BoxResult<()> {
+fn bulk_transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 2 {
         usage();
         return Ok(());

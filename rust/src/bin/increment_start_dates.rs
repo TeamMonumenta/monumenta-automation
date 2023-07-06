@@ -1,17 +1,16 @@
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+use monumenta::player::Player;
+
+use anyhow;
+use log::warn;
+use simplelog::*;
 
 use std::env;
-use simplelog::*;
-use log::warn;
-
-use monumenta::player::Player;
 
 fn increment_player_start_dates(con: &mut redis::Connection,
                                 domain: &str,
                                 player: &mut Player,
                                 amount: i32,
-                                history: &str) -> BoxResult<()> {
+                                history: &str) -> anyhow::Result<()> {
     player.load_redis_scores(&domain, con)?;
     if let Some(scores) = &mut player.scores {
         for (objective, value) in scores.iter_mut() {
@@ -30,8 +29,7 @@ fn increment_player_start_dates(con: &mut redis::Connection,
     Ok(())
 }
 
-fn main() -> BoxResult<()> {
-
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

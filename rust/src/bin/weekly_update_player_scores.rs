@@ -1,19 +1,17 @@
-#[macro_use] extern crate simple_error;
+use monumenta::player::Player;
 
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
+use anyhow::{self, bail};
 use chrono::prelude::*;
 use rayon::prelude::*;
-use std::env;
-use std::path::Path;
-use std::collections::HashMap;
-use std::collections::HashSet;
 use simplelog::*;
 use uuid::Uuid;
-use std::fs;
 
-use monumenta::player::Player;
+use std::{
+    collections::{HashMap, HashSet},
+    env,
+    fs,
+    path::Path
+};
 
 fn usage() {
     println!("Usage: weekly_update_players path/to/directory");
@@ -93,7 +91,7 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     }
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

@@ -1,14 +1,15 @@
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
-use redis::Commands;
-use std::env;
-use std::collections::HashMap;
-use simplelog::*;
-
 use monumenta::player::Player;
 
-fn main() -> BoxResult<()> {
+use anyhow;
+use redis::Commands;
+use simplelog::*;
+
+use std::{
+    collections::HashMap,
+    env
+};
+
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

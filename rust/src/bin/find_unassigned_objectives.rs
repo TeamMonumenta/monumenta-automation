@@ -1,15 +1,14 @@
-use std::env;
-
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
 use monumenta::scoreboard;
+
+use anyhow;
+
+use std::env;
 
 fn usage() {
     println!("Usage: find_unassigned_objectives <domain>");
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     /* Load all the arguments as datapacks */
     let mut args: Vec<String> = env::args().collect();
 

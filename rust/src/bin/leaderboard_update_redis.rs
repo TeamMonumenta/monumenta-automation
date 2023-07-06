@@ -1,14 +1,12 @@
-#[macro_use] extern crate log;
+use monumenta::player::Player;
 
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
-use std::env;
-use simplelog::*;
+use anyhow;
+use log::warn;
 use redis::Commands;
+use simplelog::*;
 use uuid::Uuid;
 
-use monumenta::player::Player;
+use std::env;
 
 fn usage() {
     println!("Usage: leaderboard_update_redis 'redis://127.0.0.1/' <domain> leaderboards.yaml");
@@ -16,7 +14,7 @@ fn usage() {
 
 fn update_player_leaderboards(uuid: &Uuid, player: &mut Player,
                               leaderboards: &Vec<String>, con: &mut redis::Connection,
-                              domain: &str) -> BoxResult<()> {
+                              domain: &str) -> anyhow::Result<()> {
     player.load_redis_scores(&domain, con)?;
 
     let name: String = con.hget("uuid2name", uuid.to_hyphenated().to_string())?;
@@ -32,7 +30,7 @@ fn update_player_leaderboards(uuid: &Uuid, player: &mut Player,
     Ok(())
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

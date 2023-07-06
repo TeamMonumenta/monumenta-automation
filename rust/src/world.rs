@@ -1,12 +1,13 @@
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+use crate::scoreboard::Scoreboard;
 
-use std::path::Path;
-use std::fs::File;
-use std::collections::HashMap;
+use anyhow::{self, bail};
 use uuid::Uuid;
 
-use crate::scoreboard::Scoreboard;
+use std::{
+    collections::HashMap,
+    fs::File,
+    path::Path
+};
 
 pub struct World {
     basepath: String,
@@ -14,11 +15,11 @@ pub struct World {
 }
 
 impl World {
-    pub fn new(basepath: &str) -> BoxResult<World> {
+    pub fn new(basepath: &str) -> anyhow::Result<World> {
         Ok(World{basepath: basepath.to_string(), scoreboard: None})
     }
 
-    pub fn load_scoreboard(&mut self) -> BoxResult<()> {
+    pub fn load_scoreboard(&mut self) -> anyhow::Result<()> {
         // Load scoreboard only if not already loaded
         if let Some(_) = self.scoreboard {
             return Ok(());
@@ -34,7 +35,7 @@ impl World {
         }
     }
 
-    pub fn get_scoreboard(&self) -> BoxResult<&Scoreboard> {
+    pub fn get_scoreboard(&self) -> anyhow::Result<&Scoreboard> {
         if let Some(scoreboard) = &self.scoreboard {
             Ok(scoreboard)
         } else {
@@ -46,23 +47,23 @@ impl World {
         Path::new(&self.basepath).file_name().unwrap().to_str().unwrap().to_string()
     }
 
-    pub fn get_player_scores(&self, player_name: &str) -> BoxResult<HashMap<String, i32>> {
+    pub fn get_player_scores(&self, player_name: &str) -> anyhow::Result<HashMap<String, i32>> {
         Ok(self.get_scoreboard()?.get_player_scores(player_name))
     }
 
-    pub fn get_player_data_file(&self, uuid: &Uuid) -> BoxResult<File> {
+    pub fn get_player_data_file(&self, uuid: &Uuid) -> anyhow::Result<File> {
         World::get_file_common(&Path::new(&self.basepath).join(format!("playerdata/{}.dat", uuid.to_hyphenated().to_string())))
     }
 
-    pub fn get_player_advancements_file(&self, uuid: &Uuid) -> BoxResult<File> {
+    pub fn get_player_advancements_file(&self, uuid: &Uuid) -> anyhow::Result<File> {
         World::get_file_common(&Path::new(&self.basepath).join(format!("advancements/{}.json", uuid.to_hyphenated().to_string())))
     }
 
-    pub fn get_player_stats_file(&self, uuid: &Uuid) -> BoxResult<File> {
+    pub fn get_player_stats_file(&self, uuid: &Uuid) -> anyhow::Result<File> {
         World::get_file_common(&Path::new(&self.basepath).join(format!("stats/{}.json", uuid.to_hyphenated().to_string())))
     }
 
-    pub fn get_file_common(path: &Path) -> BoxResult<File> {
+    pub fn get_file_common(path: &Path) -> anyhow::Result<File> {
         let strpath = path.to_str().unwrap();
         if !path.is_file() {
             bail!("path {} does not exist or is not a file", strpath);

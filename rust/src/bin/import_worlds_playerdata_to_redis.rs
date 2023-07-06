@@ -1,19 +1,18 @@
-#[macro_use] extern crate simple_error;
-#[macro_use] extern crate log;
-
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
-use std::env;
-use std::collections::HashMap;
-use std::path::Path;
-use uuid::Uuid;
-use simplelog::*;
-
-use monumenta::world::World;
 use monumenta::player::Player;
+use monumenta::world::World;
 
-fn main() -> BoxResult<()> {
+use anyhow::{self, bail};
+use log::warn;
+use simplelog::*;
+use uuid::Uuid;
+
+use std::{
+    collections::HashMap,
+    env,
+    path::Path
+};
+
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

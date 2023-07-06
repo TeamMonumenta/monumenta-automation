@@ -1,14 +1,12 @@
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+use monumenta::player::Player;
 
-use std::env;
-use simplelog::*;
+use anyhow;
 use redis::Commands;
 use redis::RedisError;
+use simplelog::*;
 use uuid::Uuid;
-use std::thread;
 
-use monumenta::player::Player;
+use std::{env, thread};
 
 macro_rules! map(
     { $($key:expr => $value:expr),+ } => {
@@ -22,7 +20,7 @@ macro_rules! map(
      };
 );
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let changes = map!(
         "0x26e" => 4,
         "1n10" => 37,

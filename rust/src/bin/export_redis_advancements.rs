@@ -1,18 +1,19 @@
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
-use std::env;
-use std::path::Path;
-use simplelog::*;
-use std::fs;
-
 use monumenta::player::Player;
+
+use anyhow;
+use simplelog::*;
+
+use std::{
+    env,
+    fs,
+    path::Path
+};
 
 fn usage() {
     println!("Usage: export_redis_advancements 'redis://127.0.0.1/' <domain> path/to/advancements");
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

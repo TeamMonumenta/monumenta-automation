@@ -1,19 +1,19 @@
-#[macro_use] extern crate simple_error;
-#[macro_use] extern crate log;
-#[macro_use] extern crate lazy_static;
+use monumenta::scoreboard::Scoreboard;
+use monumenta::scoreboard::ScoreboardCollection;
 
-use std::env;
-use std::fmt;
-use walkdir::WalkDir;
-use std::fs;
-use std::collections::HashMap;
+use anyhow::{self, bail};
+use lazy_static::lazy_static;
+use log::{info, error, warn};
 use regex::Regex;
 use simplelog::*;
-use monumenta::scoreboard::ScoreboardCollection;
-use monumenta::scoreboard::Scoreboard;
+use walkdir::WalkDir;
 
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+use std::{
+    collections::HashMap,
+    env,
+    fmt,
+    fs
+};
 
 #[derive(PartialEq, Eq, Hash, Clone)]
 enum NamespaceType {
@@ -31,7 +31,7 @@ struct NamespacedKey {
 }
 
 impl NamespacedKey {
-    fn from_path(path: &str) -> BoxResult<NamespacedKey> {
+    fn from_path(path: &str) -> anyhow::Result<NamespacedKey> {
         let path = path.trim_start_matches("/");
 
         if path.starts_with("data") {
@@ -64,7 +64,7 @@ impl NamespacedKey {
         bail!("Failed to convert path {} to NamespacedKey", path);
     }
 
-    fn from_str(path: &str, key_type: NamespaceType) -> BoxResult<NamespacedKey> {
+    fn from_str(path: &str, key_type: NamespaceType) -> anyhow::Result<NamespacedKey> {
         let split: Vec<&str> = path.splitn(2, ":").collect();
         if split.len() == 2 {
             return Ok(NamespacedKey{key_type: key_type, namespace: split[0].to_string(), key: split[1].to_string()});
@@ -233,8 +233,7 @@ fn get_function<'c>(advancement: &'c serde_json::Value) -> Option<NamespacedKey>
     None
 }
 
-fn load_datapack_file(path: String, datapacks_path: &str) -> BoxResult<Option<(NamespacedKey, NamespacedItem)>> {
-
+fn load_datapack_file(path: String, datapacks_path: &str) -> anyhow::Result<Option<(NamespacedKey, NamespacedItem)>> {
     if path.ends_with(".json") | path.ends_with(".mcfunction") {
         let file = fs::read_to_string(&path)?;
         if path.ends_with(".json") {
@@ -262,7 +261,7 @@ fn load_datapack_file(path: String, datapacks_path: &str) -> BoxResult<Option<(N
     Ok(None)
 }
 
-fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> BoxResult<()> {
+fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> anyhow::Result<()> {
     for entry in WalkDir::new(dir).follow_links(true) {
         if let Ok(entry) = entry {
             let path = entry.path().to_str().unwrap();
@@ -283,8 +282,7 @@ fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) ->
     Ok(())
 }
 
-
-fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> BoxResult<()> {
+fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> anyhow::Result<()> {
     for entry in WalkDir::new(dir).follow_links(true) {
         if let Ok(entry) = entry {
             if entry.path().is_file() {
@@ -337,7 +335,7 @@ fn link_quest_file_recursive(path: &str, children: &mut Vec<NamespacedKey>, valu
     }
 }
 
-fn load_commands_file(items: &mut HashMap<NamespacedKey, NamespacedItem>, path: &str) -> BoxResult<()> {
+fn load_commands_file(items: &mut HashMap<NamespacedKey, NamespacedItem>, path: &str) -> anyhow::Result<()> {
     let file = fs::read_to_string(&path)?;
     if let Ok(json) = serde_json::from_str(&file) {
         if let serde_json::value::Value::Array(array) = json {
@@ -491,7 +489,7 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
     }
 }
 
-fn find_unused_scoreboards(scoreboards: &ScoreboardCollection, items: &HashMap<NamespacedKey, NamespacedItem>) -> BoxResult<()> {
+fn find_unused_scoreboards(scoreboards: &ScoreboardCollection, items: &HashMap<NamespacedKey, NamespacedItem>) -> anyhow::Result<()> {
     let mut used_objectives: HashMap<&String, Vec<&NamespacedKey>> = HashMap::new();
 
     for objective in scoreboards.objectives() {
@@ -550,7 +548,7 @@ fn usage() {
     error!("   Where --type is one of {} {} {} {} {}", DATAPACKS_ARG, COMMANDS_ARG, QUESTS_ARG, SCOREBOARDS_ARG, REDIS_SCOREBOARDS_ARG);
 }
 
-fn main() -> BoxResult<()> {
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),

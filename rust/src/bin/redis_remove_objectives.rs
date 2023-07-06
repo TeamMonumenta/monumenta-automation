@@ -1,14 +1,15 @@
-use std::error::Error;
-type BoxResult<T> = Result<T,Box<dyn Error>>;
-
-use std::env;
-use simplelog::*;
-use std::fs::File;
-use std::io::{prelude::*, BufReader};
-
 use monumenta::player::Player;
 
-fn main() -> BoxResult<()> {
+use anyhow;
+use simplelog::*;
+
+use std::{
+    env,
+    fs::File,
+    io::{prelude::*, BufReader}
+};
+
+fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
     match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
         Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),
