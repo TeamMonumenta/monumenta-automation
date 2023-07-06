@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from pathlib import Path
 import sys
 import subprocess
 import tempfile
@@ -38,7 +39,9 @@ def usage():
     applyall - Generates and applies all deployments for this namespace with names matching the regex given by <shard>. Use '.' to match all.
     delete - Generates and then deletes the deployment, stopping shard if it is running
     deleteall - Generates and deletes all deployments for this namespace with names matching the regex given by <shard>. Use '.' to match all.
-    testall - Prints out what shards match the arguments supplied which would be executed by applyall/deleteall (without actually running)
+    test - Tests the config for the specified shard
+    testall - Tests the config for the specified shards. Use '.' to match all.
+    matchall - Prints out what shards match the arguments supplied which would be executed by applyall/deleteall/testall (without actually running)
 ''')
 
 
@@ -94,6 +97,86 @@ def perform_shard_action(action, namespace, shard):
             fp.write(proc.stdout)
             fp.flush()
             subprocess.run(["kubectl", "delete", "-f", fp.name], check=False)
+    elif action == "test":
+        test_shard(namespace, shard)
+
+
+def test_shard(namespace, shard):
+    found_problem = False
+
+    shard_info = shard_config[shard]
+    shard_namespace_info = shard_info[namespace]
+    node = shard_namespace_info["node"]
+
+
+    secrets_dir = Path('.').absolute().parent.parent.parent / 'secrets'
+
+    shard_dir = None
+    if namespace == 'build':
+        with open(secrets_dir / namespace / 'config.yml', 'r', encoding='utf-8-sig') as fp:
+            bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+
+            shard_dir = bot_config["shards"].get(shard, None)
+            if shard_dir is None:
+                print(f"{namespace} {shard}: Path not specified in {namespace} bot secret", file=sys.stderr)
+                found_problem = True
+
+    elif namespace == 'stage':
+        with open(secrets_dir / namespace / node / 'config.yml', 'r', encoding='utf-8-sig') as fp:
+            bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+
+            shard_dir = bot_config["shards"].get(shard, None)
+            if shard_dir is None:
+                print(f"{namespace} {shard}: Path not specified in {namespace} {node} bot secret", file=sys.stderr)
+                found_problem = True
+
+    elif namespace == 'play':
+        queue_name = None
+        with open(secrets_dir / namespace / node / 'config.yml', 'r', encoding='utf-8-sig') as fp:
+            bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+            queue_name = bot_config["rabbitmq"]["name"]
+
+            shard_dir = bot_config["shards"].get(shard, None)
+            if shard_dir is None:
+                print(f"{namespace} {shard}: Path not specified in {namespace} {node} bot secret", file=sys.stderr)
+                found_problem = True
+
+        stage_required = shard.endswith("-1") or not shard[-1].isdigit()
+        stage_found = False
+        for stage_node in node_info:
+            bot_config_path = secrets_dir / 'stage' / stage_node / 'config.yml'
+            if not bot_config_path.is_file():
+                continue
+
+            with open(bot_config_path, 'r', encoding='utf-8-sig') as fp:
+                bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+
+                stage_source = bot_config.get("stage_source", {}).get(node, {})
+                if shard not in stage_source.get("shards", []):
+                    continue
+
+                stage_found = True
+
+                if stage_source.get("queue_name", None) != queue_name or queue_name is None:
+                    print(f"{namespace} {shard}: RabbitMQ queue name set incorrectly for play bot ({node}) or stage bot ({stage_node})", file=sys.stderr)
+                    found_problem = True
+
+        if stage_required and not stage_found:
+            print(f"{namespace} {shard}: Not listed as a stage source", file=sys.stderr)
+            found_problem = True
+
+
+    if shard_dir is not None:
+        shard_dir = Path(shard_dir)
+        if not shard_dir.is_dir():
+            print(f"{namespace} {shard}: Path not found: {shard_dir}", file=sys.stderr)
+            found_problem = True
+
+
+    if found_problem:
+        sys.exit("One or more config errors were found")
+
+    print(f"{namespace} {shard}: OK")
 
 
 def get_shard_deployment(namespace, shard):
@@ -353,16 +436,19 @@ if len(sys.argv) != 4:
 namespace = sys.argv[2]
 shard = sys.argv[3]
 
-if action in ["print", "apply", "delete"]:
+if action in ["print", "apply", "delete", "test"]:
     perform_shard_action(action, namespace, shard)
-elif action in ["applyall", "deleteall", "testall"]:
+elif action in ["applyall", "deleteall", "testall", "matchall"]:
     # Shard is a regex for "all" operations
-    shards = [s for s in shard_config if ((namespace in shard_config[s]) and re.match(shard, s))]
+    shard_re = re.compile(shard)
+    shards = [s for s in shard_config if ((namespace in shard_config[s]) and shard_re.match(s))]
     for s in shards:
         if action == "applyall":
             perform_shard_action("apply", namespace, s)
         elif action == "deleteall":
             perform_shard_action("delete", namespace, s)
+        elif action == "testall":
+            test_shard(namespace, s)
         else:
             print(s)
 
