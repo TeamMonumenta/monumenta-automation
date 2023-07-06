@@ -12,7 +12,17 @@ with open("shard_deployment_tool_config.yaml", "r", encoding="utf-8-sig") as fp:
 
 shard_config = tool_config["shard_config"]
 namespace_defaults = tool_config["namespace_defaults"]
-abbrev_node_to_full = tool_config["abbrev_node_to_full"]
+node_info = tool_config["node_info"]
+
+# "node" uses abbreviated node names. This is the map back to full names:
+abbrev_node_to_full = {name: node["full_name"] for name, node in node_info.items()}
+
+# Node memory totals
+for node in node_info.values():
+    total_huge_page_size_GB = node["huge_pages"] * node["huge_page_size_kB"] / 1024.0 / 1024.0
+    total_non_huge_size_GB = node["mem_total_kB"] / 1024.0 / 1024.0 - total_huge_page_size_GB
+    node["total_huge_page_size_GB"] = total_huge_page_size_GB
+    node["total_non_huge_size_GB"] = total_non_huge_size_GB
 
 
 RE_NUMBER = re.compile('''[0-9]+''')
@@ -31,7 +41,8 @@ def usage():
     testall - Prints out what shards match the arguments supplied which would be executed by applyall/deleteall (without actually running)
 ''')
 
-def perform_shard_action(action, namespace, shard):
+
+def run_helm_for_shard(namespace, shard):
     if shard not in shard_config:
         sys.exit(f"Unable to find shard {shard} in shard_config, must be one of [{','.join(shard_config.keys())}]")
 
@@ -64,6 +75,12 @@ def perform_shard_action(action, namespace, shard):
     # Run helm to generate the new shard template
     proc = subprocess.run(["helm", "template", ".", "--set", ",".join(vals)], stdout=subprocess.PIPE, check=False)
 
+    return proc
+
+
+def perform_shard_action(action, namespace, shard):
+    proc = run_helm_for_shard(namespace, shard)
+
     # Handle whatever action the user specified
     if action == "print":
         print(proc.stdout.decode('utf-8'))
@@ -77,6 +94,75 @@ def perform_shard_action(action, namespace, shard):
             fp.write(proc.stdout)
             fp.flush()
             subprocess.run(["kubectl", "delete", "-f", fp.name], check=False)
+
+
+def get_shard_deployment(namespace, shard):
+    proc = run_helm_for_shard(namespace, shard)
+
+    yaml_data = []
+    document_data = ''
+    for line in proc.stdout.decode('utf-8').splitlines(keepends=True):
+        if line.rstrip().startswith('---'):
+            if len(document_data) != 0:
+                yaml_data.append(yaml.load(document_data, Loader=yaml.FullLoader))
+                document_data = ''
+            continue
+            
+        document_data += line
+
+    yaml_data.append(yaml.load(document_data, Loader=yaml.FullLoader))
+
+    return yaml_data
+
+
+def get_deployment_hugepage_memory_limit_GB(deployment):
+    result = 0
+    for document in deployment:
+        try:
+            for container in document["spec"]["template"]["spec"]["containers"]:
+                result += parse_data_size_GB(container["resources"]["limits"]["hugepages-2Mi"])
+        except KeyError:
+            pass
+    return result
+
+
+def get_deployment_normal_memory_limit_GB(deployment):
+    result = 0
+    for document in deployment:
+        try:
+            for container in document["spec"]["template"]["spec"]["containers"]:
+                result += parse_data_size_GB(container["resources"]["limits"]["memory"])
+        except KeyError:
+            pass
+    return result
+
+
+def parse_data_size_GB(data_size):
+    if isinstance(data_size, (int, float)):
+        return data_size
+
+    data_size = data_size.lower()
+    if data_size.endswith('b'):
+        data_size = data_size[:-1]
+    if data_size.endswith('i'):
+        data_size = data_size[:-1]
+
+    data_size = data_size.strip()
+
+    multiplier = 1.0
+    if data_size.endswith('k'):
+        multiplier *= 1024.0 * 1024.0
+        data_size = data_size[:-1]
+    elif data_size.endswith('m'):
+        multiplier *= 1024.0
+        data_size = data_size[:-1]
+    elif data_size.endswith('g'):
+        data_size = data_size[:-1]
+    elif data_size.endswith('t'):
+        multiplier /= 1024.0
+        data_size = data_size[:-1]
+
+    return float(data_size.strip()) / multiplier
 
 
 def natural_sort(key):
@@ -111,83 +197,164 @@ def natural_sort(key):
 
 
 def print_memory_usage():
-    node_memory_usages = {}
-    namespace_memory_usages = {}
+    node_normal_usages = {}
+    node_hugepage_usages = {}
+    namespace_normal_usages = {}
+    namespace_hugepage_usages = {}
     namespaces = set()
-    for shard in shard_config.values():
+    for shard_id, shard in shard_config.items():
         for namespace, namespace_info in shard.items():
-            if "node" not in namespace_info:
-                continue
-            if "memMB" not in namespace_info and "memGB" not in namespace_info:
-                continue
+            deployment = None
+            try:
+                deployment = get_shard_deployment(namespace, shard_id)
+            except Exception as ex:
+                print(f"Failed to load deployment for {namespace} {shard_id}", file=sys.stderr)
+                raise ex
 
             namespaces.add(namespace)
+            normal_GB = get_deployment_normal_memory_limit_GB(deployment)
+            hugepage_GB = get_deployment_hugepage_memory_limit_GB(deployment)
 
             node = namespace_info["node"]
-            memGB = 0
-            if "memMB" in namespace_info:
-                memGB = namespace_info["memMB"] / 1024.0
-            else:
-                memGB = float(namespace_info["memGB"])
+            if node not in node_hugepage_usages:
+                node_normal_usages[node] = 0.0
+                node_hugepage_usages[node] = 0.0
+            node_normal_usages[node] += normal_GB
+            node_hugepage_usages[node] += hugepage_GB
 
-            if node not in node_memory_usages:
-                node_memory_usages[node] = 0.0
-            node_memory_usages[node] += memGB
+            if namespace not in namespace_hugepage_usages:
+                namespace_normal_usages[namespace] = {}
+                namespace_hugepage_usages[namespace] = {}
+            if node not in namespace_hugepage_usages[namespace]:
+                namespace_normal_usages[namespace][node] = 0.0
+                namespace_hugepage_usages[namespace][node] = 0.0
+            namespace_normal_usages[namespace][node] += normal_GB
+            namespace_hugepage_usages[namespace][node] += hugepage_GB
 
-            if namespace not in namespace_memory_usages:
-                namespace_memory_usages[namespace] = {}
-            if node not in namespace_memory_usages[namespace]:
-                namespace_memory_usages[namespace][node] = 0.0
-            namespace_memory_usages[namespace][node] += memGB
+    header_width = max(len('Hugepages:'), len('Normal:'), len('Total:'), len('System:'), len('Remaining:'), *[len(namespace) for namespace in namespaces])
+    column_width = max(8 + len(' GB'), *[len(node) for node in node_hugepage_usages])
 
-    header_width = max(len('Total:'), *[len(namespace) for namespace in namespaces])
-    column_width = max(len(' '*7 + ' GB'), *[len(node) for node in node_memory_usages])
-
-    print(' ' * header_width, end='')
-    for node in sorted(node_memory_usages.keys(), key=natural_sort):
+    header = 'Normal:'
+    print(f'{header:<{header_width}}', end='')
+    for node in sorted(node_normal_usages.keys(), key=natural_sort):
         print(f' │ {node:<{column_width}}', end='')
     print('')
 
     print('─' * header_width, end='')
-    for node in sorted(node_memory_usages.keys(), key=natural_sort):
+    for node in sorted(node_normal_usages.keys(), key=natural_sort):
         print('─┼─' + '─'*column_width, end='')
     print('')
 
     for namespace in sorted(namespaces, key=natural_sort):
-        namespace_info = namespace_memory_usages[namespace]
+        namespace_info = namespace_normal_usages[namespace]
         print(f'{namespace:<{header_width}}', end='')
-        for node in sorted(node_memory_usages.keys(), key=natural_sort):
+        for node in sorted(node_normal_usages.keys(), key=natural_sort):
             memGB = namespace_info.get(node, 0.0)
-            preformatted_entry = f'{memGB:7.2f} GB'
+            preformatted_entry = f'{memGB:8.2f} GB'
             print(f' │ {preformatted_entry:>{column_width}}', end='')
         print('')
 
     print('─' * header_width, end='')
-    for node in sorted(node_memory_usages.keys(), key=natural_sort):
+    for node in sorted(node_normal_usages.keys(), key=natural_sort):
         print('─┼─' + '─'*column_width, end='')
     print('')
 
     header = 'Total:'
     print(f'{header:<{header_width}}', end='')
-    for node in sorted(node_memory_usages.keys(), key=natural_sort):
-        memGB = node_memory_usages[node]
-        preformatted_entry = f'{memGB:7.2f} GB'
+    for node in sorted(node_normal_usages.keys(), key=natural_sort):
+        memGB = node_normal_usages[node]
+        preformatted_entry = f'{memGB:8.2f} GB'
+        print(f' │ {preformatted_entry:>{column_width}}', end='')
+    print('')
+
+    header = 'System:'
+    print(f'{header:<{header_width}}', end='')
+    for node in sorted(node_normal_usages.keys(), key=natural_sort):
+        memGB = node_info[node]["total_non_huge_size_GB"]
+        preformatted_entry = f'{memGB:8.2f} GB'
+        print(f' │ {preformatted_entry:>{column_width}}', end='')
+    print('')
+
+    header = 'Remaining:'
+    print(f'{header:<{header_width}}', end='')
+    for node in sorted(node_normal_usages.keys(), key=natural_sort):
+        memGB = node_info[node]["total_non_huge_size_GB"] - node_normal_usages[node]
+        preformatted_entry = f'{memGB:8.2f} GB'
+        print(f' │ {preformatted_entry:>{column_width}}', end='')
+    print('')
+
+    print('─' * header_width, end='')
+    for node in sorted(node_normal_usages.keys(), key=natural_sort):
+        print('─┼─' + '─'*column_width, end='')
+    print('')
+
+    header = 'Hugepages:'
+    print(f'{header:<{header_width}}', end='')
+    for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
+        print(f' │ {node:<{column_width}}', end='')
+    print('')
+
+    print('─' * header_width, end='')
+    for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
+        print('─┼─' + '─'*column_width, end='')
+    print('')
+
+    for namespace in sorted(namespaces, key=natural_sort):
+        namespace_info = namespace_hugepage_usages[namespace]
+        print(f'{namespace:<{header_width}}', end='')
+        for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
+            memGB = namespace_info.get(node, 0.0)
+            preformatted_entry = f'{memGB:8.2f} GB'
+            print(f' │ {preformatted_entry:>{column_width}}', end='')
+        print('')
+
+    print('─' * header_width, end='')
+    for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
+        print('─┼─' + '─'*column_width, end='')
+    print('')
+
+    header = 'Total:'
+    print(f'{header:<{header_width}}', end='')
+    for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
+        memGB = node_hugepage_usages[node]
+        preformatted_entry = f'{memGB:8.2f} GB'
+        print(f' │ {preformatted_entry:>{column_width}}', end='')
+    print('')
+
+    header = 'System:'
+    print(f'{header:<{header_width}}', end='')
+    for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
+        memGB = node_info[node]["total_huge_page_size_GB"]
+        preformatted_entry = f'{memGB:8.2f} GB'
+        print(f' │ {preformatted_entry:>{column_width}}', end='')
+    print('')
+
+    header = 'Remaining:'
+    print(f'{header:<{header_width}}', end='')
+    for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
+        memGB = node_info[node]["total_huge_page_size_GB"] - node_hugepage_usages[node]
+        preformatted_entry = f'{memGB:8.2f} GB'
         print(f' │ {preformatted_entry:>{column_width}}', end='')
     print('')
 
 
+if len(sys.argv) == 1:
+    usage()
+
+if len(sys.argv) >= 2:
+    action = sys.argv[1]
+    if action == "memoryusage":
+        print_memory_usage()
+        sys.exit()
+
 if len(sys.argv) != 4:
     usage()
 
-action = sys.argv[1]
 namespace = sys.argv[2]
 shard = sys.argv[3]
 
-if action in ["print", "apply", "delete", "memoryusage"]:
-    if action == "memoryusage":
-        print_memory_usage()
-    else:
-        perform_shard_action(action, namespace, shard)
+if action in ["print", "apply", "delete"]:
+    perform_shard_action(action, namespace, shard)
 elif action in ["applyall", "deleteall", "testall"]:
     # Shard is a regex for "all" operations
     shards = [s for s in shard_config if ((namespace in shard_config[s]) and re.match(shard, s))]

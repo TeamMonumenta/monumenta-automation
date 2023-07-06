@@ -234,13 +234,13 @@
     "clash": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "false" },
 }
 
-# "node" uses abbreviated node names. This is the map back to full names:
-"abbrev_node_to_full": {
-    "m8": "monumenta-8",
-    "m11": "monumenta-11",
-    "m12": "monumenta-12",
-    "m13": "monumenta-13",
-    "m14": "monumenta-14",
-    "m15": "monumenta-15",
+# Memory values copied directly from /proc/meminfo
+"node_info": {
+    "m8":  { "full_name": "monumenta-8",  "mem_total_kB": 131650288, "huge_pages": 43000, "huge_page_size_kB": 2048 },
+    "m11": { "full_name": "monumenta-11", "mem_total_kB": 131650288, "huge_pages": 43000, "huge_page_size_kB": 2048 },
+    "m12": { "full_name": "monumenta-12", "mem_total_kB": 131650292, "huge_pages": 43000, "huge_page_size_kB": 2048 },
+    "m13": { "full_name": "monumenta-13", "mem_total_kB": 131841792, "huge_pages": 43000, "huge_page_size_kB": 2048 },
+    "m14": { "full_name": "monumenta-14", "mem_total_kB": 131799556, "huge_pages": 43000, "huge_page_size_kB": 2048 },
+    "m15": { "full_name": "monumenta-15", "mem_total_kB": 131805108, "huge_pages": 43000, "huge_page_size_kB": 2048 },
 }
 
