@@ -66,7 +66,8 @@ def run_helm_for_shard(namespace, shard):
     # Set additional required values from the context
     output_conf["name"] = shard
     output_conf["namespace"] = namespace
-    output_conf["nodeFull"] = abbrev_node_to_full[shard_namespaced["node"]]
+    node = shard_namespaced["node"]
+    output_conf["nodeFull"] = abbrev_node_to_full.get(node, f"monumenta-bad-lookup-{node}")
     if "memGB" in output_conf:
         output_conf["memMB"] = output_conf["memGB"] * 1024
 
@@ -113,57 +114,75 @@ def test_shard(namespace, shard):
 
     shard_dir = None
     if namespace == 'build':
-        with open(secrets_dir / namespace / 'config.yml', 'r', encoding='utf-8-sig') as fp:
-            bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+        bot_config_path = secrets_dir / namespace / node / 'config.yml'
+        if not bot_config_path.exists():
+            print(f"{namespace} {shard}: No config for {namespace} {node} bot secret", file=sys.stderr)
+            found_problem = True
 
-            shard_dir = bot_config["shards"].get(shard, None)
-            if shard_dir is None:
-                print(f"{namespace} {shard}: Path not specified in {namespace} bot secret", file=sys.stderr)
-                found_problem = True
-
-    elif namespace == 'stage':
-        with open(secrets_dir / namespace / node / 'config.yml', 'r', encoding='utf-8-sig') as fp:
-            bot_config = yaml.load(fp, Loader=yaml.FullLoader)
-
-            shard_dir = bot_config["shards"].get(shard, None)
-            if shard_dir is None:
-                print(f"{namespace} {shard}: Path not specified in {namespace} {node} bot secret", file=sys.stderr)
-                found_problem = True
-
-    elif namespace == 'play':
-        queue_name = None
-        with open(secrets_dir / namespace / node / 'config.yml', 'r', encoding='utf-8-sig') as fp:
-            bot_config = yaml.load(fp, Loader=yaml.FullLoader)
-            queue_name = bot_config["rabbitmq"]["name"]
-
-            shard_dir = bot_config["shards"].get(shard, None)
-            if shard_dir is None:
-                print(f"{namespace} {shard}: Path not specified in {namespace} {node} bot secret", file=sys.stderr)
-                found_problem = True
-
-        stage_required = shard.endswith("-1") or not shard[-1].isdigit()
-        stage_found = False
-        for stage_node in node_info:
-            bot_config_path = secrets_dir / 'stage' / stage_node / 'config.yml'
-            if not bot_config_path.is_file():
-                continue
-
+        else:
             with open(bot_config_path, 'r', encoding='utf-8-sig') as fp:
                 bot_config = yaml.load(fp, Loader=yaml.FullLoader)
 
-                stage_source = bot_config.get("stage_source", {}).get(node, {})
-                if shard not in stage_source.get("shards", []):
-                    continue
-
-                stage_found = True
-
-                if stage_source.get("queue_name", None) != queue_name or queue_name is None:
-                    print(f"{namespace} {shard}: RabbitMQ queue name set incorrectly for play bot ({node}) or stage bot ({stage_node})", file=sys.stderr)
+                shard_dir = bot_config["shards"].get(shard, None)
+                if shard_dir is None:
+                    print(f"{namespace} {shard}: Path not specified in {namespace} bot secret", file=sys.stderr)
                     found_problem = True
 
-        if stage_required and not stage_found:
-            print(f"{namespace} {shard}: Not listed as a stage source", file=sys.stderr)
+    elif namespace == 'stage':
+        bot_config_path = secrets_dir / namespace / node / 'config.yml'
+        if not bot_config_path.exists():
+            print(f"{namespace} {shard}: No config for {namespace} {node} bot secret", file=sys.stderr)
             found_problem = True
+
+        else:
+            with open(bot_config_path, 'r', encoding='utf-8-sig') as fp:
+                bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+
+                shard_dir = bot_config["shards"].get(shard, None)
+                if shard_dir is None:
+                    print(f"{namespace} {shard}: Path not specified in {namespace} {node} bot secret", file=sys.stderr)
+                    found_problem = True
+
+    elif namespace == 'play':
+        bot_config_path = secrets_dir / namespace / node / 'config.yml'
+        if not bot_config_path.exists():
+            print(f"{namespace} {shard}: No config for {namespace} {node} bot secret", file=sys.stderr)
+            found_problem = True
+
+        else:
+            queue_name = None
+            with open(bot_config_path, 'r', encoding='utf-8-sig') as fp:
+                bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+                queue_name = bot_config["rabbitmq"]["name"]
+
+                shard_dir = bot_config["shards"].get(shard, None)
+                if shard_dir is None:
+                    print(f"{namespace} {shard}: Path not specified in {namespace} {node} bot secret", file=sys.stderr)
+                    found_problem = True
+
+            stage_required = shard.endswith("-1") or not shard[-1].isdigit()
+            stage_found = False
+            for stage_node in node_info:
+                bot_config_path = secrets_dir / 'stage' / stage_node / 'config.yml'
+                if not bot_config_path.is_file():
+                    continue
+
+                with open(bot_config_path, 'r', encoding='utf-8-sig') as fp:
+                    bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+
+                    stage_source = bot_config.get("stage_source", {}).get(node, {})
+                    if shard not in stage_source.get("shards", []):
+                        continue
+
+                    stage_found = True
+
+                    if stage_source.get("queue_name", None) != queue_name or queue_name is None:
+                        print(f"{namespace} {shard}: RabbitMQ queue name set incorrectly for play bot ({node}) or stage bot ({stage_node})", file=sys.stderr)
+                        found_problem = True
+
+            if stage_required and not stage_found:
+                print(f"{namespace} {shard}: Not listed as a stage source", file=sys.stderr)
+                found_problem = True
 
 
     if shard_dir is not None:
@@ -353,7 +372,7 @@ def print_memory_usage():
     header = 'System:'
     print(f'{header:<{header_width}}', end='')
     for node in sorted(node_normal_usages.keys(), key=natural_sort):
-        memGB = node_info[node]["total_non_huge_size_GB"]
+        memGB = node_info.get(node, {}).get("total_non_huge_size_GB", 0.0)
         preformatted_entry = f'{memGB:8.2f} GB'
         print(f' │ {preformatted_entry:>{column_width}}', end='')
     print('')
@@ -361,7 +380,7 @@ def print_memory_usage():
     header = 'Remaining:'
     print(f'{header:<{header_width}}', end='')
     for node in sorted(node_normal_usages.keys(), key=natural_sort):
-        memGB = node_info[node]["total_non_huge_size_GB"] - node_normal_usages[node]
+        memGB = node_info.get(node, {}).get("total_non_huge_size_GB", 0.0) - node_normal_usages[node]
         preformatted_entry = f'{memGB:8.2f} GB'
         print(f' │ {preformatted_entry:>{column_width}}', end='')
     print('')
@@ -407,7 +426,7 @@ def print_memory_usage():
     header = 'System:'
     print(f'{header:<{header_width}}', end='')
     for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
-        memGB = node_info[node]["total_huge_page_size_GB"]
+        memGB = node_info.get(node, {}).get("total_huge_page_size_GB", 0.0)
         preformatted_entry = f'{memGB:8.2f} GB'
         print(f' │ {preformatted_entry:>{column_width}}', end='')
     print('')
@@ -415,7 +434,7 @@ def print_memory_usage():
     header = 'Remaining:'
     print(f'{header:<{header_width}}', end='')
     for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
-        memGB = node_info[node]["total_huge_page_size_GB"] - node_hugepage_usages[node]
+        memGB = node_info.get(node, {}).get("total_huge_page_size_GB", 0.0) - node_hugepage_usages[node]
         preformatted_entry = f'{memGB:8.2f} GB'
         print(f' │ {preformatted_entry:>{column_width}}', end='')
     print('')
