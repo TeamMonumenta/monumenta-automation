@@ -3,11 +3,7 @@ use monumenta::player::Player;
 use anyhow;
 use simplelog::*;
 
-use std::{
-    env,
-    fs,
-    path::Path
-};
+use std::{env, fs, path::Path};
 
 fn usage() {
     println!("Usage: export_redis_advancements 'redis://127.0.0.1/' <domain> path/to/advancements");
@@ -42,14 +38,16 @@ fn main() -> anyhow::Result<()> {
     }
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     println!("Exporting advancements...");
     // Iterate while at the same time removing the elements from the returned map
     Player::get_redis_players(&domain, &mut con)?.retain(|uuid, player| {
         let uuidstr = uuid.to_hyphenated().to_string();
         player.load_redis_advancements(&domain, &mut con).unwrap();
-        player.save_file_advancements(basedir.join(format!("{}.json", uuidstr)).to_str().unwrap()).unwrap();
+        player
+            .save_file_advancements(basedir.join(format!("{}.json", uuidstr)).to_str().unwrap())
+            .unwrap();
         drop(player);
         false
     });

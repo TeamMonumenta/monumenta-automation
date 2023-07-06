@@ -34,7 +34,7 @@ fn main() -> anyhow::Result<()> {
     let history = args.remove(0);
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     println!("Loading {}", playername);
     let uuid_str: String = con.hget("name2uuid", playername.to_string())?;

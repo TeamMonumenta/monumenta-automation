@@ -25,7 +25,7 @@ fn main() -> anyhow::Result<()> {
 
     let redis_uri = args.remove(0);
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     let domain = args.remove(0);
     let inputname = args.remove(0);
@@ -56,12 +56,23 @@ fn main() -> anyhow::Result<()> {
 
     // Save the original player to the backup directory
     if let Err(err) = origplayer.save_dir(&backupdirstr) {
-        bail!("Failed to save player {} domain {} to backup directory {}: {}", inputname, domain, backupdirstr, err);
+        bail!(
+            "Failed to save player {} domain {} to backup directory {}: {}",
+            inputname,
+            domain,
+            backupdirstr,
+            err
+        );
     }
 
     // Save the rollback player to redis
     if let Err(err) = rollbackplayer.save_redis(&domain, &mut con) {
-        bail!("Failed to save player {} domain {} to redis: {}", inputname, domain, err);
+        bail!(
+            "Failed to save player {} domain {} to redis: {}",
+            inputname,
+            domain,
+            err
+        );
     }
 
     Ok(())
