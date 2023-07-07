@@ -52,7 +52,7 @@
         "play" : { "node": "m14", "memGB": 5, },
     },
     "isles-3": {
-        "play" : { "node": "m15", "memGB": 5, },
+        "play" : { "node": "m11", "memGB": 5, },
     },
 
     # R3
@@ -61,15 +61,13 @@
         "build": { "node": "m12", "memGB": 3   , },
         "stage": { "node": "m12", "memGB": 3   , },
     },
-    "ring-2":  { "play" : { "node": "m15", "memGB": 7, }, },
+    "ring-2":  { "play" : { "node": "m13", "memGB": 7, }, },
     "ring-3":  { "play" : { "node": "m11", "memGB": 7, }, },
     "ring-4":  { "play" : { "node": "m11", "memGB": 7, }, },
     "ring-5":  { "play" : { "node": "m8" , "memGB": 7, }, },
     "ring-6":  { "play" : { "node": "m8" , "memGB": 7, }, },
     "ring-7":  { "play" : { "node": "m14", "memGB": 7, }, },
-    "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
-    "ring-9":  { "play" : { "node": "m15", "memGB": 7, }, },
-    "ring-10":  { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-8":  { "play" : { "node": "m14", "memGB": 7, }, },
 
     # Plots
     "plots": {
@@ -90,7 +88,7 @@
 
     # Dungeons
     "cyan": {
-        "play" : { "node": "m15", "memGB": 3   , },
+        "play" : { "node": "m11", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "depths": {
@@ -98,8 +96,9 @@
         "stage": { "node": "m12", "memMB": 1536, },
         "clash": { "node": "m12", "memMB": 1536, },
     },
+    "depths-2": { "play" : { "node": "m11" , "memGB": 3, }, },
     "forum": {
-        "play" : { "node": "m15", "memGB": 4   , },
+        "play" : { "node": "m14", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 2048, },
     },
     "gray": {
@@ -147,7 +146,7 @@
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "rush": {
-        "play" : { "node": "m15", "memGB": 3   , },
+        "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "shiftingcity": {
@@ -155,7 +154,7 @@
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "teal": {
-        "play" : { "node": "m15" , "memGB": 3   , },
+        "play" : { "node": "m14" , "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "tutorial": {
@@ -170,43 +169,26 @@
         "play" : { "node": "m13", "memGB": 5,    },
         "stage": { "node": "m12", "memMB": 1536, },
     },
-    "willows-2": {
-        "play" : { "node": "m14", "memGB": 5   , },
-    },
-    "willows-3": {
-        "play" : { "node": "m14", "memGB": 5   , },
-    },
     "yellow": {
         "play" : { "node": "m14", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
-    },
-    "yellow-2": {
-        "play" : { "node": "m14", "memGB": 5   , },
-    },
-    "yellow-3": {
-        "play" : { "node": "m15", "memGB": 5   , },
     },
 
     "gallery": {
         "play" : { "node": "m8", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
-    "gallery-2": { "play" : { "node": "m8", "memGB": 4, }, },
 
     "blue": {
         "play" : { "node": "m14", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "blue-2": { "play" : { "node": "m8" , "memGB": 5, }, },
-    "blue-3": { "play" : { "node": "m15", "memGB": 5, }, },
-    "blue-4": { "play" : { "node": "m11", "memGB": 5, }, },
 
     "brown": {
-        "play" : { "node": "m15", "memGB": 5   , },
+        "play" : { "node": "m11", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
     },
-    "brown-2":  { "play" : { "node": "m15", "memGB": 5, }, },
-    "brown-3":  { "play" : { "node": "m11", "memGB": 5, }, },
 
     "portal": {
         "play" : { "node": "m11", "memGB": 6   , },
@@ -223,7 +205,6 @@
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "skt-2": { "play" : { "node": "m13", "memGB": 4, }, },
-    "skt-3": { "play" : { "node": "m13", "memGB": 4, }, },
 }
 
 # Defaults for each namespace
@@ -236,11 +217,10 @@
 
 # Memory values copied directly from /proc/meminfo
 "node_info": {
-    "m8":  { "full_name": "monumenta-8",  "mem_total_kB": 131650288, "huge_pages": 43000, "huge_page_size_kB": 2048 },
-    "m11": { "full_name": "monumenta-11", "mem_total_kB": 131650288, "huge_pages": 43000, "huge_page_size_kB": 2048 },
+    "m8":  { "full_name": "monumenta-8",  "mem_total_kB": 131650288, "huge_pages": 42000, "huge_page_size_kB": 2048 },
+    "m11": { "full_name": "monumenta-11", "mem_total_kB": 131650288, "huge_pages": 46000, "huge_page_size_kB": 2048 },
     "m12": { "full_name": "monumenta-12", "mem_total_kB": 131650292, "huge_pages": 43000, "huge_page_size_kB": 2048 },
-    "m13": { "full_name": "monumenta-13", "mem_total_kB": 131841792, "huge_pages": 43000, "huge_page_size_kB": 2048 },
-    "m14": { "full_name": "monumenta-14", "mem_total_kB": 131799556, "huge_pages": 43000, "huge_page_size_kB": 2048 },
-    "m15": { "full_name": "monumenta-15", "mem_total_kB": 131805108, "huge_pages": 43000, "huge_page_size_kB": 2048 },
+    "m13": { "full_name": "monumenta-13", "mem_total_kB": 131841792, "huge_pages": 48000, "huge_page_size_kB": 2048 },
+    "m14": { "full_name": "monumenta-14", "mem_total_kB": 131799556, "huge_pages": 48000, "huge_page_size_kB": 2048 },
 }
 
