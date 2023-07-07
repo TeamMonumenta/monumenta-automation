@@ -711,6 +711,7 @@ if __name__ == '__main__':
         "gallery-2": "gallery",
         "skt-2": "skt",
         "skt-3": "skt",
+        "depths-2": "depths",
     }
 
     for key in copied_shard_config:
