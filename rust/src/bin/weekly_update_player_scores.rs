@@ -65,155 +65,29 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     if let Some(scores) = &mut player.scores {
         /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D0StartDate",
-            28,
-            &["D0Access", "D0Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D1StartDate",
-            28,
-            &["D1Access", "D1Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D2StartDate",
-            28,
-            &["D2Access", "D2Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D3StartDate",
-            28,
-            &["D3Access", "D3Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D4StartDate",
-            28,
-            &["D4Access", "D4Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D5StartDate",
-            28,
-            &["D5Access", "D5Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D6StartDate",
-            28,
-            &["D6Access", "D6Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D7StartDate",
-            28,
-            &["D7Access", "D7Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D8StartDate",
-            28,
-            &["D8Access", "D8Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D9StartDate",
-            28,
-            &["D9Access", "D9Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D10StartDate",
-            28,
-            &["D10Access", "D10Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D11StartDate",
-            28,
-            &["D11Access", "D11Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D12StartDate",
-            28,
-            &["D12Access", "D12Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "D13StartDate",
-            28,
-            &["D13Access", "D13Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "DTLStartDate",
-            28,
-            &["DTLAccess", "DTLFinished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "DMRStartDate",
-            28,
-            &["DCAccess", "DCFinished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "DBWStartDate",
-            28,
-            &["DB1Access", "DB1Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "DCSStartDate",
-            28,
-            &["DRL2Access", "DRL2Finished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "DFFStartDate",
-            28,
-            &["DFFAccess", "DFFFinished"],
-        );
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "DSKTStartDate",
-            14,
-            &["DSKTAccess", "DSKTChests"],
-        );
+        update_instance_scores(scores, days_since_epoch, "D0StartDate", 28, &["D0Access", "D0Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D1StartDate", 28, &["D1Access", "D1Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D2StartDate", 28, &["D2Access", "D2Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D3StartDate", 28, &["D3Access", "D3Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D4StartDate", 28, &["D4Access", "D4Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D5StartDate", 28, &["D5Access", "D5Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D6StartDate", 28, &["D6Access", "D6Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D7StartDate", 28, &["D7Access", "D7Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D8StartDate", 28, &["D8Access", "D8Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D9StartDate", 28, &["D9Access", "D9Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D10StartDate", 28, &["D10Access", "D10Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D11StartDate", 28, &["D11Access", "D11Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D12StartDate", 28, &["D12Access", "D12Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D13StartDate", 28, &["D13Access", "D13Finished"]);
+        update_instance_scores(scores, days_since_epoch, "DTLStartDate", 28, &["DTLAccess", "DTLFinished"]);
+        update_instance_scores(scores, days_since_epoch, "DMRStartDate", 28, &["DCAccess", "DCFinished"]);
+        update_instance_scores(scores, days_since_epoch, "DBWStartDate", 28, &["DB1Access", "DB1Finished"]);
+        update_instance_scores(scores, days_since_epoch, "DCSStartDate", 28, &["DRL2Access", "DRL2Finished"]);
+        update_instance_scores(scores, days_since_epoch, "DFFStartDate", 28, &["DFFAccess", "DFFFinished"]);
+        update_instance_scores(scores, days_since_epoch, "DSKTStartDate", 14, &["DSKTAccess", "DSKTChests"]);
 
         /* DelveDungeon score also resets as if it was a dungeon score */
-        update_instance_scores(
-            scores,
-            days_since_epoch,
-            "DelveStartDate",
-            28,
-            &["DelveDungeon"],
-        );
+        update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
 
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
