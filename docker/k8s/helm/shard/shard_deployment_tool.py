@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+import json
 import sys
 import subprocess
 import tempfile
@@ -35,6 +36,7 @@ def usage():
 <action> can be one of these:
     print - Generates the YAML deployment and prints it out
     memoryusage - Displays the memory usage on each node
+    exportmemoryjson - Generates JSON for the memory usage of each node and prints it out
     apply - Generates and applies the deployment, possibly creating or restarting the existing shard
     applyall - Generates and applies all deployments for this namespace with names matching the regex given by <shard>. Use '.' to match all.
     delete - Generates and then deletes the deployment, stopping shard if it is running
@@ -440,6 +442,53 @@ def print_memory_usage():
     print('')
 
 
+def export_memory_to_json():
+    namespaces = set()
+    nodes = {}
+    for shard_id, shard in shard_config.items():
+        for namespace, namespace_info in shard.items():
+            deployment = None
+            try:
+                deployment = get_shard_deployment(namespace, shard_id)
+            except Exception as ex:
+                print(f"Failed to load deployment for {namespace} {shard_id}", file=sys.stderr)
+                raise ex
+
+            node = namespace_info["node"]
+            namespaces.add(namespace)
+            shard_json = {
+                "namespace": namespace,
+                "shard": shard_id,
+                "normal_GB": get_deployment_normal_memory_limit_GB(deployment),
+                "hugepage_GB": get_deployment_hugepage_memory_limit_GB(deployment),
+            }
+
+            if node not in nodes:
+                nodes[node] = {
+                    "max_memory_GB": 0.0,
+                    "max_hugepage_GB": 0.0,
+                    "shards": []
+                }
+
+            nodes[node]["shards"].append(shard_json)
+
+    for node, node_values in node_info.items():
+        if node not in nodes:
+            nodes[node] = {
+                "max_memory_GB": 0.0,
+                "max_hugepage_GB": 0.0,
+                "shards": []
+            }
+
+        nodes[node]["max_memory_GB"] = node_values["total_huge_page_size_GB"]
+        nodes[node]["max_hugepage_GB"] = node_values["total_non_huge_size_GB"]
+
+    print(json.dumps({
+        "namespaces": list(namespaces),
+        "nodes": nodes,
+    }, indent=2, ensure_ascii=False, sort_keys=True))
+
+
 if len(sys.argv) == 1:
     usage()
 
@@ -447,6 +496,9 @@ if len(sys.argv) >= 2:
     action = sys.argv[1]
     if action == "memoryusage":
         print_memory_usage()
+        sys.exit()
+    if action == "exportmemoryjson":
+        export_memory_to_json()
         sys.exit()
 
 if len(sys.argv) != 4:
