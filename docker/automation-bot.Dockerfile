@@ -50,10 +50,6 @@ RUN groupadd --non-unique -g $GID $USERNAME && \
 	# NOTE! -l flag prevents creation of gigabytes of sparse log file for some reason
 	useradd -lmNs /bin/bash -u $UID -g $GID $USERNAME
 
-COPY docker/process.py.patch /process.py.patch
-RUN cd / && \
-	patch -p1 < process.py.patch
-
 USER $USERNAME
 
 RUN cd /tmp && \
