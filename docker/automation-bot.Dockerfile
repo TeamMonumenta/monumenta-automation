@@ -52,6 +52,8 @@ RUN groupadd --non-unique -g $GID $USERNAME && \
 
 USER $USERNAME
 
+ENV PIP_BREAK_SYSTEM_PACKAGES true
+
 RUN cd /tmp && \
 	curl -O https://bootstrap.pypa.io/get-pip.py && \
 	pypy3 get-pip.py && \
