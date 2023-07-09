@@ -87,6 +87,11 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("GodsporeAccess".to_string(), 0);
         scores.insert("AzacorAccess".to_string(), 0);
 
+        /* TODO: REVERT THIS AFTER UPDATE! */
+        scores.insert("Quest14".to_string(), 0);
+        scores.insert("Quest22".to_string(), 0);
+        scores.insert("Quest48".to_string(), 0);
+
         fix_total_level(scores);
     }
 }
