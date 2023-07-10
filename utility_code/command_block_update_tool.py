@@ -168,8 +168,8 @@ def main():
 
     arg_parser = argparse.ArgumentParser(description=__doc__)
     arg_parser.add_argument('world', type=Path, nargs='+')
-    arg_parser.add_argument('--output', type=Path, nargs='?')
-    arg_parser.add_argument('--input', type=Path, nargs='?')
+    arg_parser.add_argument('--output', type=Path, nargs='?', help='Export command blocks to json')
+    arg_parser.add_argument('--input', type=Path, nargs='?', help='Import command blocks from json')
     arg_parser.add_argument('--pos1', type=str, nargs='?', help='x,y,z')
     arg_parser.add_argument('--pos2', type=str, nargs='?', help='x,y,z')
     arg_parser.add_argument('-j', '--num-threads', type=int, default=4)
