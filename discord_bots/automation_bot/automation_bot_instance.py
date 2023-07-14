@@ -1340,7 +1340,7 @@ old coreprotect data will be removed at the 5 minute mark.
             await send_broadcast_msg(seconds_to_string(next_target))
 
         # Stop bungee
-        await self.stop(ctx, ["bungee", "bungee-11", "bungee-13", "bungee-14", "bungee-15"])
+        await self.stop(ctx, ["bungee", "bungee-11", "bungee-12", "bungee-13", "bungee-15"])
 
         await self.display(ctx, message.author.mention)
 
