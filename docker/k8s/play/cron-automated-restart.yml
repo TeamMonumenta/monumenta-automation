@@ -38,6 +38,10 @@ spec:
             hostPath:
               type: Directory
               path: /nfs/play/m11/bungee-11/plugins/BungeeDisplay
+          - name: nfs-data-12
+            hostPath:
+              type: Directory
+              path: /nfs/play/m12/bungee-12/plugins/BungeeDisplay
           - name: nfs-data-13
             hostPath:
               type: Directory
@@ -60,6 +64,8 @@ spec:
               mountPath: /home/epic/play/m8/bungee/plugins/BungeeDisplay
             - name: nfs-data-11
               mountPath: /home/epic/play/m11/bungee-11/plugins/BungeeDisplay
+            - name: nfs-data-12
+              mountPath: /home/epic/play/m12/bungee-12/plugins/BungeeDisplay
             - name: nfs-data-13
               mountPath: /home/epic/play/m13/bungee-13/plugins/BungeeDisplay
             - name: nfs-data-15
