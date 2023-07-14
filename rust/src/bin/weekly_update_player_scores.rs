@@ -46,6 +46,15 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
     scores.insert("TotalLevel".to_string(), CorrectedLevel);
 }
 
+#[allow(non_snake_case)]
+fn fix_mages_legacy(scores: &mut HashMap<String, i32>) {
+    let Quest03 = *scores.get("Quest03").unwrap_or(&0);
+    let Quest04 = *scores.get("Quest04").unwrap_or(&0);
+    let correctedScore = if Quest03 >= 21 && Quest04 == 0 {1} else {Quest04};
+
+    scores.insert("Quest04".to_string(), correctedScore);
+}
+
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     if let Some(scores) = &mut player.scores {
         /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
@@ -87,12 +96,8 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("GodsporeAccess".to_string(), 0);
         scores.insert("AzacorAccess".to_string(), 0);
 
-        /* TODO: REVERT THIS AFTER UPDATE! */
-        scores.insert("Quest14".to_string(), 0);
-        scores.insert("Quest22".to_string(), 0);
-        scores.insert("Quest48".to_string(), 0);
-
         fix_total_level(scores);
+        fix_mages_legacy(scores);
     }
 }
 
