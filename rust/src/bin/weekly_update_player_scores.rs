@@ -58,6 +58,11 @@ fn fix_quests(scores: &mut HashMap<String, i32>) {
     let correctedQuest01 = if Quest01 < 13 {0} else {Quest01};
 
     scores.insert("Quest01".to_string(), correctedQuest01);
+
+    let Quest35 = *scores.get("Quest35").unwrap_or(&0);
+    let correctedQuest35 = if Quest35 <= 12 {0} else {Quest35};
+
+    scores.insert("Quest35".to_string(), correctedQuest35);
 }
 
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
