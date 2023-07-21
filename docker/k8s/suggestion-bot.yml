@@ -48,7 +48,7 @@ spec:
             path: /nfs/task-bot/suggestions
       containers:
       - name: suggestion-bot
-        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-play
         tty: false
         stdin: false
         volumeMounts:

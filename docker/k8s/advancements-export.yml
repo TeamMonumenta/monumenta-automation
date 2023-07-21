@@ -34,7 +34,7 @@ spec:
               path: /nfs/play/advancements
           containers:
           - name: task-bot
-            image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
+            image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-play
             tty: false
             stdin: false
             volumeMounts:

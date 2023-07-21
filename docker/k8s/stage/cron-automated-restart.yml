@@ -44,7 +44,7 @@ spec:
               path: /nfs/play/m12/bungee-13/plugins/BungeeDisplay
           containers:
           - name: cron-automated-restart
-            image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
+            image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-stage
             tty: false
             stdin: false
             args:
