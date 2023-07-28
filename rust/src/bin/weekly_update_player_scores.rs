@@ -46,25 +46,6 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
     scores.insert("TotalLevel".to_string(), CorrectedLevel);
 }
 
-#[allow(non_snake_case)]
-fn fix_quests(scores: &mut HashMap<String, i32>) {
-    let Quest03 = *scores.get("Quest03").unwrap_or(&0);
-    let Quest04 = *scores.get("Quest04").unwrap_or(&0);
-    let correctedQuest04 = if Quest03 >= 21 && Quest04 == 0 {1} else {Quest04};
-
-    scores.insert("Quest04".to_string(), correctedQuest04);
-
-    let Quest01 = *scores.get("Quest01").unwrap_or(&0);
-    let correctedQuest01 = if Quest01 < 13 {0} else {Quest01};
-
-    scores.insert("Quest01".to_string(), correctedQuest01);
-
-    let Quest35 = *scores.get("Quest35").unwrap_or(&0);
-    let correctedQuest35 = if Quest35 <= 12 {0} else {Quest35};
-
-    scores.insert("Quest35".to_string(), correctedQuest35);
-}
-
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     if let Some(scores) = &mut player.scores {
         /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
@@ -107,7 +88,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("AzacorAccess".to_string(), 0);
 
         fix_total_level(scores);
-        fix_quests(scores);
     }
 }
 
