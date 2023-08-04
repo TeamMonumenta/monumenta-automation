@@ -27,6 +27,10 @@
         "stage": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
     },
 
+    "m119": {
+        "build" : { "node": "m12" , "memGB": 3, },
+    },
+
     # R1
     "valley": {
         "play" : { "node": "m8" , "memGB": 6, },
