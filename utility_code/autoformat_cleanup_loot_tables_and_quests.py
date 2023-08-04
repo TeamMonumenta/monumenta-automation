@@ -26,4 +26,8 @@ if __name__ == '__main__':
                     except Exception as ex:
                         print(f"Failed to upgrade file '{path}': {ex}")
             elif fname.endswith(".mcfunction"):
-                upgrade_mcfunction_file(path, convert_checks_to_plain="auto", regenerateUUIDs=regenerateUUIDs)
+                try:
+                    upgrade_mcfunction_file(path, convert_checks_to_plain="auto", regenerateUUIDs=regenerateUUIDs)
+                except Exception as ex:
+                    print(f"Failed to upgrade file '{path}': {ex}")
+
