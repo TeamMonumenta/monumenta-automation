@@ -97,6 +97,15 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         return str(self)
 
 
+    def get_world_path(self):
+        self_path = Path(self.path).absolute()
+        world_path = self_path.parent.parent
+        if not (world_path / 'level.dat').is_file():
+            # Region file is not in a world folder (probably a temporary region file)
+            return None
+        return world_path
+
+
     def has_chunk(self, cx, cz):
         """Return True if this region contains chunk cx, cz (global coordinates)."""
         entry = self._get_entry(cx, cz) & 0xffffffff
