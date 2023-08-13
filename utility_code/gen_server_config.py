@@ -209,9 +209,11 @@ if __name__ == '__main__':
         ('permissions.yml',),
         ('server.properties',),
         ('spigot.yml',),
-        ('paper.yml',),
+        ('config/paper-global.yml',),
+        ('config/paper-world-defaults.yml',),
         ('start.sh',),
         ('wepif.yml',),
+        ('plugins/ViaVersion/config.yml',),
         ('plugins/BKCommonLib/config.yml',),
         ('plugins/CoreProtect/config.yml',),
         ('plugins/FastAsyncWorldEdit/config.yml',),
@@ -241,6 +243,7 @@ if __name__ == '__main__':
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
+        ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
     ]
 
     server_config_min = purgatory_min + [
@@ -538,6 +541,14 @@ if __name__ == '__main__':
             'linked':server_config + base_plugins + dynmap,
         },
 
+        'm119':{
+            'config':server_config_to_copy + [
+                ('server.properties', 'view-distance', 'view-distance=12'),
+                ('spigot.yml', 'view-distance', '    view-distance: 12'),
+            ],
+            'linked':server_config + base_plugins + dynmap,
+        },
+
         'dev1':{
             'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=6'),
@@ -612,7 +623,7 @@ if __name__ == '__main__':
                 ('server.properties', 'spawn-monsters', 'spawn-monsters=false'),
                 ('server.properties', 'spawn-npcs', 'spawn-npcs=false'),
                 ('server.properties', 'spawn-protection', 'spawn-protection=16'),
-                ('paper.yml', 'keep-spawn-loaded', '    keep-spawn-loaded: true'),
+                ('paper.yml', 'keep-spawn-loaded', '    keep-spawn-loaded: true'), # TODO FIXME
                 ('permissions.yml', 'players:'),
                 ('permissions.yml', '  description: Default players'),
                 ('permissions.yml', '  default: true'),
