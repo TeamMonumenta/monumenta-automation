@@ -34,7 +34,7 @@
     # R1
     "valley": {
         "play" : { "node": "m8" , "memGB": 6, },
-        "build": { "node": "m12", "memGB": 3, },
+        "build": { "node": "m12", "memGB": 6, },
         "stage": { "node": "m12", "memGB": 3, },
     },
     "valley-2": {
@@ -48,7 +48,7 @@
     # R2
     "isles": {
         "play" : { "node": "m11", "memGB": 5, },
-        "build": { "node": "m12", "memGB": 3, },
+        "build": { "node": "m12", "memGB": 6, },
         "stage": { "node": "m12", "memGB": 4, },
         "clash": { "node": "m12", "memGB": 4, },
     },
@@ -62,7 +62,7 @@
     # R3
     "ring": {
         "play":  { "node": "m13", "memGB": 7   , },
-        "build": { "node": "m12", "memGB": 3   , },
+        "build": { "node": "m12", "memGB": 6   , },
         "stage": { "node": "m12", "memGB": 3   , },
     },
     "ring-2":  { "play" : { "node": "m13", "memGB": 7, }, },
