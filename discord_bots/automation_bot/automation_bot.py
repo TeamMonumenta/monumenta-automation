@@ -168,7 +168,11 @@ class AutomationBot(commands.Bot):
                             return
 
                         if self.rreact["msg"] is not None:
-                            await self.rreact["msg"].remove_reaction('\U0001f441', self.user)
+                            try:
+                                await self.rreact["msg"].remove_reaction('\U0001f441', self.user)
+                            except Exception:
+                                self.rlogger.warning("Failed to remove previous reaction in %s", channel.name)
+                                self.rlogger.warning(traceback.format_exc())
 
                         self.rreact["message_id"] = payload.message_id
                         self.rreact["channel_id"] = payload.channel_id
