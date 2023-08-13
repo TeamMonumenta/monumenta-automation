@@ -7,7 +7,7 @@ metadata:
   labels:
     app: cron-automated-restart
 spec:
-  schedule: "55 8 * * SUN,MON,TUE,WED,THU,SAT"
+  schedule: "55 8 * * SUN,MON,TUE,WED,THU,FRI,SAT"
   concurrencyPolicy: Replace
   jobTemplate:
     spec:

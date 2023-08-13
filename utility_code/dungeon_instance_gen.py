@@ -187,6 +187,7 @@ if __name__ == '__main__':
             "gallery": {
                 "world": [
                     "gallery",
+                    "marina",
                 ],
                 "objective":"DGAccess"
             },
