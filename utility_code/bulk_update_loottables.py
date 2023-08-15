@@ -39,8 +39,9 @@ def update_items(container_nbt_list, output_dir=None):
                 raise KeyError("No books of souls!")
 
             try:
-                locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
-                print("Updated '{}' in loot tables: \n{}".format(item_name, "\n".join(locations)))
+                raise ValueError("disable")
+                #locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
+                #print("Updated '{}' in loot tables: \n{}".format(item_name, "\n".join(locations)))
             except ValueError as e:
                 print("WARNING: Failed to update '{}' in loot tables: {}".format(item_name, e))
 

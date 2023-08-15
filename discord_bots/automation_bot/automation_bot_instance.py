@@ -1766,6 +1766,7 @@ Easiest way to get this is putting an item in a chest, and looking at that chest
 
         userfoldername = re.sub('[^a-z0-9]', '', message.author.name.lower()) + str(message.id)
         userfolderpath = os.path.join("/tmp", userfoldername)
+        await self.display(ctx, "THIS COMMAND IS CURRENTLY DISABLED, NOTHING CHANGED")
         await self.run(ctx, ["mkdir", userfolderpath])
         await self.run(ctx, [os.path.join(_top_level, f"utility_code/bulk_update_loottables.py"), "--output-dir", userfolderpath, temppath], displayOutput=True)
         files = [f for f in os.listdir(userfolderpath) if os.path.isfile(os.path.join(userfolderpath, f))]
