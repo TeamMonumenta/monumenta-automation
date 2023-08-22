@@ -1065,7 +1065,7 @@ Examples:
                     await self.stop(ctx, shard)
 
                 await self.run(ctx, f"mkdir -p /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}")
-                worlds = World.enumerate_worlds(f"/home/epic/project_epic/{shard}")
+                worlds = [Path(path).name for path in World.enumerate_worlds(f"/home/epic/project_epic/{shard}")]
                 await self.display(ctx, f"Copying worlds {' '.join(worlds)} from {shard}")
                 for worldname in worlds:
                     await self.run(ctx, f"cp -a /home/epic/project_epic/{shard}/{worldname} /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}/")
