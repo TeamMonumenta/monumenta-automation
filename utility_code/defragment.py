@@ -4,6 +4,7 @@ import os
 import sys
 import getopt
 import multiprocessing
+from pathlib import Path
 import concurrent
 import traceback
 from minecraft.world import World

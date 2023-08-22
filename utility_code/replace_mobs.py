@@ -4,6 +4,7 @@ import os
 import getopt
 import math
 import multiprocessing
+from pathlib import Path
 import sys
 import traceback
 import yaml

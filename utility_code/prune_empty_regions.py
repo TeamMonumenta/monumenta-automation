@@ -3,6 +3,7 @@
 import os
 import sys
 import multiprocessing
+from pathlib import Path
 import concurrent
 from minecraft.world import World
 from minecraft.region import Region, EntitiesRegion

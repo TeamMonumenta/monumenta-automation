@@ -4,6 +4,7 @@ import getopt
 import multiprocessing
 from pprint import pprint
 import os
+from pathlib import Path
 import sys
 import traceback
 import yaml

@@ -3,6 +3,7 @@
 import os
 import sys
 import concurrent
+from pathlib import Path
 from minecraft.world import World
 from minecraft.region import Region, EntitiesRegion
 
