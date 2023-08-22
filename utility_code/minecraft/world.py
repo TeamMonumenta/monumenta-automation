@@ -47,7 +47,7 @@ class World():
 
     @classmethod
     def enumerate_worlds(cls, dir_) -> [str]:
-        """Returns the folder/world names of all folders in the specified directory that contain a level.dat"""
+        """Returns the full world folder path of all folders in the specified directory that contain a level.dat"""
         results = []
         for level_dat in Path(dir_).glob('**/level.dat'):
             if not level_dat.is_file():
