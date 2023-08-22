@@ -385,8 +385,8 @@ if __name__ == '__main__':
         if world_path:
             worlds.append(world_path)
         if worlds_path:
-            for worldname in World.enumerate_worlds(worlds_path):
-                worlds.append(os.path.join(worlds_path, worldname))
+            for world_path in World.enumerate_worlds(worlds_path):
+                worlds.append(world_path)
 
         for world_path in worlds:
             world = World(world_path)

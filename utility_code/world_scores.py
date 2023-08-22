@@ -37,8 +37,9 @@ def export_shard_scores(shard_path, num_threads, dry_run):
     scoreboard = get_main_scoreboard(shard_path)
 
     regions = []
-    for world_name in World.enumerate_worlds(str(shard_path)):
-        world = World(str(shard_path / world_name))
+    for world_path in World.enumerate_worlds(shard_path):
+        world_name = world_path.name
+        world = World(world_path)
         for full_path, rx, rz, region_type in world.enumerate_regions():
             regions.append((full_path, world_name, rx, rz, region_type))
 
@@ -95,8 +96,9 @@ def import_shard_scores(shard_path, num_threads, dry_run):
 
     score_count = 0
     score_counts_by_world = {}
-    for world_name in World.enumerate_worlds(str(shard_path)):
-        world_json_file = shard_path / world_name / 'scores.json'
+    for world_path in World.enumerate_worlds(shard_path):
+        world_name = world_path.name
+        world_json_file = world_path / 'scores.json'
         if not world_json_file.is_file():
             continue
 
@@ -111,8 +113,8 @@ def import_shard_scores(shard_path, num_threads, dry_run):
 
     if not dry_run:
         scoreboard.save()
-        for world_name in World.enumerate_worlds(str(shard_path)):
-            world_json_file = shard_path / world_name / 'scores.json'
+        for world_path in World.enumerate_worlds(str(shard_path)):
+            world_json_file = world_path / 'scores.json'
             world_json_file.unlink(missing_ok=True)
 
     print(f'Found {score_count} scores in {len(score_counts_by_world)} worlds for {shard_path}', flush=True)

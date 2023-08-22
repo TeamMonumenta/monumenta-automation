@@ -29,31 +29,30 @@ class World():
 
     def __init__(self, path, name=None):
         """Load a world from the path provided."""
-        self.path = path
-        self.name = name
+        self._path = Path(path)
+        self.path = str(path)
+        self.name = self._path.name if name is None else name
         self._level_dat_initialized = False
         self._level_dat = None
-        if self.name is None:
-            self.name = os.path.basename(os.path.realpath(self.path))
 
     @property
     def level_dat(self):
         if self._level_dat_initialized:
             return self._level_dat
-        if os.path.isfile(os.path.join(self.path, 'level.dat')):
-            self._level_dat = LevelDat(os.path.join(self.path, 'level.dat'))
+        level_dat_path = self._path / 'level.dat'
+        if level_dat_path.is_file():
+            self._level_dat = LevelDat(level_dat_path)
         self._level_dat_initialized = True
         return self._level_dat
 
     @classmethod
     def enumerate_worlds(cls, dir_) -> [str]:
-        """Returns the full world folder path of all folders in the specified directory that contain a level.dat"""
+        """Returns the full world folder Path of all folders in the specified directory that contain a level.dat"""
         results = []
         for level_dat in Path(dir_).glob('**/level.dat'):
             if not level_dat.is_file():
                 continue
-            # TODO Return the original Path object when we're confident none of our other code will break because of it
-            results.append(str(level_dat.parent))
+            results.append(level_dat.parent)
         return results
 
     def defragment(self):
@@ -100,7 +99,7 @@ class World():
 
         for region_type in region_types:
             subfolder = region_type.folder_name()
-            region_folder = os.path.join(self.path, subfolder)
+            region_folder = self._path / subfolder
             if not os.path.isdir(region_folder):
                 continue
             for filename in os.listdir(region_folder):
@@ -182,7 +181,7 @@ class World():
         """
         rx = int(rx)
         rz = int(rz)
-        full_path = os.path.join(self.path, region_type.folder_name(), f'r.{rx}.{rz}.mca')
+        full_path = self._path / region_type.folder_name() / f'r.{rx}.{rz}.mca'
         if not os.path.exists(full_path):
             return None
         return region_type(full_path, rx, rz, read_only=read_only)
@@ -191,11 +190,11 @@ class World():
         """
         Note: Does not return the level.dat player
         """
-        for filename in os.listdir(os.path.join(self.path, 'playerdata')):
+        for filename in os.listdir(self._path / 'playerdata'):
             if not filename.endswith('.dat'):
                 continue
 
-            full_path = os.path.join(self.path, 'playerdata', filename)
+            full_path = str(self._path / 'playerdata' / filename)
             if os.path.getsize(full_path) <= 0:
                 continue
             yield full_path
@@ -250,7 +249,7 @@ class World():
         yield from process_in_parallel(parallel_args, num_processes=num_processes, initializer=initializer, initargs=initargs)
 
     def __repr__(self):
-        return f'World({self.path!r}, {self.name!r})'
+        return f'World({self._path!r}, {self.name!r})'
 
     def get_block(self, pos: [int, int, int]):
         """

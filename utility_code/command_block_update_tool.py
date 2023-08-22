@@ -186,7 +186,7 @@ def main():
     for worlds_path in args.world:
         for world_path in World.enumerate_worlds(worlds_path):
             print(world_path)
-            world_paths.append(Path(world_path))
+            world_paths.append(world_path)
     if not world_paths:
         eprint(f'No worlds found')
         sys.exit()

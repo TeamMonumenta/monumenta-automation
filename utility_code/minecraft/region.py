@@ -77,7 +77,8 @@ class BaseRegion(MutableMapping, NbtPathDebug):
 
     def __init__(self, path, rx, rz, read_only=False):
         """Load a region file from the path provided, and allow saving."""
-        self.path = path
+        # TODO Double check support for pathlib.Path
+        self.path = str(path)
         self.rx = rx
         self.rz = rz
         self._region = nbt.RegionFile(self.path, read_only=read_only)

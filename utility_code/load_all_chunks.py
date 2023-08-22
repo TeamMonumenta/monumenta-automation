@@ -32,13 +32,9 @@ if __name__ == '__main__':
 
     regions = []
     all_world_paths = []
-    for world_path in args:
-        if os.path.isfile(os.path.join(world_path, "level.dat")):
+    for arg_path in args:
+        for world_path in World.enumerate_worlds(arg_path):
             all_world_paths.append(world_path)
-        else:
-            # Not directly a world - maybe a folder containing worlds?
-            for enum_path in World.enumerate_worlds(world_path):
-                all_world_paths.append(os.path.join(world_path, enum_path))
 
     if len(all_world_paths) <= 0:
         sys.exit("No valid worlds found to load")

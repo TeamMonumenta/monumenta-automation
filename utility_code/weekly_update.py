@@ -283,34 +283,34 @@ if __name__ == '__main__':
         # If the shard name is specified, use this as the base name for the shard, rather than the server name
         shard_name = config.get("shard_name", server)
 
+        build_path = None if "build_path" not in config else Path(config["build_path"])
+        previous_path = None if "previous_path" not in config else Path(config["previous_path"])
+        output_path = Path(config["output_path"])
+
         # Move or copy base first - either from build or previously existing data
         if "move_base_from" in config:
             if config["move_base_from"] == "build":
-                for world_name in World.enumerate_worlds(config["build_path"]):
-                    from_world_path = os.path.join(config["build_path"], world_name)
-                    output_world_path = os.path.join(config["output_path"], world_name)
+                for from_world_path in World.enumerate_worlds(build_path):
+                    output_world_path = output_path / from_world_path.relative_to(build_path)
                     print(f"  {server} - Moving world from {from_world_path} to {output_world_path}")
                     move_folder(from_world_path, output_world_path)
 
             elif config["move_base_from"] == "previous":
-                for world_name in World.enumerate_worlds(config["previous_path"]):
-                    from_world_path = os.path.join(config["previous_path"], world_name)
-                    output_world_path = os.path.join(config["output_path"], world_name)
+                for from_world_path in World.enumerate_worlds(previous_path):
+                    output_world_path = output_path / from_world_path.relative_to(previous_path)
                     print(f"  {server} - Moving world from {from_world_path} to {output_world_path}")
                     move_folder(from_world_path, output_world_path)
 
         if "copy_base_from" in config:
             if config["copy_base_from"] == "build":
-                for world_name in World.enumerate_worlds(config["build_path"]):
-                    from_world_path = os.path.join(config["build_path"], world_name)
-                    output_world_path = os.path.join(config["output_path"], world_name)
+                for from_world_path in World.enumerate_worlds(build_path):
+                    output_world_path = output_path / from_world_path.relative_to(build_path)
                     print(f"  {server} - Copying world from {from_world_path} to {output_world_path}")
                     copy_folder(from_world_path, output_world_path)
 
             elif config["copy_base_from"] == "previous":
-                for world_name in World.enumerate_worlds(config["previous_path"]):
-                    from_world_path = os.path.join(config["previous_path"], world_name)
-                    output_world_path = os.path.join(config["output_path"], world_name)
+                for from_world_path in World.enumerate_worlds(previous_path):
+                    output_world_path = output_path / from_world_path.relative_to(previous_path)
                     print(f"  {server} - Copying world from {from_world_path} to {output_world_path}")
                     copy_folder(from_world_path, output_world_path)
 
@@ -321,8 +321,8 @@ if __name__ == '__main__':
             print(f"  {server} - Instances preserved this week: [{','.join(str(x) for x in preserve_instances['dungeon_scores'])}]")
             for instance in preserve_instances["dungeon_scores"]:
                 world_name = f"{shard_name}{instance}"
-                from_world_path = os.path.join(config["previous_path"], world_name)
-                output_world_path = os.path.join(config["output_path"], world_name)
+                from_world_path = previous_path / world_name
+                output_world_path = output_path / world_name
                 if os.path.exists(from_world_path):
                     move_folder(from_world_path, output_world_path)
                 else:
@@ -334,7 +334,7 @@ if __name__ == '__main__':
             move_paths(config['previous_path'], config['output_path'], config["move_previous_paths"])
 
         # Enumerate all the resulting worlds for later use
-        config["worlds"] = World.enumerate_worlds(config["output_path"])
+        config["worlds"] = World.enumerate_worlds(output_path)
         if len(config["worlds"]) == 0:
             raise Exception("ERROR: Config doesn't specify any worlds or they are missing: {!r}".format(config))
 
@@ -346,8 +346,8 @@ if __name__ == '__main__':
     print("Opening worlds, changing datapacks & filling areas...")
     worlds_paths = {}
     for config in config_list:
-        for world_name in config["worlds"]:
-            output_world_path = os.path.join(config["output_path"], world_name)
+        for output_world_path in config["worlds"]:
+            world_name = output_world_path.name
 
             world = World(output_world_path)
             worlds_paths[world_name] = output_world_path
