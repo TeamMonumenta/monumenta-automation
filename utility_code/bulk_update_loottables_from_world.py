@@ -5,14 +5,12 @@
 import argparse
 import math
 import sys
-from collections import Counter
 from pathlib import Path
 
-from lib_py3.common import eprint, parse_name_possibly_json
+from lib_py3.common import get_item_name_from_nbt
 from lib_py3.loot_table_manager import LootTableManager
 
-from minecraft.chunk_format.block_entity import BlockEntity
-from minecraft.chunk_format.entity import Entity
+from minecraft.chunk_format.chunk import Chunk
 from minecraft.player_dat_format.item import Item
 from minecraft.world import World
 
@@ -63,6 +61,10 @@ if __name__ == '__main__':
     mgr = LootTableManager()
     mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
 
+    updated_items = 0
+    not_chest_items = 0
+    no_name_items = 0
+
     world = World(str(args.world))
     for region in world.iter_regions(min_x, min_y, min_z, max_x, max_y, max_z, read_only=True):
         for chunk in region.iter_chunks(min_x, min_y, min_z, max_x, max_y, max_z):
@@ -71,12 +73,25 @@ if __name__ == '__main__':
                     if thing.nbt.has_path("id") and thing.nbt.has_path("tag"):
                         item_id = thing.nbt.at_path("id").value
                         item_nbt_str = thing.nbt.at_path("tag").to_mojangson()
-                        if thing.nbt.has_path("tag.display.Name"):
-                            item_name = parse_name_possibly_json(thing.nbt.at_path('tag.display.Name').value)
-                            #print(f"Test: {thing.get_debug_str()}")
 
-                            try:
-                                locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
-                                print(f"Updated: {thing.get_debug_str()}")
-                            except ValueError as e:
-                                print(f"Failed: {thing.get_debug_str()}")
+                        if not thing.nbt.has_path("tag.display.Name") and not thing.nbt.has_path("tag.title"):
+                            print(f"Warning: Not updating '{thing.get_debug_str()}' as it does not have a name. Full path: {thing.get_path_str()}")
+                            no_name_items += 1
+                            continue
+
+                        item_name = get_item_name_from_nbt(thing.nbt.at_path("tag"), include_masterwork_level=True)
+
+                        if ("chest" not in thing.parent.id) or (not isinstance(thing.parent.parent, Chunk)):
+                            print(f"Warning: Not updating '{item_name}' as it is not stored in a chest. Full path: {thing.get_path_str()}")
+                            not_chest_items += 1
+                            continue
+
+                        updated_items += 1
+
+                        try:
+                            locations = mgr.update_item_in_loot_tables(item_id, item_nbt_str=item_nbt_str)
+                            print(f"Updated: {thing.get_debug_str()}")
+                        except ValueError as e:
+                            print(f"Failed: {thing.get_debug_str()}")
+
+    print(f"Updated {updated_items} in loot tables, skipped {not_chest_items} items that were not directly contained in a chest and {no_name_items} with no name")
