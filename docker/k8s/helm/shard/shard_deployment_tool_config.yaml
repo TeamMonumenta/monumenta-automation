@@ -179,8 +179,8 @@
     },
 
     "gallery": {
-        "play" : { "node": "m8", "memGB": 4   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "play" : { "node": "m8" , "memGB": 4   , },
+        "stage": { "node": "m12", "memGB": 3   , },
     },
 
     "blue": {
