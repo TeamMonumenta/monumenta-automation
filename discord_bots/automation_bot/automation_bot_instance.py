@@ -1877,7 +1877,7 @@ Syntax:
             await self.display(ctx, "Scanning for command blocks on shard {}".format(shard))
             scan_results = tempfile.mktemp()
             await self.cd(ctx, self._shards[shard])
-            await self.run(ctx, os.path.join(_top_level, f"utility_code/command_block_update_tool.py --world Project_Epic-{shard} --output {scan_results}"), displayOutput=True)
+            await self.run(ctx, os.path.join(_top_level, f"utility_code/command_block_update_tool.py --output {scan_results} Project_Epic-{shard} "), displayOutput=True)
             await self.run(ctx, f"mv -f {scan_results} /tmp/{shard}.json")
             await ctx.send(f"{shard} commands:", file=discord.File(f'/tmp/{shard}.json'))
 

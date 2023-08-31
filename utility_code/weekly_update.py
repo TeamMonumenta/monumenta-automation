@@ -345,13 +345,11 @@ if __name__ == '__main__':
     # Open the worlds for use
 
     print("Opening worlds, changing datapacks & filling areas...")
-    worlds_paths = {}
     for config in config_list:
         for output_world_path in config["worlds"]:
             world_name = output_world_path.name
 
             world = World(output_world_path)
-            worlds_paths[world_name] = output_world_path
 
             if "datapacks" in config:
                 world.level_dat.enabled_datapacks = config["datapacks"]
@@ -384,8 +382,8 @@ if __name__ == '__main__':
     regions = []
     for config in config_list:
         if "replace_items_globally" in config and config["replace_items_globally"]:
-            for world_name in config["worlds"]:
-                world_path = worlds_paths[world_name]
+            for world_path in config["worlds"]:
+                world_name = world_path.name
                 for _, rx, rz, region_type in World(world_path).enumerate_regions():
                     regions.append({
                         "world": world_name,
