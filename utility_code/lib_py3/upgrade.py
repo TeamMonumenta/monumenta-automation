@@ -11,7 +11,7 @@ from lib_py3.json_file import jsonFile
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 
 from quarry.types import nbt
-from quarry.types.nbt import TagCompound, TagString, TagShort
+from quarry.types.nbt import TagCompound, TagList, TagString, TagShort
 from quarry.types.text_format import unformat_text
 from brigadier.string_reader import StringReader
 
@@ -168,6 +168,20 @@ enchant_id_map = {
     71:"minecraft:vanishing_curse",
 }
 
+cat_variant_id_map = (
+    "minecraft:tabby",
+    "minecraft:black",
+    "minecraft:red",
+    "minecraft:siamese",
+    "minecraft:british_shorthair",
+    "minecraft:calico",
+    "minecraft:persian",
+    "minecraft:ragdoll",
+    "minecraft:white",
+    "minecraft:jellie",
+    "minecraft:all_black",
+)
+
 def upgrade_entity(nbt_: TagCompound, regenerateUUIDs: bool = False, tagsToRemove: list = [], remove_non_plain_display: bool = False) -> None:
     if type(nbt_) is not TagCompound:
         raise ValueError(f"Expected TagCompound, got {type(nbt_)}")
@@ -178,6 +192,48 @@ def upgrade_entity(nbt_: TagCompound, regenerateUUIDs: bool = False, tagsToRemov
 
     if nbt_.has_path("id"):
         nbt_.at_path("id").value = nbt_.at_path("id").value.replace("zombie_pigman", "zombified_piglin")
+
+    if nbt_.has_path("CatType"):
+        cat_type = nbt_.at_path("CatType").value % len(cat_variant_id_map)
+        variant = cat_variant_id_map[cat_type]
+        del nbt_.value["CatType"]
+        nbt_.value["variant"] = TagString(variant)
+
+    # Upgrade infinite potion effects (suspicious stew)
+    if nbt_.has_path("Effects"):
+        custom_effects = nbt_.at_path("Effects")
+        if isinstance(custom_effects, TagList): # This should only ever be a list
+            for custom_effect in custom_effects.value:
+                if isinstance(custom_effect, TagCompound): # This should only ever be a compound
+                    if custom_effect.has_path("EffectDuration"):
+                        duration = custom_effect.at_path("EffectDuration").value
+                        if isinstance(duration, int) and duration >= 100000:
+                            # Infinite potion effects have a duration of -1
+                            custom_effect.at_path("EffectDuration").value = -1
+
+    # Upgrade infinite potion effects (mob active effects)
+    if nbt_.has_path("ActiveEffects"):
+        custom_effects = nbt_.at_path("ActiveEffects")
+        if isinstance(custom_effects, TagList): # This should only ever be a list
+            for custom_effect in custom_effects.value:
+                if isinstance(custom_effect, TagCompound): # This should only ever be a compound
+                    if custom_effect.has_path("Duration"):
+                        duration = custom_effect.at_path("Duration").value
+                        if isinstance(duration, int) and duration >= 100000:
+                            # Infinite potion effects have a duration of -1
+                            custom_effect.at_path("Duration").value = -1
+
+    # Upgrade infinite potion effects (potions)
+    if nbt_.has_path("CustomPotionEffects"):
+        custom_effects = nbt_.at_path("CustomPotionEffects")
+        if isinstance(custom_effects, TagList): # This should only ever be a list
+            for custom_effect in custom_effects.value:
+                if isinstance(custom_effect, TagCompound): # This should only ever be a compound
+                    if custom_effect.has_path("Duration"):
+                        duration = custom_effect.at_path("Duration").value
+                        if isinstance(duration, int) and duration >= 100000:
+                            # Infinite potion effects have a duration of -1
+                            custom_effect.at_path("Duration").value = -1
 
     # Upgrade potions
     if nbt_.has_path("Potion"):
