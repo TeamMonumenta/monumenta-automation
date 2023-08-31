@@ -92,29 +92,29 @@ def translate_attribute_name(name: str) -> str:
         name = "minecraft:zombie.spawn_reinforcements"
     return name
 
-def upgrade_uuid_if_present(nbt: TagCompound, regenerateUUIDs = False) -> None:
-    if nbt.has_path("OwnerUUID"):
-        owneruuid = uuid.UUID(nbt.at_path("OwnerUUID").value)
-        nbt.value["Owner"] = uuid_to_mc_uuid_tag_int_array(owneruuid)
-        nbt.value.pop("OwnerUUID")
+def upgrade_uuid_if_present(nbt_: TagCompound, regenerateUUIDs = False) -> None:
+    if nbt_.has_path("OwnerUUID"):
+        owneruuid = uuid.UUID(nbt_.at_path("OwnerUUID").value)
+        nbt_.value["Owner"] = uuid_to_mc_uuid_tag_int_array(owneruuid)
+        nbt_.value.pop("OwnerUUID")
 
-    if nbt.has_path("UUIDMost") or nbt.has_path("UUIDLeast") or nbt.has_path("UUID"):
+    if nbt_.has_path("UUIDMost") or nbt_.has_path("UUIDLeast") or nbt_.has_path("UUID"):
         modifierUUID = None
         if not regenerateUUIDs:
-            modifierUUID = get_entity_uuid(nbt)
+            modifierUUID = get_entity_uuid(nbt_)
         if modifierUUID is None:
             modifierUUID = uuid.uuid4()
 
-        if nbt.has_path("UUIDMost"):
-            nbt.value.pop("UUIDMost")
-        if nbt.has_path("UUIDLeast"):
-            nbt.value.pop("UUIDLeast")
-        nbt.value["UUID"] = uuid_to_mc_uuid_tag_int_array(modifierUUID)
+        if nbt_.has_path("UUIDMost"):
+            nbt_.value.pop("UUIDMost")
+        if nbt_.has_path("UUIDLeast"):
+            nbt_.value.pop("UUIDLeast")
+        nbt_.value["UUID"] = uuid_to_mc_uuid_tag_int_array(modifierUUID)
 
     # Somehow this attribute is still missing a UUID - fix it
-    if nbt.has_path("AttributeName") and not nbt.has_path("UUID"):
+    if nbt_.has_path("AttributeName") and not nbt_.has_path("UUID"):
         modifierUUID = uuid.uuid4()
-        nbt.value["UUID"] = uuid_to_mc_uuid_tag_int_array(modifierUUID)
+        nbt_.value["UUID"] = uuid_to_mc_uuid_tag_int_array(modifierUUID)
 
 def upgrade_attributes(attributes_nbt: TagCompound, regenerateUUIDs = False) -> None:
     for attribute in attributes_nbt.value:
@@ -168,42 +168,42 @@ enchant_id_map = {
     71:"minecraft:vanishing_curse",
 }
 
-def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove: list = [], remove_non_plain_display: bool = False) -> None:
-    if type(nbt) is not TagCompound:
-        raise ValueError(f"Expected TagCompound, got {type(nbt)}")
+def upgrade_entity(nbt_: TagCompound, regenerateUUIDs: bool = False, tagsToRemove: list = [], remove_non_plain_display: bool = False) -> None:
+    if type(nbt_) is not TagCompound:
+        raise ValueError(f"Expected TagCompound, got {type(nbt_)}")
 
     for junk in tagsToRemove:
-        if junk in nbt.value:
-            nbt.value.pop(junk)
+        if junk in nbt_.value:
+            nbt_.value.pop(junk)
 
-    if nbt.has_path("id"):
-        nbt.at_path("id").value = nbt.at_path("id").value.replace("zombie_pigman", "zombified_piglin")
+    if nbt_.has_path("id"):
+        nbt_.at_path("id").value = nbt_.at_path("id").value.replace("zombie_pigman", "zombified_piglin")
 
     # Upgrade potions
-    if nbt.has_path("Potion"):
-        if type(nbt.at_path("Potion")) is TagCompound:
-            nbt.value["Item"] = nbt.at_path("Potion")
-            nbt.value.pop("Potion")
-        elif type(nbt.at_path("Potion")) is TagString:
-            nbt.at_path("Potion").value = nbt.at_path("Potion").value.replace("empty", "mundane") # .replace("awkward", "mundane")
+    if nbt_.has_path("Potion"):
+        if type(nbt_.at_path("Potion")) is TagCompound:
+            nbt_.value["Item"] = nbt_.at_path("Potion")
+            nbt_.value.pop("Potion")
+        elif type(nbt_.at_path("Potion")) is TagString:
+            nbt_.at_path("Potion").value = nbt_.at_path("Potion").value.replace("empty", "mundane") # .replace("awkward", "mundane")
 
     # Upgrade UUIDMost/UUIDLeast -> UUID
-    upgrade_uuid_if_present(nbt, regenerateUUIDs=regenerateUUIDs)
+    upgrade_uuid_if_present(nbt_, regenerateUUIDs=regenerateUUIDs)
 
     # Upgrade AttributeModifiers (value name change & UUID)
-    if nbt.has_path("AttributeModifiers"):
-        upgrade_attributes(nbt.at_path("AttributeModifiers"), regenerateUUIDs=regenerateUUIDs)
-    if nbt.has_path("Attributes"):
-        upgrade_attributes(nbt.at_path("Attributes"), regenerateUUIDs=regenerateUUIDs)
+    if nbt_.has_path("AttributeModifiers"):
+        upgrade_attributes(nbt_.at_path("AttributeModifiers"), regenerateUUIDs=regenerateUUIDs)
+    if nbt_.has_path("Attributes"):
+        upgrade_attributes(nbt_.at_path("Attributes"), regenerateUUIDs=regenerateUUIDs)
 
     # Rename "ench" -> "Enchantments"
-    if nbt.has_path("ench"):
-        nbt.value["Enchantments"] = nbt.at_path("ench")
-        nbt.value.pop("ench")
+    if nbt_.has_path("ench"):
+        nbt_.value["Enchantments"] = nbt_.at_path("ench")
+        nbt_.value.pop("ench")
 
     # Clean up Enchantments
-    if "Enchantments" in nbt.value:
-        ench_list = nbt.at_path("Enchantments")
+    if "Enchantments" in nbt_.value:
+        ench_list = nbt_.at_path("Enchantments")
         for enchant in ench_list.value:
             if not "lvl" in enchant.value:
                 raise KeyError("Item enchantment does not contain 'lvl'")
@@ -227,15 +227,15 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
             enchant.value["id"] = TagString(enchant_id)
 
     # Fix unicode section symbols and quotes in display names
-    if nbt.has_path("display.Name"):
-        name_possibly_json = nbt.at_path("display.Name").value
+    if nbt_.has_path("display.Name"):
+        name_possibly_json = nbt_.at_path("display.Name").value
         name_possibly_json = name_possibly_json.replace("\\u0027", "'")
         name_possibly_json = name_possibly_json.replace("\\u00a7", "§")
-        nbt.at_path("display.Name").value = name_possibly_json
+        nbt_.at_path("display.Name").value = name_possibly_json
 
-    if nbt.has_path("display.Lore"):
+    if nbt_.has_path("display.Lore"):
         new_lore_list = []
-        for lore_nbt in nbt.at_path("display.Lore").value:
+        for lore_nbt in nbt_.at_path("display.Lore").value:
             lore_text_possibly_json = translate_lore(lore_nbt.value)
             try:
                 json.loads(lore_text_possibly_json)
@@ -244,18 +244,18 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
                 json_data = {"text": lore_text_possibly_json}
                 json_str = json.dumps(json_data, ensure_ascii=False, separators=(',', ':'))
                 new_lore_list.append(TagString(json_str))
-        nbt.at_path("display.Lore").value = new_lore_list
+        nbt_.at_path("display.Lore").value = new_lore_list
 
     # Upgrade items the entity is carrying
     for location in _single_item_locations:
-        if nbt.has_path(location):
-            upgrade_entity(nbt.at_path(location), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
+        if nbt_.has_path(location):
+            upgrade_entity(nbt_.at_path(location), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
     for location in _list_item_locations:
-        if nbt.has_path(location):
-            for item in nbt.at_path(location).value:
+        if nbt_.has_path(location):
+            for item in nbt_.at_path(location).value:
                 upgrade_entity(item, regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
-    if nbt.has_path("Offers.Recipes"):
-        for item in nbt.at_path("Offers.Recipes").value:
+    if nbt_.has_path("Offers.Recipes"):
+        for item in nbt_.at_path("Offers.Recipes").value:
             if item.has_path("buy"):
                 upgrade_entity(item.at_path("buy"), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
             if item.has_path("buyB"):
@@ -264,38 +264,38 @@ def upgrade_entity(nbt: TagCompound, regenerateUUIDs: bool = False, tagsToRemove
                 upgrade_entity(item.at_path("sell"), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
 
     # Upgrade skull items
-    if nbt.has_path("SkullOwner.Id"):
-        if type(nbt.at_path("SkullOwner.Id")) is TagString:
-            nbt.at_path("SkullOwner").value["Id"] = uuid_to_mc_uuid_tag_int_array(uuid.UUID(nbt.at_path("SkullOwner.Id").value))
+    if nbt_.has_path("SkullOwner.Id"):
+        if type(nbt_.at_path("SkullOwner.Id")) is TagString:
+            nbt_.at_path("SkullOwner").value["Id"] = uuid_to_mc_uuid_tag_int_array(uuid.UUID(nbt_.at_path("SkullOwner.Id").value))
 
     # Recurse over list tags
     for recurse_tag in ["Passengers", "SpawnPotentials"]:
-        if nbt.has_path(recurse_tag):
-            for entry in nbt.at_path(recurse_tag).value:
+        if nbt_.has_path(recurse_tag):
+            for entry in nbt_.at_path(recurse_tag).value:
                 upgrade_entity(entry, regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
 
     # Recurse over non-list tags
     for recurse_tag in ["SelectedItem", "tag", "SpawnData", "Entity"]:
-        if nbt.has_path(recurse_tag):
-            upgrade_entity(nbt.at_path(recurse_tag), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
+        if nbt_.has_path(recurse_tag):
+            upgrade_entity(nbt_.at_path(recurse_tag), regenerateUUIDs=regenerateUUIDs, tagsToRemove=tagsToRemove, remove_non_plain_display=remove_non_plain_display)
 
     # Recurse over Command block contents
-    if nbt.has_path("Command"):
+    if nbt_.has_path("Command"):
         # TODO: This probably should be plumbed through, not just set to auto
-        nbt.at_path("Command").value = upgrade_text_containing_mojangson(nbt.at_path("Command").value, convert_checks_to_plain="auto")
+        nbt_.at_path("Command").value = upgrade_text_containing_mojangson(nbt_.at_path("Command").value, convert_checks_to_plain="auto")
 
     # Once all the inner upgrading is done, build the `plain` tag from the display tag
-    update_plain_tag(nbt)
+    update_plain_tag(nbt_)
 
     if remove_non_plain_display:
-        if nbt.has_path("display"):
-            display = nbt.at_path("display")
+        if nbt_.has_path("display"):
+            display = nbt_.at_path("display")
             if display.has_path("Name"):
                 display.value.pop("Name")
             if display.has_path("Lore"):
                 display.value.pop("Lore")
             if len(display.value) <= 0:
-                nbt.value.pop("display")
+                nbt_.value.pop("display")
 
 def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = "never", regenerateUUIDs = False) -> str:
     """
@@ -313,7 +313,7 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
         if reader.peek() == '{' and not result_line.endswith("scores=") and not result_line.endswith("advancements="):
             cursor = reader.get_cursor()
             try:
-                data = nbt.MojangsonParser(reader).parse_compound()
+                data = nbt_.MojangsonParser(reader).parse_compound()
 
                 # Even though this parsed correctly as an NBT compound, it might actually have been a JSON compound.
                 # This is often used in tellraws like:
