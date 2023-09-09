@@ -369,7 +369,7 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
         if reader.peek() == '{' and not result_line.endswith("scores=") and not result_line.endswith("advancements="):
             cursor = reader.get_cursor()
             try:
-                data = nbt_.MojangsonParser(reader).parse_compound()
+                data = nbt.MojangsonParser(reader).parse_compound()
 
                 # Even though this parsed correctly as an NBT compound, it might actually have been a JSON compound.
                 # This is often used in tellraws like:
