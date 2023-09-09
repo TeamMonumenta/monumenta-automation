@@ -148,7 +148,7 @@ class LibraryOfSouls(object):
                      'WorldUUIDLeast', 'HurtTime', 'HurtByTimestamp', 'FallFlying', 'PortalCooldown',
                      'FallDistance', 'DeathTime', 'HandDropChances', 'ArmorDropChances', 'CanPickUpLoot',
                      'Bukkit.updateLevel', 'Spigot.ticksLived', 'Paper.AAAB', 'Paper.Origin',
-                     'Paper.FromMobSpawner', 'Team', 'Brain', 'Paper.SpawnReason', 'Bukkit.Aware',
+                     'Paper.FromMobSpawner', 'Brain', 'Paper.SpawnReason', 'Bukkit.Aware',
                      'Paper.ShouldBurnInDay', 'Paper.CanTick', 'Bukkit.MaxDomestication'))
 
         for junk in ('UUID', ):
