@@ -1,4 +1,8 @@
-import sys, os, json
+#!/usr/bin/env pypy3
+
+import sys
+import os
+import json
 
 def main():
     if len(sys.argv) == 1:
@@ -8,18 +12,18 @@ def main():
     if len(sys.argv) < 2:
         print("Please specify the input directory as the first argument.")
         return
-    
+
     inputPath = sys.argv[1]
 
     if len(sys.argv) < 3:
         print("Please specify the output directory as the second argument.")
         return
-    
+
     outputPath = sys.argv[2]
 
     try:
         print("Attempting to fix {} advancement files found in the directory at {}, and outputting to {}".format(len(os.listdir(inputPath)), inputPath, outputPath))
-    except:
+    except Exception:
         print("At least one of the specified paths is invalid.")
         return
 
