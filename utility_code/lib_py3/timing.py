@@ -16,6 +16,13 @@ class Timings():
             self.last = time_now
             print(f'[{time_total}, {time_delta}] {msg}')
 
+    def longStep(self,msg="Unnamed step."):
+        if self.enabled:
+            time_now = self.time_function()
+            time_total = self._formatTime(time_now - self.start)
+            time_delta = self._formatTime(time_now - self.last)
+            print(f'\r[{time_total}, {time_delta}] {msg}', end='')
+
     def _formatTime(self,seconds):
         h = int(seconds/3600)
         m = int(seconds/60)%60

@@ -1,5 +1,6 @@
 #!/usr/bin/env pypy3
 
+from datetime import datetime, timedelta
 import os
 import sys
 import getopt
@@ -90,14 +91,22 @@ if __name__ == '__main__':
 
     timings.nextStep("Computed region files")
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
-        results = pool.map(process_region, regions)
-
     initial_size = 0
     final_size = 0
-    for _, init, final in results:
-        initial_size += init
-        final_size += final
+    num_processed = 0
+    num_regions = len(regions)
+    next_update = datetime.now() + timedelta(seconds=1)
+    with concurrent.futures.ProcessPoolExecutor(max_workers=num_threads) as pool:
+        for _, init, final in pool.map(process_region, regions):
+            initial_size += init
+            final_size += final
+            num_processed += 1
+            now = datetime.now()
+            if now > next_update:
+                timings.longStep(f'{num_processed}/{num_regions} region files defragmented')
+                next_update = now + timedelta(seconds=1)
+    # Print new line
+    print('')
 
     # TODO: Would be great to print these sizes but they're just wrong/misleading today. Fix the above TODO and re-enable this
     #timings.nextStep(f"Defragemented {len(regions)} regions, reducing size from {initial_size / (1024 * 1024)} MB to {final_size / (1024 * 1024)} MB")
