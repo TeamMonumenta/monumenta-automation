@@ -3,7 +3,7 @@ FROM openjdk:17-jdk-buster
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy && \
 	pip3 install wheel && \
-	pip3 install bitstring mutf8 && \
+	pip3 install "bitstring<4.1.0" mutf8 && \
 	pip3 install -U pyyaml && \
 	cd /opt && \
 	wget https://downloads.python.org/pypy/pypy3.8-v7.3.9-linux64.tar.bz2 && \
@@ -15,7 +15,7 @@ RUN apt-get update && \
 	pypy3 get-pip.py && \
 	rm -f get-pip.py && \
 	pypy3 -m pip install wheel && \
-	pypy3 -m pip install bitstring mutf8 && \
+	pypy3 -m pip install "bitstring<4.1.0" mutf8 && \
 	pypy3 -m pip install -U pyyaml
 
 COPY quarry /automation/quarry
