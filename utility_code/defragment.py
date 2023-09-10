@@ -56,6 +56,8 @@ if __name__ == '__main__':
     for o, a in opts:
         if o in ("-j", "--num-threads"):
             num_threads = int(a)
+            if num_threads < 0:
+                num_threads = os.cpu_count()
         elif o in ("-v", "--verbose"):
             verbose = True
         else:
