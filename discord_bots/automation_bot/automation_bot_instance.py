@@ -400,7 +400,7 @@ class AutomationBotInstance(commands.Cog):
         for chunk in split_string(msg):
             await ctx.send(chunk)
 
-    async def run(self, ctx: discord.ext.commands.Context, cmd, ret=0, displayOutput=False):
+    async def run(self, ctx: discord.ext.commands.Context, cmd, ret=0, displayOutput=False, suppressStdErr=False):
         """Run a shell command"""
         if not isinstance(cmd, list):
             # For simple stuff, splitting on spaces is enough
@@ -424,7 +424,7 @@ class AutomationBotInstance(commands.Cog):
                 await self.display_verbatim(ctx, stdout)
 
         stderr = stderr.decode('utf-8')
-        if stderr:
+        if stderr and not suppressStdErr:
             await ctx.send(f"stderr from command {cmd}:")
             await self.display_verbatim(ctx, stderr)
 
@@ -1674,13 +1674,13 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             await self.run(ctx, f"mkdir -p {self._server_dir}/0_PREVIOUS")
 
         # Move the server_config directory
-        await self.run(ctx, f"mv {self._server_dir}/server_config {self._server_dir}/0_PREVIOUS/", None)
+        await self.run(ctx, f"mv {self._server_dir}/server_config {self._server_dir}/0_PREVIOUS/", ret=None, suppressStdErr=True)
 
         # Move the shard folders into those folders
         await self.display(ctx, "Moving previous data to 0_PREVIOUS directories")
         tasks = []
         for shard in self._shards:
-            tasks.append(asyncio.create_task(self.run(ctx, f"mv {self._shards[shard]} {self._server_dir}/0_PREVIOUS/", None)))
+            tasks.append(asyncio.create_task(self.run(ctx, f"mv {self._shards[shard]} {self._server_dir}/0_PREVIOUS/", ret=None, suppressStdErr=True)))
         for task in tasks:
             await task
 
