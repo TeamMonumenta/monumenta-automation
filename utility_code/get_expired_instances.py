@@ -155,13 +155,14 @@ if __name__ == '__main__':
                 config = copy.deepcopy(available_configs[shard_name])
                 config["shard_name"] = server
                 config["shard_path"] = shard_paths[server]
-                if not os.path.isdir(shard_paths[server])
+                if not os.path.isdir(shard_paths[server]):
                     print(f"Error: {shard_paths[server]} does not exist")
-                    exit()
+                    sys.exit(1)
                 config_list.append(config)
         else:
             print("Skipping unknown shard {}".format(server))
 
+    print()
     redis_scoreboard = RedisScoreboard("play", redis_host='redis')
 
     print("Loading dungeon scores...")
@@ -2891,8 +2892,6 @@ if __name__ == '__main__':
 
 
     for config in config_list:
-        pprint(config)
-
         world_paths = []
         for from_world_path in World.enumerate_worlds(config["shard_path"]):
             world_paths.append(from_world_path)
@@ -2904,7 +2903,7 @@ if __name__ == '__main__':
                 print(f"# {from_world_path}")
             else:
                 world_number_str = world_name[len(config["server"]):]
-                if len(world_number_str) > 0 and int(world_number_str) in config["dungeon_scores"]:
+                if len(world_number_str) == 0 or world_number_str == "exalted" or int(world_number_str) in config["dungeon_scores"]:
                     print(f"# {from_world_path}")
                 else:
                     print(f"rm -rf {from_world_path}")
