@@ -76,8 +76,7 @@ class NameUnnamedItems(SubstitutionRule):
             # r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:golden_apple",tag:{display:{Name:'{"text":"Kingfruit"}'},plain:{display:{Name:"Kingfruit"}}}},{Count:1b,Slot:1b,id:"minecraft:enchanted_golden_apple",tag:{display:{Name:'{"text":"Soulfruit"}'},plain:{display:{Name:"Soulfruit"}}}}]}''',
         )
         named_chests = (
-            # OLD EXAMPLE, DO NOT USE. This is pre 1.19 data
-            # r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:lingering_potion",tag:{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,Amplifier:2b,Duration:240,Id:10b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:900,Id:22b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"green","text":"Strong Sanctify Potion"}],"text":""}'},plain:{display:{Name:"Strong Sanctify Potion"}}}}]}''',
+            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:lingering_potion",tag:{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,Amplifier:2b,Duration:240,Id:10b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:900,Id:22b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"green","text":"Strong Sanctify Potion"}],"text":""}'},plain:{display:{Name:"Strong Sanctify Potion"}}}}]}''',
         )
 
         for chest_mojangson in unnamed_chests:
