@@ -137,3 +137,14 @@
 # Fishing
 - FishCombatsCompleted
 - FishQuestsCompleted
+# Casinos
+- Casino1Rolls
+- Casino1Wins
+- Casino1Dry
+- Casino2Rolls
+- Casino2RiggedRolls
+- Casino2Wins
+- Casino2Dry
+- Casino3Rolls
+- Casino3Wins
+- Casino3Dry
