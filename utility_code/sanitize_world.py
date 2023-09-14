@@ -8,6 +8,7 @@ from lib_py3.block_map import block_map
 from lib_py3.common import eprint, bounded_range
 
 from minecraft.world import World
+from minecraft.region import Region, EntitiesRegion
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types.chunk import BlockArray
@@ -74,14 +75,16 @@ if __name__ == '__main__':
     tile_entities_removed = 0
     for rz in range(min_z//512, (max_z - 1)//512 + 1):
         for rx in range(min_x//512, (max_x - 1)//512 + 1):
-            region = world.get_region(rx, rz)
+            block_region = world.get_region(rx, rz, region_type=Region)
+            entity_region = world.get_region(rx, rz, region_type=EntitiesRegion)
             for cz in range(min(max(min_z//16, rz*32), (rz + 1)*32 - 1), min(max(max_z//16, rz*32), (rz + 1)*32 - 1) + 1):
                 for cx in range(min(max(min_x//16, rx*32), (rx + 1)*32 - 1), min(max(max_x//16, rx*32), (rx + 1)*32 - 1) + 1):
-                    chunk = region.load_chunk(cx, cz)
+                    block_chunk = block_region.load_chunk(cx, cz)
+                    entity_chunk = entity_region.load_chunk(cx, cz) if entity_region.has_chunk(cx, cz) else None
 
                     # Figure out which x/z columns need to be pruned
                     columns_to_prune = set()
-                    for section in chunk.sections:
+                    for section in block_chunk.sections:
                         cy = section.at_path("Y").value
                         if cy == 0:
                             blocks = BlockArray.from_nbt(section, block_map)
@@ -92,7 +95,7 @@ if __name__ == '__main__':
                                         columns_to_prune.add(f"{bx}-{bz}")
 
                     # Prune them
-                    for section in chunk.sections:
+                    for section in block_chunk.sections:
                         cy = section.at_path("Y").value
                         blocks = BlockArray.from_nbt(section, block_map)
                         for by in bounded_range(min_y, max_y, cy, 16):
@@ -104,33 +107,41 @@ if __name__ == '__main__':
                                             blocks[256 * by + 16 * bz + bx] = {'name': 'minecraft:air'}
                                             blocks_removed += 1
 
-                    # Remove tile entities
-                    for path in ["block_entities", "Level.TileEntities"]:
-                        if chunk.nbt.has_path(path):
-                            new_tile_entities = []
-                            for block_entity in chunk.nbt.iter_multipath(f"{path}[]"):
-                                x = block_entity.at_path("x").value - (cx * 16)
-                                z = block_entity.at_path("z").value - (cz * 16)
-                                if f"{x}-{z}" in columns_to_prune:
-                                    tile_entities_removed += 1
-                                else:
-                                    new_tile_entities.append(block_entity)
+                    # Handle entities/block entities
+                    chunk_list = [block_chunk]
+                    if entity_chunk is not None:
+                        chunk_list.append(entity_chunk)
+                    for a_chunk in chunk_list:
+                        # Remove tile entities
+                        for path in ["block_entities", "Level.TileEntities"]:
+                            if a_chunk.nbt.has_path(path):
+                                new_tile_entities = []
+                                for block_entity in a_chunk.nbt.iter_multipath(f"{path}[]"):
+                                    x = block_entity.at_path("x").value - (cx * 16)
+                                    z = block_entity.at_path("z").value - (cz * 16)
+                                    if f"{x}-{z}" in columns_to_prune:
+                                        tile_entities_removed += 1
+                                    else:
+                                        new_tile_entities.append(block_entity)
 
-                            chunk.nbt.at_path(path).value = new_tile_entities
+                                a_chunk.nbt.at_path(path).value = new_tile_entities
 
-                    # Remove regular entities
-                    for path in ["Entities", "Level.Entities"]:
-                        if chunk.nbt.has_path(path):
-                            new_entities = []
-                            for entity in chunk.nbt.iter_multipath(f'{path}[]'):
-                                x = int(entity.at_path("Pos").value[0].value) - (cx * 16)
-                                z = int(entity.at_path("Pos").value[2].value) - (cz * 16)
-                                if f"{x}-{z}" in columns_to_prune:
-                                    entities_removed += 1
-                                else:
-                                    new_entities.append(entity)
+                        # Remove regular entities
+                        for path in ["Entities", "Level.Entities"]:
+                            if a_chunk.nbt.has_path(path):
+                                new_entities = []
+                                for entity in a_chunk.nbt.iter_multipath(f'{path}[]'):
+                                    x = int(entity.at_path("Pos").value[0].value) - (cx * 16)
+                                    z = int(entity.at_path("Pos").value[2].value) - (cz * 16)
+                                    if f"{x}-{z}" in columns_to_prune:
+                                        entities_removed += 1
+                                    else:
+                                        new_entities.append(entity)
 
-                            chunk.nbt.at_path(path).value = new_entities
-                    region.save_chunk(chunk)
+                                a_chunk.nbt.at_path(path).value = new_entities
+
+                    block_region.save_chunk(block_chunk)
+                    if entity_chunk is not None:
+                        entity_region.save_chunk(entity_chunk)
 
     print(f"{blocks_removed} blocks removed, {entities_removed} entities removed, {tile_entities_removed} tile entities removed")
