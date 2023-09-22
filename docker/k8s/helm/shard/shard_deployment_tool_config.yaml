@@ -179,14 +179,14 @@
     },
 
     "gallery": {
-        "play" : { "node": "m8" , "memGB": 4   , },
+        "play" : { "node": "m8" , "memGB": 6   , },
         "stage": { "node": "m12", "memGB": 3   , },
     },
     "gallery-2": {
-        "play" : { "node": "m13" , "memGB": 4   , },
+        "play" : { "node": "m13" , "memGB": 6   , },
     },
     "gallery-3": {
-        "play" : { "node": "m15" , "memGB": 4   , },
+        "play" : { "node": "m15" , "memGB": 6   , },
     },
 
     "blue": {
