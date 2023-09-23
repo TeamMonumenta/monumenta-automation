@@ -798,7 +798,7 @@ After transferring, source player data is backed up and then deleted. The source
 
         fromplayer = commandArgs[0]
         toplayer = commandArgs[1]
-        backuppath = f"/home/epic/0_OLD_BACKUPS/transfer_player_{fromplayer}_to_{toplayer}_{datestr()}"
+        backuppath = f"/home/epic/0_OLD_BACKUPS/0_PLAYERDATA_CHANGES/transfer_player_{fromplayer}_to_{toplayer}_{datestr()}"
 
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/move_redis_data_between_players"), "redis://redis/", "play", fromplayer, toplayer, backuppath], displayOutput=True)
         await self.display(ctx, f"{fromplayer} has been wiped and moved to the tutorial. If this was a mistake, you can ask an operator to restore it from the backup in {backuppath}.")
@@ -824,7 +824,7 @@ This will roll a player back to the most recent weekly update data.
 
         playername = commandArgs[0]
         rollbackpath = f"/home/epic/play/m13/server_config/redis_data_initial"
-        backuppath = f"/home/epic/0_OLD_BACKUPS/rollback_player_{playername}_{datestr()}"
+        backuppath = f"/home/epic/0_OLD_BACKUPS/0_PLAYERDATA_CHANGES/rollback_player_{playername}_{datestr()}"
 
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/player_backup_and_rollback"), "redis://redis/", "play", playername, rollbackpath, backuppath], displayOutput=True)
         await self.display(ctx, f"{playername} has been rolled back to the last weekly update. If this was a mistake, you can either fix it in-game using the `/rollback` command, or ask an operator to restore it from the backup in {backuppath}.")
@@ -1811,7 +1811,7 @@ Syntax:
 
         for shard in replace_shards:
             if shard == "structures":
-                base_backup_name = f"/home/epic/0_OLD_BACKUPS/structures_pre_entity_loot_updates_{datestr()}"
+                base_backup_name = f"/home/epic/0_OLD_BACKUPS/0_AUTOMATED_REPLACEMENTS/structures_pre_entity_loot_updates_{datestr()}"
 
                 await self.display(ctx, "Running replacements on structures")
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
@@ -1822,7 +1822,7 @@ Syntax:
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --structures generated --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
 
             else:
-                base_backup_name = f"/home/epic/0_OLD_BACKUPS/{shard}_pre_entity_loot_updates_{datestr()}"
+                base_backup_name = f"/home/epic/0_OLD_BACKUPS/0_AUTOMATED_REPLACEMENTS/{shard}_pre_entity_loot_updates_{datestr()}"
 
                 if do_prune:
                     await self.display(ctx, f"Running replacements and pruning world regions on shard {shard}")
