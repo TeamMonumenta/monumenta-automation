@@ -1,0 +1,33 @@
+# This is a useful tool for accessing the mysql/mariadb databases directly
+# It should be deployed when needed and deleted when not. It is not accessible externally
+#
+# To use:
+#   k apply -f adminer.yml
+#   (from another host)
+#   ssh -L 9999:127.0.0.1:9999 -p 9922 epic@admin.playmonumenta.com
+#   (in that terminal)
+#   kubectl port-forward deployment.apps/adminer 9999:8080 -n default
+#
+#   Open a browser and connect to localhost:9999
+#   For database use mysql.<namespace> i.e. mysql.play
+#   For user/pass, you need those from secrets / etc.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adminer
+  labels:
+    app: adminer
+spec:
+  selector:
+    matchLabels:
+      app: adminer
+  template:
+    metadata:
+      labels:
+        app: adminer
+    spec:
+      containers:
+        - name: adminer
+          image: adminer:4.6
+          ports:
+            - containerPort: 8080
