@@ -148,6 +148,13 @@ spec:
         - containerPort: 1113
         - containerPort: 1114
         - containerPort: 1115
+        env:
+          # This is the root password in a convenient environment variable so it can be used to copy the mysql
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
         volumeMounts:
         - name: nfs-play-m8
           mountPath: /home/epic/play/m8

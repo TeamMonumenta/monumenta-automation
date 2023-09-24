@@ -62,13 +62,13 @@ spec:
                 values:
                 - monumenta-12
       containers:
-      - image: mysql:5.6
+      - image: mariadb:10
         name: mysql
         env:
           # This secret was created using:
           #  kubectl create secret generic mysql-secret -n stage --from-literal=username=root --from-literal=password='THE PASSWORD'
           # Use secret in real usage
-        - name: MYSQL_ROOT_PASSWORD
+        - name: MARIADB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mysql-secret

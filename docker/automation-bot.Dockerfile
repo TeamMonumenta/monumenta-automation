@@ -17,7 +17,7 @@ RUN apt-get update && \
 	apt-get install -y software-properties-common && \
 	add-apt-repository -y ppa:pypy/ppa && \
 	apt-get update && \
-	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy python3-git zip unzip pigz python3-dev libtool curl liblz4-tool netcat pypy3 git parallel patch && \
+	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy python3-git zip unzip pigz python3-dev libtool curl liblz4-tool netcat pypy3 git parallel patch mariadb-client && \
 	rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install wheel && \
