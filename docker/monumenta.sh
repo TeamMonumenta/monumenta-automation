@@ -12,7 +12,6 @@ check_var() {
 check_var SERVER_DIR
 check_var JAVA_JAR
 check_var JAVA_MEM
-check_var JAVA_META_MEM
 # Optional argument
 # JAVA_ARG - Argument for Java
 # PAPER_ARG - Argument for Paper
@@ -22,7 +21,7 @@ if [[ ! -d "$SERVER_DIR" ]]; then
 	exit 1
 fi
 
-args="-Xmx$JAVA_MEM -Xms$JAVA_MEM -XX:MaxMetaspaceSize=$JAVA_META_MEM"
+args="-Xmx$JAVA_MEM -Xms$JAVA_MEM"
 
 # If JAVA_LARGE_PAGES variable is not empty, use hugepages
 if [[ "$JAVA_LARGE_PAGES " != " " ]]; then

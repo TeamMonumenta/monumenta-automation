@@ -119,9 +119,6 @@ spec:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
           value: "{{ .Values.memMB }}M"
-        # Set this to 256M regardless of JAVA_MEM
-        - name: "JAVA_META_MEM"
-          value: "256M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
