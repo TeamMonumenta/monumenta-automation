@@ -675,6 +675,7 @@ if __name__ == '__main__':
         'portal': 8,
         'ruin': 8,
         'skt': 8,
+        'zenith': 5,
     }
 
     for key in simple_view_distance_config:
@@ -725,6 +726,9 @@ if __name__ == '__main__':
         "skt-2": "skt",
         "skt-3": "skt",
         "depths-2": "depths",
+        "zenith-2": "zenith",
+        "zenith-3": "zenith",
+        "zenith-4": "zenith",
     }
 
     for key in copied_shard_config:

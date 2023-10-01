@@ -209,6 +209,12 @@ if __name__ == '__main__':
                 ],
                 "objective":"DSKTAccess"
             },
+            "zenith": {
+                "world": [
+                    "zenith",
+                ],
+                "objective":"DCZAccess"
+            },
         },
 
         # Chunk to copy directly from the reference folder

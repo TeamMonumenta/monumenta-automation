@@ -399,6 +399,9 @@ dungeons = {
             "-282 73 7589",
         ],
     },
+    "zenith": {
+        "container_whitelist":[],
+    },
 }
 
 if __name__ == '__main__':

@@ -210,6 +210,7 @@ if __name__ == '__main__':
         "corridors": get_non_preserved_dungeon_config("corridors"),
         "rush": get_non_preserved_dungeon_config("rush"),
         "depths": get_non_preserved_dungeon_config("depths"),
+        "zenith": get_non_preserved_dungeon_config("zenith"),
         "tutorial": tutorial,
         "build": None,
         "bungee": None,

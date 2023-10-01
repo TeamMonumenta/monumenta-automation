@@ -215,6 +215,9 @@
         "stage": { "node": "m12", "memMB": 1536, },
     },
     "skt-2": { "play" : { "node": "m13", "memGB": 4, }, },
+    "zenith": {
+        "stage": { "node": "m12", "memMB": 1536, },
+    },
 }
 
 # Defaults for each namespace

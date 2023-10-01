@@ -183,6 +183,7 @@ class AutomationBotInstance(commands.Cog):
             "portal": "DPSAccess",
             "ruin": "DMASAccess",
             "skt": "DSKTAccess",
+            "zenith": "DCZAccess",
         }
 
         try:
@@ -1045,7 +1046,7 @@ Examples:
                 await self.display(ctx, "--skip-replacements specified, will not run replacements on copied worlds")
             elif shard in ("valley", "isles", "ring",):
                 main_shards.append(shard)
-            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "willows", "shiftingcity", "labs", "depths", "corridors", "gallery", "portal", "ruin", "skt"]:
+            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "willows", "shiftingcity", "labs", "depths", "corridors", "gallery", "portal", "ruin", "skt", "zenith"]:
                 instance_gen_required.append(shard)
             else:
                 await self.display(ctx, f"Unknown shard specified: {shard}")

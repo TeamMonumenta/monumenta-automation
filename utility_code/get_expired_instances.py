@@ -137,6 +137,7 @@ if __name__ == '__main__':
         "white": "/home/epic/stage/m12/white/",
         "willows": "/home/epic/stage/m12/willows/",
         "yellow": "/home/epic/stage/m12/yellow/",
+        "zenith": "/home/epic/stage/m12/zenith/",
     }
 
 
