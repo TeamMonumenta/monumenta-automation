@@ -21,6 +21,7 @@ import discord
 import git
 import redis
 import yaml
+from urllib.parse import urlparse
 from discord.ext import commands
 
 logger = logging.getLogger(__name__)
@@ -1748,8 +1749,9 @@ Easiest way to get this is putting an item in a chest, and looking at that chest
         if message.attachments:
             # Save first attachment as text file at the temppath
             attachment = message.attachments[0]
-            if not attachment.url.endswith(".txt"):
-                await self.display(ctx, "setblock chest argument must be a .txt file")
+            attachment_url_parsed = urlparse(attachment.url)
+            if not attachment_url_parsed.path.endswith(".txt"):
+                await self.display(ctx, f"setblock chest argument must be a .txt file, got {attachment_url_parsed.path}")
                 return
 
             await attachment.save(temppath)
