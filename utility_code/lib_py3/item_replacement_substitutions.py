@@ -77,6 +77,9 @@ class NameUnnamedItems(SubstitutionRule):
         )
         named_chests = (
             r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:lingering_potion",tag:{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,Amplifier:2b,Duration:240,Id:10b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:900,Id:22b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"green","text":"Strong Sanctify Potion"}],"text":""}'},plain:{display:{Name:"Strong Sanctify Potion"}}}}]}''',
+            # Zombie Meat and Cooked Zombie Meat
+            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:rabbit",tag:{display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Zombie Meat"}],"text":""}'},plain:{display:{Name:"Zombie Meat"}}}}]}''',
+            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:cooked_rabbit",tag:{display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Cooked Zombie Meat"}],"text":""}'},plain:{display:{Name:"Cooked Zombie Meat"}}}}]}'''
         )
 
         for chest_mojangson in unnamed_chests:
