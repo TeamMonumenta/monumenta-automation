@@ -255,7 +255,7 @@ class SubtituteItems(SubstitutionRule):
                 # ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
                 ["minecraft:pumpkin_seeds", "Lesser Charm of Multiplication", "minecraft:horn_coral_fan", "Lesser Trailblazer Charm"],
                 ["minecraft:pumpkin_seeds", "Greater Charm of Multiplication", "minecraft:horn_coral_fan", "Greater Trailblazer Charm"],
-                ["minecraft:pumpkin_seeds", "Focused Charm of Multiplication", "minecraft:horn_coral_fan", "Focused Trailblazer Charm"]
+                ["minecraft:pumpkin_seeds", "Focused Charm of Multiplication", "minecraft:horn_coral_fan", "Focused Trailblazer Charm"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
