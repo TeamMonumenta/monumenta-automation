@@ -246,13 +246,16 @@ class SubtituteItems(SubstitutionRule):
         self.replacements = {}
 
         for substitution in [
-                #["minecraft:example_item_id", "Example Name", "minecraft:new_id", "Example New Name"],
+                # ["minecraft:example_item_id", "Example Name", "minecraft:new_id", "Example New Name"],
                 # Any name:
-                #["minecraft:example_banned_item", always_equal, "minecraft:new_id", "Example New Name"],
+                # ["minecraft:example_banned_item", always_equal, "minecraft:new_id", "Example New Name"],
                 # No name:
-                #["minecraft:example_vanilla_item", None, "minecraft:new_id", "Example New Name"],
+                # ["minecraft:example_vanilla_item", None, "minecraft:new_id", "Example New Name"],
                 # Example item type change:
-                #["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
+                # ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
+                ["minecraft:pumpkin_seeds", "Lesser Charm of Multiplication", "minecraft:horn_coral_fan", "Lesser Trailblazer Charm"],
+                ["minecraft:pumpkin_seeds", "Greater Charm of Multiplication", "minecraft:horn_coral_fan", "Greater Trailblazer Charm"],
+                ["minecraft:pumpkin_seeds", "Focused Charm of Multiplication", "minecraft:horn_coral_fan", "Focused Trailblazer Charm"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
