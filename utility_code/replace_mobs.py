@@ -129,13 +129,17 @@ sub = [
     # Typo
     ("Permafrost Construct", match_name('Permafrost Constuct', match_id('minecraft:iron_golem'))),
 
-    #Yellow and Willows renames
+    # Yellow and Willows renames
     ("Wrath Particulate", match_name('Malevolent Dragon', match_id('minecraft:vex'))),
     ("Corrupted Cultist", match_name('Nightmare Cultist', match_id('minecraft:zombie'))),
     ("Corrupted Warlord", match_name('Nightmare Warlord', match_id('minecraft:skeleton'))),
     ("Hateful Titan", match_name('Dragongheist', match_id('minecraft:wither_skeleton'))),
     ("River's Will", match_name('Son of the River', match_id('minecraft:zombie_villager'))),
     ("Tuathan", match_name('Corrupted Leprechaun', match_id('minecraft:zombie'))),
+
+    # Ephemeral Corridors mob typos
+    ("Mindphaser", match_name('Mindfaser', match_id('minecraft:guardian'))),
+    ("Elder Mindphaser", match_name('Elder Mindfaser', match_id('minecraft:guardian'))),
 
     # Depths
     ("Ravenous Ooze", match_name('Abyssal Guardian', match_id('minecraft:guardian'))),
