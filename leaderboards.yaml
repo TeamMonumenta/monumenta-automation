@@ -1,6 +1,8 @@
 # Redis leaderboards to update
 # The location of this file is important - it is referenced from here during terrain reset / stage fetch
 
+# Guild Founders - will be removed once this is fully upgraded to LuckPerms
+- Founder
 # Wools
 - White
 - Orange
