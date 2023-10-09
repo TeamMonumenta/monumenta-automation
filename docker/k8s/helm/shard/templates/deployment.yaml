@@ -134,6 +134,8 @@ spec:
           value: "1"
 {{- else if eq .Values.namespace "stage" }}
           value: "1"
+{{- else if eq .Values.namespace "volt" }}
+          value: "1"
 {{- else }}
           value: "0"
 {{- end }}
@@ -182,6 +184,9 @@ spec:
 {{- end }}
 {{- if .Values.maps }}
 {{- if eq .Values.namespace "stage" }}
+        - name: nfs-maps
+          mountPath: /home/epic/maps/dynmap/play
+{{- else if eq .Values.namespace "volt" }}
         - name: nfs-maps
           mountPath: /home/epic/maps/dynmap/play
 {{- else }}

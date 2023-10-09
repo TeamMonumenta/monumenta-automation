@@ -62,6 +62,7 @@ spec:
     - build
     - play
     - stage
+    - volt
     - clash
   endpoints:
   - port: metrics
@@ -85,6 +86,7 @@ spec:
     - build
     - play
     - stage
+    - volt
     - clash
   endpoints:
   - port: metrics

@@ -115,6 +115,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/stage/m12
+        - name: nfs-volt
+          hostPath:
+            type: Directory
+            path: /nfs/volt/m12
         - name: nfs-r1
           hostPath:
             type: Directory
@@ -167,6 +171,8 @@ spec:
           mountPath: /home/epic/sound_pack
         - name: nfs-stage
           mountPath: /home/epic/stage/m12
+        - name: nfs-volt
+          mountPath: /home/epic/volt/m12
         - name: nfs-r1
           mountPath: /home/epic/valley
         - name: nfs-resource-packs

@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: volt
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql
+  clusterIP: None
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+  namespace: volt
+data:
+  mysql.cnf: |
+    [mysqld]
+    max_connections = 1000
+    # Helpful: https://tech.labelleassiette.com/how-to-reduce-the-memory-usage-of-mysql-61ea7d1a9bd
+    innodb_buffer_pool_size = 64M
+    tmp_table_size          = 8M
+  docker.cnf: |
+    [mysqld]
+    skip-host-cache
+    skip-name-resolve
+  mysqldump.cnf: |
+    [mysqldump]
+    quick
+    quote-names
+    max_allowed_packet      = 16M
+
+---
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: volt
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-12
+      containers:
+      - image: mariadb:10
+        name: mysql
+        env:
+          # This secret was created using:
+          #  kubectl create secret generic mysql-secret -n volt --from-literal=username=root --from-literal=password='THE PASSWORD'
+          # Use secret in real usage
+        - name: MARIADB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+        - name: mysql-config
+          mountPath: /etc/mysql/conf.d
+        resources:
+          limits:
+            memory: 2Gi
+            cpu: "2"
+      volumes:
+        - name: mysql-persistent-storage
+          hostPath:
+            type: Directory
+            path: /nfs/volt/mysql
+        - name: mysql-config
+          configMap:
+            name: mysql-config

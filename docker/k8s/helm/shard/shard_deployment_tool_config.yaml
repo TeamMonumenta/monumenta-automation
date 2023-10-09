@@ -25,6 +25,7 @@
         "play" : { "node": "m8" , "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "build": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "stage": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+        "volt" : { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
     },
 
     "m119": {
@@ -36,10 +37,12 @@
         "play" : { "node": "m8" , "memGB": 6, },
         "build": { "node": "m12", "memGB": 6, },
         "stage": { "node": "m12", "memGB": 3, },
+        "volt" : { "node": "m12", "memGB": 3, },
     },
     "valley-2": {
         "play" : { "node": "m8" , "memGB": 6, },
         "stage": { "node": "m12", "memGB": 3, },
+        "volt" : { "node": "m12", "memGB": 3, },
     },
     "valley-3": {
         "play" : { "node": "m8" , "memGB": 6, },
@@ -50,6 +53,7 @@
         "play" : { "node": "m11", "memGB": 5, },
         "build": { "node": "m12", "memGB": 6, },
         "stage": { "node": "m12", "memGB": 4, },
+        "volt" : { "node": "m12", "memGB": 4, },
         "clash": { "node": "m12", "memGB": 4, },
     },
     "isles-2": {
@@ -64,6 +68,7 @@
         "play":  { "node": "m13", "memGB": 7   , },
         "build": { "node": "m12", "memGB": 6   , },
         "stage": { "node": "m12", "memGB": 3   , },
+        "volt" : { "node": "m12", "memGB": 3   , },
     },
     "ring-2":  { "play" : { "node": "m13", "memGB": 7, }, },
     "ring-3":  { "play" : { "node": "m11", "memGB": 7, }, },
@@ -77,110 +82,135 @@
     "plots": {
         "play" : { "node": "m15", "memGB": 8, },
         "stage": { "node": "m12", "memGB": 6, },
+        "volt" : { "node": "m12", "memGB": 6, },
     },
 
     "playerplots": {
         "play":  { "node": "m13", "memGB": 8, },
         "stage": { "node": "m12", "memGB": 4, },
+        "volt" : { "node": "m12", "memGB": 4, },
     },
 
     # Player build shard
     "build": {
         "play" : { "node": "m8" , "memGB": 3   , "gsheetCredentials": "false" },
         "stage": { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
+        "volt" : { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
     },
 
     # Dungeons
     "cyan": {
         "play" : { "node": "m11", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "depths": {
         "play" : { "node": "m11", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
         "clash": { "node": "m12", "memMB": 1536, },
     },
     "depths-2": { "play" : { "node": "m11" , "memGB": 3, }, },
     "forum": {
         "play" : { "node": "m15", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 2048, },
+        "volt" : { "node": "m12", "memMB": 2048, },
     },
     "gray": {
         "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "labs": {
         "play" : { "node": "m11", "memGB": 6   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "lightblue": {
         "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "lightgray": {
         "play" : { "node": "m15" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "lime": {
         "play" : { "node": "m15", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "magenta": {
         "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "orange": {
         "play" : { "node": "m13", "memGB": 3, },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "pink": {
         "play" : { "node": "m15", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "purple": {
         "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "reverie": {
         "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "corridors": {
         "play" : { "node": "m15", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "rush": {
         "play" : { "node": "m13", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "shiftingcity": {
         "play" : { "node": "m11", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "teal": {
         "play" : { "node": "m15" , "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "tutorial": {
         "play" : { "node": "m11", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "white": {
         "play" : { "node": "m13", "memGB": 3, },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "willows": {
         "play" : { "node": "m13", "memGB": 5,    },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "yellow": {
         "play" : { "node": "m15", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "gallery": {
         "play" : { "node": "m8" , "memGB": 6   , },
         "stage": { "node": "m12", "memGB": 3   , },
+        "volt" : { "node": "m12", "memGB": 3   , },
     },
     "gallery-2": {
         "play" : { "node": "m13" , "memGB": 6   , },
@@ -192,31 +222,37 @@
     "blue": {
         "play" : { "node": "m15", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "blue-2": { "play" : { "node": "m8" , "memGB": 5, }, },
 
     "brown": {
         "play" : { "node": "m11", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "portal": {
         "play" : { "node": "m11", "memGB": 6   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "ruin": {
         "play" : { "node": "m8", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "skt": {
         "play" : { "node": "m13", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
     "skt-2": { "play" : { "node": "m13", "memGB": 4, }, },
     "zenith": {
         "stage": { "node": "m12", "memMB": 1536, },
+        "volt" : { "node": "m12", "memMB": 1536, },
     },
 }
 
@@ -224,7 +260,8 @@
 "namespace_defaults": {
     "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true" },
     "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
-    "stage": { "gsheetCredentials": "true", "fastMetrics": "false", "maps": "true" },
+    "stage": { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true" },
+    "volt" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true" },
     "clash": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "false" },
 }
 

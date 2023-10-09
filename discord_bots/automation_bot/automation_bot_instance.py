@@ -1653,7 +1653,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             server_section = config.STAGE_SOURCE[server_name]
             stage_msg = {
                 "shards": server_section["shards"],
-                "address": "automation-bot.stage",
+                "address": f"automation-bot.{config.K8S_NAMESPACE}",
                 "port": port,
             }
             await self.display(ctx, f"Sending request to {server_section['queue_name']} with config {pformat(stage_msg)}")

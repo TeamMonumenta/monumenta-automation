@@ -1,0 +1,506 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: volt
+  labels:
+    k8s-app: monumenta-metrics
+spec:
+  selector:
+    app: redis
+  clusterIP: None
+  ports:
+  - name: redis
+    port: 6379
+  - name: metrics
+    port: 9121
+
+---
+
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: redis
+  namespace: volt
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-12
+      containers:
+      - image: redis:6
+        name: redis
+        ports:
+        - containerPort: 6379
+          name: redis
+        volumeMounts:
+        - name: redis-persistent-storage
+          mountPath: /data
+        - name: redis-config
+          mountPath: /usr/local/etc/redis/
+        command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+      - name: redis-exporter
+        image: oliver006/redis_exporter:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 9121
+      volumes:
+        - name: redis-persistent-storage
+          hostPath:
+            type: Directory
+            path: /nfs/volt/redis
+        - name: redis-config
+          configMap:
+            name: redis-config
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: volt
+data:
+  redis.conf: |
+    # Redis configuration file example.
+    #
+    # Note that in order to read the configuration file, Redis must be
+    # started with the file path as first argument:
+    #
+    # ./redis-server /path/to/redis.conf
+
+    # Note on units: when memory size is needed, it is possible to specify
+    # it in the usual form of 1k 5GB 4M and so forth:
+    #
+    # 1k => 1000 bytes
+    # 1kb => 1024 bytes
+    # 1m => 1000000 bytes
+    # 1mb => 1024*1024 bytes
+    # 1g => 1000000000 bytes
+    # 1gb => 1024*1024*1024 bytes
+    #
+    # units are case insensitive so 1GB 1Gb 1gB are all the same.
+
+    ################################## NETWORK #####################################
+    # By default, if no "bind" configuration directive is specified, Redis listens
+    # for connections from all the network interfaces available on the server.
+    # It is possible to listen to just one or multiple selected interfaces using
+    # the "bind" configuration directive, followed by one or more IP addresses.
+    #
+    # Examples:
+    #
+    # bind 192.168.1.100 10.0.0.1
+    # bind 127.0.0.1 ::1
+    #
+    # ~~~ WARNING ~~~ If the computer running Redis is directly exposed to the
+    # internet, binding to all the interfaces is dangerous and will expose the
+    # instance to everybody on the internet. So by default we uncomment the
+    # following bind directive, that will force Redis to listen only into
+    # the IPv4 loopback interface address (this means Redis will be able to
+    # accept connections only from clients running into the same computer it
+    # is running).
+    #
+    # IF YOU ARE SURE YOU WANT YOUR INSTANCE TO LISTEN TO ALL THE INTERFACES
+    # JUST COMMENT THE FOLLOWING LINE.
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    bind *
+
+    # Protected mode is a layer of security protection, in order to avoid that
+    # Redis instances left open on the internet are accessed and exploited.
+    #
+    # When protected mode is on and if:
+    #
+    # 1) The server is not binding explicitly to a set of addresses using the
+    #    "bind" directive.
+    # 2) No password is configured.
+    #
+    # The server only accepts connections from clients connecting from the
+    # IPv4 and IPv6 loopback addresses 127.0.0.1 and ::1, and from Unix domain
+    # sockets.
+    #
+    # By default protected mode is enabled. You should disable it only if
+    # you are sure you want clients from other hosts to connect to Redis
+    # even if no authentication is configured, nor a specific set of interfaces
+    # are explicitly listed using the "bind" directive.
+    protected-mode no
+
+    # Accept connections on the specified port, default is 6379 (IANA #815344).
+    # If port 0 is specified Redis will not listen on a TCP socket.
+    port 6379
+
+    # TCP listen() backlog.
+    #
+    # In high requests-per-second environments you need an high backlog in order
+    # to avoid slow clients connections issues. Note that the Linux kernel
+    # will silently truncate it to the value of /proc/sys/net/core/somaxconn so
+    # make sure to raise both the value of somaxconn and tcp_max_syn_backlog
+    # in order to get the desired effect.
+    tcp-backlog 511
+
+    # Close the connection after a client is idle for N seconds (0 to disable)
+    timeout 0
+
+    # TCP keepalive.
+    #
+    # If non-zero, use SO_KEEPALIVE to send TCP ACKs to clients in absence
+    # of communication. This is useful for two reasons:
+    #
+    # 1) Detect dead peers.
+    # 2) Take the connection alive from the point of view of network
+    #    equipment in the middle.
+    #
+    # On Linux, the specified value (in seconds) is the period used to send ACKs.
+    # Note that to close the connection the double of the time is needed.
+    # On other kernels the period depends on the kernel configuration.
+    #
+    # A reasonable value for this option is 300 seconds, which is the new
+    # Redis default starting with Redis 3.2.1.
+    tcp-keepalive 300
+
+    ################################# GENERAL #####################################
+
+    # By default Redis does not run as a daemon. Use 'yes' if you need it.
+    # Note that Redis will write a pid file in /var/run/redis.pid when daemonized.
+    daemonize no
+
+    # If you run Redis from upstart or systemd, Redis can interact with your
+    # supervision tree. Options:
+    #   supervised no      - no supervision interaction
+    #   supervised upstart - signal upstart by putting Redis into SIGSTOP mode
+    #   supervised systemd - signal systemd by writing READY=1 to $NOTIFY_SOCKET
+    #   supervised auto    - detect upstart or systemd method based on
+    #                        UPSTART_JOB or NOTIFY_SOCKET environment variables
+    # Note: these supervision methods only signal "process is ready."
+    #       They do not enable continuous liveness pings back to your supervisor.
+    supervised no
+
+    # Specify the server verbosity level.
+    # This can be one of:
+    # debug (a lot of information, useful for development/testing)
+    # verbose (many rarely useful info, but not a mess like the debug level)
+    # notice (moderately verbose, what you want in production probably)
+    # warning (only very important / critical messages are logged)
+    loglevel notice
+
+    # Specify the log file name. Also the empty string can be used to force
+    # Redis to log on the standard output. Note that if you use standard
+    # output for logging but daemonize, logs will be sent to /dev/null
+    logfile ""
+
+    # Set the number of databases. The default database is DB 0, you can select
+    # a different one on a per-connection basis using SELECT <dbid> where
+    # dbid is a number between 0 and 'databases'-1
+    databases 16
+
+    # By default Redis shows an ASCII art logo only when started to log to the
+    # standard output and if the standard output is a TTY. Basically this means
+    # that normally a logo is displayed only in interactive sessions.
+    #
+    # However it is possible to force the pre-4.0 behavior and always show a
+    # ASCII art logo in startup logs by setting the following option to yes.
+    always-show-logo yes
+
+    ################################ SNAPSHOTTING  ################################
+    #
+    # Save the DB on disk:
+    #
+    #   save <seconds> <changes>
+    #
+    #   Will save the DB if both the given number of seconds and the given
+    #   number of write operations against the DB occurred.
+    #
+    #   In the example below the behaviour will be to save:
+    #   after 900 sec (15 min) if at least 1 key changed
+    #   after 300 sec (5 min) if at least 10 keys changed
+    #   after 60 sec if at least 10000 keys changed
+    #
+    #   Note: you can disable saving completely by commenting out all "save" lines.
+    #
+    #   It is also possible to remove all the previously configured save
+    #   points by adding a save directive with a single empty string argument
+    #   like in the following example:
+    #
+    #   save ""
+
+    save 900 1
+    save 300 10
+    save 60 10000
+
+    # By default Redis will stop accepting writes if RDB snapshots are enabled
+    # (at least one save point) and the latest background save failed.
+    # This will make the user aware (in a hard way) that data is not persisting
+    # on disk properly, otherwise chances are that no one will notice and some
+    # disaster will happen.
+    #
+    # If the background saving process will start working again Redis will
+    # automatically allow writes again.
+    #
+    # However if you have setup your proper monitoring of the Redis server
+    # and persistence, you may want to disable this feature so that Redis will
+    # continue to work as usual even if there are problems with disk,
+    # permissions, and so forth.
+    stop-writes-on-bgsave-error yes
+
+    # Compress string objects using LZF when dump .rdb databases?
+    # For default that's set to 'yes' as it's almost always a win.
+    # If you want to save some CPU in the saving child set it to 'no' but
+    # the dataset will likely be bigger if you have compressible values or keys.
+    rdbcompression yes
+
+    # Since version 5 of RDB a CRC64 checksum is placed at the end of the file.
+    # This makes the format more resistant to corruption but there is a performance
+    # hit to pay (around 10%) when saving and loading RDB files, so you can disable it
+    # for maximum performances.
+    #
+    # RDB files created with checksum disabled have a checksum of zero that will
+    # tell the loading code to skip the check.
+    rdbchecksum yes
+
+    # The filename where to dump the DB
+    dbfilename dump.rdb
+
+    # The working directory.
+    #
+    # The DB will be written inside this directory, with the filename specified
+    # above using the 'dbfilename' configuration directive.
+    #
+    # The Append Only File will also be created inside this directory.
+    #
+    # Note that you must specify a directory here, not a file name.
+    dir /data/
+
+    ################################## SECURITY ###################################
+
+    # Require clients to issue AUTH <PASSWORD> before processing any other
+    # commands.  This might be useful in environments in which you do not trust
+    # others with access to the host running redis-server.
+    #
+    # This should stay commented out for backward compatibility and because most
+    # people do not need auth (e.g. they run their own servers).
+    #
+    # Warning: since Redis is pretty fast an outside user can try up to
+    # 150k passwords per second against a good box. This means that you should
+    # use a very strong password otherwise it will be very easy to break.
+    #
+    # requirepass foobared
+
+    # Command renaming.
+    #
+    # It is possible to change the name of dangerous commands in a shared
+    # environment. For instance the CONFIG command may be renamed into something
+    # hard to guess so that it will still be available for internal-use tools
+    # but not available for general clients.
+    #
+    # Example:
+    #
+    # rename-command CONFIG b840fc02d524045429941cc15f59e41cb7be6c52
+    #
+    # It is also possible to completely kill a command by renaming it into
+    # an empty string:
+    #
+    # rename-command CONFIG ""
+    #
+    # Please note that changing the name of commands that are logged into the
+    # AOF file or transmitted to replicas may cause problems.
+
+
+    ############################## MEMORY MANAGEMENT ################################
+
+    # Set a memory usage limit to the specified amount of bytes.
+    # When the memory limit is reached Redis will try to remove keys
+    # according to the eviction policy selected (see maxmemory-policy).
+    #
+    # If Redis can't remove keys according to the policy, or if the policy is
+    # set to 'noeviction', Redis will start to reply with errors to commands
+    # that would use more memory, like SET, LPUSH, and so on, and will continue
+    # to reply to read-only commands like GET.
+    #
+    # This option is usually useful when using Redis as an LRU or LFU cache, or to
+    # set a hard memory limit for an instance (using the 'noeviction' policy).
+    #
+    # WARNING: If you have replicas attached to an instance with maxmemory on,
+    # the size of the output buffers needed to feed the replicas are subtracted
+    # from the used memory count, so that network problems / resyncs will
+    # not trigger a loop where keys are evicted, and in turn the output
+    # buffer of replicas is full with DELs of keys evicted triggering the deletion
+    # of more keys, and so forth until the database is completely emptied.
+    #
+    # In short... if you have replicas attached it is suggested that you set a lower
+    # limit for maxmemory so that there is some free RAM on the system for replica
+    # output buffers (but this is not needed if the policy is 'noeviction').
+    #
+    # maxmemory <bytes>
+
+    # MAXMEMORY POLICY: how Redis will select what to remove when maxmemory
+    # is reached. You can select among five behaviors:
+    #
+    # volatile-lru -> Evict using approximated LRU among the keys with an expire set.
+    # allkeys-lru -> Evict any key using approximated LRU.
+    # volatile-lfu -> Evict using approximated LFU among the keys with an expire set.
+    # allkeys-lfu -> Evict any key using approximated LFU.
+    # volatile-random -> Remove a random key among the ones with an expire set.
+    # allkeys-random -> Remove a random key, any key.
+    # volatile-ttl -> Remove the key with the nearest expire time (minor TTL)
+    # noeviction -> Don't evict anything, just return an error on write operations.
+    #
+    # LRU means Least Recently Used
+    # LFU means Least Frequently Used
+    #
+    # Both LRU, LFU and volatile-ttl are implemented using approximated
+    # randomized algorithms.
+    #
+    # Note: with any of the above policies, Redis will return an error on write
+    #       operations, when there are no suitable keys for eviction.
+    #
+    #       At the date of writing these commands are: set setnx setex append
+    #       incr decr rpush lpush rpushx lpushx linsert lset rpoplpush sadd
+    #       sinter sinterstore sunion sunionstore sdiff sdiffstore zadd zincrby
+    #       zunionstore zinterstore hset hsetnx hmset hincrby incrby decrby
+    #       getset mset msetnx exec sort
+    #
+    # The default is:
+    #
+    # maxmemory-policy noeviction
+
+    # LRU, LFU and minimal TTL algorithms are not precise algorithms but approximated
+    # algorithms (in order to save memory), so you can tune it for speed or
+    # accuracy. For default Redis will check five keys and pick the one that was
+    # used less recently, you can change the sample size using the following
+    # configuration directive.
+    #
+    # The default of 5 produces good enough results. 10 Approximates very closely
+    # true LRU but costs more CPU. 3 is faster but not very accurate.
+    #
+    # maxmemory-samples 5
+
+    # Starting from Redis 5, by default a replica will ignore its maxmemory setting
+    # (unless it is promoted to master after a failover or manually). It means
+    # that the eviction of keys will be just handled by the master, sending the
+    # DEL commands to the replica as keys evict in the master side.
+    #
+    # This behavior ensures that masters and replicas stay consistent, and is usually
+    # what you want, however if your replica is writable, or you want the replica to have
+    # a different memory setting, and you are sure all the writes performed to the
+    # replica are idempotent, then you may change this default (but be sure to understand
+    # what you are doing).
+    #
+    # Note that since the replica by default does not evict, it may end using more
+    # memory than the one set via maxmemory (there are certain buffers that may
+    # be larger on the replica, or data structures may sometimes take more memory and so
+    # forth). So make sure you monitor your replicas and make sure they have enough
+    # memory to never hit a real out-of-memory condition before the master hits
+    # the configured maxmemory setting.
+    #
+    # replica-ignore-maxmemory yes
+
+    ############################# LAZY FREEING ####################################
+
+    # Redis has two primitives to delete keys. One is called DEL and is a blocking
+    # deletion of the object. It means that the server stops processing new commands
+    # in order to reclaim all the memory associated with an object in a synchronous
+    # way. If the key deleted is associated with a small object, the time needed
+    # in order to execute the DEL command is very small and comparable to most other
+    # O(1) or O(log_N) commands in Redis. However if the key is associated with an
+    # aggregated value containing millions of elements, the server can block for
+    # a long time (even seconds) in order to complete the operation.
+    #
+    # For the above reasons Redis also offers non blocking deletion primitives
+    # such as UNLINK (non blocking DEL) and the ASYNC option of FLUSHALL and
+    # FLUSHDB commands, in order to reclaim memory in background. Those commands
+    # are executed in constant time. Another thread will incrementally free the
+    # object in the background as fast as possible.
+    #
+    # DEL, UNLINK and ASYNC option of FLUSHALL and FLUSHDB are user-controlled.
+    # It's up to the design of the application to understand when it is a good
+    # idea to use one or the other. However the Redis server sometimes has to
+    # delete keys or flush the whole database as a side effect of other operations.
+    # Specifically Redis deletes objects independently of a user call in the
+    # following scenarios:
+    #
+    # 1) On eviction, because of the maxmemory and maxmemory policy configurations,
+    #    in order to make room for new data, without going over the specified
+    #    memory limit.
+    # 2) Because of expire: when a key with an associated time to live (see the
+    #    EXPIRE command) must be deleted from memory.
+    # 3) Because of a side effect of a command that stores data on a key that may
+    #    already exist. For example the RENAME command may delete the old key
+    #    content when it is replaced with another one. Similarly SUNIONSTORE
+    #    or SORT with STORE option may delete existing keys. The SET command
+    #    itself removes any old content of the specified key in order to replace
+    #    it with the specified string.
+    # 4) During replication, when a replica performs a full resynchronization with
+    #    its master, the content of the whole database is removed in order to
+    #    load the RDB file just transferred.
+    #
+    # In all the above cases the default is to delete objects in a blocking way,
+    # like if DEL was called. However you can configure each case specifically
+    # in order to instead release memory in a non-blocking way like if UNLINK
+    # was called, using the following configuration directives:
+
+    lazyfree-lazy-eviction no
+    lazyfree-lazy-expire no
+    lazyfree-lazy-server-del no
+    replica-lazy-flush no
+
+    ############################## APPEND ONLY MODE ###############################
+
+    # Busty: This is way overkill for Monumenta - we can afford to lose a few
+    # transactions if everything crashes
+
+    appendonly no
+
+    ################################## SLOW LOG ###################################
+
+    # The Redis Slow Log is a system to log queries that exceeded a specified
+    # execution time. The execution time does not include the I/O operations
+    # like talking with the client, sending the reply and so forth,
+    # but just the time needed to actually execute the command (this is the only
+    # stage of command execution where the thread is blocked and can not serve
+    # other requests in the meantime).
+    #
+    # You can configure the slow log with two parameters: one tells Redis
+    # what is the execution time, in microseconds, to exceed in order for the
+    # command to get logged, and the other parameter is the length of the
+    # slow log. When a new command is logged the oldest one is removed from the
+    # queue of logged commands.
+
+    # The following time is expressed in microseconds, so 1000000 is equivalent
+    # to one second. Note that a negative number disables the slow log, while
+    # a value of zero forces the logging of every command.
+    slowlog-log-slower-than 10000
+
+    # There is no limit to this length. Just be aware that it will consume memory.
+    # You can reclaim memory used by the slow log with SLOWLOG RESET.
+    slowlog-max-len 128
+
+    ################################### CLIENTS ####################################
+    ################################ REDIS CLUSTER  ###############################
+    ################################ LUA SCRIPTING  ###############################
+    ########################## CLUSTER DOCKER/NAT support  ########################
+    ################################# REPLICATION #################################
+    ############################### ADVANCED CONFIG ###############################
+    ########################### ACTIVE DEFRAGMENTATION #######################
+    ############################# EVENT NOTIFICATION ##############################
+    ################################ LATENCY MONITOR ##############################
+
+    # Busty: Defaults are fine for the forseeable future, need to revisit
+    # everything when this changes

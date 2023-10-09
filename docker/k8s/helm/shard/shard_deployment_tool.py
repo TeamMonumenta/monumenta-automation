@@ -130,7 +130,7 @@ def test_shard(namespace, shard):
                     print(f"{namespace} {shard}: Path not specified in {namespace} bot secret", file=sys.stderr)
                     found_problem = True
 
-    elif namespace == 'stage':
+    elif namespace in ('stage', 'volt'):
         bot_config_path = secrets_dir / namespace / node / 'config.yml'
         if not bot_config_path.exists():
             print(f"{namespace} {shard}: No config for {namespace} {node} bot secret", file=sys.stderr)
@@ -211,7 +211,7 @@ def get_shard_deployment(namespace, shard):
                 yaml_data.append(yaml.load(document_data, Loader=yaml.FullLoader))
                 document_data = ''
             continue
-            
+
         document_data += line
 
     yaml_data.append(yaml.load(document_data, Loader=yaml.FullLoader))

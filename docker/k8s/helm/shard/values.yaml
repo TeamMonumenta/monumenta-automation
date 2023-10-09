@@ -5,7 +5,7 @@
 # "valley", etc. No underscores!
 name: "valley"
 
-# "build", "play", "stage"
+# "build", "play", "stage", "volt"
 namespace: "play"
 
 # "m8", "m11", etc.
