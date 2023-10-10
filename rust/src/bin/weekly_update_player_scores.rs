@@ -88,6 +88,9 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("AzacorAccess".to_string(), 0);
         scores.insert("DCZAccess".to_string(), 0);
 
+        // One-time score reset for Light Blue race
+        scores.insert("RaceD-05".to_string(), 0);
+
         fix_total_level(scores);
     }
 }
