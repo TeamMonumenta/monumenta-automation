@@ -259,6 +259,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:pumpkin_seeds", "Lesser Charm of Multiplication", "minecraft:horn_coral_fan", "Lesser Trailblazer Charm"],
                 ["minecraft:pumpkin_seeds", "Greater Charm of Multiplication", "minecraft:horn_coral_fan", "Greater Trailblazer Charm"],
                 ["minecraft:pumpkin_seeds", "Focused Charm of Multiplication", "minecraft:horn_coral_fan", "Focused Trailblazer Charm"],
+                ["minecraft:lingering_potion", "Crippling Vial", "minecraft:splash_potion", "Crippling Vial"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
