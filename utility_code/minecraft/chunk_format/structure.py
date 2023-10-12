@@ -43,6 +43,7 @@ class Structure(RecursiveMinecraftIterator, NbtPathDebug):
         })
         multipaths[Entity] |= frozenset({
             '"".entities[]',
+            '"".entities[].nbt',
         })
 
     def get_debug_str(self):
