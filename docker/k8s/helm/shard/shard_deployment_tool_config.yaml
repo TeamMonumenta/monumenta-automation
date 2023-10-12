@@ -78,6 +78,8 @@
     "ring-7":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
 
+    "ringfreeze":  { "build": { "node": "m12", "memGB": 3   , }, },
+
     # Plots
     "plots": {
         "play" : { "node": "m15", "memGB": 8, },
