@@ -945,7 +945,7 @@ Must be run before starting the update on the play server
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle post autoformat", '-s'], ret=[0, 1])
 
         if not skip_replacements:
-            await self.run_replacements_internal(ctx, ["valley", "isles", "ring", "dungeon", "structures"], do_prune=True)
+            await self.run_replacements_internal(ctx, ["valley", "isles", "ring", "ringfreeze", "dungeon", "structures"], do_prune=True)
 
         if not skip_commit:
             await self.cd(ctx, '/home/epic/project_epic/server_config/data')
@@ -957,8 +957,8 @@ Must be run before starting the update on the play server
             await self.generate_instances_internal(ctx, debug=debug)
 
         if not debug:
-            await self.display(ctx, "Stopping valley, isles, and ring...")
-            await self.stop(ctx, ["valley", "isles", "ring"])
+            await self.display(ctx, "Stopping valley, isles, ring, and ringfreeze...")
+            await self.stop(ctx, ["valley", "isles", "ring", "ringfreeze"])
 
         await self.display(ctx, "Copying valley...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley")
@@ -981,15 +981,15 @@ Must be run before starting the update on the play server
             await self.display(ctx, "Restarting the isles shard...")
             await self.start(ctx, "isles", wait=False)
 
-        await self.display(ctx, "Copying ring...")
+        await self.display(ctx, "Copying ringfreeze...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring")
-        await self.run(ctx, "cp -a /home/epic/project_epic/ring/Project_Epic-ring /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
-        await self.run(ctx, "cp -a /home/epic/project_epic/ring/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
-        await self.run(ctx, "cp -a /home/epic/project_epic/ring/godspore /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ringfreeze/Project_Epic-ring /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ringfreeze/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ringfreeze/godspore /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
 
         if not debug:
-            await self.display(ctx, "Restarting the ring shard...")
-            await self.start(ctx, "ring", wait=False)
+            await self.display(ctx, "Restarting the ring and ringfreeze shards...")
+            await self.start(ctx, ["ring", "ringfreeze"], wait=False)
 
         await self.display(ctx, "Copying purgatory...")
         await self.run(ctx, "cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
