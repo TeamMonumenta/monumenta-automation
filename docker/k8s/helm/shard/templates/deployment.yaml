@@ -97,6 +97,10 @@ spec:
           hostPath:
             path: /nfs/{{ .Values.namespace }}/{{ .Values.node }}
             type: Directory
+        - name: nfs-domain-shared
+          hostPath:
+            path: /nfs/3_DOMAIN_SHARED/{{ .Values.namespace }}
+            type: Directory
         - name: nfs-shared
           hostPath:
             path: /nfs/4_SHARED
@@ -194,6 +198,8 @@ spec:
           mountPath: /home/epic/maps/dynmap/{{ .Values.namespace }}
 {{- end }}
 {{- end }}
+        - name: nfs-domain-shared
+          mountPath: /home/epic/3_DOMAIN_SHARED
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         - name: nfs-scratch

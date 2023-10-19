@@ -126,6 +126,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/volt/redis
+        - name: nfs-domain-shared
+          hostPath:
+            type: Directory
+            path: /nfs/3_DOMAIN_SHARED/volt
         - name: nfs-shared
           hostPath:
             type: Directory
@@ -164,6 +168,8 @@ spec:
           mountPath: /home/epic/volt/m12
         - name: nfs-redis
           mountPath: /home/epic/volt/redis
+        - name: nfs-domain-shared
+          mountPath: /home/epic/3_DOMAIN_SHARED
         - name: nfs-shared
           mountPath: /home/epic/4_SHARED
         - name: nfs-scratch

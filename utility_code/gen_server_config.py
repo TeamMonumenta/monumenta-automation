@@ -288,7 +288,7 @@ if __name__ == '__main__':
         ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
         ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
-        ('plugins/ScriptedQuests/translations', f'/home/epic/4_SHARED/translations/{SERVER_TYPE}'),
+        ('plugins/ScriptedQuests/translations', f'/home/epic/3_DOMAIN_SHARED/translations'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
         ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
         ('plugins/ScriptedQuests/clickables/{servername}', '../../../../server_config/data/scriptedquests/clickables/{servername}'),
