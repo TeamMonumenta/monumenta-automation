@@ -262,8 +262,8 @@
 "namespace_defaults": {
     "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true" },
     "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
-    "stage": { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true" },
-    "volt" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true" },
+    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
+    "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
     "clash": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "false" },
 }
 
