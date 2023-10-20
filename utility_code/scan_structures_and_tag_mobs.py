@@ -128,6 +128,7 @@ if __name__ == '__main__':
         "willows":{"world": "willows"},
         "willowsexalted":{"world": "willowsexalted"},
         "reverie":{"world": "reverie"},
+        "reverieexalted":{"world": "reverieexalted"},
         "labs":{"world": "labs"},
         "lime":{"world": "lime"},
         "pink":{"world": "pink"},

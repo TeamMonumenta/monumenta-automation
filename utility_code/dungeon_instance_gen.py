@@ -144,6 +144,7 @@ if __name__ == '__main__':
             "reverie": {
                 "world": [
                     "reverie",
+                    "reverieexalted",
                 ],
                 "objective":"DCAccess"
             },
