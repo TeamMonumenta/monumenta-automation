@@ -10,18 +10,17 @@ import sys
 import tempfile
 import time
 import traceback
-from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from pathlib import Path
 from pprint import pformat
+from urllib.parse import urlparse
 
 import discord
 import git
 import redis
 import yaml
-from urllib.parse import urlparse
 from discord.ext import commands
 
 logger = logging.getLogger(__name__)
@@ -776,7 +775,7 @@ Usage:
             return
 
         ns = self._k8s.namespace
-        if ns == 'stage':
+        if ns in ('stage', 'volt'):
             ns = 'play'
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/shard_utils"), "redis://redis/", ns, *commandArgs], displayOutput=True)
 
@@ -1665,7 +1664,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             await task
 
         # Stop all shards
-        await self.display(ctx, "Stopping all stage server shards...")
+        await self.display(ctx, f"Stopping all {self._k8s.namespace} server shards...")
         shards = await self._k8s.list()
         await self.stop(ctx, [shard for shard in self._shards if shard in shards])
 
@@ -1687,18 +1686,22 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         for task in tasks:
             await task
 
-        await self.display(ctx, "Moving pulled stage data into live folder")
+        await self.display(ctx, f"Moving pulled {self._k8s.namespace} data into live folder")
         await self.run(ctx, ["bash", "-c", f"mv {self._server_dir}/0_STAGE/* {self._server_dir}"])
         await self.run(ctx, f"rmdir {self._server_dir}/0_STAGE")
 
         # Download the entire redis database from the play server
-        await self.display(ctx, "Stopping stage redis...")
+        await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
         await self.stop(ctx, "redis")
         await self.cd(ctx, f"{self._server_dir}/../redis")
         await self.run(ctx, f"mv dump.rdb dump.rdb.previous")
         await self.display(ctx, "Downloading current redis database from the play server...")
         await self.run(ctx, f"redis-cli -h redis.play --rdb dump.rdb")
         await self.start(ctx, "redis")
+
+        # Download the mysql database from the play server
+        await self.display(ctx, "Syncing with current mysql database from the play server...")
+        await self.run(ctx, [os.path.join(_top_level, f"utility_code/sync_mysql.sh"), self._k8s.namespace], displayOutput=True)
 
         await self.display(ctx, "Disabling Plan and PremiumVanish...")
         await self.run(ctx, f"mv -f {self._server_dir}/server_config/plugins/Plan.jar {self._server_dir}/server_config/plugins/Plan.jar.disabled")
@@ -1716,7 +1719,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         with open(f"{self._shards['bungee']}/config.yml", "w") as f:
             yaml.dump(bungeeconfig, f, width=2147483647, allow_unicode=True)
 
-        await self.display(ctx, "Stage server loaded with current play server data")
+        await self.display(ctx, f"{self._k8s.namespace} server loaded with current play server data")
         await self.display(ctx, message.author.mention)
 
     async def stage_receive_data_task(self, ctx: discord.ext.commands.Context, port):
@@ -2057,6 +2060,7 @@ Usage:
 
     @staticmethod
     def preprocess_time_description(time_description):
+        """Allows for more natuarl date descriptions for the date command"""
         for ignored_prefix in (
                 'in ',
                 'after ',
