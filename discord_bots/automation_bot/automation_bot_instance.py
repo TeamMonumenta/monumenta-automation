@@ -2131,7 +2131,7 @@ And the first message on the developer server is:
 
         await self.display(ctx, output_message)
 
-    RE_REMINDER_ARGS = re.compile(r'(me|@.{3,32}#[0-9]{4}|\<@\d{1,32}\>|`@.{3,32}#[0-9]{4}`|`\<@\d{1,32}\>`)\s\"((?:[^\\\"]+|\\.)+)\"\s(.*)')
+    RE_REMINDER_ARGS = re.compile(r'(me|@[a-z0-9_.]{2,32}|@.{3,32}#[0-9]{4}|\<@\d{1,32}\>|`@[a-z0-9_.]{2,32}`|`@.{3,32}#[0-9]{4}`|`\<@\d{1,32}\>`)\s\"((?:[^\\\"]+|\\.)+)\"\s(.*)')
 
     async def action_remind(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sets a reminder
