@@ -593,7 +593,7 @@ Examples:
 
         await ctx.send("BUG: You definitely shouldn't have this much power")
 
-    async def action_list_shards(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
+    async def action_list_shards(self, ctx: discord.ext.commands.Context, _, inputMsg: discord.Message):
         '''Lists currently running shards on this server'''
         shards = await self._k8s.list()
         # Format of this is:
@@ -601,20 +601,61 @@ Examples:
         #  'test': {'available_replicas': 0, 'replicas': 0}}
 
         msg = ""
-        for name in shards:
-            state = shards[name]
-            if state["replicas"] == 1 and state["available_replicas"] == 1:
-                msg += f"\n:white_check_mark: {name}"
-            elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                msg += f"\n:arrow_up: {name}"
-            elif state["replicas"] == 0 and "pod_name" in state:
-                msg += f"\n:arrow_down: {name}"
-            elif state["replicas"] == 0 and "pod_name" not in state:
-                msg += f"\n:x: {name}"
+        input = inputMsg.content.split(" ")
+
+        if len(input) > 2 and input[2] == "summary":
+            bucketCheck = ""
+            bucketX = ""
+            bucketUp = ""
+            bucketDown = ""
+            bucketError = ""
+            for name in shards:
+                state = shards[name]
+                if state["replicas"] == 1 and state["available_replicas"] == 1:
+                    if not bucketCheck:
+                        bucketCheck += f":white_check_mark:: {name}"
+                    else:
+                        bucketCheck += f", {name}"
+                elif state["replicas"] == 1 and state["available_replicas"] == 0:
+                    if not bucketUp:
+                        bucketUp += f"\n:arrow_up:: {name}"
+                    else:
+                        bucketUp += f", {name}"
+                elif state["replicas"] == 0 and "pod_name" in state:
+                    if not bucketDown:
+                        bucketDown += f"\n:arrow_down:: {name}"
+                    else:
+                        bucketDown += f", {name}"
+                elif state["replicas"] == 0 and "pod_name" not in state:
+                    if not bucketX:
+                        bucketX += f"\n:x:: {name}"
+                    else:
+                        bucketX += f", {name}"
+                else:
+                    bucketError += f"\n:exclamation: {name}: {pformat(state)}"
+            if len(shards) <= 0:
+                msg = "No shards to list"
             else:
-                msg += f"\n:exclamation: {name}: {pformat(state)}"
-        if not msg:
-            msg = "No shards to list"
+                msg += bucketCheck
+                msg += bucketUp
+                msg += bucketDown
+                msg += bucketX
+                msg += bucketError
+        else:
+            for name in shards:
+                state = shards[name]
+                if state["replicas"] == 1 and state["available_replicas"] == 1:
+                    msg += f"\n:white_check_mark: {name}"
+                elif state["replicas"] == 1 and state["available_replicas"] == 0:
+                    msg += f"\n:arrow_up: {name}"
+                elif state["replicas"] == 0 and "pod_name" in state:
+                    msg += f"\n:arrow_down: {name}"
+                elif state["replicas"] == 0 and "pod_name" not in state:
+                    msg += f"\n:x: {name}"
+                else:
+                    msg += f"\n:exclamation: {name}: {pformat(state)}"
+            if not msg:
+                msg = "No shards to list"
 
         await self.display(ctx, msg)
 
