@@ -1206,6 +1206,13 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.cd(ctx, self._server_dir)
         await self.run(ctx, os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(folders_to_update)))
 
+        # TODO: Revert this once this new content launches!
+        if "ring" in folders_to_update:
+            await self.cd(ctx, "f{self._server_dir}/ring/plugins/MonumentaStructureManagement")
+            await self.run(ctx, "rm -f config.yml")
+            await self.run(ctx, "ln -s ../../../server_config/data/plugins/ring/MonumentaStructureManagement/newconfig.yml config.yml")
+            await self.cd(ctx, self._server_dir)
+
         # Apply the warps from the build server
         await self.run(ctx, f"mkdir -p {self._server_dir}/{shard}/plugins/MonumentaWarps")
         await self.run(ctx, f"cp -a /home/epic/5_SCRATCH/tmpreset/TEMPLATE/{shard}/warps.yml {self._server_dir}/{shard}/plugins/MonumentaWarps/warps.yml", None)
