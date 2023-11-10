@@ -253,8 +253,8 @@
     },
     "skt-2": { "play" : { "node": "m13", "memGB": 4, }, },
     "zenith": {
-        "stage": { "node": "m12", "memMB": 1536, },
-        "volt" : { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m12", "memGB":    3, },
+        "volt" : { "node": "m12", "memGB":    3, },
     },
 }
 
