@@ -965,6 +965,7 @@ Must be run before starting the update on the play server
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/azacor /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/sanctum /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/verdant /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/valley/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
 
         if not debug:
             await self.display(ctx, "Restarting the valley shard...")
@@ -975,6 +976,7 @@ Must be run before starting the update on the play server
         await self.run(ctx, "cp -a /home/epic/project_epic/isles/Project_Epic-isles /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
         await self.run(ctx, "cp -a /home/epic/project_epic/isles/mist /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
         await self.run(ctx, "cp -a /home/epic/project_epic/isles/remorse /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/isles/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
 
         if not debug:
             await self.display(ctx, "Restarting the isles shard...")
