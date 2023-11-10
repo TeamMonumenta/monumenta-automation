@@ -1210,7 +1210,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
 
         # TODO: Revert this once this new content launches!
         if "ring" in folders_to_update:
-            await self.cd(ctx, "f{self._server_dir}/ring/plugins/MonumentaStructureManagement")
+            await self.cd(ctx, f"{self._server_dir}/ring/plugins/MonumentaStructureManagement")
             await self.run(ctx, "rm -f config.yml")
             await self.run(ctx, "ln -s ../../../server_config/data/plugins/ring/MonumentaStructureManagement/newconfig.yml config.yml")
             await self.cd(ctx, self._server_dir)
