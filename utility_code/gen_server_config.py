@@ -721,6 +721,8 @@ if __name__ == '__main__':
         "blue-4": "blue",
         "brown-2": "brown",
         "brown-3": "brown",
+        "reverie-2": "reverie",
+        "reverie-3": "reverie",
         "gallery-2": "gallery",
         "gallery-3": "gallery",
         "skt-2": "skt",
