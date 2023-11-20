@@ -274,6 +274,7 @@ if __name__ == '__main__':
         ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
         ('plugins/Monumenta/DataCollection', '/home/epic/4_SHARED/DataCollection'),
         ('plugins/Monumenta/seasonalevents', '../../../server_config/data/plugins/all/Monumenta/seasonalevents'),
+        ('plugins/Monumenta/images', '../../../server_config/data/plugins/all/Monumenta/images'),
         ('plugins/Monumenta/InfinityTower/TowerMobs.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/TowerMobs.json'),
         ('plugins/Monumenta/InfinityTower/InfinityTowerDefault.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityTowerDefault.json'),
         ('plugins/Monumenta/properties/CommonProperties.json', '../../../../server_config/data/plugins/all/Monumenta/properties/CommonProperties.json'),
