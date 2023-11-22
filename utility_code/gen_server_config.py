@@ -273,6 +273,7 @@ if __name__ == '__main__':
         ('plugins/Monumenta/mmquest.json', '../../../server_config/data/plugins/all/Monumenta/mmquest.json'),
         ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
         ('plugins/Monumenta/DataCollection', '/home/epic/4_SHARED/DataCollection'),
+        ('plugins/Monumenta/DepthsStats', '/home/epic/4_SHARED/DepthsStats'),
         ('plugins/Monumenta/seasonalevents', '../../../server_config/data/plugins/all/Monumenta/seasonalevents'),
         ('plugins/Monumenta/images', '../../../server_config/data/plugins/all/Monumenta/images'),
         ('plugins/Monumenta/InfinityTower/TowerMobs.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/TowerMobs.json'),
