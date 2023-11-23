@@ -1297,7 +1297,7 @@ old coreprotect data will be removed at the 5 minute mark.
         ], reverse=True)
 
         self._socket.send_packet("*", "monumentanetworkrelay.command",
-                                 {"command": '''tellraw @a ''' + json.dumps([
+                                 {"command": '''tellraw @a[all_worlds=true] ''' + json.dumps([
                                      "",
                                      {"text":"[Alert] ", "color":"red"},
                                      {"text":"Monumenta is going down at ", "color":"white"},
@@ -1321,7 +1321,7 @@ old coreprotect data will be removed at the 5 minute mark.
 
         async def send_broadcast_msg(time_left):
             self._socket.send_packet("*", "monumentanetworkrelay.command",
-                                     {"command": '''tellraw @a ''' + json.dumps([
+                                     {"command": '''tellraw @a[all_worlds=true] ''' + json.dumps([
                                          "",
                                          {"text":"[Alert] ", "color":"red"},
                                          {"text":"The Monumenta server is stopping in ", "color":"white"},
