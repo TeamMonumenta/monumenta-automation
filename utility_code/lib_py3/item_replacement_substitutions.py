@@ -1,7 +1,7 @@
 import os
 import sys
+import re
 
-from lib_py3.common import always_equal
 from lib_py3.common import get_item_name_from_nbt
 from lib_py3.common import parse_name_possibly_json
 from lib_py3.common import update_plain_tag
@@ -193,6 +193,24 @@ class FixDoubleJsonNames(SubstitutionRule):
         if name_json != name_json_json:
             item.tag.at_path('display.Name').value = name_json
             item_meta['name'] = unformat_text(name_json_json)
+
+class ReplaceSuspiciousBlock(SubstitutionRule):
+    name = "Replaces Suspicious Block black concrete with just black concrete"
+    matcher = re.compile("""Suspicious Block[!',.:;i|]{3}""")
+
+    def process(self, item_meta, item):
+        if item.id != "minecraft:black_concrete":
+            return
+
+        if not item.nbt.has_path('tag.display.Name'):
+            return
+
+        name = item.tag.at_path('display.Name').value
+        name_json = parse_name_possibly_json(name)
+
+        if self.matcher.fullmatch(name_json):
+            item.nbt.value.pop('tag')
+            item_meta["name"] = None
 
 class FixEscapedNames(SubstitutionRule):
     name = "Fixed escaped characters in json names"
