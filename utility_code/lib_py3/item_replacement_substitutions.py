@@ -79,15 +79,6 @@ class NameUnnamedItems(SubstitutionRule):
         )
         named_chests = (
             r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:lingering_potion",tag:{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,Amplifier:2b,Duration:240,Id:10b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:900,Id:22b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"green","text":"Strong Sanctify Potion"}],"text":""}'},plain:{display:{Name:"Strong Sanctify Potion"}}}}]}''',
-            # Zombie Meat and Cooked Zombie Meat
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:rabbit",tag:{display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Zombie Meat"}],"text":""}'},plain:{display:{Name:"Zombie Meat"}}}}]}''',
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:cooked_rabbit",tag:{display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Cooked Zombie Meat"}],"text":""}'},plain:{display:{Name:"Cooked Zombie Meat"}}}}]}''',
-            # Loreless potions
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{CustomPotionColor:9325341,CustomPotionEffects:[{Ambient:1b,Amplifier:0b,Duration:100,Id:9b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:600,Id:19b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:1b,Duration:1200,Id:10b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:1200,Id:5b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Blackroot Brew"}],"text":""}'},plain:{display:{Name:"Blackroot Brew"}}}}]}''',
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{CustomPotionEffects:[{Ambient:1b,Amplifier:0b,Duration:10800,Id:13b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Depth Lurker"}],"text":""}'},plain:{display:{Name:"Depth Lurker"}}}}]}''',
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{CustomPotionColor:14192676,CustomPotionEffects:[{Ambient:1b,Amplifier:0b,Duration:100,Id:9b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:1800,Id:13b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:1b,Duration:100,Id:10b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Sunfish Rum"}],"text":""}'},plain:{display:{Name:"Sunfish Rum"}}}}]}''',
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{CustomPotionColor:13389173,CustomPotionEffects:[{Ambient:1b,Amplifier:0b,Duration:100,Id:9b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:400,Id:12b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:400,Id:11b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Blaze\'s Whiskey"}],"text":""}'},plain:{display:{Name:"Blaze's Whiskey"}}}}]}''',
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:splash_potion",tag:{CustomPotionEffects:[{Ambient:0b,Amplifier:2b,Duration:600,Id:2b,ShowIcon:1b,ShowParticles:1b},{Ambient:0b,Amplifier:2b,Duration:600,Id:4b,ShowIcon:1b,ShowParticles:1b},{Ambient:0b,Amplifier:1b,Duration:1200,Id:17b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:water",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"text":"Potion of Draining Life"}],"text":""}'},plain:{display:{Name:"Potion of Draining Life"}}}}]}''',
         )
 
         for chest_mojangson in unnamed_chests:
@@ -283,15 +274,8 @@ class SubtituteItems(SubstitutionRule):
                 # Example item type change:
                 # ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
                 ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
-                ["minecraft:pumpkin_seeds", "Lesser Charm of Multiplication", "minecraft:horn_coral_fan", "Lesser Trailblazer Charm"],
-                ["minecraft:pumpkin_seeds", "Greater Charm of Multiplication", "minecraft:horn_coral_fan", "Greater Trailblazer Charm"],
-                ["minecraft:pumpkin_seeds", "Focused Charm of Multiplication", "minecraft:horn_coral_fan", "Focused Trailblazer Charm"],
-                ["minecraft:lingering_potion", "Crippling Vial", "minecraft:splash_potion", "Crippling Vial"],
-                # Type changes by the request of the RP team
-                ["minecraft:leather_boots", "Deathbound Cavaliers", "minecraft:lantern", "Deathbound Cavaliers"],
-                ["minecraft:golden_helmet", "Dread Admiral's Hat", "minecraft:leather_helmet", "Dread Admiral's Hat"],
-                # Potion of Draining Life -> Elixir of Draining Life
-                ["minecraft:splash_potion", "Potion of Draining Life", "minecraft:splash_potion", "Elixir of Draining Life"],
+                # Infernal cosmetic drop
+                ["minecraft:blaze_powder", "Flittering Spark", "minecraft:netherite_scrap", "Flittering Spark"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
