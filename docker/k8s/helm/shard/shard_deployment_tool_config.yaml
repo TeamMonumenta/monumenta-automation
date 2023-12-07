@@ -274,5 +274,6 @@
     "m12": { "full_name": "monumenta-12", "mem_total_kB": 131650292, "huge_pages": 43000, "huge_page_size_kB": 2048 },
     "m13": { "full_name": "monumenta-13", "mem_total_kB": 131841792, "huge_pages": 48000, "huge_page_size_kB": 2048 },
     "m15": { "full_name": "monumenta-15", "mem_total_kB": 131799556, "huge_pages": 48000, "huge_page_size_kB": 2048 },
+    "m16": { "full_name": "monumenta-16", "mem_total_kB": 131787616, "huge_pages": 48000, "huge_page_size_kB": 2048 },
 }
 
