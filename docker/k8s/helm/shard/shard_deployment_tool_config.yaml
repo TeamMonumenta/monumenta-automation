@@ -77,6 +77,14 @@
     "ring-6":  { "play" : { "node": "m8" , "memGB": 7, }, },
     "ring-7":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
+    "ring-9":  { "play" : { "node": "m16", "memGB": 7, }, },
+    "ring-10":  { "play" : { "node": "m16", "memGB": 7, }, },
+    "ring-11":  { "play" : { "node": "m16", "memGB": 7, }, },
+    "ring-12":  { "play" : { "node": "m16", "memGB": 7, }, },
+    "ring-13":  { "play" : { "node": "m8", "memGB": 7, }, },
+    "ring-14":  { "play" : { "node": "m11", "memGB": 7, }, },
+    "ring-15":  { "play" : { "node": "m13", "memGB": 7, }, },
+    "ring-16":  { "play" : { "node": "m15", "memGB": 7, }, },
 
     "ringfreeze":  { "build": { "node": "m12", "memGB": 3   , }, },
 
@@ -102,7 +110,7 @@
 
     # Dungeons
     "cyan": {
-        "play" : { "node": "m11", "memGB": 3   , },
+        "play" : { "node": "m16", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
@@ -114,7 +122,7 @@
     },
     "depths-2": { "play" : { "node": "m11" , "memGB": 3, }, },
     "forum": {
-        "play" : { "node": "m15", "memGB": 4   , },
+        "play" : { "node": "m16", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 2048, },
         "volt" : { "node": "m12", "memMB": 2048, },
     },
@@ -210,7 +218,7 @@
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "yellow": {
-        "play" : { "node": "m15", "memGB": 5   , },
+        "play" : { "node": "m16", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
@@ -226,10 +234,10 @@
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
-    "blue-2": { "play" : { "node": "m8" , "memGB": 5, }, },
+    "blue-2": { "play" : { "node": "m16" , "memGB": 5, }, },
 
     "brown": {
-        "play" : { "node": "m11", "memGB": 5   , },
+        "play" : { "node": "m16", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
@@ -241,17 +249,17 @@
     },
 
     "ruin": {
-        "play" : { "node": "m8", "memGB": 4   , },
+        "play" : { "node": "m16", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "skt": {
-        "play" : { "node": "m13", "memGB": 4   , },
+        "play" : { "node": "m16", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
-    "skt-2": { "play" : { "node": "m13", "memGB": 4, }, },
+    "skt-2": { "play" : { "node": "m16", "memGB": 4, }, },
     "zenith": {
         "stage": { "node": "m12", "memGB":    3, },
         "volt" : { "node": "m12", "memGB":    3, },
@@ -269,7 +277,7 @@
 
 # Memory values copied directly from /proc/meminfo
 "node_info": {
-    "m8":  { "full_name": "monumenta-8",  "mem_total_kB": 131650288, "huge_pages": 42000, "huge_page_size_kB": 2048 },
+    "m8":  { "full_name": "monumenta-8",  "mem_total_kB": 131650292, "huge_pages": 40000, "huge_page_size_kB": 2048 },
     "m11": { "full_name": "monumenta-11", "mem_total_kB": 131650288, "huge_pages": 46000, "huge_page_size_kB": 2048 },
     "m12": { "full_name": "monumenta-12", "mem_total_kB": 131650292, "huge_pages": 43000, "huge_page_size_kB": 2048 },
     "m13": { "full_name": "monumenta-13", "mem_total_kB": 131841792, "huge_pages": 48000, "huge_page_size_kB": 2048 },
