@@ -737,6 +737,14 @@ if __name__ == '__main__':
         "zenith-2": "zenith",
         "zenith-3": "zenith",
         "zenith-4": "zenith",
+        "zenith-5": "zenith",
+        "zenith-6": "zenith",
+        "zenith-7": "zenith",
+        "zenith-8": "zenith",
+        "zenith-9": "zenith",
+        "zenith-10": "zenith",
+        "zenith-11": "zenith",
+        "zenith-12": "zenith",
     }
 
     for key in copied_shard_config:

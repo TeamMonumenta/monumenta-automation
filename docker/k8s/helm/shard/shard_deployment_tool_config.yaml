@@ -79,12 +79,6 @@
     "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-9":  { "play" : { "node": "m16", "memGB": 7, }, },
     "ring-10":  { "play" : { "node": "m16", "memGB": 7, }, },
-    "ring-11":  { "play" : { "node": "m16", "memGB": 7, }, },
-    "ring-12":  { "play" : { "node": "m16", "memGB": 7, }, },
-    "ring-13":  { "play" : { "node": "m8", "memGB": 7, }, },
-    "ring-14":  { "play" : { "node": "m11", "memGB": 7, }, },
-    "ring-15":  { "play" : { "node": "m13", "memGB": 7, }, },
-    "ring-16":  { "play" : { "node": "m15", "memGB": 7, }, },
 
     "ringfreeze":  { "build": { "node": "m12", "memGB": 3   , }, },
 
@@ -261,9 +255,21 @@
     },
     "skt-2": { "play" : { "node": "m16", "memGB": 4, }, },
     "zenith": {
+        "play" : { "node": "m16", "memGB":    4, },
         "stage": { "node": "m12", "memGB":    3, },
         "volt" : { "node": "m12", "memGB":    3, },
     },
+    "zenith-2":  { "play" : { "node": "m16", "memGB": 4, }, },
+    "zenith-3":  { "play" : { "node": "m16", "memGB": 4, }, },
+    "zenith-4":  { "play" : { "node": "m16", "memGB": 4, }, },
+    "zenith-5":  { "play" : { "node": "m8" , "memGB": 4, }, },
+    "zenith-6":  { "play" : { "node": "m8" , "memGB": 4, }, },
+    "zenith-7":  { "play" : { "node": "m11", "memGB": 4, }, },
+    "zenith-8":  { "play" : { "node": "m11", "memGB": 4, }, },
+    "zenith-9":  { "play" : { "node": "m13", "memGB": 4, }, },
+    "zenith-10": { "play" : { "node": "m13", "memGB": 4, }, },
+    "zenith-11": { "play" : { "node": "m15", "memGB": 4, }, },
+    "zenith-12": { "play" : { "node": "m15", "memGB": 4, }, },
 }
 
 # Defaults for each namespace
