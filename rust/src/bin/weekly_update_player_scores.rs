@@ -88,9 +88,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("AzacorAccess".to_string(), 0);
         scores.insert("DCZAccess".to_string(), 0);
 
-        // Revert next week
-        scores.insert("Quest215".to_string(), 0);
-
         fix_total_level(scores);
     }
 }
