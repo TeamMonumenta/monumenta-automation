@@ -276,6 +276,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
                 # Infernal cosmetic drop
                 ["minecraft:blaze_powder", "Flittering Spark", "minecraft:netherite_scrap", "Flittering Spark"],
+                # Consuming Blight Type Change
+                ["minecraft:vine", "Consuming Blight", "minecraft:mossy_cobblestone", "Consuming Blight"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
