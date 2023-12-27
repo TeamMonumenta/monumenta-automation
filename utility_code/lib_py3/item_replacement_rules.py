@@ -279,6 +279,25 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
         if item.nbt.has_path('tag.Monumenta.PlayerModified') and len(item.nbt.at_path('tag.Monumenta.PlayerModified').value) > 0:
             mark_dirty(item)
 
+class FixSilentKnight(GlobalRule):
+    name = 'Fix Silent Knight'
+
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, template, item):
+        pass
+
+    def postprocess(self, item):
+        if item.id != "minecraft:player_head":
+            return
+        if not item.nbt.has_path('tag.display.Name') or get_item_name_from_nbt(item.tag, True) != 'Silent Knight':
+            return
+        if item.nbt.has_path('tag.Monumenta.PlayerModified.Infusions.Festive.Infuser'):
+            festive = item.tag.at_path('Monumenta.PlayerModified.Infusions.Festive')
+            del festive.value['Infuser']
+            festive.value['InfuserNpc'] = nbt.TagString("Gertrude")
+
 class PreserveBlockEntityTag(GlobalRule):
     name = 'Preserve block entity tag'
 
