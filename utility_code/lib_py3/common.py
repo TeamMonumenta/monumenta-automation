@@ -12,11 +12,13 @@ from quarry.types.text_format import unformat_text
 from quarry.types import nbt
 from quarry.types.chunk import PackedArray
 
+
 def eprint(*args, **kwargs):
     """
     Convenience function identical to print() but to stderr
     """
     print(*args, file=sys.stderr, **kwargs)
+
 
 def get_entity_name_from_nbt(entity_nbt: nbt.TagCompound, remove_color=True) -> str:
     """
@@ -25,6 +27,7 @@ def get_entity_name_from_nbt(entity_nbt: nbt.TagCompound, remove_color=True) -> 
     if not entity_nbt.has_path('CustomName'):
         return None
     return parse_name_possibly_json(entity_nbt.at_path('CustomName').value, remove_color)
+
 
 def get_item_name_from_nbt(item_tag: nbt.TagCompound, remove_color=True, include_masterwork_level=False) -> str:
     """
@@ -47,6 +50,7 @@ def get_item_name_from_nbt(item_tag: nbt.TagCompound, remove_color=True, include
 
     return item_name
 
+
 # Returns
 def get_masterwork_level_from_nbt(item_tag: nbt.TagCompound, err_print_on_inval=True) -> str:
     """
@@ -68,6 +72,7 @@ def get_masterwork_level_from_nbt(item_tag: nbt.TagCompound, err_print_on_inval=
         return masterwork_level
 
     return None
+
 
 def get_entity_uuid(entity: nbt.TagCompound) -> uuid.UUID:
     """Returns UUID or None for any entity with a UUID, including 1.16"""
@@ -96,6 +101,7 @@ def get_entity_uuid(entity: nbt.TagCompound) -> uuid.UUID:
 
     return result
 
+
 def uuid_to_mc_uuid_tag_int_array(uuid: uuid):
     int_uuid = int(uuid)
     uuid_components = [(int_uuid>>96) & ((1<<32)-1), (int_uuid>>64) & ((1<<32)-1), (int_uuid>>32) & ((1<<32)-1), int_uuid & ((1<<32)-1)]
@@ -108,6 +114,7 @@ def uuid_to_mc_uuid_tag_int_array(uuid: uuid):
         uuid_components_centered.append(uuid_component)
 
     return nbt.TagIntArray(PackedArray.from_int_list(uuid_components_centered, 32))
+
 
 def json_text_to_plain_text(json_text):
     result = ""
@@ -140,6 +147,7 @@ def json_text_to_plain_text(json_text):
 
     return result
 
+
 def parse_name_possibly_json(name, remove_color=False):
     name = name.replace(r"\\u0027", "'")
     name = name.replace(r"\\u00a7", "§")
@@ -158,8 +166,10 @@ def parse_name_possibly_json(name, remove_color=False):
 
     return name
 
+
 def jsonify_text(text):
     return json.dumps({"text":text}, ensure_ascii=False, separators=(',', ':'))
+
 
 def get_item_ids(entity: nbt.TagCompound, path: str, expected_len: int) -> [str]:
     items = []
@@ -182,6 +192,7 @@ def get_item_ids(entity: nbt.TagCompound, path: str, expected_len: int) -> [str]
                     items.append(None)
 
     return items
+
 
 def get_named_items(entity: nbt.TagCompound, path: str, expected_len: int) -> [str]:
     items = []
@@ -206,17 +217,22 @@ def get_named_items(entity: nbt.TagCompound, path: str, expected_len: int) -> [s
 
     return items
 
+
 def get_named_hand_item_ids(entity):
     return get_item_ids(entity, "HandItems", 2)
+
 
 def get_named_armor_item_ids(entity):
     return get_item_ids(entity, "ArmorItems", 4)
 
+
 def get_named_hand_items(entity):
     return get_named_items(entity, "HandItems", 2)
 
+
 def get_named_armor_items(entity):
     return get_named_items(entity, "ArmorItems", 4)
+
 
 class AlwaysEqual():
     def __init__(self):
@@ -227,6 +243,7 @@ class AlwaysEqual():
         return True
 always_equal = AlwaysEqual()
 
+
 class NeverEqual():
     def __init__(self):
         pass
@@ -236,7 +253,9 @@ class NeverEqual():
         return False
 never_equal = NeverEqual()
 
+
 UUID_REGEX = re.compile('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+
 
 class EqualIfUuidStr(str):
     def __init__(self):
@@ -248,6 +267,7 @@ class EqualIfUuidStr(str):
             return False
         return UUID_REGEX.fullmatch(other) is not None
 equal_if_uuid_str = EqualIfUuidStr()
+
 
 def move_file(old, new):
     if not os.path.exists(old):
@@ -263,6 +283,7 @@ def move_file(old, new):
         shutil.move(old, new)
     return True
 
+
 def copy_file(old, new):
     if not os.path.exists(old):
         raise Exception(f"Source file {old} does not exist!")
@@ -275,6 +296,7 @@ def copy_file(old, new):
         os.symlink(linkto, new)
     else:
         shutil.copy2(old, new)
+
 
 def move_folder(old, new):
     # This does not check if it's a path or a file, but there's another function for that case.
@@ -291,6 +313,7 @@ def move_folder(old, new):
     else:
         shutil.move(old, new)
 
+
 def copy_folder(old, new):
     # This does not check if it's a path or a file, but there's another function for that case.
     if not os.path.exists(old):
@@ -300,6 +323,7 @@ def copy_folder(old, new):
         os.makedirs(os.path.dirname(new), mode=0o775)
     shutil.rmtree(new, ignore_errors=True)
     shutil.copytree(old, new, symlinks=True)
+
 
 def copy_maps(old, new):
     copy_file(os.path.join(old, "data", "idcounts.dat"),
@@ -311,17 +335,20 @@ def copy_maps(old, new):
             if os.path.exists(old_map):
                 copy_file(old_map, new_map)
 
+
 def move_path(old, new, path):
     if os.path.isdir(os.path.join(old, path)):
         move_folder(os.path.join(old, path), os.path.join(new, path))
     else:
         move_file(os.path.join(old, path), os.path.join(new, path))
 
+
 def copy_path(old, new, path):
     if os.path.isdir(os.path.join(old, path)):
         copy_folder(os.path.join(old, path), os.path.join(new, path))
     else:
         copy_file(os.path.join(old, path), os.path.join(new, path))
+
 
 def move_paths(old, new, paths):
     for path in paths:
@@ -330,12 +357,14 @@ def move_paths(old, new, paths):
         except Exception:
             eprint("*** " + path + " could not be moved, may not exist.")
 
+
 def copy_paths(old, new, paths):
     for path in paths:
         try:
             copy_path(old, new, path)
         except Exception:
             eprint("*** " + path + " could not be copied, may not exist.")
+
 
 def bounded_range(min_in, max_in, range_start, range_length, divide=1):
     """
@@ -355,6 +384,7 @@ def bounded_range(min_in, max_in, range_start, range_length, divide=1):
 
     return range(min_out, max_out)
 
+
 class DictWithDefault(dict):
     def __init__(self, init={}, default=0):
         if isinstance(init, type(self)):
@@ -372,9 +402,11 @@ class DictWithDefault(dict):
     def __missing__(self, key):
         return copy.deepcopy(self._default)
 
+
 # https://catonmat.net/my-favorite-regex
 # Matches all printable ascii characters, from ' ' to '~'
 NON_PLAIN_REGEX = re.compile('[^ -~]')
+
 
 def update_plain_tag(item_nbt: nbt.TagCompound) -> None:
     """Given a Minecraft item's tag, (re)generate tag.plain.
@@ -414,6 +446,13 @@ def update_plain_tag(item_nbt: nbt.TagCompound) -> None:
                 plain_str = NON_PLAIN_REGEX.sub('', plain_str).strip()
                 plain_subtag.value[plain_subpath] = nbt.TagString(plain_str)
 
+
+def mark_dirty(item):
+    if not item.nbt.has_path('tag.Monumenta'):
+        return
+    item.nbt.at_path('tag.Monumenta').value['Dirty'] = nbt.TagByte(1)
+
+
 ESCAPE_SEQUENCE_RE = re.compile(r'''
     ( \\U........      # 8-digit hex escapes
     | \\u....          # 4-digit hex escapes
@@ -423,11 +462,13 @@ ESCAPE_SEQUENCE_RE = re.compile(r'''
     | \\[\\'"abfnrtv]  # Single-character escapes
     )''', re.UNICODE | re.VERBOSE)
 
+
 def decode_escapes(s):
     def decode_match(match):
         return codecs.decode(match.group(0), 'unicode-escape')
 
     return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
+
 
 def get_main_world(shard_path):
     """Gets the primary world of a shard

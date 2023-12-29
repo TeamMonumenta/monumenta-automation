@@ -11,12 +11,15 @@ from minecraft.util.iter_util import process_in_parallel
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
 
+
 def _create_plugindata_lambda(full_path):
     return PluginData(json_path=full_path)
+
 
 def _finalize_plugindata_lambda(plugin_data, autosave):
     if autosave:
         plugin_data.save()
+
 
 def iter_plugin_data_parallel(path, func, err_func, num_processes=4, autosave=False, additional_args=(), initializer=None, initargs=()):
     """Iterates player plugin data in parallel using multiple processes.
@@ -56,8 +59,10 @@ def iter_plugin_data_parallel(path, func, err_func, num_processes=4, autosave=Fa
 
     yield from process_in_parallel(parallel_args, num_processes=num_processes, initializer=initializer, initargs=initargs)
 
+
 class PluginData(NbtPathDebug):
     """Plugin data loaded alongside player data."""
+
 
     def __init__(self, json_data=None, json_path=None):
         """Load a plugin data from json.
@@ -77,8 +82,10 @@ class PluginData(NbtPathDebug):
 
         self.nbt_path_init(None, None, self, None)
 
+
     def get_debug_str(self):
         return str(self)
+
 
     def save(self, json_path=None):
         """Save json data.
@@ -103,27 +110,39 @@ class PluginData(NbtPathDebug):
 
         return self._data
 
+
     def graves(self):
         """Get the graves stored on a player, if they exist."""
         return MonumentaGraves(self._data.get("MonumentaGravesV2", {}), self)
+
 
     def charms(self):
         """Get the charms stored on a player, if they exist."""
         return MonumentaCharms(self._data.get("R3Charms", {}), self)
 
+
+    def zenith_charms(self):
+        """Get the Zenith charms stored on a player, if they exist."""
+        return MonumentaCharms(self._data.get("R3DepthsCharms", {}), self)
+
+
     def wallet(self):
         """Get the wallet stored on a player, if it exists."""
         return MonumentaWallet(self._data.get("Wallet", {}), self)
 
+
     def __repr__(self):
         return f'PluginData({os.path.basename(self._path)!r})'
+
 
     @property
     def pos(self):
         return None
 
+
 class MonumentaCharms(NbtPathDebug):
     """A collection of items in charm slots."""
+
 
     def __init__(self, json_data, parent):
         self._data = json_data
@@ -137,8 +156,10 @@ class MonumentaCharms(NbtPathDebug):
             for item_json in charms_array:
                 self._items.append(JsonWrappedCharmItem(item_json, self))
 
+
     def get_debug_str(self):
         return str(self)
+
 
     def serialize(self):
         if isinstance(self._items, list):
@@ -146,17 +167,21 @@ class MonumentaCharms(NbtPathDebug):
 
         return self._data
 
+
     def iter_all_types(self):
         """Iterates charm items"""
         yield from self.iter_items()
+
 
     def iter_block_entities(self):
         """Iterates charm block entities (none)"""
         return
 
+
     def iter_entities(self):
         """Iterates charm entities (none)"""
         return
+
 
     def iter_items(self):
         """Iterates charm items"""
@@ -166,22 +191,27 @@ class MonumentaCharms(NbtPathDebug):
                 yield item
                 self._items[i] = item.serialize()
 
+
     def recursive_iter_all_types(self):
         yield self
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_all_types()
 
+
     def recursive_iter_block_entities(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_block_entities()
+
 
     def recursive_iter_entities(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_entities()
 
+
     def recursive_iter_items(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_items()
+
 
     @property
     def pos(self):
@@ -190,8 +220,10 @@ class MonumentaCharms(NbtPathDebug):
             return self.parent.pos
         return None
 
+
     def __repr__(self):
         return f'Charms'
+
 
 class JsonWrappedCharmItem(Item):
     """A JSON charm object containing an 'item' field describing an item
@@ -201,14 +233,17 @@ class JsonWrappedCharmItem(Item):
     Otherwise has all the methods a regular Item has (iterating, etc.)
     """
 
+
     def __init__(self, json_data, parent=None):
         self._data = json_data
         item_nbt = nbt.TagCompound.from_mojangson(self._data["item"])
         super().__init__(item_nbt, parent, None)
 
+
     def serialize(self):
         self._data["item"] = self.nbt.to_mojangson()
         return self._data
+
 
     @property
     def pos(self):
@@ -219,6 +254,7 @@ class JsonWrappedCharmItem(Item):
 
 class MonumentaWallet(NbtPathDebug):
     """A wallet with currency items in it."""
+
 
     def __init__(self, json_data, parent):
         self._data = json_data
@@ -232,8 +268,10 @@ class MonumentaWallet(NbtPathDebug):
             for item_json in items_array:
                 self._items.append(JsonWrappedWalletItem(item_json, self))
 
+
     def get_debug_str(self):
         return str(self)
+
 
     def serialize(self):
         if isinstance(self._items, list):
@@ -241,15 +279,19 @@ class MonumentaWallet(NbtPathDebug):
 
         return self._data
 
+
     def iter_all_types(self):
         """Iterates wallet items"""
         yield from self.iter_items()
 
+
     def iter_block_entities(self):
         return
 
+
     def iter_entities(self):
         return
+
 
     def iter_items(self):
         """Iterates wallet items"""
@@ -259,22 +301,27 @@ class MonumentaWallet(NbtPathDebug):
                 yield item
                 self._items[i] = item.serialize()
 
+
     def recursive_iter_all_types(self):
         yield self
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_all_types()
 
+
     def recursive_iter_block_entities(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_block_entities()
+
 
     def recursive_iter_entities(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_entities()
 
+
     def recursive_iter_items(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_items()
+
 
     @property
     def pos(self):
@@ -282,6 +329,7 @@ class MonumentaWallet(NbtPathDebug):
         if self.parent is not None:
             return self.parent.pos
         return None
+
 
     def __repr__(self):
         return f'Wallet'
@@ -295,14 +343,17 @@ class JsonWrappedWalletItem(Item):
     Otherwise has all the methods a regular Item has (iterating, etc.)
     """
 
+
     def __init__(self, json_data, parent=None):
         self._data = json_data
         item_nbt = nbt.TagCompound.from_mojangson(self._data["item"])
         super().__init__(item_nbt, parent, None)
 
+
     def serialize(self):
         self._data["item"] = self.nbt.to_mojangson()
         return self._data
+
 
     @property
     def pos(self):
@@ -314,13 +365,16 @@ class JsonWrappedWalletItem(Item):
 class MonumentaGraves(NbtPathDebug):
     """A collection of items preserved from death or carelessness."""
 
+
     def __init__(self, json_data, parent):
         self._data = json_data
 
         self.nbt_path_init(None, parent, parent.root if parent is not None and parent.root is not None else self, None)
 
+
     def get_debug_str(self):
         return str(self)
+
 
     def iter_graves(self):
         graves = self._data.get("graves", [])
@@ -330,6 +384,7 @@ class MonumentaGraves(NbtPathDebug):
             yield grave
             graves[i] = grave.serialize()
 
+
     def iter_thrown_items(self):
         thrown_items = self._data.get("thrown_items", [])
         num_thrown_items = len(thrown_items)
@@ -338,41 +393,52 @@ class MonumentaGraves(NbtPathDebug):
             yield thrown_item
             thrown_items[i] = thrown_item.serialize()
 
+
     def iter_all_types(self):
         yield from self.iter_graves()
         yield from self.iter_thrown_items()
 
+
     def iter_block_entities(self):
         return
+
 
     def iter_entities(self):
         return
 
+
     def iter_items(self):
         return
+
 
     def recursive_iter_all_types(self):
         yield self
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_all_types()
 
+
     def recursive_iter_block_entities(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_block_entities()
+
 
     def recursive_iter_entities(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_entities()
 
+
     def recursive_iter_items(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_items()
 
+
     def __repr__(self):
         return f'Graves'
 
+
 class MonumentaGrave(NbtPathDebug):
     """A collection of items preserved from a single death."""
+
 
     def __init__(self, json_data, parent):
         self._data = json_data
@@ -396,8 +462,10 @@ class MonumentaGrave(NbtPathDebug):
             for item_json in items:
                 self._items.append(JsonWrappedItem(item_json, self))
 
+
     def get_debug_str(self):
         return str(self)
+
 
     def serialize(self):
         if isinstance(self._equipment, dict):
@@ -409,6 +477,7 @@ class MonumentaGrave(NbtPathDebug):
 
         return self._data
 
+
     def iter_all_types(self):
         if isinstance(self._equipment, dict):
             for item in self._equipment.values():
@@ -419,11 +488,14 @@ class MonumentaGrave(NbtPathDebug):
         if isinstance(self._items, list):
             yield from self._items
 
+
     def iter_block_entities(self):
         return
 
+
     def iter_entities(self):
         return
+
 
     def iter_items(self):
         if isinstance(self._equipment, dict):
@@ -431,22 +503,27 @@ class MonumentaGrave(NbtPathDebug):
                 if item is not None:
                     yield item
 
+
     def recursive_iter_all_types(self):
         yield self
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_all_types()
 
+
     def recursive_iter_block_entities(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_block_entities()
+
 
     def recursive_iter_entities(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_entities()
 
+
     def recursive_iter_items(self):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_items()
+
 
     @property
     def pos(self):
@@ -456,6 +533,7 @@ class MonumentaGrave(NbtPathDebug):
         (2.71817181, 63.5, 3.1415)
         """
         return (self._data["location"]["x"], self._data["location"]["y"], self._data["location"]["z"])
+
 
     def __repr__(self):
         return f'Grave({self._data["shard"]} {" ".join([str(round(x, 1)) for x in self.pos])})'
@@ -469,14 +547,17 @@ class JsonWrappedItem(Item, NbtPathDebug):
     Otherwise has all the methods a regular Item has (iterating, etc.)
     """
 
+
     def __init__(self, json_data, parent=None):
         self._data = json_data
         item_nbt = nbt.TagCompound.from_mojangson(self._data["nbt"])
         super().__init__(item_nbt, parent, None)
 
+
     def serialize(self):
         self._data["nbt"] = self.nbt.to_mojangson()
         return self._data
+
 
     @property
     def pos(self):
