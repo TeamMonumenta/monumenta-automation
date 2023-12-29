@@ -4,7 +4,6 @@ import os
 import sys
 import json
 from lib_py3.common import get_entity_name_from_nbt
-from pprint import pprint
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 
@@ -37,5 +36,4 @@ if __name__ == '__main__':
         print("  " + name)
 
     with open(sys.argv[1], "w") as fp:
-        souls = json.dump(new_souls, fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
-
+        json.dump(new_souls, fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
