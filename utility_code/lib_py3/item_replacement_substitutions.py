@@ -4,6 +4,7 @@ import re
 
 from lib_py3.common import get_item_name_from_nbt
 from lib_py3.common import parse_name_possibly_json
+from lib_py3.common import mark_dirty
 from lib_py3.common import update_plain_tag
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
@@ -223,6 +224,15 @@ class FixPlainTag(SubstitutionRule):
         """Note: This is only useful for items that aren't in the loot tables."""
         if item.nbt.has_path("tag"):
             update_plain_tag(item.nbt.at_path("tag"))
+
+
+class MarkPlayerModifiedDirty(SubstitutionRule):
+    name = "Apply the dirty tag to items not in the loot tables"
+
+    def process(self, item_meta, item):
+        """Note: This is only useful for items that aren't in the loot tables."""
+        if item.nbt.has_path('tag.Monumenta.PlayerModified'):
+            mark_dirty(item)
 
 
 class UpdateQuivers(SubstitutionRule):

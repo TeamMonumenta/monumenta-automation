@@ -50,6 +50,11 @@ def process_plugin_data(plugin_data):
         if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
             num_replacements += 1
 
+    # TODO: Second verse, same as the first!
+    for item in plugin_data.zenith_charms().recursive_iter_items():
+        if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
+            num_replacements += 1
+
     for item in plugin_data.wallet().recursive_iter_items():
         if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
             num_replacements += 1
