@@ -600,64 +600,58 @@ Examples:
         # {'dungeon': {'available_replicas': 1, 'replicas': 1, 'pod_name': 'dungeon-xyz'}
         #  'test': {'available_replicas': 0, 'replicas': 0}}
 
-        msg = ""
+        msg = []
         input = inputMsg.content.split(" ")
 
         if len(input) > 2 and input[2] == "summary":
-            bucketCheck = ""
-            bucketX = ""
-            bucketUp = ""
-            bucketDown = ""
-            bucketError = ""
+            bucketCheck = []
+            bucketX = []
+            bucketUp = []
+            bucketDown = []
+            bucketError = []
             for name in shards:
                 state = shards[name]
                 if state["replicas"] == 1 and state["available_replicas"] == 1:
-                    if not bucketCheck:
-                        bucketCheck += f":white_check_mark:: {name}"
-                    else:
-                        bucketCheck += f", {name}"
+                    bucketCheck.append(name)
                 elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                    if not bucketUp:
-                        bucketUp += f"\n:arrow_up:: {name}"
-                    else:
-                        bucketUp += f", {name}"
+                    bucketUp.append(name)
                 elif state["replicas"] == 0 and "pod_name" in state:
-                    if not bucketDown:
-                        bucketDown += f"\n:arrow_down:: {name}"
-                    else:
-                        bucketDown += f", {name}"
+                    bucketDown.append(name)
                 elif state["replicas"] == 0 and "pod_name" not in state:
-                    if not bucketX:
-                        bucketX += f"\n:x:: {name}"
-                    else:
-                        bucketX += f", {name}"
+                    bucketX.append(name)
                 else:
-                    bucketError += f"\n:exclamation: {name}: {pformat(state)}"
+                    bucketError.append(name)
+
             if len(shards) <= 0:
-                msg = "No shards to list"
-            else:
-                msg += bucketCheck
-                msg += bucketUp
-                msg += bucketDown
-                msg += bucketX
-                msg += bucketError
+                msg.append("No shards to list")
+            if bucketCheck:
+                msg.append(":white_check_mark:: " + ", ".join(bucketCheck))
+            if bucketUp:
+                msg.append(":arrow_up:: " + ", ".join(bucketUp))
+            if bucketDown:
+                msg.append(":arrow_down:: " + ", ".join(bucketDown))
+            if bucketX:
+                msg.append(":x:: " + ", ".join(bucketX))
+            if bucketError:
+                msg.append(":exclamation:: " + ", ".join(bucketError))
+
         else:
             for name in shards:
                 state = shards[name]
                 if state["replicas"] == 1 and state["available_replicas"] == 1:
-                    msg += f"\n:white_check_mark: {name}"
+                    msg.append(f":white_check_mark: {name}")
                 elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                    msg += f"\n:arrow_up: {name}"
+                    msgmsg.append(f":arrow_up: {name}")
                 elif state["replicas"] == 0 and "pod_name" in state:
-                    msg += f"\n:arrow_down: {name}"
+                    msg.append(f":arrow_down: {name}")
                 elif state["replicas"] == 0 and "pod_name" not in state:
-                    msg += f"\n:x: {name}"
+                    msg.append(f":x: {name}")
                 else:
-                    msg += f"\n:exclamation: {name}: {pformat(state)}"
+                    msg.append(f":exclamation: {name}: {pformat(state)}")
             if not msg:
-                msg = "No shards to list"
+                msg.append("No shards to list")
 
-        await self.display(ctx, msg)
+        await self.display(ctx, "\n".join(msg))
 
     async def action_list_instances(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         """List player dungeon instances"""
