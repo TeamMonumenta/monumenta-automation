@@ -190,6 +190,9 @@ class AutomationBotInstance(commands.Cog):
             self._shards = config.SHARDS
             self._server_dir = config.SERVER_DIR
 
+            self._persistence_path = Path(f'/home/epic/4_SHARED/bot_persistence/{self._name}')
+            self._persistence_path.mkdir(mode=0o775, parents=True, exist_ok=True)
+
             if config.RABBITMQ:
                 try:
                     conf = config.RABBITMQ
@@ -310,6 +313,12 @@ class AutomationBotInstance(commands.Cog):
             self._k8s = KubernetesManager(config.K8S_NAMESPACE)
         except KeyError as e:
             sys.exit(f'Config missing key: {e}')
+
+    async def cog_load(self) -> None:
+        await self._check_updated_avatar()
+
+        # start the task to run in the background
+        #self.my_background_task.start()
 
     async def handle_message(self, ctx: discord.ext.commands.Context, message):
         """Called by parent bot on receiving a message"""
@@ -2048,9 +2057,6 @@ Usage:
 {cmdPrefix}update avatar /home/epic/4_SHARED/bot_avatars/example.png
 """
 
-        PNG_HEADER = b'\x89\x50\x4e\x47\x0d\x0a\x1a\x0a'
-        JPG_HEADER = b'\xff\xd8\xff'
-
         avatar_path_str = message.content[len(config.PREFIX + cmd) + 1:]
         avatar_path = Path(avatar_path_str)
         await self.display(ctx, f"Attempting to set avatar `{avatar_path_str}`")
@@ -2078,29 +2084,72 @@ Usage:
             await self.display(ctx, "Only png and jpg files are supported.")
             return
 
-        file_contents = None
+        try:
+            await self._internal_update_avatar(avatar_path)
+            await self.display(ctx, "Success")
+        except Exception as ex:
+            await self.display(ctx, str(ex))
+            await self.display_verbatim(ctx, traceback.format_exc())
+
+    async def _check_updated_avatar(self):
+        """Checks if avatar.png and last_set_avatar.png differ, and if so, use avatar.png"""
+        previous_path = self._persistence_path / 'last_set_avatar.png'
+        current_path = self._persistence_path / 'avatar.png'
+
+        if not current_path.is_file():
+            return
+
+        if (
+                not previous_path.is_file()
+                or current_path.stat().st_size != previous_path.stat().st_size
+        ):
+            try:
+                await self._internal_update_avatar(current_path)
+            except Exception:
+                pass
+            return
+
+        if current_path.read_bytes() != previous_path.read_bytes():
+            try:
+                await self._internal_update_avatar(current_path)
+            except Exception:
+                pass
+
+    async def _internal_update_avatar(self, avatar_path: Path):
+        """Internal code to update the bot's avatar, raising an exception on failure"""
+
+        PNG_HEADER = b'\x89\x50\x4e\x47\x0d\x0a\x1a\x0a'
+        JPG_HEADER = b'\xff\xd8\xff'
+
+        if not avatar_path.is_file():
+            raise Exception(f'Could not find {avatar_path}')
+
         try:
             file_contents = avatar_path.read_bytes()
         except Exception:
-            await self.display(ctx, "Could not open avatar file.")
-            return
+            raise Exception(f'Could not read {avatar_path}')
+
         if not file_contents.startswith(PNG_HEADER) and not file_contents.startswith(JPG_HEADER):
-            await self.display(ctx, "Only jpg and png files are supported. Nice try changing the extension, though.")
-            return
+            raise Exception(f'Avatar file must be a real png or jpg file: {avatar_path}')
 
         user = self._bot.user
         if user is None:
-            await self.display(ctx, "No user object found. Not logged in?")
-            return
+            raise Exception(f'Bot has no user object; is it not signed in?')
 
         try:
             await user.edit(avatar=file_contents)
         except Exception:
-            await self.display(ctx, "Failed to set the avater (see link)")
-            await self.display_verbatim(ctx, traceback.format_exc())
-            await self.display(ctx, "https://discordpy.readthedocs.io/en/stable/api.html#discord.ClientUser.edit")
-            return
-        await self.display(ctx, "Success")
+            raise Exception(f'Failed to change avatar; check https://discordpy.readthedocs.io/en/stable/api.html#discord.ClientUser.edit')
+
+        try:
+            # Set current and previous bot image files
+            previous_path = self._persistence_path / 'last_set_avatar.png'
+            previous_path.write_bytes(file_contents)
+            current_path = self._persistence_path / 'avatar.png'
+            current_path.write_bytes(file_contents)
+        except Exception:
+            # Any errors in this block are non-critical
+            pass
 
     @staticmethod
     def preprocess_time_description(time_description):
