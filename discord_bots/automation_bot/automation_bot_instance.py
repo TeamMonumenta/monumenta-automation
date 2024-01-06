@@ -593,30 +593,65 @@ Examples:
 
         await ctx.send("BUG: You definitely shouldn't have this much power")
 
-    async def action_list_shards(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
+    async def action_list_shards(self, ctx: discord.ext.commands.Context, _, inputMsg: discord.Message):
         '''Lists currently running shards on this server'''
         shards = await self._k8s.list()
         # Format of this is:
         # {'dungeon': {'available_replicas': 1, 'replicas': 1, 'pod_name': 'dungeon-xyz'}
         #  'test': {'available_replicas': 0, 'replicas': 0}}
 
-        msg = ""
-        for name in shards:
-            state = shards[name]
-            if state["replicas"] == 1 and state["available_replicas"] == 1:
-                msg += f"\n:white_check_mark: {name}"
-            elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                msg += f"\n:arrow_up: {name}"
-            elif state["replicas"] == 0 and "pod_name" in state:
-                msg += f"\n:arrow_down: {name}"
-            elif state["replicas"] == 0 and "pod_name" not in state:
-                msg += f"\n:x: {name}"
-            else:
-                msg += f"\n:exclamation: {name}: {pformat(state)}"
-        if not msg:
-            msg = "No shards to list"
+        msg = []
+        input = inputMsg.content.split(" ")
 
-        await self.display(ctx, msg)
+        if len(input) > 2 and input[2] == "summary":
+            bucketCheck = []
+            bucketX = []
+            bucketUp = []
+            bucketDown = []
+            bucketError = []
+            for name in shards:
+                state = shards[name]
+                if state["replicas"] == 1 and state["available_replicas"] == 1:
+                    bucketCheck.append(name)
+                elif state["replicas"] == 1 and state["available_replicas"] == 0:
+                    bucketUp.append(name)
+                elif state["replicas"] == 0 and "pod_name" in state:
+                    bucketDown.append(name)
+                elif state["replicas"] == 0 and "pod_name" not in state:
+                    bucketX.append(name)
+                else:
+                    bucketError.append(name)
+
+            if len(shards) <= 0:
+                msg.append("No shards to list")
+            if bucketCheck:
+                msg.append(":white_check_mark:: " + ", ".join(bucketCheck))
+            if bucketUp:
+                msg.append(":arrow_up:: " + ", ".join(bucketUp))
+            if bucketDown:
+                msg.append(":arrow_down:: " + ", ".join(bucketDown))
+            if bucketX:
+                msg.append(":x:: " + ", ".join(bucketX))
+            if bucketError:
+                msg.append(":exclamation:: " + ", ".join(bucketError))
+
+        else:
+            for name in shards:
+                state = shards[name]
+                if state["replicas"] == 1 and state["available_replicas"] == 1:
+                    msg.append(f":white_check_mark: {name}")
+                elif state["replicas"] == 1 and state["available_replicas"] == 0:
+                    msgmsg.append(f":arrow_up: {name}")
+                elif state["replicas"] == 0 and "pod_name" in state:
+                    msg.append(f":arrow_down: {name}")
+                elif state["replicas"] == 0 and "pod_name" not in state:
+                    msg.append(f":x: {name}")
+                else:
+                    msg.append(f":exclamation: {name}: {pformat(state)}")
+            if not msg:
+                msg.append("No shards to list")
+
+        await self.display(ctx, "\n".join(msg))
 
     async def action_list_instances(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         """List player dungeon instances"""
