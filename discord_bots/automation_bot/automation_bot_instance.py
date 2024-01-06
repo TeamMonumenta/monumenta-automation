@@ -641,7 +641,7 @@ Examples:
                 if state["replicas"] == 1 and state["available_replicas"] == 1:
                     msg.append(f":white_check_mark: {name}")
                 elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                    msgmsg.append(f":arrow_up: {name}")
+                    msg.append(f":arrow_up: {name}")
                 elif state["replicas"] == 0 and "pod_name" in state:
                     msg.append(f":arrow_down: {name}")
                 elif state["replicas"] == 0 and "pod_name" not in state:
