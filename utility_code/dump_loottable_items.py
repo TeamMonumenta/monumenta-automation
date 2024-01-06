@@ -82,6 +82,7 @@ def create_mcfunction(chestlist: [str]):
 def main():
     arg_parser = argparse.ArgumentParser(description=__doc__)
     arg_parser.add_argument('--unupdated', action='store_true')
+    arg_parser.add_argument('--only_masterworked', action='store_true')
     args = arg_parser.parse_args()
 
     mgr = LootTableManager()
@@ -100,6 +101,8 @@ def main():
                 continue
             item_nbt = entry["nbt"]
             if args.unupdated and is_up_to_date(item_nbt):
+                continue
+            if args.only_masterworked and "masterwork" not in entry:
                 continue
 
             item_slot = nbt.TagCompound({

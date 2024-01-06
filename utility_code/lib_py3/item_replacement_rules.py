@@ -5,6 +5,7 @@ import yaml
 
 from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
+from lib_py3.common import mark_dirty
 from lib_py3.common import update_plain_tag
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
@@ -54,12 +55,6 @@ def to_number(numeral):
     if numeral == 'IV':
         return 4
     return 0
-
-
-def mark_dirty(item):
-    if not item.nbt.has_path('tag.Monumenta'):
-        return
-    item.nbt.at_path('tag.Monumenta').value['Dirty'] = nbt.TagByte(1)
 
 
 class GlobalRule():
@@ -278,6 +273,25 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
 
         if item.nbt.has_path('tag.Monumenta.PlayerModified') and len(item.nbt.at_path('tag.Monumenta.PlayerModified').value) > 0:
             mark_dirty(item)
+
+class FixSilentKnight(GlobalRule):
+    name = 'Fix Silent Knight'
+
+    def __init__(self):
+        super().__init__()
+
+    def preprocess(self, template, item):
+        pass
+
+    def postprocess(self, item):
+        if item.id != "minecraft:player_head":
+            return
+        if not item.nbt.has_path('tag.display.Name') or get_item_name_from_nbt(item.tag, True) != 'Silent Knight':
+            return
+        if item.nbt.has_path('tag.Monumenta.PlayerModified.Infusions.Festive.Infuser'):
+            festive = item.tag.at_path('Monumenta.PlayerModified.Infusions.Festive')
+            del festive.value['Infuser']
+            festive.value['InfuserNpc'] = nbt.TagString("Gertrude")
 
 class PreserveBlockEntityTag(GlobalRule):
     name = 'Preserve block entity tag'

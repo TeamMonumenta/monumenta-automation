@@ -480,8 +480,8 @@ def export_memory_to_json():
                 "shards": []
             }
 
-        nodes[node]["max_memory_GB"] = node_values["total_huge_page_size_GB"]
-        nodes[node]["max_hugepage_GB"] = node_values["total_non_huge_size_GB"]
+        nodes[node]["max_memory_GB"] = node_values["total_non_huge_size_GB"]
+        nodes[node]["max_hugepage_GB"] = node_values["total_huge_page_size_GB"]
 
     print(json.dumps({
         "namespaces": list(namespaces),

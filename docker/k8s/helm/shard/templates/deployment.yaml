@@ -129,6 +129,8 @@ spec:
           value: "/home/epic/{{ .Values.namespace }}/{{ .Values.node }}/{{ .Values.name }}"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        - name: "NETWORK_NAMESPACE"
+          value: {{ .Values.namespace }}
         - name: "NETWORK_RELAY_NAME"
           value: {{ .Values.name }}
         - name: "NETWORK_RELAY_SERVER_ADDRESS"

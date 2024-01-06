@@ -77,6 +77,8 @@
     "ring-6":  { "play" : { "node": "m8" , "memGB": 7, }, },
     "ring-7":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
+    "ring-9":  { "play" : { "node": "m16", "memGB": 7, }, },
+    "ring-10":  { "play" : { "node": "m16", "memGB": 7, }, },
 
     "ringfreeze":  { "build": { "node": "m12", "memGB": 3   , }, },
 
@@ -102,7 +104,7 @@
 
     # Dungeons
     "cyan": {
-        "play" : { "node": "m11", "memGB": 3   , },
+        "play" : { "node": "m16", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
@@ -114,7 +116,7 @@
     },
     "depths-2": { "play" : { "node": "m11" , "memGB": 3, }, },
     "forum": {
-        "play" : { "node": "m15", "memGB": 4   , },
+        "play" : { "node": "m16", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 2048, },
         "volt" : { "node": "m12", "memMB": 2048, },
     },
@@ -164,9 +166,15 @@
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "reverie": {
-        "play" : { "node": "m13", "memGB": 3   , },
+        "play" : { "node": "m13", "memGB": 6   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
+    },
+    "reverie-2": {
+        "play" : { "node": "m13" , "memGB": 6   , },
+    },
+    "reverie-3": {
+        "play" : { "node": "m15" , "memGB": 6   , },
     },
     "corridors": {
         "play" : { "node": "m15", "memGB": 3   , },
@@ -204,21 +212,15 @@
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "yellow": {
-        "play" : { "node": "m15", "memGB": 5   , },
+        "play" : { "node": "m16", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "gallery": {
-        "play" : { "node": "m8" , "memGB": 6   , },
+        "play" : { "node": "m8" , "memGB": 3   , },
         "stage": { "node": "m12", "memGB": 3   , },
         "volt" : { "node": "m12", "memGB": 3   , },
-    },
-    "gallery-2": {
-        "play" : { "node": "m13" , "memGB": 6   , },
-    },
-    "gallery-3": {
-        "play" : { "node": "m15" , "memGB": 6   , },
     },
 
     "blue": {
@@ -226,10 +228,10 @@
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
-    "blue-2": { "play" : { "node": "m8" , "memGB": 5, }, },
+    "blue-2": { "play" : { "node": "m16" , "memGB": 5, }, },
 
     "brown": {
-        "play" : { "node": "m11", "memGB": 5   , },
+        "play" : { "node": "m16", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
@@ -241,21 +243,33 @@
     },
 
     "ruin": {
-        "play" : { "node": "m8", "memGB": 4   , },
+        "play" : { "node": "m16", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "skt": {
-        "play" : { "node": "m13", "memGB": 4   , },
+        "play" : { "node": "m16", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
-    "skt-2": { "play" : { "node": "m13", "memGB": 4, }, },
+    "skt-2": { "play" : { "node": "m16", "memGB": 4, }, },
     "zenith": {
-        "stage": { "node": "m12", "memMB": 1536, },
-        "volt" : { "node": "m12", "memMB": 1536, },
+        "play" : { "node": "m16", "memGB":    4, },
+        "stage": { "node": "m12", "memGB":    3, },
+        "volt" : { "node": "m12", "memGB":    3, },
     },
+    "zenith-2":  { "play" : { "node": "m16", "memGB": 4, }, },
+    "zenith-3":  { "play" : { "node": "m16", "memGB": 4, }, },
+    "zenith-4":  { "play" : { "node": "m16", "memGB": 4, }, },
+    "zenith-5":  { "play" : { "node": "m8" , "memGB": 4, }, },
+    "zenith-6":  { "play" : { "node": "m8" , "memGB": 4, }, },
+    "zenith-7":  { "play" : { "node": "m11", "memGB": 4, }, },
+    "zenith-8":  { "play" : { "node": "m11", "memGB": 4, }, },
+    "zenith-9":  { "play" : { "node": "m13", "memGB": 4, }, },
+    "zenith-10": { "play" : { "node": "m13", "memGB": 4, }, },
+    "zenith-11": { "play" : { "node": "m15", "memGB": 4, }, },
+    "zenith-12": { "play" : { "node": "m15", "memGB": 4, }, },
 }
 
 # Defaults for each namespace
@@ -269,10 +283,11 @@
 
 # Memory values copied directly from /proc/meminfo
 "node_info": {
-    "m8":  { "full_name": "monumenta-8",  "mem_total_kB": 131650288, "huge_pages": 42000, "huge_page_size_kB": 2048 },
+    "m8":  { "full_name": "monumenta-8",  "mem_total_kB": 131650292, "huge_pages": 40000, "huge_page_size_kB": 2048 },
     "m11": { "full_name": "monumenta-11", "mem_total_kB": 131650288, "huge_pages": 46000, "huge_page_size_kB": 2048 },
     "m12": { "full_name": "monumenta-12", "mem_total_kB": 131650292, "huge_pages": 43000, "huge_page_size_kB": 2048 },
     "m13": { "full_name": "monumenta-13", "mem_total_kB": 131841792, "huge_pages": 48000, "huge_page_size_kB": 2048 },
     "m15": { "full_name": "monumenta-15", "mem_total_kB": 131799556, "huge_pages": 48000, "huge_page_size_kB": 2048 },
+    "m16": { "full_name": "monumenta-16", "mem_total_kB": 131787616, "huge_pages": 48000, "huge_page_size_kB": 2048 },
 }
 

@@ -7,6 +7,7 @@ import re
 from lib_py3.json_file import jsonFile
 from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
+from lib_py3.common import get_masterwork_level_from_nbt
 from lib_py3.upgrade import upgrade_entity
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
@@ -209,11 +210,15 @@ class LootTableManager():
         if item_name is None:
             return
 
+        masterwork_level = get_masterwork_level_from_nbt(item_tag_nbt)
+
         # Item is named - add it to the map
         new_entry = {}
         new_entry["file"] = filename
         new_entry["nbt"] = item_tag_nbt
         new_entry["namespaced_key"] = self._to_namespaced_path(filename)
+        if masterwork_level is not None:
+            new_entry["masterwork"] = masterwork_level
 
         self._register_loot_table_item(item_id, item_name, new_entry)
         for interchangeable_id_set in self.INTERCHANGEABLE_ITEM_IDS:

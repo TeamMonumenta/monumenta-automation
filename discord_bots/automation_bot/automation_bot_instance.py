@@ -985,7 +985,7 @@ Must be run before starting the update on the play server
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle post autoformat", '-s'], ret=[0, 1])
 
         if not skip_replacements:
-            await self.run_replacements_internal(ctx, ["valley", "isles", "ring", "ringfreeze", "dungeon", "structures"], do_prune=True)
+            await self.run_replacements_internal(ctx, ["valley", "isles", "ring", "dungeon", "structures"], do_prune=True)
 
         if not skip_commit:
             await self.cd(ctx, '/home/epic/project_epic/server_config/data')
@@ -997,8 +997,8 @@ Must be run before starting the update on the play server
             await self.generate_instances_internal(ctx, debug=debug)
 
         if not debug:
-            await self.display(ctx, "Stopping valley, isles, ring, and ringfreeze...")
-            await self.stop(ctx, ["valley", "isles", "ring", "ringfreeze"])
+            await self.display(ctx, "Stopping valley, isles, ring...")
+            await self.stop(ctx, ["valley", "isles", "ring"])
 
         await self.display(ctx, "Copying valley...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley")
@@ -1006,6 +1006,7 @@ Must be run before starting the update on the play server
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/azacor /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/sanctum /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/verdant /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/valley/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
 
         if not debug:
             await self.display(ctx, "Restarting the valley shard...")
@@ -1016,20 +1017,21 @@ Must be run before starting the update on the play server
         await self.run(ctx, "cp -a /home/epic/project_epic/isles/Project_Epic-isles /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
         await self.run(ctx, "cp -a /home/epic/project_epic/isles/mist /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
         await self.run(ctx, "cp -a /home/epic/project_epic/isles/remorse /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/isles/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/")
 
         if not debug:
             await self.display(ctx, "Restarting the isles shard...")
             await self.start(ctx, "isles", wait=False)
 
-        await self.display(ctx, "Copying ringfreeze...")
+        await self.display(ctx, "Copying ring...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring")
-        await self.run(ctx, "cp -a /home/epic/project_epic/ringfreeze/Project_Epic-ring /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
-        await self.run(ctx, "cp -a /home/epic/project_epic/ringfreeze/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
-        await self.run(ctx, "cp -a /home/epic/project_epic/ringfreeze/godspore /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ring/Project_Epic-ring /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ring/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ring/godspore /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
 
         if not debug:
-            await self.display(ctx, "Restarting the ring and ringfreeze shards...")
-            await self.start(ctx, ["ring", "ringfreeze"], wait=False)
+            await self.display(ctx, "Restarting the ring and ring shards...")
+            await self.start(ctx, "ring", wait=False)
 
         await self.display(ctx, "Copying purgatory...")
         await self.run(ctx, "cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
@@ -1247,6 +1249,13 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.cd(ctx, self._server_dir)
         await self.run(ctx, os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(folders_to_update)))
 
+        # TODO: Revert this once this new content launches!
+        if "ring" in folders_to_update:
+            await self.cd(ctx, f"{self._server_dir}/ring/plugins/MonumentaStructureManagement")
+            await self.run(ctx, "rm -f config.yml")
+            await self.run(ctx, "ln -s ../../../server_config/data/plugins/ring/MonumentaStructureManagement/newconfig.yml config.yml")
+            await self.cd(ctx, self._server_dir)
+
         # Apply the warps from the build server
         await self.run(ctx, f"mkdir -p {self._server_dir}/{shard}/plugins/MonumentaWarps")
         await self.run(ctx, f"cp -a /home/epic/5_SCRATCH/tmpreset/TEMPLATE/{shard}/warps.yml {self._server_dir}/{shard}/plugins/MonumentaWarps/warps.yml", None)
@@ -1329,7 +1338,7 @@ old coreprotect data will be removed at the 5 minute mark.
         ], reverse=True)
 
         self._socket.send_packet("*", "monumentanetworkrelay.command",
-                                 {"command": '''tellraw @a ''' + json.dumps([
+                                 {"command": '''tellraw @a[all_worlds=true] ''' + json.dumps([
                                      "",
                                      {"text":"[Alert] ", "color":"red"},
                                      {"text":"Monumenta is going down at ", "color":"white"},
@@ -1353,7 +1362,7 @@ old coreprotect data will be removed at the 5 minute mark.
 
         async def send_broadcast_msg(time_left):
             self._socket.send_packet("*", "monumentanetworkrelay.command",
-                                     {"command": '''tellraw @a ''' + json.dumps([
+                                     {"command": '''tellraw @a[all_worlds=true] ''' + json.dumps([
                                          "",
                                          {"text":"[Alert] ", "color":"red"},
                                          {"text":"The Monumenta server is stopping in ", "color":"white"},

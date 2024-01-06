@@ -7,7 +7,7 @@ metadata:
   labels:
     app: cron-automated-restart
 spec:
-  schedule: "55 8 * * SUN,MON,TUE,WED,THU,FRI,SAT"
+  schedule: "55 8 * * SUN,MON,TUE,WED,THU,SAT"
   concurrencyPolicy: Replace
   jobTemplate:
     spec:
@@ -50,6 +50,10 @@ spec:
             hostPath:
               type: Directory
               path: /nfs/play/m15/bungee-15/plugins/BungeeDisplay
+          - name: nfs-data-16
+            hostPath:
+              type: Directory
+              path: /nfs/play/m16/bungee-16/plugins/BungeeDisplay
           containers:
           - name: cron-automated-restart
             image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-play
@@ -70,6 +74,8 @@ spec:
               mountPath: /home/epic/play/m13/bungee-13/plugins/BungeeDisplay
             - name: nfs-data-15
               mountPath: /home/epic/play/m15/bungee-15/plugins/BungeeDisplay
+            - name: nfs-data-16
+              mountPath: /home/epic/play/m16/bungee-16/plugins/BungeeDisplay
           restartPolicy: Never
           imagePullSecrets:
           - name: githubcred

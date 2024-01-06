@@ -161,6 +161,14 @@ class LibraryOfSouls(object):
                     if passenger.has_path(junk):
                         passenger.value.pop(junk)
 
+        for string_tag in soul_nbt.iter_multipath('Tags[]'):
+            for old_part, new_part in (
+                ('rejuvination', 'rejuvenation'),
+                ('Rejuvination', 'Rejuvenation'),
+                ('REJUVINATION', 'REJUVENATION'),
+            ):
+                if old_part in string_tag.value:
+                    string_tag.value = string_tag.value.replace(old_part, new_part)
 
         return soul_nbt
 

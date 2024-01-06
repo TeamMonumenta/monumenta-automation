@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import sys
-import os
 import asyncio
+import json
+import os
+import sys
 import traceback
 from pprint import pprint
 import yaml
@@ -11,8 +12,16 @@ from lib_py3.lib_sockets import SocketManager
 from lib_py3.lib_k8s import KubernetesManager
 
 def send_broadcast_msg(time_left):
+    raw_json_text = [
+        "",
+        {"text": "[Alert] ", "color": "red"},
+        {"text": "Monumenta will perform its daily restart in ", "color": "white"},
+        {"text": time_left, "color": "red"},
+        {"text": ". This helps reduce lag! The server will be down for ~90 seconds."}
+    ]
+    command = '''tellraw @a[all_worlds=true] ''' + json.dumps(raw_json_text, ensure_ascii=False, separators=(',', ':'))
     socket.send_packet("*", "monumentanetworkrelay.command",
-                       {"command": '''tellraw @a ["",{"text":"[Alert] ","color":"red"},{"text":"Monumenta will perform its daily restart in","color":"white"},{"text":" ''' + time_left + '''","color":"red"},{"text":". This helps reduce lag! The server will be down for ~90 seconds."}]'''},
+                       {"command": command},
                        heartbeat_server_type="daily-restart")
 
 async def main():
@@ -67,9 +76,9 @@ async def main():
 
     # Kick anyone with ops who bypassed maintenance
     #### TODO: Disabled for now, just stopping bungee directly. Eventually we may want this back so bungee stays up to tell people why it is down.
-    # print("Broadcasting kick @a command to all shards...")
+    # print("Broadcasting kick @a[all_worlds=true] command to all shards...")
     # socket.send_packet("*", "monumentanetworkrelay.command",
-    #         {"command": 'kick @a'}
+    #         {"command": 'kick @a[all_worlds=true]'}
     # )
 
     # At this point shards that didn't already restart will do so

@@ -1,9 +1,10 @@
 import os
 import sys
+import re
 
-from lib_py3.common import always_equal
 from lib_py3.common import get_item_name_from_nbt
 from lib_py3.common import parse_name_possibly_json
+from lib_py3.common import mark_dirty
 from lib_py3.common import update_plain_tag
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
@@ -79,15 +80,6 @@ class NameUnnamedItems(SubstitutionRule):
         )
         named_chests = (
             r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:lingering_potion",tag:{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,Amplifier:2b,Duration:240,Id:10b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:900,Id:22b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"green","text":"Strong Sanctify Potion"}],"text":""}'},plain:{display:{Name:"Strong Sanctify Potion"}}}}]}''',
-            # Zombie Meat and Cooked Zombie Meat
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:rabbit",tag:{display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Zombie Meat"}],"text":""}'},plain:{display:{Name:"Zombie Meat"}}}}]}''',
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:cooked_rabbit",tag:{display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Cooked Zombie Meat"}],"text":""}'},plain:{display:{Name:"Cooked Zombie Meat"}}}}]}''',
-            # Loreless potions
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{CustomPotionColor:9325341,CustomPotionEffects:[{Ambient:1b,Amplifier:0b,Duration:100,Id:9b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:600,Id:19b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:1b,Duration:1200,Id:10b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:1200,Id:5b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Blackroot Brew"}],"text":""}'},plain:{display:{Name:"Blackroot Brew"}}}}]}''',
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{CustomPotionEffects:[{Ambient:1b,Amplifier:0b,Duration:10800,Id:13b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Depth Lurker"}],"text":""}'},plain:{display:{Name:"Depth Lurker"}}}}]}''',
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{CustomPotionColor:14192676,CustomPotionEffects:[{Ambient:1b,Amplifier:0b,Duration:100,Id:9b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:1800,Id:13b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:1b,Duration:100,Id:10b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Sunfish Rum"}],"text":""}'},plain:{display:{Name:"Sunfish Rum"}}}}]}''',
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{CustomPotionColor:13389173,CustomPotionEffects:[{Ambient:1b,Amplifier:0b,Duration:100,Id:9b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:400,Id:12b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:400,Id:11b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Blaze\'s Whiskey"}],"text":""}'},plain:{display:{Name:"Blaze's Whiskey"}}}}]}''',
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:splash_potion",tag:{CustomPotionEffects:[{Ambient:0b,Amplifier:2b,Duration:600,Id:2b,ShowIcon:1b,ShowParticles:1b},{Ambient:0b,Amplifier:2b,Duration:600,Id:4b,ShowIcon:1b,ShowParticles:1b},{Ambient:0b,Amplifier:1b,Duration:1200,Id:17b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:water",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"text":"Potion of Draining Life"}],"text":""}'},plain:{display:{Name:"Potion of Draining Life"}}}}]}''',
         )
 
         for chest_mojangson in unnamed_chests:
@@ -194,6 +186,24 @@ class FixDoubleJsonNames(SubstitutionRule):
             item.tag.at_path('display.Name').value = name_json
             item_meta['name'] = unformat_text(name_json_json)
 
+class ReplaceSuspiciousBlock(SubstitutionRule):
+    name = "Replaces Suspicious Block black concrete with just black concrete"
+    matcher = re.compile("""Suspicious Block[!',.:;i|]{3}""")
+
+    def process(self, item_meta, item):
+        if item.id != "minecraft:black_concrete":
+            return
+
+        if not item.nbt.has_path('tag.display.Name'):
+            return
+
+        name = item.tag.at_path('display.Name').value
+        name_json = parse_name_possibly_json(name)
+
+        if self.matcher.fullmatch(name_json):
+            item.nbt.value.pop('tag')
+            item_meta["name"] = None
+
 class FixEscapedNames(SubstitutionRule):
     name = "Fixed escaped characters in json names"
 
@@ -214,6 +224,15 @@ class FixPlainTag(SubstitutionRule):
         """Note: This is only useful for items that aren't in the loot tables."""
         if item.nbt.has_path("tag"):
             update_plain_tag(item.nbt.at_path("tag"))
+
+
+class MarkPlayerModifiedDirty(SubstitutionRule):
+    name = "Apply the dirty tag to items not in the loot tables"
+
+    def process(self, item_meta, item):
+        """Note: This is only useful for items that aren't in the loot tables."""
+        if item.nbt.has_path('tag.Monumenta.PlayerModified'):
+            mark_dirty(item)
 
 
 class UpdateQuivers(SubstitutionRule):
@@ -265,15 +284,12 @@ class SubtituteItems(SubstitutionRule):
                 # Example item type change:
                 # ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
                 ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
-                ["minecraft:pumpkin_seeds", "Lesser Charm of Multiplication", "minecraft:horn_coral_fan", "Lesser Trailblazer Charm"],
-                ["minecraft:pumpkin_seeds", "Greater Charm of Multiplication", "minecraft:horn_coral_fan", "Greater Trailblazer Charm"],
-                ["minecraft:pumpkin_seeds", "Focused Charm of Multiplication", "minecraft:horn_coral_fan", "Focused Trailblazer Charm"],
-                ["minecraft:lingering_potion", "Crippling Vial", "minecraft:splash_potion", "Crippling Vial"],
-                # Type changes by the request of the RP team
-                ["minecraft:leather_boots", "Deathbound Cavaliers", "minecraft:lantern", "Deathbound Cavaliers"],
-                ["minecraft:golden_helmet", "Dread Admiral's Hat", "minecraft:leather_helmet", "Dread Admiral's Hat"],
-                # Potion of Draining Life -> Elixir of Draining Life
-                ["minecraft:splash_potion", "Potion of Draining Life", "minecraft:splash_potion", "Elixir of Draining Life"],
+                # Infernal cosmetic drop
+                ["minecraft:blaze_powder", "Flittering Spark", "minecraft:netherite_scrap", "Flittering Spark"],
+                # Consuming Blight Type Change
+                ["minecraft:vine", "Consuming Blight", "minecraft:mossy_cobblestone", "Consuming Blight"],
+                # Sedated -> Explosive Reckless Charm change
+                ["minecraft:nether_wart_block", "Sedated Reckless Charm", "minecraft:nether_wart_block", "Explosive Reckless Charm"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
