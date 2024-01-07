@@ -347,6 +347,75 @@ class AutomationBotInstance(commands.Cog):
         else:
             await ctx.send("Sorry " + message.author.mention + ", you do not have permission to run this command")
 
+    async def status_tick(self):
+        """Updates bot status message(s) if required and possible"""
+
+        if config.STATUS_CHANNEL is None:
+            return
+
+        STATUS_MESSAGES = {
+            "This message was last updated": self._delme_time_test,
+            "Shard status": self._get_list_shards_str_summary,
+            "Shard status (long form)": self._get_list_shards_str_long,
+        }
+
+        status_channel = self._bot.get_channel(config.STATUS_CHANNEL)
+
+        status_path = self._persistence_path / 'status.json'
+        status_data = {
+            "messages": {}
+        }
+        if status_path.is_file():
+            status_data = json.loads(status_path.read_text(encoding='utf-8-sig'))
+        messages = status_data["messages"]
+
+        for header, callback in STATUS_MESSAGES.items():
+            new_message = await callback()
+
+            previous_status = messages.get(header, None)
+            message_id = None
+            previous_message = None
+            if previous_status is not None:
+                message_id = previous_status["message_id"]
+                previous_message = previous_status["message_data"]
+
+            if new_message == previous_message:
+                continue
+
+            msg = None
+            if message_id is not None:
+                try:
+                    msg = await status_channel.fetch_message(message_id)
+                except discord.errors.NotFound:
+                    msg = None
+
+            formatted_message = f'**{header}**\n{new_message}'
+            if msg is None:
+                msg = await status_channel.send(formatted_message)
+                message_id = msg.id
+            else:
+                await msg.edit(content=formatted_message)
+
+            messages[header] = {
+                "message_id": message_id,
+                "message_data": new_message,
+            }
+
+        with open(status_path, 'w', encoding='utf-8') as fp:
+            print(
+                json.dumps(
+                    status_data,
+                    ensure_ascii=False,
+                    indent=2,
+                    separators=(',', ': ')
+                ),
+                file=fp
+            )
+
+    async def _delme_time_test(self):
+        unix_timestamp = int(datetime.now().timestamp())
+        return f'<t:{unix_timestamp}:R>'
+
     # Entry points
     ################################################################################
 
@@ -604,63 +673,83 @@ Examples:
 
     async def action_list_shards(self, ctx: discord.ext.commands.Context, _, inputMsg: discord.Message):
         '''Lists currently running shards on this server'''
+        msg = None
+        split_input_message = inputMsg.content.split(" ")
+
+        if len(split_input_message) > 2 and split_input_message[2] == "summary":
+            msg = self._get_list_shards_str_summary()
+        else:
+            msg = self._get_list_shards_str_long()
+
+        await self.display(ctx, "\n".join(msg))
+
+    async def _get_list_shards_str_summary(self):
+        """Get a `~list shard summary` formatted string"""
         shards = await self._k8s.list()
         # Format of this is:
         # {'dungeon': {'available_replicas': 1, 'replicas': 1, 'pod_name': 'dungeon-xyz'}
         #  'test': {'available_replicas': 0, 'replicas': 0}}
 
         msg = []
-        input = inputMsg.content.split(" ")
 
-        if len(input) > 2 and input[2] == "summary":
-            bucketCheck = []
-            bucketX = []
-            bucketUp = []
-            bucketDown = []
-            bucketError = []
-            for name in shards:
-                state = shards[name]
-                if state["replicas"] == 1 and state["available_replicas"] == 1:
-                    bucketCheck.append(name)
-                elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                    bucketUp.append(name)
-                elif state["replicas"] == 0 and "pod_name" in state:
-                    bucketDown.append(name)
-                elif state["replicas"] == 0 and "pod_name" not in state:
-                    bucketX.append(name)
-                else:
-                    bucketError.append(name)
+        bucketCheck = []
+        bucketX = []
+        bucketUp = []
+        bucketDown = []
+        bucketError = []
+        for name in shards:
+            state = shards[name]
+            if state["replicas"] == 1 and state["available_replicas"] == 1:
+                bucketCheck.append(name)
+            elif state["replicas"] == 1 and state["available_replicas"] == 0:
+                bucketUp.append(name)
+            elif state["replicas"] == 0 and "pod_name" in state:
+                bucketDown.append(name)
+            elif state["replicas"] == 0 and "pod_name" not in state:
+                bucketX.append(name)
+            else:
+                bucketError.append(name)
 
-            if len(shards) <= 0:
-                msg.append("No shards to list")
-            if bucketCheck:
-                msg.append(":white_check_mark:: " + ", ".join(bucketCheck))
-            if bucketUp:
-                msg.append(":arrow_up:: " + ", ".join(bucketUp))
-            if bucketDown:
-                msg.append(":arrow_down:: " + ", ".join(bucketDown))
-            if bucketX:
-                msg.append(":x:: " + ", ".join(bucketX))
-            if bucketError:
-                msg.append(":exclamation:: " + ", ".join(bucketError))
+        if len(shards) <= 0:
+            msg.append("No shards to list")
+        if bucketCheck:
+            msg.append(":white_check_mark:: " + ", ".join(bucketCheck))
+        if bucketUp:
+            msg.append(":arrow_up:: " + ", ".join(bucketUp))
+        if bucketDown:
+            msg.append(":arrow_down:: " + ", ".join(bucketDown))
+        if bucketX:
+            msg.append(":x:: " + ", ".join(bucketX))
+        if bucketError:
+            msg.append(":exclamation:: " + ", ".join(bucketError))
 
-        else:
-            for name in shards:
-                state = shards[name]
-                if state["replicas"] == 1 and state["available_replicas"] == 1:
-                    msg.append(f":white_check_mark: {name}")
-                elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                    msgmsg.append(f":arrow_up: {name}")
-                elif state["replicas"] == 0 and "pod_name" in state:
-                    msg.append(f":arrow_down: {name}")
-                elif state["replicas"] == 0 and "pod_name" not in state:
-                    msg.append(f":x: {name}")
-                else:
-                    msg.append(f":exclamation: {name}: {pformat(state)}")
-            if not msg:
-                msg.append("No shards to list")
+        return "\n".join(msg)
 
-        await self.display(ctx, "\n".join(msg))
+    async def _get_list_shards_str_long(self):
+        """Get a `~list shard` formatted string"""
+        shards = await self._k8s.list()
+        # Format of this is:
+        # {'dungeon': {'available_replicas': 1, 'replicas': 1, 'pod_name': 'dungeon-xyz'}
+        #  'test': {'available_replicas': 0, 'replicas': 0}}
+
+        msg = []
+
+        for name in shards:
+            state = shards[name]
+            if state["replicas"] == 1 and state["available_replicas"] == 1:
+                msg.append(f":white_check_mark: {name}")
+            elif state["replicas"] == 1 and state["available_replicas"] == 0:
+                msg.append(f":arrow_up: {name}")
+            elif state["replicas"] == 0 and "pod_name" in state:
+                msg.append(f":arrow_down: {name}")
+            elif state["replicas"] == 0 and "pod_name" not in state:
+                msg.append(f":x: {name}")
+            else:
+                msg.append(f":exclamation: {name}: {pformat(state)}")
+        if not msg:
+            msg.append("No shards to list")
+
+        return "\n".join(msg)
 
     async def action_list_instances(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         """List player dungeon instances"""

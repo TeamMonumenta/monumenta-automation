@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO)
 
 import discord
 from discord.ext import commands
+from discord.ext import tasks
 
 import config
 from automation_bot_lib import split_string
@@ -48,6 +49,7 @@ class AutomationBot(commands.Bot):
             application_id=config.APPLICATION_ID)
 
         # Create instances of the shell bot, one per channel
+        self.instance = None
         self.channels = {}
 
         ################################################################################
@@ -65,6 +67,10 @@ class AutomationBot(commands.Bot):
             "msg": None,
         }
 
+    async def setup_hook(self) -> None:
+        # start tasks to run in the background
+        self.shard_status_background_task.start()
+
     async def on_ready(self):
         """Bot ready"""
 
@@ -76,18 +82,27 @@ class AutomationBot(commands.Bot):
 
         # On ready can happen multiple times when the bot automatically reconnects
         # Don't re-create the per-channel listeners when this happens
-        if len(self.channels) == 0:
-            instance = AutomationBotInstance(self, self.rreact)
-            await bot.add_cog(instance, guilds=[discord.Object(id=config.GUILD_ID)])
+        if self.instance is None:
+            self.instance = AutomationBotInstance(self, self.rreact)
+            await bot.add_cog(self.instance, guilds=[discord.Object(id=config.GUILD_ID)])
 
             for channel_id in config.CHANNELS:
                 try:
                     channel = self.get_channel(channel_id)
-                    self.channels[channel_id] = instance
+                    self.channels[channel_id] = self.instance
                     if channel_id != 486019840134610965: # TODO: Config... this is the visible weekly update channel
                         await channel.send(config.NAME + " started and now listening.")
                 except Exception:
                     logging.error("Cannot connect to channel: %s", config.CHANNELS)
+
+    @tasks.loop(seconds=10)
+    async def shard_status_background_task(self):
+        # TODO HERE See https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/background_task.py
+        await self.instance.status_tick()
+
+    @shard_status_background_task.before_loop
+    async def before_shard_status_background_task(self):
+        await self.wait_until_ready()  # wait until the bot logs in
 
     async def on_message(self, message):
         """Bot received message"""
