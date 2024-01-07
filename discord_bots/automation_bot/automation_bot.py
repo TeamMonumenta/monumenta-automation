@@ -95,7 +95,7 @@ class AutomationBot(commands.Bot):
                 except Exception:
                     logging.error("Cannot connect to channel: %s", config.CHANNELS)
 
-    @tasks.loop(seconds=10)
+    @tasks.loop(seconds=5)
     async def shard_status_background_task(self):
         # TODO HERE See https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/background_task.py
         await self.instance.status_tick()

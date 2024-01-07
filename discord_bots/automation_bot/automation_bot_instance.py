@@ -354,9 +354,8 @@ class AutomationBotInstance(commands.Cog):
             return
 
         STATUS_MESSAGES = {
-            "This message was last updated": self._delme_time_test,
-            "Shard status": self._get_list_shards_str_summary,
             "Shard status (long form)": self._get_list_shards_str_long,
+            "Shard status": self._get_list_shards_str_summary,
         }
 
         status_channel = self._bot.get_channel(config.STATUS_CHANNEL)
@@ -374,12 +373,19 @@ class AutomationBotInstance(commands.Cog):
 
             previous_status = messages.get(header, None)
             message_id = None
+            previous_timestamp = 0
             previous_message = None
             if previous_status is not None:
                 message_id = previous_status["message_id"]
+                previous_timestamp = previous_status.get("modify_time", 0)
                 previous_message = previous_status["message_data"]
 
-            if new_message == previous_message:
+            now = datetime.utcnow()
+            now_timestamp = now.timestamp()
+            if (
+                    new_message == previous_message
+                    and now_timestamp // 60 == previous_timestamp // 60
+            ):
                 continue
 
             msg = None
@@ -389,7 +395,8 @@ class AutomationBotInstance(commands.Cog):
                 except discord.errors.NotFound:
                     msg = None
 
-            formatted_message = f'**{header}**\n{new_message}'
+            modify_time = "Last updated " + self.get_discord_timestamp(now, ":R")
+            formatted_message = f'**{header}** {modify_time}\n{new_message}'
             if msg is None:
                 msg = await status_channel.send(formatted_message)
                 message_id = msg.id
@@ -398,6 +405,7 @@ class AutomationBotInstance(commands.Cog):
 
             messages[header] = {
                 "message_id": message_id,
+                "modify_time": now_timestamp,
                 "message_data": new_message,
             }
 
@@ -411,10 +419,6 @@ class AutomationBotInstance(commands.Cog):
                 ),
                 file=fp
             )
-
-    async def _delme_time_test(self):
-        unix_timestamp = int(datetime.now().timestamp())
-        return f'<t:{unix_timestamp}:R>'
 
     # Entry points
     ################################################################################
