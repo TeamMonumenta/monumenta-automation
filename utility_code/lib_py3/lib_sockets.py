@@ -5,16 +5,23 @@ import threading
 import pika
 import traceback
 import time
+from datetime import datetime
+from datetime import timedelta
 
 logger = logging.getLogger(__name__)
+logging.getLogger("pika").setLevel(logging.WARNING)
 
 class SocketManager(object):
+    HEARTBEAT_CHANNEL = "monumentanetworkrelay.heartbeat"
+
     # Default log level is INFO
-    def __init__(self, rabbit_host, queue_name, durable=False, callback=None, log_level=20):
+    def __init__(self, rabbit_host, queue_name, durable=False, callback=None, log_level=20, server_type="bot"):
         self._queue_name = queue_name
         self._callback = callback
         self._rabbit_host = rabbit_host
         self._durable_queue = durable
+        self._server_type = server_type
+        self._heartbeat_threshhold = datetime.min
         logger.setLevel(log_level);
 
         # Create a thread to connect to the queue and block / consume messages
@@ -58,12 +65,15 @@ class SocketManager(object):
             logger.warn('Attempting to reconnect rabbitmq consumer...')
             time.sleep(10)
 
-    def send_packet(self, destination, operation, data, heartbeat_server_type=None):
+    def send_heartbeat(self):
+        self.send_packet("*", self.HEARTBEAT_CHANNEL, {})
+
+    def send_packet(self, destination, operation, data, heartbeat_data={}, online=True):
         if destination is None or len(destination) == 0:
             logger.warn("destination can not be None!")
         if operation is None or len(operation) == 0:
             logger.warn("operation can not be None!")
-        if data is None or len(data) == 0:
+        if data is None:
             logger.warn("data can not be None!")
 
         connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
@@ -73,21 +83,26 @@ class SocketManager(object):
             raise Exception("Failed to send message to rabbitmq despite attempting to reconnect")
 
         packet = {
+            "data": data,
             "source": self._queue_name,
             "dest": destination,
             "channel": operation,
-            "data": data,
         }
 
-        if heartbeat_server_type is None:
-            heartbeat_server_type = self._queue_name
+        now = datetime.utcnow()
+        if operation == self.HEARTBEAT_CHANNEL or (
+                now >= self._heartbeat_threshhold
+                and destination == "*"
+        ):
+            self._heartbeat_threshhold = now + timedelta(seconds=0.5)
 
-        packet["online"] = True
-        packet["pluginData"] = {
-            "monumentanetworkrelay":{
-                "server-type":heartbeat_server_type
-            }
-        }
+            network_relay_data = heartbeat_data.get("monumentanetworkrelay", {})
+            heartbeat_data["monumentanetworkrelay"] = network_relay_data
+
+            network_relay_data["server-type"] = self._server_type
+
+            packet["pluginData"] = heartbeat_data
+            packet["online"] = online
 
         encoded = json.dumps(packet, ensure_ascii=False).encode("utf-8")
         logger.debug("Sending Packet: {}".format(pformat(encoded)))

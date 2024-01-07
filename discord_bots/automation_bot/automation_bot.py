@@ -71,7 +71,8 @@ class AutomationBot(commands.Bot):
         # start tasks to run in the background
         # See https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/background_task.py
         # The start method is provided by the decorator
-        self.shard_status_background_task.start()
+        self.heartbeat_task.start()
+        self.shard_status_task.start()
 
     async def on_ready(self):
         """Bot ready"""
@@ -98,11 +99,20 @@ class AutomationBot(commands.Bot):
                     logging.error("Cannot connect to channel: %s", config.CHANNELS)
 
     @tasks.loop(seconds=5)
-    async def shard_status_background_task(self):
+    async def shard_status_task(self):
         await self.instance.status_tick()
 
-    @shard_status_background_task.before_loop
-    async def before_shard_status_background_task(self):
+    @shard_status_task.before_loop
+    async def before_shard_status_task(self):
+        await self.wait_until_ready()  # wait until the bot logs in
+
+    @tasks.loop(seconds=1)
+    async def heartbeat_task(self):
+        if self.instance and self.instance._socket:
+            self.instance._socket.send_heartbeat()
+
+    @heartbeat_task.before_loop
+    async def before_heartbeat_task(self):
         await self.wait_until_ready()  # wait until the bot logs in
 
     async def on_message(self, message):

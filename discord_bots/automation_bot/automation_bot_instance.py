@@ -203,12 +203,14 @@ class AutomationBotInstance(commands.Cog):
                 except Exception:
                     logging.error("Cannot connect to audit channel: %s", config.STATUS_CHANNEL)
 
+            self._socket = None
             if config.RABBITMQ:
                 try:
                     conf = config.RABBITMQ
 
                     # Get the event loop on the main thread
                     loop = asyncio.get_event_loop()
+                    seen_channel_ids = set()
 
                     def send_message_to_channel(message, channel):
                         # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
@@ -217,79 +219,83 @@ class AutomationBotInstance(commands.Cog):
                         asyncio.run_coroutine_threadsafe(self.display_verbatim(channel, message), loop)
 
                     def socket_callback(message):
-                        if "channel" in message:
-                            if message["channel"] == "monumentanetworkrelay.heartbeat":
-                                return
+                        message_channel = message.get("channel", None)
+                        if not message_channel:
+                            return
 
-                            logger.info("Got socket message: %s", pformat(message))
-                            if self._audit_channel:
-                                if message["channel"] == "Monumenta.Automation.AuditLog":
-                                    # Schedule the display coroutine back on the main event loop
-                                    send_message_to_channel(message["data"]["message"], self._audit_channel)
+                        if message_channel not in seen_channel_ids:
+                            seen_channel_ids.add(message_channel)
+                            logger.warning('First occurance of channel %s: %s', repr(message_channel), message)
 
-                            if self._admin_channel:
-                                if message["channel"] == "Monumenta.Automation.AdminNotification":
-                                    send_message_to_channel(message["data"]["message"], self._admin_channel)
+                        if message_channel == "monumentanetworkrelay.heartbeat":
+                            return
 
-                            if self._audit_severe_channel:
-                                if message["channel"] == "Monumenta.Automation.AuditLogSevere":
-                                    send_message_to_channel(message["data"]["message"], self._audit_severe_channel)
+                        #logger.info("Got socket message: %s", pformat(message))
+                        if self._audit_channel:
+                            if message_channel == "Monumenta.Automation.AuditLog":
+                                # Schedule the display coroutine back on the main event loop
+                                send_message_to_channel(message["data"]["message"], self._audit_channel)
 
-                            if self._death_audit_channel:
-                                if message["channel"] == "Monumenta.Automation.DeathAuditLog":
-                                    send_message_to_channel(message["data"]["message"], self._death_audit_channel)
+                        if self._admin_channel:
+                            if message_channel == "Monumenta.Automation.AdminNotification":
+                                send_message_to_channel(message["data"]["message"], self._admin_channel)
 
-                            if self._player_audit_channel:
-                                if message["channel"] == "Monumenta.Automation.PlayerAuditLog":
-                                    send_message_to_channel(message["data"]["message"], self._player_audit_channel)
+                        if self._audit_severe_channel:
+                            if message_channel == "Monumenta.Automation.AuditLogSevere":
+                                send_message_to_channel(message["data"]["message"], self._audit_severe_channel)
 
-                            if self._stage_notify_channel:
-                                if message["channel"] == "Monumenta.Automation.stage":
-                                    # Schedule the display coroutine back on the main event loop
-                                    # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
-                                    # Probably hard to fix though
-                                    asyncio.run_coroutine_threadsafe(self.stage_data_request(self._stage_notify_channel, message["data"]), loop)
+                        if self._death_audit_channel:
+                            if message_channel == "Monumenta.Automation.DeathAuditLog":
+                                send_message_to_channel(message["data"]["message"], self._death_audit_channel)
 
-                            if self._status_channel:
-                                if message["channel"] == "monumenta.eventbroadcast.update":
-                                    event_data = message["data"]
+                        if self._player_audit_channel:
+                            if message_channel == "Monumenta.Automation.PlayerAuditLog":
+                                send_message_to_channel(message["data"]["message"], self._player_audit_channel)
 
-                                    event_shard = event_data.get("shard", None)
-                                    event_name = event_data.get("eventName", None)
-                                    event_time_left = event_data.get("timeLeft", None)
+                        if self._stage_notify_channel:
+                            if message_channel == "Monumenta.Automation.stage":
+                                # Schedule the display coroutine back on the main event loop
+                                # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
+                                # Probably hard to fix though
+                                asyncio.run_coroutine_threadsafe(self.stage_data_request(self._stage_notify_channel, message["data"]), loop)
 
-                                    if not all(
-                                            isinstance(event_shard, str),
-                                            isinstance(event_name, str),
-                                            isinstance(event_time_left, int),
-                                    ):
-                                        return
+                        if self._status_channel:
+                            if message_channel == "monumenta.eventbroadcast.update":
+                                logger.warning("Got Monumenta gameplay event message: %s", pformat(message))
+                                event_data = message["data"]
 
-                                    event_map = self._gameplay_events.get(event_name, {})
-                                    self._gameplay_events[event_name] = event_map
+                                event_shard = event_data.get("shard", None)
+                                event_name = event_data.get("eventName", None)
+                                event_time_left = event_data.get("timeLeft", None)
 
-                                    if event_time_left < 0:
-                                        del event_map[event_shard]
-                                        if len(event_map) == 0:
-                                            del self._gameplay_events[event_name]
-                                        return
+                                if not all(
+                                        isinstance(event_shard, str),
+                                        isinstance(event_name, str),
+                                        isinstance(event_time_left, int),
+                                ):
+                                    return
 
-                                    now = datetime.utcnow()
-                                    gameplay_event = event_map.get("event_shard", {
-                                        "shard": event_shard,
-                                        "event_name": event_name,
-                                    })
-                                    gameplay_event["last_update"] = now
-                                    if event_time_left > 0:
-                                        gameplay_event["ETA"] = now + timedelta(seconds=event_time_left)
-                                    else:
-                                        gameplay_event.pop("ETA", False)
+                                event_map = self._gameplay_events.get(event_name, {})
+                                self._gameplay_events[event_name] = event_map
 
-                    if "log_level" in conf:
-                        log_level = conf["log_level"]
-                    else:
-                        log_level = 20
+                                if event_time_left < 0:
+                                    del event_map[event_shard]
+                                    if len(event_map) == 0:
+                                        del self._gameplay_events[event_name]
+                                    return
 
+                                now = datetime.utcnow()
+                                gameplay_event = event_map.get("event_shard", {
+                                    "shard": event_shard,
+                                    "event_name": event_name,
+                                })
+                                gameplay_event["last_update"] = now
+                                if event_time_left > 0:
+                                    gameplay_event["ETA"] = now + timedelta(seconds=event_time_left)
+                                else:
+                                    gameplay_event.pop("ETA", False)
+
+                    log_level = config.RABBITMQ.get("log_level", 20)
                     self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level)
 
                     # Add commands that require the sockets here!
@@ -753,7 +759,7 @@ Examples:
         else:
             msg = self._get_list_shards_str_long()
 
-        await self.display(ctx, "\n".join(msg))
+        await self.display(ctx, msg)
 
     async def _get_list_shards_str_summary(self):
         """Get a `~list shard summary` formatted string"""
@@ -1845,7 +1851,8 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         if not config.STAGE_SOURCE:
             raise Exception("WARNING: bot doesn't have stage source, aborting")
 
-        play_broker = SocketManager("rabbitmq.play", "stagebot", callback=None)
+        log_level = config.RABBITMQ.get("log_level", 20)
+        play_broker = SocketManager("rabbitmq.play", "stagebot", callback=None, log_level=log_level)
 
         await self.display(ctx, "Removing previous 0_STAGE directories")
         await self.run(ctx, f"rm -rf {self._server_dir}/0_STAGE")
