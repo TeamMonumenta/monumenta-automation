@@ -69,6 +69,8 @@ class AutomationBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         # start tasks to run in the background
+        # See https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/background_task.py
+        # The start method is provided by the decorator
         self.shard_status_background_task.start()
 
     async def on_ready(self):
@@ -97,7 +99,6 @@ class AutomationBot(commands.Bot):
 
     @tasks.loop(seconds=5)
     async def shard_status_background_task(self):
-        # TODO HERE See https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/background_task.py
         await self.instance.status_tick()
 
     @shard_status_background_task.before_loop
