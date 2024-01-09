@@ -755,9 +755,9 @@ Examples:
         split_input_message = inputMsg.content.split(" ")
 
         if len(split_input_message) > 2 and split_input_message[2] == "summary":
-            msg = self._get_list_shards_str_summary()
+            msg = await self._get_list_shards_str_summary()
         else:
-            msg = self._get_list_shards_str_long()
+            msg = await self._get_list_shards_str_long()
 
         await self.display(ctx, msg)
 
