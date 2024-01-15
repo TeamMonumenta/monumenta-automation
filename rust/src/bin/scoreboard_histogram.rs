@@ -2,10 +2,7 @@ use monumenta::scoreboard;
 
 use anyhow;
 
-use std::{
-    collections::HashMap,
-    env
-};
+use std::{collections::HashMap, env};
 
 fn main() -> anyhow::Result<()> {
     /* Load all the arguments as datapacks */
@@ -33,7 +30,10 @@ fn main() -> anyhow::Result<()> {
     let mut count_vec: Vec<(&i32, &i32)> = freq_map.iter().collect();
     count_vec.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
 
-    println!("Distribution of objective {} for scoreboard {}:", objective_name, scoreboard_path);
+    println!(
+        "Distribution of objective {} for scoreboard {}:",
+        objective_name, scoreboard_path
+    );
     for (value, amount) in count_vec.iter() {
         println!("{0: <10}{1}", value, amount);
     }

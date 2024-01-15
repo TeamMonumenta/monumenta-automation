@@ -638,20 +638,21 @@ fn main() -> anyhow::Result<()> {
     let domain = "play";
     let objective = "HorsemanWins";
     let history = "Reverted HorsemanWins";
-    let mut threads = vec!();
+    let mut threads = vec![];
 
     for (playername, add_val) in changes {
-        let thread = thread::spawn(move|| {
+        let thread = thread::spawn(move || {
             let client = redis::Client::open("redis://127.0.0.1/");
             if let Err(redis_err) = client {
                 println!("Failed to create client to redis: {}", redis_err);
             } else if let Ok(client) = client {
-                let con : Result<redis::Connection, RedisError> = client.get_connection();
+                let con: Result<redis::Connection, RedisError> = client.get_connection();
                 if let Err(redis_err) = con {
                     println!("Failed to connect to redis: {}", redis_err);
                 } else if let Ok(mut con) = con {
                     // println!("Loading {}", playername);
-                    let uuid_result: Result<String, RedisError> = con.hget("name2uuid", playername.to_string());
+                    let uuid_result: Result<String, RedisError> =
+                        con.hget("name2uuid", playername.to_string());
                     if let Ok(uuid_str) = uuid_result {
                         let uuid: Uuid = Uuid::parse_str(&uuid_str).unwrap();
 
@@ -665,7 +666,10 @@ fn main() -> anyhow::Result<()> {
                                 scores.insert(objective.to_string(), new_score);
                                 player.update_history(history);
                                 if let Err(redis_err) = player.save_redis(&domain, &mut con) {
-                                    println!("Failed to save player data {} : {}", playername, redis_err);
+                                    println!(
+                                        "Failed to save player data {} : {}",
+                                        playername, redis_err
+                                    );
                                 }
                             }
                             println!("{}", player);

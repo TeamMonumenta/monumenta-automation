@@ -7,7 +7,7 @@ use nbt;
 use std::{
     collections::{HashMap, HashSet},
     fs::File,
-    io::Read
+    io::Read,
 };
 
 #[derive(Debug)]
@@ -19,14 +19,14 @@ pub struct Scoreboard {
 
 #[derive(Debug)]
 pub struct Score {
-    pub score: i32, // Score
+    pub score: i32,   // Score
     pub locked: bool, // Locked
 }
 
 #[derive(Debug)]
 pub struct Objective {
-    pub render_type: String, // RenderType
-    pub display_name: String, // DisplayName
+    pub render_type: String,   // RenderType
+    pub display_name: String,  // DisplayName
     pub criteria_name: String, // CriteriaName
     pub data: HashMap<String, Score>,
 }
@@ -38,7 +38,10 @@ pub struct ScoreboardCollection {
 
 impl ScoreboardCollection {
     pub fn new() -> ScoreboardCollection {
-        ScoreboardCollection{ scoreboards: HashMap::new(), objectives: HashSet::new() }
+        ScoreboardCollection {
+            scoreboards: HashMap::new(),
+            objectives: HashSet::new(),
+        }
     }
 
     pub fn add_scoreboard(&mut self, filepath: &str) -> anyhow::Result<()> {
@@ -51,7 +54,8 @@ impl ScoreboardCollection {
         for objective_name in scoreboard.objectives.keys() {
             self.objectives.insert(objective_name.to_string());
         }
-        self.scoreboards.insert(scoreboard.filepath.to_string(), scoreboard);
+        self.scoreboards
+            .insert(scoreboard.filepath.to_string(), scoreboard);
         Ok(())
     }
 
@@ -75,7 +79,9 @@ impl ScoreboardCollection {
                 let mut total_entries = 0;
 
                 /* Retrieve stored values from the hash table if they are present */
-                if let Some((stored_nonzero_count, stored_total_entries)) = counts.get(objective_name) {
+                if let Some((stored_nonzero_count, stored_total_entries)) =
+                    counts.get(objective_name)
+                {
                     nonzero_count = *stored_nonzero_count;
                     total_entries = *stored_total_entries;
                 }
@@ -99,13 +105,24 @@ impl ScoreboardCollection {
             }
         }
 
-        counts.iter().map(|(objective_name, (nonzero_count, total_entries))| (objective_name.to_string(), *nonzero_count as f64 / *total_entries as f64)).collect()
+        counts
+            .iter()
+            .map(|(objective_name, (nonzero_count, total_entries))| {
+                (
+                    objective_name.to_string(),
+                    *nonzero_count as f64 / *total_entries as f64,
+                )
+            })
+            .collect()
     }
 
     pub fn get_objective_usage_sorted(&self) -> Vec<(String, f64)> {
-
         /* Create a vector from the hash table data and sort it by value */
-        let mut count_vec: Vec<(String, f64)> = self.get_objective_usage().iter().map(|(a, b)| (a.clone(), b.clone())).collect();
+        let mut count_vec: Vec<(String, f64)> = self
+            .get_objective_usage()
+            .iter()
+            .map(|(a, b)| (a.clone(), b.clone()))
+            .collect();
         count_vec.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
 
         count_vec
@@ -114,7 +131,11 @@ impl ScoreboardCollection {
 
 impl Scoreboard {
     pub fn load_redis(domain: &str, con: &mut redis::Connection) -> anyhow::Result<Scoreboard> {
-        let mut scoreboard = Scoreboard{filepath: "TODO REDIS".to_string(), data_version: 0, objectives: HashMap::new()};
+        let mut scoreboard = Scoreboard {
+            filepath: "TODO REDIS".to_string(),
+            data_version: 0,
+            objectives: HashMap::new(),
+        };
 
         for (_, player) in Player::get_redis_players(&domain, con)?.iter_mut() {
             player.load_redis_scores(domain, con)?;
@@ -123,9 +144,23 @@ impl Scoreboard {
             if let Some(scores) = &mut player.scores {
                 if let Some(playername) = &player.name {
                     for (objective_name, value) in scores {
-                        let objective = scoreboard.objectives.entry(objective_name.to_string()).or_insert(Objective{criteria_name: "dummy".to_string(), display_name: objective_name.to_string(), render_type: "TODO REDIS".to_string(), data: HashMap::new()});
+                        let objective = scoreboard
+                            .objectives
+                            .entry(objective_name.to_string())
+                            .or_insert(Objective {
+                                criteria_name: "dummy".to_string(),
+                                display_name: objective_name.to_string(),
+                                render_type: "TODO REDIS".to_string(),
+                                data: HashMap::new(),
+                            });
 
-                        objective.data.insert(playername.to_string(), Score{score: *value, locked: false});
+                        objective.data.insert(
+                            playername.to_string(),
+                            Score {
+                                score: *value,
+                                locked: false,
+                            },
+                        );
                     }
                 }
             }
@@ -140,20 +175,52 @@ impl Scoreboard {
         let mut src = std::io::Cursor::new(&contents[..]);
         let blob = nbt::Blob::from_gzip_reader(&mut src).unwrap();
 
-        let data_version: i32 = if let Some(nbt::Value::Int(data_version)) = blob.get("DataVersion") { *data_version } else { bail!("Scoreboard missing DataVersion") };
+        let data_version: i32 = if let Some(nbt::Value::Int(data_version)) = blob.get("DataVersion")
+        {
+            *data_version
+        } else {
+            bail!("Scoreboard missing DataVersion")
+        };
 
-        let mut scoreboard = Scoreboard{filepath: filepath.to_string(), data_version: data_version, objectives: HashMap::new()};
+        let mut scoreboard = Scoreboard {
+            filepath: filepath.to_string(),
+            data_version: data_version,
+            objectives: HashMap::new(),
+        };
 
         if let Some(nbt::Value::Compound(data)) = blob.get("data") {
             if let Some(nbt::Value::List(objectives)) = data.get("Objectives") {
                 for objectives_entry in objectives.iter() {
                     if let nbt::Value::Compound(objective) = objectives_entry {
-                        let name: String = if let Some(nbt::Value::String(name)) = objective.get("Name") { name.to_string() } else { bail!("Objective missing Name") };
+                        let name: String =
+                            if let Some(nbt::Value::String(name)) = objective.get("Name") {
+                                name.to_string()
+                            } else {
+                                bail!("Objective missing Name")
+                            };
 
                         let new_objective = Objective {
-                            criteria_name: if let Some(nbt::Value::String(criteria_name)) = objective.get("CriteriaName") { criteria_name.to_string() } else { bail!("Objective missing CriteriaName") },
-                            display_name: if let Some(nbt::Value::String(display_name)) = objective.get("DisplayName") { display_name.to_string() } else { bail!("Objective missing DisplayName") },
-                            render_type: if let Some(nbt::Value::String(render_type)) = objective.get("RenderType") { render_type.to_string() } else { bail!("Objective missing RenderType") },
+                            criteria_name: if let Some(nbt::Value::String(criteria_name)) =
+                                objective.get("CriteriaName")
+                            {
+                                criteria_name.to_string()
+                            } else {
+                                bail!("Objective missing CriteriaName")
+                            },
+                            display_name: if let Some(nbt::Value::String(display_name)) =
+                                objective.get("DisplayName")
+                            {
+                                display_name.to_string()
+                            } else {
+                                bail!("Objective missing DisplayName")
+                            },
+                            render_type: if let Some(nbt::Value::String(render_type)) =
+                                objective.get("RenderType")
+                            {
+                                render_type.to_string()
+                            } else {
+                                bail!("Objective missing RenderType")
+                            },
                             data: HashMap::new(),
                         };
 
@@ -166,12 +233,40 @@ impl Scoreboard {
             if let Some(nbt::Value::List(player_scores)) = data.get("PlayerScores") {
                 for player_score_entry in player_scores.iter() {
                     if let nbt::Value::Compound(score_compound) = player_score_entry {
-                        let name: String = if let Some(nbt::Value::String(name)) = score_compound.get("Name") { name.to_string() } else { bail!("Score missing Name") };
-                        let objective: String = if let Some(nbt::Value::String(objective)) = score_compound.get("Objective") { objective.to_string() } else { bail!("Score missing Objective") };
-                        let score: i32 = if let Some(nbt::Value::Int(score)) = score_compound.get("Score") { *score } else { bail!("Score missing Score") };
-                        let locked: bool = if let Some(nbt::Value::Byte(locked)) = score_compound.get("Locked") { *locked != 0 } else { bail!("Score missing Locked") };
+                        let name: String =
+                            if let Some(nbt::Value::String(name)) = score_compound.get("Name") {
+                                name.to_string()
+                            } else {
+                                bail!("Score missing Name")
+                            };
+                        let objective: String = if let Some(nbt::Value::String(objective)) =
+                            score_compound.get("Objective")
+                        {
+                            objective.to_string()
+                        } else {
+                            bail!("Score missing Objective")
+                        };
+                        let score: i32 =
+                            if let Some(nbt::Value::Int(score)) = score_compound.get("Score") {
+                                *score
+                            } else {
+                                bail!("Score missing Score")
+                            };
+                        let locked: bool =
+                            if let Some(nbt::Value::Byte(locked)) = score_compound.get("Locked") {
+                                *locked != 0
+                            } else {
+                                bail!("Score missing Locked")
+                            };
 
-                        scoreboard.set_score(name, objective, Score{ score: score, locked: locked });
+                        scoreboard.set_score(
+                            name,
+                            objective,
+                            Score {
+                                score: score,
+                                locked: locked,
+                            },
+                        );
                     }
                 }
             } else {
