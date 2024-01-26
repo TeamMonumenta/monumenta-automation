@@ -5,7 +5,6 @@ use std::fmt::Formatter;
 use anyhow::{self, bail};
 use chrono::{DateTime, Duration, Utc};
 use chrono::serde::ts_seconds;
-use log::error;
 use redis::{Commands, RedisResult};
 use serde::{Deserialize, Serialize};
 
@@ -84,12 +83,12 @@ impl LockoutEntry {
 
     fn _internal_set_lockout(&self, con: &mut redis::Connection, current: Option<LockoutEntry>) -> Option<LockoutEntry> {
         let self_json: String = serde_json::to_string(&self).unwrap();
-        match con.hset::<String, String, String, String>(format!("{}:lockout", self.domain), self.shard.clone(), self_json) {
+        match con.hset::<String, String, String, i64>(format!("{}:lockout", self.domain), self.shard.clone(), self_json) {
             Ok(_) => {
                 Some(self.clone())
             },
             Err(err) => {
-                error!("An error occurred: {}", err);
+                eprintln!("An error occurred: {}", err);
                 current
             }
         }
@@ -126,6 +125,21 @@ impl LockoutEntry {
         }
 
         Ok(lockouts)
+    }
+
+    pub fn clear_lockouts(domain: &str, con: &mut redis::Connection, shard: &str, owner: &str) -> anyhow::Result<()> {
+        for lockout in Self::get_all_lockouts(domain, con)?.values() {
+            if owner != "*" && owner != lockout.owner {
+                continue;
+            }
+
+            if shard != "*" && shard != lockout.shard {
+                continue;
+            }
+
+            lockout.rescind(con)?;
+        }
+        Ok(())
     }
 
     pub fn rescind(&self, con: &mut redis::Connection) -> RedisResult<()> {

@@ -8,6 +8,7 @@ fn usage() {
     println!("Usage: lockout 'redis://127.0.0.1/' <domain> claim <shard> <owner> <duration in minutes> <reason>");
     println!("Usage: lockout 'redis://127.0.0.1/' <domain> check <shard>");
     println!("Usage: lockout 'redis://127.0.0.1/' <domain> checkall");
+    println!("Usage: lockout 'redis://127.0.0.1/' <domain> clear <shard> <owner>");
     println!();
     println!("A lockout allows a player to claim a shard, preventing others from using it until they are done.");
     println!();
@@ -24,6 +25,9 @@ fn usage() {
     println!("Starting a new claim will return null on error, or the new/old claim on that shard.");
     println!();
     println!("checkall returns an object of shard name to active lockout results instead.");
+    println!();
+    println!("Claiming the shard * claims all shards");
+    println!("Clearing the owner * clears all owners");
 }
 
 fn main() -> anyhow::Result<()> {
@@ -52,6 +56,9 @@ fn main() -> anyhow::Result<()> {
         "checkall" => {
             check_all(&domain, &mut con, &mut args)
         },
+        "clear" => {
+            clear(&domain, &mut con, &mut args)
+        }
         _ => {
             usage();
             Ok(())
@@ -114,6 +121,24 @@ fn check_all(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) 
     let results = LockoutEntry::get_all_lockouts(domain, con)?;
     let final_result = json!({
         "results": results
+    });
+    let result_json = serde_json::to_string(&final_result)?;
+    print!("{}", result_json);
+    Ok(())
+}
+
+fn clear(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> anyhow::Result<()> {
+    if args.len() == 2 {
+        usage();
+        return Ok(());
+    }
+
+    let shard = args.remove(0);
+    let owner = args.remove(0);
+
+    let opt_result = LockoutEntry::clear_lockouts(domain, con, &shard, &owner)?;
+    let final_result = json!({
+        "results": opt_result
     });
     let result_json = serde_json::to_string(&final_result)?;
     print!("{}", result_json);
