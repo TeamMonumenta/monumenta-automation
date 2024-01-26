@@ -67,6 +67,18 @@ impl LockoutEntry {
     }
 
     pub fn start_lockout(&self, con: &mut redis::Connection) -> Option<LockoutEntry> {
+        if self.shard == "*" {
+            match Self::get_all_lockouts(&self.domain, con, false) {
+                Ok(all_lockouts) => {
+                    for lockout in all_lockouts.values() {
+                        if self.owner != lockout.owner {
+                            return Some(lockout.clone());
+                        }
+                    }
+                }
+                Err(_) => ()
+            };
+        }
         return match Self::get_lockout(self.domain.as_ref(), con, self.shard.as_ref()) {
             None => {
                 self._internal_set_lockout(con, None)

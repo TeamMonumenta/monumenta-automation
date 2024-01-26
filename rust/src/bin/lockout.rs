@@ -118,7 +118,7 @@ fn check_all(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) 
         return Ok(());
     }
 
-    if args.len() == 1 && &args.get(0) != "debug" {
+    if args.len() == 1 && &args.get(0).unwrap() != &"debug" {
         usage();
         return Ok(());
     }
@@ -133,7 +133,7 @@ fn check_all(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) 
 }
 
 fn clear(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> anyhow::Result<()> {
-    if args.len() == 2 {
+    if args.len() != 2 {
         usage();
         return Ok(());
     }
