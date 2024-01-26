@@ -5,6 +5,7 @@ use std::fmt::Formatter;
 use anyhow::{self, bail};
 use chrono::{DateTime, Duration, Utc};
 use chrono::serde::ts_seconds;
+use log::error;
 use redis::{Commands, RedisResult};
 use serde::{Deserialize, Serialize};
 
@@ -67,20 +68,29 @@ impl LockoutEntry {
     }
 
     pub fn start_lockout(&self, con: &mut redis::Connection) -> Option<LockoutEntry> {
-        let self_json: String = serde_json::to_string(&self).unwrap();
         return match Self::get_lockout(self.domain.as_ref(), con, self.shard.as_ref()) {
             None => {
-                match con.hset::<String, String, String, String>(format!("{}:lockout", self.domain), self.shard.clone(), self_json) {
-                    Ok(_) => {
-                        Some(self.clone())
-                    },
-                    Err(_) => {
-                        None
-                    }
-                }
+                self._internal_set_lockout(con, None)
             }
             Some(existing) => {
-                Some(existing.clone())
+                if existing.owner == self.owner {
+                    self._internal_set_lockout(con, Some(existing.clone()))
+                } else {
+                    Some(existing.clone())
+                }
+            }
+        }
+    }
+
+    fn _internal_set_lockout(&self, con: &mut redis::Connection, current: Option<LockoutEntry>) -> Option<LockoutEntry> {
+        let self_json: String = serde_json::to_string(&self).unwrap();
+        match con.hset::<String, String, String, String>(format!("{}:lockout", self.domain), self.shard.clone(), self_json) {
+            Ok(_) => {
+                Some(self.clone())
+            },
+            Err(err) => {
+                error!("An error occurred: {}", err);
+                current
             }
         }
     }
