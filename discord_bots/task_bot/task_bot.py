@@ -1,21 +1,12 @@
-#!/usr/bin/env python3
-
-import sys
-import logging
-import traceback
-import signal
 import asyncio
-import kanboard
-
-logging.basicConfig(level=logging.INFO)
-
 import discord
-from discord.ext import commands
-
+import logging
+import signal
+import traceback
 import config
+
 from common import split_string
-from kanboard_webhooks import start_webhook_server
-from task_database import TaskDatabase
+from discord.ext import commands
 
 class GracefulKiller:
     """Class to catch signals (CTRL+C, SIGTERM) and gracefully save databases and stop the bot"""
@@ -52,30 +43,33 @@ class TaskBot(commands.Bot):
             application_id=config.APPLICATION_ID)
 
         self.db = None
-        self.kanboard_client = None
-        self.kanboard_webhook_queue = None
-        self.kanboard_webhook_process = None
+        #self.modmail = None
 
-    async def on_ready(self):
-        """Bot ready"""
-        logging.info('Logged in as')
-        logging.info(self.user.name)
-        logging.info(self.user.id)
 
-        killer.register(asyncio.get_running_loop())
+    async def setup_hook(self):
+        try:
+            await bot.load_extension(f"task_database")
+            self.db = bot.get_cog(config.DESCRIPTOR_SHORT)
+            if self.db is None:
+                raise Exception("Failed to get main cog")
+            print(f"Loaded task bot cogs")
+        except Exception as e:
+            print(f"Failed to load task bot cogs")
+            print(f"[ERROR] {e}")
 
-        if config.KANBOARD is not None:
-            self.kanboard_client = kanboard.Client(config.KANBOARD['url'], 'jsonrpc', config.KANBOARD['token'])
-            if self.kanboard_client is None:
-                sys.exit("Kanboard specified but failed to connect")
+        """ try:
+            await bot.load_extension(f"flig_modmail")
+            self.modmail = bot.get_cog("modmail")
+            if self.modmail is None:
+                raise Exception("Failed to get modmail cog")
+            print(f"Loaded modmail cogs")
+        except Exception as e:
+            print(f"Failed to load modmail bot cogs")
+            print(f"[ERROR] {e}") """
 
-            self.kanboard_webhook_process, self.kanboard_webhook_queue = start_webhook_server()
-
-        # On ready can happen multiple times when the bot automatically reconnects
-        # Don't re-create the per-channel listeners when this happens
-        if self.db is None:
-            self.db = TaskDatabase(self, self.kanboard_client)
-            await bot.add_cog(self.db, guilds=[discord.Object(id=config.GUILD_ID)])
+        await self.tree.sync()
+        print("Successfully synced commands")
+        print(f"Logged onto {self.user}")
 
     async def on_message(self, message):
         """Bot received message"""
@@ -90,12 +84,7 @@ class TaskBot(commands.Bot):
         if killer.stopping:
             logging.info('Ignoring message during shutdown')
             return
-
-        if self.kanboard_webhook_queue is not None:
-            while not self.kanboard_webhook_queue.empty():
-                json_msg = self.kanboard_webhook_queue.get()
-                await self.db.on_webhook_post(json_msg)
-
+        
         if message.channel.id == config.BOT_INPUT_CHANNEL:
             try:
                 await self.db.handle_message(message)
@@ -104,6 +93,13 @@ class TaskBot(commands.Bot):
                 await message.channel.send("**ERROR**: ```" + str(e) + "```")
                 for chunk in split_string(traceback.format_exc()):
                     await message.channel.send("```" + chunk + "```")
+        
+        if message.channel.id == config.DISCUSSION_ID:
+            try:
+                print("tried to handle thing in discussion")
+                await self.db.handle_discussion_message(message)
+            except Exception as e:
+                return
 
 intents = discord.Intents.default()
 intents.members = True
