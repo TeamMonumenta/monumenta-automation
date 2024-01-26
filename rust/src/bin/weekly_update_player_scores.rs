@@ -1,4 +1,9 @@
-use monumenta::player::Player;
+use std::{
+    collections::{HashMap, HashSet},
+    env,
+    fs,
+    path::Path
+};
 
 use anyhow::{self, bail};
 use chrono::prelude::*;
@@ -6,12 +11,7 @@ use rayon::prelude::*;
 use simplelog::*;
 use uuid::Uuid;
 
-use std::{
-    collections::{HashMap, HashSet},
-    env,
-    fs,
-    path::Path
-};
+use monumenta::player::Player;
 
 fn usage() {
     println!("Usage: weekly_update_players path/to/directory");
@@ -139,7 +139,7 @@ fn main() -> anyhow::Result<()> {
     println!("Loaded {} uuids in {} milliseconds", uuids.len(), (end - start).num_milliseconds());
 
     let start = Utc::now().time(); // START
-    let days_since_epoch: i32 = (Utc::now() - Utc.timestamp(0, 0)).num_days() as i32;
+    let days_since_epoch: i32 = (Utc::now() - Utc.timestamp_nanos(0)).num_days() as i32;
 
     uuids.par_iter().for_each(|uuid| {
         let mut player = Player::new(*uuid);

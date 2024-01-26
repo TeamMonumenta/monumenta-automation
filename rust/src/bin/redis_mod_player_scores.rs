@@ -1,12 +1,13 @@
-use monumenta::player::Player;
+use std::{env, thread};
 
 use anyhow;
+use log::error;
 use redis::Commands;
 use redis::RedisError;
 use simplelog::*;
 use uuid::Uuid;
 
-use std::{env, thread};
+use monumenta::player::Player;
 
 macro_rules! map(
     { $($key:expr => $value:expr),+ } => {
@@ -680,7 +681,9 @@ fn main() -> anyhow::Result<()> {
     }
 
     for thread in threads {
-        thread.join();
+        if thread.join().is_err() {
+            error!("An error occurred joining a thread");
+        };
     }
 
     Ok(())
