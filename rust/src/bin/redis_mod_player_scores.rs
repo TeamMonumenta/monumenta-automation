@@ -1,7 +1,6 @@
 use std::{env, thread};
 
 use anyhow;
-use log::error;
 use redis::Commands;
 use redis::RedisError;
 use simplelog::*;
@@ -682,7 +681,7 @@ fn main() -> anyhow::Result<()> {
 
     for thread in threads {
         if thread.join().is_err() {
-            error!("An error occurred joining a thread");
+            eprintln!("An error occurred joining a thread");
         };
     }
 
