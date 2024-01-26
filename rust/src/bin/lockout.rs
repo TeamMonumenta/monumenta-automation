@@ -113,17 +113,12 @@ fn check(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> a
 }
 
 fn check_all(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> anyhow::Result<()> {
-    if args.len() > 1 {
+    if args.len() != 0 {
         usage();
         return Ok(());
     }
 
-    if args.len() == 1 && &args.get(0).unwrap() != &"debug" {
-        usage();
-        return Ok(());
-    }
-
-    let results = LockoutEntry::get_all_lockouts(domain, con, args.len() > 0)?;
+    let results = LockoutEntry::get_all_lockouts(domain, con)?;
     let final_result = json!({
         "results": results
     });
