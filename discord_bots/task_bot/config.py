@@ -22,10 +22,12 @@ DESCRIPTOR_SHORT = bot_config["descriptor_short"]
 DESCRIPTOR_SINGLE = bot_config["descriptor_single"]
 DESCRIPTOR_PROPER = bot_config["descriptor_proper"]
 DESCRIPTOR_PLURAL = bot_config["descriptor_plural"]
+DESCRIPTOR_SHORT = bot_config["descriptor_short"]
 USER_PRIVILEGES = bot_config["user_privileges"]
 GROUP_PRIVILEGES = bot_config["group_privileges"]
 REACTIONS = bot_config["reactions"]
 
-KANBOARD = bot_config.get("kanboard", None)
-
 logging.info("\nBot Configuration: %s\n", pformat(bot_config))
+
+#MODMAIL_CHANNEL_ID = bot_config["modmail_channel_id"]
+#MODMAIL_INPUT_CHANNEL_ID = bot_config["modmail_input_channel_id"]
