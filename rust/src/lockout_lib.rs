@@ -95,7 +95,7 @@ impl LockoutEntry {
     }
 
     pub fn get_lockout(domain: &str, con: &mut redis::Connection, shard: &str) -> Option<LockoutEntry> {
-        match Self::get_all_lockouts(&domain, con) {
+        match Self::get_all_lockouts(&domain, con, false) {
             Ok(all_lockouts) => {
                 let opt_all_shard_lockout = all_lockouts.get("*");
                 if opt_all_shard_lockout.is_some() {
@@ -113,13 +113,13 @@ impl LockoutEntry {
         }
     }
 
-    pub fn get_all_lockouts(domain: &str, con: &mut redis::Connection) -> anyhow::Result<HashMap<String, LockoutEntry>> {
+    pub fn get_all_lockouts(domain: &str, con: &mut redis::Connection, debug: bool) -> anyhow::Result<HashMap<String, LockoutEntry>> {
         let mut lockouts: HashMap<String, LockoutEntry> = HashMap::new();
 
         let raw_lockouts: HashMap<String, String> = con.hgetall(format!("{}:lockout", domain))?;
         for raw_lockout in raw_lockouts.values() {
             let lockout: LockoutEntry = serde_json::from_str(raw_lockout)?;
-            if !Self::handle_expiration(&lockout, con) {
+            if debug || !Self::handle_expiration(&lockout, con) {
                 lockouts.insert(lockout.shard.clone(), lockout);
             }
         }
@@ -128,7 +128,7 @@ impl LockoutEntry {
     }
 
     pub fn clear_lockouts(domain: &str, con: &mut redis::Connection, shard: &str, owner: &str) -> anyhow::Result<()> {
-        for lockout in Self::get_all_lockouts(domain, con)?.values() {
+        for lockout in Self::get_all_lockouts(domain, con, false)?.values() {
             if owner != "*" && owner != lockout.owner {
                 continue;
             }
@@ -142,7 +142,7 @@ impl LockoutEntry {
         Ok(())
     }
 
-    pub fn rescind(&self, con: &mut redis::Connection) -> RedisResult<()> {
+    pub fn rescind(&self, con: &mut redis::Connection) -> RedisResult<i64> {
         con.hdel(format!("{}:lockout", &self.domain), &self.shard)
     }
 
