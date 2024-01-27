@@ -284,12 +284,8 @@ class SubtituteItems(SubstitutionRule):
                 # Example item type change:
                 # ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
                 ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
-                # Infernal cosmetic drop
-                ["minecraft:blaze_powder", "Flittering Spark", "minecraft:netherite_scrap", "Flittering Spark"],
-                # Consuming Blight Type Change
-                ["minecraft:vine", "Consuming Blight", "minecraft:mossy_cobblestone", "Consuming Blight"],
-                # Sedated -> Explosive Reckless Charm change
-                ["minecraft:nether_wart_block", "Sedated Reckless Charm", "minecraft:nether_wart_block", "Explosive Reckless Charm"],
+                # Prismatic Runeblade -> Prismatic Blade
+                ["minecraft:stone_sword", "Prismatic Runeblade", "minecraft:stone_sword", "Prismatic Blade"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
