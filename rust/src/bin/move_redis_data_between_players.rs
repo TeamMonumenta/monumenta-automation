@@ -10,10 +10,7 @@ use std::env;
 
 fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
-    match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
-        Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),
-        None => multiple.push(SimpleLogger::new(LevelFilter::Debug, Config::default())),
-    }
+    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
     CombinedLogger::init(multiple).unwrap();
 
     let mut args: Vec<String> = env::args().collect();
@@ -44,7 +41,7 @@ fn main() -> anyhow::Result<()> {
     inputplayer.load_redis(&domain, &mut con)?;
 
     let bungeelocs = format!("{}:bungee:locations", domain);
-    let inputlocation: String = con.hget(&bungeelocs, inputuuid.to_hyphenated().to_string())?;
+    let inputlocation: String = con.hget(&bungeelocs, inputuuid.hyphenated().to_string())?;
 
     if let Err(err) = inputplayer.save_dir(&backupdir) {
         warn!("Failed to save player {} domain {} to backup directory {}: {}", inputname, domain, backupdir, err);
@@ -71,9 +68,9 @@ fn main() -> anyhow::Result<()> {
     }
 
     // Delete the location record for bungee, moving the player back to the default
-    con.hdel(&bungeelocs, inputuuid.to_hyphenated().to_string())?;
+    con.hdel(&bungeelocs, inputuuid.hyphenated().to_string())?;
     // Move the new player to the location of the old player
-    con.hset(&bungeelocs, outputuuid.to_hyphenated().to_string(), inputlocation)?;
+    con.hset(&bungeelocs, outputuuid.hyphenated().to_string(), inputlocation)?;
 
     info!("Successfully deleted original player data for user {} domain {}", &inputname, &domain);
 

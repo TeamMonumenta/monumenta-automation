@@ -15,10 +15,7 @@ fn usage() {
 
 fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
-    match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
-        Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),
-        None => multiple.push(SimpleLogger::new(LevelFilter::Debug, Config::default())),
-    }
+    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
     CombinedLogger::init(multiple).unwrap();
 
     let mut args: Vec<String> = env::args().collect();
@@ -47,7 +44,7 @@ fn main() -> anyhow::Result<()> {
     println!("Exporting advancements...");
     // Iterate while at the same time removing the elements from the returned map
     Player::get_redis_players(&domain, &mut con)?.retain(|uuid, player| {
-        let uuidstr = uuid.to_hyphenated().to_string();
+        let uuidstr = uuid.hyphenated().to_string();
         player.load_redis_advancements(&domain, &mut con).unwrap();
         player.save_file_advancements(basedir.join(format!("{}.json", uuidstr)).to_str().unwrap()).unwrap();
         drop(player);

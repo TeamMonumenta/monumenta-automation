@@ -15,10 +15,7 @@ fn usage() {
 
 fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
-    match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
-        Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),
-        None => multiple.push(SimpleLogger::new(LevelFilter::Debug, Config::default())),
-    }
+    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
     CombinedLogger::init(multiple).unwrap();
 
     let mut args: Vec<String> = env::args().collect();
@@ -37,7 +34,7 @@ fn main() -> anyhow::Result<()> {
     let mut con : redis::Connection = client.get_connection()?;
 
     for (uuid, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {
-        if let Ok(oldplugindata) = con.hgetall(format!("{}:playerdata:{}:plugindata", domain, uuid.to_hyphenated().to_string())) {
+        if let Ok(oldplugindata) = con.hgetall(format!("{}:playerdata:{}:plugindata", domain, uuid.hyphenated().to_string())) {
             /* There is plugindata here */
             let oldplugindata : HashMap<String, String> = oldplugindata;
             let mut newplugindata = HashMap::new();
@@ -47,7 +44,7 @@ fn main() -> anyhow::Result<()> {
             }
             player.plugindata = Some(newplugindata);
             /* Clear out the old style data */
-            let _: () = con.del(format!("{}:playerdata:{}:plugindata", domain, uuid.to_hyphenated().to_string()))?;
+            let _: () = con.del(format!("{}:playerdata:{}:plugindata", domain, uuid.hyphenated().to_string()))?;
         } else {
             /* No plugindata found - try the new format */
             if let Err(_) = player.load_redis_plugindata(&domain, &mut con) {
