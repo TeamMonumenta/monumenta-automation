@@ -356,19 +356,22 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         matches = pattern.finditer(message.content)
         list_of_links = []
         for match in matches:
-            print("found match of " + match.group(0) + match.group(1) + match.group(2))
             if match.group(2) is not None:
                 testIndex = match.group(2)
                 try:
                     index, entry = self.get_entry(testIndex)
                 except Exception as e:
-                    print("Couldn't find entry with index " + testIndex)
                     return
 
                 if "message_id" in entry:
                     list_of_links.append("#" + str(index) + ": https://discord.com/channels/" + str(config.GUILD_ID) + "/" + str(config.CHANNEL_ID) + "/" + str(entry["message_id"]))
         if len(list_of_links) > 0:
-            await message.channel.send("Here are the links to the suggestions you mentioned\n" + "\n".join(list_of_links))
+            if (len(list_of_links) > 5):
+                final_list = list_of_links[:5]
+                await message.channel.send("Here are the links to the tasks you mentioned, limited to 5 links:\n" + "\n".join(final_list))
+            else:
+                final_list = list_of_links[:5]
+                await message.channel.send("Here are the links to the tasks you mentioned:\n" + "\n".join(final_list))
 
 
     ### Report command aliases ###
