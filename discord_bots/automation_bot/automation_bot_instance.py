@@ -33,6 +33,7 @@ _top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 from lib_py3.common import decode_escapes
+from lib_py3.lockout import LockoutAPI
 from lib_py3.raffle import vote_raffle
 from lib_py3.lib_k8s import KubernetesManager
 from lib_py3.lib_sockets import SocketManager
@@ -40,7 +41,7 @@ from lib_py3.redis_scoreboard import RedisRBoard
 from minecraft.world import World
 
 import config
-from automation_bot_lib import datestr, split_string
+from automation_bot_lib import datestr, escape_triple_backtick, split_string
 
 class Listening():
     """Class to keep track of whether a bot is listening to a user or not"""
@@ -111,6 +112,11 @@ class AutomationBotInstance(commands.Cog):
             "test": self.action_test,
             "testpriv": self.action_test_priv,
             "testunpriv": self.action_test_unpriv,
+
+            "lockout check all": self.action_lockout_check_all,
+            "lockout check": self.action_lockout_check,
+            "lockout clear": self.action_lockout_clear,
+            "lockout claim": self.action_lockout_claim,
 
             "list shards": self.action_list_shards,
             "instances": self.action_list_instances,
@@ -184,6 +190,13 @@ class AutomationBotInstance(commands.Cog):
             "skt": "DSKTAccess",
             "zenith": "DCZAccess",
         }
+
+        self._status_messages = {
+            "Shard status": self._get_list_shards_str_summary,
+            #"Public events": self._gameplay_event_summary, # TODO Bot cannot see these messages for reasons unknown
+        }
+        if config.K8S_NAMESPACE != "play":
+            self._status_messages["Developer Lockouts"] = self._get_lockout_message
 
         self._gameplay_events = {}
 
@@ -404,11 +417,6 @@ class AutomationBotInstance(commands.Cog):
         if self._status_channel is None:
             return
 
-        STATUS_MESSAGES = {
-            "Shard status": self._get_list_shards_str_summary,
-            "Public events": self._gameplay_event_summary,
-        }
-
         status_path = self._persistence_path / 'status.json'
         status_data = {
             "messages": {}
@@ -417,8 +425,11 @@ class AutomationBotInstance(commands.Cog):
             status_data = json.loads(status_path.read_text(encoding='utf-8-sig'))
         messages = status_data["messages"]
 
-        for header, callback in STATUS_MESSAGES.items():
-            new_message = await callback()
+        for header, callback in self._status_messages.items():
+            try:
+                new_message = await callback()
+            except Exception as ex:
+                new_message = f'{ex}\n{traceback.format_exc()}'
 
             previous_status = messages.get(header, None)
             message_id = None
@@ -512,7 +523,7 @@ class AutomationBotInstance(commands.Cog):
 
     async def display_verbatim(self, ctx: discord.ext.commands.Context, text: str):
         """Respond with verbatim text split into chunks that fit the message size"""
-        for chunk in split_string(text):
+        for chunk in split_string(escape_triple_backtick(text)):
             await ctx.send("```\n" + chunk + "\n```")
 
     async def debug(self, ctx: discord.ext.commands.Context, text: str):
@@ -540,7 +551,7 @@ class AutomationBotInstance(commands.Cog):
         else:
             # For complicated stuff, the caller must split appropriately
             splitCmd = cmd
-        await self.debug(ctx, "Executing: ```\n" + str(splitCmd) + "\n```")
+        await self.debug(ctx, "Executing: ```\n" + escape_triple_backtick(str(splitCmd)) + "\n```")
         process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = await process.communicate()
         rc = process.returncode
@@ -568,28 +579,46 @@ class AutomationBotInstance(commands.Cog):
 
         return stdout
 
-    async def stop(self, ctx: discord.ext.commands.Context, shards, wait=True):
+    async def stop(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
         """Stop shards"""
         if not isinstance(shards, list):
             shards = [shards,]
+
+        lockout_owner = owner if owner is not None else self._name
+        for shard in shards:
+            if await self.check_lockout(ctx, lockout_owner, shard):
+                raise Exception(f"Could not get lockout for {shard}")
+
         async with ctx.typing():
             await self.debug(ctx, f"Stopping shards [{','.join(shards)}]...")
             await self._k8s.stop(shards, wait=wait)
             await self.debug(ctx, f"Stopped shards [{','.join(shards)}]")
 
-    async def start(self, ctx: discord.ext.commands.Context, shards, wait=True):
+    async def start(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
         """Start shards"""
         if not isinstance(shards, list):
             shards = [shards,]
+
+        lockout_owner = owner if owner is not None else self._name
+        for shard in shards:
+            if await self.check_lockout(ctx, lockout_owner, shard):
+                raise Exception(f"Could not get lockout for {shard}")
+
         async with ctx.typing():
             await self.debug(ctx, f"Starting shards [{','.join(shards)}]...")
             await self._k8s.start(shards, wait=wait)
             await self.debug(ctx, f"Started shards [{','.join(shards)}]")
 
-    async def restart(self, ctx: discord.ext.commands.Context, shards, wait=True):
+    async def restart(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
         """Restart shards"""
         if not isinstance(shards, list):
             shards = [shards,]
+
+        lockout_owner = owner if owner is not None else self._name
+        for shard in shards:
+            if await self.check_lockout(ctx, lockout_owner, shard):
+                raise Exception(f"Could not get lockout for {shard}")
+
         async with ctx.typing():
             await self.debug(ctx, f"Restarting shards [{','.join(shards)}]...")
             await self._k8s.restart(shards, wait=wait)
@@ -628,6 +657,19 @@ class AutomationBotInstance(commands.Cog):
 
         if not msg:
             msg.append("No events are currently in progress")
+
+        return "\n".join(msg)
+
+    async def _get_lockout_message(self):
+        msg = []
+
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        lockouts = await lockout_api.check_all()
+        for _, lockout in sorted(lockouts.items()):
+            msg.append(f'🔒 {lockout.discord_str()}')
+
+        if not msg:
+            msg.append('🔓 No lockouts are currently active')
 
         return "\n".join(msg)
 
@@ -672,7 +714,12 @@ class AutomationBotInstance(commands.Cog):
                     helptext += "\n**" + config.PREFIX + command + "**"
                 else:
                     helptext += "\n~~" + config.PREFIX + command + "~~"
-                helptext += "```\n" + self._commands[command].__doc__.replace('{cmdPrefix}', config.PREFIX) + "\n```"
+                helptext += ("```\n"
+                    + escape_triple_backtick(self
+                        ._commands[command]
+                        .__doc__
+                        .replace('{cmdPrefix}', config.PREFIX))
+                    + "\n```")
 
             if helptext is None:
                 helptext = '''Command {!r} does not exist!'''.format(target_command)
@@ -748,6 +795,7 @@ Examples:
         '''Test that a restricted command fails for all users'''
 
         await ctx.send("BUG: You definitely shouldn't have this much power")
+
 
     async def action_list_shards(self, ctx: discord.ext.commands.Context, _, inputMsg: discord.Message):
         '''Lists currently running shards on this server'''
@@ -841,9 +889,33 @@ Examples:
                 inst_str += f"{dungeon : <15}{used : <15}"
                 inst_str += "\n"
             else:
-                self.display(ctx, f"Warning: Failed to load rboard values for {dungeon}")
+                await self.display(ctx, f"Warning: Failed to load rboard values for {dungeon}")
         inst_str += "\n```"
         await self.display(ctx, inst_str)
+
+    async def check_lockout(self, ctx: discord.ext.commands.Context, owner, shard):
+        """Checks for a lockout on a shard
+
+        owner may be a string for the owner ID, or a message whose author will be checked
+
+        If found for another user, displays a message and returns True
+        Otherwise, returns False without message
+        """
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        lockout = await lockout_api.check(shard)
+
+        if lockout is None:
+            return False
+
+        if isinstance(owner, str):
+            if owner == lockout.owner:
+                return False
+        else:
+            if owner and owner.author.mention == lockout.owner:
+                return False
+
+        await self.display(ctx, f'🔒 {lockout.discord_str()}')
+        return True
 
     # pylint: disable=comparison-with-callable
     async def _start_stop_restart_common(self, ctx: discord.ext.commands.Context, cmd, message, action):
@@ -854,6 +926,8 @@ Examples:
 
         # Kills the bot, causing k8s to restart it
         if arg_str == 'bot' and action in (self.stop, self.restart):
+            if await self.check_lockout(ctx, message, self._name):
+                return
             await ctx.send("Restarting bot. Note: This will not update the bot's image")
             sys.exit(0)
 
@@ -886,6 +960,135 @@ Examples:
                 await self.display(ctx, "Restarted shards [{}]".format(",".join(shards_changed)))
 
             await self.display(ctx, message.author.mention)
+
+    async def action_lockout_check_all(self, ctx: discord.ext.commands.Context, _, message: discord.Message, prefix=()):
+        """List all active shard lockouts
+
+Syntax:
+`{cmdPrefix}lockout check all`
+"""
+
+        yours = []
+        others = []
+
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        lockouts = await lockout_api.check_all()
+        owner = message.author.name
+
+        for _, lockout in sorted(lockouts.items()):
+            line = f'🔒 {lockout.discord_str()}'
+
+            if owner == lockout.owner:
+                yours.append(line)
+            else:
+                others.append(line)
+
+        if yours:
+            yours.insert(0, 'Your active lockouts:')
+        else:
+            yours.append('🔓 You have no active lockouts')
+
+        if others:
+            others.insert(0, 'Other active lockouts:')
+        else:
+            others.append('🔓 There are no other active lockouts')
+
+        msg = list(prefix) + yours + [''] + others
+        await self.display(ctx, '\n'.join(msg))
+
+    async def action_lockout_check(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        """Check shards for active lockouts
+
+Syntax:
+`{cmdPrefix}lockout check *`
+`{cmdPrefix}lockout check bungee valley isles orange'''
+"""
+
+        shards = message.content[len(config.PREFIX + cmd) + 1:].split()
+
+        yours = []
+        others = []
+        unlocked = []
+
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        owner = message.author.name
+
+        for shard in shards:
+            lockout = await lockout_api.check(shard)
+
+            if lockout is None:
+                unlocked.append(f'🔓 {shard} has no active lockout')
+                continue
+
+            line = f'🔒 {lockout.discord_str()}'
+            if owner == lockout.owner:
+                yours.append(line)
+            else:
+                others.append(line)
+
+        if yours:
+            yours.insert(0, 'Your active lockouts:')
+        else:
+            yours.append('🔓 You have no active lockouts')
+
+        if others:
+            others.insert(0, 'Other active lockouts:')
+        else:
+            others.append('🔓 There are no other active lockouts')
+
+        msg = []
+        if unlocked:
+            msg.append('\n'.join(unlocked))
+        msg.append('\n'.join(yours))
+        msg.append('\n'.join(others))
+
+        await self.display(ctx, '\n\n'.join(msg))
+
+    async def action_lockout_clear(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        """Clears lockouts on shards
+
+Syntax:
+`{cmdPrefix}lockout clear my valley isles`
+`{cmdPrefix}lockout clear my *`
+`{cmdPrefix}lockout clear * valley isles`
+`{cmdPrefix}lockout clear * *`
+"""
+
+        who, *shards = message.content[len(config.PREFIX + cmd) + 1:].split()
+
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        owner = message.author.name if who in ('me', 'my') else who
+        for shard in shards:
+            await lockout_api.clear(shard, owner)
+
+        await self.action_lockout_check_all(ctx, cmd, message, prefix=['Remaining lockouts:', ''])
+
+    async def action_lockout_claim(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        """Claim a lockout on a shard
+
+Syntax:
+`{cmdPrefix}lockout claim <shard> <minutes> <reason>`
+`{cmdPrefix}lockout claim dev3 15 secret mob ability test`
+`{cmdPrefix}lockout claim * 240 weekly update test`
+`{cmdPrefix}lockout claim * 10080 beta testing all week`
+"""
+
+        shard, minutes, *reason = message.content[len(config.PREFIX + cmd) + 1:].split()
+        reason = ' '.join(reason)
+
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        owner = message.author.name
+        lockout = await lockout_api.claim(shard, owner, minutes, reason)
+
+        if lockout is None:
+            await self.display(ctx, f'Failed to claim lockout; is Redis down?\n{message.author.mention}')
+            return
+
+        if lockout.owner != owner:
+            await self.display(ctx, f'Failed to claim lockout due to existing claim\n{lockout.discord_str()}\n{message.author.mention}')
+            return
+
+        await self.display(ctx, f'Lockout claim successful:\n{lockout.discord_str()}')
 
     async def action_start(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Start specified shards.
