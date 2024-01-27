@@ -286,6 +286,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
                 # Prismatic Runeblade -> Prismatic Blade
                 ["minecraft:stone_sword", "Prismatic Runeblade", "minecraft:stone_sword", "Prismatic Blade"],
+                # "Special" Crystalline Chip -> Special Crystalline Chip
+                ["minecraft:light_blue_dye", '"Special" Crystalline Chip', "minecraft:light_blue_dye", "Special Crystalline Chip"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
