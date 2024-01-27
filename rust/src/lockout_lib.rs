@@ -78,6 +78,12 @@ impl LockoutEntry {
                 }
                 Err(_) => ()
             };
+            match con.del::<String, i64>(format!("{}:lockout", &self.domain)) {
+                Ok(_) => {}
+                Err(err) => {
+                    eprintln!("An error occurred trying to clear the lockout map: {}", err);
+                }
+            }
         }
         return match Self::get_lockout(self.domain.as_ref(), con, self.shard.as_ref()) {
             None => {
