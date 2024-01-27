@@ -54,7 +54,7 @@ spec:
         hostnames:
         - "monumenta-rabbit"
       containers:
-      - image: rabbitmq:3-management
+      - image: rabbitmq:3.8-management
         name: rabbitmq
         env:
         - name: RABBITMQ_VM_MEMORY_HIGH_WATERMARK
