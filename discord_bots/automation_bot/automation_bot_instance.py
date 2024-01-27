@@ -378,12 +378,6 @@ class AutomationBotInstance(commands.Cog):
         except KeyError as e:
             sys.exit(f'Config missing key: {e}')
 
-    async def cog_load(self) -> None:
-        await self._check_updated_avatar()
-
-        # start the task to run in the background
-        #self.my_background_task.start()
-
     async def handle_message(self, ctx: discord.ext.commands.Context, message):
         """Called by parent bot on receiving a message"""
 
@@ -442,9 +436,10 @@ class AutomationBotInstance(commands.Cog):
 
             now = datetime.utcnow()
             now_timestamp = now.timestamp()
+            always_update_seconds = 15 * 60
             if (
                     new_message == previous_message
-                    and now_timestamp // 60 == previous_timestamp // 60
+                    and now_timestamp // always_update_seconds == previous_timestamp // always_update_seconds
             ):
                 continue
 
@@ -2462,7 +2457,7 @@ Usage:
             await self.display(ctx, str(ex))
             await self.display_verbatim(ctx, traceback.format_exc())
 
-    async def _check_updated_avatar(self):
+    async def check_updated_avatar(self):
         """Checks if avatar.png and last_set_avatar.png differ, and if so, use avatar.png"""
         previous_path = self._persistence_path / 'last_set_avatar.png'
         current_path = self._persistence_path / 'avatar.png'
