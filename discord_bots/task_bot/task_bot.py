@@ -47,15 +47,18 @@ class TaskBot(commands.Bot):
 
 
     async def setup_hook(self):
-        try:
-            await bot.load_extension(f"task_database")
-            self.db = bot.get_cog(config.DESCRIPTOR_SHORT)
-            if self.db is None:
-                raise Exception("Failed to get main cog")
-            print(f"Loaded task bot cogs")
-        except Exception as e:
-            print(f"Failed to load task bot cogs")
-            print(f"[ERROR] {e}")
+        if self.db is None:
+            try:
+                await bot.load_extension(f"task_database")
+                self.db = bot.get_cog(config.DESCRIPTOR_SHORT)
+                if self.db is None:
+                    raise Exception("Failed to get main cog")
+                print(f"Loaded task bot cogs")
+            except Exception as e:
+                print(f"Failed to load task bot cogs")
+                print(f"[ERROR] {e}")
+        else:
+            print("Already loaded task bot cogs")
 
         """ try:
             await bot.load_extension(f"flig_modmail")
@@ -96,7 +99,6 @@ class TaskBot(commands.Bot):
         
         if message.channel.id == config.DISCUSSION_ID:
             try:
-                print("tried to handle thing in discussion")
                 await self.db.handle_discussion_message(message)
             except Exception as e:
                 return
