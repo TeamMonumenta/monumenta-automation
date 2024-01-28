@@ -118,6 +118,7 @@ class TaskDatabase(commands.GroupCog, name=config.DESCRIPTOR_SHORT):
     async def validate_using_bot_channel(self, interaction : discord.Interaction, message):
         if interaction.channel_id == config.BOT_INPUT_CHANNEL and self._stopping == False:
             return True
+        return False
     
     def load(self):
         if not os.path.exists(self._database_path):
