@@ -906,7 +906,7 @@ Examples:
             if owner == lockout.owner:
                 return False
         else:
-            if owner and owner.author.mention == lockout.owner:
+            if owner and owner.author.name == lockout.owner:
                 return False
 
         await self.display(ctx, f'🔒 {lockout.discord_str()}')
@@ -945,7 +945,7 @@ Examples:
             elif action == self.restart:
                 await self.display(ctx, "Restarting shards [{}]...".format(",".join(shards_changed)))
 
-            await action(ctx, shards_changed)
+            await action(ctx, shards_changed, owner=message)
 
             if action == self.stop:
                 await self.display(ctx, "Stopped shards [{}]".format(",".join(shards_changed)))
@@ -1251,9 +1251,9 @@ If --debug argument is specified, will not stop dungeon shard before copying
             debug = True
             await self.display(ctx, "Debug mode enabled! Will only generate 5 of each dungeon, and will not cleanly copy the dungeon shard")
 
-        await self.generate_instances_internal(ctx, mention=message.author.mention, debug=debug)
+        await self.generate_instances_internal(ctx, mention=message.author.mention, debug=debug, owner=message)
 
-    async def generate_instances_internal(self, ctx: discord.ext.commands.Context, mention=None, debug=False):
+    async def generate_instances_internal(self, ctx: discord.ext.commands.Context, mention=None, debug=False, owner=None):
         '''Internals of {cmdPrefix}generate instances'''
 
         await self.display(ctx, "Cleaning up old weekly update data...")
@@ -1262,14 +1262,14 @@ If --debug argument is specified, will not stop dungeon shard before copying
 
         if not debug:
             await self.display(ctx, "Stopping the dungeon shard...")
-            await self.stop(ctx, "dungeon")
+            await self.stop(ctx, "dungeon", owner=owner)
 
         await self.display(ctx, "Copying the dungeon master copies...")
         await self.run(ctx, "cp -a /home/epic/project_epic/dungeon /home/epic/5_SCRATCH/tmpreset/dungeon")
 
         if not debug:
             await self.display(ctx, "Restarting the dungeon shard...")
-            await self.start(ctx, "dungeon", wait=False)
+            await self.start(ctx, "dungeon", wait=False, owner=owner)
 
         await self.display(ctx, "Generating dungeon instances (this may take a while)...")
         instance_gen_arg = " --dungeon-path /home/epic/5_SCRATCH/tmpreset/dungeon/ --out-folder /home/epic/5_SCRATCH/tmpreset/dungeons-out/"
@@ -1353,7 +1353,7 @@ Must be run before starting the update on the play server
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle post autoformat", '-s'], ret=[0, 1])
 
         if not skip_replacements:
-            await self.run_replacements_internal(ctx, ["valley", "isles", "ring", "dungeon", "structures"], do_prune=True)
+            await self.run_replacements_internal(ctx, ["valley", "isles", "ring", "dungeon", "structures"], do_prune=True, owner=message)
 
         if not skip_commit:
             await self.cd(ctx, '/home/epic/project_epic/server_config/data')
@@ -1362,11 +1362,11 @@ Must be run before starting the update on the play server
             await self.run(ctx, ['git', 'tag', version])
 
         if not skip_generation:
-            await self.generate_instances_internal(ctx, debug=debug)
+            await self.generate_instances_internal(ctx, debug=debug, owner=message)
 
         if not debug:
             await self.display(ctx, "Stopping valley, isles, ring...")
-            await self.stop(ctx, ["valley", "isles", "ring"])
+            await self.stop(ctx, ["valley", "isles", "ring"], owner=message)
 
         await self.display(ctx, "Copying valley...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley")
@@ -1378,7 +1378,7 @@ Must be run before starting the update on the play server
 
         if not debug:
             await self.display(ctx, "Restarting the valley shard...")
-            await self.start(ctx, "valley", wait=False)
+            await self.start(ctx, "valley", wait=False, owner=message)
 
         await self.display(ctx, "Copying isles...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles")
@@ -1389,7 +1389,7 @@ Must be run before starting the update on the play server
 
         if not debug:
             await self.display(ctx, "Restarting the isles shard...")
-            await self.start(ctx, "isles", wait=False)
+            await self.start(ctx, "isles", wait=False, owner=message)
 
         await self.display(ctx, "Copying ring...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring")
@@ -1399,7 +1399,7 @@ Must be run before starting the update on the play server
 
         if not debug:
             await self.display(ctx, "Restarting the ring and ring shards...")
-            await self.start(ctx, "ring", wait=False)
+            await self.start(ctx, "ring", wait=False, owner=message)
 
         await self.display(ctx, "Copying purgatory...")
         await self.run(ctx, "cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
@@ -1475,7 +1475,7 @@ Examples:
             for shard in main_shards:
                 if not debug:
                     await self.display(ctx, f"Stopping {shard}...")
-                    await self.stop(ctx, shard)
+                    await self.stop(ctx, shard, owner=message)
 
                 await self.run(ctx, f"mkdir -p /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}")
                 worlds = [Path(path).name for path in World.enumerate_worlds(f"/home/epic/project_epic/{shard}")]
@@ -1488,7 +1488,7 @@ Examples:
 
                 if not debug:
                     await self.display(ctx, f"Restarting {shard}...")
-                    await self.start(ctx, shard, wait=False)
+                    await self.start(ctx, shard, wait=False, owner=message)
 
                 if run_replacements:
                     await self.display(ctx, f"Running replacements on copied version of {shard}...")
@@ -1501,7 +1501,7 @@ Examples:
             # Need to generate instances
             if not debug:
                 await self.display(ctx, "Stopping the dungeon shard...")
-                await self.stop(ctx, "dungeon")
+                await self.stop(ctx, "dungeon", owner=message)
 
             await self.display(ctx, "Copying the dungeon master copies...")
             await self.run(ctx, "cp -a /home/epic/project_epic/dungeon /home/epic/5_SCRATCH/tmpstage/dungeon")
@@ -1509,7 +1509,7 @@ Examples:
 
             if not debug:
                 await self.display(ctx, "Restarting the dungeon shard...")
-                await self.start(ctx, "dungeon", wait=False)
+                await self.start(ctx, "dungeon", wait=False, owner=message)
 
             if run_replacements:
                 await self.display(ctx, "Running replacements on copied dungeon masters...")
@@ -1574,7 +1574,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         # Stop all shards
         await self.display(ctx, "Stopping all shards...")
         shards = await self._k8s.list()
-        await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards])
+        await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards], owner=message)
         for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
                 await self.display(ctx, f"ERROR: shard {shard} is still running!")
@@ -1760,7 +1760,7 @@ old coreprotect data will be removed at the 5 minute mark.
             await send_broadcast_msg(seconds_to_string(next_target))
 
         # Stop bungee
-        await self.stop(ctx, ["bungee", "bungee-11", "bungee-12", "bungee-13", "bungee-15"])
+        await self.stop(ctx, ["bungee", "bungee-11", "bungee-12", "bungee-13", "bungee-15"], owner=message)
 
         await self.display(ctx, message.author.mention)
 
@@ -1779,7 +1779,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         shards = await self._k8s.list()
 
         # Stop all shards
-        await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards])
+        await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards], owner=message)
 
         # Fail if any shards are still running
         await self.display(ctx, "Checking that all shards are stopped...")
@@ -1967,7 +1967,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 15 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Restarting rabbitmq")
-            await self.restart(ctx, "rabbitmq")
+            await self.restart(ctx, "rabbitmq", owner=message)
 
         if min_phase <= 16 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Marking common tasks as complete")
@@ -2085,7 +2085,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         # Stop all shards
         await self.display(ctx, f"Stopping all {self._k8s.namespace} server shards...")
         shards = await self._k8s.list()
-        await self.stop(ctx, [shard for shard in self._shards if shard in shards])
+        await self.stop(ctx, [shard for shard in self._shards if shard in shards], owner=message)
 
         # Delete and re-create all the 0_PREVIOUS directories, wherever they might be at one level above the shard folders
         await self.display(ctx, "Removing previous 0_PREVIOUS directories")
@@ -2111,12 +2111,12 @@ Archives the previous stage server contents under 0_PREVIOUS '''
 
         # Download the entire redis database from the play server
         await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
-        await self.stop(ctx, "redis")
+        await self.stop(ctx, "redis", owner=message)
         await self.cd(ctx, f"{self._server_dir}/../redis")
         await self.run(ctx, f"mv dump.rdb dump.rdb.previous")
         await self.display(ctx, "Downloading current redis database from the play server...")
         await self.run(ctx, f"redis-cli -h redis.play --rdb dump.rdb")
-        await self.start(ctx, "redis")
+        await self.start(ctx, "redis", owner=message)
 
         # Download the mysql database from the play server
         await self.display(ctx, "Syncing with current mysql database from the play server...")
@@ -2229,9 +2229,9 @@ Syntax:
             await self.display(ctx, "Nothing to do")
             return
 
-        await self.run_replacements_internal(ctx, replace_shards, mention=message.author.mention, do_prune=do_prune)
+        await self.run_replacements_internal(ctx, replace_shards, mention=message.author.mention, do_prune=do_prune, owner=message)
 
-    async def run_replacements_internal(self, ctx: discord.ext.commands.Context, replace_shards, mention=None, do_prune=False):
+    async def run_replacements_internal(self, ctx: discord.ext.commands.Context, replace_shards, mention=None, do_prune=False, owner=None):
         """Run replacements on the given shards"""
         await self.display(ctx, f"Replacing both mobs AND items on [{' '.join(replace_shards)}]")
 
@@ -2254,7 +2254,7 @@ Syntax:
                     await self.display(ctx, f"Running replacements and pruning world regions on shard {shard}")
                 else:
                     await self.display(ctx, f"Running replacements on shard {shard}")
-                await self.stop(ctx, shard)
+                await self.stop(ctx, shard, owner=owner)
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(ctx, ["tar", f"--exclude={shard}/logs", f"--exclude={shard}/plugins", f"--exclude={shard}/cache", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", shard])
                 if do_prune:
@@ -2266,7 +2266,7 @@ Syntax:
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard}"), displayOutput=True)
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_mobs.py --worlds {shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
-                await self.start(ctx, shard)
+                await self.start(ctx, shard, owner=owner)
 
         if mention is not None:
             await self.display(ctx, mention)
@@ -2354,7 +2354,7 @@ Syntax:
 
         await self.display(ctx, "Generating demo release version V{}...".format(version))
 
-        await self.stop(ctx, "white-demo")
+        await self.stop(ctx, "white-demo", owner=message)
 
         # Clean up the working directory for testing/etc
         await self.cd(ctx, "/home/epic/project_epic/Monumenta Demo - The Halls of Wind and Blood")
@@ -2378,7 +2378,7 @@ Syntax:
         await self.run(ctx, ["zip", "-rq", "/home/epic/4_SHARED/monumenta_demo/Monumenta Demo - The Halls of Wind and Blood V{}.zip".format(version), "Monumenta Demo - The Halls of Wind and Blood"])
         await self.run(ctx, ["rm", "-rf", "Monumenta Demo - The Halls of Wind and Blood"])
 
-        await self.start(ctx, "white-demo")
+        await self.start(ctx, "white-demo", owner=message)
 
         await self.display(ctx, "Demo release version V{} generated successfully".format(version))
         await self.display(ctx, message.author.mention)
