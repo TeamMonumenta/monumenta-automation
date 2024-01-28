@@ -17,10 +17,8 @@ class LockoutAPI():
     """The API to interact with Lockout entries"""
 
 
-    def __init__(self, domain, redis_host="redis", redis_port=6379):
+    def __init__(self, domain):
         """Sets up the connection to the Lockout database"""
-        self.redis_host = redis_host
-        self.redis_port = redis_port
         self.domain = domain
 
 
@@ -29,17 +27,11 @@ class LockoutAPI():
         return _top_level / 'rust' / 'bin' / 'lockout'
 
 
-    def _redis_url(self):
-        """Returns the Redis database URL"""
-        return f'redis://{self.redis_host}:{self.redis_port}/'
-
-
     async def check_all(self):
         """Returns a map of active lockout entries by shard"""
 
         lockout_bin = self._lockout_bin()
-        redis_url = self._redis_url()
-        cmd = [str(lockout_bin), redis_url, self.domain, 'checkall']
+        cmd = [str(lockout_bin), self.domain, 'checkall']
 
         process = await asyncio.create_subprocess_exec(*cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout_raw, _ = await process.communicate()
@@ -62,8 +54,7 @@ class LockoutAPI():
         """
 
         lockout_bin = self._lockout_bin()
-        redis_url = self._redis_url()
-        cmd = [str(lockout_bin), redis_url, self.domain, 'check', shard]
+        cmd = [str(lockout_bin), self.domain, 'check', shard]
 
         process = await asyncio.create_subprocess_exec(*cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout_raw, _ = await process.communicate()
@@ -87,12 +78,10 @@ class LockoutAPI():
 
         On success, returns your new claim
         On conflict, returns the conflicting claim
-        On error, returns None - most likely because Redis could not be reached
         """
 
         lockout_bin = self._lockout_bin()
-        redis_url = self._redis_url()
-        cmd = [str(lockout_bin), redis_url, self.domain, 'claim', shard, owner, duration, reason]
+        cmd = [str(lockout_bin), self.domain, 'claim', shard, owner, duration, reason]
 
         process = await asyncio.create_subprocess_exec(*cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout_raw, _ = await process.communicate()
@@ -101,11 +90,7 @@ class LockoutAPI():
         full_json = json.loads(stdout_text)
         results_json = full_json["results"]
 
-        if results_json is None:
-            result = None
-        else:
-            result = Lockout(results_json)
-        return result
+        return Lockout(results_json)
 
 
     async def clear(self, shard, owner):
@@ -115,8 +100,7 @@ class LockoutAPI():
         """
 
         lockout_bin = self._lockout_bin()
-        redis_url = self._redis_url()
-        cmd = [str(lockout_bin), redis_url, self.domain, 'clear', shard, owner]
+        cmd = [str(lockout_bin), self.domain, 'clear', shard, owner]
 
         process = await asyncio.create_subprocess_exec(*cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout_raw, _ = await process.communicate()
