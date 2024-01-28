@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import os
+import sys
 import re
 import logging
 import traceback
@@ -17,6 +19,14 @@ from discord.ext import tasks
 import config
 from automation_bot_lib import split_string
 from automation_bot_instance import AutomationBotInstance
+
+# TODO: This is ugly and needs updating if we ever move this file
+_file_depth = 3
+_file = os.path.abspath(__file__)
+_top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
+from lib_py3.lockout import LockoutException
 
 class GracefulKiller:
     """Class to catch signals (CTRL+C, SIGTERM) and gracefully save databases and stop the bot"""
@@ -132,10 +142,13 @@ class AutomationBot(commands.Bot):
             logging.info('Ignoring message during shutdown')
             return
 
-        if message.channel.id in self.channels:
+        channel_handler = self.channels.get(message.channel.id, None)
+        if channel_handler is not None:
             try:
                 ctx = await self.get_context(message)
-                await self.channels[message.channel.id].handle_message(ctx, message)
+                await channel_handler.handle_message(ctx, message)
+            except LockoutException:
+                await channel_handler.display(ctx, 'There is a lockout preventing that action')
             except Exception as e:
                 await message.channel.send(message.author.mention)
                 await message.channel.send("**ERROR**: ```" + str(e) + "```")

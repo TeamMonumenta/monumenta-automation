@@ -146,6 +146,16 @@ class Lockout():
         return f'{owner_str} has a lockout claim on `{self.shard}` expiring <t:{int(self.expiration.timestamp())}:R> for `{self.reason}`'
 
 
+    def as_exception(self):
+        """Returns an exception with an appropriate message for general use"""
+        return LockoutException(str(self))
+
+
+    def as_discord_exception(self):
+        """Returns an exception with an appropriate message for Discord"""
+        return LockoutException(self.discord_str())
+
+
     def __str__(self):
         """Returns a friendly string for this entry"""
         return f'{self.owner} has a lockout on {self.domain} {self.shard} until {self.expiration} for {self.reason}'
@@ -154,3 +164,7 @@ class Lockout():
     def __repr__(self):
         """Returns the code to create this object as a string"""
         return f'Lockout({self.to_json()!r})'
+
+
+class LockoutException(Exception):
+    """An exception specific to lockouts"""

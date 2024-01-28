@@ -315,6 +315,7 @@ class AutomationBotInstance(commands.Cog):
                     self._commands["broadcastcommand"] = self.action_broadcastcommand
                     self._commands["broadcastbungeecommand"] = self.action_broadcastbungeecommand
                     self._commands["broadcastminecraftcommand"] = self.action_broadcastminecraftcommand
+                    self._all_commands = set(self._commands.keys())
 
                     self._audit_channel = None
                     if "audit_channel" in conf:
@@ -581,8 +582,9 @@ class AutomationBotInstance(commands.Cog):
 
         lockout_owner = owner if owner is not None else self._name
         for shard in shards:
-            if await self.check_lockout(ctx, lockout_owner, shard):
-                raise Exception(f"Could not get lockout for {shard}")
+            opt_lockout = await self.check_lockout(ctx, lockout_owner, shard)
+            if opt_lockout:
+                raise opt_lockout.as_discord_exception()
 
         async with ctx.typing():
             await self.debug(ctx, f"Stopping shards [{','.join(shards)}]...")
@@ -596,8 +598,9 @@ class AutomationBotInstance(commands.Cog):
 
         lockout_owner = owner if owner is not None else self._name
         for shard in shards:
-            if await self.check_lockout(ctx, lockout_owner, shard):
-                raise Exception(f"Could not get lockout for {shard}")
+            opt_lockout = await self.check_lockout(ctx, lockout_owner, shard)
+            if opt_lockout:
+                raise opt_lockout.as_discord_exception()
 
         async with ctx.typing():
             await self.debug(ctx, f"Starting shards [{','.join(shards)}]...")
@@ -611,8 +614,9 @@ class AutomationBotInstance(commands.Cog):
 
         lockout_owner = owner if owner is not None else self._name
         for shard in shards:
-            if await self.check_lockout(ctx, lockout_owner, shard):
-                raise Exception(f"Could not get lockout for {shard}")
+            opt_lockout = await self.check_lockout(ctx, lockout_owner, shard)
+            if opt_lockout:
+                raise opt_lockout.as_discord_exception()
 
         async with ctx.typing():
             await self.debug(ctx, f"Restarting shards [{','.join(shards)}]...")
@@ -893,24 +897,24 @@ Examples:
 
         owner may be a string for the owner ID, or a message whose author will be checked
 
-        If found for another user, displays a message and returns True
-        Otherwise, returns False without message
+        If found for another user, returns the lockout
+        Otherwise, returns None
         """
         lockout_api = LockoutAPI(config.K8S_NAMESPACE)
         lockout = await lockout_api.check(shard)
 
         if lockout is None:
-            return False
+            return None
 
         if isinstance(owner, str):
             if owner == lockout.owner:
-                return False
+                return None
         else:
             if owner and owner.author.name == lockout.owner:
-                return False
+                return None
 
         await self.display(ctx, f'🔒 {lockout.discord_str()}')
-        return True
+        return lockout
 
     # pylint: disable=comparison-with-callable
     async def _start_stop_restart_common(self, ctx: discord.ext.commands.Context, cmd, message, action):
