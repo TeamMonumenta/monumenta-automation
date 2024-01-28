@@ -1,19 +1,19 @@
 use std::env;
 use anyhow::bail;
 use chrono::Duration;
-use monumenta::lockout_lib::LockoutEntry;
+use monumenta::lockout_lib::{LockoutAPI, LockoutEntry};
 use serde_json::json;
 
 fn usage() {
-    println!("Usage: lockout 'redis://127.0.0.1/' <domain> claim <shard> <owner> <duration in minutes> <reason>");
-    println!("Usage: lockout 'redis://127.0.0.1/' <domain> check <shard>");
-    println!("Usage: lockout 'redis://127.0.0.1/' <domain> checkall");
-    println!("Usage: lockout 'redis://127.0.0.1/' <domain> clear <shard> <owner>");
+    println!("Usage: lockout <domain> claim <shard> <owner> <duration in minutes> <reason>");
+    println!("Usage: lockout <domain> check <shard>");
+    println!("Usage: lockout <domain> checkall");
+    println!("Usage: lockout <domain> clear <shard> <owner>");
     println!();
     println!("A lockout allows a player to claim a shard, preventing others from using it until they are done.");
     println!();
     println!("Returns json to stdout in the form {{\"results\": results}}, where:");
-    println!("- A single result from claim or check is in the format: `null` or:");
+    println!("- A single claim is in the format: `null` or:");
     println!("{{");
     println!("    \"domain\": \"volt\",");
     println!("    \"shard\": \"* or valley-2\",");
@@ -22,7 +22,9 @@ fn usage() {
     println!("    \"reason\": \"Testing the lockout system\",");
     println!("}}");
     println!();
-    println!("Starting a new claim will return null on error, or the new/old claim on that shard.");
+    println!("Starting a new claim will return the new/old claim on that shard.");
+    println!();
+    println!("check returns a single claim or null.");
     println!();
     println!("checkall returns an object of shard name to active lockout results instead.");
     println!();
@@ -33,31 +35,27 @@ fn usage() {
 fn main() -> anyhow::Result<()> {
     let mut args: Vec<String> = env::args().collect();
 
-    if args.len() < 4 {
+    if args.len() < 3 {
         usage();
         return Ok(());
     }
 
     args.remove(0);
 
-    let redis_uri = args.remove(0);
-    let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
-
     let domain = args.remove(0);
 
     return match &args.remove(0)[..] {
         "claim" => {
-            claim(&domain, &mut con, &mut args)
+            claim(&domain, &mut args)
         },
         "check" => {
-            check(&domain, &mut con, &mut args)
+            check(&domain, &mut args)
         },
         "checkall" => {
-            check_all(&domain, &mut con, &mut args)
+            check_all(&domain, &mut args)
         },
         "clear" => {
-            clear(&domain, &mut con, &mut args)
+            clear(&domain, &mut args)
         }
         _ => {
             usage();
@@ -66,7 +64,7 @@ fn main() -> anyhow::Result<()> {
     }
 }
 
-fn claim(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> anyhow::Result<()> {
+fn claim(domain: &str, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 4 {
         usage();
         return Ok(());
@@ -84,7 +82,9 @@ fn claim(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> a
     let duration = Duration::minutes(num_minutes);
 
     let new_lockout = LockoutEntry::new(&owner, duration, &domain, &shard, &reason)?;
-    let found_lockout = new_lockout.start_lockout(con);
+    let mut api: LockoutAPI = LockoutAPI::load(domain)?;
+    let found_lockout = api.start_lockout(new_lockout);
+    api.save()?;
 
     let final_result = json!({
         "results": found_lockout
@@ -95,7 +95,7 @@ fn claim(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> a
     Ok(())
 }
 
-fn check(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> anyhow::Result<()> {
+fn check(domain: &str, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 1 {
         usage();
         return Ok(());
@@ -103,7 +103,9 @@ fn check(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> a
 
     let shard = args.remove(0);
 
-    let opt_result = LockoutEntry::get_lockout(domain, con, &shard);
+    let mut api: LockoutAPI = LockoutAPI::load(domain)?;
+    let opt_result = api.get_lockout(&shard);
+    api.save()?;
     let final_result = json!({
         "results": opt_result
     });
@@ -112,13 +114,15 @@ fn check(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> a
     Ok(())
 }
 
-fn check_all(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> anyhow::Result<()> {
+fn check_all(domain: &str, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 0 {
         usage();
         return Ok(());
     }
 
-    let results = LockoutEntry::get_all_lockouts(domain, con)?;
+    let mut api: LockoutAPI = LockoutAPI::load(domain)?;
+    let results = api.get_all_lockouts();
+    api.save()?;
     let final_result = json!({
         "results": results
     });
@@ -127,7 +131,7 @@ fn check_all(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) 
     Ok(())
 }
 
-fn clear(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> anyhow::Result<()> {
+fn clear(domain: &str, args: &mut Vec<String>) -> anyhow::Result<()> {
     if args.len() != 2 {
         usage();
         return Ok(());
@@ -136,7 +140,9 @@ fn clear(domain: &str, con: &mut redis::Connection, args: &mut Vec<String>) -> a
     let shard = args.remove(0);
     let owner = args.remove(0);
 
-    let opt_result = LockoutEntry::clear_lockouts(domain, con, &shard, &owner)?;
+    let mut api: LockoutAPI = LockoutAPI::load(domain)?;
+    let opt_result = api.clear_lockouts(&shard, &owner);
+    api.save()?;
     let final_result = json!({
         "results": opt_result
     });

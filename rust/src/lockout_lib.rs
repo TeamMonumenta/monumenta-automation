@@ -1,12 +1,147 @@
 use std::collections::HashMap;
 use std::fmt;
 use std::fmt::Formatter;
+use std::fs::{create_dir_all, read_to_string, write};
 
 use anyhow::{self, bail};
 use chrono::{DateTime, Duration, Utc};
 use chrono::serde::ts_seconds;
 use redis::{Commands, RedisResult};
 use serde::{Deserialize, Serialize};
+
+pub struct LockoutAPI {
+    domain: String,
+    entries: HashMap<String, LockoutEntry>,
+}
+
+impl LockoutAPI {
+    fn default(domain: &str) -> LockoutAPI {
+        let entries: HashMap<String, LockoutEntry> = HashMap::new();
+        LockoutAPI{
+            domain: domain.to_string(),
+            entries,
+        }
+    }
+
+    pub fn load(domain: &str) -> anyhow::Result<LockoutAPI> {
+        if let Err(_) = create_dir_all("/home/epic/4_SHARED/lockouts") {
+            bail!("Unable to create lockouts directory")
+        }
+        let lockout_path = format!("/home/epic/4_SHARED/lockouts/{}.json", domain);
+        let lockout_json_text = match read_to_string(lockout_path) {
+            Ok(data) => {data}
+            Err(_) => {
+                return Ok(Self::default(domain));
+            }
+        };
+
+        let raw_entries: serde_json::Map<String, serde_json::Value> = match serde_json::from_str(&*lockout_json_text) {
+            Ok(data) => {
+                data
+            },
+            Err(_) => {
+                return Ok(Self::default(domain));
+            }
+        };
+
+        let mut entries: HashMap<String, LockoutEntry> = HashMap::new();
+        for (shard, raw_entry) in raw_entries {
+            if let Ok(entry) = serde_json::from_value::<LockoutEntry>(raw_entry) {
+                if entry.is_current() {
+                    entries.insert(shard, entry);
+                }
+            }
+        };
+
+        return Ok(LockoutAPI{
+            domain: domain.to_string(),
+            entries,
+        })
+    }
+
+    pub fn save(&mut self) -> anyhow::Result<()> {
+        if let Err(_) = create_dir_all("/home/epic/4_SHARED/lockouts") {
+            bail!("Unable to create lockouts directory")
+        }
+        let lockout_path = format!("/home/epic/4_SHARED/lockouts/{}.json", self.domain);
+        let serialized = serde_json::to_string_pretty(&self.entries);
+        if let Err(_) = serialized {
+            bail!("Unable to serialize lockouts");
+        }
+        if let Err(_) = write(lockout_path, serialized.unwrap()) {
+            bail!("Unable to save lockouts")
+        }
+        Ok(())
+    }
+
+    pub fn start_lockout(&mut self, entry: LockoutEntry) -> LockoutEntry {
+        if entry.shard == "*" {
+            // Check for existing entries from other owners
+            for existing_entry in self.entries.values() {
+                if entry.owner != existing_entry.owner {
+                    return existing_entry.clone();
+                }
+            }
+
+            // Clear all entries from the same owner
+            self.entries.clear();
+        } else {
+            // Check for an existing entries from other owners
+            if let Some(&ref existing_entry) = self.entries.get("*") {
+                if entry.owner != existing_entry.owner {
+                    return existing_entry.clone();
+                }
+            }
+            if let Some(&ref existing_entry) = self.entries.get(&entry.shard) {
+                if entry.owner != existing_entry.owner {
+                    return existing_entry.clone();
+                }
+            }
+
+            // Remove existing entries from the same owner if there are no conflicts
+            if let Some(&ref existing_entry) = self.entries.clone().get("*") {
+                self.entries.remove(&existing_entry.owner);
+            }
+            if let Some(&ref existing_entry) = self.entries.clone().get(&entry.shard) {
+                self.entries.remove(&existing_entry.owner);
+            }
+        }
+
+        self.entries.insert(entry.shard.clone(), entry.clone());
+        entry.clone()
+    }
+
+    pub fn get_lockout(&mut self, shard: &str) -> Option<LockoutEntry> {
+        match self.entries.get("*") {
+            Some(&ref entry) => {
+                return Some(entry.clone());
+            }
+            None => {
+            }
+        }
+
+        match self.entries.get(shard) {
+            Some(&ref entry) => {
+                return Some(entry.clone());
+            }
+            None => {
+            }
+        }
+
+        None
+    }
+
+    pub fn get_all_lockouts(&self) -> HashMap<String, LockoutEntry> {
+        self.entries.clone()
+    }
+
+    pub fn clear_lockouts(&mut self, shard: &str, owner: &str) -> HashMap<String, LockoutEntry> {
+        self.entries.retain(|_, entry| {
+           entry.keep_after_clear(shard, owner)
+        });
+        self.get_all_lockouts()
+    }
+}
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct LockoutEntry {
@@ -66,118 +201,15 @@ impl LockoutEntry {
         })
     }
 
-    pub fn start_lockout(&self, con: &mut redis::Connection) -> Option<LockoutEntry> {
-        if self.shard == "*" {
-            match Self::get_all_lockouts(&self.domain, con) {
-                Ok(all_lockouts) => {
-                    for lockout in all_lockouts.values() {
-                        if self.owner != lockout.owner {
-                            return Some(lockout.clone());
-                        }
-                    }
-                }
-                Err(_) => ()
-            };
-            match con.del::<String, i64>(format!("{}:lockout", &self.domain)) {
-                Ok(_) => {}
-                Err(err) => {
-                    eprintln!("An error occurred trying to clear the lockout map: {}", err);
-                }
-            }
-        }
-        return match Self::get_lockout(self.domain.as_ref(), con, self.shard.as_ref()) {
-            None => {
-                self._internal_set_lockout(con, None)
-            }
-            Some(existing) => {
-                if existing.owner == self.owner {
-                    self._internal_set_lockout(con, Some(existing.clone()))
-                } else {
-                    Some(existing.clone())
-                }
-            }
-        }
-    }
-
-    fn _internal_set_lockout(&self, con: &mut redis::Connection, current: Option<LockoutEntry>) -> Option<LockoutEntry> {
-        let self_json: String = serde_json::to_string(&self).unwrap();
-        match con.hset::<String, String, String, i64>(format!("{}:lockout", self.domain), self.shard.clone(), self_json) {
-            Ok(_) => {
-                Some(self.clone())
-            },
-            Err(err) => {
-                eprintln!("An error occurred: {}", err);
-                current
-            }
-        }
-    }
-
-    pub fn get_lockout(domain: &str, con: &mut redis::Connection, shard: &str) -> Option<LockoutEntry> {
-        match Self::get_all_lockouts(&domain, con) {
-            Ok(all_lockouts) => {
-                let opt_all_shard_lockout = all_lockouts.get("*");
-                if opt_all_shard_lockout.is_some() {
-                    return opt_all_shard_lockout.cloned();
-                }
-
-                let opt_shard_lockout = all_lockouts.get(shard);
-                if opt_shard_lockout.is_some() {
-                    return opt_shard_lockout.cloned();
-                }
-
-                None
-            }
-            Err(_) => None
-        }
-    }
-
-    pub fn get_all_lockouts(domain: &str, con: &mut redis::Connection) -> anyhow::Result<HashMap<String, LockoutEntry>> {
-        let mut lockouts: HashMap<String, LockoutEntry> = HashMap::new();
-
-        let raw_lockouts: HashMap<String, String> = con.hgetall(format!("{}:lockout", domain))?;
-        for raw_lockout in raw_lockouts.values() {
-            let lockout: LockoutEntry = serde_json::from_str(raw_lockout)?;
-            if !Self::handle_expiration(&lockout, con) {
-                lockouts.insert(lockout.shard.clone(), lockout);
-            }
-        }
-
-        Ok(lockouts)
-    }
-
-    pub fn clear_lockouts(domain: &str, con: &mut redis::Connection, shard: &str, owner: &str) -> anyhow::Result<HashMap<String, LockoutEntry>> {
-        for lockout in Self::get_all_lockouts(domain, con)?.values() {
-            if owner != "*" && owner != lockout.owner {
-                continue;
-            }
-
-            if shard != "*" && shard != lockout.shard {
-                continue;
-            }
-
-            lockout.rescind(con)?;
-        }
-        Self::get_all_lockouts(domain, con)
+    pub fn keep_after_clear(&self, shard: &str, owner: &str) -> bool {
+        return !((shard == "*" || shard == self.shard) && (owner == "*" || owner == self.owner));
     }
 
     pub fn rescind(&self, con: &mut redis::Connection) -> RedisResult<i64> {
         con.hdel(format!("{}:lockout", &self.domain), &self.shard)
     }
 
-    pub fn has_expired(&self) -> bool {
-        Utc::now() >= self.expiration
-    }
-
-    // Returns true for expired entries
-    pub fn handle_expiration(lockout: &LockoutEntry, con: &mut redis::Connection) -> bool {
-        if !lockout.has_expired() {
-            return false;
-        }
-
-        match lockout.rescind(con) {
-            Ok(_) => (),
-            Err(_) => ()
-        }
-        return true;
+    pub fn is_current(&self) -> bool {
+        Utc::now() < self.expiration
     }
 }
