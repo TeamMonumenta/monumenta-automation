@@ -447,7 +447,7 @@ You can also attach an image to your message to include it in the {single}
         if await self.validate_or_get_posting_channel() == False:
             raise ValueError("Failed to get posting channel")
         if len(suggestion.split()) < 5:
-            raise ValueError('Description must contain at least 5 words')
+            raise ValueError('Description must contain at least 5 words, to help increase the ability for others to find it in searches and increase visibility to developers.')
 
         if len(suggestion) != len(discord.utils.escape_mentions(suggestion)):
             raise ValueError('Please do not include pings in your {single}'.format(single=config.DESCRIPTOR_SINGLE))
