@@ -136,10 +136,15 @@ impl LockoutAPI {
     }
 
     pub fn clear_lockouts(&mut self, shard: &str, owner: &str) -> HashMap<String, LockoutEntry> {
+        let mut cleared: HashMap<String, LockoutEntry> = HashMap::new();
         self.entries.retain(|_, entry| {
-           entry.keep_after_clear(shard, owner)
+            let keep = entry.keep_after_clear(shard, owner);
+            if !keep {
+                cleared.insert(entry.shard.clone(), entry.clone());
+            }
+            keep
         });
-        self.get_all_lockouts()
+        cleared
     }
 }
 

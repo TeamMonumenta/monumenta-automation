@@ -28,6 +28,8 @@ fn usage() {
     println!();
     println!("checkall returns an object of shard name to active lockout results instead.");
     println!();
+    println!("clear returns the cleared claims");
+    println!();
     println!("Claiming the shard * claims all shards");
     println!("Clearing the owner * clears all owners");
 }

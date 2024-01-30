@@ -113,7 +113,8 @@ class AutomationBotInstance(commands.Cog):
             "testpriv": self.action_test_priv,
             "testunpriv": self.action_test_unpriv,
 
-            "lockout check all": self.action_lockout_check_all,
+            "lockout": self.action_lockout,
+            "lockout check *": self.action_lockout_check_all,
             "lockout check": self.action_lockout_check,
             "lockout clear": self.action_lockout_clear,
             "lockout claim": self.action_lockout_claim,
@@ -960,11 +961,18 @@ Examples:
 
             await self.display(ctx, message.author.mention)
 
+    async def action_lockout(self, ctx: discord.ext.commands.Context, _, message: discord.Message):
+        """Provides help for lockout subcommands"""
+        await self.help_internal(ctx, ["lockout check *"], message.author)
+        await self.help_internal(ctx, ["lockout check"], message.author)
+        await self.help_internal(ctx, ["lockout clear"], message.author)
+        await self.help_internal(ctx, ["lockout claim"], message.author)
+
     async def action_lockout_check_all(self, ctx: discord.ext.commands.Context, _, message: discord.Message, prefix=()):
         """List all active shard lockouts
 
 Syntax:
-`{cmdPrefix}lockout check all`
+`{cmdPrefix}lockout check *`
 """
 
         yours = []
@@ -999,11 +1007,13 @@ Syntax:
         """Check shards for active lockouts
 
 Syntax:
-`{cmdPrefix}lockout check *`
 `{cmdPrefix}lockout check bungee valley isles orange'''
 """
 
         shards = message.content[len(config.PREFIX + cmd) + 1:].split()
+        if not shards:
+            await self.action_lockout_check_all(ctx, cmd, message)
+            return
 
         yours = []
         others = []
@@ -1053,7 +1063,12 @@ Syntax:
 `{cmdPrefix}lockout clear * *`
 """
 
-        who, *shards = message.content[len(config.PREFIX + cmd) + 1:].split()
+        args = message.content[len(config.PREFIX + cmd) + 1:].split()
+        if len(args) < 2:
+            await self.help_internal(ctx, ["lockout clear"], message.author)
+            return
+
+        who, *shards = args
 
         lockout_api = LockoutAPI(config.K8S_NAMESPACE)
         owner = message.author.name if who in ('me', 'my') else who
@@ -1072,7 +1087,12 @@ Syntax:
 `{cmdPrefix}lockout claim * 10080 beta testing all week`
 """
 
-        shard, minutes, *reason = message.content[len(config.PREFIX + cmd) + 1:].split()
+        args = message.content[len(config.PREFIX + cmd) + 1:].split()
+        if len(args) < 3:
+            await self.help_internal(ctx, ["lockout claim"], message.author)
+            return
+
+        shard, minutes, *reason = args
         reason = ' '.join(reason)
 
         lockout_api = LockoutAPI(config.K8S_NAMESPACE)

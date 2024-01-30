@@ -94,7 +94,7 @@ class LockoutAPI():
 
 
     async def clear(self, shard, owner):
-        """Clears matching lockouts, returning a map of remaining lockouts
+        """Clears matching lockouts, returning a map of cleared lockouts
 
         The shard and owner fields support '*' to match all shards/owners
         """
