@@ -79,7 +79,7 @@ class NameUnnamedItems(SubstitutionRule):
             r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{Potion:"minecraft:strong_turtle_master",display:{Name:'{"text":"Potion of the Turtle Master"}'},plain:{display:{Name:"Potion of the Turtle Master"}}}}]}''',
         )
         named_chests = (
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:lingering_potion",tag:{CustomPotionColor:16744576,CustomPotionEffects:[{Ambient:1b,Amplifier:2b,Duration:240,Id:10b,ShowIcon:1b,ShowParticles:1b},{Ambient:1b,Amplifier:0b,Duration:900,Id:22b,ShowIcon:1b,ShowParticles:1b}],Potion:"minecraft:mundane",display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"green","text":"Strong Sanctify Potion"}],"text":""}'},plain:{display:{Name:"Strong Sanctify Potion"}}}}]}''',
+            r'''{Items:[{Count:1b,Slot:13b,id:"minecraft:chorus_plant",tag:{display:{Name:'[{"text":"Knick-Knack Sack","italic":false,"underlined":true,"bold":true,"color":"#ff0099"}]'},plain:{display:{Name:"Knick-Knack Sack"}}}}]}''',
         )
 
         for chest_mojangson in unnamed_chests:
