@@ -1584,7 +1584,9 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.run(ctx, "rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset")
         await self.cd(ctx, "/home/epic/5_SCRATCH/tmpreset")
-        await self.run(ctx, "tar xzf /home/epic/4_SHARED/stage_bundle.tgz")
+        await self.run(ctx, "cp -a /home/epic/4_SHARED/stage_bundle.tgz /home/epic/5_SCRATCH/tmpreset/stage_bundle.tgz")
+        await self.run(ctx, "tar xzf /home/epic/5_SCRATCH/tmpreset/stage_bundle.tgz")
+        await self.run(ctx, "rm -f /home/epic/5_SCRATCH/tmpreset/stage_bundle.tgz", None)
 
         await self.cd(ctx, "/home/epic/5_SCRATCH/tmpreset/TEMPLATE")
         folders_to_update = [d for d in os.listdir(os.getcwd()) if os.path.isdir(d)]
@@ -1668,7 +1670,9 @@ Downloads the weekly update bundle from the build server and unpacks it'''
         await self.run(ctx, "rm -rf /home/epic/5_SCRATCH/tmpreset", None)
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset")
         await self.cd(ctx, "/home/epic/5_SCRATCH/tmpreset")
-        await self.run(ctx, "tar xzf /home/epic/4_SHARED/project_epic_build_template.tgz")
+        await self.run(ctx, "cp -a /home/epic/4_SHARED/project_epic_build_template.tgz /home/epic/5_SCRATCH/tmpreset/project_epic_build_template.tgz")
+        await self.run(ctx, "tar xzf /home/epic/5_SCRATCH/tmpreset/project_epic_build_template.tgz")
+        await self.run(ctx, "rm -f /home/epic/5_SCRATCH/tmpreset/project_epic_build_template.tgz", None)
         await self.display(ctx, "Build server template data retrieved and ready for update.")
         await self.display(ctx, message.author.mention)
 
