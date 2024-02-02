@@ -121,7 +121,7 @@ def export_commands(output_path, world_paths, min_x, min_y, min_z, max_x, max_y,
 
     for world_path in world_paths:
         world = World(world_path)
-        for result in world.iter_regions_parallel(out_region_iter, err_func, num_processes=num_threads,
+        for result in world.iter_regions_parallel(out_region_iter, err_func, num_processes=num_threads, read_only=True,
                                                   min_x=min_x, min_y=min_y, min_z=min_z,
                                                   max_x=max_x, max_y=max_y, max_z=max_z):
             for item in result:

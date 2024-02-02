@@ -12,8 +12,8 @@ from minecraft.region import Region, EntitiesRegion, PoiRegion
 from minecraft.player_dat_format.player import PlayerFile
 from minecraft.util.iter_util import process_in_parallel
 
-def _create_region_lambda(region_type, full_path, rx, rz):
-    return region_type(full_path, rx, rz)
+def _create_region_lambda(region_type, full_path, rx, rz, read_only):
+    return region_type(full_path, rx, rz, read_only=read_only)
 
 # No _finalize_region_lambda, chunks are saved as they are iterated
 
@@ -140,7 +140,7 @@ class World():
         for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
             yield region_type(full_path, rx, rz, read_only=read_only)
 
-    def iter_regions_parallel(self, func, err_func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion), additional_args=(), initializer=None, initargs=()): # TODO: PoiRegion
+    def iter_regions_parallel(self, func, err_func, num_processes=4, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion), additional_args=(), initializer=None, initargs=(), read_only=False): # TODO: PoiRegion
         """Iterates regions in parallel using multiple processes.
 
         func will be called with each Region object that this folder contains
@@ -170,7 +170,7 @@ class World():
 
         parallel_args = []
         for full_path, rx, rz, region_type in self.enumerate_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, region_types=region_types):
-            parallel_args.append((_create_region_lambda, (region_type, full_path, rx, rz), None, None, func, err_func, additional_args))
+            parallel_args.append((_create_region_lambda, (region_type, full_path, rx, rz, read_only), None, None, func, err_func, additional_args))
 
         yield from process_in_parallel(parallel_args, num_processes=num_processes, initializer=initializer, initargs=initargs)
 
