@@ -9,10 +9,7 @@ use std::{env, path::Path};
 
 fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
-    match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
-        Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),
-        None => multiple.push(SimpleLogger::new(LevelFilter::Debug, Config::default())),
-    }
+    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
     CombinedLogger::init(multiple).unwrap();
 
     let mut args: Vec<String> = env::args().collect();

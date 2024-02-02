@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import os
+import sys
 import re
 import logging
 import traceback
@@ -12,10 +14,19 @@ logging.basicConfig(level=logging.INFO)
 
 import discord
 from discord.ext import commands
+from discord.ext import tasks
 
 import config
 from automation_bot_lib import split_string
 from automation_bot_instance import AutomationBotInstance
+
+# TODO: This is ugly and needs updating if we ever move this file
+_file_depth = 3
+_file = os.path.abspath(__file__)
+_top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
+from lib_py3.lockout import LockoutException
 
 class GracefulKiller:
     """Class to catch signals (CTRL+C, SIGTERM) and gracefully save databases and stop the bot"""
@@ -48,6 +59,7 @@ class AutomationBot(commands.Bot):
             application_id=config.APPLICATION_ID)
 
         # Create instances of the shell bot, one per channel
+        self.instance = None
         self.channels = {}
 
         ################################################################################
@@ -65,6 +77,14 @@ class AutomationBot(commands.Bot):
             "msg": None,
         }
 
+    async def setup_hook(self) -> None:
+        # start tasks to run in the background
+        # See https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/background_task.py
+        # The start method is provided by the decorator
+        self.update_avatar_task.start()
+        self.heartbeat_task.start()
+        self.shard_status_task.start()
+
     async def on_ready(self):
         """Bot ready"""
 
@@ -76,18 +96,43 @@ class AutomationBot(commands.Bot):
 
         # On ready can happen multiple times when the bot automatically reconnects
         # Don't re-create the per-channel listeners when this happens
-        if len(self.channels) == 0:
-            instance = AutomationBotInstance(self, self.rreact)
-            await bot.add_cog(instance, guilds=[discord.Object(id=config.GUILD_ID)])
+        if self.instance is None:
+            self.instance = AutomationBotInstance(self, self.rreact)
+            await bot.add_cog(self.instance, guilds=[discord.Object(id=config.GUILD_ID)])
 
             for channel_id in config.CHANNELS:
                 try:
                     channel = self.get_channel(channel_id)
-                    self.channels[channel_id] = instance
+                    self.channels[channel_id] = self.instance
                     if channel_id != 486019840134610965: # TODO: Config... this is the visible weekly update channel
                         await channel.send(config.NAME + " started and now listening.")
                 except Exception:
                     logging.error("Cannot connect to channel: %s", config.CHANNELS)
+
+    @tasks.loop(seconds=60)
+    async def update_avatar_task(self):
+        await self.instance.check_updated_avatar()
+
+    @update_avatar_task.before_loop
+    async def before_update_avatar_task(self):
+        await self.wait_until_ready()  # wait until the bot logs in
+
+    @tasks.loop(seconds=5)
+    async def shard_status_task(self):
+        await self.instance.status_tick()
+
+    @shard_status_task.before_loop
+    async def before_shard_status_task(self):
+        await self.wait_until_ready()  # wait until the bot logs in
+
+    @tasks.loop(seconds=1)
+    async def heartbeat_task(self):
+        if self.instance and self.instance._socket:
+            self.instance._socket.send_heartbeat()
+
+    @heartbeat_task.before_loop
+    async def before_heartbeat_task(self):
+        await self.wait_until_ready()  # wait until the bot logs in
 
     async def on_message(self, message):
         """Bot received message"""
@@ -97,10 +142,13 @@ class AutomationBot(commands.Bot):
             logging.info('Ignoring message during shutdown')
             return
 
-        if message.channel.id in self.channels:
+        channel_handler = self.channels.get(message.channel.id, None)
+        if channel_handler is not None:
             try:
                 ctx = await self.get_context(message)
-                await self.channels[message.channel.id].handle_message(ctx, message)
+                await channel_handler.handle_message(ctx, message)
+            except LockoutException:
+                await channel_handler.display(ctx, 'There is a lockout preventing that action')
             except Exception as e:
                 await message.channel.send(message.author.mention)
                 await message.channel.send("**ERROR**: ```" + str(e) + "```")

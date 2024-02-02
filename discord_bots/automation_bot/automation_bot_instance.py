@@ -33,6 +33,7 @@ _top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 from lib_py3.common import decode_escapes
+from lib_py3.lockout import LockoutAPI
 from lib_py3.raffle import vote_raffle
 from lib_py3.lib_k8s import KubernetesManager
 from lib_py3.lib_sockets import SocketManager
@@ -40,7 +41,7 @@ from lib_py3.redis_scoreboard import RedisRBoard
 from minecraft.world import World
 
 import config
-from automation_bot_lib import datestr, split_string
+from automation_bot_lib import datestr, escape_triple_backtick, split_string
 
 class Listening():
     """Class to keep track of whether a bot is listening to a user or not"""
@@ -111,6 +112,12 @@ class AutomationBotInstance(commands.Cog):
             "test": self.action_test,
             "testpriv": self.action_test_priv,
             "testunpriv": self.action_test_unpriv,
+
+            "lockout": self.action_lockout,
+            "lockout check *": self.action_lockout_check_all,
+            "lockout check": self.action_lockout_check,
+            "lockout clear": self.action_lockout_clear,
+            "lockout claim": self.action_lockout_claim,
 
             "list shards": self.action_list_shards,
             "instances": self.action_list_instances,
@@ -185,17 +192,39 @@ class AutomationBotInstance(commands.Cog):
             "zenith": "DCZAccess",
         }
 
+        self._status_messages = {
+            "Shard status": self._get_list_shards_str_summary,
+            #"Public events": self._gameplay_event_summary, # TODO Bot cannot see these messages for reasons unknown
+        }
+        if config.K8S_NAMESPACE != "play":
+            self._status_messages["Developer Lockouts"] = self._get_lockout_message
+
+        self._gameplay_events = {}
+
         try:
             self._name = config.NAME
             self._shards = config.SHARDS
             self._server_dir = config.SERVER_DIR
 
+            self._persistence_path = Path(f'/home/epic/4_SHARED/bot_persistence/{self._name}')
+            self._persistence_path.mkdir(mode=0o775, parents=True, exist_ok=True)
+
+            self._status_channel = None
+            if config.STATUS_CHANNEL:
+                try:
+                    self._status_channel = self._bot.get_channel(config.STATUS_CHANNEL)
+                    logging.info("Found audit channel: %s", config.STATUS_CHANNEL)
+                except Exception:
+                    logging.error("Cannot connect to audit channel: %s", config.STATUS_CHANNEL)
+
+            self._socket = None
             if config.RABBITMQ:
                 try:
                     conf = config.RABBITMQ
 
                     # Get the event loop on the main thread
                     loop = asyncio.get_event_loop()
+                    seen_channel_ids = set()
 
                     def send_message_to_channel(message, channel):
                         # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
@@ -204,50 +233,90 @@ class AutomationBotInstance(commands.Cog):
                         asyncio.run_coroutine_threadsafe(self.display_verbatim(channel, message), loop)
 
                     def socket_callback(message):
-                        if "channel" in message:
-                            if "Heartbeat" in message["channel"]:
-                                return
+                        message_channel = message.get("channel", None)
+                        if not message_channel:
+                            return
 
-                            logger.info("Got socket message: %s", pformat(message))
-                            if self._audit_channel:
-                                if message["channel"] == "Monumenta.Automation.AuditLog":
-                                    # Schedule the display coroutine back on the main event loop
-                                    send_message_to_channel(message["data"]["message"], self._audit_channel)
+                        if message_channel not in seen_channel_ids:
+                            seen_channel_ids.add(message_channel)
+                            logger.warning('First occurance of channel %s: %s', repr(message_channel), message)
 
-                            if self._admin_channel:
-                                if message["channel"] == "Monumenta.Automation.AdminNotification":
-                                    send_message_to_channel(message["data"]["message"], self._admin_channel)
+                        if message_channel == "monumentanetworkrelay.heartbeat":
+                            return
 
-                            if self._audit_severe_channel:
-                                if message["channel"] == "Monumenta.Automation.AuditLogSevere":
-                                    send_message_to_channel(message["data"]["message"], self._audit_severe_channel)
+                        #logger.info("Got socket message: %s", pformat(message))
+                        if self._audit_channel:
+                            if message_channel == "Monumenta.Automation.AuditLog":
+                                # Schedule the display coroutine back on the main event loop
+                                send_message_to_channel(message["data"]["message"], self._audit_channel)
 
-                            if self._death_audit_channel:
-                                if message["channel"] == "Monumenta.Automation.DeathAuditLog":
-                                    send_message_to_channel(message["data"]["message"], self._death_audit_channel)
+                        if self._admin_channel:
+                            if message_channel == "Monumenta.Automation.AdminNotification":
+                                send_message_to_channel(message["data"]["message"], self._admin_channel)
 
-                            if self._player_audit_channel:
-                                if message["channel"] == "Monumenta.Automation.PlayerAuditLog":
-                                    send_message_to_channel(message["data"]["message"], self._player_audit_channel)
+                        if self._audit_severe_channel:
+                            if message_channel == "Monumenta.Automation.AuditLogSevere":
+                                send_message_to_channel(message["data"]["message"], self._audit_severe_channel)
 
-                            if self._stage_notify_channel:
-                                if message["channel"] == "Monumenta.Automation.stage":
-                                    # Schedule the display coroutine back on the main event loop
-                                    # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
-                                    # Probably hard to fix though
-                                    asyncio.run_coroutine_threadsafe(self.stage_data_request(self._stage_notify_channel, message["data"]), loop)
+                        if self._death_audit_channel:
+                            if message_channel == "Monumenta.Automation.DeathAuditLog":
+                                send_message_to_channel(message["data"]["message"], self._death_audit_channel)
 
-                    if "log_level" in conf:
-                        log_level = conf["log_level"]
-                    else:
-                        log_level = 20
+                        if self._player_audit_channel:
+                            if message_channel == "Monumenta.Automation.PlayerAuditLog":
+                                send_message_to_channel(message["data"]["message"], self._player_audit_channel)
 
+                        if self._stage_notify_channel:
+                            if message_channel == "Monumenta.Automation.stage":
+                                # Schedule the display coroutine back on the main event loop
+                                # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
+                                # Probably hard to fix though
+                                asyncio.run_coroutine_threadsafe(self.stage_data_request(self._stage_notify_channel, message["data"]), loop)
+
+                        if self._status_channel:
+                            if message_channel == "monumenta.eventbroadcast.update":
+                                logger.warning("Got Monumenta gameplay event message: %s", pformat(message))
+                                event_data = message["data"]
+
+                                event_shard = event_data.get("shard", None)
+                                event_name = event_data.get("eventName", None)
+                                event_time_left = event_data.get("timeLeft", None)
+
+                                if not all(
+                                        isinstance(event_shard, str),
+                                        isinstance(event_name, str),
+                                        isinstance(event_time_left, int),
+                                ):
+                                    return
+
+                                event_map = self._gameplay_events.get(event_name, {})
+                                self._gameplay_events[event_name] = event_map
+
+                                if event_time_left < 0:
+                                    del event_map[event_shard]
+                                    if len(event_map) == 0:
+                                        del self._gameplay_events[event_name]
+                                    return
+
+                                now = datetime.utcnow()
+                                gameplay_event = event_map.get("event_shard", {
+                                    "shard": event_shard,
+                                    "event_name": event_name,
+                                })
+                                gameplay_event["last_update"] = now
+                                if event_time_left > 0:
+                                    gameplay_event["ETA"] = now + timedelta(seconds=event_time_left)
+                                else:
+                                    gameplay_event.pop("ETA", False)
+
+                    log_level = config.RABBITMQ.get("log_level", 20)
                     self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level)
 
                     # Add commands that require the sockets here!
                     self._commands["broadcastcommand"] = self.action_broadcastcommand
                     self._commands["broadcastbungeecommand"] = self.action_broadcastbungeecommand
                     self._commands["broadcastminecraftcommand"] = self.action_broadcastminecraftcommand
+                    self._all_commands = set(self._commands.keys())
 
                     self._audit_channel = None
                     if "audit_channel" in conf:
@@ -338,6 +407,76 @@ class AutomationBotInstance(commands.Cog):
         else:
             await ctx.send("Sorry " + message.author.mention + ", you do not have permission to run this command")
 
+    async def status_tick(self):
+        """Updates bot status message(s) if required and possible"""
+
+        if self._status_channel is None:
+            return
+
+        status_path = self._persistence_path / 'status.json'
+        status_data = {
+            "messages": {}
+        }
+        if status_path.is_file():
+            status_data = json.loads(status_path.read_text(encoding='utf-8-sig'))
+        messages = status_data["messages"]
+
+        for header, callback in self._status_messages.items():
+            try:
+                new_message = await callback()
+            except Exception as ex:
+                new_message = f'{ex}\n{traceback.format_exc()}'
+
+            previous_status = messages.get(header, None)
+            message_id = None
+            previous_timestamp = 0
+            previous_message = None
+            if previous_status is not None:
+                message_id = previous_status["message_id"]
+                previous_timestamp = previous_status.get("modify_time", 0)
+                previous_message = previous_status["message_data"]
+
+            now = datetime.utcnow()
+            now_timestamp = now.timestamp()
+            always_update_seconds = 15 * 60
+            if (
+                    new_message == previous_message
+                    and now_timestamp // always_update_seconds == previous_timestamp // always_update_seconds
+            ):
+                continue
+
+            msg = None
+            if message_id is not None:
+                try:
+                    msg = await self._status_channel.fetch_message(message_id)
+                except discord.errors.NotFound:
+                    msg = None
+
+            modify_time = "Last updated " + self.get_discord_timestamp(now, ":R")
+            formatted_message = f'**{header}** {modify_time}\n{new_message}'
+            if msg is None:
+                msg = await self._status_channel.send(formatted_message)
+                message_id = msg.id
+            else:
+                await msg.edit(content=formatted_message)
+
+            messages[header] = {
+                "message_id": message_id,
+                "modify_time": now_timestamp,
+                "message_data": new_message,
+            }
+
+        with open(status_path, 'w', encoding='utf-8') as fp:
+            print(
+                json.dumps(
+                    status_data,
+                    ensure_ascii=False,
+                    indent=2,
+                    separators=(',', ': ')
+                ),
+                file=fp
+            )
+
     # Entry points
     ################################################################################
 
@@ -381,7 +520,7 @@ class AutomationBotInstance(commands.Cog):
 
     async def display_verbatim(self, ctx: discord.ext.commands.Context, text: str):
         """Respond with verbatim text split into chunks that fit the message size"""
-        for chunk in split_string(text):
+        for chunk in split_string(escape_triple_backtick(text)):
             await ctx.send("```\n" + chunk + "\n```")
 
     async def debug(self, ctx: discord.ext.commands.Context, text: str):
@@ -409,7 +548,7 @@ class AutomationBotInstance(commands.Cog):
         else:
             # For complicated stuff, the caller must split appropriately
             splitCmd = cmd
-        await self.debug(ctx, "Executing: ```\n" + str(splitCmd) + "\n```")
+        await self.debug(ctx, "Executing: ```\n" + escape_triple_backtick(str(splitCmd)) + "\n```")
         process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = await process.communicate()
         rc = process.returncode
@@ -437,28 +576,49 @@ class AutomationBotInstance(commands.Cog):
 
         return stdout
 
-    async def stop(self, ctx: discord.ext.commands.Context, shards, wait=True):
+    async def stop(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
         """Stop shards"""
         if not isinstance(shards, list):
             shards = [shards,]
+
+        lockout_owner = owner if owner is not None else self._name
+        for shard in shards:
+            opt_lockout = await self.check_lockout(ctx, lockout_owner, shard)
+            if opt_lockout:
+                raise opt_lockout.as_discord_exception()
+
         async with ctx.typing():
             await self.debug(ctx, f"Stopping shards [{','.join(shards)}]...")
             await self._k8s.stop(shards, wait=wait)
             await self.debug(ctx, f"Stopped shards [{','.join(shards)}]")
 
-    async def start(self, ctx: discord.ext.commands.Context, shards, wait=True):
+    async def start(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
         """Start shards"""
         if not isinstance(shards, list):
             shards = [shards,]
+
+        lockout_owner = owner if owner is not None else self._name
+        for shard in shards:
+            opt_lockout = await self.check_lockout(ctx, lockout_owner, shard)
+            if opt_lockout:
+                raise opt_lockout.as_discord_exception()
+
         async with ctx.typing():
             await self.debug(ctx, f"Starting shards [{','.join(shards)}]...")
             await self._k8s.start(shards, wait=wait)
             await self.debug(ctx, f"Started shards [{','.join(shards)}]")
 
-    async def restart(self, ctx: discord.ext.commands.Context, shards, wait=True):
+    async def restart(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
         """Restart shards"""
         if not isinstance(shards, list):
             shards = [shards,]
+
+        lockout_owner = owner if owner is not None else self._name
+        for shard in shards:
+            opt_lockout = await self.check_lockout(ctx, lockout_owner, shard)
+            if opt_lockout:
+                raise opt_lockout.as_discord_exception()
+
         async with ctx.typing():
             await self.debug(ctx, f"Restarting shards [{','.join(shards)}]...")
             await self._k8s.restart(shards, wait=wait)
@@ -474,6 +634,44 @@ class AutomationBotInstance(commands.Cog):
             raffle_seed = self._rreact["msg_contents"]
 
         return raffle_seed
+
+    async def _gameplay_event_summary(self):
+        msg = []
+
+        now = datetime.utcnow()
+        expired_threshhold = now - timedelta(minutes=3)
+
+        # Sorting also makes a copy of the collection, allowing entries to be removed
+        for event_name, event_map in sorted(self._gameplay_events.items()):
+            for shard, gameplay_event in sorted(event_map.items()):
+                if gameplay_event["last_update"] < expired_threshhold:
+                    event_map.pop(shard, None)
+                    continue
+
+                eta = gameplay_event.get("ETA", None)
+                if eta:
+                    eta_timestamp = self.get_discord_timestamp(eta, ":R")
+                    msg.append(f'{event_name} is starting on {shard} {eta_timestamp}')
+                else:
+                    msg.append(f'{event_name} is in progress on {shard}')
+
+        if not msg:
+            msg.append("No events are currently in progress")
+
+        return "\n".join(msg)
+
+    async def _get_lockout_message(self):
+        msg = []
+
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        lockouts = await lockout_api.check_all()
+        for _, lockout in sorted(lockouts.items()):
+            msg.append(f'🔒 {lockout.discord_str()}')
+
+        if not msg:
+            msg.append('🔓 No lockouts are currently active')
+
+        return "\n".join(msg)
 
     # Infrastructure
     ################################################################################
@@ -516,7 +714,12 @@ class AutomationBotInstance(commands.Cog):
                     helptext += "\n**" + config.PREFIX + command + "**"
                 else:
                     helptext += "\n~~" + config.PREFIX + command + "~~"
-                helptext += "```\n" + self._commands[command].__doc__.replace('{cmdPrefix}', config.PREFIX) + "\n```"
+                helptext += ("```\n"
+                    + escape_triple_backtick(self
+                        ._commands[command]
+                        .__doc__
+                        .replace('{cmdPrefix}', config.PREFIX))
+                    + "\n```")
 
             if helptext is None:
                 helptext = '''Command {!r} does not exist!'''.format(target_command)
@@ -593,65 +796,86 @@ Examples:
 
         await ctx.send("BUG: You definitely shouldn't have this much power")
 
+
     async def action_list_shards(self, ctx: discord.ext.commands.Context, _, inputMsg: discord.Message):
         '''Lists currently running shards on this server'''
+        msg = None
+        split_input_message = inputMsg.content.split(" ")
+
+        if len(split_input_message) > 2 and split_input_message[2] == "summary":
+            msg = await self._get_list_shards_str_summary()
+        else:
+            msg = await self._get_list_shards_str_long()
+
+        await self.display(ctx, msg)
+
+    async def _get_list_shards_str_summary(self):
+        """Get a `~list shard summary` formatted string"""
         shards = await self._k8s.list()
         # Format of this is:
         # {'dungeon': {'available_replicas': 1, 'replicas': 1, 'pod_name': 'dungeon-xyz'}
         #  'test': {'available_replicas': 0, 'replicas': 0}}
 
         msg = []
-        input = inputMsg.content.split(" ")
 
-        if len(input) > 2 and input[2] == "summary":
-            bucketCheck = []
-            bucketX = []
-            bucketUp = []
-            bucketDown = []
-            bucketError = []
-            for name in shards:
-                state = shards[name]
-                if state["replicas"] == 1 and state["available_replicas"] == 1:
-                    bucketCheck.append(name)
-                elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                    bucketUp.append(name)
-                elif state["replicas"] == 0 and "pod_name" in state:
-                    bucketDown.append(name)
-                elif state["replicas"] == 0 and "pod_name" not in state:
-                    bucketX.append(name)
-                else:
-                    bucketError.append(name)
+        bucketCheck = []
+        bucketX = []
+        bucketUp = []
+        bucketDown = []
+        bucketError = []
+        for name in shards:
+            state = shards[name]
+            if state["replicas"] == 1 and state["available_replicas"] == 1:
+                bucketCheck.append(name)
+            elif state["replicas"] == 1 and state["available_replicas"] == 0:
+                bucketUp.append(name)
+            elif state["replicas"] == 0 and "pod_name" in state:
+                bucketDown.append(name)
+            elif state["replicas"] == 0 and "pod_name" not in state:
+                bucketX.append(name)
+            else:
+                bucketError.append(name)
 
-            if len(shards) <= 0:
-                msg.append("No shards to list")
-            if bucketCheck:
-                msg.append(":white_check_mark:: " + ", ".join(bucketCheck))
-            if bucketUp:
-                msg.append(":arrow_up:: " + ", ".join(bucketUp))
-            if bucketDown:
-                msg.append(":arrow_down:: " + ", ".join(bucketDown))
-            if bucketX:
-                msg.append(":x:: " + ", ".join(bucketX))
-            if bucketError:
-                msg.append(":exclamation:: " + ", ".join(bucketError))
+        if len(shards) <= 0:
+            msg.append("No shards to list")
+        if bucketCheck:
+            msg.append(":white_check_mark:: " + ", ".join(bucketCheck))
+        if bucketUp:
+            msg.append(":arrow_up:: " + ", ".join(bucketUp))
+        if bucketDown:
+            msg.append(":arrow_down:: " + ", ".join(bucketDown))
+        if bucketX:
+            msg.append(":x:: " + ", ".join(bucketX))
+        if bucketError:
+            msg.append(":exclamation:: " + ", ".join(bucketError))
 
-        else:
-            for name in shards:
-                state = shards[name]
-                if state["replicas"] == 1 and state["available_replicas"] == 1:
-                    msg.append(f":white_check_mark: {name}")
-                elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                    msg.append(f":arrow_up: {name}")
-                elif state["replicas"] == 0 and "pod_name" in state:
-                    msg.append(f":arrow_down: {name}")
-                elif state["replicas"] == 0 and "pod_name" not in state:
-                    msg.append(f":x: {name}")
-                else:
-                    msg.append(f":exclamation: {name}: {pformat(state)}")
-            if not msg:
-                msg.append("No shards to list")
+        return "\n".join(msg)
 
-        await self.display(ctx, "\n".join(msg))
+    async def _get_list_shards_str_long(self):
+        """Get a `~list shard` formatted string"""
+        shards = await self._k8s.list()
+        # Format of this is:
+        # {'dungeon': {'available_replicas': 1, 'replicas': 1, 'pod_name': 'dungeon-xyz'}
+        #  'test': {'available_replicas': 0, 'replicas': 0}}
+
+        msg = []
+
+        for name in shards:
+            state = shards[name]
+            if state["replicas"] == 1 and state["available_replicas"] == 1:
+                msg.append(f":white_check_mark: {name}")
+            elif state["replicas"] == 1 and state["available_replicas"] == 0:
+                msg.append(f":arrow_up: {name}")
+            elif state["replicas"] == 0 and "pod_name" in state:
+                msg.append(f":arrow_down: {name}")
+            elif state["replicas"] == 0 and "pod_name" not in state:
+                msg.append(f":x: {name}")
+            else:
+                msg.append(f":exclamation: {name}: {pformat(state)}")
+        if not msg:
+            msg.append("No shards to list")
+
+        return "\n".join(msg)
 
     async def action_list_instances(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         """List player dungeon instances"""
@@ -665,9 +889,33 @@ Examples:
                 inst_str += f"{dungeon : <15}{used : <15}"
                 inst_str += "\n"
             else:
-                self.display(ctx, f"Warning: Failed to load rboard values for {dungeon}")
+                await self.display(ctx, f"Warning: Failed to load rboard values for {dungeon}")
         inst_str += "\n```"
         await self.display(ctx, inst_str)
+
+    async def check_lockout(self, ctx: discord.ext.commands.Context, owner, shard):
+        """Checks for a lockout on a shard
+
+        owner may be a string for the owner ID, or a message whose author will be checked
+
+        If found for another user, returns the lockout
+        Otherwise, returns None
+        """
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        lockout = await lockout_api.check(shard)
+
+        if lockout is None:
+            return None
+
+        if isinstance(owner, str):
+            if owner == lockout.owner:
+                return None
+        else:
+            if owner and owner.author.name == lockout.owner:
+                return None
+
+        await self.display(ctx, f'🔒 {lockout.discord_str()}')
+        return lockout
 
     # pylint: disable=comparison-with-callable
     async def _start_stop_restart_common(self, ctx: discord.ext.commands.Context, cmd, message, action):
@@ -678,6 +926,8 @@ Examples:
 
         # Kills the bot, causing k8s to restart it
         if arg_str == 'bot' and action in (self.stop, self.restart):
+            if await self.check_lockout(ctx, message, self._name):
+                return
             await ctx.send("Restarting bot. Note: This will not update the bot's image")
             sys.exit(0)
 
@@ -700,7 +950,7 @@ Examples:
             elif action == self.restart:
                 await self.display(ctx, "Restarting shards [{}]...".format(",".join(shards_changed)))
 
-            await action(ctx, shards_changed)
+            await action(ctx, shards_changed, owner=message)
 
             if action == self.stop:
                 await self.display(ctx, "Stopped shards [{}]".format(",".join(shards_changed)))
@@ -710,6 +960,154 @@ Examples:
                 await self.display(ctx, "Restarted shards [{}]".format(",".join(shards_changed)))
 
             await self.display(ctx, message.author.mention)
+
+    async def action_lockout(self, ctx: discord.ext.commands.Context, _, message: discord.Message):
+        """Provides help for lockout subcommands"""
+        await self.help_internal(ctx, ["lockout check *"], message.author)
+        await self.help_internal(ctx, ["lockout check"], message.author)
+        await self.help_internal(ctx, ["lockout clear"], message.author)
+        await self.help_internal(ctx, ["lockout claim"], message.author)
+
+    async def action_lockout_check_all(self, ctx: discord.ext.commands.Context, _, message: discord.Message, prefix=()):
+        """List all active shard lockouts
+
+Syntax:
+`{cmdPrefix}lockout check *`
+"""
+
+        yours = []
+        others = []
+
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        lockouts = await lockout_api.check_all()
+        owner = message.author.name
+
+        for _, lockout in sorted(lockouts.items()):
+            line = f'🔒 {lockout.discord_str()}'
+
+            if owner == lockout.owner:
+                yours.append(line)
+            else:
+                others.append(line)
+
+        if yours:
+            yours.insert(0, 'Your active lockouts:')
+        else:
+            yours.append('🔓 You have no active lockouts')
+
+        if others:
+            others.insert(0, 'Other active lockouts:')
+        else:
+            others.append('🔓 There are no other active lockouts')
+
+        msg = list(prefix) + yours + [''] + others
+        await self.display(ctx, '\n'.join(msg))
+
+    async def action_lockout_check(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        """Check shards for active lockouts
+
+Syntax:
+`{cmdPrefix}lockout check bungee valley isles orange'''
+"""
+
+        shards = message.content[len(config.PREFIX + cmd) + 1:].split()
+        if not shards:
+            await self.action_lockout_check_all(ctx, cmd, message)
+            return
+
+        yours = []
+        others = []
+        unlocked = []
+
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        owner = message.author.name
+
+        for shard in shards:
+            lockout = await lockout_api.check(shard)
+
+            if lockout is None:
+                unlocked.append(f'🔓 {shard} has no active lockout')
+                continue
+
+            line = f'🔒 {lockout.discord_str()}'
+            if owner == lockout.owner:
+                yours.append(line)
+            else:
+                others.append(line)
+
+        if yours:
+            yours.insert(0, 'Your active lockouts:')
+        else:
+            yours.append('🔓 You have no active lockouts')
+
+        if others:
+            others.insert(0, 'Other active lockouts:')
+        else:
+            others.append('🔓 There are no other active lockouts')
+
+        msg = []
+        if unlocked:
+            msg.append('\n'.join(unlocked))
+        msg.append('\n'.join(yours))
+        msg.append('\n'.join(others))
+
+        await self.display(ctx, '\n\n'.join(msg))
+
+    async def action_lockout_clear(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        """Clears lockouts on shards
+
+Syntax:
+`{cmdPrefix}lockout clear my valley isles`
+`{cmdPrefix}lockout clear my *`
+`{cmdPrefix}lockout clear * valley isles`
+`{cmdPrefix}lockout clear * *`
+"""
+
+        args = message.content[len(config.PREFIX + cmd) + 1:].split()
+        if len(args) < 2:
+            await self.help_internal(ctx, ["lockout clear"], message.author)
+            return
+
+        who, *shards = args
+
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        owner = message.author.name if who in ('me', 'my') else who
+        for shard in shards:
+            await lockout_api.clear(shard, owner)
+
+        await self.action_lockout_check_all(ctx, cmd, message, prefix=['Remaining lockouts:', ''])
+
+    async def action_lockout_claim(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        """Claim a lockout on a shard
+
+Syntax:
+`{cmdPrefix}lockout claim <shard> <minutes> <reason>`
+`{cmdPrefix}lockout claim dev3 15 secret mob ability test`
+`{cmdPrefix}lockout claim * 240 weekly update test`
+`{cmdPrefix}lockout claim * 10080 beta testing all week`
+"""
+
+        args = message.content[len(config.PREFIX + cmd) + 1:].split()
+        if len(args) < 3:
+            await self.help_internal(ctx, ["lockout claim"], message.author)
+            return
+
+        shard, minutes, *reason = args
+        reason = ' '.join(reason)
+
+        lockout_api = LockoutAPI(config.K8S_NAMESPACE)
+        owner = message.author.name
+        lockout = await lockout_api.claim(shard, owner, minutes, reason)
+
+        if lockout is None:
+            await self.display(ctx, f'Failed to claim lockout; is Redis down?\n{message.author.mention}')
+            return
+
+        if lockout.owner != owner:
+            await self.display(ctx, f'Failed to claim lockout due to existing claim\n{lockout.discord_str()}\n{message.author.mention}')
+            return
+
+        await self.display(ctx, f'Lockout claim successful:\n{lockout.discord_str()}')
 
     async def action_start(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Start specified shards.
@@ -877,9 +1275,9 @@ If --debug argument is specified, will not stop dungeon shard before copying
             debug = True
             await self.display(ctx, "Debug mode enabled! Will only generate 5 of each dungeon, and will not cleanly copy the dungeon shard")
 
-        await self.generate_instances_internal(ctx, mention=message.author.mention, debug=debug)
+        await self.generate_instances_internal(ctx, mention=message.author.mention, debug=debug, owner=message)
 
-    async def generate_instances_internal(self, ctx: discord.ext.commands.Context, mention=None, debug=False):
+    async def generate_instances_internal(self, ctx: discord.ext.commands.Context, mention=None, debug=False, owner=None):
         '''Internals of {cmdPrefix}generate instances'''
 
         await self.display(ctx, "Cleaning up old weekly update data...")
@@ -888,14 +1286,14 @@ If --debug argument is specified, will not stop dungeon shard before copying
 
         if not debug:
             await self.display(ctx, "Stopping the dungeon shard...")
-            await self.stop(ctx, "dungeon")
+            await self.stop(ctx, "dungeon", owner=owner)
 
         await self.display(ctx, "Copying the dungeon master copies...")
         await self.run(ctx, "cp -a /home/epic/project_epic/dungeon /home/epic/5_SCRATCH/tmpreset/dungeon")
 
         if not debug:
             await self.display(ctx, "Restarting the dungeon shard...")
-            await self.start(ctx, "dungeon", wait=False)
+            await self.start(ctx, "dungeon", wait=False, owner=owner)
 
         await self.display(ctx, "Generating dungeon instances (this may take a while)...")
         instance_gen_arg = " --dungeon-path /home/epic/5_SCRATCH/tmpreset/dungeon/ --out-folder /home/epic/5_SCRATCH/tmpreset/dungeons-out/"
@@ -979,7 +1377,7 @@ Must be run before starting the update on the play server
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle post autoformat", '-s'], ret=[0, 1])
 
         if not skip_replacements:
-            await self.run_replacements_internal(ctx, ["valley", "isles", "ring", "dungeon", "structures"], do_prune=True)
+            await self.run_replacements_internal(ctx, ["valley", "isles", "ring", "dungeon", "structures"], do_prune=True, owner=message)
 
         if not skip_commit:
             await self.cd(ctx, '/home/epic/project_epic/server_config/data')
@@ -988,11 +1386,11 @@ Must be run before starting the update on the play server
             await self.run(ctx, ['git', 'tag', version])
 
         if not skip_generation:
-            await self.generate_instances_internal(ctx, debug=debug)
+            await self.generate_instances_internal(ctx, debug=debug, owner=message)
 
         if not debug:
             await self.display(ctx, "Stopping valley, isles, ring...")
-            await self.stop(ctx, ["valley", "isles", "ring"])
+            await self.stop(ctx, ["valley", "isles", "ring"], owner=message)
 
         await self.display(ctx, "Copying valley...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley")
@@ -1004,7 +1402,7 @@ Must be run before starting the update on the play server
 
         if not debug:
             await self.display(ctx, "Restarting the valley shard...")
-            await self.start(ctx, "valley", wait=False)
+            await self.start(ctx, "valley", wait=False, owner=message)
 
         await self.display(ctx, "Copying isles...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles")
@@ -1015,7 +1413,7 @@ Must be run before starting the update on the play server
 
         if not debug:
             await self.display(ctx, "Restarting the isles shard...")
-            await self.start(ctx, "isles", wait=False)
+            await self.start(ctx, "isles", wait=False, owner=message)
 
         await self.display(ctx, "Copying ring...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring")
@@ -1025,7 +1423,7 @@ Must be run before starting the update on the play server
 
         if not debug:
             await self.display(ctx, "Restarting the ring and ring shards...")
-            await self.start(ctx, "ring", wait=False)
+            await self.start(ctx, "ring", wait=False, owner=message)
 
         await self.display(ctx, "Copying purgatory...")
         await self.run(ctx, "cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
@@ -1101,7 +1499,7 @@ Examples:
             for shard in main_shards:
                 if not debug:
                     await self.display(ctx, f"Stopping {shard}...")
-                    await self.stop(ctx, shard)
+                    await self.stop(ctx, shard, owner=message)
 
                 await self.run(ctx, f"mkdir -p /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}")
                 worlds = [Path(path).name for path in World.enumerate_worlds(f"/home/epic/project_epic/{shard}")]
@@ -1114,7 +1512,7 @@ Examples:
 
                 if not debug:
                     await self.display(ctx, f"Restarting {shard}...")
-                    await self.start(ctx, shard, wait=False)
+                    await self.start(ctx, shard, wait=False, owner=message)
 
                 if run_replacements:
                     await self.display(ctx, f"Running replacements on copied version of {shard}...")
@@ -1127,7 +1525,7 @@ Examples:
             # Need to generate instances
             if not debug:
                 await self.display(ctx, "Stopping the dungeon shard...")
-                await self.stop(ctx, "dungeon")
+                await self.stop(ctx, "dungeon", owner=message)
 
             await self.display(ctx, "Copying the dungeon master copies...")
             await self.run(ctx, "cp -a /home/epic/project_epic/dungeon /home/epic/5_SCRATCH/tmpstage/dungeon")
@@ -1135,7 +1533,7 @@ Examples:
 
             if not debug:
                 await self.display(ctx, "Restarting the dungeon shard...")
-                await self.start(ctx, "dungeon", wait=False)
+                await self.start(ctx, "dungeon", wait=False, owner=message)
 
             if run_replacements:
                 await self.display(ctx, "Running replacements on copied dungeon masters...")
@@ -1200,7 +1598,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         # Stop all shards
         await self.display(ctx, "Stopping all shards...")
         shards = await self._k8s.list()
-        await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards])
+        await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards], owner=message)
         for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
                 await self.display(ctx, f"ERROR: shard {shard} is still running!")
@@ -1386,7 +1784,7 @@ old coreprotect data will be removed at the 5 minute mark.
             await send_broadcast_msg(seconds_to_string(next_target))
 
         # Stop bungee
-        await self.stop(ctx, ["bungee", "bungee-11", "bungee-12", "bungee-13", "bungee-15"])
+        await self.stop(ctx, ["bungee", "bungee-11", "bungee-12", "bungee-13", "bungee-15"], owner=message)
 
         await self.display(ctx, message.author.mention)
 
@@ -1405,7 +1803,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         shards = await self._k8s.list()
 
         # Stop all shards
-        await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards])
+        await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards], owner=message)
 
         # Fail if any shards are still running
         await self.display(ctx, "Checking that all shards are stopped...")
@@ -1593,7 +1991,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 15 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Restarting rabbitmq")
-            await self.restart(ctx, "rabbitmq")
+            await self.restart(ctx, "rabbitmq", owner=message)
 
         if min_phase <= 16 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Marking common tasks as complete")
@@ -1675,7 +2073,8 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         if not config.STAGE_SOURCE:
             raise Exception("WARNING: bot doesn't have stage source, aborting")
 
-        play_broker = SocketManager("rabbitmq.play", "stagebot", callback=None)
+        log_level = config.RABBITMQ.get("log_level", 20)
+        play_broker = SocketManager("rabbitmq.play", "stagebot", callback=None, log_level=log_level)
 
         await self.display(ctx, "Removing previous 0_STAGE directories")
         await self.run(ctx, f"rm -rf {self._server_dir}/0_STAGE")
@@ -1710,7 +2109,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         # Stop all shards
         await self.display(ctx, f"Stopping all {self._k8s.namespace} server shards...")
         shards = await self._k8s.list()
-        await self.stop(ctx, [shard for shard in self._shards if shard in shards])
+        await self.stop(ctx, [shard for shard in self._shards if shard in shards], owner=message)
 
         # Delete and re-create all the 0_PREVIOUS directories, wherever they might be at one level above the shard folders
         await self.display(ctx, "Removing previous 0_PREVIOUS directories")
@@ -1736,12 +2135,12 @@ Archives the previous stage server contents under 0_PREVIOUS '''
 
         # Download the entire redis database from the play server
         await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
-        await self.stop(ctx, "redis")
+        await self.stop(ctx, "redis", owner=message)
         await self.cd(ctx, f"{self._server_dir}/../redis")
         await self.run(ctx, f"mv dump.rdb dump.rdb.previous")
         await self.display(ctx, "Downloading current redis database from the play server...")
         await self.run(ctx, f"redis-cli -h redis.play --rdb dump.rdb")
-        await self.start(ctx, "redis")
+        await self.start(ctx, "redis", owner=message)
 
         # Download the mysql database from the play server
         await self.display(ctx, "Syncing with current mysql database from the play server...")
@@ -1854,9 +2253,9 @@ Syntax:
             await self.display(ctx, "Nothing to do")
             return
 
-        await self.run_replacements_internal(ctx, replace_shards, mention=message.author.mention, do_prune=do_prune)
+        await self.run_replacements_internal(ctx, replace_shards, mention=message.author.mention, do_prune=do_prune, owner=message)
 
-    async def run_replacements_internal(self, ctx: discord.ext.commands.Context, replace_shards, mention=None, do_prune=False):
+    async def run_replacements_internal(self, ctx: discord.ext.commands.Context, replace_shards, mention=None, do_prune=False, owner=None):
         """Run replacements on the given shards"""
         await self.display(ctx, f"Replacing both mobs AND items on [{' '.join(replace_shards)}]")
 
@@ -1879,7 +2278,7 @@ Syntax:
                     await self.display(ctx, f"Running replacements and pruning world regions on shard {shard}")
                 else:
                     await self.display(ctx, f"Running replacements on shard {shard}")
-                await self.stop(ctx, shard)
+                await self.stop(ctx, shard, owner=owner)
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(ctx, ["tar", f"--exclude={shard}/logs", f"--exclude={shard}/plugins", f"--exclude={shard}/cache", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", shard])
                 if do_prune:
@@ -1891,7 +2290,7 @@ Syntax:
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard}"), displayOutput=True)
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_mobs.py --worlds {shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
-                await self.start(ctx, shard)
+                await self.start(ctx, shard, owner=owner)
 
         if mention is not None:
             await self.display(ctx, mention)
@@ -1979,7 +2378,7 @@ Syntax:
 
         await self.display(ctx, "Generating demo release version V{}...".format(version))
 
-        await self.stop(ctx, "white-demo")
+        await self.stop(ctx, "white-demo", owner=message)
 
         # Clean up the working directory for testing/etc
         await self.cd(ctx, "/home/epic/project_epic/Monumenta Demo - The Halls of Wind and Blood")
@@ -2003,7 +2402,7 @@ Syntax:
         await self.run(ctx, ["zip", "-rq", "/home/epic/4_SHARED/monumenta_demo/Monumenta Demo - The Halls of Wind and Blood V{}.zip".format(version), "Monumenta Demo - The Halls of Wind and Blood"])
         await self.run(ctx, ["rm", "-rf", "Monumenta Demo - The Halls of Wind and Blood"])
 
-        await self.start(ctx, "white-demo")
+        await self.start(ctx, "white-demo", owner=message)
 
         await self.display(ctx, "Demo release version V{} generated successfully".format(version))
         await self.display(ctx, message.author.mention)
@@ -2048,9 +2447,6 @@ Usage:
 {cmdPrefix}update avatar /home/epic/4_SHARED/bot_avatars/example.png
 """
 
-        PNG_HEADER = b'\x89\x50\x4e\x47\x0d\x0a\x1a\x0a'
-        JPG_HEADER = b'\xff\xd8\xff'
-
         avatar_path_str = message.content[len(config.PREFIX + cmd) + 1:]
         avatar_path = Path(avatar_path_str)
         await self.display(ctx, f"Attempting to set avatar `{avatar_path_str}`")
@@ -2078,29 +2474,72 @@ Usage:
             await self.display(ctx, "Only png and jpg files are supported.")
             return
 
-        file_contents = None
+        try:
+            await self._internal_update_avatar(avatar_path)
+            await self.display(ctx, "Success")
+        except Exception as ex:
+            await self.display(ctx, str(ex))
+            await self.display_verbatim(ctx, traceback.format_exc())
+
+    async def check_updated_avatar(self):
+        """Checks if avatar.png and last_set_avatar.png differ, and if so, use avatar.png"""
+        previous_path = self._persistence_path / 'last_set_avatar.png'
+        current_path = self._persistence_path / 'avatar.png'
+
+        if not current_path.is_file():
+            return
+
+        if (
+                not previous_path.is_file()
+                or current_path.stat().st_size != previous_path.stat().st_size
+        ):
+            try:
+                await self._internal_update_avatar(current_path)
+            except Exception:
+                pass
+            return
+
+        if current_path.read_bytes() != previous_path.read_bytes():
+            try:
+                await self._internal_update_avatar(current_path)
+            except Exception:
+                pass
+
+    async def _internal_update_avatar(self, avatar_path: Path):
+        """Internal code to update the bot's avatar, raising an exception on failure"""
+
+        PNG_HEADER = b'\x89\x50\x4e\x47\x0d\x0a\x1a\x0a'
+        JPG_HEADER = b'\xff\xd8\xff'
+
+        if not avatar_path.is_file():
+            raise Exception(f'Could not find {avatar_path}')
+
         try:
             file_contents = avatar_path.read_bytes()
         except Exception:
-            await self.display(ctx, "Could not open avatar file.")
-            return
+            raise Exception(f'Could not read {avatar_path}')
+
         if not file_contents.startswith(PNG_HEADER) and not file_contents.startswith(JPG_HEADER):
-            await self.display(ctx, "Only jpg and png files are supported. Nice try changing the extension, though.")
-            return
+            raise Exception(f'Avatar file must be a real png or jpg file: {avatar_path}')
 
         user = self._bot.user
         if user is None:
-            await self.display(ctx, "No user object found. Not logged in?")
-            return
+            raise Exception(f'Bot has no user object; is it not signed in?')
 
         try:
             await user.edit(avatar=file_contents)
         except Exception:
-            await self.display(ctx, "Failed to set the avater (see link)")
-            await self.display_verbatim(ctx, traceback.format_exc())
-            await self.display(ctx, "https://discordpy.readthedocs.io/en/stable/api.html#discord.ClientUser.edit")
-            return
-        await self.display(ctx, "Success")
+            raise Exception(f'Failed to change avatar; check https://discordpy.readthedocs.io/en/stable/api.html#discord.ClientUser.edit')
+
+        try:
+            # Set current and previous bot image files
+            previous_path = self._persistence_path / 'last_set_avatar.png'
+            previous_path.write_bytes(file_contents)
+            current_path = self._persistence_path / 'avatar.png'
+            current_path.write_bytes(file_contents)
+        except Exception:
+            # Any errors in this block are non-critical
+            pass
 
     @staticmethod
     def preprocess_time_description(time_description):

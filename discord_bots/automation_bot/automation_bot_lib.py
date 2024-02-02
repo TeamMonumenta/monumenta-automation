@@ -30,6 +30,9 @@ def get_list_match(item, lst):
 def datestr():
     return datetime.datetime.now().strftime("%Y_%m_%d")
 
+def escape_triple_backtick(text):
+    return text.replace('```', '` ` `')
+
 def split_string(text):
     # Maximum number of characters in a single line
     n = 1950

@@ -30,22 +30,22 @@ fn main() -> anyhow::Result<()> {
     let domain = args.remove(0);
     let locations_key = format!("{}:bungee:locations", domain);
 
-    match &args.remove(0)[..] {
+    return match &args.remove(0)[..] {
         "get" => {
-            return get(&mut con, &locations_key, &mut args);
+            get(&mut con, &locations_key, &mut args)
         },
         "histogram" => {
-            return histogram(&mut con, &locations_key, &mut args);
+            histogram(&mut con, &locations_key, &mut args)
         },
         "transfer" => {
-            return transfer(&mut con, &locations_key, &mut args);
+            transfer(&mut con, &locations_key, &mut args)
         },
         "bulk_transfer" => {
-            return bulk_transfer(&mut con, &locations_key, &mut args);
+            bulk_transfer(&mut con, &locations_key, &mut args)
         },
         _ => {
             usage();
-            return Ok(());
+            Ok(())
         }
     };
 }

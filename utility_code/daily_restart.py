@@ -21,8 +21,7 @@ def send_broadcast_msg(time_left):
     ]
     command = '''tellraw @a[all_worlds=true] ''' + json.dumps(raw_json_text, ensure_ascii=False, separators=(',', ':'))
     socket.send_packet("*", "monumentanetworkrelay.command",
-                       {"command": command},
-                       heartbeat_server_type="daily-restart")
+                       {"command": command})
 
 async def main():
     # Short wait to make sure socket connects correctly
@@ -32,8 +31,7 @@ async def main():
         # Set all shards to restart the next time they are empty (many will restart immediately)
         print("Broadcasting restart-empty command to all shards...")
         socket.send_packet("*", "monumentanetworkrelay.command",
-                           {"command": 'restart-empty'},
-                           heartbeat_server_type="daily-restart")
+                           {"command": 'restart-empty'})
 
         send_broadcast_msg("5 minutes")
         await asyncio.sleep(120)
@@ -135,7 +133,7 @@ if __name__ == '__main__':
             else:
                 log_level = 20
 
-            socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level)
+            socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level, server_type="daily-restart")
 
         k8s = KubernetesManager(config["k8s_namespace"])
     except KeyError as e:

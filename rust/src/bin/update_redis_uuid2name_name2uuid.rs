@@ -11,10 +11,7 @@ use std::{
 
 fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
-    match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
-        Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),
-        None => multiple.push(SimpleLogger::new(LevelFilter::Debug, Config::default())),
-    }
+    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
     CombinedLogger::init(multiple).unwrap();
 
     let mut args: Vec<String> = env::args().collect();
@@ -37,7 +34,7 @@ fn main() -> anyhow::Result<()> {
     for (uuid, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {
         player.load_redis(&domain, &mut con)?;
         if let Some(name) = &player.name {
-            let uuidstr = uuid.to_hyphenated().to_string();
+            let uuidstr = uuid.hyphenated().to_string();
             let _: () = con.hset("uuid2name", &uuidstr, name)?;
             let _: () = con.hset("name2uuid", name, &uuidstr)?;
             uuid2name.insert(uuidstr.to_string(), name.to_string());

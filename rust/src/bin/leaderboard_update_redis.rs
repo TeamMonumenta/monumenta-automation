@@ -17,7 +17,7 @@ fn update_player_leaderboards(uuid: &Uuid, player: &mut Player,
                               domain: &str) -> anyhow::Result<()> {
     player.load_redis_scores(&domain, con)?;
 
-    let name: String = con.hget("uuid2name", uuid.to_hyphenated().to_string())?;
+    let name: String = con.hget("uuid2name", uuid.hyphenated().to_string())?;
 
     for leaderboard in leaderboards.iter() {
         if let Some(score) = player.scores.as_ref().unwrap().get(leaderboard) {
@@ -32,10 +32,7 @@ fn update_player_leaderboards(uuid: &Uuid, player: &mut Player,
 
 fn main() -> anyhow::Result<()> {
     let mut multiple = vec![];
-    match TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed) {
-        Some(logger) => multiple.push(logger as Box<dyn SharedLogger>),
-        None => multiple.push(SimpleLogger::new(LevelFilter::Debug, Config::default())),
-    }
+    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
     CombinedLogger::init(multiple).unwrap();
 
     let mut args: Vec<String> = env::args().collect();

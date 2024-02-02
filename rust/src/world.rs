@@ -52,15 +52,15 @@ impl World {
     }
 
     pub fn get_player_data_file(&self, uuid: &Uuid) -> anyhow::Result<File> {
-        World::get_file_common(&Path::new(&self.basepath).join(format!("playerdata/{}.dat", uuid.to_hyphenated().to_string())))
+        World::get_file_common(&Path::new(&self.basepath).join(format!("playerdata/{}.dat", uuid.hyphenated().to_string())))
     }
 
     pub fn get_player_advancements_file(&self, uuid: &Uuid) -> anyhow::Result<File> {
-        World::get_file_common(&Path::new(&self.basepath).join(format!("advancements/{}.json", uuid.to_hyphenated().to_string())))
+        World::get_file_common(&Path::new(&self.basepath).join(format!("advancements/{}.json", uuid.hyphenated().to_string())))
     }
 
     pub fn get_player_stats_file(&self, uuid: &Uuid) -> anyhow::Result<File> {
-        World::get_file_common(&Path::new(&self.basepath).join(format!("stats/{}.json", uuid.to_hyphenated().to_string())))
+        World::get_file_common(&Path::new(&self.basepath).join(format!("stats/{}.json", uuid.hyphenated().to_string())))
     }
 
     pub fn get_file_common(path: &Path) -> anyhow::Result<File> {
