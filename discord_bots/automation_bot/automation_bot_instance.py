@@ -1441,7 +1441,8 @@ Must be run before starting the update on the play server
         await self.display(ctx, "Packaging up update bundle...")
         await self.cd(ctx, "/home/epic/5_SCRATCH/tmpreset")
         await self.run(ctx, "rm -f /home/epic/4_SHARED/project_epic_build_template.tgz")
-        await self.run(ctx, ["tar", "-I", "pigz --best", "-cf", "/home/epic/4_SHARED/project_epic_build_template.tgz", "TEMPLATE"])
+        await self.run(ctx, ["tar", "-I", "pigz --best", "-cf", "/home/epic/5_SCRATCH/tmpreset/project_epic_build_template.tgz", "TEMPLATE"])
+        await self.run(ctx, ["mv", "/home/epic/5_SCRATCH/tmpreset/project_epic_build_template.tgz", "/home/epic/4_SHARED/project_epic_build_template.tgz"])
 
         await self.display(ctx, "Update bundle ready!")
         await self.display(ctx, message.author.mention)
@@ -1568,7 +1569,8 @@ Examples:
         await self.cd(ctx, "/home/epic/5_SCRATCH/tmpstage")
 
         await self.run(ctx, "rm -f /home/epic/4_SHARED/stage_bundle.tgz", None)
-        await self.run(ctx, ["tar", "-I", "pigz --best", "-cf", "/home/epic/4_SHARED/stage_bundle.tgz", "TEMPLATE"])
+        await self.run(ctx, ["tar", "-I", "pigz --best", "-cf", "/home/epic/5_SCRATCH/tmpstage/stage_bundle.tgz", "TEMPLATE"])
+        await self.run(ctx, ["mv", "/home/epic/5_SCRATCH/tmpstage/stage_bundle.tgz", "/home/epic/4_SHARED/stage_bundle.tgz"])
 
         await self.display(ctx, "Cleaning up stage temp files...")
         await self.run(ctx, "rm -rf /home/epic/5_SCRATCH/tmpstage")
