@@ -3,15 +3,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: bungee-11
-  namespace: volt
+  name: bungee-17
+  namespace: play
   labels:
-    app: bungee-11
+    app: bungee-17
     k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
-    app: bungee-11
+    app: bungee-17
   ports:
   - name: metrics
     port: 9225
@@ -24,21 +24,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bungee-11
-  namespace: volt
+  name: bungee-17
+  namespace: play
   labels:
-    app: bungee-11
+    app: bungee-17
 spec:
   strategy:
     type: Recreate
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
-      app: bungee-11
+      app: bungee-17
   template:
     metadata:
       labels:
-        app: bungee-11
+        app: bungee-17
     spec:
       affinity:
         nodeAffinity:
@@ -48,36 +48,40 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - monumenta-17
       volumes:
         - name: nfs-volume
           hostPath:
-            path: /nfs/volt/m12
+            path: /nfs/play/m17
             type: Directory
       containers:
-      - name: bungee-11
-        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard-17
+      - name: bungee-17
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-17
         tty: true
         stdin: true
         ports:
         # Primary Minecraft port
         - containerPort: 25566
-          hostPort: 9013
-          hostIP: "141.94.75.9" # The node's external facing IP address
+          hostPort: 25565
+          hostIP: "15.235.84.119" # The node's external facing IP address
+        # Votifier
+        - containerPort: 8192
+          hostPort: 3333
+          hostIP: "15.235.84.119" # The node's external facing IP address
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
-          value: "512M"
+          value: "4G"
         - name: "JAVA_META_MEM"
-          value: "128M"
+          value: "256M"
         - name: "JAVA_JAR"
           value: "BungeeCord.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/volt/m12/bungee-11"
+          value: "/home/epic/play/m17/bungee-17"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
-          value: bungee-11
+          value: bungee-17
         readinessProbe:
           tcpSocket:
             port: 25566
@@ -92,13 +96,11 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/volt/m12
+          mountPath: /home/epic/play/m17
         resources:
           limits:
             memory: 1Gi
-            hugepages-2Mi: 704Mi
+            hugepages-2Mi: 4608Mi
           requests:
             memory: 64Mi
-            hugepages-2Mi: 704Mi
-      imagePullSecrets:
-      - name: githubcred
+            hugepages-2Mi: 4608Mi

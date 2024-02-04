@@ -1,0 +1,127 @@
+# This is a service account for the bot's pod to use to talk to the controller
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: automation-bot-service-account
+  namespace: play
+
+---
+
+# This is the permission object that will be attached to the above service account
+# This specifies what the pod is allowed to do
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: automation-bot-role
+  namespace: play
+rules:
+  - apiGroups:
+      - ""
+      - "apps"
+    resources:
+      - deployments
+      # TODO: Don't need this?
+      - pods
+    verbs:
+      - list
+      - patch
+      # TODO: Don't need this?
+      - update
+
+---
+
+# This binds the role to the service account, giving it perms
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: automation-bot-role-binding
+  namespace: play
+roleRef:
+  kind: Role
+  name: automation-bot-role
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+ - kind: ServiceAccount
+   name: automation-bot-service-account
+   namespace: play
+
+---
+
+# This is the actual bot's deployment, specifying what it should run
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: automation-bot-m17
+  namespace: play
+  labels:
+    app: automation-bot-m17
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: automation-bot-m17
+  template:
+    metadata:
+      labels:
+        app: automation-bot-m17
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-17
+      serviceAccountName: automation-bot-service-account
+      volumes:
+        - name: nfs-play-m17
+          hostPath:
+            type: Directory
+            path: /nfs/play/m17
+        - name: nfs-old-backups
+          hostPath:
+            type: Directory
+            path: /nfs/0_OLD_BACKUPS
+        - name: nfs-archive
+          hostPath:
+            type: Directory
+            path: /nfs/1_ARCHIVE
+        - name: nfs-domain-shared
+          hostPath:
+            type: Directory
+            path: /nfs/3_DOMAIN_SHARED/play
+        - name: nfs-shared
+          hostPath:
+            type: Directory
+            path: /nfs/4_SHARED
+        - name: nfs-scratch
+          hostPath:
+            type: Directory
+            path: /nfs/5_SCRATCH
+        - name: secret-config
+          secret:
+            secretName: automation-bot-m17-config
+      containers:
+      - name: automation-bot
+        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-play
+        tty: false
+        stdin: false
+        volumeMounts:
+        - name: nfs-play-m17
+          mountPath: /home/epic/play/m17
+        - name: nfs-old-backups
+          mountPath: /home/epic/0_OLD_BACKUPS
+        - name: nfs-archive
+          mountPath: /home/epic/1_ARCHIVE
+        - name: nfs-domain-shared
+          mountPath: /home/epic/3_DOMAIN_SHARED
+        - name: nfs-shared
+          mountPath: /home/epic/4_SHARED
+        - name: nfs-scratch
+          mountPath: /home/epic/5_SCRATCH
+        - name: secret-config
+          mountPath: /home/epic/.monumenta_bot

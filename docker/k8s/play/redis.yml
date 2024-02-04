@@ -17,7 +17,7 @@ spec:
 
 ---
 
-apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
@@ -41,7 +41,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-8
+                - monumenta-17
       containers:
       - image: redis:6
         name: redis

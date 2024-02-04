@@ -22,7 +22,7 @@
 
     # Purgatory
     "purgatory": {
-        "play" : { "node": "m8" , "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+        "play" : { "node": "m17" , "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "build": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "stage": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "volt" : { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
@@ -34,18 +34,18 @@
 
     # R1
     "valley": {
-        "play" : { "node": "m8" , "memGB": 6, },
+        "play" : { "node": "m17" , "memGB": 6, },
         "build": { "node": "m12", "memGB": 6, },
         "stage": { "node": "m12", "memGB": 3, },
         "volt" : { "node": "m12", "memGB": 3, },
     },
     "valley-2": {
-        "play" : { "node": "m8" , "memGB": 6, },
+        "play" : { "node": "m17" , "memGB": 6, },
         "stage": { "node": "m12", "memGB": 3, },
         "volt" : { "node": "m12", "memGB": 3, },
     },
     "valley-3": {
-        "play" : { "node": "m8" , "memGB": 6, },
+        "play" : { "node": "m17" , "memGB": 6, },
     },
 
     # R2
@@ -73,8 +73,8 @@
     "ring-2":  { "play" : { "node": "m13", "memGB": 7, }, },
     "ring-3":  { "play" : { "node": "m11", "memGB": 7, }, },
     "ring-4":  { "play" : { "node": "m11", "memGB": 7, }, },
-    "ring-5":  { "play" : { "node": "m8" , "memGB": 7, }, },
-    "ring-6":  { "play" : { "node": "m8" , "memGB": 7, }, },
+    "ring-5":  { "play" : { "node": "m17" , "memGB": 7, }, },
+    "ring-6":  { "play" : { "node": "m17" , "memGB": 7, }, },
     "ring-7":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
     "ring-9":  { "play" : { "node": "m16", "memGB": 7, }, },
@@ -97,7 +97,7 @@
 
     # Player build shard
     "build": {
-        "play" : { "node": "m8" , "memGB": 3   , "gsheetCredentials": "false" },
+        "play" : { "node": "m17" , "memGB": 3   , "gsheetCredentials": "false" },
         "stage": { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
         "volt" : { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
     },
@@ -121,7 +121,7 @@
         "volt" : { "node": "m12", "memMB": 2048, },
     },
     "gray": {
-        "play" : { "node": "m8" , "memGB": 3   , },
+        "play" : { "node": "m17" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
@@ -161,7 +161,7 @@
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "purple": {
-        "play" : { "node": "m8" , "memGB": 3   , },
+        "play" : { "node": "m17" , "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
@@ -218,7 +218,7 @@
     },
 
     "gallery": {
-        "play" : { "node": "m8" , "memGB": 3   , },
+        "play" : { "node": "m17" , "memGB": 3   , },
         "stage": { "node": "m12", "memGB": 3   , },
         "volt" : { "node": "m12", "memGB": 3   , },
     },
@@ -262,8 +262,8 @@
     "zenith-2":  { "play" : { "node": "m16", "memGB": 4, }, },
     "zenith-3":  { "play" : { "node": "m16", "memGB": 4, }, },
     "zenith-4":  { "play" : { "node": "m16", "memGB": 4, }, },
-    "zenith-5":  { "play" : { "node": "m8" , "memGB": 4, }, },
-    "zenith-6":  { "play" : { "node": "m8" , "memGB": 4, }, },
+    "zenith-5":  { "play" : { "node": "m17" , "memGB": 4, }, },
+    "zenith-6":  { "play" : { "node": "m17" , "memGB": 4, }, },
     "zenith-7":  { "play" : { "node": "m11", "memGB": 4, }, },
     "zenith-8":  { "play" : { "node": "m11", "memGB": 4, }, },
     "zenith-9":  { "play" : { "node": "m13", "memGB": 4, }, },

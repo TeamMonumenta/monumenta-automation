@@ -112,7 +112,7 @@ spec:
       terminationGracePeriodSeconds: 90
       containers:
       - name: {{ .Values.name }}
-        image: "docker.pkg.github.com/teammonumenta/monumenta-automation/{{ .Values.image }}"
+        image: "ghcr.io/teammonumenta/monumenta-automation/{{ .Values.image }}"
         tty: true
         stdin: true
         ports:
@@ -223,5 +223,3 @@ spec:
             # Tried making this 64 extra, low-memory shards still crash with this
             # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
             hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 192 }}Mi
-      imagePullSecrets:
-      - name: githubcred
