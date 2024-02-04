@@ -59,7 +59,7 @@ spec:
             type: Directory
       containers:
       - name: bungee
-        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard-17
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-17
         tty: true
         stdin: true
         ports:
@@ -108,5 +108,3 @@ spec:
           requests:
             memory: 64Mi
             hugepages-2Mi: 704Mi
-      imagePullSecrets:
-      - name: githubcred

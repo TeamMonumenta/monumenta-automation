@@ -105,5 +105,3 @@ spec:
             memory: 64Mi
             # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
             hugepages-2Mi: 1888Mi
-      imagePullSecrets:
-      - name: githubcred
