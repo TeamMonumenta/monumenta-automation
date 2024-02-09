@@ -9,7 +9,7 @@ metadata:
 
 # This is the permission object that will be attached to the above service account
 # This specifies what the pod is allowed to do
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: automation-bot-role
@@ -31,7 +31,7 @@ rules:
 ---
 
 # This binds the role to the service account, giving it perms
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: automation-bot-role-binding
@@ -107,7 +107,7 @@ spec:
             secretName: automation-bot-m17-config
       containers:
       - name: automation-bot
-        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-play
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
         tty: false
         stdin: false
         volumeMounts:

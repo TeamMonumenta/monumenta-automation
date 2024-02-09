@@ -56,7 +56,7 @@ spec:
             type: Directory
       containers:
       - name: bungee-12
-        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-java-shard-17
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-17
         tty: true
         stdin: true
         ports:

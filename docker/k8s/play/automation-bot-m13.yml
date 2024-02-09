@@ -1,5 +1,5 @@
 
-# NOTE: This depends on the service account stuff already existing that's set up by automation-bot.yaml
+# NOTE: This depends on the service account stuff already existing that's set up by automation-bot-17.yaml
 # This is just the deployment for the 2nd bot
 
 apiVersion: apps/v1
@@ -61,7 +61,7 @@ spec:
             secretName: automation-bot-m13-config
       containers:
       - name: automation-bot
-        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-play
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
         tty: false
         stdin: false
         volumeMounts:
@@ -79,5 +79,3 @@ spec:
           mountPath: /home/epic/5_SCRATCH
         - name: secret-config
           mountPath: /home/epic/.monumenta_bot
-      imagePullSecrets:
-      - name: githubcred
