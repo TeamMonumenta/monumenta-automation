@@ -160,6 +160,8 @@ sub = [
     ("Molldyer's Punisher", match_name('Rumall\'s Punisher', match_id('minecraft:pillager'))),
     ("Molldyer's Legionary", match_name('Rumall\'s Legionary', match_id('minecraft:vindicator'))),
     ("The Vedha's Sentinels", match_name('Obaria\'s Sentinels', match_id('minecraft:pillager'))),
+    ("The Vedha's Sentinels", match_name('Obaria\'s Sentinels', match_id('minecraft:pillager'))),
+    ("Xeno, Shattered Scallawag,", match_name('Xeno, Shattered Scalllawag', match_id('minecraft:wither_skeleton'))),
 ]
 
 def usage():
