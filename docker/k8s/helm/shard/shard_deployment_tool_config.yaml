@@ -22,7 +22,7 @@
 
     # Purgatory
     "purgatory": {
-        "play" : { "node": "m17" , "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+        "play" : { "node": "m17", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "build": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "stage": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "volt" : { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
@@ -34,242 +34,240 @@
 
     # R1
     "valley": {
-        "play" : { "node": "m17" , "memGB": 6, },
+        "play" : { "node": "m17", "memGB": 6, },
         "build": { "node": "m12", "memGB": 6, },
         "stage": { "node": "m12", "memGB": 3, },
         "volt" : { "node": "m12", "memGB": 3, },
     },
     "valley-2": {
-        "play" : { "node": "m17" , "memGB": 6, },
+        "play" : { "node": "m17", "memGB": 6, },
         "stage": { "node": "m12", "memGB": 3, },
         "volt" : { "node": "m12", "memGB": 3, },
     },
     "valley-3": {
-        "play" : { "node": "m17" , "memGB": 6, },
+        "play" : { "node": "m17", "memGB": 6, },
     },
 
     # R2
     "isles": {
-        "play" : { "node": "m11", "memGB": 5, },
+        "play" : { "node": "m17", "memGB": 5, },
         "build": { "node": "m12", "memGB": 6, },
         "stage": { "node": "m12", "memGB": 4, },
         "volt" : { "node": "m12", "memGB": 4, },
-        "clash": { "node": "m12", "memGB": 4, },
     },
     "isles-2": {
-        "play" : { "node": "m15", "memGB": 5, },
+        "play" : { "node": "m17", "memGB": 5, },
     },
     "isles-3": {
-        "play" : { "node": "m11", "memGB": 5, },
+        "play" : { "node": "m17", "memGB": 5, },
     },
 
     # R3
     "ring": {
-        "play":  { "node": "m13", "memGB": 7   , },
+        "play":  { "node": "m17", "memGB": 7   , },
         "build": { "node": "m12", "memGB": 6   , },
         "stage": { "node": "m12", "memGB": 3   , },
         "volt" : { "node": "m12", "memGB": 3   , },
     },
-    "ring-2":  { "play" : { "node": "m13", "memGB": 7, }, },
-    "ring-3":  { "play" : { "node": "m11", "memGB": 7, }, },
-    "ring-4":  { "play" : { "node": "m11", "memGB": 7, }, },
-    "ring-5":  { "play" : { "node": "m17" , "memGB": 7, }, },
-    "ring-6":  { "play" : { "node": "m17" , "memGB": 7, }, },
-    "ring-7":  { "play" : { "node": "m15", "memGB": 7, }, },
-    "ring-8":  { "play" : { "node": "m15", "memGB": 7, }, },
-    "ring-9":  { "play" : { "node": "m16", "memGB": 7, }, },
-    "ring-10":  { "play" : { "node": "m16", "memGB": 7, }, },
+    "ring-2":  { "play" : { "node": "m17", "memGB": 7, }, },
+    "ring-3":  { "play" : { "node": "m17", "memGB": 7, }, },
+    "ring-4":  { "play" : { "node": "m17", "memGB": 7, }, },
+    "ring-5":  { "play" : { "node": "m17", "memGB": 7, }, },
+    "ring-6":  { "play" : { "node": "m17", "memGB": 7, }, },
+    "ring-7":  { "play" : { "node": "m17", "memGB": 7, }, },
+    "ring-8":  { "play" : { "node": "m17", "memGB": 7, }, },
+    "ring-9":  { "play" : { "node": "m17", "memGB": 7, }, },
+    "ring-10": { "play" : { "node": "m17", "memGB": 7, }, },
 
     "ringfreeze":  { "build": { "node": "m12", "memGB": 3   , }, },
 
     # Plots
     "plots": {
-        "play" : { "node": "m15", "memGB": 8, },
+        "play" : { "node": "m17", "memGB": 8, },
         "stage": { "node": "m12", "memGB": 6, },
         "volt" : { "node": "m12", "memGB": 6, },
     },
 
     "playerplots": {
-        "play":  { "node": "m13", "memGB": 8, },
+        "play":  { "node": "m17", "memGB": 8, },
         "stage": { "node": "m12", "memGB": 4, },
         "volt" : { "node": "m12", "memGB": 4, },
     },
 
     # Player build shard
     "build": {
-        "play" : { "node": "m17" , "memGB": 3   , "gsheetCredentials": "false" },
+        "play" : { "node": "m17", "memGB": 3   , "gsheetCredentials": "false" },
         "stage": { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
         "volt" : { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
     },
 
     # Dungeons
     "cyan": {
-        "play" : { "node": "m16", "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "depths": {
-        "play" : { "node": "m11", "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
-        "clash": { "node": "m12", "memMB": 1536, },
     },
-    "depths-2": { "play" : { "node": "m11" , "memGB": 3, }, },
+    "depths-2": { "play" : { "node": "m17", "memGB": 3, }, },
     "forum": {
-        "play" : { "node": "m16", "memGB": 4   , },
+        "play" : { "node": "m17", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 2048, },
         "volt" : { "node": "m12", "memMB": 2048, },
     },
     "gray": {
-        "play" : { "node": "m17" , "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "labs": {
-        "play" : { "node": "m11", "memGB": 6   , },
+        "play" : { "node": "m17", "memGB": 6   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "lightblue": {
-        "play" : { "node": "m13", "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "lightgray": {
-        "play" : { "node": "m15" , "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "lime": {
-        "play" : { "node": "m15", "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "magenta": {
-        "play" : { "node": "m13", "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "orange": {
-        "play" : { "node": "m13", "memGB": 3, },
+        "play" : { "node": "m17", "memGB": 3, },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "pink": {
-        "play" : { "node": "m15", "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "purple": {
-        "play" : { "node": "m17" , "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "reverie": {
-        "play" : { "node": "m13", "memGB": 6   , },
+        "play" : { "node": "m17", "memGB": 6   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "reverie-2": {
-        "play" : { "node": "m13" , "memGB": 6   , },
+        "play" : { "node": "m17", "memGB": 6   , },
     },
     "reverie-3": {
-        "play" : { "node": "m15" , "memGB": 6   , },
+        "play" : { "node": "m17", "memGB": 6   , },
     },
     "corridors": {
-        "play" : { "node": "m15", "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "rush": {
-        "play" : { "node": "m13", "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "shiftingcity": {
-        "play" : { "node": "m11", "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "teal": {
-        "play" : { "node": "m15" , "memGB": 4   , },
+        "play" : { "node": "m17", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "tutorial": {
-        "play" : { "node": "m11", "memGB": 5   , },
+        "play" : { "node": "m17", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "white": {
-        "play" : { "node": "m13", "memGB": 3, },
+        "play" : { "node": "m17", "memGB": 3, },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "willows": {
-        "play" : { "node": "m13", "memGB": 5,    },
+        "play" : { "node": "m17", "memGB": 5,    },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "yellow": {
-        "play" : { "node": "m16", "memGB": 5   , },
+        "play" : { "node": "m17", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "gallery": {
-        "play" : { "node": "m17" , "memGB": 3   , },
+        "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m12", "memGB": 3   , },
         "volt" : { "node": "m12", "memGB": 3   , },
     },
 
     "blue": {
-        "play" : { "node": "m15", "memGB": 5   , },
+        "play" : { "node": "m17", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
-    "blue-2": { "play" : { "node": "m16" , "memGB": 5, }, },
+    "blue-2": { "play" : { "node": "m17", "memGB": 5, }, },
 
     "brown": {
-        "play" : { "node": "m16", "memGB": 5   , },
+        "play" : { "node": "m17", "memGB": 5   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "portal": {
-        "play" : { "node": "m11", "memGB": 6   , },
+        "play" : { "node": "m17", "memGB": 6   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "ruin": {
-        "play" : { "node": "m16", "memGB": 4   , },
+        "play" : { "node": "m17", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "skt": {
-        "play" : { "node": "m16", "memGB": 4   , },
+        "play" : { "node": "m17", "memGB": 4   , },
         "stage": { "node": "m12", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
-    "skt-2": { "play" : { "node": "m16", "memGB": 4, }, },
+    "skt-2": { "play" : { "node": "m17", "memGB": 4, }, },
     "zenith": {
-        "play" : { "node": "m16", "memGB":    4, },
+        "play" : { "node": "m17", "memGB":    4, },
         "stage": { "node": "m12", "memGB":    3, },
         "volt" : { "node": "m12", "memGB":    3, },
     },
-    "zenith-2":  { "play" : { "node": "m16", "memGB": 4, }, },
-    "zenith-3":  { "play" : { "node": "m16", "memGB": 4, }, },
-    "zenith-4":  { "play" : { "node": "m16", "memGB": 4, }, },
-    "zenith-5":  { "play" : { "node": "m17" , "memGB": 4, }, },
-    "zenith-6":  { "play" : { "node": "m17" , "memGB": 4, }, },
-    "zenith-7":  { "play" : { "node": "m11", "memGB": 4, }, },
-    "zenith-8":  { "play" : { "node": "m11", "memGB": 4, }, },
-    "zenith-9":  { "play" : { "node": "m13", "memGB": 4, }, },
-    "zenith-10": { "play" : { "node": "m13", "memGB": 4, }, },
-    "zenith-11": { "play" : { "node": "m15", "memGB": 4, }, },
-    "zenith-12": { "play" : { "node": "m15", "memGB": 4, }, },
+    "zenith-2":  { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-3":  { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-4":  { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-5":  { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-6":  { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-7":  { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-8":  { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-9":  { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-10": { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-11": { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-12": { "play" : { "node": "m17", "memGB": 4, }, },
 }
 
 # Defaults for each namespace
@@ -278,17 +276,12 @@
     "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
     "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
     "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
-    "clash": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "false" },
 }
 
 # Memory values copied directly from /proc/meminfo
 "node_info": {
-    "m8":  { "full_name": "monumenta-8",  "mem_total_kB": 131650292, "huge_pages":  40000, "huge_page_size_kB": 2048 },
-    "m11": { "full_name": "monumenta-11", "mem_total_kB": 131650288, "huge_pages":  46000, "huge_page_size_kB": 2048 },
     "m12": { "full_name": "monumenta-12", "mem_total_kB": 131650292, "huge_pages":  43000, "huge_page_size_kB": 2048 },
     "m13": { "full_name": "monumenta-13", "mem_total_kB": 131841792, "huge_pages":  48000, "huge_page_size_kB": 2048 },
-    "m15": { "full_name": "monumenta-15", "mem_total_kB": 131799556, "huge_pages":  48000, "huge_page_size_kB": 2048 },
-    "m16": { "full_name": "monumenta-16", "mem_total_kB": 131787616, "huge_pages":  48000, "huge_page_size_kB": 2048 },
     "m17": { "full_name": "monumenta-17", "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048 },
 }
 
