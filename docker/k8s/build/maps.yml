@@ -5,16 +5,17 @@
 # kubectl create secret generic maps-auth --from-file auth -n build
 # rm auth
 
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: maps
   namespace: build
   annotations:
     nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: maps-auth
+    nginx.ingress.kubernetes.io/auth-secret: tm-auth
     nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
     - build.playmonumenta.com
@@ -22,9 +23,13 @@ spec:
   - host: build.playmonumenta.com
     http:
       paths:
-      - backend:
-          serviceName: maps
-          servicePort: 80
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: maps
+              port:
+                number: 80
 
 ---
 
