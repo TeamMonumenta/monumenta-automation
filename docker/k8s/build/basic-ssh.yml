@@ -123,10 +123,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/build/m12/valley
-            #        - name: nfs-resource-packs
-            #          hostPath:
-            #            type: Directory
-            #            path: /nfs/web-files/files/resource-packs
+        - name: nfs-resource-packs
+          hostPath:
+            type: Directory
+            path: /nfs/web-files/files/resource-packs
         - name: authorized-keys-config
           secret:
             secretName: authorized-keys-config
@@ -175,8 +175,8 @@ spec:
           mountPath: /home/epic/volt/m12
         - name: nfs-r1
           mountPath: /home/epic/valley
-          #        - name: nfs-resource-packs
-          #          mountPath: /home/epic/resource-packs
+        - name: nfs-resource-packs
+          mountPath: /home/epic/resource-packs
         - name: authorized-keys-config
           mountPath: /home/epic/.ssh/authorized_keys
           subPath: authorized_keys
