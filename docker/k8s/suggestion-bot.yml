@@ -40,7 +40,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-8
+                - monumenta-17
       volumes:
         - name: suggestion-bot-storage
           hostPath:
@@ -48,7 +48,7 @@ spec:
             path: /nfs/task-bot/suggestions
       containers:
       - name: suggestion-bot
-        image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-play
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
         tty: false
         stdin: false
         volumeMounts:
@@ -62,5 +62,3 @@ spec:
           requests:
             cpu: 100m
             memory: 128Mi
-      imagePullSecrets:
-      - name: githubcred
