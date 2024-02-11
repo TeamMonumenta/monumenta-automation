@@ -1,7 +1,8 @@
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: cron-advancements-export
+  namespace: play
   labels:
     app: cron-advancements-export
 spec:
@@ -26,15 +27,15 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                    - monumenta-8
+                    - monumenta-17
           volumes:
           - name: advancements
             hostPath:
               type: Directory
               path: /nfs/play/advancements
           containers:
-          - name: task-bot
-            image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot-play
+          - name: automation-bot
+            image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
             tty: false
             stdin: false
             volumeMounts:
@@ -49,5 +50,3 @@ spec:
                 cpu: 100m
                 memory: 1536Mi
           restartPolicy: Never
-          imagePullSecrets:
-          - name: githubcred
