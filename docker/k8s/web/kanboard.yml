@@ -1,21 +1,30 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kanboard
+  namespace: web
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "75m"
     nginx.org/client-max-body-size: "75m"
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: tm-auth
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
 spec:
+  ingressClassName: nginx
   tls:
-  - hosts:
-    - kanboard.playmonumenta.com
+    - hosts:
+      - kanboard.playmonumenta.com
   rules:
-  - host: kanboard.playmonumenta.com
-    http:
-      paths:
-      - backend:
-          serviceName: kanboard
-          servicePort: 80
+    - host: kanboard.playmonumenta.com
+      http:
+        paths:
+         - pathType: Prefix
+           path: "/"
+           backend:
+             service:
+               name: kanboard
+               port:
+                 number: 80
 
 ---
 
@@ -25,6 +34,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kanboard
+  namespace: web
   labels:
     app: kanboard
 spec:
@@ -44,6 +54,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: kanboard-php-config
+  namespace: web
 data:
   kanboard-memory.ini: |
     memory_limit = 768M
@@ -56,6 +67,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: kanboard-config
+  namespace: web
 data:
   config.php: |
     <?php
@@ -90,6 +102,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kanboard
+  namespace: web
   labels:
     app: kanboard
 spec:
@@ -112,7 +125,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-8
+                - monumenta-17
       volumes:
         - name: kanboard-php-config
           configMap:
