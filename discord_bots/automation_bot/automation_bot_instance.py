@@ -1257,7 +1257,7 @@ This will roll a player back to the most recent weekly update data.
             return
 
         playername = commandArgs[0]
-        rollbackpath = f"/home/epic/play/m13/server_config/redis_data_initial"
+        rollbackpath = f"/home/epic/play/m17/server_config/redis_data_initial"
         backuppath = f"/home/epic/0_OLD_BACKUPS/0_PLAYERDATA_CHANGES/rollback_player_{playername}_{datestr()}"
 
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/player_backup_and_rollback"), "redis://redis/", "play", playername, rollbackpath, backuppath], displayOutput=True)
@@ -1418,8 +1418,10 @@ Must be run before starting the update on the play server
         await self.display(ctx, "Copying ring...")
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/Project_Epic-ring /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
-        await self.run(ctx, "cp -a /home/epic/project_epic/ring/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/godspore /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ring/portal /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ring/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ring/ruin /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
 
         if not debug:
             await self.display(ctx, "Restarting the ring and ring shards...")
@@ -1790,7 +1792,7 @@ old coreprotect data will be removed at the 5 minute mark.
             await send_broadcast_msg(seconds_to_string(next_target))
 
         # Stop bungee
-        await self.stop(ctx, ["bungee", "bungee-11", "bungee-12", "bungee-13", "bungee-15"], owner=message)
+        await self.stop(ctx, ["bungee", "bungee-12", "bungee-13"], owner=message)
 
         await self.display(ctx, message.author.mention)
 
@@ -2159,11 +2161,44 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         await self.display(ctx, "Adjusting bungee config...")
         with open(f"{self._shards['bungee']}/config.yml", "r") as f:
             bungeeconfig = yaml.load(f, Loader=yaml.FullLoader)
+        bungeeconfig["servers"] = {
+            "dummy": {
+                "address": "127.0.0.1:65500",
+                "motd": "THIS SERVER DOES NOT EXIST",
+                "restricted": False,
+            },
+            "isles": {
+                "address": "isles:25566",
+                "motd": "isles",
+                "restricted": False,
+            },
+            "plots": {
+                "address": "plots:25566",
+                "motd": "plots",
+                "restricted": False,
+            },
+            "purgatory": {
+                "address": "purgatory:25566",
+                "motd": "purgatory",
+                "restricted": False,
+            },
+            "ring": {
+                "address": "ring:25566",
+                "motd": "ring",
+                "restricted": False,
+            },
+            "valley": {
+                "address": "valley:25566",
+                "motd": "valley",
+                "restricted": False,
+            },
+        }
         bungeeconfig["listeners"][0]["priorities"] = [
-            "purgatory",
-            "valley",
-            "isles",
             "plots",
+            "ring",
+            "isles",
+            "valley",
+            "purgatory",
         ]
         with open(f"{self._shards['bungee']}/config.yml", "w") as f:
             yaml.dump(bungeeconfig, f, width=2147483647, allow_unicode=True)

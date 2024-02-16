@@ -81,6 +81,8 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         // Remorse & Mist
         scores.insert("R2Access".to_string(), 0);
         scores.insert("DDAccess".to_string(), 0);
+        // Ring scores
+        scores.insert("DR3Access".to_string(), 0);
         scores.insert("DGAccess".to_string(), 0);
         scores.insert("DPSAccess".to_string(), 0);
         scores.insert("DMASAccess".to_string(), 0);

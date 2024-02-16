@@ -150,8 +150,8 @@ if __name__ == '__main__':
         "remorse":{"path": "isles/remorse"},
         "depths":{"world": "depths"},
         "gallery":{"world": "gallery"},
-        "portal":{"world": "portal"},
-        "ruin":{"world": "bluestrike"},
+        "portal":{"path": "ring/portal"},
+        "ruin":{"path": "ring/ruin"},
         "skt":{"world": "SKT"},
     }
 
