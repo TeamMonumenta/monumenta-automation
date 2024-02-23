@@ -2149,11 +2149,14 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         await self.display(ctx, "Downloading current redis database from the play server...")
         await self.run(ctx, f"redis-cli -h redis.play --rdb dump.rdb")
         await self.start(ctx, "redis", owner=message)
-        await self.run(ctx, [os.path.join(_top_level, f"rust/bin/redis_truncate_playerdata"), 'redis://redis/', 'play', '1'], displayOutput=True)
 
         # Download the mysql database from the play server
         await self.display(ctx, "Syncing with current mysql database from the play server...")
         await self.run(ctx, [os.path.join(_top_level, f"utility_code/sync_mysql.sh"), self._k8s.namespace], displayOutput=True)
+
+        # This was moved after the mysql sync due to the following error:
+        # Error: An error was signalled by the server - BusyLoadingError: Redis is loading the dataset in memory
+        await self.run(ctx, [os.path.join(_top_level, f"rust/bin/redis_truncate_playerdata"), 'redis://redis/', 'play', '1'], displayOutput=True)
 
         await self.display(ctx, "Disabling Plan and PremiumVanish...")
         await self.run(ctx, f"mv -f {self._server_dir}/server_config/plugins/Plan.jar {self._server_dir}/server_config/plugins/Plan.jar.disabled")
