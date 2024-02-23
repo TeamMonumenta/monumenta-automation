@@ -62,7 +62,7 @@ spec:
                 values:
                 - monumenta-12
       containers:
-      - image: mariadb:10
+      - image: mariadb:11
         name: mysql
         env:
           # This secret was created using:
