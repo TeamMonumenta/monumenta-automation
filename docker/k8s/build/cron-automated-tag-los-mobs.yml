@@ -1,5 +1,5 @@
 # Run the LoS scan-and-tag script every day
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: cron-automated-tag-los-mobs
@@ -32,7 +32,7 @@ spec:
               path: /nfs/build/m12
           containers:
           - name: cron-automated-tag-los-mobs
-            image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
+            image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot
             tty: false
             stdin: false
             args:
@@ -41,5 +41,3 @@ spec:
             - name: nfs-data
               mountPath: /home/epic/project_epic
           restartPolicy: Never
-          imagePullSecrets:
-          - name: githubcred
