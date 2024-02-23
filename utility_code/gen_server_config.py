@@ -403,7 +403,7 @@ if __name__ == '__main__':
 
     base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
     if SERVER_TYPE == 'build':
-        base_plugins += speedchanger + voxelsniper + gobrush + metatools
+        base_plugins += speedchanger + voxelsniper + gobrush
     else:
         base_plugins += vanish
 
