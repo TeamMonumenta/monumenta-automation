@@ -288,6 +288,10 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:stone_sword", "Prismatic Runeblade", "minecraft:stone_sword", "Prismatic Blade"],
                 # "Special" Crystalline Chip -> Special Crystalline Chip
                 ["minecraft:light_blue_dye", '"Special" Crystalline Chip', "minecraft:light_blue_dye", "Special Crystalline Chip"],
+                # Pris crystals -> echo shard base item
+                ["minecraft:prismarine_crystals", "Arcane Crystal", "minecraft:echo_shard", "Arcane Crystal"],
+                # Clay ball -> brick base item
+                ["minecraft:clay_ball", "Spectral Maravedi", "minecraft:brick", "Spectral Maravedi"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
