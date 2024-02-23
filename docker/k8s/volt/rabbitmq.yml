@@ -24,7 +24,7 @@ spec:
 
 ---
 
-apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rabbitmq
@@ -54,18 +54,40 @@ spec:
         hostnames:
         - "monumenta-rabbit"
       containers:
-      - image: rabbitmq:3.8-management
+      - image: rabbitmq:3.12-management
         name: rabbitmq
-        env:
-        - name: RABBITMQ_VM_MEMORY_HIGH_WATERMARK
-          value: "0.60"
-        - name: HOSTNAME
-          value: "monumenta-rabbit"
         ports:
         - containerPort: 5672
           name: rabbitmq
         - containerPort: 15672
           name: rabbitmq-mgmt
+        volumeMounts:
+        - name: rabbitmq-config
+          mountPath: /etc/rabbitmq/conf.d/20-monumenta-custom.conf
+          subPath: 20-monumenta-custom.conf
         resources:
           limits:
             memory: 1Gi
+      volumes:
+        - name: rabbitmq-config
+          configMap:
+            name: rabbitmq-config
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-config
+  namespace: volt
+data:
+  20-monumenta-custom.conf: |
+    ## Busty: This config file was derived from
+    ## https://github.com/rabbitmq/rabbitmq-server/blob/v3.12.x/deps/rabbit/docs/rabbitmq.conf.example
+
+    ##
+    ## Resource Limits & Flow Control
+    ## ==============================
+    ##
+    ## Related doc guide: https://rabbitmq.com/memory.html.
+    vm_memory_high_watermark.absolute = 768M
