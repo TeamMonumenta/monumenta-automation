@@ -3,16 +3,17 @@
 # helm install prom-op stable/prometheus-operator --set kubeProxy.enabled=false --set grafana.plugins=grafana-piechart-panel --set grafana.adminPassword=...
 # Default password prom-operator if admin password not passed in
 
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dashboard
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: maps-auth
+    nginx.ingress.kubernetes.io/auth-secret: tm-auth
     nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
     - dashboard.playmonumenta.com
@@ -20,20 +21,27 @@ spec:
   - host: dashboard.playmonumenta.com
     http:
       paths:
-      - backend:
-          serviceName: prom-op-grafana
-          servicePort: 80
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: prom-op-grafana
+              port:
+                number: 80
+
 ---
-apiVersion: networking.k8s.io/v1beta1
+
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: prometheus
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: maps-auth
+    nginx.ingress.kubernetes.io/auth-secret: tm-auth
     nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
     - prometheus.playmonumenta.com
@@ -41,10 +49,16 @@ spec:
   - host: prometheus.playmonumenta.com
     http:
       paths:
-      - backend:
-          serviceName: prom-op-prometheus-operato-prometheus
-          servicePort: 9090
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: prometheus-operated
+              port:
+                number: 9090
+
 ---
+
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -63,12 +77,13 @@ spec:
     - play
     - stage
     - volt
-    - clash
   endpoints:
   - port: metrics
     interval: 5s
     path: /metrics
+
 ---
+
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -87,7 +102,6 @@ spec:
     - play
     - stage
     - volt
-    - clash
   endpoints:
   - port: metrics
     interval: 30s

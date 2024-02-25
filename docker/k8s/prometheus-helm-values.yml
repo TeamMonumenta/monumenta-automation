@@ -1,0 +1,35 @@
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-storage
+          selector:
+            matchLabels:
+              app.kubernetes.io/name: monumenta-prometheus
+          resources:
+            requests:
+              storage: 50Gi
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: local-storage
+          selector:
+            matchLabels:
+              app.kubernetes.io/name: monumenta-alertmanager
+          resources:
+            requests:
+              storage: 50Gi
+
+grafana:
+  persistence:
+    enabled: true
+    type: pvc
+    storageClassName: grafana-storage
+    accessModes:
+      - ReadWriteOnce
+    size: 20Gi
+    finalizers:
+      - kubernetes.io/pvc-protection
