@@ -2145,7 +2145,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
         await self.stop(ctx, "redis", owner=message)
         await self.cd(ctx, f"{self._server_dir}/../redis")
-        await self.run(ctx, f"mv dump.rdb dump.rdb.previous")
+        await self.run(ctx, f"mv -f dump.rdb dump.rdb.previous")
         await self.display(ctx, "Downloading current redis database from the play server...")
         await self.run(ctx, f"redis-cli -h redis.play --rdb dump.rdb")
         await self.start(ctx, "redis", owner=message)
