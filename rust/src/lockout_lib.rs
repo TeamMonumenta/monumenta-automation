@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 pub struct LockoutAPI {
     domain: String,
     entries: HashMap<String, LockoutEntry>,
+    dirty: bool,
 }
 
 impl LockoutAPI {
@@ -20,6 +21,7 @@ impl LockoutAPI {
         LockoutAPI{
             domain: domain.to_string(),
             entries,
+            dirty: false,
         }
     }
 
@@ -56,10 +58,14 @@ impl LockoutAPI {
         return Ok(LockoutAPI{
             domain: domain.to_string(),
             entries,
+            dirty: false,
         })
     }
 
     pub fn save(&mut self) -> anyhow::Result<()> {
+        if !self.dirty {
+            return Ok(());
+        }
         if let Err(_) = create_dir_all("/home/epic/4_SHARED/lockouts") {
             bail!("Unable to create lockouts directory")
         }
@@ -108,6 +114,7 @@ impl LockoutAPI {
         }
 
         self.entries.insert(entry.shard.clone(), entry.clone());
+        self.dirty = true;
         entry.clone()
     }
 
@@ -144,6 +151,9 @@ impl LockoutAPI {
             }
             keep
         });
+        if !cleared.is_empty() {
+            self.dirty = true;
+        }
         cleared
     }
 }
