@@ -79,7 +79,10 @@ class NameUnnamedItems(SubstitutionRule):
             r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{Potion:"minecraft:strong_turtle_master",display:{Name:'{"text":"Potion of the Turtle Master"}'},plain:{display:{Name:"Potion of the Turtle Master"}}}}]}''',
         )
         named_chests = (
-            r'''{Items:[{Count:1b,Slot:13b,id:"minecraft:bread",tag:{display:{Name:'{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"white","text":"Pretzel"}],"text":""}'},plain:{display:{Name:"Pretzel"}}}}]}''',
+            # Second try on Saturation Suspicious Stew -> Dichen Specialty Stew
+            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:suspicious_stew",tag:{Effects:[{EffectDuration:8,EffectId:23b}]}}]}''',
+            # Somehow some Summoning Crystals ended up with no lore after they were added to the loot tables
+            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:yellow_dye",tag:{display:{Name:'{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"Summoning Crystal"}],"text":""}'},plain:{display:{Name:"Summoning Crystal"}}}}]}'''
         )
 
         for chest_mojangson in unnamed_chests:
@@ -283,15 +286,12 @@ class SubtituteItems(SubstitutionRule):
                 # ["minecraft:example_vanilla_item", None, "minecraft:new_id", "Example New Name"],
                 # Example item type change:
                 # ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
+                # Saturation Suspicious Stew -> Dichen Specialty Stew
                 ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
-                # Prismatic Runeblade -> Prismatic Blade
-                ["minecraft:stone_sword", "Prismatic Runeblade", "minecraft:stone_sword", "Prismatic Blade"],
-                # "Special" Crystalline Chip -> Special Crystalline Chip
-                ["minecraft:light_blue_dye", '"Special" Crystalline Chip', "minecraft:light_blue_dye", "Special Crystalline Chip"],
-                # Pris crystals -> echo shard base item
-                ["minecraft:prismarine_crystals", "Arcane Crystal", "minecraft:echo_shard", "Arcane Crystal"],
-                # Clay ball -> brick base item
-                ["minecraft:clay_ball", "Spectral Maravedi", "minecraft:brick", "Spectral Maravedi"],
+                # Copper Furnace -> Copper Relay Unit replacement
+                ["minecraft:cut_copper", "Copper Furnace", "minecraft:repeater", "Copper Relay Unit"],
+                # Molldyer's Inferno -> Hexcrafted Siphon replacement
+                ["minecraft:blaze_powder", "Molldyer's Inferno", "minecraft:amethyst_cluster", "Hexcrafted Siphon"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
