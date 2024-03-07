@@ -72,17 +72,29 @@ class NameUnnamedItems(SubstitutionRule):
     @classmethod
     def _init_unnamed_items(cls):
         NameUnnamedItems.NAME_TABLE = {}
+        # These two lists allow replacing items that are missing lore text and/or item names, which would otherwise be
+        # ignored. The item NBT must match exactly with the exception of adding the name of the item for replacement
+        # purposes, including the order of data in lists, and the exact raw json text strings
+        # (formatting has the same capitalization, order, spaces, yada yada)
+
+        # These items do not have display names in-game; the only difference from the items to be replaced should be the
+        # addition of the display name for the sake of replacements. If the NBT otherwise matches exactly, the name and
+        # lore text are set on the items before continuing with item updates.
         unnamed_chests = (
             # OLD EXAMPLE, DO NOT USE. This is pre 1.19 data
             # r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:golden_apple",tag:{display:{Name:'{"text":"Kingfruit"}'},plain:{display:{Name:"Kingfruit"}}}},{Count:1b,Slot:1b,id:"minecraft:enchanted_golden_apple",tag:{display:{Name:'{"text":"Soulfruit"}'},plain:{display:{Name:"Soulfruit"}}}}]}''',
             # Begone evil Turtle Master potions!
             r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{Potion:"minecraft:strong_turtle_master",display:{Name:'{"text":"Potion of the Turtle Master"}'},plain:{display:{Name:"Potion of the Turtle Master"}}}}]}''',
-        )
-        named_chests = (
             # Second try on Saturation Suspicious Stew -> Dichen Specialty Stew
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:suspicious_stew",tag:{Effects:[{EffectDuration:8,EffectId:23b}]}}]}''',
+            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:suspicious_stew",tag:{Effects:[{EffectDuration:8,EffectId:23b}],display:{Name:'{"text":"Suspicious Stew"}'},plain:{display:{Name:"Suspicious Stew"}}}}]}'''
+        )
+
+        # These items have no lore text, which means they're assumed to be on mobs and will be skipped to prevent them
+        # from dropping or changing stats. Items that match exactly will be given a temporary line of lore so they can
+        # be replaced.
+        named_chests = (
             # Somehow some Summoning Crystals ended up with no lore after they were added to the loot tables
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:yellow_dye",tag:{display:{Name:'{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"Summoning Crystal"}],"text":""}'},plain:{display:{Name:"Summoning Crystal"}}}}]}'''
+            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:yellow_dye",tag:{display:{Name:'{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"Summoning Crystal"}],"text":""}'},plain:{display:{Name:"Summoning Crystal"}}}}]}''',
         )
 
         for chest_mojangson in unnamed_chests:
