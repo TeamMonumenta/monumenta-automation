@@ -266,6 +266,10 @@ class AutomationBotInstance(commands.Cog):
                             if message_channel == "Monumenta.Automation.PlayerAuditLog":
                                 send_message_to_channel(message["data"]["message"], self._player_audit_channel)
 
+                        if self._market_audit_channel:
+                            if message.channel == "Monumenta.Automation.MarketAuditLog":
+                                send_message_to_channel(message["data"]["message"], self._market_audit_channel)
+
                         if self._stage_notify_channel:
                             if message_channel == "Monumenta.Automation.stage":
                                 # Schedule the display coroutine back on the main event loop
@@ -346,6 +350,13 @@ class AutomationBotInstance(commands.Cog):
                             logging.info("Found player audit channel: %s", conf["player_audit_channel"])
                         except Exception:
                             logging.error("Cannot connect to player audit channel: %s", conf["player_audit_channel"])
+                    self._market_audit_channel = None
+                    if "market_audit_channel" in conf:
+                        try:
+                            self._market_audit_channel = self._bot.get_channel(conf["market_audit_channel"])
+                            logging.info("Found market audit channel: %s", conf["market_audit_channel"])
+                        except Exception:
+                            logging.error("Cannot connect to market audit channel: %s", conf["market_audit_channel"])
                     self._admin_channel = None
                     if "admin_channel" in conf:
                         try:
