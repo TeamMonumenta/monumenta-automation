@@ -85,8 +85,6 @@ class NameUnnamedItems(SubstitutionRule):
             # r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:golden_apple",tag:{display:{Name:'{"text":"Kingfruit"}'},plain:{display:{Name:"Kingfruit"}}}},{Count:1b,Slot:1b,id:"minecraft:enchanted_golden_apple",tag:{display:{Name:'{"text":"Soulfruit"}'},plain:{display:{Name:"Soulfruit"}}}}]}''',
             # Begone evil Turtle Master potions!
             r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{Potion:"minecraft:strong_turtle_master",display:{Name:'{"text":"Potion of the Turtle Master"}'},plain:{display:{Name:"Potion of the Turtle Master"}}}}]}''',
-            # Second try on Saturation Suspicious Stew -> Dichen Specialty Stew
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:suspicious_stew",tag:{Effects:[{EffectDuration:8,EffectId:23b}],display:{Name:'{"text":"Suspicious Stew"}'},plain:{display:{Name:"Suspicious Stew"}}}}]}'''
         )
 
         # These items have no lore text, which means they're assumed to be on mobs and will be skipped to prevent them
@@ -95,6 +93,8 @@ class NameUnnamedItems(SubstitutionRule):
         named_chests = (
             # Somehow some Summoning Crystals ended up with no lore after they were added to the loot tables
             r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:yellow_dye",tag:{display:{Name:'{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"Summoning Crystal"}],"text":""}'},plain:{display:{Name:"Summoning Crystal"}}}}]}''',
+            # Third try on Saturation Suspicious Stew -> Dichen Specialty Stew
+            r'''{Items:[{Count:1b,Slot:13b,id:"minecraft:suspicious_stew",tag:{Effects:[{EffectDuration:8,EffectId:23b}],display:{Name:'{"text":"Dichen Specialty Stew"}',Lore:['{"text":"Don\'t skip this if it\'s missing lore!"}']},plain:{display:{Name:"Dichen Specialty Stew",Lore:["Don't skip this if it's missing lore!"]}}}}]}''',
         )
 
         for chest_mojangson in unnamed_chests:
@@ -298,8 +298,6 @@ class SubtituteItems(SubstitutionRule):
                 # ["minecraft:example_vanilla_item", None, "minecraft:new_id", "Example New Name"],
                 # Example item type change:
                 # ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
-                # Saturation Suspicious Stew -> Dichen Specialty Stew
-                ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
                 # Copper Furnace -> Copper Relay Unit replacement
                 ["minecraft:cut_copper", "Copper Furnace", "minecraft:repeater", "Copper Relay Unit"],
                 # Molldyer's Inferno -> Hexcrafted Siphon replacement
