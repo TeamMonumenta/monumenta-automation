@@ -107,13 +107,13 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - monumenta-13
       serviceAccountName: automation-bot-service-account
       volumes:
         - name: nfs-data
           hostPath:
             type: Directory
-            path: /nfs/stage/m12
+            path: /nfs/stage/m13
         - name: nfs-redis
           hostPath:
             type: Directory
@@ -153,7 +153,7 @@ spec:
               key: password
         volumeMounts:
         - name: nfs-data
-          mountPath: /home/epic/stage/m12
+          mountPath: /home/epic/stage/m13
         - name: nfs-redis
           mountPath: /home/epic/stage/redis
         - name: nfs-domain-shared

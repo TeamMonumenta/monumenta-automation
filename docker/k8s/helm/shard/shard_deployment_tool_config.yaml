@@ -24,7 +24,7 @@
     "purgatory": {
         "play" : { "node": "m17", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "build": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
-        "stage": { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+        "stage": { "node": "m13", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "volt" : { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
     },
 
@@ -36,12 +36,12 @@
     "valley": {
         "play" : { "node": "m17", "memGB": 6, },
         "build": { "node": "m12", "memGB": 6, },
-        "stage": { "node": "m12", "memGB": 3, },
+        "stage": { "node": "m13", "memGB": 3, },
         "volt" : { "node": "m12", "memGB": 3, },
     },
     "valley-2": {
         "play" : { "node": "m17", "memGB": 6, },
-        "stage": { "node": "m12", "memGB": 3, },
+        "stage": { "node": "m13", "memGB": 3, },
         "volt" : { "node": "m12", "memGB": 3, },
     },
     "valley-3": {
@@ -52,7 +52,7 @@
     "isles": {
         "play" : { "node": "m17", "memGB": 5, },
         "build": { "node": "m12", "memGB": 6, },
-        "stage": { "node": "m12", "memGB": 4, },
+        "stage": { "node": "m13", "memGB": 4, },
         "volt" : { "node": "m12", "memGB": 4, },
     },
     "isles-2": {
@@ -66,7 +66,7 @@
     "ring": {
         "play":  { "node": "m17", "memGB": 7   , },
         "build": { "node": "m12", "memGB": 6   , },
-        "stage": { "node": "m12", "memGB": 3   , },
+        "stage": { "node": "m13", "memGB": 3   , },
         "volt" : { "node": "m12", "memGB": 3   , },
     },
     "ring-2":  { "play" : { "node": "m17", "memGB": 7, }, },
@@ -84,88 +84,88 @@
     # Plots
     "plots": {
         "play" : { "node": "m17", "memGB": 8, },
-        "stage": { "node": "m12", "memGB": 6, },
+        "stage": { "node": "m13", "memGB": 6, },
         "volt" : { "node": "m12", "memGB": 6, },
     },
 
     "playerplots": {
         "play":  { "node": "m17", "memGB": 8, },
-        "stage": { "node": "m12", "memGB": 4, },
+        "stage": { "node": "m13", "memGB": 4, },
         "volt" : { "node": "m12", "memGB": 4, },
     },
 
     # Player build shard
     "build": {
         "play" : { "node": "m17", "memGB": 3   , "gsheetCredentials": "false" },
-        "stage": { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
+        "stage": { "node": "m13", "memMB": 1536, "gsheetCredentials": "false" },
         "volt" : { "node": "m12", "memMB": 1536, "gsheetCredentials": "false" },
     },
 
     # Dungeons
     "cyan": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "depths": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "depths-2": { "play" : { "node": "m17", "memGB": 3, }, },
     "forum": {
         "play" : { "node": "m17", "memGB": 4   , },
-        "stage": { "node": "m12", "memMB": 2048, },
+        "stage": { "node": "m13", "memMB": 2048, },
         "volt" : { "node": "m12", "memMB": 2048, },
     },
     "gray": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "labs": {
         "play" : { "node": "m17", "memGB": 6   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "lightblue": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "lightgray": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "lime": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "magenta": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "orange": {
         "play" : { "node": "m17", "memGB": 3, },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "pink": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "purple": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "reverie": {
         "play" : { "node": "m17", "memGB": 6   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "reverie-2": {
@@ -176,73 +176,73 @@
     },
     "corridors": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "rush": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "shiftingcity": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "teal": {
         "play" : { "node": "m17", "memGB": 4   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "tutorial": {
         "play" : { "node": "m17", "memGB": 5   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "white": {
         "play" : { "node": "m17", "memGB": 3, },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "willows": {
         "play" : { "node": "m17", "memGB": 5,    },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "yellow": {
         "play" : { "node": "m17", "memGB": 5   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "gallery": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m12", "memGB": 3   , },
+        "stage": { "node": "m13", "memGB": 3   , },
         "volt" : { "node": "m12", "memGB": 3   , },
     },
 
     "blue": {
         "play" : { "node": "m17", "memGB": 5   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "blue-2": { "play" : { "node": "m17", "memGB": 5, }, },
 
     "brown": {
         "play" : { "node": "m17", "memGB": 5   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
 
     "skt": {
         "play" : { "node": "m17", "memGB": 4   , },
-        "stage": { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
     "skt-2": { "play" : { "node": "m17", "memGB": 4, }, },
     "zenith": {
         "play" : { "node": "m17", "memGB":    4, },
-        "stage": { "node": "m12", "memGB":    3, },
+        "stage": { "node": "m13", "memGB":    3, },
         "volt" : { "node": "m12", "memGB":    3, },
     },
     "zenith-2":  { "play" : { "node": "m17", "memGB": 4, }, },

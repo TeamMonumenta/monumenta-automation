@@ -51,11 +51,11 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - monumenta-13
       volumes:
         - name: nfs-volume
           hostPath:
-            path: /nfs/stage/m12
+            path: /nfs/stage/m13
             type: Directory
       containers:
       - name: bungee
@@ -66,11 +66,11 @@ spec:
         # Primary Minecraft port
         - containerPort: 25566
           hostPort: 9002
-          hostIP: "141.94.75.9" # The node's external facing IP address
+          hostIP: "15.235.54.193" # The node's external facing IP address
         # Votifier
         - containerPort: 8192
           hostPort: 23333
-          hostIP: "141.94.75.9" # The node's external facing IP address
+          hostIP: "15.235.54.193" # The node's external facing IP address
         - containerPort: 8804
         - containerPort: 9225
         env:
@@ -81,7 +81,7 @@ spec:
         - name: "JAVA_JAR"
           value: "BungeeCord.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/stage/m12/bungee"
+          value: "/home/epic/stage/m13/bungee"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
@@ -100,7 +100,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/stage/m12
+          mountPath: /home/epic/stage/m13
         resources:
           limits:
             memory: 1Gi
