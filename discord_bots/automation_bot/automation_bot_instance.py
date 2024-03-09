@@ -267,7 +267,7 @@ class AutomationBotInstance(commands.Cog):
                                 send_message_to_channel(message["data"]["message"], self._player_audit_channel)
 
                         if self._market_audit_channel:
-                            if message.channel == "Monumenta.Automation.MarketAuditLog":
+                            if message_channel == "Monumenta.Automation.MarketAuditLog":
                                 send_message_to_channel(message["data"]["message"], self._market_audit_channel)
 
                         if self._stage_notify_channel:
