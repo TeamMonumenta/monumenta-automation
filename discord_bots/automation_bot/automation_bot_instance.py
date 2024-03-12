@@ -1785,7 +1785,7 @@ old coreprotect data will be removed at the 5 minute mark.
                     if shard in ["plots", "playerplots"]:
                         self._socket.send_packet(shard, "monumentanetworkrelay.command", {
                             "server_type": "minecraft",
-                            "command": 'co purge t:90d'
+                            "command": 'co purge t:180d'
                         })
                         continue
                     elif shard not in ["build",]:
