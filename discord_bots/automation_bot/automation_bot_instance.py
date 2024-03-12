@@ -1781,7 +1781,14 @@ old coreprotect data will be removed at the 5 minute mark.
             if next_target == 60 * 5 and "weekly update" in reason:
                 await self.display(ctx, "Clearing coreprotect data older than 30 days")
                 for shard in self._shards:
-                    if shard not in ["build",]:
+                    # TODO: add guild worlds to this when added - usb
+                    if shard in ["plots", "playerplots"]:
+                        self._socket.send_packet(shard, "monumentanetworkrelay.command", {
+                            "server_type": "minecraft",
+                            "command": 'co purge t:90d'
+                        })
+                        continue
+                    elif shard not in ["build",]:
                         self._socket.send_packet(shard, "monumentanetworkrelay.command", {
                             "server_type": "minecraft",
                             "command": 'co purge t:30d'
