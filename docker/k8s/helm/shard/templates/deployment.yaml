@@ -24,6 +24,11 @@ spec:
   - name: metrics
     port: 9225
     targetPort: 9225
+{{- if eq .Values.namespace "build" }}
+  - name: jdb
+    port: 9000
+    targetPort: 9000
+{{- end }}
 
 {{- if .Values.nodePort }}
 ---
@@ -120,6 +125,9 @@ spec:
         - containerPort: 25566
         - containerPort: 8000
         - containerPort: 9225
+{{- if eq .Values.namespace "build" }}
+        - containerPort: 9000
+{{- end }}
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
@@ -136,6 +144,10 @@ spec:
           value: {{ .Values.name }}
         - name: "NETWORK_RELAY_SERVER_ADDRESS"
           value: "{{ .Values.name }}:25566"
+{{- if eq .Values.namespace "build" }}
+        - name: "JAVA_ARG"
+          value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9000"
+{{- end }}
         - name: "MONUMENTA_IS_PLAY"
 {{- if eq .Values.namespace "play" }}
           value: "1"

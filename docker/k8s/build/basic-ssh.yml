@@ -137,7 +137,7 @@ spec:
             defaultMode: 292
       containers:
       - name: basic-ssh
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-basic-ssh
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-basic-ssh-dev
         tty: false
         stdin: false
         ports:
@@ -186,5 +186,3 @@ spec:
         - name: authorized-keys-config
           mountPath: /home/epic/.ssh/authorized_keys
           subPath: authorized_keys
-      imagePullSecrets:
-      - name: githubcred
