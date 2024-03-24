@@ -42,7 +42,7 @@
     "valley-2": {
         "play" : { "node": "m17", "memGB": 6, },
         "stage": { "node": "m13", "memGB": 3, },
-        "volt" : { "node": "m12", "memGB": 3, },
+        "volt" : { "node": "m13", "memGB": 3, },
     },
     "valley-3": {
         "play" : { "node": "m17", "memGB": 6, },
@@ -242,10 +242,13 @@
     "skt-2": { "play" : { "node": "m17", "memGB": 4, }, },
     "zenith": {
         "play" : { "node": "m17", "memGB":    4, },
-        "stage": { "node": "m13", "memGB":    3, },
+        "stage": { "node": "m12", "memGB":    3, },
         "volt" : { "node": "m12", "memGB":    3, },
     },
-    "zenith-2":  { "play" : { "node": "m17", "memGB": 4, }, },
+    "zenith-2":  {
+        "play": { "node": "m17", "memGB": 4, },
+        "volt": { "node": "m13", "memGB": 3, },
+    },
     "zenith-3":  { "play" : { "node": "m17", "memGB": 4, }, },
     "zenith-4":  { "play" : { "node": "m17", "memGB": 4, }, },
     "zenith-5":  { "play" : { "node": "m17", "memGB": 4, }, },

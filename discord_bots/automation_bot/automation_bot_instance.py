@@ -1622,11 +1622,12 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
                 await self.display(ctx, message.author.mention)
                 return
 
-        await self.display(ctx, "Saving ops and banned players")
-        await self.run(ctx, "mkdir -p /home/epic/4_SHARED/op-ban-sync/stage/")
-        await self.run(ctx, f"cp -a {self._shards['valley']}/banned-ips.json /home/epic/4_SHARED/op-ban-sync/stage/")
-        await self.run(ctx, f"cp -a {self._shards['valley']}/banned-players.json /home/epic/4_SHARED/op-ban-sync/stage/")
-        await self.run(ctx, f"cp -a {self._shards['valley']}/ops.json /home/epic/4_SHARED/op-ban-sync/stage/")
+        if 'valley' in self._shards:
+            await self.display(ctx, "Saving ops and banned players")
+            await self.run(ctx, "mkdir -p /home/epic/4_SHARED/op-ban-sync/stage/")
+            await self.run(ctx, f"cp -a {self._shards['valley']}/banned-ips.json /home/epic/4_SHARED/op-ban-sync/stage/")
+            await self.run(ctx, f"cp -a {self._shards['valley']}/banned-players.json /home/epic/4_SHARED/op-ban-sync/stage/")
+            await self.run(ctx, f"cp -a {self._shards['valley']}/ops.json /home/epic/4_SHARED/op-ban-sync/stage/")
 
         await self.display(ctx, "Deleting previous update data...")
         await self.cd(ctx, self._server_dir)
@@ -2102,6 +2103,12 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         log_level = config.RABBITMQ.get("log_level", 20)
         play_broker = SocketManager("rabbitmq.play", "stagebot", callback=None, log_level=log_level)
 
+        # Stop all shards belonging to this bot instance
+        # This will fail if there's a lockout in place, so do this at the beginning
+        shards = await self._k8s.list()
+        await self.display(ctx, f"Stopping shards {', '.join([shard for shard in self._shards if shard in shards])}")
+        await self.stop(ctx, [shard for shard in self._shards if shard in shards], owner=message)
+
         await self.display(ctx, "Removing previous 0_STAGE directories")
         await self.run(ctx, f"rm -rf {self._server_dir}/0_STAGE")
         await self.run(ctx, f"mkdir {self._server_dir}/0_STAGE")
@@ -2121,7 +2128,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             server_section = config.STAGE_SOURCE[server_name]
             stage_msg = {
                 "shards": server_section["shards"],
-                "address": f"automation-bot.{config.K8S_NAMESPACE}",
+                "address": f"{config.RABBITMQ['name']}.{config.K8S_NAMESPACE}",
                 "port": port,
             }
             await self.display(ctx, f"Sending request to {server_section['queue_name']} with config {pformat(stage_msg)}")
@@ -2132,22 +2139,17 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         for task in tasks:
             await task
 
-        # Stop all shards
-        await self.display(ctx, f"Stopping all {self._k8s.namespace} server shards...")
-        shards = await self._k8s.list()
-        await self.stop(ctx, [shard for shard in self._shards if shard in shards], owner=message)
-
-        # Delete and re-create all the 0_PREVIOUS directories, wherever they might be at one level above the shard folders
+        # Delete and re-create the 0_PREVIOUS directory
         await self.display(ctx, "Removing previous 0_PREVIOUS directories")
         for shard in self._shards:
             await self.run(ctx, f"rm -rf {self._server_dir}/0_PREVIOUS")
         for shard in self._shards:
             await self.run(ctx, f"mkdir -p {self._server_dir}/0_PREVIOUS")
 
-        # Move the server_config directory
+        # Move the server_config directory to previous
         await self.run(ctx, f"mv {self._server_dir}/server_config {self._server_dir}/0_PREVIOUS/", ret=None, suppressStdErr=True)
 
-        # Move the shard folders into those folders
+        # Move the old shards themselves into previous
         await self.display(ctx, "Moving previous data to 0_PREVIOUS directories")
         tasks = []
         for shard in self._shards:
@@ -2155,75 +2157,84 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         for task in tasks:
             await task
 
+        # Move the newly sync'd shard data from 0_STAGE into where it's supposed to be, and remove 0_STAGE
         await self.display(ctx, f"Moving pulled {self._k8s.namespace} data into live folder")
         await self.run(ctx, ["bash", "-c", f"mv {self._server_dir}/0_STAGE/* {self._server_dir}"])
         await self.run(ctx, f"rmdir {self._server_dir}/0_STAGE")
 
-        # Download the entire redis database from the play server
-        await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
-        await self.stop(ctx, "redis", owner=message)
-        await self.cd(ctx, f"{self._server_dir}/../redis")
-        await self.run(ctx, f"mv -f dump.rdb dump.rdb.previous")
-        await self.display(ctx, "Downloading current redis database from the play server...")
-        await self.run(ctx, f"redis-cli -h redis.play --rdb dump.rdb")
-        await self.start(ctx, "redis", owner=message)
+        if config.COMMON_WEEKLY_UPDATE_TASKS:
+            # Download the entire redis database from the play server
+            await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
+            await self.stop(ctx, "redis", owner=message)
+            await self.cd(ctx, f"{self._server_dir}/../redis")
+            await self.run(ctx, f"mv -f dump.rdb dump.rdb.previous")
+            await self.display(ctx, "Downloading current redis database from the play server...")
+            await self.run(ctx, f"redis-cli -h redis.play --rdb dump.rdb")
+            await self.start(ctx, "redis", owner=message)
 
-        # Download the mysql database from the play server
-        await self.display(ctx, "Syncing with current mysql database from the play server...")
-        await self.run(ctx, [os.path.join(_top_level, f"utility_code/sync_mysql.sh"), self._k8s.namespace], displayOutput=True)
+            # Download the mysql database from the play server
+            await self.display(ctx, "Syncing with current mysql database from the play server...")
+            await self.run(ctx, [os.path.join(_top_level, f"utility_code/sync_mysql.sh"), self._k8s.namespace], displayOutput=True)
 
-        # This was moved after the mysql sync due to the following error:
-        # Error: An error was signalled by the server - BusyLoadingError: Redis is loading the dataset in memory
-        await self.run(ctx, [os.path.join(_top_level, f"rust/bin/redis_truncate_playerdata"), 'redis://redis/', 'play', '1'], displayOutput=True)
+            # This was moved after the mysql sync due to the following error:
+            # Error: An error was signalled by the server - BusyLoadingError: Redis is loading the dataset in memory
+            await self.display(ctx, f"Truncating playerdata history...")
+            await self.run(ctx, [os.path.join(_top_level, f"rust/bin/redis_truncate_playerdata"), 'redis://redis/', 'play', '1'], displayOutput=True)
 
         await self.display(ctx, "Disabling Plan and PremiumVanish...")
         await self.run(ctx, f"mv -f {self._server_dir}/server_config/plugins/Plan.jar {self._server_dir}/server_config/plugins/Plan.jar.disabled")
         await self.run(ctx, f"mv -f {self._server_dir}/server_config/plugins/PremiumVanish.jar {self._server_dir}/server_config/plugins/PremiumVanish.jar.disabled")
 
         await self.display(ctx, "Adjusting bungee config...")
-        with open(f"{self._shards['bungee']}/config.yml", "r") as f:
-            bungeeconfig = yaml.load(f, Loader=yaml.FullLoader)
-        bungeeconfig["servers"] = {
-            "dummy": {
-                "address": "127.0.0.1:65500",
-                "motd": "THIS SERVER DOES NOT EXIST",
-                "restricted": False,
-            },
-            "isles": {
-                "address": "isles:25566",
-                "motd": "isles",
-                "restricted": False,
-            },
-            "plots": {
-                "address": "plots:25566",
-                "motd": "plots",
-                "restricted": False,
-            },
-            "purgatory": {
-                "address": "purgatory:25566",
-                "motd": "purgatory",
-                "restricted": False,
-            },
-            "ring": {
-                "address": "ring:25566",
-                "motd": "ring",
-                "restricted": False,
-            },
-            "valley": {
-                "address": "valley:25566",
-                "motd": "valley",
-                "restricted": False,
-            },
-        }
-        bungeeconfig["listeners"][0]["priorities"] = [
-            "plots",
-            "ring",
-            "isles",
-            "valley",
-            "purgatory",
-        ]
-        with open(f"{self._shards['bungee']}/config.yml", "w") as f:
-            yaml.dump(bungeeconfig, f, width=2147483647, allow_unicode=True)
+        for shard_name, shard_path in self._shards.items():
+            if not shard_name.startswith('bungee'):
+                continue
+            config_path = Path(shard_path) / 'config.yml'
+            if not config_path.is_file():
+                continue
+            with open(config_path, "r") as f:
+                bungeeconfig = yaml.load(f, Loader=yaml.FullLoader)
+            bungeeconfig["servers"] = {
+                "dummy": {
+                    "address": "127.0.0.1:65500",
+                    "motd": "THIS SERVER DOES NOT EXIST",
+                    "restricted": False,
+                },
+                "isles": {
+                    "address": "isles:25566",
+                    "motd": "isles",
+                    "restricted": False,
+                },
+                "plots": {
+                    "address": "plots:25566",
+                    "motd": "plots",
+                    "restricted": False,
+                },
+                "purgatory": {
+                    "address": "purgatory:25566",
+                    "motd": "purgatory",
+                    "restricted": False,
+                },
+                "ring": {
+                    "address": "ring:25566",
+                    "motd": "ring",
+                    "restricted": False,
+                },
+                "valley": {
+                    "address": "valley:25566",
+                    "motd": "valley",
+                    "restricted": False,
+                },
+            }
+            bungeeconfig["listeners"][0]["priorities"] = [
+                "plots",
+                "ring",
+                "isles",
+                "valley",
+                "purgatory",
+            ]
+            with open(config_path, "w") as f:
+                yaml.dump(bungeeconfig, f, width=2147483647, allow_unicode=True)
 
         await self.display(ctx, f"{self._k8s.namespace} server loaded with current play server data")
         await self.display(ctx, message.author.mention)
