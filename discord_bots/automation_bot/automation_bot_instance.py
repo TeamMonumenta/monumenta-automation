@@ -2113,6 +2113,17 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         await self.run(ctx, f"rm -rf {self._server_dir}/0_STAGE")
         await self.run(ctx, f"mkdir {self._server_dir}/0_STAGE")
 
+        if config.COMMON_WEEKLY_UPDATE_TASKS:
+            # Download the entire redis database from the play server
+            # Do this early to give it plenty of time to start
+            await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
+            await self.stop(ctx, "redis", owner=message)
+            await self.cd(ctx, f"{self._server_dir}/../redis")
+            await self.run(ctx, f"mv -f dump.rdb dump.rdb.previous")
+            await self.display(ctx, "Downloading current redis database from the play server...")
+            await self.run(ctx, f"redis-cli -h redis.play --rdb dump.rdb")
+            await self.start(ctx, "redis", owner=message)
+
         tasks = []
         port = 1111
         for server_name in config.STAGE_SOURCE:
@@ -2163,21 +2174,13 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         await self.run(ctx, f"rmdir {self._server_dir}/0_STAGE")
 
         if config.COMMON_WEEKLY_UPDATE_TASKS:
-            # Download the entire redis database from the play server
-            await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
-            await self.stop(ctx, "redis", owner=message)
-            await self.cd(ctx, f"{self._server_dir}/../redis")
-            await self.run(ctx, f"mv -f dump.rdb dump.rdb.previous")
-            await self.display(ctx, "Downloading current redis database from the play server...")
-            await self.run(ctx, f"redis-cli -h redis.play --rdb dump.rdb")
-            await self.start(ctx, "redis", owner=message)
-
             # Download the mysql database from the play server
             await self.display(ctx, "Syncing with current mysql database from the play server...")
+            # Don't need to be in this directory exactly, but need to be in a stable directory
+            await self.cd(ctx, f"{self._server_dir}")
             await self.run(ctx, [os.path.join(_top_level, f"utility_code/sync_mysql.sh"), self._k8s.namespace], displayOutput=True)
 
-            # This was moved after the mysql sync due to the following error:
-            # Error: An error was signalled by the server - BusyLoadingError: Redis is loading the dataset in memory
+            # Note that this needs to be fairly long after starting redis to give it time to load
             await self.display(ctx, f"Truncating playerdata history...")
             await self.run(ctx, [os.path.join(_top_level, f"rust/bin/redis_truncate_playerdata"), 'redis://redis/', 'play', '1'], displayOutput=True)
 
