@@ -271,6 +271,7 @@ if __name__ == '__main__':
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
         ('plugins/Monumenta/experiencinator_config.json', '../../../server_config/data/plugins/all/Monumenta/experiencinator_config.json'),
         ('plugins/Monumenta/SiriusBlightArena.json', '../../../server_config/data/plugins/all/Monumenta/SiriusBlightArena.json'),
+        ('plugins/Monumenta/skins.json', '../../../server_config/data/plugins/all/Monumenta/skins.json'),
         ('plugins/Monumenta/mmquest.json', '../../../server_config/data/plugins/all/Monumenta/mmquest.json'),
         ('plugins/Monumenta/market.json', '../../../server_config/data/plugins/all/Monumenta/market.json'),
         ('plugins/Monumenta/ItemIndex', '../../../server_config/data/plugins/all/ItemIndex'),
