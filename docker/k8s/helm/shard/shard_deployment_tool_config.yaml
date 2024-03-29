@@ -69,7 +69,10 @@
         "stage": { "node": "m13", "memGB": 3   , },
         "volt" : { "node": "m12", "memGB": 3   , },
     },
-    "ring-2":  { "play" : { "node": "m17", "memGB": 7, }, },
+    "ring-2":  {
+        "play" : { "node": "m17", "memGB": 7, },
+        "stage": { "node": "m13", "memGB": 3   , },
+    },
     "ring-3":  { "play" : { "node": "m17", "memGB": 7, }, },
     "ring-4":  { "play" : { "node": "m17", "memGB": 7, }, },
     "ring-5":  { "play" : { "node": "m17", "memGB": 7, }, },
@@ -186,8 +189,8 @@
     },
     "shiftingcity": {
         "play" : { "node": "m17", "memGB": 3   , },
-        "stage": { "node": "m13", "memMB": 1536, },
-        "volt" : { "node": "m12", "memMB": 1536, },
+        "stage": { "node": "m13", "memGB": 3   , },
+        "volt" : { "node": "m12", "memGB": 3   , },
     },
     "teal": {
         "play" : { "node": "m17", "memGB": 4   , },
