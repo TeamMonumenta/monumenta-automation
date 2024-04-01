@@ -488,3 +488,18 @@ def get_main_world(shard_path):
         raise Exception(f'Could not find main world for shard {shard_path}')
 
     return main_world
+
+def int_to_ordinal(i):
+    """Converts a number to an ordinal string with suffix"""
+    num = str(i)
+    if len(num) == 0:
+        return num
+    last_char = num[-1]
+    if last_char == '1':
+        return num + 'st'
+    if last_char == '2':
+        return num + 'nd'
+    if last_char == '3':
+        return num + 'rd'
+    return num + 'th'
+
