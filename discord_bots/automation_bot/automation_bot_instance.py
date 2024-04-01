@@ -916,12 +916,12 @@ Examples:
         tomorrow_start = today_start + timedelta(days=1)
         new_week = today_start + timedelta(days=7 - day_of_week_0_indexed)
 
-        today_format = now_skip_seconds.strftime(f'%I:%M %p on %A the {int_to_ordinal(now_skip_seconds.day)} of %B, %Y')
+        today_format = now_skip_seconds.strftime(f'%-I:%M %p on %A the {int_to_ordinal(now_skip_seconds.day)} of %B, %Y')
 
         msg = []
         msg.append(f"Monumenta's local time (UTC{monumenta_timezone:+d})")
         msg.append("The following information is used for daily and weekly events, such as delve bounties, dungeon access, and the season pass. Note that this is not the same as weekly updates, which we use to release new content into the game and provide a fresh copy of the overworlds.")
-        msg.append(f'It is currently {today_format}')
+        msg.append(f'It is currently `{today_format}`')
         msg.append(f'A new day begins {self.get_discord_timestamp(tomorrow_start, ":R")}')
         msg.append(f'A new week begins {self.get_discord_timestamp(new_week, ":R")} (every Friday)')
         return "\n".join(msg)
