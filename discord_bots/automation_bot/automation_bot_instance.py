@@ -1882,6 +1882,9 @@ DELETES DUNGEON CORE PROTECT DATA'''
             await self.display(ctx, "Copying player data from redis")
             await self.run(ctx, os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --output {self._server_dir}/server_config/redis_data_final")
 
+            await self.display(ctx, "Copying market data from redis")
+            await self.run(ctx, os.path.join(_top_level, "utility_code/market_itemdb_export") + f" redis://redis/ play {self._server_dir}/server_config/redis_data_final")
+
         if debug:
             await self.display(ctx, "WARNING! Skipping backup!")
         else:
@@ -1996,10 +1999,14 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.display(ctx, "Loading player data back into redis...")
             await self.run(ctx, os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --input {self._server_dir}/server_config/redis_data_initial 1")
 
+        if min_phase <= 13 and config.COMMON_WEEKLY_UPDATE_TASKS:
+            await self.display(ctx, "Loading market data back into redis")
+            await self.run(ctx, os.path.join(_top_level, "utility_code/market_itemdb_import") + f" redis://redis/ play {self._server_dir}/server_config/redis_data_initial")
+
         ########################################
         # Raffle
 
-        if min_phase <= 13 and config.COMMON_WEEKLY_UPDATE_TASKS:
+        if min_phase <= 14 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Raffle results:")
             raffle_seed = await self.get_raffle_seed(ctx)
             if self._rreact["msg_contents"] is not None:
@@ -2012,19 +2019,19 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         # Raffle
         ########################################
 
-        if min_phase <= 14 and config.COMMON_WEEKLY_UPDATE_TASKS:
+        if min_phase <= 15 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Refreshing leaderboards")
             await self.run(ctx, os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
 
-        if min_phase <= 15 and config.COMMON_WEEKLY_UPDATE_TASKS:
+        if min_phase <= 16 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Restarting rabbitmq")
             await self.restart(ctx, "rabbitmq", owner=message)
 
-        if min_phase <= 16 and config.COMMON_WEEKLY_UPDATE_TASKS:
+        if min_phase <= 17 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Marking common tasks as complete")
             r.set('monumenta:automation:weekly_update_common_done', 'True')
 
-        if min_phase <= 17:
+        if min_phase <= 18:
             await self.display(ctx, "Waiting for common tasks to complete...")
             while True:
                 common_done = r.get('monumenta:automation:weekly_update_common_done').decode("utf-8")
@@ -2035,17 +2042,17 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                 # Not done yet, wait a bit before polling
                 await asyncio.sleep(5)
 
-        if min_phase <= 18:
+        if min_phase <= 19:
             await self.display(ctx, "Running actual weekly update (this will take a while!)...")
             await self.run(ctx, os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j {config.CPU_COUNT} " + " ".join(self._shards)))
 
-        if min_phase <= 19:
+        if min_phase <= 20:
             await self.display(ctx, "Pruning scores from expired instances...")
             for shard in self._shards:
                 if shard not in ["build",] and not shard.startswith("bungee"):
                     await self.run(ctx, os.path.join(_top_level, f"utility_code/prune_scores.py -j {config.CPU_COUNT} {self._shards[shard]}"))
 
-        if min_phase <= 20:
+        if min_phase <= 21:
             for shard in self._shards:
                 if shard not in ["build",] and not shard.startswith("bungee"):
                     await self.run(ctx, f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
@@ -2069,22 +2076,22 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run(ctx, ["perl", "-p", "-i", "-e", "s|enabled: *false|enabled: true|g", f"{self._shards[shard]}/plugins/BungeeDisplay/config.yml"])
 
         await self.cd(ctx, self._server_dir)
-        if min_phase <= 21:
+        if min_phase <= 22:
             await self.display(ctx, "Generating per-shard config...")
             await self.run(ctx, os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(self._shards.keys())))
 
-        if min_phase <= 22:
+        if min_phase <= 23:
             await self.display(ctx, "Checking for broken symbolic links...")
             await self.run(ctx, f"find {self._server_dir} -xtype l", displayOutput=True)
 
         await self.cd(ctx, "/home/epic")
-        if min_phase <= 23:
+        if min_phase <= 24:
             await self.display(ctx, "Backing up post-update artifacts...")
             await self.cd(ctx, f"{self._server_dir}/..")
             folder_name = self._server_dir.strip("/").split("/")[-1]
             await self.run(ctx, ["tar", f"--exclude={folder_name}/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/{folder_name}_post_reset_{datestr()}.tgz", folder_name])
 
-        if min_phase <= 24:
+        if min_phase <= 25:
             await self.display(ctx, "Deleting 0_PREVIOUS...")
             await self.run(ctx, f"rm -rf {self._server_dir}/0_PREVIOUS")
 

@@ -10,6 +10,7 @@ import yaml
 from lib_py3.common import eprint
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
+from lib_py3.market_data import MarketData
 from lib_py3.plugin_data import iter_plugin_data_parallel
 from lib_py3.timing import Timings
 from lib_py3.upgrade import upgrade_entity
@@ -129,5 +130,26 @@ if __name__ == '__main__':
     num_replacements += replacements
 
     timings.nextStep(f"Plugin data replacements done: {replacements} replacements")
+
+    # Begin market replacements --
+    replacements = 0
+
+    mkt = MarketData(json_path=os.path.join(world_path, "itemDBIDToItem.json"), item_to_id=False)
+    for item in mkt.recursive_iter_items():
+        if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
+            replacements += 1
+    if not dry_run:
+        mkt.save()
+
+    mkt = MarketData(json_path=os.path.join(world_path, "itemDBItemToID.json"), item_to_id=True)
+    for item in mkt.recursive_iter_items():
+        if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
+            replacements += 1
+    if not dry_run:
+        mkt.save()
+
+    num_replacements += replacements
+    timings.nextStep(f"Market data replacements done: {replacements} replacements")
+    # -- End market replacements
 
     print("Replaced {} items".format(num_replacements))
