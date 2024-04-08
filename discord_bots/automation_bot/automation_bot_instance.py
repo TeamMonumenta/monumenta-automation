@@ -33,6 +33,7 @@ _top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 from lib_py3.common import decode_escapes
+from lib_py3.common import int_to_ordinal
 from lib_py3.lockout import LockoutAPI
 from lib_py3.raffle import vote_raffle
 from lib_py3.lib_k8s import KubernetesManager
@@ -193,7 +194,8 @@ class AutomationBotInstance(commands.Cog):
         }
 
         self._status_messages = {
-            "Shard status": self._get_list_shards_str_summary,
+            "Shard Status": self._get_list_shards_str_summary,
+            "Server Time": self._time_summary,
             #"Public events": self._gameplay_event_summary, # TODO Bot cannot see these messages for reasons unknown
         }
         if config.K8S_NAMESPACE != "play":
@@ -886,6 +888,42 @@ Examples:
         if not msg:
             msg.append("No shards to list")
 
+        return "\n".join(msg)
+
+    async def get_utc_offset(self):
+        utc_offset_path = self._persistence_path / 'utc_offset.json'
+        config = {
+            "hours": -17
+        }
+        if utc_offset_path.is_file():
+            config = json.loads(utc_offset_path.read_text(encoding='utf-8-sig'))
+        try:
+            return timedelta(**config)
+        except Exception:
+            return timedelta(hours=-17)
+
+    async def _time_summary(self):
+        """Display common time information"""
+        utc_offset = await self.get_utc_offset()
+        tz = timezone(utc_offset)
+        monumenta_timezone = int(utc_offset / timedelta(hours=1))
+        now = datetime.now(tz)
+        now_skip_seconds = datetime(now.year, now.month, now.day, now.hour, now.minute, tzinfo=tz)
+        today_start = datetime(now.year, now.month, now.day, 0, 0, tzinfo=tz)
+        day_of_week_0_indexed = (today_start.weekday() + 3) % 7
+        week_start = today_start - timedelta(days=day_of_week_0_indexed)
+
+        tomorrow_start = today_start + timedelta(days=1)
+        new_week = today_start + timedelta(days=7 - day_of_week_0_indexed)
+
+        today_format = now_skip_seconds.strftime(f'%-I:%M %p on %A the {int_to_ordinal(now_skip_seconds.day)} of %B, %Y')
+
+        msg = []
+        msg.append(f"Monumenta's local time (UTC{monumenta_timezone:+d})")
+        msg.append("The following information is used for daily and weekly events, such as delve bounties, dungeon access, and the season pass. Note that this is not the same as weekly updates, which we use to release new content into the game and provide a fresh copy of the overworlds.")
+        msg.append(f'It is currently `{today_format}`')
+        msg.append(f'A new day begins {self.get_discord_timestamp(tomorrow_start, ":R")}')
+        msg.append(f'A new week begins {self.get_discord_timestamp(new_week, ":R")} (every Friday)')
         return "\n".join(msg)
 
     async def action_list_instances(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
