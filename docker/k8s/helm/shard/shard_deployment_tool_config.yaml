@@ -28,10 +28,6 @@
         "volt" : { "node": "m12", "memGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
     },
 
-    "m119": {
-        "build" : { "node": "m12" , "memGB": 3, },
-    },
-
     # R1
     "valley": {
         "play" : { "node": "m17", "memGB": 6, },
@@ -81,8 +77,6 @@
     "ring-8":  { "play" : { "node": "m17", "memGB": 7, }, },
     "ring-9":  { "play" : { "node": "m17", "memGB": 7, }, },
     "ring-10": { "play" : { "node": "m17", "memGB": 7, }, },
-
-    "ringfreeze":  { "build": { "node": "m12", "memGB": 3   , }, },
 
     # Plots
     "plots": {

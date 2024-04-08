@@ -547,14 +547,6 @@ if __name__ == '__main__':
             'linked':server_config + base_plugins + dynmap,
         },
 
-        'm119':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=12'),
-                ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ],
-            'linked':server_config + base_plugins + dynmap,
-        },
-
         'dev1':{
             'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance=6'),
