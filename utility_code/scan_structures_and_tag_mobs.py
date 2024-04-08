@@ -149,6 +149,7 @@ if __name__ == '__main__':
         "mist":{"path": "isles/mist"},
         "remorse":{"path": "isles/remorse"},
         "depths":{"world": "depths"},
+        "zenith":{"world": "zenithrooms"},
         "gallery":{"world": "gallery"},
         "portal":{"path": "ring/portal"},
         "ruin":{"path": "ring/ruin"},
