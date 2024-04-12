@@ -123,6 +123,14 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/volt/m13
+        - name: nfs-community-m12
+          hostPath:
+            type: Directory
+            path: /nfs/community/m12
+        - name: nfs-community-m13
+          hostPath:
+            type: Directory
+            path: /nfs/community/m13
         - name: nfs-r1
           hostPath:
             type: Directory
@@ -179,6 +187,10 @@ spec:
           mountPath: /home/epic/volt/m12
         - name: nfs-volt-m13
           mountPath: /home/epic/volt/m13
+        - name: nfs-community-m12
+          mountPath: /home/epic/community/m12
+        - name: nfs-community-m13
+          mountPath: /home/epic/community/m13
         - name: nfs-r1
           mountPath: /home/epic/valley
         - name: nfs-resource-packs
