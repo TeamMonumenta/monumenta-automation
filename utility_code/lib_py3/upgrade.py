@@ -2,7 +2,6 @@ import sys
 import os
 import uuid
 import json
-import traceback
 import re
 from typing import Union
 from lib_py3.common import get_entity_uuid, uuid_to_mc_uuid_tag_int_array, update_plain_tag
@@ -12,7 +11,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../qu
 
 from quarry.types import nbt
 from quarry.types.nbt import TagCompound, TagList, TagString, TagShort
-from quarry.types.text_format import unformat_text
 from brigadier.string_reader import StringReader
 
 _single_item_locations = (
@@ -92,7 +90,7 @@ def translate_attribute_name(name: str) -> str:
         name = "minecraft:zombie.spawn_reinforcements"
     return name
 
-def upgrade_uuid_if_present(nbt_: TagCompound, regenerateUUIDs = False) -> None:
+def upgrade_uuid_if_present(nbt_: TagCompound, regenerateUUIDs=False) -> None:
     if nbt_.has_path("OwnerUUID"):
         owneruuid = uuid.UUID(nbt_.at_path("OwnerUUID").value)
         nbt_.value["Owner"] = uuid_to_mc_uuid_tag_int_array(owneruuid)
@@ -116,7 +114,7 @@ def upgrade_uuid_if_present(nbt_: TagCompound, regenerateUUIDs = False) -> None:
         modifierUUID = uuid.uuid4()
         nbt_.value["UUID"] = uuid_to_mc_uuid_tag_int_array(modifierUUID)
 
-def upgrade_attributes(attributes_nbt: TagCompound, regenerateUUIDs = False) -> None:
+def upgrade_attributes(attributes_nbt: TagCompound, regenerateUUIDs=False) -> None:
     for attribute in attributes_nbt.value:
         if attribute.has_path("Name"):
             mod = attribute.at_path("Name")
@@ -182,8 +180,8 @@ cat_variant_id_map = (
     "minecraft:all_black",
 )
 
-def upgrade_entity(nbt_: TagCompound, regenerateUUIDs: bool = False, tagsToRemove: list = [], remove_non_plain_display: bool = False) -> None:
-    if type(nbt_) is not TagCompound:
+def upgrade_entity(nbt_: TagCompound, regenerateUUIDs=False, tagsToRemove: list = [], remove_non_plain_display=False) -> None:
+    if not isinstance(nbt_, TagCompound):
         raise ValueError(f"Expected TagCompound, got {type(nbt_)}")
 
     for junk in tagsToRemove:
@@ -237,10 +235,10 @@ def upgrade_entity(nbt_: TagCompound, regenerateUUIDs: bool = False, tagsToRemov
 
     # Upgrade potions
     if nbt_.has_path("Potion"):
-        if type(nbt_.at_path("Potion")) is TagCompound:
+        if isinstance(nbt_.at_path("Potion"), TagCompound):
             nbt_.value["Item"] = nbt_.at_path("Potion")
             nbt_.value.pop("Potion")
-        elif type(nbt_.at_path("Potion")) is TagString:
+        elif isinstance(nbt_.at_path("Potion"), TagString):
             nbt_.at_path("Potion").value = nbt_.at_path("Potion").value.replace("empty", "mundane") # .replace("awkward", "mundane")
 
     # Upgrade UUIDMost/UUIDLeast -> UUID
@@ -267,7 +265,7 @@ def upgrade_entity(nbt_: TagCompound, regenerateUUIDs: bool = False, tagsToRemov
                 raise KeyError("Item enchantment does not contain 'id'")
 
             # Upgrade numeric enchants to strings
-            if type(enchant.at_path("id").value) is int:
+            if isinstance(enchant.at_path("id").value, int):
                 enchant.value["id"] = TagString(enchant_id_map[enchant.at_path("id").value])
 
             # Make sure the enchantment is namespaced
@@ -321,7 +319,7 @@ def upgrade_entity(nbt_: TagCompound, regenerateUUIDs: bool = False, tagsToRemov
 
     # Upgrade skull items
     if nbt_.has_path("SkullOwner.Id"):
-        if type(nbt_.at_path("SkullOwner.Id")) is TagString:
+        if isinstance(nbt_.at_path("SkullOwner.Id"), TagString):
             nbt_.at_path("SkullOwner").value["Id"] = uuid_to_mc_uuid_tag_int_array(uuid.UUID(nbt_.at_path("SkullOwner.Id").value))
 
     # Recurse over list tags
@@ -353,7 +351,7 @@ def upgrade_entity(nbt_: TagCompound, regenerateUUIDs: bool = False, tagsToRemov
             if len(display.value) <= 0:
                 nbt_.value.pop("display")
 
-def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = "never", regenerateUUIDs = False) -> str:
+def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = "never", regenerateUUIDs=False) -> str:
     """
     Takes in a line and parses/upgrades all the NBT contained in that line
     """
@@ -380,10 +378,10 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
                 embedded_json = None
                 try:
                     embedded_json = json.loads(embedded_fragment)
-                except Exception as e:
+                except Exception:
                     try:
                         embedded_json = json.loads(embedded_fragment.replace(r"""\'""", r"""'""").replace(r'''\\\\''', r'''\\'''))
-                    except Exception as e:
+                    except Exception:
                         pass
 
                 if embedded_json is not None:
@@ -409,8 +407,9 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
 
                     result_line += data.to_mojangson()
             except Exception as e:
-                print("Failed to parse, skipping:", e)
-                print("Line:", line)
+                # These prints are incredibly noisy - lots of things have { but don't parse as mojangson. Ignore them.
+                #print("Failed to parse, skipping:", e)
+                #print("Line:", line)
                 result_line += '{'
                 reader.set_cursor(cursor + 1)
         else:
@@ -419,10 +418,10 @@ def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = 
 
     return result_line
 
-def upgrade_json_walk(obj: Union[str, dict, list, int, bool], convert_checks_to_plain: str = "never", regenerateUUIDs = False) -> Union[str, dict, list, int, bool]:
+def upgrade_json_walk(obj: Union[str, dict, list, int, bool], convert_checks_to_plain: str = "never", regenerateUUIDs=False) -> Union[str, dict, list, int, bool]:
     if isinstance(obj, str):
         return upgrade_text_containing_mojangson(obj, convert_checks_to_plain, regenerateUUIDs=regenerateUUIDs)
-    elif isinstance(obj, dict):
+    if isinstance(obj, dict):
         new_obj = {}
         for k, v in obj.items():
             if k == "conditions" and convert_checks_to_plain == "auto":
@@ -431,20 +430,19 @@ def upgrade_json_walk(obj: Union[str, dict, list, int, bool], convert_checks_to_
             else:
                 new_obj[k] = upgrade_json_walk(v, convert_checks_to_plain, regenerateUUIDs=regenerateUUIDs)
         return new_obj
-    elif isinstance(obj, list):
+    if isinstance(obj, list):
         new_obj = []
         for v in obj:
             new_obj.append(upgrade_json_walk(v, convert_checks_to_plain, regenerateUUIDs=regenerateUUIDs))
         return new_obj
-    else:
-        return obj
+    return obj
 
-def upgrade_json_file(path: str, convert_checks_to_plain: str = "never", regenerateUUIDs = False):
+def upgrade_json_file(path: str, convert_checks_to_plain: str = "never", regenerateUUIDs=False):
     json_file = jsonFile(path)
     json_file.dict = upgrade_json_walk(json_file.dict, convert_checks_to_plain, regenerateUUIDs=regenerateUUIDs)
     json_file.save()
 
-def upgrade_mcfunction_file(path: str, convert_checks_to_plain: str = "never", regenerateUUIDs = False):
+def upgrade_mcfunction_file(path: str, convert_checks_to_plain: str = "never", regenerateUUIDs=False):
     lines = []
     with open(path, 'r') as fp:
         lines = fp.readlines()
