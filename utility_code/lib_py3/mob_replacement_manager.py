@@ -1,18 +1,13 @@
 import os
 import sys
 
-import traceback
-
-from lib_py3.common import get_item_name_from_nbt, get_entity_name_from_nbt, parse_name_possibly_json, eprint
-from lib_py3.item_replacement_rules import global_rules
-from lib_py3.item_replacement_substitutions import substitution_rules
+from lib_py3.common import get_entity_name_from_nbt, eprint
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
 from quarry.types import nbt
 
 def pop_if_present(entity_nbt: nbt.TagCompound, key: str):
     if isinstance(entity_nbt, nbt.TagCompound) and key in entity_nbt.value:
-        name = get_entity_name_from_nbt(entity_nbt)
         entity_nbt.value.pop(key)
 
 def remove_unwanted_spawner_tags(entity_nbt: nbt.TagCompound):
@@ -50,7 +45,7 @@ def remove_unwanted_spawner_tags(entity_nbt: nbt.TagCompound):
     for entity in entity_nbt.iter_multipath('Passengers[]'):
         remove_unwanted_spawner_tags(entity)
 
-class MobReplacementManager(object):
+class MobReplacementManager:
     """
     A tool to replace mobs while preserving certain data.
     """
@@ -124,15 +119,17 @@ class MobReplacementManager(object):
     # resulting to prevent false-positive matches
     #
 
-    def recurse_replace(self, entity_nbt) -> int:
+    def recurse_replace_master_passengers(self, entity_nbt, parent_nbt) -> int:
         replacements = 0
         if self.replace_mob(entity_nbt):
-            from lib_py3.common import get_entity_name_from_nbt
-            eprint(f"Incorrect passenger {get_entity_name_from_nbt(entity_nbt)}")
+            if parent_nbt is None:
+                eprint(f"BUG! This shouldn't be possible - somehow replaced a mob at the top level of mob replacements. Problematic mob was '{get_entity_name_from_nbt(entity_nbt)}'")
+            else:
+                eprint(f"Incorrect passenger '{get_entity_name_from_nbt(entity_nbt)}' riding '{get_entity_name_from_nbt(parent_nbt)}'")
             replacements += 1
 
-        for entity_nbt in entity_nbt.iter_multipath('Passengers[]'):
-            replacements += self.recurse_replace(entity_nbt)
+        for iter_nbt in entity_nbt.iter_multipath('Passengers[]'):
+            replacements += self.recurse_replace_master_passengers(iter_nbt, entity_nbt)
 
         return replacements
 
@@ -141,7 +138,7 @@ class MobReplacementManager(object):
         for mob_id in self._mob_map:
             mob_type = self._mob_map[mob_id]
             for mob_name in mob_type:
-                replacements += self.recurse_replace(mob_type[mob_name])
+                replacements += self.recurse_replace_master_passengers(mob_type[mob_name], None)
         return replacements
 
     def add_substitutions(self, substitutions: [dict], force_add_ignoring_conflicts=False) -> None:
@@ -194,7 +191,7 @@ class MobReplacementManager(object):
         # Try the more efficient direct name update first
         mob_name = get_entity_name_from_nbt(mob)
         if mob_name:
-            new_nbt = self._mob_map.get(mob_id,{}).get(mob_name,None)
+            new_nbt = self._mob_map.get(mob_id, {}).get(mob_name, None)
         else:
             mob_name = "<nameless>"
 
