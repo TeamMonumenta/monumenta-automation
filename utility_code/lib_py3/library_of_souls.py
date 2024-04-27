@@ -108,10 +108,9 @@ class LibraryOfSouls(object):
     def is_mob_riding_itself(cls, soul_nbt: TagCompound, bad_names: [str]) -> bool:
         if soul_nbt.has_path("CustomName"):
             name = unformat_text(parse_name_possibly_json(soul_nbt.at_path("CustomName").value))
-            if name in bad_names:
+            if len(name) > 0 and name in bad_names:
                 return True
-            else:
-                bad_names.append(name)
+            bad_names.append(name)
 
         if soul_nbt.has_path("Passengers"):
             for passenger in soul_nbt.at_path("Passengers").value:
