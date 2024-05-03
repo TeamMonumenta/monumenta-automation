@@ -16,6 +16,8 @@ import discord
 from discord.ext import commands
 from discord.ext import tasks
 
+import pika
+
 import config
 from automation_bot_lib import split_string
 from automation_bot_instance import AutomationBotInstance
@@ -78,6 +80,12 @@ class AutomationBot(commands.Bot):
         }
 
     async def setup_hook(self) -> None:
+        self.retry_delays = {
+            "heartbeat": 0.0,
+            "heartbeat_retry_backoff": 1.0,
+            "status": 0.0,
+        }
+
         # start tasks to run in the background
         # See https://github.com/Rapptz/discord.py/blob/v2.3.2/examples/background_task.py
         # The start method is provided by the decorator
@@ -119,7 +127,21 @@ class AutomationBot(commands.Bot):
 
     @tasks.loop(seconds=5)
     async def shard_status_task(self):
-        await self.instance.status_tick()
+        if self.retry_delays["status"] > 0.0:
+            self.retry_delays["status"] -= 5.0
+            if self.retry_delays["status"] < 0.0:
+                self.retry_delays["status"] = 0.0
+            return
+
+        try:
+            await self.instance.status_tick()
+        except discord.DiscordServerError:
+            logger.debug("A 5xx server error occurred on Discord's end, trying again later")
+            self.retry_delays["status"] = 60.0
+        except discord.RateLimited as rate_limited:
+            retry_after = rate_limited.retry_after
+            logger.debug("%s", f"Rate limited (messages might not have sent in the first place); retrying after {retry_after}")
+            self.retry_delays["status"] = retry_after
 
     @shard_status_task.before_loop
     async def before_shard_status_task(self):
@@ -127,8 +149,26 @@ class AutomationBot(commands.Bot):
 
     @tasks.loop(seconds=1)
     async def heartbeat_task(self):
-        if self.instance and self.instance._socket:
+        if not (self.instance and self.instance._socket):
+            return
+
+        if self.retry_delays["heartbeat"] > 0.0:
+            self.retry_delays["heartbeat"] -= 1.0
+            if self.retry_delays["heartbeat"] < 0.0:
+                self.retry_delays["heartbeat"] = 0.0
+            return
+
+        try:
             self.instance._socket.send_heartbeat()
+            self.retry_delays["heartbeat_retry_backoff"] = 1.0
+            return
+        except pika.exceptions.StreamLostError as ex:
+            logger.debug("Heartbeat stream lost, will retry shortly: %s", f"{ex}")
+
+        self.retry_delays["heartbeat_retry_backoff"] *= 2.0
+        if self.retry_delays["heartbeat_retry_backoff"] > 60.0:
+            self.retry_delays["heartbeat_retry_backoff"] = 60.0
+        self.retry_delays["heartbeat"] = self.retry_delays["heartbeat_retry_backoff"]
 
     @heartbeat_task.before_loop
     async def before_heartbeat_task(self):
@@ -172,7 +212,7 @@ class AutomationBot(commands.Bot):
 
                 try:
                     msg = await channel.fetch_message(payload.message_id)
-                except discord.errors.Forbidden:
+                except discord.Forbidden:
                     self.rlogger.warning("Permission denied retrieving reaction message in channel %s", channel.name)
                     return
 
