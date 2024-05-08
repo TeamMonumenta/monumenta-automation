@@ -92,12 +92,15 @@ fn claim(domain: &str, args: &mut Vec<String>) -> anyhow::Result<()> {
         "results": found_lockout
     });
     let result_json = serde_json::to_string(&final_result)?;
+    print!("{}", result_json);
 
-    if found_lockout.owner != new_lockout.owner || found_lockout.shard != new_lockout.shard {
-        bail!("{}", result_json);
+    if found_lockout.owner != new_lockout.owner {
+        bail!("Another user has a conflicting claim");
+    }
+    if found_lockout.shard != new_lockout.shard {
+        bail!("You have a conflicting claim elsewhere");
     }
 
-    print!("{}", result_json);
     Ok(())
 }
 
