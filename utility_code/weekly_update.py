@@ -204,6 +204,7 @@ if __name__ == '__main__':
         "skt": get_dungeon_config("skt", "DSKTAccess"),
 
 
+        "hexfall": get_dungeon_config("hexfall", "DHFAccess"),
         "gallery": get_non_preserved_dungeon_config("gallery"),
         "portal": get_non_preserved_dungeon_config("portal"),
         "ruin": get_non_preserved_dungeon_config("ruin"),

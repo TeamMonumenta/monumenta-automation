@@ -204,6 +204,12 @@ if __name__ == '__main__':
                 ],
                 "objective":"DMASAccess"
             },
+            "hexfall": {
+                "world": [
+                    "hexfall",
+                ],
+                "objective":"DHFAccess"
+            },
             "skt": {
                 "world": [
                     "SKT",

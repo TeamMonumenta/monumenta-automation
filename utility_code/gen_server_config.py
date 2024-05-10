@@ -670,6 +670,7 @@ if __name__ == '__main__':
         'playerplots': 6,
 
         'gallery': 8,
+        'hexfall': 8,
         'portal': 8,
         'ruin': 8,
         'skt': 8,
