@@ -135,13 +135,14 @@ class AutomationBot(commands.Bot):
 
         try:
             await self.instance.status_tick()
-        except discord.DiscordServerError:
-            logger.debug("A 5xx server error occurred on Discord's end, trying again later")
+        except discord.errors.DiscordServerError:
+            self.rlogger.debug("A 5xx server error occurred on Discord's end, trying again later")
             self.retry_delays["status"] = 60.0
-        except discord.RateLimited as rate_limited:
-            retry_after = rate_limited.retry_after
-            logger.debug("%s", f"Rate limited (messages might not have sent in the first place); retrying after {retry_after}")
-            self.retry_delays["status"] = retry_after
+        # Future version?
+        #except discord.errors.RateLimited as rate_limited:
+        #    retry_after = rate_limited.retry_after
+        #    self.rlogger.debug("%s", f"Rate limited (messages might not have sent in the first place); retrying after {retry_after}")
+        #    self.retry_delays["status"] = retry_after
 
     @shard_status_task.before_loop
     async def before_shard_status_task(self):
@@ -163,7 +164,7 @@ class AutomationBot(commands.Bot):
             self.retry_delays["heartbeat_retry_backoff"] = 1.0
             return
         except pika.exceptions.StreamLostError as ex:
-            logger.debug("Heartbeat stream lost, will retry shortly: %s", f"{ex}")
+            self.rlogger.debug("Heartbeat stream lost, will retry shortly: %s", f"{ex}")
 
         self.retry_delays["heartbeat_retry_backoff"] *= 2.0
         if self.retry_delays["heartbeat_retry_backoff"] > 60.0:
@@ -212,7 +213,7 @@ class AutomationBot(commands.Bot):
 
                 try:
                     msg = await channel.fetch_message(payload.message_id)
-                except discord.Forbidden:
+                except discord.errors.Forbidden:
                     self.rlogger.warning("Permission denied retrieving reaction message in channel %s", channel.name)
                     return
 
