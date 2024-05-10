@@ -11,4 +11,9 @@ if [[ $? -eq 0 ]]; then
 		mv "target/release/$fname" bin/
 	done
 	tree bin
+
+	if [ -d "/home/epic/4_SHARED/lockouts" ]; then
+		rm /home/epic/4_SHARED/lockouts/lockout
+		cp -a bin/lockout /home/epic/4_SHARED/lockouts/
+	fi
 fi

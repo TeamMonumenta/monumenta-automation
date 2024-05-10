@@ -159,3 +159,4 @@ fn clear(domain: &str, args: &mut Vec<String>) -> anyhow::Result<()> {
     print!("{}", result_json);
     Ok(())
 }
+
