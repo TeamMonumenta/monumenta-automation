@@ -85,8 +85,6 @@ class NameUnnamedItems(SubstitutionRule):
             # r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:golden_apple",tag:{display:{Name:'{"text":"Kingfruit"}'},plain:{display:{Name:"Kingfruit"}}}},{Count:1b,Slot:1b,id:"minecraft:enchanted_golden_apple",tag:{display:{Name:'{"text":"Soulfruit"}'},plain:{display:{Name:"Soulfruit"}}}}]}''',
             # Begone evil Turtle Master potions!
             r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{Potion:"minecraft:strong_turtle_master",display:{Name:'{"text":"Potion of the Turtle Master"}'},plain:{display:{Name:"Potion of the Turtle Master"}}}}]}''',
-            # Conjoined boomer boots
-            r'''{Items:[Count:1b,Slot:0b,id:"minecraft:golden_boots",tag:{{AttributeModifiers:[{Amount:1.0d,AttributeName:"minecraft:generic.armor_toughness",Name:"MMDummy",Operation:2,UUID:[I;0,0,0,0]}],Damage:0,Enchantments:[{id:"minecraft:power",lvl:1s}],HideFlags:3,Monumenta:{Stock:{Enchantments:{"Blast Protection":{Level:100}}}},display:{Lore:['{"italic":false,"color":"gray","text":"Blast Protection C"}'],Name:'{"bold":false,"italic":false,"underlined":false,"color":"#81D434","text":"Boots of Deleting"}'},plain:{display:{Lore:["Blast Protection C"],Name:"Boots of Deleting"}}}}]}''',
         )
 
         # These items have no lore text, which means they're assumed to be on mobs and will be skipped to prevent them
@@ -304,8 +302,6 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:cut_copper", "Copper Furnace", "minecraft:repeater", "Copper Relay Unit"],
                 # Molldyer's Inferno -> Hexcrafted Siphon replacement
                 ["minecraft:blaze_powder", "Molldyer's Inferno", "minecraft:amethyst_cluster", "Hexcrafted Siphon"],
-                # Replace boots of deleting
-                ["minecraft:golden_boots", "Boots of Deleting", "minecraft:leather_boots", "Infused Cloth Shoes"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
