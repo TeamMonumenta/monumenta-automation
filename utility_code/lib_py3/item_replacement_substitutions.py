@@ -1,6 +1,5 @@
 import os
 import sys
-import re
 
 from lib_py3.common import get_item_name_from_nbt
 from lib_py3.common import parse_name_possibly_json
@@ -18,7 +17,6 @@ class SubstitutionRule():
 
     def __init__(self):
         """Local data storage"""
-        pass
 
     def process(self, item_meta, item):
         """Edit the item name and ID before doing other replacements.
@@ -27,7 +25,6 @@ class SubstitutionRule():
         Edit item name and ID here, and it will change
         which item NBT is used for replacements.
         """
-        pass
 
     @classmethod
     def recursive_public_subclasses(cls):
@@ -56,6 +53,7 @@ substitution_rules = []
 # Substitution rules begin
 
 class ResetDirty(SubstitutionRule):
+    """Rule to reset the dirty flag"""
     name = "Reset Dirty tag"
 
     def process(self, item_meta, item):
@@ -66,8 +64,9 @@ class ResetDirty(SubstitutionRule):
             item.tag.value.pop('Monumenta')
 
 class NameUnnamedItems(SubstitutionRule):
+    """Rule to apply a name to unnamed items"""
     name = "Name Unnamed Items"
-    NAME_TABLE = None
+    NAME_TABLE = {}
 
     @classmethod
     def _init_unnamed_items(cls):
@@ -83,18 +82,16 @@ class NameUnnamedItems(SubstitutionRule):
         unnamed_chests = (
             # OLD EXAMPLE, DO NOT USE. This is pre 1.19 data
             # r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:golden_apple",tag:{display:{Name:'{"text":"Kingfruit"}'},plain:{display:{Name:"Kingfruit"}}}},{Count:1b,Slot:1b,id:"minecraft:enchanted_golden_apple",tag:{display:{Name:'{"text":"Soulfruit"}'},plain:{display:{Name:"Soulfruit"}}}}]}''',
-            # Begone evil Turtle Master potions!
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:potion",tag:{Potion:"minecraft:strong_turtle_master",display:{Name:'{"text":"Potion of the Turtle Master"}'},plain:{display:{Name:"Potion of the Turtle Master"}}}}]}''',
+            # Somehow some Summoning Crystals ended up with no lore after they were added to the loot tables
+            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:yellow_dye",tag:{display:{Name:'{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"Summoning Crystal"}],"text":""}'},plain:{display:{Name:"Summoning Crystal"}}}}]}''',
         )
 
         # These items have no lore text, which means they're assumed to be on mobs and will be skipped to prevent them
         # from dropping or changing stats. Items that match exactly will be given a temporary line of lore so they can
         # be replaced.
         named_chests = (
-            # Somehow some Summoning Crystals ended up with no lore after they were added to the loot tables
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:yellow_dye",tag:{display:{Name:'{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"Summoning Crystal"}],"text":""}'},plain:{display:{Name:"Summoning Crystal"}}}}]}''',
-            # Third try on Saturation Suspicious Stew -> Dichen Specialty Stew
-            r'''{Items:[{Count:1b,Slot:13b,id:"minecraft:suspicious_stew",tag:{Effects:[{EffectDuration:8,EffectId:23b}],display:{Name:'{"text":"Dichen Specialty Stew"}',Lore:['{"text":"Don\'t skip this if it\'s missing lore!"}']},plain:{display:{Name:"Dichen Specialty Stew",Lore:["Don't skip this if it's missing lore!"]}}}}]}''',
+            # Blast Prot 100 boots again
+            r'''{Items:[{Count:1b,Slot:13b,id:"minecraft:golden_boots",tag:{AttributeModifiers:[{Amount:1.0d,AttributeName:"minecraft:generic.armor_toughness",Name:"MMDummy",Operation:2,UUID:[I;0,0,0,0]}],Damage:0,Enchantments:[{id:"minecraft:power",lvl:1s}],HideFlags:3,Monumenta:{Stock:{Enchantments:{"Blast Protection":{Level:100}}}},display:{Lore:['{"italic":false,"color":"gray","text":"Blast Protection C"}'],Name:'{"bold":false,"italic":false,"underlined":false,"color":"#81D434","text":"Boots of Deleting"}'},plain:{display:{Lore:["Blast Protection C"],Name:"Boots of Deleting"}}}}]}''',
         )
 
         for chest_mojangson in unnamed_chests:
@@ -159,6 +156,7 @@ class NameUnnamedItems(SubstitutionRule):
                 return
 
 class FixBookTitles(SubstitutionRule):
+    """Rule to identify books by title if the name is not set"""
     name = "Fix book titles"
 
     def process(self, item_meta, item):
@@ -168,9 +166,11 @@ class FixBookTitles(SubstitutionRule):
         item_meta['name'] = unformat_text(parse_name_possibly_json(title))
 
 class FixBrokenSectionSymbols(SubstitutionRule):
+    """Rule to fix section symbols with the wrong character encoding"""
     name = "Fix broken section symbols"
 
-    def _fix(self, old_str):
+    @staticmethod
+    def _fix(old_str):
         return old_str.replace(chr(0xfffd), chr(0xa7))
 
     def process(self, item_meta, item):
@@ -189,6 +189,7 @@ class FixBrokenSectionSymbols(SubstitutionRule):
             lore_line.value = new_lore
 
 class FixDoubleJsonNames(SubstitutionRule):
+    """Rule to fix item names that are json inside of json"""
     name = "Fixed json in json names"
 
     def process(self, item_meta, item):
@@ -201,25 +202,8 @@ class FixDoubleJsonNames(SubstitutionRule):
             item.tag.at_path('display.Name').value = name_json
             item_meta['name'] = unformat_text(name_json_json)
 
-class ReplaceSuspiciousBlock(SubstitutionRule):
-    name = "Replaces Suspicious Block black concrete with just black concrete"
-    matcher = re.compile("""Suspicious Block[!',.:;i|]{3}""")
-
-    def process(self, item_meta, item):
-        if item.id != "minecraft:black_concrete":
-            return
-
-        if not item.nbt.has_path('tag.display.Name'):
-            return
-
-        name = item.tag.at_path('display.Name').value
-        name_json = parse_name_possibly_json(name)
-
-        if self.matcher.fullmatch(name_json):
-            item.nbt.value.pop('tag')
-            item_meta["name"] = None
-
 class FixEscapedNames(SubstitutionRule):
+    """Rule to un-escape valid json characters"""
     name = "Fixed escaped characters in json names"
 
     def process(self, item_meta, item):
@@ -233,6 +217,7 @@ class FixEscapedNames(SubstitutionRule):
         item_meta['name'] = unformat_text(name_json)
 
 class FixPlainTag(SubstitutionRule):
+    """Rule to update the plain tag"""
     name = "Fix the plain tag"
 
     def process(self, item_meta, item):
@@ -242,6 +227,7 @@ class FixPlainTag(SubstitutionRule):
 
 
 class MarkPlayerModifiedDirty(SubstitutionRule):
+    """Rule to mark items modified by players so the plugin code updates their lore text"""
     name = "Apply the dirty tag to items not in the loot tables"
 
     def process(self, item_meta, item):
@@ -285,9 +271,11 @@ class UpdateQuivers(SubstitutionRule):
 
 
 class SubtituteItems(SubstitutionRule):
+    """Rule to replace items by ID/name"""
     name = "Substitute the ID and name of items, ignoring other NBT"
 
     def __init__(self):
+        super().__init__()
         self.replacements = {}
 
         for substitution in [
@@ -302,6 +290,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:cut_copper", "Copper Furnace", "minecraft:repeater", "Copper Relay Unit"],
                 # Molldyer's Inferno -> Hexcrafted Siphon replacement
                 ["minecraft:blaze_powder", "Molldyer's Inferno", "minecraft:amethyst_cluster", "Hexcrafted Siphon"],
+                # Boots of Deleting -> Infused Cloth Shoes
+                ["minecraft:golden_boots", "Boots of Deleting", "minecraft:leather_boots", "Infused Cloth Shoes"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
