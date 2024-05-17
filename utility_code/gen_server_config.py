@@ -261,6 +261,7 @@ if __name__ == '__main__':
     network_chat = [
         ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
         ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/all/MonumentaNetworkChat/config.yml'),
+        ('plugins/MonumentaNetworkChat/global_filters', '/home/epic/4_SHARED/global_chat_filters'),
         ('plugins/MonumentaNetworkChat/help', '../../../server_config/data/plugins/all/MonumentaNetworkChat/help'),
     ]
 
