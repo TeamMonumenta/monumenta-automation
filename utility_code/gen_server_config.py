@@ -234,6 +234,7 @@ if __name__ == '__main__':
         ('plugins/MonumentaNetworkRelay/config.yml',),
         ('plugins/HolographicDisplays/config.yml',),
         ('plugins/HolographicDisplays/symbols.yml',),
+        ('log4j2-shard.xml',)
     ]
 
     purgatory_min = [
