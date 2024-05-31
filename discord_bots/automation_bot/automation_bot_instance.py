@@ -1285,10 +1285,10 @@ After transferring, source player data is backed up and then deleted. The source
         backuppath = f"/home/epic/0_OLD_BACKUPS/0_PLAYERDATA_CHANGES/transfer_player_{fromplayer}_to_{toplayer}_{datestr()}"
 
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/move_redis_data_between_players"), "redis://redis/", "play", fromplayer, toplayer, backuppath], displayOutput=True)
-        await self.display(ctx, f"{fromplayer} has been wiped and moved to the tutorial. If this was a mistake, you can ask an operator to restore it from the backup in {backuppath}.")
-        await self.display(ctx, f"{toplayer} has had their data overwritten by the data from {fromplayer}. If this was a mistake, you can roll the player back to before the transfer using the in-game /rollback command")
-        await self.display(ctx, f"**You still have to fix the player's guilds.**")
-        await self.display(ctx, f"To do this, go in-game and run ```\n/lp user {fromplayer} parent info\n``` Take note of the guild group. Then remove the original player from that guild via ```\n/lp user {fromplayer} parent remove <guild>\n``` and add the new player to the guild via ```\n/lp user {toplayer} parent add <guild>\n```")
+        await self.display(ctx, f"`{fromplayer}` has been wiped and moved to the tutorial. If this was a mistake, you can ask an operator to restore it from the backup in `{backuppath}`.")
+        await self.display(ctx, f"`{toplayer}` has had their data overwritten by the data from {fromplayer}. If this was a mistake, you can roll the player back to before the transfer using the in-game /rollback command")
+        await self.display(ctx, f"**You still have to fix the player's LuckPerms data.**")
+        await self.display(ctx, f"To do this, go in-game and run ```\n/transferpermissions {fromplayer} {toplayer}\n```\nNote that `{fromplayer}` needs to be offline, and `{toplayer}` needs to be online. This will update all LuckPerms data (guilds, roles, etc) in one go.")
 
     async def action_rollback_playerdata(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Rolls a player back to the most recent weekly update
