@@ -80,6 +80,8 @@ spec:
           value: "/home/epic/play/m13/bungee-13"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        - name: "JAVA_ARG"
+          value: "-Dlog4j2.configurationFile=log4j2-bungee.xml"
         - name: "NETWORK_RELAY_NAME"
           value: bungee-13
         readinessProbe:

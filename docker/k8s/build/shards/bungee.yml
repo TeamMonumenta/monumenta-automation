@@ -98,6 +98,8 @@ spec:
           value: "/home/epic/build/m12/bungee"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        - name: "JAVA_ARG"
+          value: "-Dlog4j2.configurationFile=log4j2-bungee.xml"
         - name: "NETWORK_RELAY_NAME"
           value: bungee
         readinessProbe:

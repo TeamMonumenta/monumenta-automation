@@ -3,19 +3,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: bungee
+  name: bungee-13
   namespace: volt
   labels:
-    app: bungee
+    app: bungee-13
     k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
-    app: bungee
+    app: bungee-13
   ports:
-  - name: plan
-    port: 8804
-    targetPort: 8804
   - name: metrics
     port: 9225
     targetPort: 9225
@@ -27,21 +24,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bungee
+  name: bungee-13
   namespace: volt
   labels:
-    app: bungee
+    app: bungee-13
 spec:
   strategy:
     type: Recreate
   replicas: 0
   selector:
     matchLabels:
-      app: bungee
+      app: bungee-13
   template:
     metadata:
       labels:
-        app: bungee
+        app: bungee-13
     spec:
       affinity:
         nodeAffinity:
@@ -51,14 +48,14 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - monumenta-13
       volumes:
         - name: nfs-volume
           hostPath:
-            path: /nfs/volt/m12
+            path: /nfs/volt/m13
             type: Directory
       containers:
-      - name: bungee
+      - name: bungee-13
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-17
         tty: true
         stdin: true
@@ -66,8 +63,11 @@ spec:
         # Primary Minecraft port
         - containerPort: 25566
           hostPort: 9012
-          hostIP: "141.94.75.9" # The node's external facing IP address
-        - containerPort: 8804
+          hostIP: "15.235.54.193" # The node's external facing IP address
+        # Votifier
+        - containerPort: 8192
+          hostPort: 23334
+          hostIP: "15.235.54.193" # The node's external facing IP address
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
@@ -77,13 +77,13 @@ spec:
         - name: "JAVA_JAR"
           value: "BungeeCord.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/volt/m12/bungee"
+          value: "/home/epic/volt/m13/bungee-13"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "JAVA_ARG"
           value: "-Dlog4j2.configurationFile=log4j2-bungee.xml"
         - name: "NETWORK_RELAY_NAME"
-          value: bungee
+          value: bungee-13
         readinessProbe:
           tcpSocket:
             port: 25566
@@ -98,7 +98,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/volt/m12
+          mountPath: /home/epic/volt/m13
         resources:
           limits:
             memory: 1Gi
