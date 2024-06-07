@@ -5,10 +5,12 @@ import yaml
 
 from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
+from lib_py3.common import parse_name_possibly_json
 from lib_py3.common import mark_dirty
 from lib_py3.common import update_plain_tag
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../quarry"))
+from quarry.types.text_format import unformat_text
 from quarry.types import nbt
 from quarry.types.text_format import TextFormats, TextStyles
 
@@ -120,6 +122,22 @@ class AbortNoLore(GlobalRule):
         # Items with lore are always replaced
         if item.nbt.has_path('tag.display.Lore[0]'):
             return
+
+        # Quest dev request to always update written books - if this fails, it's on them
+        if item.id == 'minecraft:written_book':
+            if not item.nbt.has_path('tag.title'):
+                return
+
+            # There are specific books that shouldn't be replaced if a player writes their own book with the same title,
+            # which would be missing lore text
+            title = item.tag.at_path('title').value
+            title = unformat_text(parse_name_possibly_json(title))
+            if title not in (
+                "Endless",
+                "I Will Do What I Must",
+                "Magic Beyond Control",
+            ):
+                return
 
         # Items without lore in spawners never get replaced
         #if item.is_in_spawner():
