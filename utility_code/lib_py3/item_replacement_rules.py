@@ -328,10 +328,6 @@ class PreserveBlockEntityTag(GlobalRule):
                 eprint("Skipping invalid BlockEntityTag: " + item.nbt.to_mojangson(highlight=False))
                 return
 
-            # Some legacy items have this invalid tag.BlockEntityTag.id field
-            if self.block_entity_tag.has_path('id'):
-                self.block_entity_tag.value.pop('id')
-
     def postprocess(self, item):
         if item.nbt.has_path('tag.BlockEntityTag'):
             item.tag.value.pop('BlockEntityTag')
