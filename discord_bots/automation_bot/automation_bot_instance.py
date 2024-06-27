@@ -269,6 +269,10 @@ class AutomationBotInstance(commands.Cog):
                             if message_channel == "Monumenta.Automation.PlayerAuditLog":
                                 send_message_to_channel(message["data"]["message"], self._player_audit_channel)
 
+                        if self._mail_audit_channel:
+                            if message_channel == "Monumenta.Automation.MailAuditLog":
+                                send_message_to_channel(message["data"]["message"], self._mail_audit_channel)
+
                         if self._market_audit_channel:
                             if message_channel == "Monumenta.Automation.MarketAuditLog":
                                 send_message_to_channel(message["data"]["message"], self._market_audit_channel)
@@ -353,6 +357,13 @@ class AutomationBotInstance(commands.Cog):
                             logging.info("Found player audit channel: %s", conf["player_audit_channel"])
                         except Exception:
                             logging.error("Cannot connect to player audit channel: %s", conf["player_audit_channel"])
+                    self._mail_audit_channel = None
+                    if "mail_audit_channel" in conf:
+                        try:
+                            self._mail_audit_channel = self._bot.get_channel(conf["mail_audit_channel"])
+                            logging.info("Found mail audit channel: %s", conf["mail_audit_channel"])
+                        except Exception:
+                            logging.error("Cannot connect to mail audit channel: %s", conf["mail_audit_channel"])
                     self._market_audit_channel = None
                     if "market_audit_channel" in conf:
                         try:
@@ -728,12 +739,17 @@ class AutomationBotInstance(commands.Cog):
                     helptext += "\n**" + config.PREFIX + command + "**"
                 else:
                     helptext += "\n~~" + config.PREFIX + command + "~~"
-                helptext += ("```\n"
-                    + escape_triple_backtick(self
-                        ._commands[command]
-                        .__doc__
-                        .replace('{cmdPrefix}', config.PREFIX))
-                    + "\n```")
+                command_help = (
+                    self
+                    ._commands[command]
+                    .__doc__
+                    .replace('{cmdPrefix}', config.PREFIX)
+                )
+                helptext += (
+                    "```\n"
+                    + escape_triple_backtick(command_help)
+                    + "\n```"
+                )
 
             if helptext is None:
                 helptext = '''Command {!r} does not exist!'''.format(target_command)
@@ -912,7 +928,6 @@ Examples:
         now_skip_seconds = datetime(now.year, now.month, now.day, now.hour, now.minute, tzinfo=tz)
         today_start = datetime(now.year, now.month, now.day, 0, 0, tzinfo=tz)
         day_of_week_0_indexed = (today_start.weekday() + 3) % 7
-        week_start = today_start - timedelta(days=day_of_week_0_indexed)
 
         tomorrow_start = today_start + timedelta(days=1)
         new_week = today_start + timedelta(days=7 - day_of_week_0_indexed)
@@ -1838,7 +1853,6 @@ old coreprotect data will be removed at the 5 minute mark.
                             "server_type": "minecraft",
                             "command": 'co purge t:180d'
                         })
-                        continue
                     elif shard not in ["build",]:
                         self._socket.send_packet(shard, "monumentanetworkrelay.command", {
                             "server_type": "minecraft",
