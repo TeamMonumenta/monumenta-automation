@@ -277,6 +277,10 @@ class AutomationBotInstance(commands.Cog):
                             if message_channel == "Monumenta.Automation.MarketAuditLog":
                                 send_message_to_channel(message["data"]["message"], self._market_audit_channel)
 
+                        if self._report_audit_channel:
+                            if message_channel == "Monumenta.Automation.ReportAuditLog":
+                                send_message_to_channel(message["data"]["message"], self._report_audit_channel)
+
                         if self._stage_notify_channel:
                             if message_channel == "Monumenta.Automation.stage":
                                 # Schedule the display coroutine back on the main event loop
