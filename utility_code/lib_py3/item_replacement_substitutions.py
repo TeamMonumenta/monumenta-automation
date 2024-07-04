@@ -292,6 +292,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:blaze_powder", "Molldyer's Inferno", "minecraft:amethyst_cluster", "Hexcrafted Siphon"],
                 # Boots of Deleting -> Infused Cloth Shoes
                 ["minecraft:golden_boots", "Boots of Deleting", "minecraft:leather_boots", "Infused Cloth Shoes"],
+                # Boreas Mattock -> Winter's Bounty
+                ["minecraft:iron_pickaxe", "Boreas Mattock", "minecraft:golden_helmet", "Winter's Bounty"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
