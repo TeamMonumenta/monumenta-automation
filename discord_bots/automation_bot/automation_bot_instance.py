@@ -375,6 +375,13 @@ class AutomationBotInstance(commands.Cog):
                             logging.info("Found market audit channel: %s", conf["market_audit_channel"])
                         except Exception:
                             logging.error("Cannot connect to market audit channel: %s", conf["market_audit_channel"])
+                    self._report_audit_channel = None
+                    if "report_audit_channel" in conf:
+                        try:
+                            self._report_audit_channel = self._bot.get_channel(conf["report_audit_channel"])
+                            logging.info("Found report audit channel: %s", conf["report_audit_channel"])
+                        except Exception:
+                            logging.error("Cannot connect to report audit channel: %s", conf["report_audit_channel"])
                     self._admin_channel = None
                     if "admin_channel" in conf:
                         try:
