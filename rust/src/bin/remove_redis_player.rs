@@ -1,8 +1,8 @@
 use monumenta::player::Player;
 
-use anyhow;
+use anyhow::anyhow;
 use log::{info, warn};
-use redis::Commands;
+use redis::{Commands, RedisResult};
 use simplelog::*;
 use uuid::Uuid;
 
@@ -15,21 +15,27 @@ fn main() -> anyhow::Result<()> {
 
     let mut args: Vec<String> = env::args().collect();
 
-    if args.len() != 4 {
-        println!("Usage: {} <domain> <from_player_name> <backup_dir>", args.remove(0));
+    if args.len() != 5 {
+        println!("Usage: {} 'redis://127.0.0.1/' <domain> <from_player_name> <backup_dir>", args.remove(0));
         return Ok(());
     }
 
     args.remove(0);
 
-    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let redis_uri = args.remove(0);
+    let client = redis::Client::open(redis_uri)?;
     let mut con : redis::Connection = client.get_connection()?;
 
     let domain = args.remove(0);
 
     let inputname = args.remove(0);
-    let inputuuid: String = con.hget("name2uuid", &inputname)?;
-    let inputuuid: Uuid = Uuid::parse_str(&inputuuid)?;
+    let inputuuid: RedisResult<String> = con.hget("name2uuid", &inputname);
+    if let Err(err) = inputuuid {
+        warn!("Failed to look up player's UUID, possibly name spelled wrong? (It is case sensitive). Error was: {}", err);
+        return Err(anyhow!(err));
+    }
+
+    let inputuuid: Uuid = Uuid::parse_str(&inputuuid.unwrap())?;
 
     let backupdir = args.remove(0);
 
