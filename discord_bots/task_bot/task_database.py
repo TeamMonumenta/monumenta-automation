@@ -273,7 +273,7 @@ class TaskDatabase(commands.Cog):
 
         return (index, entry)
 
-    async def format_entry(self, index, entry, include_reactions=False, mention_assigned=False):
+    async def format_entry(self, index, entry, include_reactions=False, mention_assigned=False, include_link=False):
         author_name = ""
         user = self.get_user_by_id(entry["author"], allow_empty=True)
         if user is not None:
@@ -300,10 +300,14 @@ class TaskDatabase(commands.Cog):
                 else:
                     assigned_text = '''`Assigned: {}`\n'''.format(user.display_name)
 
+        link = ''
+        if include_link:
+            link = "\nhttps://discord.com/channels/" + str(config.GUILD_ID) + "/" + str(config.CHANNEL_ID) + "/" + str(entry["message_id"])
+
         complexity_emoji = self._complexities[entry["complexity"]]
 
         entry_text = '''`#{} [{} - {}] {}` {}
-{}{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, complexity_emoji, assigned_text, entry["description"], react_text)
+{}{}{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, complexity_emoji, assigned_text, entry["description"], react_text, link)
 
         if "close_reason" in entry:
             entry_text = '''~~{}~~
@@ -350,7 +354,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         for reaction in config.REACTIONS:
             await msg.add_reaction(reaction)
 
-    async def print_search_results(self, responder, match_entries, limit=15, sort_entries=True, mention_assigned=False, include_reactions=True, ephemeral=False):
+    async def print_search_results(self, responder, match_entries, limit=15, sort_entries=True, mention_assigned=False, include_reactions=True, include_link=False, ephemeral=False):
         """
         Calls responder.send() with matching entries up to limit
         If ephemeral=true, will append epmeheral=true to call
@@ -370,7 +374,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             print_entries = print_entries[:limit]
 
         for index, entry in print_entries:
-            entry_text, embed = await self.format_entry(index, entry, include_reactions=include_reactions, mention_assigned=mention_assigned)
+            entry_text, embed = await self.format_entry(index, entry, include_reactions=include_reactions, mention_assigned=mention_assigned, include_link=include_link)
             if ephemeral:
                 await responder.send(entry_text, embed=embed, ephemeral=True)
             else:
@@ -389,6 +393,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             "isearch": self.cmd_isearch,
             "asearch": self.cmd_asearch,
             "rsearch": self.cmd_rsearch,
+            "delete": self.cmd_delete,
             "reject": self.cmd_reject,
             "edit": self.cmd_edit,
             "append": self.cmd_append,
@@ -511,6 +516,10 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         if self.has_privilege(2, message.author):
             usage += '''
 **Commands team members can use:**
+
+`{prefix} delete <number>`
+    Deletes the specified {single}, for the purposes of redacting a {single}
+
 `{prefix} edit <number> [author | priority | complexity ] [argument]`
     Edits the specified field of the entry
 
@@ -590,6 +599,36 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             await self.reply(message, "Privilege: 0")
         else:
             await self.reply(message, "Privilege: None")
+
+    ################################################################################
+    # discussion messages
+
+    async def handle_discussion_message(self, message):
+        if message.author.bot:
+            return
+        pattern = re.compile(r"(" + config.DESCRIPTOR_SINGLE + ")-([0-9]+)", re.IGNORECASE)
+        matches = pattern.finditer(message.content)
+        list_of_entries = []
+        list_of_links = []
+        for match in matches:
+            if match.group(2) is not None:
+                testIndex = match.group(2)
+                try:
+                    index, entry = self.get_entry(testIndex)
+                except Exception as e:
+                    return
+                if "message_id" in entry:
+                    list_of_entries.append((index, entry))
+                    list_of_links.append("#" + str(index) + ": https://discord.com/channels/" + str(config.GUILD_ID) + "/" + str(config.CHANNEL_ID) + "/" + str(entry["message_id"]))
+        if len(list_of_links) > 0:
+            final_list = list_of_links[:3]
+            if (len(list_of_links) > 3):
+                await message.channel.send("Here are the links to the tasks you mentioned, limited to 3 links:\n" + "\n".join(final_list))
+            elif (len(list_of_links) == 1):
+                entry_text, embed = await self.format_entry(index, entry, include_reactions=True, include_link=True)
+                await message.channel.send(entry_text, embed=embed)
+            else:
+                await message.channel.send("\n".join(final_list))
 
     ################################################################################
     # add / report
@@ -1017,7 +1056,7 @@ Available complexities: {complexities}'''.format(prefix=config.PREFIX, labels=se
     async def cmd_search(self, message, args):
         match_entries, match_labels, match_priorities, match_complexities, max_count = await self.search_helper(args, max_count=10)
 
-        await self.print_search_results(message.channel, match_entries, limit=max_count)
+        await self.print_search_results(message.channel, match_entries, limit=max_count, include_link=True)
 
         await self.reply(message, "{} {} found matching labels={} priorities={} complexities={}".format(
             len(match_entries), config.DESCRIPTOR_PLURAL,
@@ -1029,7 +1068,7 @@ Available complexities: {complexities}'''.format(prefix=config.PREFIX, labels=se
         """Description search ~command"""
         match_entries, limit = await self.dsearch_internal(args, 15)
         await message.channel.send(f"{len(match_entries)} {config.DESCRIPTOR_PLURAL} found matching {args}")
-        await self.print_search_results(message.channel, match_entries, limit=limit)
+        await self.print_search_results(message.channel, match_entries, limit=limit, include_link=True)
 
     @app_commands.command(name=f'{config.DESCRIPTOR_SINGLE}_description_search',
                           description=f'Searches all {config.DESCRIPTOR_SINGLE} descriptions for ones that contain all the specified search terms')
@@ -1039,7 +1078,7 @@ Available complexities: {complexities}'''.format(prefix=config.PREFIX, labels=se
         """Description search /command"""
         match_entries, limit = await self.dsearch_internal(search_terms, limit)
         await message.response.send_message(f"{len(match_entries)} {config.DESCRIPTOR_PLURAL} found matching {search_terms}", ephemeral=True)
-        await self.print_search_results(message.followup, match_entries, limit=limit, ephemeral=True)
+        await self.print_search_results(message.followup, match_entries, limit=limit, ephemeral=True, include_link=True)
 
     async def dsearch_internal(self, search_terms: str, limit: int):
         """Description search terms parser"""
@@ -1104,7 +1143,7 @@ Available complexities: {complexities}'''.format(prefix=config.PREFIX, labels=se
                     match_entries.append((index, entry))
                     open_count += 1
 
-        await self.print_search_results(message.channel, match_entries)
+        await self.print_search_results(message.channel, match_entries, include_link=True)
 
         await(self.reply(message, "{} open {} of {} total from author {}".format(open_count, config.DESCRIPTOR_PLURAL, total_count, author.display_name)))
 
@@ -1210,6 +1249,35 @@ Labels can only contain a-z characters'''.format(prefix=config.PREFIX))
         self.save()
 
         await(self.reply(message, "Label {} removed successfully from {} {plural}".format(match, count, plural=config.DESCRIPTOR_PLURAL)))
+
+
+    ################################################################################
+    # delete
+    async def cmd_delete(self, message, args):
+        part = args.split(maxsplit=1)
+        if (not args) or (len(part) < 1):
+            raise ValueError('''Usage: {prefix} delete <number>'''.format(prefix=config.PREFIX))
+        if not self.has_privilege(1, message.author):
+            raise ValueError("You do not have permission to use this command")
+
+        index, entry = self.get_entry(part[0].strip())
+
+        if "close_reason" in entry:
+            entry["close_reason"] = ""
+        if "pending_notification" in entry:
+            entry["pending_notification"] = False
+        if "description" in entry:
+            entry["description"] = "redacted"
+        if "image" in entry:
+            entry.pop("image")
+
+        self.save()
+
+        # Update the entry
+        await self.send_entry(index, entry)
+
+        await(self.reply(message, "{proper} #{index} deleted. You still need to manually delete any messages related to this in other channels."
+                         .format(proper=config.DESCRIPTOR_PROPER, index=index)))
 
     ################################################################################
     # reject
