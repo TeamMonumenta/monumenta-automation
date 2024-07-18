@@ -615,16 +615,16 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
                 testIndex = match.group(2)
                 try:
                     index, entry = self.get_entry(testIndex)
-                except Exception as e:
+                except Exception:
                     return
                 if "message_id" in entry:
                     list_of_entries.append((index, entry))
                     list_of_links.append("#" + str(index) + ": https://discord.com/channels/" + str(config.GUILD_ID) + "/" + str(config.CHANNEL_ID) + "/" + str(entry["message_id"]))
         if len(list_of_links) > 0:
             final_list = list_of_links[:3]
-            if (len(list_of_links) > 3):
+            if len(list_of_links) > 3:
                 await message.channel.send("Here are the links to the tasks you mentioned, limited to 3 links:\n" + "\n".join(final_list))
-            elif (len(list_of_links) == 1):
+            elif len(list_of_links) == 1:
                 entry_text, embed = await self.format_entry(index, entry, include_reactions=True, include_link=True)
                 await message.channel.send(entry_text, embed=embed)
             else:
@@ -1248,7 +1248,7 @@ Labels can only contain a-z characters'''.format(prefix=config.PREFIX))
 
         self.save()
 
-        await(self.reply(message, "Label {} removed successfully from {} {plural}".format(match, count, plural=config.DESCRIPTOR_PLURAL)))
+        await(self.reply(message, f"Label {match} removed successfully from {count} {config.DESCRIPTOR_PLURAL}"))
 
 
     ################################################################################
@@ -1256,7 +1256,7 @@ Labels can only contain a-z characters'''.format(prefix=config.PREFIX))
     async def cmd_delete(self, message, args):
         part = args.split(maxsplit=1)
         if (not args) or (len(part) < 1):
-            raise ValueError('''Usage: {prefix} delete <number>'''.format(prefix=config.PREFIX))
+            raise ValueError(f'''Usage: {config.PREFIX} delete <number>''')
         if not self.has_privilege(1, message.author):
             raise ValueError("You do not have permission to use this command")
 
@@ -1276,8 +1276,7 @@ Labels can only contain a-z characters'''.format(prefix=config.PREFIX))
         # Update the entry
         await self.send_entry(index, entry)
 
-        await(self.reply(message, "{proper} #{index} deleted. You still need to manually delete any messages related to this in other channels."
-                         .format(proper=config.DESCRIPTOR_PROPER, index=index)))
+        await(self.reply(message, f"{config.DESCRIPTOR_PROPER} #{index} deleted. You still need to manually delete any messages related to this in other channels."))
 
     ################################################################################
     # reject

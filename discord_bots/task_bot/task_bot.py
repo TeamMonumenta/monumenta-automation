@@ -104,11 +104,11 @@ class TaskBot(commands.Bot):
                 await message.channel.send("**ERROR**: ```" + str(e) + "```")
                 for chunk in split_string(traceback.format_exc()):
                     await message.channel.send("```" + chunk + "```")
-        
+
         if message.channel.id == config.DISCUSSION_ID:
             try:
                 await self.db.handle_discussion_message(message)
-            except Exception as e:
+            except Exception:
                 return
 
 intents = discord.Intents.default()
