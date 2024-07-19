@@ -105,6 +105,12 @@ class TaskBot(commands.Bot):
                 for chunk in split_string(traceback.format_exc()):
                     await message.channel.send("```" + chunk + "```")
 
+        if message.channel.id == config.DISCUSSION_ID:
+            try:
+                await self.db.handle_discussion_message(message)
+            except Exception:
+                return
+
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
