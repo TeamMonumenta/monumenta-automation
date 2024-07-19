@@ -294,6 +294,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:golden_boots", "Boots of Deleting", "minecraft:leather_boots", "Infused Cloth Shoes"],
                 # Boreas Mattock -> Winter's Bounty
                 ["minecraft:iron_pickaxe", "Boreas Mattock", "minecraft:golden_helmet", "Winter's Bounty"],
+                # Uriddan's Eternal Call -> Uriddan's Eternal Call (A15)
+                ["minecraft:goat_horn", "Uriddan's Eternal Call", "minecraft:goat_horn", "Uriddan's Eternal Call (A15)"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
