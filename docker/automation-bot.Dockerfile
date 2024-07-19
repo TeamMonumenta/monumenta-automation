@@ -44,7 +44,7 @@ RUN : "${USERNAME:?'USERNAME' argument needs to be set and non-empty.}"
 RUN : "${UID:?'UID' argument needs to be set and non-empty.}"
 RUN : "${GID:?'GID' argument needs to be set and non-empty.}"
 
-ENV USERHOME /home/$USERNAME
+ENV USERHOME=/home/$USERNAME
 
 RUN groupadd --non-unique -g $GID $USERNAME && \
 	# NOTE! -l flag prevents creation of gigabytes of sparse log file for some reason
@@ -52,7 +52,7 @@ RUN groupadd --non-unique -g $GID $USERNAME && \
 
 USER $USERNAME
 
-ENV PIP_BREAK_SYSTEM_PACKAGES true
+ENV PIP_BREAK_SYSTEM_PACKAGES=true
 
 RUN cd /tmp && \
 	curl -O https://bootstrap.pypa.io/get-pip.py && \
@@ -62,7 +62,7 @@ RUN cd /tmp && \
 	git config --global user.name "Automation Bot" && \
 	git config --global user.email "monumentammo@gmail.com"
 
-ENV PYTHONIOENCODING UTF-8
+ENV PYTHONIOENCODING=UTF-8
 
 COPY quarry $USERHOME/MCEdit-And-Automation/quarry
 COPY rust/bin $USERHOME/MCEdit-And-Automation/rust/bin

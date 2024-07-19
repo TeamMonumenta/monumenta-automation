@@ -129,9 +129,12 @@ class AutomationBotInstance(commands.Cog):
             "view scores": self.action_view_scores,
             "get score": self.action_get_player_scores,
             "set score": self.action_set_player_scores,
+
+            "player find": self.action_player_find,
+            "player rollback": self.action_player_rollback,
             "player shard": self.action_player_shard,
-            "transfer playerdata": self.action_transfer_playerdata,
-            "rollback playerdata": self.action_rollback_playerdata,
+            "player transfer": self.action_player_transfer,
+            "player wipe": self.action_player_wipe,
 
             "update item": self.action_update_items,
             "run replacements": self.action_run_replacements,
@@ -660,7 +663,7 @@ class AutomationBotInstance(commands.Cog):
             await self._k8s.restart(shards, wait=wait)
             await self.debug(ctx, f"Restarted shards [{','.join(shards)}]")
 
-    async def get_raffle_seed(self, ctx: discord.ext.commands.Context):
+    def get_raffle_seed(self):
         '''Returns a raffle seed'''
 
         tz = timezone.utc
@@ -1288,10 +1291,10 @@ Usage:
             ns = 'play'
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/shard_utils"), "redis://redis/", ns, *commandArgs], displayOutput=True)
 
-    async def action_transfer_playerdata(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+    async def action_player_transfer(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Transfers player data from one account to another.
 
-Usage: {cmdPrefix}transfer playerdata <sourceplayer> <destplayer>
+Usage: {cmdPrefix}player transfer <sourceplayer> <destplayer>
 
 This will transfer everything from <sourceplayer> to <destplayer> except their guild and plot access. Guild must be done manually by you. Plot access will have to be recreated by the player.
 
@@ -1303,7 +1306,7 @@ After transferring, source player data is backed up and then deleted. The source
         commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()
 
         if len(commandArgs) != 2:
-            await self.help_internal(ctx, ["transfer playerdata"], message.author)
+            await self.help_internal(ctx, ["player transfer"], message.author)
             return
 
         fromplayer = commandArgs[0]
@@ -1316,10 +1319,10 @@ After transferring, source player data is backed up and then deleted. The source
         await self.display(ctx, f"**You still have to fix the player's LuckPerms data.**")
         await self.display(ctx, f"To do this, go in-game and run ```\n/transferpermissions {fromplayer} {toplayer}\n```\nNote that `{fromplayer}` needs to be offline, and `{toplayer}` needs to be online. This will update all LuckPerms data (guilds, roles, etc) in one go.")
 
-    async def action_rollback_playerdata(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+    async def action_player_rollback(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Rolls a player back to the most recent weekly update
 
-Usage: {cmdPrefix}rollback playerdata <player>
+Usage: {cmdPrefix}player rollback <player>
 
 This will roll a player back to the most recent weekly update data.
 
@@ -1329,7 +1332,7 @@ This will roll a player back to the most recent weekly update data.
         commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()
 
         if len(commandArgs) != 1:
-            await self.help_internal(ctx, ["rollback playerdata"], message.author)
+            await self.help_internal(ctx, ["player rollback"], message.author)
             return
 
         playername = commandArgs[0]
@@ -1338,6 +1341,104 @@ This will roll a player back to the most recent weekly update data.
 
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/player_backup_and_rollback"), "redis://redis/", "play", playername, rollbackpath, backuppath], displayOutput=True)
         await self.display(ctx, f"{playername} has been rolled back to the last weekly update. If this was a mistake, you can either fix it in-game using the `/rollback` command, or ask an operator to restore it from the backup in {backuppath}.")
+
+    async def action_player_wipe(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Wipe's a player's data
+
+Usage: {cmdPrefix}player wipe <player>
+
+This remove player data for this player, but will NOT remove their luckperms groups (guilds, etc.)
+
+**Player must be offline for this to work. The bot is not currently able to test for this, so you have to check manually!**
+        '''
+
+        commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()
+
+        if len(commandArgs) != 1:
+            await self.help_internal(ctx, ["player wipe"], message.author)
+            return
+
+        playername = commandArgs[0]
+        backuppath = f"/home/epic/0_OLD_BACKUPS/0_PLAYERDATA_CHANGES/wipe_player_{playername}_{datestr()}"
+
+        await self.run(ctx, [os.path.join(_top_level, "rust/bin/remove_redis_player"), "redis://redis/", "play", playername, backuppath], displayOutput=True)
+
+        await self.display(ctx, f"{playername} has had their data backed up and then wiped. If this was a mistake, ping an operator to restore it from the backup in `{backuppath}`. Note this only worked if the player is currently logged out.")
+
+        await self.display(ctx, f"**This did not clear their luckperms data** (guilds, patreon, etc.). If the player is just resetting maybe this is fine, but if you're truly removing the account, go in game and run `/lp user {playername} clear`.")
+
+    async def action_player_find(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Finds player names that match the specified string, case insensitive
+
+Usage: {cmdPrefix}player find <search_string>
+        '''
+
+        commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()
+
+        if len(commandArgs) != 1:
+            await self.help_internal(ctx, ["player find"], message.author)
+            return
+
+        search_string = commandArgs[0].lower()
+
+        r = redis.Redis(host="redis", port=6379)
+        name2uuid = r.hgetall('name2uuid')
+        uuid2name = r.hgetall('uuid2name')
+
+        # We have two maps, name2uuid (a dict of names to UUID strings) and uuid2name (a dict of UUIDs to most recently seen names). Multiple names may map to the same UUID, indicating the player changed their name at some point. Each name will exist only once in uuid2name (indicating this is the player's current name), or not at all (indicating a past name for that player)
+        # We want to find all names that match the search string, and summarize the uuid's of those matching players, along with indicating any prior names for that UUID
+        # print the results in the format:
+        #   uuid1: most recent name=name1, prior names=(name2, name3, ...
+        #   uuid2: most recent name=name1, prior names=(name2, name3,...)
+        # Only include the strings "most recent name=" and "prior names=" if more than one name exists for that UUID
+
+        # Initialize an empty dictionary to store the results
+        results = {}
+
+        # Iterate over the name2uuid map
+        for name, uuid in name2uuid.items():
+            namestr = name.decode('utf-8')
+
+            # Check if the name matches the search string
+            if search_string in namestr.lower():
+                # Retrieve the most recent name and prior names for this UUID
+                uuidstr = uuid.decode('utf-8')
+                current_namestr = uuid2name.get(uuid, None).decode('utf-8')
+                if (current_namestr) is None:
+                    await self.display(ctx, f"Found matching name {namestr} with uuid {uuidstr} but somehow this uuid is not in uuid2name, this should not happen. Skipping this name in results.")
+                    continue
+
+                result_entry = results.get(uuidstr, {
+                    "most recent name":current_namestr,
+                    "prior_names":[],
+                })
+                if namestr != current_namestr and namestr not in result_entry["prior_names"]:
+                    result_entry["prior_names"].append(namestr)
+                results[uuidstr] = result_entry
+
+                if len(results) > 500:
+                    await self.display(ctx, f"More than 500 results, try a more specific search string.")
+                    return
+
+        # Scan through again to find names that don't match the search string but were previous names
+        for name, uuid in name2uuid.items():
+            uuidstr = uuid.decode('utf-8')
+            for uuidmatch, result_entry in results.items():
+                if uuidstr == uuidmatch:
+                    namestr = name.decode('utf-8')
+                    if namestr != result_entry["most recent name"] and namestr not in result_entry["prior_names"]:
+                        result_entry["prior_names"].append(namestr)
+                        results[uuidstr] = result_entry
+
+        # Print the results to a list, then join the list and display it
+        await self.display(ctx, f'{len(results)} matching players for search string "{search_string}":')
+        resultstrlist = []
+        for uuidstr, result_entry in results.items():
+            if len(result_entry["prior_names"]) > 0:
+                resultstrlist.append(f"{uuidstr}: most recent name= {result_entry['most recent name']}   prior names= {'  '.join(result_entry['prior_names'])}")
+            else:
+                resultstrlist.append(f"{uuidstr}: {result_entry['most recent name']}")
+        await self.display_verbatim(ctx, "\n".join(resultstrlist))
 
     async def action_generate_instances(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Generates instances from dungeon worlds
@@ -1973,7 +2074,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         '''Runs a test raffle (does not save results)'''
 
         await self.display(ctx, "Test raffle results:")
-        raffle_seed = await self.get_raffle_seed(ctx)
+        raffle_seed = self.get_raffle_seed()
 
         raffle_results = tempfile.mktemp()
         vote_raffle(raffle_seed, 'redis', raffle_results, dry_run=True)
@@ -2072,7 +2173,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 14 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Raffle results:")
-            raffle_seed = await self.get_raffle_seed(ctx)
+            raffle_seed = self.get_raffle_seed()
             if self._rreact["msg_contents"] is not None:
                 raffle_seed = self._rreact["msg_contents"]
 
