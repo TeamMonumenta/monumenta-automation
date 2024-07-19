@@ -606,7 +606,7 @@ Closed: {entry["close_reason"]}'''
     async def handle_discussion_message(self, message):
         if message.author.bot:
             return
-        pattern = re.compile(r"(" + config.DESCRIPTOR_SINGLE + ")-([0-9]+)", re.IGNORECASE)
+        pattern = re.compile(r"(" + config.DESCRIPTOR_SHORT + ")-([0-9]+)", re.IGNORECASE)
         matches = pattern.finditer(message.content)
         list_of_entries = []
         list_of_links = []
