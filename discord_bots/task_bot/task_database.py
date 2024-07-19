@@ -215,7 +215,7 @@ class TaskDatabase(commands.Cog):
                             multimatch.append(f"{member.name} ({member.display_name})")
                         else:
                             multimatch.append(f"{member.name}")
-                    raise ValueError(f"Multiple users match {user!r}: {'\n'.join(multimatch)}")
+                    raise ValueError(f"Multiple users match {user!r}: {}".format("\n".join(multimatch)))
 
                 user = matches[0].id
 
