@@ -264,6 +264,10 @@ class AutomationBotInstance(commands.Cog):
                             if message_channel == "Monumenta.Automation.AuditLogSevere":
                                 send_message_to_channel(message["data"]["message"], self._audit_severe_channel)
 
+                        if self._chat_mod_audit_channel:
+                            if message_channel == "Monumenta.Automation.ChatModAuditLog":
+                                send_message_to_channel(message["data"]["message"], self._chat_mod_audit_channel)
+
                         if self._death_audit_channel:
                             if message_channel == "Monumenta.Automation.DeathAuditLog":
                                 send_message_to_channel(message["data"]["message"], self._death_audit_channel)
@@ -350,6 +354,13 @@ class AutomationBotInstance(commands.Cog):
                             logging.info("Found audit severe channel: %s", conf["audit_severe_channel"])
                         except Exception:
                             logging.error("Cannot connect to audit severe channel: %s", conf["audit_severe_channel"])
+                    self._chat_mod_audit_channel = None
+                    if "chat_mod_audit_channel" in conf:
+                        try:
+                            self._chat_mod_audit_channel = self._bot.get_channel(conf["chat_mod_audit_channel"])
+                            logging.info("Found mail audit channel: %s", conf["chat_mod_audit_channel"])
+                        except Exception:
+                            logging.error("Cannot connect to mail audit channel: %s", conf["chat_mod_audit_channel"])
                     self._death_audit_channel = None
                     if "death_audit_channel" in conf:
                         try:
