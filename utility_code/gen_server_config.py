@@ -462,16 +462,16 @@ if __name__ == '__main__':
             ],
         },
 
-        'futurama':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
-                ('spigot.yml', '      villagers:', '      villagers: 25'),
-            ],
-            'linked':server_config + base_plugins + [
-                ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
-            ],
-        },
+        #'futurama':{
+        #    'config':server_config_to_copy + [
+        #        ('server.properties', 'view-distance', 'view-distance=8'),
+        #        ('spigot.yml', 'view-distance', '    view-distance: 8'),
+        #        ('spigot.yml', '      villagers:', '      villagers: 25'),
+        #    ],
+        #    'linked':server_config + base_plugins + [
+        #        ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
+        #    ],
+        #},
 
         'test2':{
             'config':server_config_to_copy + [

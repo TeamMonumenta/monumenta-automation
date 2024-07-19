@@ -15,8 +15,8 @@
     "dev4"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "mobs"               : { "build": { "node": "m12", "memMB": 1536, }, },
     "dungeon"            : { "build": { "node": "m12", "memGB": 8   , }, },
-    "futurama"           : { "build": { "node": "m12", "memGB": 3   , }, },
-    "test"               : { "build": { "node": "m12", "memGB": 3   , }, },
+    #"futurama"           : { "build": { "node": "m12", "memGB": 3   , }, }, # Re-enable later
+    #"test"               : { "build": { "node": "m12", "memGB": 3   , }, }, # Re-enable later
     "event"              : { "build": { "node": "m12", "memGB": 3   , }, },
     "monumenta-sdk"      : { "build": { "node": "m12", "memGB": 3   , "nodePort": 22221, }, },
 
