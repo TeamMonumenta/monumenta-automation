@@ -296,6 +296,20 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:iron_pickaxe", "Boreas Mattock", "minecraft:golden_helmet", "Winter's Bounty"],
                 # Uriddan's Eternal Call -> Uriddan's Eternal Call (A15)
                 ["minecraft:goat_horn", "Uriddan's Eternal Call", "minecraft:goat_horn", "Uriddan's Eternal Call (A15)"],
+                # Potion Merge
+                ["minecraft:splash_potion", "Aqueous Vial", "minecraft:potion", "Aqueous Potion"],
+                ["minecraft:potion", "Minor Aqueous Potion", "minecraft:potion", "Aqueous Potion"],
+                ["minecraft:splash_potion", "Darksight Vial", "minecraft:potion", "Darksight Potion"],
+                ["minecraft:potion", "Minor Darksight Potion", "minecraft:potion", "Darksight Potion"],
+                ["minecraft:splash_potion", "Major Regeneration Vial", "minecraft:potion", "Major Regeneration Potion"],
+                ["minecraft:splash_potion", "Major Strength Vial", "minecraft:potion", "Major Strength Potion"],
+                ["minecraft:splash_potion", "Major Swiftness Vial", "minecraft:potion", "Major Swiftness Potion"],
+                ["minecraft:splash_potion", "Minor Regeneration Vial", "minecraft:potion", "Minor Regeneration Potion"],
+                ["minecraft:splash_potion", "Minor Strength Vial", "minecraft:potion", "Minor Strength Potion"],
+                ["minecraft:splash_potion", "Minor Swiftness Vial", "minecraft:potion", "Minor Swiftness Potion"],
+                ["minecraft:splash_potion", "Regeneration Vial", "minecraft:potion", "Regeneration Potion"],
+                ["minecraft:splash_potion", "Strength Vial", "minecraft:potion", "Strength Potion"],
+                ["minecraft:splash_potion", "Swiftness Vial", "minecraft:potion", "Swiftness Potion"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
