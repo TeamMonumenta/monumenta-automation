@@ -215,6 +215,7 @@ if __name__ == '__main__':
         "tutorial": tutorial,
         "build": None,
         "bungee": None,
+        "velocity": None,
         "purgatory": None,
     }
 
@@ -237,7 +238,7 @@ if __name__ == '__main__':
                 config["previous_path"] = os.path.join(last_week_dir, server) # previous path is the full specified name
                 config_list.append(config)
         else:
-            print("ERROR: Unknown shard {} specified!".format(server))
+            eprint("ERROR: Unknown shard {} specified!".format(server))
             usage()
 
     timings = Timings(enabled=True)

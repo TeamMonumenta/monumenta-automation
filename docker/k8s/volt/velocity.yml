@@ -1,0 +1,105 @@
+# Service / internal network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: velocity
+  namespace: volt
+  labels:
+    app: velocity
+    k8s-app: monumenta-metrics
+spec:
+  type: ClusterIP
+  selector:
+    app: velocity
+  ports:
+  - name: monumenta-socket
+    port: 9576
+    targetPort: 9576
+  - name: metrics
+    port: 9225
+    targetPort: 9225
+
+---
+
+# Deployment / the actual running application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velocity
+  namespace: volt
+  labels:
+    app: velocity
+spec:
+  strategy:
+    type: Recreate
+  replicas: 0
+  selector:
+    matchLabels:
+      app: velocity
+  template:
+    metadata:
+      labels:
+        app: velocity
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-12
+      volumes:
+        - name: nfs-volume
+          hostPath:
+            type: Directory
+            path: /nfs/volt/m12
+      containers:
+      - name: velocity
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-17
+        tty: true
+        stdin: true
+        ports:
+        # Primary Minecraft port
+        - containerPort: 25566
+          hostPort: 9013
+          hostIP: "141.94.75.9" # The node's external facing IP address
+        - containerPort: 9225
+        env:
+        - name: "JAVA_MEM"
+          value: "512M"
+        - name: "JAVA_META_MEM"
+          value: "128M"
+        - name: "JAVA_JAR"
+          value: "velocity.jar"
+        - name: "SERVER_DIR"
+          value: "/home/epic/volt/m12/velocity"
+        - name: "JAVA_LARGE_PAGES"
+          value: "yes"
+        - name: "NETWORK_RELAY_NAME"
+          value: velocity
+        readinessProbe:
+          tcpSocket:
+            port: 25566
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 25566
+          initialDelaySeconds: 240
+          timeoutSeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /home/epic/volt/m12
+        resources:
+          limits:
+            memory: 1Gi
+            hugepages-2Mi: 704Mi
+          requests:
+            memory: 64Mi
+            hugepages-2Mi: 704Mi

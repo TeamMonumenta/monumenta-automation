@@ -19,7 +19,7 @@ def send_broadcast_time(time_left):
         {"text": "[Alert] ", "color": "red"},
         {"text": "Monumenta will perform its daily restart in ", "color": "white"},
         {"text": time_left, "color": "red"},
-        {"text": ". This helps reduce lag! The server will be down for ~90 seconds."}
+        {"text": ". This helps reduce lag! The server will be down for ~120 seconds."}
     ]
     send_broadcast_message(raw_json_text)
 
@@ -43,7 +43,9 @@ async def main():
                            {"command": 'restart-empty'})
 
         send_broadcast_time("5 minutes")
-        await asyncio.sleep(120)
+        await asyncio.sleep(60)
+        send_broadcast_time("4 minutes")
+        await asyncio.sleep(60)
         send_broadcast_time("3 minutes")
         await asyncio.sleep(60)
         send_broadcast_time("2 minutes")
@@ -53,50 +55,19 @@ async def main():
         send_broadcast_time("30 seconds")
         await asyncio.sleep(15)
         send_broadcast_time("15 seconds")
-        await asyncio.sleep(10)
+        await asyncio.sleep(5)
+        send_broadcast_time("10 seconds")
+        await asyncio.sleep(5)
         send_broadcast_time("5 seconds")
         await asyncio.sleep(5)
     except Exception:
         print("Failed to notify players about pending restart: {}".format(traceback.format_exc()))
 
     try:
-        # Read the BungeeDisplay config file
-        primary_bungee_name = config["primary_bungee_name"]
-        #bungee_instances = config["bungee_instances"]
-        bungee_instances = {}
-        for path in Path('/home/epic/play/').glob('*/*/plugins/BungeeDisplay/config.yml'):
-            bungee_name = path.parents[2].name
-            bungee_instances[bungee_name] = path
-
-        primary_path = bungee_instances.get(primary_bungee_name, None)
-        if primary_path is None:
-            if len(bungee_instances) == 0:
-                print("Could not find ANY bungee instances! Did our plugin code change?")
-                send_broadcast_message([
-                    "",
-                    {"text": "[Alert] ", "color": "red"},
-                    {"text": "Monumenta has failed to perform its daily restart"}
-                ])
-                return
-            fallback_bungee_name, primary_path = list(bungee_instances.items())[0]
-            print(f"Could not find primary bungee instance {primary_bungee_name}! Using {fallback_bungee_name} instead.")
-
-        with open(bungee_instances[primary_bungee_name], 'r') as ymlfile:
-            bungee_display_yml = yaml.load(ymlfile, Loader=yaml.FullLoader)
-
-        # Modify the file to set maintenance mode - this kicks everyone
-        bungee_display_yml["maintenance"]["enabled"] = True
-        bungee_display_yml["maintenance"]["join"] = '&cMonumenta is currently down for daily restart - try again in a few minutes'
-        bungee_display_yml["maintenance"]["kick_message"] = '&cMonumenta is going down for daily restart - join again in 5 minutes'
-        bungee_display_yml["maintenance"]["information"] = '&6Please try again in a few minutes'
-        bungee_display_yml["motd"]["maintenance"]["line2"] = '              &c&lDown for Daily Restart'
-
-        # Write the updated config file to enable maintenance mode
-        for path in bungee_instances.values():
-            with open(path, 'w') as ymlfile:
-                yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
-
-        # Just a bit of time to process config and kick players
+        # Turn on Maintenance
+        socket.send_packet("*", "monumentanetworkrelay.command",
+                           {"command": 'maintenance on', "server_type": 'proxy'})
+        # Wait for proxies to process command
         await asyncio.sleep(5)
 
         # Kick anyone with ops who bypassed maintenance
@@ -108,28 +79,17 @@ async def main():
 
         # At this point shards that didn't already restart will do so
 
-        # Stop bungee
-        print("Stopping bungee...")
-        await k8s.stop(list(bungee_instances.keys()))
+        # Restart proxies
+        # await k8s.restart(list(bungee_instances.keys()))
+        socket.send_packet("*", "monumentanetworkrelay.command",
+                           {"command": 'shutdown', "server_type": 'proxy'})
 
         # Some time for everything to stabilize
-        await asyncio.sleep(55)
+        await asyncio.sleep(120)
 
         # Turn maintenance mode back off
-        bungee_display_yml["maintenance"]["enabled"] = False
-
-        # Update maintenance state again
-        for path in bungee_instances.values():
-            with open(path, 'w') as ymlfile:
-                yaml.dump(bungee_display_yml, ymlfile, default_flow_style=False)
-                os.fsync(ymlfile)
-
-        # Some more time for file to propagate and shards to stabilize
-        await asyncio.sleep(30)
-
-        # Start bungee
-        print("Starting bungee...")
-        await k8s.start(list(bungee_instances.keys()))
+        socket.send_packet("*", "monumentanetworkrelay.command",
+                           {"command": 'maintenance off', "server_type": 'proxy'})
     except Exception:
         print("Failed to restart the server: {}".format(traceback.format_exc()))
         send_broadcast_message([
