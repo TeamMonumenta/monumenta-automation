@@ -158,6 +158,7 @@ class AutomationBotInstance(commands.Cog):
             "broadcastcommand": self.action_dummy,
             "broadcastbungeecommand": self.action_dummy,
             "broadcastminecraftcommand": self.action_dummy,
+            "broadcastproxycommand": self.action_dummy,
 
             "get timestamp": self.action_get_timestamp,
             "remind": self.action_remind,
@@ -338,6 +339,7 @@ class AutomationBotInstance(commands.Cog):
                     self._commands["broadcastcommand"] = self.action_broadcastcommand
                     self._commands["broadcastbungeecommand"] = self.action_broadcastbungeecommand
                     self._commands["broadcastminecraftcommand"] = self.action_broadcastminecraftcommand
+                    self._commands["broadcastproxycommand"] = self.action_broadcastproxycommand
                     self._all_commands = set(self._commands.keys())
 
                     self._audit_channel = None
@@ -1825,7 +1827,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.run(ctx, os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j 6 " + " ".join(folders_to_update)))
 
         for shard in folders_to_update:
-            if shard in ["build",] or shard.startswith("bungee"):
+            if shard in ["build",] or shard.startswith("bungee") or shard.startswith("velocity"):
                 continue
 
             await self.run(ctx, f"cp -af /home/epic/4_SHARED/op-ban-sync/stage/banned-ips.json {self._shards[shard]}/")
@@ -1982,12 +1984,17 @@ old coreprotect data will be removed at the 5 minute mark.
                             "command": 'co purge t:30d'
                         })
             if next_target == 15:
-                self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": 'save-all'})
+                self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "minecraft", "command": 'save-all'})
 
             await send_broadcast_msg(seconds_to_string(next_target))
 
-        # Stop bungee
-        await self.stop(ctx, ["bungee", "bungee-12", "bungee-13"], owner=message)
+        # Stop velocity (I guess you could uh... run maintenance?)
+        self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "proxy", "command": 'maintenance on'})
+        await asyncio.sleep(5)
+        # TODO: don't hardcode velocity instances here
+        shards = await self._k8s.list()
+        velocityShards = list(filter(lambda x: (x.startswith("velocity")), shards))
+        await self.stop(ctx, velocityShards, owner=message)
 
         await self.display(ctx, message.author.mention)
 
@@ -2225,12 +2232,12 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         if min_phase <= 20:
             await self.display(ctx, "Pruning scores from expired instances...")
             for shard in self._shards:
-                if shard not in ["build",] and not shard.startswith("bungee"):
+                if shard not in ["build",] and not shard.startswith("bungee") and not shard.startswith("velocity"):
                     await self.run(ctx, os.path.join(_top_level, f"utility_code/prune_scores.py -j {config.CPU_COUNT} {self._shards[shard]}"))
 
         if min_phase <= 21:
             for shard in self._shards:
-                if shard not in ["build",] and not shard.startswith("bungee"):
+                if shard not in ["build",] and not shard.startswith("bungee") and not shard.startswith("velocity"):
                     await self.run(ctx, f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
                     await self.run(ctx, f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-players.json {self._shards[shard]}/")
                     await self.run(ctx, f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/ops.json {self._shards[shard]}/")
@@ -2248,8 +2255,9 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                     await self.run(ctx, f"cp -af /home/epic/4_SHARED/op-ban-sync/ring/plugins/MonumentaWarps {self._shards[shard]}/plugins/MonumentaWarps")
 
                 # Enable maintenance mode on all bungee shards
-                if shard.startswith("bungee"):
-                    await self.run(ctx, ["perl", "-p", "-i", "-e", "s|enabled: *false|enabled: true|g", f"{self._shards[shard]}/plugins/BungeeDisplay/config.yml"])
+                # Maintenance mode should be enabled via ~stop at
+                # if shard.startswith("bungee"):
+                #   await self.run(ctx, ["perl", "-p", "-i", "-e", "s|enabled: *false|enabled: true|g", f"{self._shards[shard]}/plugins/BungeeDisplay/config.yml"])
 
         await self.cd(ctx, self._server_dir)
         if min_phase <= 22:
@@ -2699,6 +2707,17 @@ Syntax:
 
         await self.display(ctx, "Broadcasting command {!r} to all minecraft servers".format(commandArgs))
         self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "minecraft", "command": commandArgs})
+
+    async def action_broadcastproxycommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Sends a command to all proxy instances
+Syntax:
+`{cmdPrefix}broadcastproxycommand <command>`'''
+        commandArgs = message.content[len(config.PREFIX + cmd)+1:].strip()
+        if commandArgs.startswith("/"):
+            commandArgs = commandArgs[1:]
+
+        await self.display(ctx, "Broadcasting command {!r} to all proxy servers".format(commandArgs))
+        self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "proxy", "command": commandArgs})
 
 
     async def action_update_avatar(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):

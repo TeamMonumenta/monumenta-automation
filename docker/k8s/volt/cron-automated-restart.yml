@@ -1,0 +1,45 @@
+# NOTE: This uses the same permissions as the automation-bot! If the automation bot is not set up, this will not work.
+
+# This is the actual cron job, specifying what it should run
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cron-automated-restart
+  namespace: volt
+  labels:
+    app: cron-automated-restart
+spec:
+  schedule: "55 4 * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: cron-automated-restart
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                    - monumenta-12
+          serviceAccountName: automation-bot-service-account
+          volumes:
+          - name: secret-config
+            secret:
+              secretName: automated-restart
+          containers:
+          - name: cron-automated-restart
+            image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-volt
+            tty: false
+            stdin: false
+            args:
+            - /home/epic/MCEdit-And-Automation/utility_code/daily_restart.py
+            volumeMounts:
+            - name: secret-config
+              mountPath: /home/epic/.monumenta_bot
+          restartPolicy: Never

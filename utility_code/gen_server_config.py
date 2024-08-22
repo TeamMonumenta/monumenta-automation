@@ -234,7 +234,9 @@ if __name__ == '__main__':
         ('plugins/MonumentaNetworkRelay/config.yml',),
         ('plugins/HolographicDisplays/config.yml',),
         ('plugins/HolographicDisplays/symbols.yml',),
-        ('log4j2-shard.xml',)
+        ('log4j2-shard.xml',),
+        ('plugins/TAB/config.yml',),
+        ('plugins/TAB/skincache.yml',),
     ]
 
     purgatory_min = [
@@ -245,6 +247,48 @@ if __name__ == '__main__':
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
+    ]
+
+    proxy_copy = [
+        ('log4j2-proxy.xml',),
+        ('plugins/maintenance/config.yml',),
+        ('plugins/monumenta-redisapi/config.yaml'),
+        ('velocity.toml',),
+    ]
+
+    proxy_link = [
+        ('velocity.jar', '../server_config/velocity.jar'),
+        ('server-icon.png', '../server_config/data/server_config_template/server-icon.png'),
+        ('plugins/AdvancedServerList-Velocity.jar', '../../server_config/plugins/AdvancedServerList-Velocity.jar'),
+        ('plugins/advancedserverlist/config.yml', '../../../server_config/data/server_config_template/AdvancedServerList/config.yml'),
+        ('plugins/advancedserverlist/profiles', '../../../server_config/data/server_config_template/AdvancedServerList/profiles/{}'.format(SERVER_TYPE)),
+        ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
+        ('plugins/litebans/config.yml', '../../../server_config/data/plugins/proxy/litebans/config.yml'),
+        ('plugins/litebans/messages.yml', '../../../server_config/data/plugins/proxy/litebans/messages.yml'),
+        ('plugins/litebans/webhooks.yml', '../../../server_config/data/plugins/proxy/litebans/webhooks.yml'),
+        ('plugins/LuckPerms-Velocity.jar', '../../server_config/plugins/LuckPerms-Velocity.jar'),
+        ('plugins/luckperms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
+        ('plugins/Maintenance-Velocity.jar', '../../server_config/plugins/Maintenance-Velocity.jar'),
+        ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
+        ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
+        ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
+        ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
+        ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
+        ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
+        ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
+        ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
+        ('plugins/PremiumVanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
+        ('plugins/spark-velocity.jar', '../../server_config/plugins/spark-velocity.jar'),
+        ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
+        ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
+        ('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/ViaVersion/config.yml'),
+        ('plugins/velocity-prometheus-exporter.jar', '../../server_config/plugins/velocity-prometheus-exporter.jar'),
+        ('plugins/velocity-prometheus-exporter/config.json', '../../../server_config/data/plugins/proxy/velocity-prometheus-exporter/config.json'),
+    ]
+
+    proxy_plan = [
+        ('plugins/Plan.jar', '../../server_config/plugins/Plan.jar'), # TODO: how to use same config?
+        ('plugins/plan/config.yaml', '../../../server_config/data/plugins/proxy/Plan/config.yaml'),
     ]
 
     server_config_min = purgatory_min + [
@@ -327,6 +371,7 @@ if __name__ == '__main__':
         ('plugins/StructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
         ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
+        ('plugins/TAB.jar', '../../server_config/plugins/TAB.jar'),
     ]
 
     vanish = [
@@ -628,18 +673,25 @@ if __name__ == '__main__':
                 ('permissions.yml', '  description: Default players'),
                 ('permissions.yml', '  default: true'),
                 ('permissions.yml', '  children:'),
-                ('permissions.yml', '    minecraft.autocraft: true'),
                 ('permissions.yml', '    minecraft.command.help: true'),
                 ('permissions.yml', '    minecraft.command.list: true'),
                 ('permissions.yml', '    minecraft.command.me: true'),
                 ('permissions.yml', '    minecraft.command.tell: true'),
                 ('permissions.yml', '    minecraft.command.tps: true'),
-                ('permissions.yml', '    monumenta.command.transferserver: true'),
+                ('permissions.yml', '    monumenta.command.rejoin: true'),
                 ('plugins/MonumentaRedisSync/config.yml', 'saving_disabled:', 'saving_disabled: true'),
                 ('plugins/MonumentaRedisSync/config.yml', 'scoreboard_cleanup_enabled:', 'scoreboard_cleanup_enabled: false'),
             ],
             'linked':purgatory_min,
         },
+
+        'velocity': {
+            'config': proxy_copy + [
+                ('plugins/maintenance/config.yml', 'maintenance-enabled:', 'maintenance-enabled: true'),
+                ('velocity.toml', '	failover-on-unexpected-server-disconnect =', '	failover-on-unexpected-server-disconnect = {}'.format("true" if SERVER_TYPE == 'build' else "false")),
+            ],
+            'linked': proxy_link
+        }
 
 
     }
@@ -744,6 +796,8 @@ if __name__ == '__main__':
         "zenith-10": "zenith",
         "zenith-11": "zenith",
         "zenith-12": "zenith",
+        "velocity-12": "velocity",
+        "velocity-13": "velocity",
     }
 
     for key in copied_shard_config:
