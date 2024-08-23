@@ -1,3 +1,5 @@
+# NOTE: This uses the same permissions as the automation-bot! If the automation bot is not set up, this will not work.
+
 # This is the actual cron job, specifying what it should run
 apiVersion: batch/v1
 kind: CronJob
@@ -7,7 +9,7 @@ metadata:
   labels:
     app: cron-automated-restart
 spec:
-  schedule: "55 4 * * SUN,MON,TUE,WED,THU,SAT"
+  schedule: "55 4 * * SUN,MON,TUE,WED,THU"
   concurrencyPolicy: Replace
   jobTemplate:
     spec:
@@ -30,18 +32,6 @@ spec:
           - name: secret-config
             secret:
               secretName: automated-restart
-          - name: nfs-data-12
-            hostPath:
-              type: Directory
-              path: /nfs/play/m12/bungee-12/plugins/BungeeDisplay
-          - name: nfs-data-13
-            hostPath:
-              type: Directory
-              path: /nfs/play/m13/bungee-13/plugins/BungeeDisplay
-          - name: nfs-data-17
-            hostPath:
-              type: Directory
-              path: /nfs/play/m17/bungee/plugins/BungeeDisplay
           containers:
           - name: cron-automated-restart
             image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
@@ -52,10 +42,4 @@ spec:
             volumeMounts:
             - name: secret-config
               mountPath: /home/epic/.monumenta_bot
-            - name: nfs-data-12
-              mountPath: /home/epic/play/m12/bungee-12/plugins/BungeeDisplay
-            - name: nfs-data-13
-              mountPath: /home/epic/play/m13/bungee-13/plugins/BungeeDisplay
-            - name: nfs-data-17
-              mountPath: /home/epic/play/m17/bungee/plugins/BungeeDisplay
           restartPolicy: Never
