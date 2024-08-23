@@ -213,7 +213,7 @@ if __name__ == '__main__':
         ('config/paper-world-defaults.yml',),
         ('start.sh',),
         ('wepif.yml',),
-        ('plugins/ViaVersion/config.yml',),
+        # ('plugins/ViaVersion/config.yml',),
         ('plugins/BKCommonLib/config.yml',),
         ('plugins/CoreProtect/config.yml',),
         ('plugins/FastAsyncWorldEdit/config.yml',),
@@ -246,22 +246,23 @@ if __name__ == '__main__':
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
-        ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
+        # ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
     ]
 
     proxy_copy = [
-        ('log4j2-proxy.xml',),
+        ('log4j2-velocity.xml',),
         ('plugins/maintenance/config.yml',),
-        ('plugins/monumenta-redisapi/config.yaml'),
+        ('plugins/monumenta-redisapi/config.yaml',),
         ('velocity.toml',),
+        ('forwarding.secret',),
     ]
 
     proxy_link = [
         ('velocity.jar', '../server_config/velocity.jar'),
         ('server-icon.png', '../server_config/data/server_config_template/server-icon.png'),
         ('plugins/AdvancedServerList-Velocity.jar', '../../server_config/plugins/AdvancedServerList-Velocity.jar'),
-        ('plugins/advancedserverlist/config.yml', '../../../server_config/data/server_config_template/AdvancedServerList/config.yml'),
-        ('plugins/advancedserverlist/profiles', '../../../server_config/data/server_config_template/AdvancedServerList/profiles/{}'.format(SERVER_TYPE)),
+        ('plugins/advancedserverlist/config.yml', '../../../server_config/data/server_config_template/plugins/AdvancedServerList/config.yml'),
+        ('plugins/advancedserverlist/profiles', '../../../server_config/data/server_config_template/plugins/AdvancedServerList/profiles/{}'.format(SERVER_TYPE)),
         ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
         ('plugins/litebans/config.yml', '../../../server_config/data/plugins/proxy/litebans/config.yml'),
         ('plugins/litebans/messages.yml', '../../../server_config/data/plugins/proxy/litebans/messages.yml'),
@@ -273,7 +274,7 @@ if __name__ == '__main__':
         ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
-        ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
+        ('plugins/MonumentaRedisSync.jar', '../..       /server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
         ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
@@ -281,19 +282,19 @@ if __name__ == '__main__':
         ('plugins/spark-velocity.jar', '../../server_config/plugins/spark-velocity.jar'),
         ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
         ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
-        ('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/ViaVersion/config.yml'),
+        ('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
         ('plugins/velocity-prometheus-exporter.jar', '../../server_config/plugins/velocity-prometheus-exporter.jar'),
         ('plugins/velocity-prometheus-exporter/config.json', '../../../server_config/data/plugins/proxy/velocity-prometheus-exporter/config.json'),
     ]
 
     proxy_plan = [
         ('plugins/Plan.jar', '../../server_config/plugins/Plan.jar'), # TODO: how to use same config?
-        ('plugins/plan/config.yaml', '../../../server_config/data/plugins/proxy/Plan/config.yaml'),
+        ('plugins/plan/config.yml', '../../../server_config/data/server_config_template/plugins/plan/config.yml'),
     ]
 
     server_config_min = purgatory_min + [
         ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
-        ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
+        # ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
         ('plugins/BKCommonLib.jar', '../../server_config/plugins/BKCommonLib.jar'),
         ('plugins/LightCleaner.jar', '../../server_config/plugins/LightCleaner.jar'),
     ]
@@ -693,7 +694,6 @@ if __name__ == '__main__':
             'linked': proxy_link
         }
 
-
     }
 
     simple_view_distance_config = {
@@ -805,7 +805,6 @@ if __name__ == '__main__':
         config[key] = copy.deepcopy(config[copy_of])
         config[key]["copy_of"] = copy_of
 
-
     # Config additions that are specific to build or play server
     if SERVER_TYPE == 'build':
         config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=peaceful'))
@@ -820,6 +819,9 @@ if __name__ == '__main__':
         # Player analytics plugin only for play server
         for key in config:
             if not "purgatory" in key:
+                if "velocity" in key:
+                    config[key]['linked'] = config[key]['linked'] + proxy_plan
+                    continue
                 if "build" in key:
                     config[key]['linked'] = config[key]['linked'] + plan
                 else:
