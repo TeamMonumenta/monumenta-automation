@@ -40,7 +40,7 @@ async def main():
         # Set all shards to restart the next time they are empty (many will restart immediately)
         print("Broadcasting restart-empty command to all shards...")
         socket.send_packet("*", "monumentanetworkrelay.command",
-                           {"command": 'restart-empty'})
+                           {"command": 'restart-empty', "server_type": 'minecraft'})
 
         send_broadcast_time("5 minutes")
         await asyncio.sleep(60)
@@ -80,9 +80,10 @@ async def main():
         # At this point shards that didn't already restart will do so
 
         # Restart proxies
-        # await k8s.restart(list(bungee_instances.keys()))
-        socket.send_packet("*", "monumentanetworkrelay.command",
-                           {"command": 'shutdown', "server_type": 'proxy'})
+        # TODO: don't hardcode velocity instances here
+        shards = await k8s.list()
+        velocityShards = list(filter(lambda x: (x.startswith("velocity")), shards))
+        await k8s.restart(velocityShards)
 
         # Some time for everything to stabilize
         await asyncio.sleep(120)

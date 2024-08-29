@@ -67,7 +67,7 @@ spec:
           subPath: 20-monumenta-custom.conf
         resources:
           limits:
-            memory: 1Gi
+            memory: 2Gi
       volumes:
         - name: rabbitmq-config
           configMap:
@@ -91,3 +91,6 @@ data:
     ##
     ## Related doc guide: https://rabbitmq.com/memory.html.
     vm_memory_high_watermark.absolute = 768M
+
+    ## usb: Default limit is very low (128) https://www.rabbitmq.com/docs/networking#tuning-for-large-number-of-connections-connection-backlog
+    tcp_listen_options.backlog = 256
