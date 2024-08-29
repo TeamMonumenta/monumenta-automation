@@ -278,7 +278,7 @@ if __name__ == '__main__':
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
         ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
-        ('plugins/PremiumVanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
+        ('plugins/premiumvanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
         ('plugins/spark-velocity.jar', '../../server_config/plugins/spark-velocity.jar'),
         ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
         ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
@@ -447,11 +447,18 @@ if __name__ == '__main__':
         ('plugins/HeadDatabase', '../../server_config/data/plugins/all/HeadDatabase'),
     ]
 
+    litebans = [
+        ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
+        ('plugins/LiteBans/config.yml', '../../../server_config/data/plugins/all/LiteBans/config.yml'),
+        ('plugins/LiteBans/messages.yml', '../../../server_config/data/plugins/all/LiteBans/messages.yml'),
+        ('plugins/LiteBans/webhooks.yml', '../../../server_config/data/plugins/all/LiteBans/webhooks.yml'),
+    ]
+
     # Index of nodes:
     #   server_config
     #   structures
 
-    base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
+    base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat + litebans
     if SERVER_TYPE == 'build':
         base_plugins += speedchanger + voxelsniper + gobrush
     else:
@@ -642,7 +649,7 @@ if __name__ == '__main__':
                 ('spigot.yml', '      animals: 48', '      animals: 12'),
                 ('spigot.yml', '      monsters: 48', '      monsters: 12'),
                 ('spigot.yml', '      misc: 32', '      misc: 12'),
-                ('spigot.yml', '      other: 64', '      other: 12'),
+                ('spigot.yml', '      other: 96', '      other: 12'),
             ],
             'linked':server_config + base_plugins + dynmap,
         },
@@ -689,7 +696,7 @@ if __name__ == '__main__':
         'velocity': {
             'config': proxy_copy + [
                 ('plugins/maintenance/config.yml', 'maintenance-enabled:', 'maintenance-enabled: true'),
-                ('velocity.toml', '	failover-on-unexpected-server-disconnect =', '	failover-on-unexpected-server-disconnect = {}'.format("true" if SERVER_TYPE == 'build' else "false")),
+                ('velocity.toml', 'failover-on-unexpected-server-disconnect =', 'failover-on-unexpected-server-disconnect = {}'.format("true" if SERVER_TYPE == 'build' else "false")),
             ],
             'linked': proxy_link
         }
@@ -798,6 +805,7 @@ if __name__ == '__main__':
         "zenith-12": "zenith",
         "velocity-12": "velocity",
         "velocity-13": "velocity",
+        "velocity-17": "velocity",
     }
 
     for key in copied_shard_config:
