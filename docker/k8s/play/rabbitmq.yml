@@ -90,7 +90,7 @@ data:
     ## ==============================
     ##
     ## Related doc guide: https://rabbitmq.com/memory.html.
-    vm_memory_high_watermark.absolute = 768M
+    vm_memory_high_watermark.absolute = 1536M
 
     ## usb: Default limit is very low (128) https://www.rabbitmq.com/docs/networking#tuning-for-large-number-of-connections-connection-backlog
     tcp_listen_options.backlog = 256
