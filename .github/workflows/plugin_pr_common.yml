@@ -1,10 +1,6 @@
 name: Reviewdog checks 
 # This is a common script, so we only listen to workflow_call
-on: 
-  workflow_call:
-    secrets:
-      GITHUB_TOKEN:
-        required: true
+on: [workflow_call]
 # Jobs
 jobs:
   reviewdog:
