@@ -46,7 +46,7 @@ for folder in folders:
     for subfolder in glob(f"{folder}/{shard_name}*"):
         basename = os.path.basename(subfolder)
         subfolder_idx = basename[len(shard_name):]
-        if len(subfolder_idx) <= 0:
+        if len(subfolder_idx) <= 0 or subfolder_idx == "exalted":
             continue
         subfolder_idx = int(subfolder_idx)
         this_shard_instances.append(subfolder_idx)
