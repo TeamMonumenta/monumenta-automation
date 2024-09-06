@@ -67,7 +67,11 @@ spec:
           subPath: 20-monumenta-custom.conf
         resources:
           limits:
+            cpu: 2
             memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 64Mi
       volumes:
         - name: rabbitmq-config
           configMap:
