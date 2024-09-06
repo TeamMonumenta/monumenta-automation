@@ -75,8 +75,6 @@
     "ring-6":  { "play" : { "node": "m17", "memGB": 7, }, },
     "ring-7":  { "play" : { "node": "m17", "memGB": 7, }, },
     "ring-8":  { "play" : { "node": "m17", "memGB": 7, }, },
-    "ring-9":  { "play" : { "node": "m17", "memGB": 7, }, },
-    "ring-10": { "play" : { "node": "m17", "memGB": 7, }, },
 
     # Plots
     "plots": {
@@ -165,12 +163,6 @@
         "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
-    "reverie-2": {
-        "play" : { "node": "m17", "memGB": 6   , },
-    },
-    "reverie-3": {
-        "play" : { "node": "m17", "memGB": 6   , },
-    },
     "corridors": {
         "play" : { "node": "m17", "memGB": 3   , },
         "stage": { "node": "m13", "memMB": 1536, },
@@ -223,7 +215,6 @@
         "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
-    "blue-2": { "play" : { "node": "m17", "memGB": 5, }, },
 
     "brown": {
         "play" : { "node": "m17", "memGB": 5   , },
@@ -232,15 +223,30 @@
     },
 
     "hexfall": {
-        "stage": { "node": "m13", "memMB": 1536, },
-        "volt" : { "node": "m12", "memMB": 1536, },
+        "play" : { "node": "m17", "memGB": 4   , },
+        "stage": { "node": "m13", "memGB": 3   , },
+        "volt" : { "node": "m12", "memGB": 3   , },
     },
+    "hexfall-2":  { "play" : { "node": "m13", "memGB": 5, }, },
+    "hexfall-3":  { "play" : { "node": "m17", "memGB": 5, }, },
+    "hexfall-4":  { "play" : { "node": "m13", "memGB": 5, }, },
+    "hexfall-5":  { "play" : { "node": "m17", "memGB": 5, }, },
+    "hexfall-6":  { "play" : { "node": "m13", "memGB": 5, }, },
+    "hexfall-7":  { "play" : { "node": "m17", "memGB": 5, }, },
+    "hexfall-8":  { "play" : { "node": "m13", "memGB": 5, }, },
+    "hexfall-9":  { "play" : { "node": "m17", "memGB": 5, }, },
+    "hexfall-10": { "play" : { "node": "m17", "memGB": 5, }, },
+    "hexfall-11": { "play" : { "node": "m17", "memGB": 5, }, },
+    "hexfall-12": { "play" : { "node": "m17", "memGB": 5, }, },
+    "hexfall-13": { "play" : { "node": "m17", "memGB": 5, }, },
+    "hexfall-14": { "play" : { "node": "m17", "memGB": 5, }, },
+    "hexfall-15": { "play" : { "node": "m17", "memGB": 5, }, },
+    "hexfall-16": { "play" : { "node": "m17", "memGB": 5, }, },
     "skt": {
         "play" : { "node": "m17", "memGB": 4   , },
         "stage": { "node": "m13", "memMB": 1536, },
         "volt" : { "node": "m12", "memMB": 1536, },
     },
-    "skt-2": { "play" : { "node": "m17", "memGB": 4, }, },
     "zenith": {
         "play" : { "node": "m17", "memGB":    4, },
         "stage": { "node": "m13", "memGB":    3, },
@@ -250,16 +256,6 @@
         "play": { "node": "m17", "memGB": 4, },
         "volt": { "node": "m13", "memGB": 3, },
     },
-    "zenith-3":  { "play" : { "node": "m17", "memGB": 4, }, },
-    "zenith-4":  { "play" : { "node": "m17", "memGB": 4, }, },
-    "zenith-5":  { "play" : { "node": "m17", "memGB": 4, }, },
-    "zenith-6":  { "play" : { "node": "m17", "memGB": 4, }, },
-    "zenith-7":  { "play" : { "node": "m17", "memGB": 4, }, },
-    "zenith-8":  { "play" : { "node": "m17", "memGB": 4, }, },
-    "zenith-9":  { "play" : { "node": "m17", "memGB": 4, }, },
-    "zenith-10": { "play" : { "node": "m17", "memGB": 4, }, },
-    "zenith-11": { "play" : { "node": "m17", "memGB": 4, }, },
-    "zenith-12": { "play" : { "node": "m17", "memGB": 4, }, },
 }
 
 # Defaults for each namespace
@@ -275,5 +271,8 @@
     "m12": { "full_name": "monumenta-12", "mem_total_kB": 131621592, "huge_pages":  43000, "huge_page_size_kB": 2048 },
     "m13": { "full_name": "monumenta-13", "mem_total_kB": 131841792, "huge_pages":  48000, "huge_page_size_kB": 2048 },
     "m17": { "full_name": "monumenta-17", "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048 },
-}
 
+    # These are not real hosts and exist purely for planning where to put new shards
+    "new": { "full_name": "monumenta-new", "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048 },
+    "delete": { "full_name": "monumenta-delete-me", "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048 },
+}
