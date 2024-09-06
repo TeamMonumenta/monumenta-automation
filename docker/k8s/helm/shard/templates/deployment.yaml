@@ -146,16 +146,16 @@ spec:
           value: "{{ .Values.name }}:25566"
 {{- if eq .Values.namespace "build" }}
         - name: "JAVA_ARG"
-          value: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9000 -Dlog4j2.configurationFile=log4j2-shard.xml"
+          value: "-DPaper.IgnoreJavaVersion=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9000 -Dlog4j2.configurationFile=log4j2-shard.xml"
 {{- else if eq .Values.namespace "stage" }}
         - name: "JAVA_ARG"
-          value: "-Dlog4j2.configurationFile=log4j2-shard.xml"
+          value: "-DPaper.IgnoreJavaVersion=true -Dlog4j2.configurationFile=log4j2-shard.xml"
 {{- else if eq .Values.namespace "volt" }}
         - name: "JAVA_ARG"
-          value: "-Dlog4j2.configurationFile=log4j2-shard.xml"
+          value: "-DPaper.IgnoreJavaVersion=true -Dlog4j2.configurationFile=log4j2-shard.xml"
 {{- else if eq .Values.namespace "play" }}
         - name: "JAVA_ARG"
-          value: "-Dlog4j2.configurationFile=log4j2-shard.xml"
+          value: "-DPaper.IgnoreJavaVersion=true -Dlog4j2.configurationFile=log4j2-shard.xml"
 {{- end }}
         - name: "MONUMENTA_IS_PLAY"
 {{- if eq .Values.namespace "play" }}
@@ -238,6 +238,7 @@ spec:
             # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
             # Tried making this 64 extra, low-memory shards still crash with this
             hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 192 }}Mi
+            cpu: 2
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
@@ -245,3 +246,4 @@ spec:
             # Tried making this 64 extra, low-memory shards still crash with this
             # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
             hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 192 }}Mi
+            cpu: 100m
