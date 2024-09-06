@@ -151,6 +151,38 @@ spec:
           secret:
             secretName: authorized-keys-config
             defaultMode: 292
+        - name: ssh-host-dsa-key
+          secret:
+            secretName: ssh-host-dsa-key
+            defaultMode: 292
+        - name: ssh-host-ecdsa-key
+          secret:
+            secretName: ssh-host-ecdsa-key
+            defaultMode: 292
+        - name: ssh-host-ed25519-key
+          secret:
+            secretName: ssh-host-ed25519-key
+            defaultMode: 292
+        - name: ssh-host-rsa-key
+          secret:
+            secretName: ssh-host-rsa-key
+            defaultMode: 292
+        - name: ssh-host-dsa-key-pub
+          secret:
+            secretName: ssh-host-dsa-key-pub
+            defaultMode: 292
+        - name: ssh-host-ecdsa-key-pub
+          secret:
+            secretName: ssh-host-ecdsa-key-pub
+            defaultMode: 292
+        - name: ssh-host-ed25519-key-pub
+          secret:
+            secretName: ssh-host-ed25519-key-pub
+            defaultMode: 292
+        - name: ssh-host-rsa-key-pub
+          secret:
+            secretName: ssh-host-rsa-key-pub
+            defaultMode: 292
       containers:
       - name: basic-ssh
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-basic-ssh-dev
@@ -210,3 +242,28 @@ spec:
         - name: authorized-keys-config
           mountPath: /home/epic/.ssh/authorized_keys
           subPath: authorized_keys
+        - name: ssh-host-dsa-key
+          mountPath: /etc/ssh/ssh_host_dsa_key
+          subPath: ssh_host_dsa_key
+        - name: ssh-host-ecdsa-key
+          mountPath: /etc/ssh/ssh_host_ecdsa_key
+          subPath: ssh_host_ecdsa_key
+        - name: ssh-host-ed25519-key
+          mountPath: /etc/ssh/ssh_host_ed25519_key
+          subPath: ssh_host_ed25519_key
+        - name: ssh-host-rsa-key
+          mountPath: /etc/ssh/ssh_host_rsa_key
+          subPath: ssh_host_rsa_key
+        - name: ssh-host-dsa-key-pub
+          mountPath: /etc/ssh/ssh_host_dsa_key.pub
+          subPath: ssh_host_dsa_key.pub
+        - name: ssh-host-ecdsa-key-pub
+          mountPath: /etc/ssh/ssh_host_ecdsa_key.pub
+          subPath: ssh_host_ecdsa_key.pub
+        - name: ssh-host-ed25519-key-pub
+          mountPath: /etc/ssh/ssh_host_ed25519_key.pub
+          subPath: ssh_host_ed25519_key.pub
+        - name: ssh-host-rsa-key-pub
+          mountPath: /etc/ssh/ssh_host_rsa_key.pub
+          subPath: ssh_host_rsa_key.pub
+
