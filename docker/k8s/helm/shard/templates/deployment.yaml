@@ -131,7 +131,7 @@ spec:
         env:
         # Set this to however much RAM the shard needs
         - name: "JAVA_MEM"
-          value: "{{ .Values.memMB }}M"
+          value: "{{ .Values.hugePageMB }}M"
         - name: "JAVA_JAR"
           value: "paperclip.jar"
         - name: "SERVER_DIR"
@@ -234,10 +234,10 @@ spec:
             # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
             # It should not need much/any...
             # TEMP: Set to 4GB to avoid OOMkilling the copy_world on blue
-            memory: 4Gi
+            memory: {{ .Values.memMB }}Mi
             # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
             # Tried making this 64 extra, low-memory shards still crash with this
-            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 192 }}Mi
+            hugepages-2Mi: {{ add .Values.hugePageMB (div .Values.hugePageMB 16) 192 }}Mi
             cpu: 2
           requests:
             # Set this to 64Mi
@@ -245,5 +245,5 @@ spec:
             memory: 64Mi
             # Tried making this 64 extra, low-memory shards still crash with this
             # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: {{ add .Values.memMB (div .Values.memMB 16) 192 }}Mi
+            hugepages-2Mi: {{ add .Values.hugePageMB (div .Values.hugePageMB 16) 192 }}Mi
             cpu: 100m

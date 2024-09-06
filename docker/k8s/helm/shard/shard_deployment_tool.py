@@ -70,6 +70,8 @@ def run_helm_for_shard(namespace, shard):
     output_conf["namespace"] = namespace
     node = shard_namespaced["node"]
     output_conf["nodeFull"] = abbrev_node_to_full.get(node, f"monumenta-bad-lookup-{node}")
+    if "hugePageGB" in output_conf:
+        output_conf["hugePageMB"] = output_conf["hugePageGB"] * 1024
     if "memGB" in output_conf:
         output_conf["memMB"] = output_conf["memGB"] * 1024
 
@@ -407,8 +409,8 @@ def print_memory_usage():
         namespace_info = namespace_hugepage_usages[namespace]
         print(f'{namespace:<{header_width}}', end='')
         for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
-            memGB = namespace_info.get(node, 0.0)
-            preformatted_entry = f'{memGB:8.2f} GB'
+            hugePageGB = namespace_info.get(node, 0.0)
+            preformatted_entry = f'{hugePageGB:8.2f} GB'
             print(f' │ {preformatted_entry:>{column_width}}', end='')
         print('')
 
@@ -420,24 +422,24 @@ def print_memory_usage():
     header = 'Total:'
     print(f'{header:<{header_width}}', end='')
     for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
-        memGB = node_hugepage_usages[node]
-        preformatted_entry = f'{memGB:8.2f} GB'
+        hugePageGB = node_hugepage_usages[node]
+        preformatted_entry = f'{hugePageGB:8.2f} GB'
         print(f' │ {preformatted_entry:>{column_width}}', end='')
     print('')
 
     header = 'System:'
     print(f'{header:<{header_width}}', end='')
     for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
-        memGB = node_info.get(node, {}).get("total_huge_page_size_GB", 0.0)
-        preformatted_entry = f'{memGB:8.2f} GB'
+        hugePageGB = node_info.get(node, {}).get("total_huge_page_size_GB", 0.0)
+        preformatted_entry = f'{hugePageGB:8.2f} GB'
         print(f' │ {preformatted_entry:>{column_width}}', end='')
     print('')
 
     header = 'Remaining:'
     print(f'{header:<{header_width}}', end='')
     for node in sorted(node_hugepage_usages.keys(), key=natural_sort):
-        memGB = node_info.get(node, {}).get("total_huge_page_size_GB", 0.0) - node_hugepage_usages[node]
-        preformatted_entry = f'{memGB:8.2f} GB'
+        hugePageGB = node_info.get(node, {}).get("total_huge_page_size_GB", 0.0) - node_hugepage_usages[node]
+        preformatted_entry = f'{hugePageGB:8.2f} GB'
         print(f' │ {preformatted_entry:>{column_width}}', end='')
     print('')
 

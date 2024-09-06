@@ -17,8 +17,11 @@ image: "monumenta-java-shard-21"
 # "monumenta-8", "monumenta-11", etc.
 nodeFull: "monumenta-8"
 
-# Amount of base memory (hugepages allocated will be a bit more than this)
-memMB: 6144
+# Amount of base hugepages memory (hugepages allocated will be a bit more than this)
+hugePageMB: 6144
+
+# Amount of overhead memory for other tasks. Used for blue's pregeneration
+memMB: 1024
 
 # Whether performance metrics will be scraped every few seconds or tens of seconds
 fastMetrics: false
