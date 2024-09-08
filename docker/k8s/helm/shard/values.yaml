@@ -21,7 +21,7 @@ nodeFull: "monumenta-8"
 hugePageMB: 6144
 
 # Amount of overhead memory for other tasks. Used for blue's pregeneration
-memMB: 1024
+memMB: 1536
 
 # Whether performance metrics will be scraped every few seconds or tens of seconds
 fastMetrics: false
@@ -38,3 +38,8 @@ useSocketForProbes: false
 
 # If non-zero, expose the server via a NodePort on that given port
 nodePort: 0
+
+# CPU requests for this shard (the guaranteed amount of cpu time)
+cpuReqs: "250m"
+# CPU limits for this shard (the max number of threads used for this shard)
+cpuLimits: "2"
