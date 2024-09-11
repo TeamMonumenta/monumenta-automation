@@ -4,7 +4,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: velocity-13
-  namespace: volt
+  namespace: stage
   labels:
     app: velocity-13
     k8s-app: monumenta-metrics
@@ -28,7 +28,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: velocity-13
-  namespace: volt
+  namespace: stage
   labels:
     app: velocity-13
 spec:
@@ -56,7 +56,7 @@ spec:
         - name: nfs-volume
           hostPath:
             type: Directory
-            path: /nfs/volt/m13
+            path: /nfs/stage/m13
       containers:
       - name: velocity-13
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
@@ -65,7 +65,7 @@ spec:
         ports:
         # Primary Minecraft port
         - containerPort: 25566
-          hostPort: 9012
+          hostPort: 9002
           hostIP: "15.235.54.193" # The node's external facing IP address
         - containerPort: 9225
         env:
@@ -76,7 +76,7 @@ spec:
         - name: "JAVA_JAR"
           value: "velocity.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/volt/m13/velocity-13"
+          value: "/home/epic/stage/m13/velocity-13"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
@@ -95,7 +95,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/volt/m13
+          mountPath: /home/epic/stage/m13
         resources:
           limits:
             memory: 1Gi

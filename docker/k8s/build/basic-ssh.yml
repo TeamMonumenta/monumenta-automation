@@ -143,6 +143,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/4_SHARED/lockouts
+        - name: chat-global-filters
+          hostPath:
+            type: Directory
+            path: /nfs/4_SHARED/global_chat_filters
         - name: nfs-resource-packs
           hostPath:
             type: Directory
@@ -158,15 +162,15 @@ spec:
         - name: ssh-host-ecdsa-key
           secret:
             secretName: ssh-host-ecdsa-key
-            defaultMode: 292
+            defaultMode: 256
         - name: ssh-host-ed25519-key
           secret:
             secretName: ssh-host-ed25519-key
-            defaultMode: 292
+            defaultMode: 256
         - name: ssh-host-rsa-key
           secret:
             secretName: ssh-host-rsa-key
-            defaultMode: 292
+            defaultMode: 256
         - name: ssh-host-dsa-key-pub
           secret:
             secretName: ssh-host-dsa-key-pub
@@ -237,6 +241,8 @@ spec:
           mountPath: /home/epic/valley
         - name: nfs-lockouts
           mountPath: /home/epic/4_SHARED/lockouts
+        - name: chat-global-filters
+          mountPath: /home/epic/global_chat_filters
         - name: nfs-resource-packs
           mountPath: /home/epic/resource-packs
         - name: authorized-keys-config

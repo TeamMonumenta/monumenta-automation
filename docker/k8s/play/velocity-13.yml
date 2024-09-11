@@ -1,10 +1,45 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Service / internal network ports
 
 apiVersion: v1
 kind: Service
 metadata:
   name: velocity-13
-  namespace: volt
+  namespace: play
   labels:
     app: velocity-13
     k8s-app: monumenta-metrics
@@ -13,9 +48,9 @@ spec:
   selector:
     app: velocity-13
   ports:
-  - name: monumenta-socket
-    port: 9576
-    targetPort: 9576
+
+
+
   - name: metrics
     port: 9225
     targetPort: 9225
@@ -28,13 +63,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: velocity-13
-  namespace: volt
+  namespace: play
   labels:
     app: velocity-13
 spec:
   strategy:
     type: Recreate
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: velocity-13
@@ -55,8 +90,12 @@ spec:
       volumes:
         - name: nfs-volume
           hostPath:
+            path: /nfs/play/m13
             type: Directory
-            path: /nfs/volt/m13
+        - name: nfs-scratch
+          hostPath:
+            type: Directory
+            path: /nfs/5_SCRATCH
       containers:
       - name: velocity-13
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
@@ -65,21 +104,33 @@ spec:
         ports:
         # Primary Minecraft port
         - containerPort: 25566
-          hostPort: 9012
+          hostPort: 25565
+          hostIP: "15.235.54.193" # The node's external facing IP address
+        # Votifier
+        - containerPort: 8192
+          hostPort: 3333
           hostIP: "15.235.54.193" # The node's external facing IP address
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
-          value: "512M"
+          value: "2G"
         - name: "JAVA_META_MEM"
-          value: "128M"
+          value: "256M"
         - name: "JAVA_JAR"
           value: "velocity.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/volt/m13/velocity-13"
+          value: "/home/epic/play/m13/velocity-13"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        - name: "JAVA_ARG"
+          value: "-Dlog4j2.configurationFile=log4j2-velocity.xml"
         - name: "NETWORK_RELAY_NAME"
+          value: velocity-13
+        - name: "PLAN_SERVER_ID"
+          value: velocity-13
+        - name: "PLAN_SERVER_UUID"
+          value: "cfd035eb-0c85-5af1-8ae9-ac710306b138"
+        - name: "PLAN_PLUGIN_SERVERNAME"
           value: velocity-13
         readinessProbe:
           tcpSocket:
@@ -95,11 +146,15 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/volt/m13
+          mountPath: /home/epic/play/m13
+        - name: nfs-scratch
+          mountPath: /home/epic/5_SCRATCH
         resources:
           limits:
-            memory: 1Gi
-            hugepages-2Mi: 704Mi
+            cpu: "8"
+            memory: 2608Mi
+            hugepages-2Mi: 4608Mi
           requests:
-            memory: 64Mi
-            hugepages-2Mi: 704Mi
+            cpu: "1"
+            memory: 2608Mi
+            hugepages-2Mi: 4608Mi

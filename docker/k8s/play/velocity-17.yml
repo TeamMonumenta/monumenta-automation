@@ -1,0 +1,160 @@
+#
+# NOTE:
+# To generate the maps-auth secret, run these commands:
+# htpasswd -c ./auth plan
+# kubectl create secret generic plan-auth --from-file auth -n play
+# rm auth
+#
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: plan
+  namespace: play
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: plan-auth
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required - ok"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - plan.playmonumenta.com
+  rules:
+  - host: plan.playmonumenta.com
+    http:
+      paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: velocity-17
+              port:
+                number: 8804
+
+---
+
+# Service / internal network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: velocity-17
+  namespace: play
+  labels:
+    app: velocity-17
+    k8s-app: monumenta-metrics
+spec:
+  type: ClusterIP
+  selector:
+    app: velocity-17
+  ports:
+  - name: plan
+    port: 8804
+    targetPort: 8804
+  - name: metrics
+    port: 9225
+    targetPort: 9225
+
+---
+
+# Deployment / the actual running application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velocity-17
+  namespace: play
+  labels:
+    app: velocity-17
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: velocity-17
+  template:
+    metadata:
+      labels:
+        app: velocity-17
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-17
+      volumes:
+        - name: nfs-volume
+          hostPath:
+            path: /nfs/play/m17
+            type: Directory
+        - name: nfs-scratch
+          hostPath:
+            type: Directory
+            path: /nfs/5_SCRATCH
+      containers:
+      - name: velocity-17
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
+        tty: true
+        stdin: true
+        ports:
+        # Primary Minecraft port
+        - containerPort: 25566
+          hostPort: 25565
+          hostIP: "15.235.84.119" # The node's external facing IP address
+        # Votifier
+        - containerPort: 8192
+          hostPort: 3333
+          hostIP: "15.235.84.119" # The node's external facing IP address
+        - containerPort: 9225
+        env:
+        - name: "JAVA_MEM"
+          value: "2G"
+        - name: "JAVA_META_MEM"
+          value: "256M"
+        - name: "JAVA_JAR"
+          value: "velocity.jar"
+        - name: "SERVER_DIR"
+          value: "/home/epic/play/m17/velocity-17"
+        - name: "JAVA_LARGE_PAGES"
+          value: "yes"
+        - name: "JAVA_ARG"
+          value: "-Dlog4j2.configurationFile=log4j2-velocity.xml"
+        - name: "NETWORK_RELAY_NAME"
+          value: velocity-17
+        - name: "PLAN_SERVER_ID"
+          value: velocity-17
+        - name: "PLAN_SERVER_UUID"
+          value: "1b8b0221-a4a1-5dee-b024-f95c35ee3362"
+        - name: "PLAN_PLUGIN_SERVERNAME"
+          value: velocity-17
+        readinessProbe:
+          tcpSocket:
+            port: 25566
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 25566
+          initialDelaySeconds: 240
+          timeoutSeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /home/epic/play/m17
+        - name: nfs-scratch
+          mountPath: /home/epic/5_SCRATCH
+        resources:
+          limits:
+            cpu: "8"
+            memory: 2608Mi
+            hugepages-2Mi: 4608Mi
+          requests:
+            cpu: "1"
+            memory: 2608Mi
+            hugepages-2Mi: 4608Mi

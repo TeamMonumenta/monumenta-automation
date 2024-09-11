@@ -43,7 +43,7 @@ spec:
                 values:
                 - monumenta-13
       containers:
-      - image: redis:6
+      - image: redis:7.4.0
         name: redis
         ports:
         - containerPort: 6379

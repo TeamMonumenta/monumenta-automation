@@ -3,15 +3,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: velocity-13
+  name: velocity-12
   namespace: volt
   labels:
-    app: velocity-13
+    app: velocity-12
     k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
-    app: velocity-13
+    app: velocity-12
   ports:
   - name: monumenta-socket
     port: 9576
@@ -27,21 +27,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: velocity-13
+  name: velocity-12
   namespace: volt
   labels:
-    app: velocity-13
+    app: velocity-12
 spec:
   strategy:
     type: Recreate
   replicas: 0
   selector:
     matchLabels:
-      app: velocity-13
+      app: velocity-12
   template:
     metadata:
       labels:
-        app: velocity-13
+        app: velocity-12
     spec:
       affinity:
         nodeAffinity:
@@ -51,14 +51,14 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-13
+                - monumenta-12
       volumes:
         - name: nfs-volume
           hostPath:
             type: Directory
-            path: /nfs/volt/m13
+            path: /nfs/volt/m12
       containers:
-      - name: velocity-13
+      - name: velocity-12
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
         tty: true
         stdin: true
@@ -66,7 +66,7 @@ spec:
         # Primary Minecraft port
         - containerPort: 25566
           hostPort: 9012
-          hostIP: "15.235.54.193" # The node's external facing IP address
+          hostIP: "141.94.75.9" # The node's external facing IP address
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
@@ -76,11 +76,11 @@ spec:
         - name: "JAVA_JAR"
           value: "velocity.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/volt/m13/velocity-13"
+          value: "/home/epic/volt/m12/velocity-12"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
-          value: velocity-13
+          value: velocity-12
         readinessProbe:
           tcpSocket:
             port: 25566
@@ -95,7 +95,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/volt/m13
+          mountPath: /home/epic/volt/m12
         resources:
           limits:
             memory: 1Gi
