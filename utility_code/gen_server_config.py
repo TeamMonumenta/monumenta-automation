@@ -211,7 +211,6 @@ if __name__ == '__main__':
         ('spigot.yml',),
         ('config/paper-global.yml',),
         ('config/paper-world-defaults.yml',),
-        ('start.sh',),
         ('wepif.yml',),
         # ('plugins/ViaVersion/config.yml',),
         ('plugins/BKCommonLib/config.yml',),
