@@ -90,6 +90,8 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("GodsporeAccess".to_string(), 0);
         scores.insert("AzacorAccess".to_string(), 0);
         scores.insert("DCZAccess".to_string(), 0);
+        // Temporarily reset Guild score for use on guildplots (avoid sending people to other peoples' guilds by mistake)
+        scores.insert("Guild".to_string(), 0);
 
         fix_total_level(scores);
     }
