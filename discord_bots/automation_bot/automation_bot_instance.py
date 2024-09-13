@@ -2270,6 +2270,10 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         await self.cd(ctx, "/home/epic")
         if min_phase <= 24:
+            # XXX NOTE
+            # This logic is run the same on play/stage/volt/etc
+            # This means that test weekly updates on stage/volt will overwrite real play server backups in 1_ARCHIVE if run on the same day
+            # Because of this, 1_ARCHIVE is deliberately not mounted into stage/volt so as not to damage play server backups, while still actually testing that they run correctly
             await self.display(ctx, "Backing up post-update artifacts...")
             await self.cd(ctx, f"{self._server_dir}/..")
             folder_name = self._server_dir.strip("/").split("/")[-1]

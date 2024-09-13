@@ -69,6 +69,11 @@ spec:
           mountPath: /home/epic/play/m12
         - name: nfs-old-backups
           mountPath: /home/epic/0_OLD_BACKUPS
+          # XXX NOTE
+          # 1_ARCHIVE is deliberately not mounted into stage/volt automation bot
+          # This is because part of running weekly test updates there is generating backup files
+          # and currently those backups would overwrite play server backups made on the same day
+          # If you change this to mount in 1_ARCHIVE, you must change the weekly update script as well
         - name: nfs-archive
           mountPath: /home/epic/1_ARCHIVE
         - name: nfs-domain-shared

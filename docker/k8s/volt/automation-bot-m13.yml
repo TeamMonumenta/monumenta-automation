@@ -103,6 +103,11 @@ spec:
         volumeMounts:
         - name: nfs-data
           mountPath: /home/epic/volt/m13
+          # XXX NOTE
+          # 1_ARCHIVE is deliberately not mounted into stage/volt automation bot
+          # This is because part of running weekly test updates there is generating backup files
+          # and currently those backups would overwrite play server backups made on the same day
+          # If you change this to mount in 1_ARCHIVE, you must change the weekly update script as well
         - name: nfs-domain-shared
           mountPath: /home/epic/3_DOMAIN_SHARED
         - name: nfs-shared
