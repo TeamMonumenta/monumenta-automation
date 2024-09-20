@@ -11,7 +11,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: velocity-12
+    app: velocity-12-nodeport
   ports:
   - name: monumenta-socket
     port: 9576
@@ -117,8 +117,10 @@ spec:
           mountPath: /home/epic/build/m12
         resources:
           limits:
-            memory: 1Gi
-            hugepages-2Mi: 704Mi
+            cpu: 4
+            memory: 2Gi
+            hugepages-2Mi: 1024Mi
           requests:
+            cpu: 1
             memory: 64Mi
-            hugepages-2Mi: 704Mi
+            hugepages-2Mi: 1024Mi
