@@ -76,6 +76,8 @@
     "ring-6":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuLimits": "4" }, },
     "ring-7":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuLimits": "4" }, },
     "ring-8":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuLimits": "4" }, },
+    "ring-9":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuLimits": "4" }, },
+    "ring-10": { "play" : { "node": "m17", "hugePageGB": 7, "cpuLimits": "4" }, },
 
     # Plots
     "plots": {
@@ -232,17 +234,6 @@
     "hexfall-3":  { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
     "hexfall-4":  { "play" : { "node": "m13", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
     "hexfall-5":  { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-6":  { "play" : { "node": "m13", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-7":  { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-8":  { "play" : { "node": "m13", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-9":  { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-10": { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-11": { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-12": { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-13": { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-14": { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-15": { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
-    "hexfall-16": { "play" : { "node": "m17", "hugePageGB": 5, "cpuLimits": "4", "cpuReqs": "500m" }, },
     "skt": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
         "stage": { "node": "m13", "hugePageMB": 1536, },
