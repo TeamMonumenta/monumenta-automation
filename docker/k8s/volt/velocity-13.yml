@@ -59,13 +59,13 @@ spec:
             path: /nfs/volt/m13
       containers:
       - name: velocity-13
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-17
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
         tty: true
         stdin: true
         ports:
         # Primary Minecraft port
         - containerPort: 25566
-          hostPort: 9013
+          hostPort: 9012
           hostIP: "15.235.54.193" # The node's external facing IP address
         - containerPort: 9225
         env:

@@ -238,7 +238,7 @@ spec:
             # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
             # Tried making this 64 extra, low-memory shards still crash with this
             hugepages-2Mi: {{ add .Values.hugePageMB (div .Values.hugePageMB 16) 192 }}Mi
-            cpu: 2
+            cpu: {{ .Values.cpuLimits }}
           requests:
             # Set this to 64Mi
             # The shard should not need non-hugepage RAM by default
@@ -246,4 +246,4 @@ spec:
             # Tried making this 64 extra, low-memory shards still crash with this
             # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
             hugepages-2Mi: {{ add .Values.hugePageMB (div .Values.hugePageMB 16) 192 }}Mi
-            cpu: 100m
+            cpu: {{ .Values.cpuReqs }}

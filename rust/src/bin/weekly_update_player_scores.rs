@@ -68,7 +68,7 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         update_instance_scores(scores, days_since_epoch, "DBWStartDate", 28, &["DB1Access", "DB1Finished"]);
         update_instance_scores(scores, days_since_epoch, "DCSStartDate", 28, &["DRL2Access", "DRL2Finished"]);
         update_instance_scores(scores, days_since_epoch, "DFFStartDate", 28, &["DFFAccess", "DFFFinished"]);
-        update_instance_scores(scores, days_since_epoch, "DHFStartDate", 14, &["DHFAccess", "DHFChests", "DHFChests2"]);
+        update_instance_scores(scores, days_since_epoch, "DHFStartDate", 28, &["DHFAccess", "DHFChests"]);
         update_instance_scores(scores, days_since_epoch, "DSKTStartDate", 14, &["DSKTAccess", "DSKTChests"]);
 
         /* DelveDungeon score also resets as if it was a dungeon score */

@@ -27,7 +27,7 @@ spec:
           path: "/"
           backend:
             service:
-              name: bungee
+              name: velocity-17
               port:
                 number: 8804
 
@@ -38,15 +38,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: bungee
+  name: velocity-17
   namespace: play
   labels:
-    app: bungee
+    app: velocity-17
     k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
-    app: bungee
+    app: velocity-17
   ports:
   - name: plan
     port: 8804
@@ -62,21 +62,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bungee
+  name: velocity-17
   namespace: play
   labels:
-    app: bungee
+    app: velocity-17
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: bungee
+      app: velocity-17
   template:
     metadata:
       labels:
-        app: bungee
+        app: velocity-17
     spec:
       affinity:
         nodeAffinity:
@@ -92,9 +92,13 @@ spec:
           hostPath:
             path: /nfs/play/m17
             type: Directory
+        - name: nfs-scratch
+          hostPath:
+            type: Directory
+            path: /nfs/5_SCRATCH
       containers:
-      - name: bungee
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-17
+      - name: velocity-17
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
         tty: true
         stdin: true
         ports:
@@ -109,19 +113,25 @@ spec:
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
-          value: "4G"
+          value: "2G"
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
-          value: "BungeeCord.jar"
+          value: "velocity.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/play/m17/bungee"
+          value: "/home/epic/play/m17/velocity-17"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "JAVA_ARG"
-          value: "-Dlog4j2.configurationFile=log4j2-bungee.xml"
+          value: "-Dlog4j2.configurationFile=log4j2-velocity.xml"
         - name: "NETWORK_RELAY_NAME"
-          value: bungee
+          value: velocity-17
+        - name: "PLAN_SERVER_ID"
+          value: velocity-17
+        - name: "PLAN_SERVER_UUID"
+          value: "1b8b0221-a4a1-5dee-b024-f95c35ee3362"
+        - name: "PLAN_PLUGIN_SERVERNAME"
+          value: velocity-17
         readinessProbe:
           tcpSocket:
             port: 25566
@@ -137,10 +147,14 @@ spec:
         volumeMounts:
         - name: nfs-volume
           mountPath: /home/epic/play/m17
+        - name: nfs-scratch
+          mountPath: /home/epic/5_SCRATCH
         resources:
           limits:
-            memory: 1Gi
+            cpu: "8"
+            memory: 2608Mi
             hugepages-2Mi: 4608Mi
           requests:
-            memory: 64Mi
+            cpu: "1"
+            memory: 2608Mi
             hugepages-2Mi: 4608Mi

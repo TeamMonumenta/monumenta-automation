@@ -223,9 +223,9 @@ class AutomationBot(commands.Bot):
 
                 # Conditionally timezone aware cutoff time
                 if msg.created_at.tzinfo is None:
-                    time_cutoff = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
+                    time_cutoff = datetime.datetime.utcnow() - datetime.timedelta(days=7)
                 else:
-                    time_cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=24)
+                    time_cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7)
 
                 self.rlogger.debug("time_cutoff=%s      msg.created_at=%s", time_cutoff, msg.created_at)
                 if msg.created_at > time_cutoff:

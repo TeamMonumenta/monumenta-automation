@@ -37,7 +37,30 @@ async def main():
     await asyncio.sleep(3)
 
     try:
-        # Set all shards to restart the next time they are empty (many will restart immediately)
+        send_broadcast_time("15 minutes")
+        await asyncio.sleep(60)
+        send_broadcast_time("14 minutes")
+        await asyncio.sleep(60)
+        send_broadcast_time("13 minutes")
+        await asyncio.sleep(60)
+        send_broadcast_time("12 minutes")
+        await asyncio.sleep(60)
+        send_broadcast_time("11 minutes")
+        await asyncio.sleep(60)
+        send_broadcast_time("10 minutes")
+        await asyncio.sleep(60)
+        send_broadcast_time("9 minutes")
+        await asyncio.sleep(60)
+        send_broadcast_time("8 minutes" )
+        await asyncio.sleep(60)
+        send_broadcast_time("7 minutes")
+        await asyncio.sleep(60)
+
+        # TODO: add shutoff to creating dungeon instances and starting world bosses
+        send_broadcast_time("6 minutes")
+        await asyncio.sleep(60)
+
+        # Set all shards to restart the next time they are empty (many will restart immediately) at 5 minutes
         print("Broadcasting restart-empty command to all shards...")
         socket.send_packet("*", "monumentanetworkrelay.command",
                            {"command": 'restart-empty', "server_type": 'minecraft'})

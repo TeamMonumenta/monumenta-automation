@@ -3,22 +3,44 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: bungee
-  namespace: volt
+  name: velocity-12
+  namespace: build
   labels:
-    app: bungee
+    app: velocity-12
     k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
-    app: bungee
+    app: velocity-12-nodeport
   ports:
-  - name: plan
-    port: 8804
-    targetPort: 8804
+  - name: monumenta-socket
+    port: 9576
+    targetPort: 9576
   - name: metrics
     port: 9225
     targetPort: 9225
+
+---
+
+# Service / external network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: velocity-12-nodeport
+  namespace: build
+  labels:
+    app: velocity-12
+spec:
+  type: NodePort
+  #externalTrafficPolicy: Local
+  selector:
+    app: velocity-12
+  ports:
+  - name: minecraft
+    port: 9001
+    nodePort: 9001
+    targetPort: 25566
 
 ---
 
@@ -27,21 +49,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bungee
-  namespace: volt
+  name: velocity-12
+  namespace: build
   labels:
-    app: bungee
+    app: velocity-12
 spec:
   strategy:
     type: Recreate
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
-      app: bungee
+      app: velocity-12
   template:
     metadata:
       labels:
-        app: bungee
+        app: velocity-12
     spec:
       affinity:
         nodeAffinity:
@@ -55,19 +77,15 @@ spec:
       volumes:
         - name: nfs-volume
           hostPath:
-            path: /nfs/volt/m12
             type: Directory
+            path: /nfs/build/m12
       containers:
-      - name: bungee
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-17
+      - name: velocity-12
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
         tty: true
         stdin: true
         ports:
-        # Primary Minecraft port
         - containerPort: 25566
-          hostPort: 9012
-          hostIP: "141.94.75.9" # The node's external facing IP address
-        - containerPort: 8804
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
@@ -75,15 +93,13 @@ spec:
         - name: "JAVA_META_MEM"
           value: "128M"
         - name: "JAVA_JAR"
-          value: "BungeeCord.jar"
+          value: "velocity.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/volt/m12/bungee"
+          value: "/home/epic/build/m12/velocity-12"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
-        - name: "JAVA_ARG"
-          value: "-Dlog4j2.configurationFile=log4j2-bungee.xml"
         - name: "NETWORK_RELAY_NAME"
-          value: bungee
+          value: velocity-12
         readinessProbe:
           tcpSocket:
             port: 25566
@@ -98,13 +114,13 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/volt/m12
+          mountPath: /home/epic/build/m12
         resources:
           limits:
-            memory: 1Gi
-            hugepages-2Mi: 704Mi
+            cpu: 4
+            memory: 2Gi
+            hugepages-2Mi: 1024Mi
           requests:
+            cpu: 1
             memory: 64Mi
-            hugepages-2Mi: 704Mi
-      imagePullSecrets:
-      - name: githubcred
+            hugepages-2Mi: 1024Mi
