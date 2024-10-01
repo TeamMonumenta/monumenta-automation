@@ -742,8 +742,31 @@ class AutomationBotInstance(commands.Cog):
         for chunk in split_string(msg):
             await ctx.send(chunk)
 
-    async def run(self, ctx: discord.ext.commands.Context, cmd, ret=0, displayOutput=False, suppressStdErr=False):
+    async def _read_stream(self, queue, stream, process_line, terminator):
+        """Reads a stream of text, such as from a pipe, and passes it into a queue one line at a time.
+
+        When a new line is ready, `process_line(line)` is run to handle any formatting or class-wrapping that is required
+
+        When all lines have been read, adds the specified terminator to the queue to mark the stream as done.
+        """
+        loop = asyncio.get_event_loop()
+        while True:
+            line = await stream.readline()
+            if line:
+                asyncio.run_coroutine_threadsafe(queue.put(process_line(line)), loop)
+            else:
+                asyncio.run_coroutine_threadsafe(queue.put(terminator), loop)
+                break
+
+    async def run(self, ctx: discord.ext.commands.Context, cmd, ret=0, displayOutput=False, suppressStdErr=False, streamOutput=False):
         """Run a shell command"""
+        # TODO HERE:
+        '''
+        https://stackoverflow.com/questions/2996887/how-to-replicate-tee-behavior-in-python-when-using-subprocess
+        https://kevinmccarthy.org/2016/07/25/streaming-subprocess-stdin-and-stdout-with-asyncio-in-python/
+        https://docs.python.org/3.10/library/asyncio-subprocess.html?ref=kevinmccarthy.org#examples
+        https://docs.python.org/3/library/asyncio-dev.html#concurrency-and-multithreading
+        '''
         if not isinstance(cmd, list):
             # For simple stuff, splitting on spaces is enough
             splitCmd = cmd.split(' ')

@@ -1,14 +1,9 @@
 import os
 import math
 from pathlib import Path
-import sys
-import time
-import zlib
-
-from lib_py3.common import bounded_range
 
 from minecraft.level_dat import LevelDat
-from minecraft.region import Region, EntitiesRegion, PoiRegion
+from minecraft.region import Region, EntitiesRegion
 from minecraft.player_dat_format.player import PlayerFile
 from minecraft.util.iter_util import process_in_parallel
 
@@ -70,11 +65,25 @@ class World():
         new_world = World(path)
         for region in self.iter_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, read_only=True):
             try:
-                region.copy_to(new_world, region.rx, region.rz, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
-            except Exception as e:
+                region.copy_to(new_world, region.rx, region.rz, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
+            except Exception:
                 print(f'Exception copying {region!r}')
                 raise
         return new_world
+
+    def copy_from_bounding_box(self, src_world, min_x, min_y, min_z, max_x, max_y, max_z, src_x, src_y, src_z, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
+        """Replaces the contents of this world at some specified coordinates with that of the specified minimum source coordinates from src_world.
+
+        Assumes that source and destination do not share the same region file, but both already exist at all specified coordinates; work on a copy or make improvements as needed
+
+        Note that this is slower than copying a region file as a whole!
+        """
+        for dst_region in self.iter_regions(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, read_only=False):
+            try:
+                dst_region.copy_from_bounding_box(src_world, min_x, min_y, min_z, max_x, max_y, max_z, src_x, src_y, src_z, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
+            except Exception:
+                print('Exception copying selected area')
+                raise
 
     def enumerate_regions(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf, region_types=(Region, EntitiesRegion)): # TODO: PoiRegion
         """
@@ -85,17 +94,11 @@ class World():
         yields tuples of (full_path, rx, rz, region_type) which is what is needed to load the region file
         """
         if min_x > max_x:
-            temp = min_x;
-            min_x = max_x
-            max_x = temp
+            min_x, max_x = max_x, min_x
         if min_y > max_y:
-            temp = min_y;
-            min_y = max_y
-            max_y = temp
+            min_y, max_y = max_y, min_y
         if min_z > max_z:
-            temp = min_z;
-            min_z = max_z
-            max_z = temp
+            min_z, max_z = max_z, min_z
 
         for region_type in region_types:
             subfolder = region_type.folder_name()
@@ -105,10 +108,10 @@ class World():
             for filename in os.listdir(region_folder):
                 filename_parts = filename.split('.')
                 if (
-                    len(filename_parts) != 4 or
-                    filename_parts[0] != 'r' or
-                    filename_parts[3] != 'mca'
-                ):
+                        len(filename_parts) != 4 or
+                        filename_parts[0] != 'r' or
+                        filename_parts[3] != 'mca'
+                    ):
                     continue
 
                 try:
@@ -118,10 +121,10 @@ class World():
                     continue
 
                 if (
-                    512*rx + 512 <= min_x or
-                    512*rx       >  max_x or
-                    512*rz + 512 <= min_z or
-                    512*rz       >  max_z
+                        512*rx + 512 <= min_x or
+                        512*rx > max_x or
+                        512*rz + 512 <= min_z or
+                        512*rz > max_z
                 ):
                     continue
 
@@ -261,7 +264,7 @@ class World():
 
         Returns None if the region file containing the requested block does not exist
         """
-        x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
+        x, z = (int(pos[0]), int(pos[2]))
         region = self.get_region(x // 512, z // 512)
         if region is None:
             return None
@@ -281,7 +284,7 @@ class World():
 
         Returns None if the region file containing the requested block does not exist
         """
-        x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
+        x, z = (int(pos[0]), int(pos[2]))
         region = self.get_region(x // 512, z // 512)
         if region is None:
             return None
