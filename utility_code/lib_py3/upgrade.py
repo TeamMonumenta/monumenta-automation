@@ -166,6 +166,42 @@ enchant_id_map = {
     71:"minecraft:vanishing_curse",
 }
 
+potion_id_map = {
+    1: "minecraft:speed",
+    2: "minecraft:slowness",
+    3: "minecraft:haste",
+    4: "minecraft:mining_fatigue",
+    5: "minecraft:strength",
+    6: "minecraft:instant_health",
+    7: "minecraft:instant_damage",
+    8: "minecraft:jump_boost",
+    9: "minecraft:nausea",
+    10: "minecraft:regeneration",
+    11: "minecraft:resistance",
+    12: "minecraft:fire_resistance",
+    13: "minecraft:water_breathing",
+    14: "minecraft:invisibility",
+    15: "minecraft:blindness",
+    16: "minecraft:night_vision",
+    17: "minecraft:hunger",
+    18: "minecraft:weakness",
+    19: "minecraft:poison",
+    20: "minecraft:wither",
+    21: "minecraft:health_boost",
+    22: "minecraft:absorption",
+    23: "minecraft:saturation",
+    24: "minecraft:glowing",
+    25: "minecraft:levitation",
+    26: "minecraft:luck",
+    27: "minecraft:unluck",
+    28: "minecraft:slow_falling",
+    29: "minecraft:conduit_power",
+    30: "minecraft:dolphins_grace",
+    31: "minecraft:bad_omen",
+    32: "minecraft:hero_of_the_village",
+    33: "minecraft:darkness",
+}
+
 cat_variant_id_map = (
     "minecraft:tabby",
     "minecraft:black",
@@ -179,6 +215,63 @@ cat_variant_id_map = (
     "minecraft:jellie",
     "minecraft:all_black",
 )
+
+def rename_key(nbt_: TagCompound, from: str, to: str) -> None:
+    if(nbt_.has_path(from)):
+        nbt_.value[to] = nbt_.at_path(from)
+        nbt_.value.pop(from)
+
+def v1_20_4_convert_legacy_effect(nbt_: TagCompound, legacy_path: str, new_path: str ) -> None: 
+    if not nbt_.has_path(legacy_path):
+        return 
+    new_id = potion_id_map[nbt_.at_path(legacy_path)]
+    nbt_.value.pop(legacy_path)
+    nbt_.value[new_path] = TagString(new_id)
+
+def v1_20_4_convert_mob_effect(nbt_: TagCompound) -> None:
+    v1_20_4_convert_legacy_effect(nbt_, "Id", "id")
+    v1_20_4_convert_legacy_effect(nbt_, "EffectId", "id")
+    rename_key(nbt_, "Ambient", "ambient")
+    rename_key(nbt_, "Amplifier", "amplifier")
+    rename_key(nbt_, "Duration", "duration")
+    rename_key(nbt_, "EffectDuration", "duration")
+    rename_key(nbt_, "ShowParticles", "show_particles")
+    rename_key(nbt_, "ShowIcon", "show_icon")
+    rename_key(nbt_, "FactorCalculationData", "factor_calculation_data")
+    rename_key(nbt_, "HiddenEffect", "hidden_effect")
+
+    if nbt_.has_path("hidden_effect"):
+        v1_20_4_convert_mob_effect(nbt_.at_path("hidden_effect"))
+
+def v1_20_4_convert_mob_effect_list(nbt_: TagCompound, old_path: str, new_path: str) -> None: 
+    for entry in nbt_.at_path(old_str):
+        v1_20_4_convert_mob_effect(entry)
+
+    rename_key(old_path, new_path)
+
+def v1_20_4_convert_stew(nbt_: TagCompound) -> TagList:
+    c = TagCompound()
+    c.value["id"] = TagString(potion_id_map[nbt_.at_path("EffectId").value])
+    c.value["EffectDuration"] = nbt_.at_path("EffectDuration")
+
+    nbt_.value.pop("EffectId")
+    nbt_.value.pop("EffectDuration")
+
+    l = TagList()
+    l.value.push(c)
+    return l
+
+def update_1_20_4(nbt_: TagCompound) -> None:
+    # beacon
+    v1_20_4_convert_legacy_effect(nbt_, "Primary", "primary_effect")
+    v1_20_4_convert_legacy_effect(nbt_, "Secondary", "secondary_effect")
+    # area_effect_cloud
+    v1_20_4_convert_mob_effect_list(nbt_, "Effects", "effects")
+    v1_20_4_convert_mob_effect_list(nbt_, "ActiveEffects", "active_effects")
+    # arrow, item
+    v1_20_4_convert_mob_effect_list(nbt_, "CustomPotionEffects", "custom_potion_effects")
+
+    nbt_.value["stew_effects"] = v1_20_4_convert_stew(nbt_)
 
 def upgrade_entity(nbt_: TagCompound, regenerateUUIDs=False, tagsToRemove: list = [], remove_non_plain_display=False) -> None:
     if not isinstance(nbt_, TagCompound):
@@ -350,6 +443,7 @@ def upgrade_entity(nbt_: TagCompound, regenerateUUIDs=False, tagsToRemove: list 
                 display.value.pop("Lore")
             if len(display.value) <= 0:
                 nbt_.value.pop("display")
+    update_1_20_4(nbt_)
 
 def upgrade_text_containing_mojangson(line: str, convert_checks_to_plain: str = "never", regenerateUUIDs=False) -> str:
     """
