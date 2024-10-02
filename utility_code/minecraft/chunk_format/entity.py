@@ -59,7 +59,7 @@ class Entity(RecursiveMinecraftIterator, NbtPathDebug):
             'Item',
             'Items[]',
             'Inventory[]',
-            'Trident',
+            'item',
             'FireworksItem',
         })
 
