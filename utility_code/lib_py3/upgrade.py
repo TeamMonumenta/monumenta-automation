@@ -239,6 +239,8 @@ def v1_20_4_convert_mob_effect(nbt_: TagCompound) -> None:
     rename_key(nbt_, "ShowIcon", "show_icon")
     rename_key(nbt_, "FactorCalculationData", "factor_calculation_data")
     rename_key(nbt_, "HiddenEffect", "hidden_effect")
+    rename_key(nbt_, "Trident", "item")
+    rename_key(nbt_, "Fuse", "fuse")
 
     if nbt_.has_path("hidden_effect"):
         v1_20_4_convert_mob_effect(nbt_.at_path("hidden_effect"))
