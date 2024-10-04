@@ -457,11 +457,11 @@ if __name__ == '__main__':
     #   server_config
     #   structures
 
-    base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat + litebans
+    base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
     if SERVER_TYPE == 'build':
         base_plugins += speedchanger + voxelsniper + gobrush
     else:
-        base_plugins += vanish
+        base_plugins += vanish + litebans
 
     # String replacements:
     # {servername} - server name
