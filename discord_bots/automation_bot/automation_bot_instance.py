@@ -1612,6 +1612,7 @@ Must be run before starting the update on the play server
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/portal /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/ruin /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ring/land_of_storms /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
 
         if not debug:
             await self.display(ctx, "Restarting the ring and ring shards...")
