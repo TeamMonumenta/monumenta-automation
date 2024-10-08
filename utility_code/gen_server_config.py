@@ -241,7 +241,7 @@ if __name__ == '__main__':
 
     mixins = [
         ('mods/MonumentaMixins.jar', '../../../server_config/mods/MonumentaMixins.jar'),
-        ('server.jar', '../../../server_config/FabricMixinLoader.jar'),
+        ('server.jar', '../../../server_config/mixinloader.jar'),
     ]
 
     purgatory_min = mixins + [
@@ -306,7 +306,7 @@ if __name__ == '__main__':
 
     server_config = server_config_min + [
         ('Project_Epic-{servername}/generated', '../../server_config/data/generated'),
-        ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks_1_20_4'),
+        ('Project_Epic-{servername}/datapacks', '../../server_config/data/datapacks'),
     ]
 
     network_chat = [
