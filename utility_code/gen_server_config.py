@@ -211,6 +211,7 @@ if __name__ == '__main__':
         ('spigot.yml',),
         ('config/paper-global.yml',),
         ('config/paper-world-defaults.yml',),
+        ('config/monumenta-mixins.yml',),
         ('wepif.yml',),
         # ('plugins/ViaVersion/config.yml',),
         ('plugins/BKCommonLib/config.yml',),
@@ -238,7 +239,12 @@ if __name__ == '__main__':
         ('plugins/TAB/skincache.yml',),
     ]
 
-    purgatory_min = [
+    mixins = [
+        ('mods/MonumentaMixins.jar', '../../../server_config/mods/MonumentaMixins.jar'),
+        ('server.jar', '../../../server_config/FabricMixinLoader.jar'),
+    ]
+
+    purgatory_min = mixins + [
         ('paperclip.jar', '../server_config/paperclip.jar'),
         ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
@@ -457,7 +463,7 @@ if __name__ == '__main__':
     #   server_config
     #   structures
 
-    base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat + litebans
+    base_plugins = mixins + luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat + litebans
     if SERVER_TYPE == 'build':
         base_plugins += speedchanger + voxelsniper + gobrush
     else:
