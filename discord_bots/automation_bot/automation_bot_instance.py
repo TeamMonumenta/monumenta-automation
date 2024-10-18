@@ -2258,10 +2258,6 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.display(ctx, "Running item replacements for players...")
             await self.run(ctx, os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks -j {config.CPU_COUNT}")
 
-            # TODO REMOVE THIS
-            await self.display(ctx, "Stopping for manual player data fixes")
-            return
-
         if min_phase <= 12 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Loading player data back into redis...")
             await self.run(ctx, os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --input {self._server_dir}/server_config/redis_data_initial 1")
