@@ -783,7 +783,7 @@ class AutomationBotInstance(commands.Cog):
 
         stdout = stdout.decode('utf-8')
         if stdout:
-            await self.debug(ctx, f"stdout from command {cmd}:")
+            await self.debug(ctx, f"stdout from command `{cmd}`:")
             logger.debug(stdout)
 
             if self._debug or displayOutput:
@@ -791,14 +791,14 @@ class AutomationBotInstance(commands.Cog):
 
         stderr = stderr.decode('utf-8')
         if stderr and not suppressStdErr:
-            await ctx.send(f"stderr from command {cmd}:")
+            await ctx.send(f"stderr from command `{cmd}`:")
             await self.display_verbatim(ctx, stderr)
 
         if isinstance(ret, int) and rc != ret:
-            raise ValueError(f"Expected result {ret}, got result {rc} while processing {cmd!r}")
+            raise ValueError(f"Expected result {ret}, got result {rc} while processing `{cmd!r}`")
 
         if isinstance(ret, (list, tuple, set)) and rc not in ret:
-            raise ValueError(f"Expected result in {ret}, got result {rc} while processing {cmd!r}")
+            raise ValueError(f"Expected result in {ret}, got result {rc} while processing `{cmd!r}`")
 
         return stdout
 
@@ -1532,7 +1532,11 @@ Do not use for debugging quests or other scores that are likely to change often.
             value = commandArgs[2]
             message = f'Set score {objective}={value} via bot'
 
-            await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", self._k8s.namespace, name, objective, value, message], displayOutput=(len(lines) < 5))
+            ns = self._k8s.namespace
+            if ns in ('stage', 'volt'):
+                ns = 'play'
+
+            await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, value, message], displayOutput=(len(lines) < 5))
             self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": f"execute if entity {name} run scoreboard players set {name} {objective} {value}"})
             setscores += 1
 
@@ -1554,17 +1558,21 @@ Do not use for debugging quests or other scores that are likely to change often.
         objective = 'Guild'
         message = 'Set Guild score for guildplots migration'
 
+        ns = self._k8s.namespace
+        if ns in ('stage', 'volt'):
+            ns = 'play'
+
         # Load list of guild plot bounds/coordinates
         guild_plots_json = {}
         with open(guild_plots_json_file, 'r', encoding='utf-8') as fp:
             guild_plots_json = json.load(fp)
 
         setscores = 0
-        for guild_details in guild_plots_json.value():
+        for guild_details in guild_plots_json.values():
             value = guild_details['plot_number']
             members = guild_details['members']
             for name in members:
-                await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", self._k8s.namespace, name, objective, value, message], displayOutput=False)
+                await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, str(value), message], displayOutput=False, ret=[0, 1])
                 self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": f"execute if entity {name} run scoreboard players set {name} {objective} {value}"})
                 setscores += 1
 
