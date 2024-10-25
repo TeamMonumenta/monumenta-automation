@@ -43,3 +43,5 @@ nodePort: 0
 cpuReqs: "250m"
 # CPU limits for this shard (the max number of threads used for this shard)
 cpuLimits: "2"
+# CPU ActiveProcessorCount - number of cpu threads this shard can see
+cpuActiveProcessorCount: 2
