@@ -240,8 +240,8 @@ if __name__ == '__main__':
     ]
 
     mixins = [
-        ('mods/MonumentaMixins.jar', '../../../server_config/mods/MonumentaMixins.jar'),
-        ('server.jar', '../../../server_config/mixinloader.jar'),
+        ('mods/MonumentaMixins.jar', '../../server_config/mods/MonumentaMixins.jar'),
+        ('server.jar', '../server_config/mixinloader.jar'),
     ]
 
     purgatory_min = mixins + [
@@ -338,7 +338,6 @@ if __name__ == '__main__':
         ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
         ('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
-        ('plugins/nbt-api.jar', '../../server_config/plugins/nbt-api.jar'),
         ('plugins/HolographicDisplays.jar', '../../server_config/plugins/HolographicDisplays.jar'),
         ('plugins/HolographicDisplays/database.yml', '../../../server_config/data/plugins/{servername}/HolographicDisplays/database.yml'),
         ('plugins/spark.jar', '../../server_config/plugins/spark.jar'),
