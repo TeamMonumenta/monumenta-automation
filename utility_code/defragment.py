@@ -1,9 +1,10 @@
 #!/usr/bin/env pypy3
+"""Removes unused space in region files"""
 
+import argparse
 from datetime import datetime, timedelta
 import os
 import sys
-import getopt
 import multiprocessing
 from pathlib import Path
 import concurrent
@@ -12,15 +13,11 @@ from minecraft.world import World
 from lib_py3.common import eprint
 from lib_py3.timing import Timings
 
-def usage():
-    """Prints usage and exits with error"""
-    sys.exit(f"Usage: {sys.argv[0]} [--verbose] [--num-threads 4] /path/to/world [/path/to/parent ...]")
-
 def disk_usage_for_path(path):
-    """Gets approximate real disk usage for a path"""
-    # TODO: Everything I've tried is garabage, this is definitely wrong
-    # Needs replacing with a function that actually works
-    return os.stat(path).st_blocks * 512
+    """Gets approximate disk usage for a path"""
+    with open(path, 'rb') as fp:
+        fp.seek(0, os.SEEK_END)
+        return fp.tell()
 
 def process_region(arg):
     """Defragments a single region file"""
@@ -44,28 +41,16 @@ def process_region(arg):
 if __name__ == '__main__':
     multiprocessing.set_start_method("fork")
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "vj:", ["verbose", "num-threads=", ])
-    except getopt.GetoptError as err:
-        eprint(str(err))
-        usage()
+    arg_parser = argparse.ArgumentParser(description=__doc__)
+    arg_parser.add_argument('world', type=Path, nargs='+', help='A folder containing one or more worlds')
+    arg_parser.add_argument('-j', '--num-threads', type=int, default=4)
+    arg_parser.add_argument('-v', '--verbose', action='store_true')
+    args = arg_parser.parse_args()
 
-    num_threads = 4
-    verbose = False
-
-    for o, a in opts:
-        if o in ("-j", "--num-threads"):
-            num_threads = int(a)
-            if num_threads < 0:
-                num_threads = os.cpu_count()
-        elif o in ("-v", "--verbose"):
-            verbose = True
-        else:
-            eprint("Unknown argument: {}".format(o))
-            usage()
-
-    if len(args) < 1:
-        usage()
+    num_threads = args.num_threads
+    if num_threads <= 0:
+        num_threads = os.cpu_count()
+    verbose = args.verbose
 
     timings = Timings(enabled=True)
 
@@ -75,8 +60,8 @@ if __name__ == '__main__':
     regions = []
 
     all_world_paths = []
-    for arg_path in args:
-        for world_path in World.enumerate_worlds(arg_path):
+    for world_root_path in args.world:
+        for world_path in World.enumerate_worlds(world_root_path):
             all_world_paths.append(world_path)
 
     if len(all_world_paths) <= 0:
@@ -110,6 +95,4 @@ if __name__ == '__main__':
     # Print new line
     print('')
 
-    # TODO: Would be great to print these sizes but they're just wrong/misleading today. Fix the above TODO and re-enable this
-    #timings.nextStep(f"Defragemented {len(regions)} regions, reducing size from {initial_size / (1024 * 1024)} MB to {final_size / (1024 * 1024)} MB")
-    timings.nextStep(f"Defragemented {len(regions)} regions")
+    timings.nextStep(f"Defragemented {len(regions)} regions, reducing size from {initial_size / (1024 * 1024)} MB to {final_size / (1024 * 1024)} MB")

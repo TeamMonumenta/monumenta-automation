@@ -28,7 +28,7 @@ class jsonFile(object):
         if path is None:
             self.dict = {}
             return
-        with open(path, 'r', encoding='utf-8') as f:
+        with open(path, 'r', encoding='utf-8-sig') as f:
             try:
                 fContent = f.read()
                 if fContent[0] == chr(0xfeff):
