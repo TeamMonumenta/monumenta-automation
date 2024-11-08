@@ -2168,14 +2168,22 @@ DELETES DUNGEON CORE PROTECT DATA'''
         else:
             await self.display(ctx, "No current raffle seed")
 
-    async def action_run_test_raffle(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
+    async def action_run_test_raffle(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Runs a test raffle (does not save results)'''
 
-        await self.display(ctx, "Test raffle results:")
+        commandArgs = message.content[len(config.PREFIX):].strip()
+        dry_run = True
+        if len(commandArgs) > len(cmd) + 1 and "actual" in commandArgs[len(cmd) + 1:].strip():
+            dry_run = False
+
+        if dry_run:
+            await self.display(ctx, "Test raffle results:")
+        else:
+            await self.display(ctx, "Raffle results:")
         raffle_seed = self.get_raffle_seed()
 
         raffle_results = tempfile.mktemp()
-        vote_raffle(raffle_seed, 'redis', raffle_results, dry_run=True)
+        vote_raffle(raffle_seed, 'redis', raffle_results, dry_run=dry_run)
         await self.run(ctx, "cat {}".format(raffle_results), displayOutput=True)
 
     async def action_weekly_update(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
