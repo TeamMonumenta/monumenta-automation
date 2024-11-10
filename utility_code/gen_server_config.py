@@ -458,13 +458,18 @@ if __name__ == '__main__':
         ('plugins/LiteBans/webhooks.yml', '../../../server_config/data/plugins/all/LiteBans/webhooks.yml'),
     ]
 
+    axiom = [
+        ('plugins/AxiomPaper.jar', '../../server_config/plugins/AxiomPaper.jar'),
+        ('plugins/AxiomPaper', '../../server_config/data/plugins/all/AxiomPaper'),
+    ]
+
     # Index of nodes:
     #   server_config
     #   structures
 
     base_plugins = mixins + luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat + litebans
     if SERVER_TYPE == 'build':
-        base_plugins += speedchanger + voxelsniper + gobrush
+        base_plugins += speedchanger + voxelsniper + gobrush + axiom
     else:
         base_plugins += vanish
 
