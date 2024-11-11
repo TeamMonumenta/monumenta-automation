@@ -216,15 +216,15 @@ cat_variant_id_map = (
     "minecraft:all_black",
 )
 
-def rename_key(nbt_: TagCompound, from: str, to: str) -> None:
-    if(nbt_.has_path(from)):
-        nbt_.value[to] = nbt_.at_path(from)
-        nbt_.value.pop(from)
+def rename_key(nbt_: TagCompound, from_: str, to: str) -> None:
+    if nbt_.has_path(from_):
+        nbt_.value[to] = nbt_.at_path(from_)
+        nbt_.value.pop(from_)
 
-def v1_20_4_convert_legacy_effect(nbt_: TagCompound, legacy_path: str, new_path: str ) -> None: 
+def v1_20_4_convert_legacy_effect(nbt_: TagCompound, legacy_path: str, new_path: str ) -> None:
     if not nbt_.has_path(legacy_path):
-        return 
-    new_id = potion_id_map[nbt_.at_path(legacy_path)]
+        return
+    new_id = potion_id_map[nbt_.at_path(legacy_path).value]
     nbt_.value.pop(legacy_path)
     nbt_.value[new_path] = TagString(new_id)
 
@@ -245,21 +245,24 @@ def v1_20_4_convert_mob_effect(nbt_: TagCompound) -> None:
     if nbt_.has_path("hidden_effect"):
         v1_20_4_convert_mob_effect(nbt_.at_path("hidden_effect"))
 
-def v1_20_4_convert_mob_effect_list(nbt_: TagCompound, old_path: str, new_path: str) -> None: 
-    for entry in nbt_.at_path(old_str):
+def v1_20_4_convert_mob_effect_list(nbt_: TagCompound, old_path: str, new_path: str) -> None:
+    if not nbt_.has_path(old_path):
+        return
+
+    for entry in nbt_.at_path(old_path).value:
         v1_20_4_convert_mob_effect(entry)
 
-    rename_key(old_path, new_path)
+    rename_key(nbt_, old_path, new_path)
 
 def v1_20_4_convert_stew(nbt_: TagCompound) -> TagList:
-    c = TagCompound()
+    c = TagCompound({})
     c.value["id"] = TagString(potion_id_map[nbt_.at_path("EffectId").value])
-    c.value["EffectDuration"] = nbt_.at_path("EffectDuration")
+    c.value["duration"] = nbt_.at_path("EffectDuration")
 
     nbt_.value.pop("EffectId")
     nbt_.value.pop("EffectDuration")
 
-    l = TagList()
+    l = TagList([])
     l.value.push(c)
     return l
 
@@ -273,7 +276,8 @@ def update_1_20_4(nbt_: TagCompound) -> None:
     # arrow, item
     v1_20_4_convert_mob_effect_list(nbt_, "CustomPotionEffects", "custom_potion_effects")
 
-    nbt_.value["stew_effects"] = v1_20_4_convert_stew(nbt_)
+    if nbt_.has_path("EffectId") and nbt_.has_path("EffectDuration"):
+        nbt_.value["stew_effects"] = v1_20_4_convert_stew(nbt_)
 
 def upgrade_entity(nbt_: TagCompound, regenerateUUIDs=False, tagsToRemove: list = [], remove_non_plain_display=False) -> None:
     if not isinstance(nbt_, TagCompound):
