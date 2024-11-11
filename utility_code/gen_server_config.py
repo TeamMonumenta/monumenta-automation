@@ -211,6 +211,7 @@ if __name__ == '__main__':
         ('spigot.yml',),
         ('config/paper-global.yml',),
         ('config/paper-world-defaults.yml',),
+        ('config/monumenta-mixins.yml',),
         ('wepif.yml',),
         # ('plugins/ViaVersion/config.yml',),
         ('plugins/BKCommonLib/config.yml',),
@@ -238,7 +239,12 @@ if __name__ == '__main__':
         ('plugins/TAB/skincache.yml',),
     ]
 
-    purgatory_min = [
+    mixins = [
+        ('mods/MonumentaMixins.jar', '../../server_config/mods/MonumentaMixins.jar'),
+        ('server.jar', '../server_config/mixinloader.jar'),
+    ]
+
+    purgatory_min = mixins + [
         ('paperclip.jar', '../server_config/paperclip.jar'),
         ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
@@ -332,7 +338,6 @@ if __name__ == '__main__':
         ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
         ('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
-        ('plugins/nbt-api.jar', '../../server_config/plugins/nbt-api.jar'),
         ('plugins/HolographicDisplays.jar', '../../server_config/plugins/HolographicDisplays.jar'),
         ('plugins/HolographicDisplays/database.yml', '../../../server_config/data/plugins/{servername}/HolographicDisplays/database.yml'),
         ('plugins/spark.jar', '../../server_config/plugins/spark.jar'),
@@ -453,15 +458,20 @@ if __name__ == '__main__':
         ('plugins/LiteBans/webhooks.yml', '../../../server_config/data/plugins/all/LiteBans/webhooks.yml'),
     ]
 
+    axiom = [
+        ('plugins/AxiomPaper.jar', '../../server_config/plugins/AxiomPaper.jar'),
+        ('plugins/AxiomPaper', '../../server_config/data/plugins/all/AxiomPaper'),
+    ]
+
     # Index of nodes:
     #   server_config
     #   structures
 
-    base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
+    base_plugins = mixins + luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat + litebans
     if SERVER_TYPE == 'build':
-        base_plugins += speedchanger + voxelsniper + gobrush
+        base_plugins += speedchanger + voxelsniper + gobrush + axiom
     else:
-        base_plugins += vanish + litebans
+        base_plugins += vanish
 
     # String replacements:
     # {servername} - server name

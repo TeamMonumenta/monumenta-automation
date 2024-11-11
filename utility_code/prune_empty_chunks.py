@@ -1,5 +1,5 @@
 #!/usr/bin/env pypy3
-"""Removes unused space in region files"""
+"""Removes empty chunks in region files"""
 
 import argparse
 from datetime import datetime, timedelta
@@ -9,6 +9,7 @@ import multiprocessing
 from pathlib import Path
 import concurrent
 import traceback
+from minecraft.region import Region, EntitiesRegion
 from minecraft.world import World
 from lib_py3.common import eprint
 from lib_py3.timing import Timings
@@ -19,8 +20,36 @@ def disk_usage_for_path(path):
         fp.seek(0, os.SEEK_END)
         return fp.tell()
 
+def process_chunk(region, cx, cz):
+    """Checks if a chunk is empty, and if so, removes it"""
+    chunk = region.load_chunk(cx, cz)
+
+    # Check for non-blocks (really fast)
+    for _ in chunk.iter_all_types():
+        # Could be an entity, block entity, item, or some new thing - regardless, it's important! Don't delete!
+        return
+
+    # Check for non-air blocks
+    for section in chunk.sections:
+        if not section.has_path("block_states.palette"):
+            # Global palette - has lots of blocks, so we keep this
+            return
+
+        for palette_entry in section.at_path("block_states.palette").value:
+            name = palette_entry.at_path("Name").value
+            if name not in (
+                    "minecraft:air",
+                    "minecraft:cave_air",
+                    "minecraft:void_air",
+            ):
+                # Block is probably important - keep it
+                return
+
+    # Empty chunk - safe to delete
+    region.delete_chunk(cx, cz)
+
 def process_region(arg):
-    """Defragments a single region file"""
+    """Removes empty chunks a single region file"""
     full_path, rx, rz, region_type, verbose = arg
     region = region_type(full_path, rx, rz)
 
@@ -29,8 +58,16 @@ def process_region(arg):
 
     try:
         initial_size = disk_usage_for_path(full_path)
-        region.defragment()
-        final_size = disk_usage_for_path(full_path)
+        if isinstance(region, (Region, EntitiesRegion)):
+            for cx, cz in list(region.iter_chunk_coordinates()):
+                process_chunk(region, cx, cz)
+
+        if len(list(region.iter_chunk_coordinates())) == 0:
+            os.remove(region.path)
+            final_size = 0
+        else:
+            region.defragment()
+            final_size = disk_usage_for_path(full_path)
     except Exception as ex:
         eprint(f"Failed to process file {full_path}: {ex}")
         eprint(traceback.format_exc())
@@ -65,9 +102,9 @@ if __name__ == '__main__':
             all_world_paths.append(world_path)
 
     if len(all_world_paths) <= 0:
-        sys.exit("No valid worlds found to defragment")
+        sys.exit("No valid worlds found")
 
-    print(f"Defragmenting regions from:")
+    print(f"Removing empty chunks from from:")
     for world_path in all_world_paths:
         print(f"  {world_path}")
 
@@ -90,9 +127,9 @@ if __name__ == '__main__':
             num_processed += 1
             now = datetime.now()
             if now > next_update:
-                timings.longStep(f'{num_processed}/{num_regions} region files defragmented')
+                timings.longStep(f'{num_processed}/{num_regions} region files checked')
                 next_update = now + timedelta(seconds=1)
     # Print new line
     print('')
 
-    timings.nextStep(f"Defragemented {len(regions)} regions, reducing size from {initial_size / (1024 * 1024)} MB to {final_size / (1024 * 1024)} MB")
+    timings.nextStep(f"Checked {len(regions)} regions, reducing size from {initial_size / (1024 * 1024)} MB to {final_size / (1024 * 1024)} MB")
