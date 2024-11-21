@@ -271,7 +271,7 @@ if __name__ == '__main__':
         ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
         ('plugins/litebans/config.yml', '../../../server_config/data/plugins/proxy/litebans/config.yml'),
         ('plugins/litebans/messages.yml', '../../../server_config/data/plugins/proxy/litebans/messages.yml'),
-        ('plugins/litebans/webhooks.yml', '../../../server_config/data/plugins/proxy/litebans/webhooks.yml'),
+        ('plugins/litebans/webhooks.yml', f'../../../server_config/data/plugins/proxy/litebans/{SERVER_TYPE}/webhooks.yml'),
         ('plugins/LuckPerms-Velocity.jar', '../../server_config/plugins/LuckPerms-Velocity.jar'),
         ('plugins/luckperms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
         ('plugins/Maintenance-Velocity.jar', '../../server_config/plugins/Maintenance-Velocity.jar'),
@@ -455,7 +455,7 @@ if __name__ == '__main__':
         ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
         ('plugins/LiteBans/config.yml', '../../../server_config/data/plugins/all/LiteBans/config.yml'),
         ('plugins/LiteBans/messages.yml', '../../../server_config/data/plugins/all/LiteBans/messages.yml'),
-        ('plugins/LiteBans/webhooks.yml', '../../../server_config/data/plugins/all/LiteBans/webhooks.yml'),
+        ('plugins/LiteBans/webhooks.yml', f'../../../server_config/data/plugins/all/LiteBans/{SERVER_TYPE}/webhooks.yml'),
     ]
 
     axiom = [
