@@ -290,6 +290,7 @@ if __name__ == '__main__':
         ('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
         ('plugins/velocity-prometheus-exporter.jar', '../../server_config/plugins/velocity-prometheus-exporter.jar'),
         ('plugins/velocity-prometheus-exporter/config.json', '../../../server_config/data/plugins/proxy/velocity-prometheus-exporter/config.json'),
+        ('plugins/SignedVelocity-Proxy.jar', '../../../server_config/data/plugins/SignedVelocity-Proxy.jar'),
     ]
 
     proxy_plan = [
@@ -302,6 +303,7 @@ if __name__ == '__main__':
         # ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
         ('plugins/BKCommonLib.jar', '../../server_config/plugins/BKCommonLib.jar'),
         ('plugins/LightCleaner.jar', '../../server_config/plugins/LightCleaner.jar'),
+        ('plugins/SignedVelocity-Paper.jar', '../../../server_config/data/plugins/SignedVelocity-Paper.jar'),
     ]
 
     server_config = server_config_min + [
