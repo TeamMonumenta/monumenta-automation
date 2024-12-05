@@ -145,9 +145,7 @@ def main():
 
     config["worlds"] = [world_config for _, world_config in sorted(world_configs.items())]
 
-    final_config_path = dynmap_standalone / 'dynmap_config.json'
-    if final_config_path.is_file():
-        final_config_path.chmod(0o644)
+    final_config_path = dynmap_standalone / 'dynmap_config_web.json'
     with open(final_config_path, 'w', encoding='utf-8') as fp:
         json.dump(
             config,
@@ -158,7 +156,6 @@ def main():
             sort_keys=False
         )
         fp.write("\n")
-    final_config_path.chmod(0o444)
 
 
 if __name__ == '__main__':
