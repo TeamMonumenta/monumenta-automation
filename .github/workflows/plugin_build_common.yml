@@ -16,7 +16,7 @@ jobs:
         java-version: 17
         check-latest: true
     # Git config, not sure why this is needed?
-    - name: Apply global CI config
+    - name: Apply global Git config
       run: |
           git config --global user.name "Monumenta CI"
           git config --global user.email "Monumenta.CI@NotARealEmail.com"

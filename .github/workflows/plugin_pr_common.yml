@@ -4,7 +4,6 @@ on: [workflow_call]
 # Jobs
 jobs:
   reviewdog:
-    name: reviewdog
     runs-on: ubuntu-22.04
     steps:
     - name: Checkout Repository
@@ -22,7 +21,7 @@ jobs:
       with:
         reviewdog_version: latest
     # Git config, not sure why this is needed?
-    - name: Apply global CI config
+    - name: Apply global Git config
       run: |
         git config --global user.name "Monumenta CI"
         git config --global user.email "Monumenta.CI@NotARealEmail.com"
