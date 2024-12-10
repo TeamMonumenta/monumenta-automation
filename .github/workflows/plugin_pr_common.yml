@@ -44,7 +44,7 @@ jobs:
           ${{ runner.os }}-
     # Reviewdog stuff...
     - name: Build and report style/pmd/warnings
-      env:
+      secrets:
         REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         shopt -s nullglob
