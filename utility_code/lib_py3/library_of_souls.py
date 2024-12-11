@@ -24,6 +24,8 @@ class LibraryOfSouls(object):
 
         with open(path, "r") as fp:
             self._souls = json.load(fp)
+            if isinstance(self._souls, dict):
+                self._souls = self._souls["souls"]
 
     def clear_tags(self) -> None:
         for soul_entry in self._souls:
