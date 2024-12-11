@@ -1,5 +1,7 @@
 FROM eclipse-temurin:21
 
+ENV PIP_BREAK_SYSTEM_PACKAGES=true
+
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends bzip2 python3 python3-yaml python3-pip python3-setuptools python3-numpy && \
 	pip3 install wheel && \
@@ -31,7 +33,7 @@ ENV USERHOME=/home/$USERNAME
 
 RUN groupadd --non-unique -g $GID $USERNAME && \
 	# NOTE! -l flag prevents creation of gigabytes of sparse log file for some reason
-	useradd -lmNs /bin/bash -u $UID -g $GID $USERNAME
+	useradd --non-unique -lmNs /bin/bash -u $UID -g $GID $USERNAME
 
 COPY docker/monumenta.sh /
 RUN chmod +x /monumenta.sh
