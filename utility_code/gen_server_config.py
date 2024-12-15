@@ -213,6 +213,7 @@ if __name__ == '__main__':
         ('config/paper-world-defaults.yml',),
         ('config/monumenta-mixins.yml',),
         ('wepif.yml',),
+        ('plugins/ViaVersion/config.yml',),
         ('plugins/BKCommonLib/config.yml',),
         ('plugins/CoreProtect/config.yml',),
         ('plugins/FastAsyncWorldEdit/config.yml',),
@@ -250,6 +251,7 @@ if __name__ == '__main__':
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
+        ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
     ]
 
     proxy_copy = [
@@ -284,8 +286,8 @@ if __name__ == '__main__':
         ('plugins/premiumvanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
         ('plugins/spark-velocity.jar', '../../server_config/plugins/spark-velocity.jar'),
         ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
-        ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
-        ('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
+        #('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
+        #('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
         ('plugins/velocity-prometheus-exporter.jar', '../../server_config/plugins/velocity-prometheus-exporter.jar'),
         ('plugins/velocity-prometheus-exporter/config.json', '../../../server_config/data/plugins/proxy/velocity-prometheus-exporter/config.json'),
     ]
