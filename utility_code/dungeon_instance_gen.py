@@ -184,25 +184,12 @@ if __name__ == '__main__':
                 ],
                 "objective":"DDAccess"
             },
-
             "gallery": {
                 "world": [
                     "gallery",
                     "marina",
                 ],
                 "objective":"DGAccess"
-            },
-            "portal": {
-                "world": [
-                    "portal",
-                ],
-                "objective":"DPSAccess"
-            },
-            "ruin": {
-                "world": [
-                    "bluestrike",
-                ],
-                "objective":"DMASAccess"
             },
             "hexfall": {
                 "world": [
@@ -319,7 +306,12 @@ if __name__ == '__main__':
             dest_template_world = source_template_world.copy_to(os.path.join(new_shard_path, template_world), clear_world_uuid=True)
 
             # Set copied world to normal mode
-            dest_template_world.level_dat.difficulty = 2
+            try:
+                dest_template_world.level_dat.difficulty = 2
+            except AttributeError:
+                print(dest_template_world.path)
+                raise
+
             dest_template_world.level_dat.save()
 
         timings.nextStep(f"{name}: world copied")
