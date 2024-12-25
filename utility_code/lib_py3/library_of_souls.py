@@ -15,17 +15,19 @@ from quarry.types.nbt import TagCompound
 from quarry.types.text_format import unformat_text
 
 
-class LibraryOfSouls(object):
+class LibraryOfSouls():
     def __init__(self, path: str, readonly=False):
         self._path = path
         self._souls = []
+        self._souls_root = None
         self._index = None
         self._readonly = readonly
 
         with open(path, "r") as fp:
             self._souls = json.load(fp)
             if isinstance(self._souls, dict):
-                self._souls = self._souls["souls"]
+                self._souls_root = self._souls
+                self._souls = self._souls_root.pop("souls", [])
 
     def clear_tags(self) -> None:
         for soul_entry in self._souls:
@@ -44,9 +46,9 @@ class LibraryOfSouls(object):
             if not soul_nbt.has_path("CustomName"):
                 eprint("WARNING: Souls database entry is missing a name: {}".format(pformat(soul_entry)))
                 continue
-            else:
-                name = unformat_text(parse_name_possibly_json(soul_nbt.at_path("CustomName").value))
-                self._index[name] = soul_entry
+
+            name = unformat_text(parse_name_possibly_json(soul_nbt.at_path("CustomName").value))
+            self._index[name] = soul_entry
 
             new_souls.append(soul_entry)
 
@@ -141,16 +143,21 @@ class LibraryOfSouls(object):
         if self._readonly:
             raise Exception("Attempted to save read-only Library of Souls")
         with open(self._path, "w") as fp:
-            json.dump(self._souls, fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
+            if self._souls_root is None:
+                json.dump(self._souls, fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
+            else:
+                self._souls_root["souls"] = self._souls
+                json.dump(self._souls_root, fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
+                self._souls_root.pop("souls")
 
     @classmethod
     def upgrade_nbt(cls, soul_nbt: TagCompound) -> TagCompound:
         upgrade_entity(soul_nbt, False, ('Pos', 'Leashed', 'Air', 'OnGround', 'Dimension', 'Rotation', 'WorldUUIDMost',
-                     'WorldUUIDLeast', 'HurtTime', 'HurtByTimestamp', 'FallFlying', 'PortalCooldown',
-                     'FallDistance', 'DeathTime', 'HandDropChances', 'ArmorDropChances', 'CanPickUpLoot',
-                     'Bukkit.updateLevel', 'Spigot.ticksLived', 'Paper.AAAB', 'Paper.Origin',
-                     'Paper.FromMobSpawner', 'Brain', 'Paper.SpawnReason', 'Bukkit.Aware',
-                     'Paper.ShouldBurnInDay', 'Paper.CanTick', 'Bukkit.MaxDomestication'))
+                                         'WorldUUIDLeast', 'HurtTime', 'HurtByTimestamp', 'FallFlying', 'PortalCooldown',
+                                         'FallDistance', 'DeathTime', 'HandDropChances', 'ArmorDropChances', 'CanPickUpLoot',
+                                         'Bukkit.updateLevel', 'Spigot.ticksLived', 'Paper.AAAB', 'Paper.Origin',
+                                         'Paper.FromMobSpawner', 'Brain', 'Paper.SpawnReason', 'Bukkit.Aware',
+                                         'Paper.ShouldBurnInDay', 'Paper.CanTick', 'Bukkit.MaxDomestication'))
 
         for junk in ('UUID', ):
             if soul_nbt.has_path(junk):
@@ -164,9 +171,9 @@ class LibraryOfSouls(object):
 
         for string_tag in soul_nbt.iter_multipath('Tags[]'):
             for old_part, new_part in (
-                ('rejuvination', 'rejuvenation'),
-                ('Rejuvination', 'Rejuvenation'),
-                ('REJUVINATION', 'REJUVENATION'),
+                    ('rejuvination', 'rejuvenation'),
+                    ('Rejuvination', 'Rejuvenation'),
+                    ('REJUVINATION', 'REJUVENATION'),
             ):
                 if old_part in string_tag.value:
                     string_tag.value = string_tag.value.replace(old_part, new_part)
@@ -178,4 +185,3 @@ class LibraryOfSouls(object):
             for history_entry in soul_entry["history"]:
                 soul_nbt = nbt.TagCompound.from_mojangson(history_entry["mojangson"])
                 history_entry["mojangson"] = self.upgrade_nbt(soul_nbt).to_mojangson()
-
