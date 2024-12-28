@@ -122,6 +122,7 @@ if __name__ == '__main__':
     num_replacements += replacements
 
     timings.nextStep(f"Player replacements done: {replacements} replacements")
+    eprint("Player replacements done")
 
     generator = iter_plugin_data_parallel(os.path.join(world_path, "plugindata"), process_plugin_data, err_func, num_processes=num_threads, autosave=(not dry_run), initializer=process_init, initargs=(item_replace_manager,))
     replacements = 0
@@ -130,7 +131,7 @@ if __name__ == '__main__':
     num_replacements += replacements
 
     timings.nextStep(f"Plugin data replacements done: {replacements} replacements")
-
+    eprint("Plugin data replacements done")
     # Begin market replacements --
     replacements = 0
 
