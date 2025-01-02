@@ -92,7 +92,13 @@ class MarketData(NbtPathDebug):
                 nbtstr = v
 
             # Deserialize to an Item and yield to the caller
-            item = Item(nbt.TagCompound.from_mojangson(nbtstr), self, None)
+            try:
+                item = Item(nbt.TagCompound.from_mojangson(nbtstr), self, None)
+            except:
+                print('[Market Data] Error trying to parse item NBT:', file=sys.stderr)
+                print(f'k={k!r}', file=sys.stderr)
+                print(f'v={v!r}', file=sys.stderr)
+                raise
             yield item
 
             # Re-serialize the resulting item
