@@ -3,6 +3,7 @@
 import json
 import os
 import sys
+import redis
 
 from minecraft.player_dat_format.item import Item
 from minecraft.util.debug_util import NbtPathDebug
@@ -10,8 +11,55 @@ from minecraft.util.debug_util import NbtPathDebug
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types import nbt
 
+
+class MarketRedis():
+    """Class for loading and saving market data in Redis"""
+
+
+    def __init__(self, domain, redis_host="redis", redis_port=6379):
+        """Initialize values to later connect to Redis"""
+        self._domain = domain
+        self._redis_host = redis_host
+        self._redis_port = redis_port
+
+
+    def market_listings(self):
+        """List all known market listings"""
+        r = redis.Redis(host=self._redis_host, port=self._redis_port)
+
+        result = {}
+        for listing_id_bytes, listing_data_bytes in r.hgetall(f"{self._domain}:market:listings").items():
+            listing_id = listing_id_bytes.decode("utf-8")
+            listing_json = json.loads(listing_data_bytes.decode("utf-8"))
+            result[listing_id] = listing_json
+        return result
+
+
+class MarketListing():
+    """A listing within the market"""
+
+
+    def __init__(self, json_data):
+        self.json_data = json_data
+
+
+    def market_id_set(self):
+        result = set()
+
+        to_sell_id = self.json_data.get("mItemToSellID", None)
+        if isinstance(to_sell_id, int):
+            result.add(to_sell_id)
+
+        to_buy_id = self.json_data.get("mCurrencyToBuyID", None)
+        if isinstance(to_buy_id, int):
+            result.add(to_buy_id)
+
+        return result
+
+
 class MarketData(NbtPathDebug):
     """Single class to support both ItemToID and IdToItem maps"""
+
 
     def __init__(self, json_data=None, json_path=None, item_to_id=True):
         """Load from json.
@@ -37,8 +85,10 @@ class MarketData(NbtPathDebug):
 
         self.nbt_path_init(None, None, self, None)
 
+
     def get_debug_str(self):
         return str(self)
+
 
     def save(self, json_path=None):
         """Save json data.
@@ -62,6 +112,7 @@ class MarketData(NbtPathDebug):
                 fp.write("\n")
 
         return self._data
+
 
     def iter_all_types(self):
         """Iterates charm items"""
@@ -113,6 +164,7 @@ class MarketData(NbtPathDebug):
         # New map replaces the original map
         self._data = newdata
 
+
     def recursive_iter_all_types(self):
         yield self
         for obj in self.iter_all_types():
@@ -133,8 +185,10 @@ class MarketData(NbtPathDebug):
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_items()
 
+
     def __repr__(self):
         return f'MarketData({os.path.basename(self._path)!r})'
+
 
     @property
     def pos(self):
