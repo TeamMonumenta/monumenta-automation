@@ -53,9 +53,8 @@ for mailbox_key in list(mail_redis.mailbox_keys()):
         mail_item_ids |= MailboxSlot(mailbox_slot_data).market_id_set()
 
 formatted = {
-    "0_item_ids_from_listings": len(listing_item_ids),
-    "0_item_ids_from_mail": len(mail_item_ids),
-    "used_ids": list(listing_item_ids | mail_item_ids),
+    "listings": list(sorted(listing_item_ids)),
+    "mail": list(sorted(mail_item_ids)),
 }
 with open(os.path.join(EXPORT_DIR, "itemDBUsedIds.json"), "w") as fp:
     json.dump(formatted, fp, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
