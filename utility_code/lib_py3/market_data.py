@@ -114,6 +114,10 @@ class MarketData(NbtPathDebug):
         return self._data
 
 
+    def __len__(self):
+        return len(self._data)
+
+
     def iter_all_types(self):
         """Iterates charm items"""
         yield from self.iter_items()
@@ -145,11 +149,11 @@ class MarketData(NbtPathDebug):
                 nbt_str = v
 
             # If keep_ids is a container, skip values not inside without preserving them
-            if '__contains__' in dir(keep_ids) and int(item_id) not in keep_ids:
+            if '__contains__' in dir(keep_ids) and str(item_id) not in keep_ids:
                 continue
 
             # If yield_ids is a container, skip values not inside, but preserve them
-            if '__contains__' in dir(yield_ids) and int(item_id) not in yield_ids:
+            if '__contains__' in dir(yield_ids) and str(item_id) not in yield_ids:
                 new_nbt_str = nbt_str
             else:
                 # Deserialize to an Item and yield to the caller
