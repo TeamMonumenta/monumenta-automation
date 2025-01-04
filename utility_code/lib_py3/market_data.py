@@ -129,7 +129,7 @@ class MarketData(NbtPathDebug):
         return
 
 
-    def iter_items(self):
+    def iter_items(self, keep_ids=None, yield_ids=None):
         """Iterates items, either in key or value position in the map"""
 
         # A new map - values are added to it as iterating happens
@@ -138,28 +138,38 @@ class MarketData(NbtPathDebug):
         for k, v in self._data.items():
             # Pull out the actual item nbt, depending on which type of map this is
             if self._item_to_id:
-                nbtstr = k
+                item_id = v
+                nbt_str = k
             else:
-                nbtstr = v
+                item_id = k
+                nbt_str = v
 
-            # Deserialize to an Item and yield to the caller
-            try:
-                item = Item(nbt.TagCompound.from_mojangson(nbtstr), self, None)
-            except:
-                print('[Market Data] Error trying to parse item NBT:', file=sys.stderr)
-                print(f'k={k!r}', file=sys.stderr)
-                print(f'v={v!r}', file=sys.stderr)
-                raise
-            yield item
+            # If keep_ids is a container, skip values not inside without preserving them
+            if '__contains__' in dir(keep_ids) and int(item_id) not in keep_ids:
+                continue
 
-            # Re-serialize the resulting item
-            new_nbtstr = item.nbt.to_mojangson()
+            # If yield_ids is a container, skip values not inside, but preserve them
+            if '__contains__' in dir(yield_ids) and int(item_id) not in yield_ids:
+                new_nbt_str = nbt_str
+            else:
+                # Deserialize to an Item and yield to the caller
+                try:
+                    item = Item(nbt.TagCompound.from_mojangson(nbt_str), self, None)
+                except:
+                    print('[Market Data] Error trying to parse item NBT:', file=sys.stderr)
+                    print(f'k={k!r}', file=sys.stderr)
+                    print(f'v={v!r}', file=sys.stderr)
+                    raise
+                yield item
+
+                # Re-serialize the resulting item
+                new_nbt_str = item.nbt.to_mojangson()
 
             # Insert the new item into the new map
             if self._item_to_id:
-                newdata[new_nbtstr] = v
+                newdata[new_nbt_str] = v
             else:
-                newdata[k] = new_nbtstr
+                newdata[k] = new_nbt_str
 
         # New map replaces the original map
         self._data = newdata
