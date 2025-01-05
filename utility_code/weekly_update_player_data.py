@@ -1,10 +1,15 @@
 #!/usr/bin/env pypy3
 
-import getopt
+"""Run weekly update tasks for player data
+
+...or anything else shared between shards.
+...except for scores, which are handled by Rust code for performance reasons.
+"""
+
+import argparse
 import json
 import multiprocessing
-import os
-import sys
+from pathlib import Path
 import traceback
 
 from lib_py3.common import eprint
@@ -15,11 +20,6 @@ from lib_py3.plugin_data import iter_plugin_data_parallel
 from lib_py3.timing import Timings
 from lib_py3.upgrade import upgrade_entity
 from minecraft.world import World
-
-
-def usage():
-    """Prints command usage"""
-    sys.exit("Usage: {} <--world /path/to/world> <--datapacks /path/to/datapacks> [--num-threads num] [--dry-run]".format(sys.argv[0]))
 
 
 def process_init(mgr):
@@ -104,36 +104,17 @@ def temp_remove_nested_mail_items(main_item):
 if __name__ == '__main__':
     multiprocessing.set_start_method("spawn")
 
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "w:p:l:j:d", ["world=", "datapacks=", "num-threads=", "dry-run"])
-    except getopt.GetoptError as err:
-        eprint(str(err))
-        usage()
+    arg_parser = argparse.ArgumentParser(description=__doc__)
+    arg_parser.add_argument('-w', '--world_path', type=Path, required=True)
+    arg_parser.add_argument('-p', '--datapacks', type=Path, required=True)
+    arg_parser.add_argument('-j', '--num-threads', type=int)
+    arg_parser.add_argument('-d', '--dry-run', action='store_true')
+    args = arg_parser.parse_args()
 
-    world_path = None
-    datapacks = None
-    dry_run = False
-    num_threads = 4
-
-    for o, a in opts:
-        if o in ("-w", "--world"):
-            world_path = a
-        elif o in ("-p", "--datapacks"):
-            datapacks = a
-        elif o in ("-j", "--num-threads"):
-            num_threads = int(a)
-        elif o in ("-d", "--dry-run"):
-            dry_run = True
-        else:
-            eprint("Unknown argument: {}".format(o))
-            usage()
-
-    if world_path is None:
-        eprint("--world must be specified!")
-        usage()
-    if datapacks is None:
-        eprint("--datapacks must be specified!")
-        usage()
+    world_path = args.world_path
+    datapacks = args.datapacks
+    dry_run = args.dry_run
+    num_threads = args.num_threads
 
     timings = Timings(enabled=dry_run)
     loot_table_manager = LootTableManager()
@@ -157,7 +138,7 @@ if __name__ == '__main__':
     timings.nextStep(f"Player replacements done: {replacements} replacements")
     eprint("Player replacements done")
 
-    generator = iter_plugin_data_parallel(os.path.join(world_path, "plugindata"), process_plugin_data, err_func, num_processes=num_threads, autosave=(not dry_run), initializer=process_init, initargs=(item_replace_manager,))
+    generator = iter_plugin_data_parallel(world_path / "plugindata", process_plugin_data, err_func, num_processes=num_threads, autosave=(not dry_run), initializer=process_init, initargs=(item_replace_manager,))
     replacements = 0
     for x in generator:
         replacements += x
@@ -172,7 +153,7 @@ if __name__ == '__main__':
 
     # Get list of used IDs; no need to process the others
     used_id_data = {}
-    with open(os.path.join(world_path, "itemDBUsedIds.json"), 'r') as fp:
+    with open(world_path / "itemDBUsedIds.json", 'r') as fp:
         used_id_data = json.load(fp)
     ids_used_by_listings = set(used_id_data.get("listings", []))
     ids_used_by_mail = set(used_id_data.get("mail", []))
@@ -183,7 +164,7 @@ if __name__ == '__main__':
 
 
     # ID to Item map
-    mkt = MarketData(json_path=os.path.join(world_path, "itemDBIDToItem.json"), item_to_id=False)
+    mkt = MarketData(json_path=world_path / "itemDBIDToItem.json", item_to_id=False)
     original_item_count += len(mkt)
 
     # Temp remove nested items from mail - TODO Remove this when done
@@ -202,7 +183,7 @@ if __name__ == '__main__':
 
 
     # Item to ID map
-    mkt = MarketData(json_path=os.path.join(world_path, "itemDBItemToID.json"), item_to_id=True)
+    mkt = MarketData(json_path=world_path / "itemDBItemToID.json", item_to_id=True)
     original_item_count += len(mkt)
 
     # Temp remove nested items from mail - TODO Remove this when done
