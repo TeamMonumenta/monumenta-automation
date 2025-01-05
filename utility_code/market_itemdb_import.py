@@ -1,21 +1,27 @@
 #!/usr/bin/env pypy3
 
-import os
+"""Imports items to the market/mail database from json files"""
+
+import argparse
 import sys
 import json
 import redis
+from pathlib import Path
 
-if len(sys.argv) < 4:
-    sys.exit(f"Usage: {sys.argv[0]} <redis_host_ip> <namespace(play/build)> <input_directory>")
+arg_parser = argparse.ArgumentParser(description=__doc__)
+arg_parser.add_argument('redis_host_ip', type=str)
+arg_parser.add_argument('namespace', type=str, help='either "build" or "play"')
+arg_parser.add_argument('input_directory', type=Path)
+args = arg_parser.parse_args()
 
-REDIS_HOST = sys.argv[1]
-SERVER_TYPE = sys.argv[2]
-IMPORT_DIR = sys.argv[3]
+REDIS_HOST = args.redis_host_ip
+SERVER_TYPE = args.namespace
+IMPORT_DIR = args.input_directory
 
 if SERVER_TYPE not in ["play", "build"]:
     sys.exit(f"Unknown namespace: {SERVER_TYPE}. Should be either 'build' or 'play' ")
 
-if not os.path.isdir(IMPORT_DIR):
+if not IMPORT_DIR.is_dir():
     sys.exit(f"Input directory '{IMPORT_DIR}' does not exist")
 
 if SERVER_TYPE == 'build':
@@ -29,7 +35,7 @@ r = redis.Redis(host=REDIS_HOST)
 
 # read file
 data = {}
-with open(os.path.join(IMPORT_DIR, "itemDBIDToItem.json"), "r") as fp:
+with open(IMPORT_DIR / "itemDBIDToItem.json", "r") as fp:
     for key, value in json.load(fp).items():
         data[key] = value
 
@@ -46,7 +52,7 @@ print("itemDBIDToItem set in redis")
 
 # read file
 data = {}
-with open(os.path.join(IMPORT_DIR, "itemDBItemToID.json"), "r") as fp:
+with open(IMPORT_DIR / "itemDBItemToID.json", "r") as fp:
     for key, value in json.load(fp).items():
         data[key] = value
 

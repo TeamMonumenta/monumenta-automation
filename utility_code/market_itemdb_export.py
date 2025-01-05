@@ -1,5 +1,7 @@
 #!/usr/bin/env pypy3
 
+"""Exports items from the market/mail database into json files"""
+
 import argparse
 import sys
 import json
