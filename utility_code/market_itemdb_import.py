@@ -33,6 +33,9 @@ with open(os.path.join(IMPORT_DIR, "itemDBIDToItem.json"), "r") as fp:
     for key, value in json.load(fp).items():
         data[key] = value
 
+# remove old data
+r.delete(SERVER_TYPE + ":market:ItemDBIDToItem")
+
 # set new data
 for key, value in data.items():
     r.hset(SERVER_TYPE + ":market:ItemDBIDToItem", key, value)
