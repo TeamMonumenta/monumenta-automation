@@ -18,13 +18,18 @@ from minecraft.world import World
 
 
 def usage():
+    """Prints command usage"""
     sys.exit("Usage: {} <--world /path/to/world> <--datapacks /path/to/datapacks> [--num-threads num] [--dry-run]".format(sys.argv[0]))
 
+
 def process_init(mgr):
+    """Initialize multiprocess iterator for multithreaded code"""
     global item_replace_manager
     item_replace_manager = mgr
 
+
 def process_player(player):
+    """Run weekly update tasks on players (healing, updating tags, updating items)"""
     num_replacements = 0
 
     player.full_heal()
@@ -39,7 +44,9 @@ def process_player(player):
 
     return num_replacements
 
+
 def process_plugin_data(plugin_data):
+    """Runs item updates on player plugin data"""
     num_replacements = 0
 
     for item in plugin_data.graves().recursive_iter_items():
@@ -62,11 +69,14 @@ def process_plugin_data(plugin_data):
 
     return num_replacements
 
+
 def err_func(ex, args):
+    """Prints caught exceptions to stderr during multithreaded code"""
     eprint(f"Caught exception: {ex}")
     eprint(f"While iterating: {args}")
     eprint(traceback.format_exc())
     return 0
+
 
 def temp_remove_nested_mail_items(main_item):
     """TODO Remove this once all nested mail items have been processed"""
@@ -89,6 +99,7 @@ def temp_remove_nested_mail_items(main_item):
         main_item.nbt.at_path('tag.Monumenta.PlayerModified.Items').value = []
         modified = True
     return modified
+
 
 if __name__ == '__main__':
     multiprocessing.set_start_method("spawn")

@@ -40,10 +40,12 @@ class MarketListing():
 
 
     def __init__(self, json_data):
+        """Loads a MarketListing from json"""
         self.json_data = json_data
 
 
     def market_id_set(self):
+        """Returns a set of all market IDs used by this MailboxSlot and its child items"""
         result = set()
 
         to_sell_id = self.json_data.get("mItemToSellID", None)
@@ -87,6 +89,7 @@ class MarketData(NbtPathDebug):
 
 
     def get_debug_str(self):
+        """Returns debug information about the given MarketData"""
         return str(self)
 
 
@@ -180,22 +183,26 @@ class MarketData(NbtPathDebug):
 
 
     def recursive_iter_all_types(self):
+        """Recursively lists all Minecraft data types in this MarketData"""
         yield self
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_all_types()
 
 
     def recursive_iter_block_entities(self):
+        """Recursively lists all block entities in this MarketData"""
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_block_entities()
 
 
     def recursive_iter_entities(self):
+        """Recursively lists all entities in this MarketData"""
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_entities()
 
 
     def recursive_iter_items(self):
+        """Recursively lists all items in this MarketData"""
         for obj in self.iter_all_types():
             yield from obj.recursive_iter_items()
 
@@ -206,4 +213,5 @@ class MarketData(NbtPathDebug):
 
     @property
     def pos(self):
+        """MarketData does not have a location in a world; return None"""
         return None

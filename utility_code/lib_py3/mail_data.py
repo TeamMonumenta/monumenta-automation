@@ -38,6 +38,7 @@ class MailRedis():
 class MailboxSlot():
     """Class that lists a mailbox slot's market item IDs"""
     def __init__(self, slot_json):
+        """Load a mailbox slot from json (recursive data structure)"""
         self._item_id = slot_json["mItemId"]
         self._amount = slot_json["mAmount"]
         self._virtual_amount = slot_json.get("mVirtualAmount", None)
@@ -55,6 +56,7 @@ class MailboxSlot():
 
     @staticmethod
     def load_nullable(nullable_slot_json):
+        """If provided None, returns None; else attempts to load a MailboxSlot from json"""
         if nullable_slot_json is None:
             return None
         return MailboxSlot(nullable_slot_json)
@@ -62,6 +64,7 @@ class MailboxSlot():
 
     @staticmethod
     def load_nullable_array(nullable_slot_json_array):
+        """If provided None, returns None; else attempts to load a list of nullable MailboxSlot from json"""
         if not isinstance(nullable_slot_json_array, list):
             return None
 
@@ -72,6 +75,7 @@ class MailboxSlot():
 
 
     def market_id_set(self):
+        """Returns a set of all market IDs used by this MailboxSlot and its child items"""
         result = {self._item_id,}
 
         if self._vanilla_content_array is not None:

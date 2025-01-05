@@ -5,8 +5,8 @@
 import argparse
 import sys
 import json
-import redis
 from pathlib import Path
+import redis
 
 from lib_py3.mail_data import MailboxSlot, MailRedis
 from lib_py3.market_data import MarketListing, MarketRedis

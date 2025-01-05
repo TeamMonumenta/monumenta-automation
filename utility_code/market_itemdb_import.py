@@ -5,8 +5,8 @@
 import argparse
 import sys
 import json
-import redis
 from pathlib import Path
+import redis
 
 arg_parser = argparse.ArgumentParser(description=__doc__)
 arg_parser.add_argument('redis_host_ip', type=str)
