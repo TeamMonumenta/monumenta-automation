@@ -203,7 +203,7 @@ class AutomationBotInstance(commands.Cog):
         self._status_messages = {
             "Shard Status": self._get_list_shards_str_status,
             "Server Time": self._time_summary,
-            #"Public events": self._gameplay_event_summary, # TODO Bot cannot see these messages for reasons unknown
+            #"Public Events": self._gameplay_event_summary, # TODO Bot cannot see these messages for reasons unknown
         }
         if config.K8S_NAMESPACE != "play":
             self._status_messages["Developer Lockouts"] = self._get_lockout_message
@@ -222,9 +222,9 @@ class AutomationBotInstance(commands.Cog):
             if config.STATUS_CHANNEL:
                 try:
                     self._status_channel = self._bot.get_channel(config.STATUS_CHANNEL)
-                    logging.info("Found audit channel: %s", config.STATUS_CHANNEL)
+                    logging.info("Found status channel: %s", config.STATUS_CHANNEL)
                 except Exception:
-                    logging.error("Cannot connect to audit channel: %s", config.STATUS_CHANNEL)
+                    logging.error("Cannot connect to status channel: %s", config.STATUS_CHANNEL)
 
             self._socket = None
             if config.RABBITMQ:
