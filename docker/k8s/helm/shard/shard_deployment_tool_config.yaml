@@ -10,11 +10,11 @@
 #   memGB OR memMB
 "shard_config": {
     # Shards that only exist on build
-    "dev1"               : { "build": { "node": "m12", "hugePageMB": 1536, }, },
-    "dev2"               : { "build": { "node": "m12", "hugePageMB": 1536, }, },
-    "dev3"               : { "build": { "node": "m12", "hugePageMB": 1536, }, },
-    "dev4"               : { "build": { "node": "m12", "hugePageMB": 1536, }, },
-    "mobs"               : { "build": { "node": "m12", "hugePageMB": 1536, }, },
+    "dev1"               : { "build": { "node": "m12", "hugePageMB": 2560, }, },
+    "dev2"               : { "build": { "node": "m12", "hugePageMB": 2560, }, },
+    "dev3"               : { "build": { "node": "m12", "hugePageMB": 2560, }, },
+    "dev4"               : { "build": { "node": "m12", "hugePageMB": 2560, }, },
+    "mobs"               : { "build": { "node": "m12", "hugePageMB": 2560, }, },
     "dungeon"            : { "build": { "node": "m12", "hugePageGB": 8   , }, },
     #"futurama"           : { "build": { "node": "m12", "hugePageGB": 3   , }, }, # Re-enable later
     #"test"               : { "build": { "node": "m12", "hugePageGB": 3   , }, }, # Re-enable later

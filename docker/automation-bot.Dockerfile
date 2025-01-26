@@ -5,13 +5,11 @@ RUN apt-get update && \
 
 # Install redis tools
 RUN cd /tmp && \
-	curl -O https://download.redis.io/releases/redis-5.0.14.tar.gz && \
-	tar xzf redis-5.0.14.tar.gz && \
-	cd redis-5.0.14 && \
+	curl -O https://download.redis.io/releases/redis-7.4.0.tar.gz && \
+	tar xzf redis-7.4.0.tar.gz && \
+	cd redis-7.4.0 && \
 	make -j 4 && \
 	make install
-
-FROM ubuntu:22.04
 
 RUN apt-get update && \
 	apt-get install -y software-properties-common && \
@@ -32,9 +30,6 @@ RUN curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && \
 	chown root:root /usr/bin/rclone && \
 	chmod 755 /usr/bin/rclone && \
 	rclone --version
-
-# Install redis-cli from container 0
-COPY --from=0 /usr/local/bin/redis-cli /usr/local/bin/redis-cli
 
 # Check for mandatory build arguments
 ARG USERNAME

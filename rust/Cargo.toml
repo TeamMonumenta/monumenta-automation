@@ -17,9 +17,9 @@ lazy_static = "1.4"
 simplelog = "0.12"
 log = "0.4"
 hematite-nbt = "0.5"
-redis = "0.24"
-serde_yaml = "0.9"
+redis = "0.27.6"
+serde_yml = "0.0.12"
 uuid = "1.7"
 rayon = "1.8"
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { version = "0.4.39", features = ["serde"] }
 clap = { version = "4.4", features = ["derive"] }

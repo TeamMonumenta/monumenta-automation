@@ -51,6 +51,10 @@ def out_region_iter(region):
                     entry['facing'] = block['facing']
                 else:
                     entry['facing'] = None
+                if 'conditional' in block:
+                    entry['conditional'] = block['conditional']
+                else:
+                    entry['conditional'] = None
 
                 out.append(entry)
 

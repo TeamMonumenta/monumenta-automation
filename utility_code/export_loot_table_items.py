@@ -194,11 +194,9 @@ for item_name in items_at_warp_items:
 
 # Filter the actual json output map that gets written based on the release status filter specified on the command line
 json_out_map = {}
-for item_type in out_map:
+for item_type, out_types in sorted(out_map.items()):
     item_type_out = {}
-    out_types = out_map[item_type]
-    for item_name in out_types:
-        item_entry = out_types[item_name]
+    for item_name, item_entry in sorted(out_types.items()):
         if release_status_filter(item_entry["release_status"]):
             # Filter matches, add to json_out_map
             item_type_out[item_name] = item_entry

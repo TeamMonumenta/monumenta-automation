@@ -133,7 +133,7 @@ spec:
         - name: "JAVA_MEM"
           value: "{{ .Values.hugePageMB }}M"
         - name: "JAVA_JAR"
-          value: "paperclip.jar"
+          value: "server.jar"
         - name: "SERVER_DIR"
           value: "/home/epic/{{ .Values.namespace }}/{{ .Values.node }}/{{ .Values.name }}"
         - name: "JAVA_LARGE_PAGES"
