@@ -495,7 +495,7 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/InfinityTower/InfinityFloors.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityFloors.json'),
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/valley/Monumenta/bounties'),
             ],
@@ -507,7 +507,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/isles/Monumenta/bounties'),
             ],
         },
@@ -518,7 +518,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
             ],
         },
@@ -835,6 +835,11 @@ if __name__ == '__main__':
         copy_of = copied_shard_config[key]
         config[key] = copy.deepcopy(config[copy_of])
         config[key]["copy_of"] = copy_of
+
+    # For plugins that should only load on the first instance (not very elegant solution, but it should work)
+    config["valley"]["linked"] += dynmap
+    config["isles"]["linked"] += dynmap
+    config["ring"]["linked"] += dynmap
 
     # Config additions that are specific to build or play server
     if SERVER_TYPE == 'build':
