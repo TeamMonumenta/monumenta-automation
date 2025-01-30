@@ -1935,7 +1935,7 @@ Examples:
         await self.display(ctx, "Cleaning up stage temp files...")
         await self.run(ctx, "rm -rf /home/epic/5_SCRATCH/tmpstage")
 
-        await self.display(ctx, "Stage bundle ready!")
+        await self.display(ctx, "Stage bundle ready! Note that this includes all worlds on overworld shards, and weekly update does not!")
         await self.display(ctx, message.author.mention)
 
     async def action_apply_stage_bundle(self, ctx: discord.ext.commands.Context, _, message: discord.Message):
