@@ -34,6 +34,9 @@ def get_item_name_from_nbt(item_tag: nbt.TagCompound, remove_color=True, include
     Parses a color-removed name out of an item's NBT. Returns a string or None if no name exists
     if include_masterwork_level is True, _m{masterwork_level} will be appended to the item's name if both name and masterwork level exist
     """
+    if item_tag.has_path("plain.display.Name"):
+        return item_tag.at_path("plain.display.Name").value
+
     if not item_tag.has_path("display.Name"):
         if item_tag.has_path("title"):
             title = item_tag.at_path("title").value
