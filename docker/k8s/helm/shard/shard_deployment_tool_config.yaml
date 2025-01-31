@@ -87,7 +87,7 @@
     },
 
     "playerplots": {
-        "play":  { "node": "m17", "hugePageGB": 8, },
+        "play":  { "node": "m17", "hugePageGB": 12, },
         "stage": { "node": "m13", "hugePageGB": 4, },
         "volt" : { "node": "m12", "hugePageGB": 4, },
     },
