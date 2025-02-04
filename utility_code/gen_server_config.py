@@ -395,6 +395,8 @@ if __name__ == '__main__':
     dynmap = [
         ('plugins/Dynmap.jar', '../../server_config/plugins/Dynmap.jar'),
         ('plugins/dynmap/configuration.txt', '../../../server_config/data/plugins/all/dynmap/' + SERVER_TYPE + '/configuration.txt'),
+        ('plugins/dynmap/markers.yml', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/markers.yml'),
+        ('plugins/dynmap/worlds.txt', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/worlds.txt'),
         ('plugins/dynmap/templates', '../../../server_config/data/plugins/all/dynmap/' + SERVER_TYPE + '/templates'),
     ]
 
