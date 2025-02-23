@@ -9,6 +9,7 @@ import multiprocessing
 from pathlib import Path
 import concurrent
 import traceback
+from minecraft.chunk_format.chunk import Chunk
 from minecraft.region import Region, EntitiesRegion
 from minecraft.world import World
 from lib_py3.common import eprint
@@ -30,20 +31,21 @@ def process_chunk(region, cx, cz):
         return
 
     # Check for non-air blocks
-    for section in chunk.sections:
-        if not section.has_path("block_states.palette"):
-            # Global palette - has lots of blocks, so we keep this
-            return
-
-        for palette_entry in section.at_path("block_states.palette").value:
-            name = palette_entry.at_path("Name").value
-            if name not in (
-                    "minecraft:air",
-                    "minecraft:cave_air",
-                    "minecraft:void_air",
-            ):
-                # Block is probably important - keep it
+    if isinstance(chunk, Chunk):
+        for section in chunk.sections:
+            if not section.has_path("block_states.palette"):
+                # Global palette - has lots of blocks, so we keep this
                 return
+
+            for palette_entry in section.at_path("block_states.palette").value:
+                name = palette_entry.at_path("Name").value
+                if name not in (
+                        "minecraft:air",
+                        "minecraft:cave_air",
+                        "minecraft:void_air",
+                ):
+                    # Block is probably important - keep it
+                    return
 
     # Empty chunk - safe to delete
     region.delete_chunk(cx, cz)

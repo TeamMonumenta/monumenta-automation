@@ -38,6 +38,7 @@ class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
         })
         multipaths[Item] |= frozenset({
             'Book',
+            'item', # Decorated pots
             'Items[]',
             'RecordItem',
         })
