@@ -1,0 +1,268 @@
+rabbitmq:
+    host: "rabbitmq"
+    # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
+    name: "automation-bot"
+    # Whether the queue will persist when the connection is closed
+    durable: True
+    # Whether this queue will be able to receive messages or not
+    process_messages: True
+    # Messages greater than this will be logged to stdout
+    # Levels - from https://docs.python.org/3/library/logging.html#levels
+    log_level: 20
+
+    # mod-alerts (play)
+    audit_severe_channel: 997610883884789951
+    # chat-mod-audit-log (play)
+    chat_mod_audit_channel: 1263639582973493300
+    # death-audit-log (play)
+    death_audit_channel: 1065829191666385047
+    # mail-audit-log (play)
+    mail_audit_channel: 1257078461609283707
+    # market-audit-log (play)
+    market_audit_channel: 1216046605535285258
+    # mod-audit-log (play)
+    audit_channel: 651674581148368927
+    # player-audit-log (play)
+    player_audit_channel:  1257080302745030656
+    # report-audit-log (play)
+    report_audit_channel: 1257035872763645982
+    # admin-notices (build)
+    admin_channel: 934119833967161424
+
+    # Where to post "got stage request messages"
+    # Required for ~stage to pull data from this bot
+    stage_notify_channel: 467361088460029954
+
+k8s_namespace: "play"
+
+reactions_enabled: True
+
+# NOTE: If enabling reactions, sync this list!
+ignored_reaction_channels:
+    # rules
+    - 704049401588613161
+    # welcome
+    - 313413923821060107
+    # rules-faq
+    - 313066655494438922
+    # announcements
+    - 313403825442521088
+    # change-logs
+    - 313404193647886337
+    # epic-bot
+    - 486019840134610965
+    # server-status
+    - 579190910567317514
+    # spoiler-chat
+    - 513043410526142484
+    # community-bot
+    - 562691403596169216
+    # self-promo
+    - 721491379020365835
+    # suggestions-voting
+    - 575186608761077760
+    # suggestions-bot-feed
+    - 575210423025139713
+    # bugs-fixed-for-next-update
+    - 515270484322156575
+    # bug-reports
+    - 569283558741508107
+    # bug-report-bot-feed
+    - 569283901202366524
+    # moderator-help
+    - 358326443609948160
+    # rp-announcements
+    - 481866909097132043
+    # mod-chat
+    - 313404419628859394
+    # mod-log
+    - 359117671947567124
+    # mod-alerts
+    - 997610883884789951
+    # mod-punish-system-chat
+    - 919735195186368522
+    # mod-bot
+    - 467361088460029954
+    # mod-audit-log
+    - 651674581148368927
+    # admin-notices
+    - 934119833967161424
+    # build-mod-alerts
+    - 1037060288945586186
+    # build-admin-notices
+    - 1037060429186342932
+
+channels:
+    # moderation-bot (public discord, moderators + TE only)
+    - 467361088460029954
+    # weekly-update-bot (public discord, publicly visible, used for weekly update)
+    - 486019840134610965
+
+# server-status (public discord)
+status_channel: 579190910567317514
+
+cpu_count: -1
+
+server_dir: /home/epic/play/m17
+
+common_weekly_update_tasks: True
+
+shards:
+    velocity-17: /home/epic/play/m17/velocity-17/
+    blue: /home/epic/play/m17/blue/
+    brown: /home/epic/play/m17/brown/
+    build: /home/epic/play/m17/build/
+    corridors: /home/epic/play/m17/corridors/
+    cyan: /home/epic/play/m17/cyan/
+    depths: /home/epic/play/m17/depths/
+    depths-2: /home/epic/play/m17/depths-2/
+    forum: /home/epic/play/m17/forum/
+    gallery: /home/epic/play/m17/gallery/
+    gray: /home/epic/play/m17/gray/
+    hexfall: /home/epic/play/m17/hexfall/
+    hexfall-2: /home/epic/play/m17/hexfall-2/
+    hexfall-3: /home/epic/play/m17/hexfall-3/
+    hexfall-4: /home/epic/play/m17/hexfall-4/
+    hexfall-5: /home/epic/play/m17/hexfall-5/
+    isles: /home/epic/play/m17/isles/
+    isles-2: /home/epic/play/m17/isles-2/
+    isles-3: /home/epic/play/m17/isles-3/
+    labs: /home/epic/play/m17/labs/
+    lightblue: /home/epic/play/m17/lightblue/
+    lightgray: /home/epic/play/m17/lightgray/
+    lime: /home/epic/play/m17/lime/
+    magenta: /home/epic/play/m17/magenta/
+    orange: /home/epic/play/m17/orange/
+    pink: /home/epic/play/m17/pink/
+    playerplots: /home/epic/play/m17/playerplots/
+    plots: /home/epic/play/m17/plots/
+    purgatory: /home/epic/play/m17/purgatory/
+    purple: /home/epic/play/m17/purple/
+    reverie: /home/epic/play/m17/reverie/
+    ring: /home/epic/play/m17/ring/
+    ring-2: /home/epic/play/m17/ring-2/
+    ring-3: /home/epic/play/m17/ring-3/
+    ring-4: /home/epic/play/m17/ring-4/
+    ring-5: /home/epic/play/m17/ring-5/
+    ring-6: /home/epic/play/m17/ring-6/
+    ring-7: /home/epic/play/m17/ring-7/
+    ring-8: /home/epic/play/m17/ring-8/
+    ring-9: /home/epic/play/m17/ring-9/
+    ring-10: /home/epic/play/m17/ring-10/
+    rush: /home/epic/play/m17/rush/
+    shiftingcity: /home/epic/play/m17/shiftingcity/
+    skt: /home/epic/play/m17/skt/
+    teal: /home/epic/play/m17/teal/
+    tutorial: /home/epic/play/m17/tutorial/
+    valley: /home/epic/play/m17/valley/
+    valley-2: /home/epic/play/m17/valley-2/
+    valley-3: /home/epic/play/m17/valley-3/
+    white: /home/epic/play/m17/white/
+    willows: /home/epic/play/m17/willows/
+    yellow: /home/epic/play/m17/yellow/
+    zenith: /home/epic/play/m17/zenith/
+    zenith-2: /home/epic/play/m17/zenith-2/
+
+
+commands:
+    - address to english
+    - batch
+    - broadcastcommand
+    - broadcastminecraftcommand
+    - broadcastproxycommand
+    - fetch update bundle
+    - get raffle seed
+    - get score
+    - help
+    - get timestamp
+    - remind
+    - remind me
+    - instances
+    - list bots
+    - list shards
+    - player find
+    - player rollback
+    - player shard
+    - player transfer
+    - player wipe
+    - restart
+    - run test raffle
+    - select
+    - set score
+    - start
+    - stop
+    - stop and backup
+    - stop at
+    - test
+    - testpriv
+    - testunpriv
+    - update avatar
+    - verbose
+    - view scores
+    - weekly update
+
+permissions:
+    users:
+        302298391969267712: {"name": "Combustible", "rights": [ "@root" ]}
+        228226807353180162: {"name": "NickNackGus", "rights": [ "@root" ]}
+        225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]}
+        222170304577929218: {"name": "U5B",         "rights": [ "@root" ]}
+        117818457462013955: {"name": "Zig",         "rights": [ "@root" ]}
+        503202330284392452: {"name": "Floweynt",    "rights": [ "@root" ]}
+
+    groups_by_role:
+        # Team Monumenta (Public discord)
+        313066719365300264: "@team monumenta"
+        # Intern (Private discord)
+        390269554657460226: "@intern"
+        # Moderator (Public)
+        313067199579422722: "@moderator"
+        # Discord Manager (Public)
+        456928886278848514: "@discord manager"
+        # Leads (Public)
+        541004457257861131: "@discord manager"
+
+    groups:
+        "@root":
+            - "+*"
+            - "-testunpriv"
+        "@moderator":
+            - "@discord manager"
+            - "+verbose"
+        "@discord manager":
+            - "@team monumenta"
+            - "+broadcastcommand"
+            - "+broadcastbungeecommand"
+            - "+broadcastminecraftcommand"
+            - "+player rollback"
+            - "+player transfer"
+            - "+player wipe"
+        "@team monumenta":
+            - "@everyone"
+            - "+address to english"
+            - "+batch"
+            - "+get raffle seed"
+            - "+get score"
+            - "+instances"
+            - "+remind"
+            - "+kaul"
+            - "+list bots"
+            - "+list shards"
+            - "+player shard"
+            - "+restart"
+            - "+select"
+            - "+set score"
+            - "+start"
+            - "+stop"
+            - "+stop at"
+            - "+player find"
+            - "+player shard"
+            - "+test"
+            - "+testpriv"
+            - "+view scores"
+        "@everyone":
+            - "+help"
+            - "+get timestamp"
+            - "+remind me"
+        "@restricted":
+            - "-*"

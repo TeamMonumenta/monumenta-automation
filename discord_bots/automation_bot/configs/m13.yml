@@ -1,0 +1,103 @@
+rabbitmq:
+    host: "rabbitmq"
+    # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
+    name: "automation-bot-m13"
+    # Whether the queue will persist when the connection is closed
+    durable: True
+    # Whether this queue will be able to receive messages or not
+    process_messages: True
+    # Messages greater than this will be logged to stdout
+    # Levels - from https://docs.python.org/3/library/logging.html#levels
+    log_level: 20
+
+    # Where to post "got stage request messages"
+    # Required for ~stage to pull data from this bot
+    stage_notify_channel: 467361088460029954
+
+k8s_namespace: "play"
+
+reactions_enabled: False
+
+# NOTE: If enabling reactions, sync this list!
+ignored_reaction_channels:
+    # rules
+    - 704049401588613161
+
+channels:
+    # moderation-bot (public discord, moderators + TE only)
+    - 467361088460029954
+    # weekly-update-bot (public discord, publicly visible, used for weekly update)
+    - 486019840134610965
+
+cpu_count: -1
+
+server_dir: /home/epic/play/m13
+
+common_weekly_update_tasks: False
+
+shards:
+    velocity-13: /home/epic/play/m13/velocity-13/
+
+commands:
+    - fetch update bundle
+    - help
+    - list bots
+    - restart
+    - select
+    - start
+    - stop
+    - stop and backup
+    - test
+    - testpriv
+    - testunpriv
+    - update avatar
+    - verbose
+    - weekly update
+
+permissions:
+    users:
+        302298391969267712: {"name": "Combustible", "rights": [ "@root" ]}
+        228226807353180162: {"name": "NickNackGus", "rights": [ "@root" ]}
+        225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]}
+        222170304577929218: {"name": "U5B",         "rights": [ "@root" ]}
+        117818457462013955: {"name": "Zig",         "rights": [ "@root" ]}
+        503202330284392452: {"name": "Floweynt",    "rights": [ "@root" ]}
+
+    groups_by_role:
+        # Team Monumenta (Public discord)
+        313066719365300264: "@team monumenta"
+        # Intern (Private discord)
+        390269554657460226: "@intern"
+        # Moderator (Public)
+        313067199579422722: "@moderator"
+        # Discord Manager (Public)
+        456928886278848514: "@discord manager"
+        # Leads (Public)
+        541004457257861131: "@discord manager"
+
+    groups:
+        "@root":
+            - "+*"
+            - "-testunpriv"
+        "@moderator":
+            - "@discord manager"
+            - "+verbose"
+        "@discord manager":
+            - "@team monumenta"
+            - "+broadcastcommand"
+        "@team monumenta":
+            - "@everyone"
+            - "+address to english"
+            - "+list bots"
+            - "+restart"
+            - "+select"
+            - "+set score"
+            - "+start"
+            - "+stop"
+            - "+test"
+            - "+testpriv"
+            - "+view scores"
+        "@everyone":
+            - "+help"
+        "@restricted":
+            - "-*"

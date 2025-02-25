@@ -1,0 +1,230 @@
+prefix: '~'
+
+rabbitmq:
+    host: "rabbitmq"
+    # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
+    name: "automation-bot"
+    # Whether the queue will persist when the connection is closed
+    durable: True
+    # Whether this queue will be able to receive messages or not
+    process_messages: True
+    # Messages greater than this will be logged to stdout
+    # Levels - from https://docs.python.org/3/library/logging.html#levels
+    log_level: 20
+
+    # build-mod-alerts
+    audit_severe_channel: 1167973574427029555
+    # build-admin-notices
+    admin_channel: 1167973644115386459
+    # mail-audit-log
+    mail_audit_channel: 1291153788161495091
+
+k8s_namespace: "stage"
+
+reactions_enabled: True
+
+ignored_reaction_channels:
+    # rules - doesn't actually matter, just a placeholder for stage bot
+    - 704049401588613161,
+
+channels:
+    # stage-bot (dev discord)
+    - 673309184564920347
+
+# stage-status (dev discord)
+status_channel: 1200853620271349764
+
+server_dir: /home/epic/stage/m13
+
+cpu_count: 12
+
+stage_source:
+    m17:
+        queue_name: automation-bot
+        shards:
+            - blue
+            - brown
+            - build
+            - corridors
+            - cyan
+            - depths
+            - forum
+            - gallery
+            - gray
+            - hexfall
+            - isles
+            - labs
+            - lightblue
+            - lightgray
+            - lime
+            - magenta
+            - orange
+            - pink
+            - playerplots
+            - plots
+            - purgatory
+            - purple
+            - reverie
+            - ring
+            - ring-2
+            - rush
+            - server_config
+            - shiftingcity
+            - skt
+            - teal
+            - tutorial
+            - valley
+            - valley-2
+            - velocity-13
+            - white
+            - willows
+            - yellow
+            - zenith
+
+shards:
+    blue: /home/epic/stage/m13/blue/
+    brown: /home/epic/stage/m13/brown/
+    build: /home/epic/stage/m13/build/
+    corridors: /home/epic/stage/m13/corridors/
+    cyan: /home/epic/stage/m13/cyan/
+    depths: /home/epic/stage/m13/depths/
+    forum: /home/epic/stage/m13/forum/
+    gallery: /home/epic/stage/m13/gallery/
+    gray: /home/epic/stage/m13/gray/
+    hexfall: /home/epic/stage/m13/hexfall/
+    isles: /home/epic/stage/m13/isles/
+    labs: /home/epic/stage/m13/labs/
+    lightblue: /home/epic/stage/m13/lightblue/
+    lightgray: /home/epic/stage/m13/lightgray/
+    lime: /home/epic/stage/m13/lime/
+    magenta: /home/epic/stage/m13/magenta/
+    orange: /home/epic/stage/m13/orange/
+    pink: /home/epic/stage/m13/pink/
+    playerplots: /home/epic/stage/m13/playerplots/
+    plots: /home/epic/stage/m13/plots/
+    purgatory: /home/epic/stage/m13/purgatory/
+    purple: /home/epic/stage/m13/purple/
+    reverie: /home/epic/stage/m13/reverie/
+    ring: /home/epic/stage/m13/ring/
+    ring-2: /home/epic/stage/m13/ring-2/
+    rush: /home/epic/stage/m13/rush/
+    shiftingcity: /home/epic/stage/m13/shiftingcity/
+    skt: /home/epic/stage/m13/skt/
+    teal: /home/epic/stage/m13/teal/
+    tutorial: /home/epic/stage/m13/tutorial/
+    valley-2: /home/epic/stage/m13/valley-2/
+    valley: /home/epic/stage/m13/valley/
+    velocity-13: /home/epic/stage/m13/velocity-13/
+    white: /home/epic/stage/m13/white/
+    willows: /home/epic/stage/m13/willows/
+    yellow: /home/epic/stage/m13/yellow/
+    zenith: /home/epic/stage/m13/zenith/
+
+commands:
+    - apply stage bundle
+    - broadcastcommand
+    - broadcastminecraftcommand
+    - broadcastproxycommand
+    - lockout
+    - lockout check *
+    - lockout check
+    - lockout clear
+    - lockout claim
+    - debug
+    - get raffle seed
+    - run test raffle
+    - fetch update bundle
+    - help
+    - get timestamp
+    - remind
+    - remind me
+    - list bots
+    - list shards
+    - player find
+    - player rollback
+    - player shard
+    - player transfer
+    - player wipe
+    - restart
+    - select
+    - skill info
+    - stage
+    - start
+    - stop
+    - stop at
+    - stop and backup
+    - weekly update
+    - test
+    - testpriv
+    - testunpriv
+    - verbose
+    - view scores
+    - get score
+    - set score
+    - update avatar
+
+permissions:
+    users:
+        302298391969267712: {"name": "Combustible", "rights": [ "@root" ]}
+        225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]}
+        503202330284392452: {"name": "Floweynt",    "rights": [ "@root" ]}
+        122593763490004992: {"name": "Hazerdous",   "rights": [ "@root" ]}
+        228226807353180162: {"name": "NickNackGus", "rights": [ "@root" ]}
+        192645668592943104: {"name": "Njol",        "rights": [ "@root" ]}
+        257887001834029056: {"name": "rayman520",   "rights": [ "@root" ]}
+        222170304577929218: {"name": "U5B_",        "rights": [ "@root" ]}
+
+    groups_by_role:
+        # Team Monumenta (Private discord)
+        341032989787947008: "@team monumenta"
+        # Intern (Private discord)
+        390269554657460226: "@intern"
+
+    groups:
+        "@root":
+            - "+*"
+            - "-testunpriv"
+        "@team monumenta":
+            - "@intern"
+        "@intern":
+            - "+apply stage bundle"
+            - "+broadcastcommand"
+            - "+broadcastminecraftcommand"
+            - "+broadcastproxycommand"
+            - "+debug"
+            - "+fetch update bundle"
+            - "+get errors"
+            - "+get score"
+            - "+get timestamp"
+            - "+help"
+            - "+list bots"
+            - "+list shards"
+            - "+lockout check *"
+            - "+lockout check"
+            - "+lockout claim"
+            - "+lockout clear"
+            - "+lockout"
+            - "+player find"
+            - "+player rollback"
+            - "+player shard"
+            - "+player transfer"
+            - "+player wipe"
+            - "+remind me"
+            - "+remind"
+            - "+restart"
+            - "+set score"
+            - "+stage"
+            - "+start"
+            - "+stop and backup"
+            - "+stop at"
+            - "+stop"
+            - "+test"
+            - "+testpriv"
+            - "+verbose"
+            - "+view scores"
+            - "+weekly update"
+        "@everyone":
+            - "+select"
+            - "+help"
+            - "+get timestamp"
+            - "+remind me"
