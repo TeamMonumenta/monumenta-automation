@@ -117,6 +117,8 @@ class AutomationBot(commands.Bot):
                 except Exception:
                     logging.error("Cannot connect to channel: %s", config.CHANNELS)
 
+            await self.instance.load_raffle_reaction()
+
     @tasks.loop(seconds=60)
     async def update_avatar_task(self):
         await self.instance.check_updated_avatar()
@@ -199,6 +201,13 @@ class AutomationBot(commands.Bot):
     async def on_raw_reaction_add(self, payload):
         """Bot detected reaction add"""
         try:
+            reaction_name = payload.emoji.name
+            if isinstance(reaction_name, (discord.Emoji, discord.PartialEmoji)):
+                reaction_name = reaction_name.name
+            if '\U0001f441' in reaction_name:
+                # Ignore the raffle indicator reaction
+                return
+
             if payload.user_id == self.user.id:
                 # Don't handle self changes
                 return

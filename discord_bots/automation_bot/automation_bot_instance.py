@@ -10,9 +10,7 @@ import sys
 import tempfile
 import time
 import traceback
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from pprint import pformat
 from urllib.parse import urlparse
@@ -32,8 +30,7 @@ _file = os.path.abspath(__file__)
 _top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
-from lib_py3.common import decode_escapes
-from lib_py3.common import int_to_ordinal
+from lib_py3.common import decode_escapes, int_to_ordinal
 from lib_py3.lockout import LockoutAPI
 from lib_py3.raffle import vote_raffle
 from lib_py3.lib_k8s import KubernetesManager
@@ -93,6 +90,7 @@ class AutomationBotInstance(commands.Cog):
 
     def __init__(self, bot: commands.Bot, rreact: dict):
         self._bot = bot
+
         # For raffle reactions
         self._rreact = rreact
 
@@ -458,6 +456,134 @@ class AutomationBotInstance(commands.Cog):
             await self._commands[match](ctx, match, message)
         else:
             await ctx.send("Sorry " + message.author.mention + ", you do not have permission to run this command")
+
+    async def load_raffle_reaction(self):
+        """Loads persistent raffle reaction ID"""
+        self.clear_raffle_reaction(save=False)
+
+        raffle_path = self._persistence_path / 'raffle.json'
+        if not raffle_path.is_file():
+            return
+
+        raffle_data = json.loads(raffle_path.read_text(encoding='utf-8-sig'))
+        reaction_data = raffle_data.get("reaction", {})
+
+        channel_id = reaction_data.get("channel_id", None)
+
+        if channel_id is None:
+            return
+        try:
+            channel = self._bot.get_channel(channel_id)
+        except Exception:
+            return
+
+        message_id = reaction_data.get("message_id", None)
+        if message_id is None:
+            return
+        try:
+            msg = await channel.fetch_message(message_id)
+        except discord.errors.NotFound:
+            return
+
+        await self.update_raffle_reaction(channel, msg, save=False)
+
+    def clear_raffle_reaction(self, save=True):
+        """Clears the currently set raffle message"""
+        self._rreact.update({
+            "timestamp": datetime.now(),
+            "channel_id": None,
+            "message_id": None,
+            "msg_contents": None,
+            "count": 0,
+            "msg": None,
+        })
+        if save:
+            self.save_raffle_reaction()
+
+    async def update_raffle_reaction(self, channel, msg, save=True):
+        """Attempt to update the current raffle message"""
+        if msg.id == self._rreact.get("message_id", None):
+            return
+
+        msg_contents = re.sub("''*", "'", msg.clean_content).replace('\\', '')
+        if len(msg_contents) < 1:
+            return
+
+        # Conditionally timezone aware cutoff time
+        if msg.created_at.tzinfo is None:
+            time_cutoff = datetime.utcnow() - datetime.timedelta(days=7)
+        else:
+            time_cutoff = datetime.now(timezone.utc) - timedelta(days=7)
+        self._bot.rlogger.debug("time_cutoff=%s      msg.created_at=%s", time_cutoff, msg.created_at)
+
+        if msg.created_at <= time_cutoff:
+            return
+        self._bot.rlogger.debug("Reaction was new enough")
+
+        highest_reaction_count = 0
+        self._bot.rlogger.debug("Reactions: %s", msg.reactions)
+        for reaction in msg.reactions:
+            reaction_name = reaction.emoji
+            if isinstance(reaction_name, (discord.Emoji, discord.PartialEmoji)):
+                reaction_name = reaction_name.name
+
+            if '\U0001f441' in reaction_name:
+                continue
+
+            highest_reaction_count = max(highest_reaction_count, reaction.count)
+
+        if not (
+                highest_reaction_count > self._rreact["count"]
+                or time_cutoff > self._rreact["timestamp"]
+        ):
+            return
+
+        # If the bot can't react to a message due to permission issues, don't mark it as the winning message
+        try:
+            await msg.add_reaction('\U0001f441')
+        except Exception:
+            self._bot.rlogger.warning("Permission denied adding reaction in channel %s", channel.name)
+            return
+
+        if self._rreact["msg"] is not None:
+            try:
+                await self._rreact["msg"].remove_reaction('\U0001f441', self._bot.user)
+            except Exception:
+                self._bot.rlogger.warning("Failed to remove previous reaction in %s", channel.name)
+                self._bot.rlogger.warning(traceback.format_exc())
+
+        self._rreact.update({
+            "timestamp": msg.created_at,
+            "channel_id": channel.id,
+            "message_id": msg.id,
+            "msg_contents": msg_contents,
+            "count": highest_reaction_count,
+            "msg": msg,
+        })
+        if save:
+            self.save_raffle_reaction()
+
+    def save_raffle_reaction(self):
+        """Saves the raffle message to persistent storage"""
+        raffle_path = self._persistence_path / 'raffle.json'
+
+        raffle_data = {
+            "reaction": {
+                "channel_id": self._rreact.get("channel_id", None),
+                "message_id": self._rreact.get("message_id", None),
+            },
+        }
+
+        with open(raffle_path, 'w', encoding='utf-8') as fp:
+            print(
+                json.dumps(
+                    raffle_data,
+                    ensure_ascii=False,
+                    indent=2,
+                    separators=(',', ': ')
+                ),
+                file=fp
+            )
 
     async def status_tick(self):
         """Updates bot status message(s) if required and possible"""
