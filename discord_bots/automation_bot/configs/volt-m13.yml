@@ -19,7 +19,7 @@ rabbitmq:
 
 k8s_namespace: "volt"
 
-reactions_enabled: True
+reactions_enabled: False
 
 ignored_reaction_channels:
     # rules - doesn't actually matter, just a placeholder for volt bot
