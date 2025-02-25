@@ -339,28 +339,21 @@ class PreserveBlockEntityTag(GlobalRule):
 
 class PreserveTotemOfTransposing(GlobalRule):
     name = 'Preserve Totem of Transposing tags'
-    debug_counter = 0
 
     def __init__(self):
         super().__init__()
         self.channel = None
 
     def preprocess(self, template, item):
-        self.debug_counter += 1
         self.channel = None
         if item.nbt.has_path('tag.TransposingID') and isinstance(item.tag.at_path('TransposingID').value, int):
             self.channel = item.tag.at_path('TransposingID').value
-            if self.channel is not None:
-                print(f'{self.debug_counter} Pre-process: Found Totem of Transposing ID {self.channel} by old tag')
         if item.nbt.has_path('tag.Monumenta.PlayerModified.TransposingID') and isinstance(item.tag.at_path('Monumenta.PlayerModified.TransposingID').value, int):
             self.channel = item.tag.at_path('Monumenta.PlayerModified.TransposingID').value
-            if self.channel is not None:
-                print(f'{self.debug_counter} Pre-process: Found Totem of Transposing ID {self.channel} by new tag')
 
     def postprocess(self, item):
         if self.channel is not None:
             if not item.nbt.has_path('tag.display.Lore[0]'):
-                print(f'{self.debug_counter} Post-process: Unable to update Totem of Transposing ID {self.channel}; no lore text?')
                 return
             for i, oldLoreTag in enumerate(item.tag.at_path('display.Lore').value):
                 if 'Transposing Channel:' in oldLoreTag.value:
@@ -368,12 +361,9 @@ class PreserveTotemOfTransposing(GlobalRule):
 
                     if not item.tag.has_path('Monumenta'):
                         item.tag.value['Monumenta'] = nbt.TagCompound({})
-                        print(f'{self.debug_counter} Post-process: Added Monumenta tag')
                     if not item.tag.has_path('Monumenta.PlayerModified'):
                         item.tag.at_path('Monumenta').value['PlayerModified'] = nbt.TagCompound({})
-                        print(f'{self.debug_counter} Post-process: Added PlayerModified tag')
                     item.tag.at_path('Monumenta.PlayerModified').value['TransposingID'] = nbt.TagInt(self.channel)
-                    print(f'{self.debug_counter} Post-process: Added PlayerModified TransposingID tag')
 
                     item.tag.at_path('display.Lore').value[i].value = '{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","extra":[{"text":"Transposing Channel: "},{"text":"$TRANSPOSING_ID$"}],"text":""}'.replace('$TRANSPOSING_ID$', str(self.channel))
                     plain_tag_path = 'plain.display.Lore[$INDEX$]'.replace('$INDEX$', str(i))
