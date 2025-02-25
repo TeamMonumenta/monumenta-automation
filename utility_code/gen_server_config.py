@@ -213,6 +213,7 @@ if __name__ == '__main__':
         ('config/paper-world-defaults.yml',),
         ('config/monumenta-mixins.yml',),
         ('wepif.yml',),
+        ('plugins/ViaVersion/config.yml',),
         ('plugins/BKCommonLib/config.yml',),
         ('plugins/CoreProtect/config.yml',),
         ('plugins/FastAsyncWorldEdit/config.yml',),
@@ -250,6 +251,7 @@ if __name__ == '__main__':
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
+        ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
     ]
 
     proxy_copy = [
@@ -284,8 +286,8 @@ if __name__ == '__main__':
         ('plugins/premiumvanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
         ('plugins/spark-velocity.jar', '../../server_config/plugins/spark-velocity.jar'),
         ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
-        ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
-        ('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
+        #('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
+        #('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
         ('plugins/velocity-prometheus-exporter.jar', '../../server_config/plugins/velocity-prometheus-exporter.jar'),
         ('plugins/velocity-prometheus-exporter/config.json', '../../../server_config/data/plugins/proxy/velocity-prometheus-exporter/config.json'),
     ]
@@ -393,6 +395,8 @@ if __name__ == '__main__':
     dynmap = [
         ('plugins/Dynmap.jar', '../../server_config/plugins/Dynmap.jar'),
         ('plugins/dynmap/configuration.txt', '../../../server_config/data/plugins/all/dynmap/' + SERVER_TYPE + '/configuration.txt'),
+        ('plugins/dynmap/markers.yml', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/markers.yml'),
+        ('plugins/dynmap/worlds.txt', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/worlds.txt'),
         ('plugins/dynmap/templates', '../../../server_config/data/plugins/all/dynmap/' + SERVER_TYPE + '/templates'),
     ]
 
@@ -464,11 +468,11 @@ if __name__ == '__main__':
     #   server_config
     #   structures
 
-    base_plugins = mixins + luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat + litebans
+    base_plugins = mixins + luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
     if SERVER_TYPE == 'build':
         base_plugins += speedchanger + voxelsniper + gobrush + axiom
     else:
-        base_plugins += vanish
+        base_plugins += vanish + litebans
 
     # String replacements:
     # {servername} - server name
@@ -493,7 +497,7 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/InfinityTower/InfinityFloors.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityFloors.json'),
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/valley/Monumenta/bounties'),
             ],
@@ -505,7 +509,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/isles/Monumenta/bounties'),
             ],
         },
@@ -516,7 +520,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
             ],
         },
@@ -833,6 +837,11 @@ if __name__ == '__main__':
         copy_of = copied_shard_config[key]
         config[key] = copy.deepcopy(config[copy_of])
         config[key]["copy_of"] = copy_of
+
+    # For plugins that should only load on the first instance (not very elegant solution, but it should work)
+    config["valley"]["linked"] += dynmap
+    config["isles"]["linked"] += dynmap
+    config["ring"]["linked"] += dynmap
 
     # Config additions that are specific to build or play server
     if SERVER_TYPE == 'build':

@@ -3,6 +3,7 @@
 import asyncio
 import json
 import logging
+import math
 import os
 import re
 import subprocess
@@ -130,6 +131,7 @@ class AutomationBotInstance(commands.Cog):
             "get score": self.action_get_player_scores,
             "set score": self.action_set_player_scores,
 
+            "badname": self.action_bad_name,
             "player find": self.action_player_find,
             "player rollback": self.action_player_rollback,
             "player shard": self.action_player_shard,
@@ -201,7 +203,7 @@ class AutomationBotInstance(commands.Cog):
         self._status_messages = {
             "Shard Status": self._get_list_shards_str_status,
             "Server Time": self._time_summary,
-            #"Public events": self._gameplay_event_summary, # TODO Bot cannot see these messages for reasons unknown
+            #"Public Events": self._gameplay_event_summary, # TODO Bot cannot see these messages for reasons unknown
         }
         if config.K8S_NAMESPACE != "play":
             self._status_messages["Developer Lockouts"] = self._get_lockout_message
@@ -220,9 +222,9 @@ class AutomationBotInstance(commands.Cog):
             if config.STATUS_CHANNEL:
                 try:
                     self._status_channel = self._bot.get_channel(config.STATUS_CHANNEL)
-                    logging.info("Found audit channel: %s", config.STATUS_CHANNEL)
+                    logging.info("Found status channel: %s", config.STATUS_CHANNEL)
                 except Exception:
-                    logging.error("Cannot connect to audit channel: %s", config.STATUS_CHANNEL)
+                    logging.error("Cannot connect to status channel: %s", config.STATUS_CHANNEL)
 
             self._socket = None
             if config.RABBITMQ:
@@ -1459,6 +1461,92 @@ This remove player data for this player, but will NOT remove their luckperms gro
 
         await self.display(ctx, f"**This did not clear their luckperms data** (guilds, patreon, etc.). If the player is just resetting maybe this is fine, but if you're truly removing the account, go in game and run `/lp user {playername} clear`.")
 
+    async def action_bad_name(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Add/remove/list bad playernames
+
+Usage:
+{cmdPrefix}badname add <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}badname remove <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}badname list [<page number or start of name>]'''
+
+        PAGE_SIZE = 10
+
+        commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()
+
+        if len(commandArgs) < 1:
+            await self.help_internal(ctx, ["badname"], message.author)
+            return
+
+        subcommand = commandArgs.pop(0).lower()
+        r = redis.Redis(host="redis", port=6379)
+
+        if subcommand == "add":
+            if len(commandArgs) < 1:
+                await self.display(ctx, f"Expected one or more names to add")
+                await self.help_internal(ctx, ["badname"], message.author)
+                return
+
+            await self.display(ctx, f"(NYI) Adding " + " ".join(commandArgs))
+
+        elif subcommand == "remove":
+            if len(commandArgs) < 1:
+                await self.display(ctx, f"Expected one or more names to remove")
+                await self.help_internal(ctx, ["badname"], message.author)
+                return
+
+            await self.display(ctx, f"(NYI) Removing " + " ".join(commandArgs))
+
+        elif subcommand == "list":
+            starting_text = ''
+            requested_page = 0
+
+            if len(commandArgs) > 1:
+                await self.display(ctx, f"Expected one or more names to remove")
+                await self.help_internal(ctx, ["badname"], message.author)
+                return
+            if len(commandArgs) == 1:
+                try:
+                    requested_page = int(commandArgs[0])
+                except ValueError:
+                    starting_text = commandArgs[0].lower()
+
+            if requested_page > 0:
+                await self.display(ctx, f"One moment, fetching list starting with page {requested_page}...")
+            elif starting_text:
+                await self.display(ctx, f"One moment, fetching list starting with {starting_text!r}...")
+            else:
+                await self.display(ctx, f"One moment, fetching list...")
+            badnames_bytes = r.smembers("badnames")
+            num_badnames = len(badnames_bytes)
+
+            current_page = 0
+            lines_to_display = []
+            for index, badname_bytes in enumerate(sorted(badnames_bytes)):
+                current_page = math.ceil((index + 1) / PAGE_SIZE)
+                if current_page < requested_page:
+                    continue
+
+                bad_name = badname_bytes.decode('utf-8')
+                if bad_name < starting_text:
+                    continue
+
+                if requested_page <= 0:
+                    requested_page = current_page
+
+                escaped_bad_name = bad_name.replace('`', '\\`')
+                lines_to_display.append(f"- {index + 1}: `{escaped_bad_name}`")
+
+                if (index + 1) % PAGE_SIZE == 0:
+                    # End of current page
+                    break
+
+            lines_to_display.append(f"Page {current_page}/{math.ceil(num_badnames / PAGE_SIZE)} ({num_badnames} bad names registered)")
+
+            await self.display(ctx, '\n'.join(lines_to_display))
+
+        else:
+            await self.help_internal(ctx, ["badname"], message.author)
+
     async def action_player_find(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Finds player names that match the specified string, case insensitive
 
@@ -1847,7 +1935,7 @@ Examples:
         await self.display(ctx, "Cleaning up stage temp files...")
         await self.run(ctx, "rm -rf /home/epic/5_SCRATCH/tmpstage")
 
-        await self.display(ctx, "Stage bundle ready!")
+        await self.display(ctx, "Stage bundle ready! Note that this includes all worlds on overworld shards, and weekly update does not!")
         await self.display(ctx, message.author.mention)
 
     async def action_apply_stage_bundle(self, ctx: discord.ext.commands.Context, _, message: discord.Message):
