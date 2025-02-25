@@ -39,6 +39,10 @@ server_dir: /home/epic/stage/m13
 cpu_count: 12
 
 stage_source:
+    m13:
+        queue_name: automation-bot-m13
+        shards:
+            - velocity-13
     m17:
         queue_name: automation-bot
         shards:
@@ -75,11 +79,12 @@ stage_source:
             - tutorial
             - valley
             - valley-2
-            - velocity-13
             - white
             - willows
             - yellow
             - zenith
+
+dynmap_dir: /home/epic/stage/maps
 
 shards:
     blue: /home/epic/stage/m13/blue/
@@ -140,6 +145,7 @@ commands:
     - remind me
     - list bots
     - list shards
+    - badname
     - player find
     - player rollback
     - player shard
@@ -166,13 +172,13 @@ commands:
 permissions:
     users:
         302298391969267712: {"name": "Combustible", "rights": [ "@root" ]}
-        225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]}
-        503202330284392452: {"name": "Floweynt",    "rights": [ "@root" ]}
-        122593763490004992: {"name": "Hazerdous",   "rights": [ "@root" ]}
         228226807353180162: {"name": "NickNackGus", "rights": [ "@root" ]}
-        192645668592943104: {"name": "Njol",        "rights": [ "@root" ]}
+        225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]}
+        122593763490004992: {"name": "Hazerdous",   "rights": [ "@root" ]}
         257887001834029056: {"name": "rayman520",   "rights": [ "@root" ]}
+        192645668592943104: {"name": "Njol",        "rights": [ "@root" ]}
         222170304577929218: {"name": "U5B_",        "rights": [ "@root" ]}
+        503202330284392452: {"name": "Floweynt",    "rights": [ "@root" ]}
 
     groups_by_role:
         # Team Monumenta (Private discord)
@@ -199,6 +205,7 @@ permissions:
             - "+help"
             - "+list bots"
             - "+list shards"
+            - "+badname"
             - "+lockout check *"
             - "+lockout check"
             - "+lockout claim"

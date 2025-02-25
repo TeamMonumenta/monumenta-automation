@@ -1,3 +1,5 @@
+prefix: '~'
+
 rabbitmq:
     host: "rabbitmq"
     # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
@@ -107,6 +109,8 @@ server_dir: /home/epic/play/m17
 
 common_weekly_update_tasks: True
 
+dynmap_dir: /home/epic/play/maps
+
 shards:
     velocity-17: /home/epic/play/m17/velocity-17/
     blue: /home/epic/play/m17/blue/
@@ -180,6 +184,7 @@ commands:
     - instances
     - list bots
     - list shards
+    - badname
     - player find
     - player rollback
     - player shard
@@ -248,6 +253,7 @@ permissions:
             - "+kaul"
             - "+list bots"
             - "+list shards"
+            - "+badname"
             - "+player shard"
             - "+restart"
             - "+select"

@@ -1,3 +1,5 @@
+prefix: '~'
+
 rabbitmq:
     host: "rabbitmq"
     # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
