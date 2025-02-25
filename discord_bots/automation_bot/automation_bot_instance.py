@@ -3,7 +3,6 @@
 import asyncio
 import json
 import logging
-import math
 import os
 import re
 import subprocess
@@ -129,7 +128,6 @@ class AutomationBotInstance(commands.Cog):
             "get score": self.action_get_player_scores,
             "set score": self.action_set_player_scores,
 
-            "badname": self.action_bad_name,
             "player find": self.action_player_find,
             "player rollback": self.action_player_rollback,
             "player shard": self.action_player_shard,
@@ -201,7 +199,7 @@ class AutomationBotInstance(commands.Cog):
         self._status_messages = {
             "Shard Status": self._get_list_shards_str_status,
             "Server Time": self._time_summary,
-            #"Public Events": self._gameplay_event_summary, # TODO Bot cannot see these messages for reasons unknown
+            #"Public events": self._gameplay_event_summary, # TODO Bot cannot see these messages for reasons unknown
         }
         if config.K8S_NAMESPACE != "play":
             self._status_messages["Developer Lockouts"] = self._get_lockout_message
@@ -220,9 +218,9 @@ class AutomationBotInstance(commands.Cog):
             if config.STATUS_CHANNEL:
                 try:
                     self._status_channel = self._bot.get_channel(config.STATUS_CHANNEL)
-                    logging.info("Found status channel: %s", config.STATUS_CHANNEL)
+                    logging.info("Found audit channel: %s", config.STATUS_CHANNEL)
                 except Exception:
-                    logging.error("Cannot connect to status channel: %s", config.STATUS_CHANNEL)
+                    logging.error("Cannot connect to audit channel: %s", config.STATUS_CHANNEL)
 
             self._socket = None
             if config.RABBITMQ:
@@ -461,7 +459,7 @@ class AutomationBotInstance(commands.Cog):
 
     async def load_raffle_reaction(self):
         """Loads persistent raffle reaction ID"""
-        self.clear_raffle_reaction(save=False)
+        await self.clear_raffle_reaction(save=False)
 
         raffle_path = self._persistence_path / 'raffle.json'
         if not raffle_path.is_file():
@@ -489,10 +487,21 @@ class AutomationBotInstance(commands.Cog):
 
         await self.update_raffle_reaction(channel, msg, save=False)
 
-    def clear_raffle_reaction(self, save=True):
+    async def clear_raffle_reaction(self, channel_id=None, message_id=None, save=True):
         """Clears the currently set raffle message"""
+        if channel_id is not None and message_id is not None:
+            if not (channel_id == self._rreact.get("channel_id", None) and message_id == self._rreact.get("message_id", None)):
+                return
+
+        if self._rreact.get("msg", None) is not None:
+            try:
+                await self._rreact["msg"].remove_reaction('\U0001f441', self._bot.user)
+            except Exception:
+                self._bot.rlogger.warning("Failed to remove previous reaction in %s", channel.name)
+                self._bot.rlogger.warning(traceback.format_exc())
+
         self._rreact.update({
-            "timestamp": datetime.now(),
+            "timestamp": datetime.now().timestamp(),
             "channel_id": None,
             "message_id": None,
             "msg_contents": None,
@@ -504,10 +513,29 @@ class AutomationBotInstance(commands.Cog):
 
     async def update_raffle_reaction(self, channel, msg, save=True):
         """Attempt to update the current raffle message"""
-        if msg.id == self._rreact.get("message_id", None):
+        highest_reaction_count = 0
+        self._bot.rlogger.debug("Reactions: %s", msg.reactions)
+        for reaction in msg.reactions:
+            reaction_name = reaction.emoji
+            if isinstance(reaction_name, (discord.Emoji, discord.PartialEmoji)):
+                reaction_name = reaction_name.name
+
+            if '\U0001f441' in reaction_name:
+                continue
+
+            highest_reaction_count = max(highest_reaction_count, reaction.count)
+
+        if channel.id == self._rreact.get("channel_id", None) and msg.id == self._rreact.get("message_id", None):
+            if highest_reaction_count == 0:
+                await self.clear_raffle_reaction(save)
+                return
+
+            self._rreact["count"] = highest_reaction_count
+            if save:
+                self.save_raffle_reaction()
             return
 
-        msg_contents = re.sub("''*", "'", msg.clean_content).replace('\\', '')
+        msg_contents = re.sub("''*", "'", msg.clean_content).replace('\\', '').replace('```', '` ` `')
         if len(msg_contents) < 1:
             return
 
@@ -522,21 +550,9 @@ class AutomationBotInstance(commands.Cog):
             return
         self._bot.rlogger.debug("Reaction was new enough")
 
-        highest_reaction_count = 0
-        self._bot.rlogger.debug("Reactions: %s", msg.reactions)
-        for reaction in msg.reactions:
-            reaction_name = reaction.emoji
-            if isinstance(reaction_name, (discord.Emoji, discord.PartialEmoji)):
-                reaction_name = reaction_name.name
-
-            if '\U0001f441' in reaction_name:
-                continue
-
-            highest_reaction_count = max(highest_reaction_count, reaction.count)
-
         if not (
                 highest_reaction_count > self._rreact["count"]
-                or time_cutoff > self._rreact["timestamp"]
+                or time_cutoff.timestamp() > self._rreact["timestamp"]
         ):
             return
 
@@ -555,7 +571,7 @@ class AutomationBotInstance(commands.Cog):
                 self._bot.rlogger.warning(traceback.format_exc())
 
         self._rreact.update({
-            "timestamp": msg.created_at,
+            "timestamp": msg.created_at.timestamp(),
             "channel_id": channel.id,
             "message_id": msg.id,
             "msg_contents": msg_contents,
@@ -728,7 +744,7 @@ class AutomationBotInstance(commands.Cog):
         else:
             # For complicated stuff, the caller must split appropriately
             splitCmd = cmd
-        await self.debug(ctx, "Executing: ```\n" + escape_triple_backtick(str(splitCmd)) + "\n```")
+        await self.debug(ctx, "Executing:\n```\n" + escape_triple_backtick(str(splitCmd)) + "\n```")
         process = await asyncio.create_subprocess_exec(*splitCmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = await process.communicate()
         rc = process.returncode
@@ -1537,7 +1553,7 @@ After transferring, source player data is backed up and then deleted. The source
         await self.display(ctx, f"`{fromplayer}` has been wiped and moved to the tutorial. If this was a mistake, you can ask an operator to restore it from the backup in `{backuppath}`.")
         await self.display(ctx, f"`{toplayer}` has had their data overwritten by the data from {fromplayer}. If this was a mistake, you can roll the player back to before the transfer using the in-game /rollback command")
         await self.display(ctx, f"**You still have to fix the player's LuckPerms data.**")
-        await self.display(ctx, f"To do this, go in-game and run ```\n/transferpermissions {fromplayer} {toplayer}\n```\nNote that `{fromplayer}` needs to be offline, and `{toplayer}` needs to be online. This will update all LuckPerms data (guilds, roles, etc) in one go.")
+        await self.display(ctx, f"To do this, go in-game and run\n```\n/transferpermissions {fromplayer} {toplayer}\n```\nNote that `{fromplayer}` needs to be offline, and `{toplayer}` needs to be online. This will update all LuckPerms data (guilds, roles, etc) in one go.")
 
     async def action_player_rollback(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Rolls a player back to the most recent weekly update
@@ -1586,92 +1602,6 @@ This remove player data for this player, but will NOT remove their luckperms gro
         await self.display(ctx, f"{playername} has had their data backed up and then wiped. If this was a mistake, ping an operator to restore it from the backup in `{backuppath}`. Note this only worked if the player is currently logged out.")
 
         await self.display(ctx, f"**This did not clear their luckperms data** (guilds, patreon, etc.). If the player is just resetting maybe this is fine, but if you're truly removing the account, go in game and run `/lp user {playername} clear`.")
-
-    async def action_bad_name(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
-        '''Add/remove/list bad playernames
-
-Usage:
-{cmdPrefix}badname add <name> [<name 2>] [<name 3> ...]
-{cmdPrefix}badname remove <name> [<name 2>] [<name 3> ...]
-{cmdPrefix}badname list [<page number or start of name>]'''
-
-        PAGE_SIZE = 10
-
-        commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()
-
-        if len(commandArgs) < 1:
-            await self.help_internal(ctx, ["badname"], message.author)
-            return
-
-        subcommand = commandArgs.pop(0).lower()
-        r = redis.Redis(host="redis", port=6379)
-
-        if subcommand == "add":
-            if len(commandArgs) < 1:
-                await self.display(ctx, f"Expected one or more names to add")
-                await self.help_internal(ctx, ["badname"], message.author)
-                return
-
-            await self.display(ctx, f"(NYI) Adding " + " ".join(commandArgs))
-
-        elif subcommand == "remove":
-            if len(commandArgs) < 1:
-                await self.display(ctx, f"Expected one or more names to remove")
-                await self.help_internal(ctx, ["badname"], message.author)
-                return
-
-            await self.display(ctx, f"(NYI) Removing " + " ".join(commandArgs))
-
-        elif subcommand == "list":
-            starting_text = ''
-            requested_page = 0
-
-            if len(commandArgs) > 1:
-                await self.display(ctx, f"Expected one or more names to remove")
-                await self.help_internal(ctx, ["badname"], message.author)
-                return
-            if len(commandArgs) == 1:
-                try:
-                    requested_page = int(commandArgs[0])
-                except ValueError:
-                    starting_text = commandArgs[0].lower()
-
-            if requested_page > 0:
-                await self.display(ctx, f"One moment, fetching list starting with page {requested_page}...")
-            elif starting_text:
-                await self.display(ctx, f"One moment, fetching list starting with {starting_text!r}...")
-            else:
-                await self.display(ctx, f"One moment, fetching list...")
-            badnames_bytes = r.smembers("badnames")
-            num_badnames = len(badnames_bytes)
-
-            current_page = 0
-            lines_to_display = []
-            for index, badname_bytes in enumerate(sorted(badnames_bytes)):
-                current_page = math.ceil((index + 1) / PAGE_SIZE)
-                if current_page < requested_page:
-                    continue
-
-                bad_name = badname_bytes.decode('utf-8')
-                if bad_name < starting_text:
-                    continue
-
-                if requested_page <= 0:
-                    requested_page = current_page
-
-                escaped_bad_name = bad_name.replace('`', '\\`')
-                lines_to_display.append(f"- {index + 1}: `{escaped_bad_name}`")
-
-                if (index + 1) % PAGE_SIZE == 0:
-                    # End of current page
-                    break
-
-            lines_to_display.append(f"Page {current_page}/{math.ceil(num_badnames / PAGE_SIZE)} ({num_badnames} bad names registered)")
-
-            await self.display(ctx, '\n'.join(lines_to_display))
-
-        else:
-            await self.help_internal(ctx, ["badname"], message.author)
 
     async def action_player_find(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Finds player names that match the specified string, case insensitive
@@ -2061,7 +1991,7 @@ Examples:
         await self.display(ctx, "Cleaning up stage temp files...")
         await self.run(ctx, "rm -rf /home/epic/5_SCRATCH/tmpstage")
 
-        await self.display(ctx, "Stage bundle ready! Note that this includes all worlds on overworld shards, and weekly update does not!")
+        await self.display(ctx, "Stage bundle ready!")
         await self.display(ctx, message.author.mention)
 
     async def action_apply_stage_bundle(self, ctx: discord.ext.commands.Context, _, message: discord.Message):
@@ -2378,26 +2308,18 @@ DELETES DUNGEON CORE PROTECT DATA'''
         '''Gets the current raffle seed based on reactions'''
 
         if self._rreact["msg_contents"] is not None:
-            await self.display(ctx, "Current raffle seed is: ```\n{}\n```".format(self._rreact["msg_contents"]))
+            await self.display(ctx, "Current raffle seed is:\n```\n{}\n```".format(self._rreact["msg_contents"]))
         else:
             await self.display(ctx, "No current raffle seed")
 
-    async def action_run_test_raffle(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+    async def action_run_test_raffle(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         '''Runs a test raffle (does not save results)'''
 
-        commandArgs = message.content[len(config.PREFIX):].strip()
-        dry_run = True
-        if len(commandArgs) > len(cmd) + 1 and "actual" in commandArgs[len(cmd) + 1:].strip():
-            dry_run = False
-
-        if dry_run:
-            await self.display(ctx, "Test raffle results:")
-        else:
-            await self.display(ctx, "Raffle results:")
+        await self.display(ctx, "Test raffle results:")
         raffle_seed = self.get_raffle_seed()
 
         raffle_results = tempfile.mktemp()
-        vote_raffle(raffle_seed, 'redis', raffle_results, dry_run=dry_run)
+        vote_raffle(raffle_seed, 'redis', raffle_results, dry_run=True)
         await self.run(ctx, "cat {}".format(raffle_results), displayOutput=True)
 
     async def action_weekly_update(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -2479,6 +2401,10 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         if min_phase <= 11 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Running item replacements for players...")
             await self.run(ctx, os.path.join(_top_level, "utility_code/weekly_update_player_data.py") + f" --world {self._server_dir}/server_config/redis_data_initial --datapacks {self._server_dir}/server_config/data/datapacks -j {config.CPU_COUNT}")
+
+            # TODO REMOVE THIS
+            await self.display(ctx, "Stopping for manual player data fixes")
+            return
 
         if min_phase <= 12 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Loading player data back into redis...")
