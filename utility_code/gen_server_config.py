@@ -211,8 +211,9 @@ if __name__ == '__main__':
         ('spigot.yml',),
         ('config/paper-global.yml',),
         ('config/paper-world-defaults.yml',),
+        ('config/monumenta-mixins.yml',),
         ('wepif.yml',),
-        # ('plugins/ViaVersion/config.yml',),
+        ('plugins/ViaVersion/config.yml',),
         ('plugins/BKCommonLib/config.yml',),
         ('plugins/CoreProtect/config.yml',),
         ('plugins/FastAsyncWorldEdit/config.yml',),
@@ -238,14 +239,19 @@ if __name__ == '__main__':
         ('plugins/TAB/skincache.yml',),
     ]
 
-    purgatory_min = [
+    mixins = [
+        ('mods/MonumentaMixins.jar', '../../server_config/mods/MonumentaMixins.jar'),
+        ('server.jar', '../server_config/mixinloader.jar'),
+    ]
+
+    purgatory_min = mixins + [
         ('paperclip.jar', '../server_config/paperclip.jar'),
         ('plugins/Vault.jar', '../../server_config/plugins/Vault.jar'),
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
         ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
-        # ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
+        ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
     ]
 
     proxy_copy = [
@@ -265,7 +271,7 @@ if __name__ == '__main__':
         ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
         ('plugins/litebans/config.yml', '../../../server_config/data/plugins/proxy/litebans/config.yml'),
         ('plugins/litebans/messages.yml', '../../../server_config/data/plugins/proxy/litebans/messages.yml'),
-        ('plugins/litebans/webhooks.yml', '../../../server_config/data/plugins/proxy/litebans/webhooks.yml'),
+        ('plugins/litebans/webhooks.yml', f'../../../server_config/data/plugins/proxy/litebans/{SERVER_TYPE}/webhooks.yml'),
         ('plugins/LuckPerms-Velocity.jar', '../../server_config/plugins/LuckPerms-Velocity.jar'),
         ('plugins/luckperms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
         ('plugins/Maintenance-Velocity.jar', '../../server_config/plugins/Maintenance-Velocity.jar'),
@@ -280,8 +286,8 @@ if __name__ == '__main__':
         ('plugins/premiumvanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
         ('plugins/spark-velocity.jar', '../../server_config/plugins/spark-velocity.jar'),
         ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
-        ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
-        ('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
+        #('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
+        #('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
         ('plugins/velocity-prometheus-exporter.jar', '../../server_config/plugins/velocity-prometheus-exporter.jar'),
         ('plugins/velocity-prometheus-exporter/config.json', '../../../server_config/data/plugins/proxy/velocity-prometheus-exporter/config.json'),
     ]
@@ -293,7 +299,6 @@ if __name__ == '__main__':
 
     server_config_min = purgatory_min + [
         ('plugins/PlaceholderAPI', '../../server_config/plugins/PlaceholderAPI'),
-        # ('plugins/BungeeTabListPlus_BukkitBridge.jar', '../../server_config/plugins/BungeeTabListPlus_BukkitBridge.jar'),
         ('plugins/BKCommonLib.jar', '../../server_config/plugins/BKCommonLib.jar'),
         ('plugins/LightCleaner.jar', '../../server_config/plugins/LightCleaner.jar'),
     ]
@@ -332,7 +337,6 @@ if __name__ == '__main__':
         ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
         ('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
-        ('plugins/nbt-api.jar', '../../server_config/plugins/nbt-api.jar'),
         ('plugins/HolographicDisplays.jar', '../../server_config/plugins/HolographicDisplays.jar'),
         ('plugins/HolographicDisplays/database.yml', '../../../server_config/data/plugins/{servername}/HolographicDisplays/database.yml'),
         ('plugins/spark.jar', '../../server_config/plugins/spark.jar'),
@@ -391,6 +395,8 @@ if __name__ == '__main__':
     dynmap = [
         ('plugins/Dynmap.jar', '../../server_config/plugins/Dynmap.jar'),
         ('plugins/dynmap/configuration.txt', '../../../server_config/data/plugins/all/dynmap/' + SERVER_TYPE + '/configuration.txt'),
+        ('plugins/dynmap/markers.yml', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/markers.yml'),
+        ('plugins/dynmap/worlds.txt', '../../../server_config/data/plugins/{servername}/dynmap/' + SERVER_TYPE + '/worlds.txt'),
         ('plugins/dynmap/templates', '../../../server_config/data/plugins/all/dynmap/' + SERVER_TYPE + '/templates'),
     ]
 
@@ -450,16 +456,21 @@ if __name__ == '__main__':
         ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
         ('plugins/LiteBans/config.yml', '../../../server_config/data/plugins/all/LiteBans/config.yml'),
         ('plugins/LiteBans/messages.yml', '../../../server_config/data/plugins/all/LiteBans/messages.yml'),
-        ('plugins/LiteBans/webhooks.yml', '../../../server_config/data/plugins/all/LiteBans/webhooks.yml'),
+        ('plugins/LiteBans/webhooks.yml', f'../../../server_config/data/plugins/all/LiteBans/{SERVER_TYPE}/webhooks.yml'),
+    ]
+
+    axiom = [
+        ('plugins/AxiomPaper.jar', '../../server_config/plugins/AxiomPaper.jar'),
+        ('plugins/AxiomPaper', '../../server_config/data/plugins/all/AxiomPaper'),
     ]
 
     # Index of nodes:
     #   server_config
     #   structures
 
-    base_plugins = luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
+    base_plugins = mixins + luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
     if SERVER_TYPE == 'build':
-        base_plugins += speedchanger + voxelsniper + gobrush
+        base_plugins += speedchanger + voxelsniper + gobrush + axiom
     else:
         base_plugins += vanish + litebans
 
@@ -486,7 +497,7 @@ if __name__ == '__main__':
                 ('server.properties', 'view-distance', 'view-distance=8'),
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/InfinityTower/InfinityFloors.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityFloors.json'),
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/valley/Monumenta/bounties'),
             ],
@@ -498,7 +509,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/isles/Monumenta/bounties'),
             ],
         },
@@ -509,7 +520,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
-            'linked':server_config + base_plugins + dynmap + [
+            'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/ring/Monumenta/bounties'),
             ],
         },
@@ -826,6 +837,11 @@ if __name__ == '__main__':
         copy_of = copied_shard_config[key]
         config[key] = copy.deepcopy(config[copy_of])
         config[key]["copy_of"] = copy_of
+
+    # For plugins that should only load on the first instance (not very elegant solution, but it should work)
+    config["valley"]["linked"] += dynmap
+    config["isles"]["linked"] += dynmap
+    config["ring"]["linked"] += dynmap
 
     # Config additions that are specific to build or play server
     if SERVER_TYPE == 'build':

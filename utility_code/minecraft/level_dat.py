@@ -73,6 +73,15 @@ class LevelDat():
             self.sort_disabled()
 
     @property
+    def spawn(self):
+        """Gets the world's spawn location"""
+        return [
+            self.nbt.at_path('Data.SpawnX').value,
+            self.nbt.at_path('Data.SpawnY').value,
+            self.nbt.at_path('Data.SpawnZ').value,
+        ]
+
+    @property
     def difficulty(self):
         """
         Gets the world's current difficulty

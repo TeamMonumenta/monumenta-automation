@@ -286,30 +286,10 @@ class SubtituteItems(SubstitutionRule):
                 # ["minecraft:example_vanilla_item", None, "minecraft:new_id", "Example New Name"],
                 # Example item type change:
                 # ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
-                # Copper Furnace -> Copper Relay Unit replacement
-                ["minecraft:cut_copper", "Copper Furnace", "minecraft:repeater", "Copper Relay Unit"],
-                # Molldyer's Inferno -> Hexcrafted Siphon replacement
-                ["minecraft:blaze_powder", "Molldyer's Inferno", "minecraft:amethyst_cluster", "Hexcrafted Siphon"],
                 # Boots of Deleting -> Infused Cloth Shoes
                 ["minecraft:golden_boots", "Boots of Deleting", "minecraft:leather_boots", "Infused Cloth Shoes"],
-                # Boreas Mattock -> Winter's Bounty
-                ["minecraft:iron_pickaxe", "Boreas Mattock", "minecraft:golden_helmet", "Winter's Bounty"],
-                # Uriddan's Eternal Call -> Uriddan's Eternal Call (A15)
-                ["minecraft:goat_horn", "Uriddan's Eternal Call", "minecraft:goat_horn", "Uriddan's Eternal Call (A15)"],
-                # Potion Merge
-                ["minecraft:splash_potion", "Aqueous Vial", "minecraft:potion", "Aqueous Potion"],
-                ["minecraft:potion", "Minor Aqueous Potion", "minecraft:potion", "Aqueous Potion"],
-                ["minecraft:splash_potion", "Darksight Vial", "minecraft:potion", "Darksight Potion"],
-                ["minecraft:potion", "Minor Darksight Potion", "minecraft:potion", "Darksight Potion"],
-                ["minecraft:splash_potion", "Major Regeneration Vial", "minecraft:potion", "Major Regeneration Potion"],
-                ["minecraft:splash_potion", "Major Strength Vial", "minecraft:potion", "Major Strength Potion"],
-                ["minecraft:splash_potion", "Major Swiftness Vial", "minecraft:potion", "Major Swiftness Potion"],
-                ["minecraft:splash_potion", "Minor Regeneration Vial", "minecraft:potion", "Minor Regeneration Potion"],
-                ["minecraft:splash_potion", "Minor Strength Vial", "minecraft:potion", "Minor Strength Potion"],
-                ["minecraft:splash_potion", "Minor Swiftness Vial", "minecraft:potion", "Minor Swiftness Potion"],
-                ["minecraft:splash_potion", "Regeneration Vial", "minecraft:potion", "Regeneration Potion"],
-                ["minecraft:splash_potion", "Strength Vial", "minecraft:potion", "Strength Potion"],
-                ["minecraft:splash_potion", "Swiftness Vial", "minecraft:potion", "Swiftness Potion"],
+                # 1.20.4 Balance changes
+                ["minecraft:blaze_powder", "Swift Divine Flare Charm", "minecraft:blaze_powder", "Focused Divine Flare Charm"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
