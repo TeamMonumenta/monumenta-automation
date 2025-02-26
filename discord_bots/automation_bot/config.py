@@ -21,8 +21,6 @@ else:
 with open(AUTH_PATH, 'r') as ymlfile:
     bot_auth = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
-logging.info("\nBot Authorization: %s\n", pformat(bot_auth))
-
 old_umask = os.umask(0o022)
 logging.info("New umask=0o022, old umask=%s", oct(old_umask))
 
@@ -38,6 +36,7 @@ CONFIG_PATH = CONFIG_DIR / f'{NAME}.yml'
 with open(CONFIG_PATH, 'r') as ymlfile:
     bot_config = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
+logging.info("\nBot Configuration: %s\n", pformat(bot_config))
 
 PREFIX = bot_config["prefix"]
 RABBITMQ = bot_config.get("rabbitmq", None)
