@@ -1,28 +1,42 @@
 import os
 import logging
+from pathlib import Path
 from pprint import pformat
 import yaml
 
+# TODO: This is ugly and needs updating if we ever move this file
+_file_depth = 3
+_file = Path(__file__).absolute()
+_top_level = _file.parents[_file_depth-1]
+
+
 if "BOT_CONFIG" in os.environ and os.path.isfile(os.environ["BOT_CONFIG"]):
-    CONFIG_PATH = os.environ["BOT_CONFIG"]
-    CONFIG_DIR = os.path.dirname(CONFIG_PATH)
+    AUTH_PATH = Path(os.environ["BOT_CONFIG"])
+    AUTH_DIR = AUTH_PATH.parent
 else:
-    CONFIG_DIR = os.path.expanduser("~/.monumenta_bot/")
-    CONFIG_PATH = os.path.join(CONFIG_DIR, "config.yml")
+    AUTH_DIR = Path("~/.monumenta_bot/").expanduser()
+    AUTH_PATH = AUTH_DIR / "config.yml"
+
+# Read the bot's auth files
+with open(AUTH_PATH, 'r') as ymlfile:
+    bot_auth = yaml.load(ymlfile, Loader=yaml.FullLoader)
+
+old_umask = os.umask(0o022)
+logging.info("New umask=0o022, old umask=%s", oct(old_umask))
+
+NAME = bot_auth["name"]
+LOGIN = bot_auth["login"]
+APPLICATION_ID = bot_auth["application_id"]
+GUILD_ID = bot_auth["guild_id"]
+
+CONFIG_DIR = _top_level / 'discord_bots/automation_bot/configs'
+CONFIG_PATH = CONFIG_DIR / f'{NAME}.yml'
 
 # Read the bot's config files
 with open(CONFIG_PATH, 'r') as ymlfile:
     bot_config = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
 logging.info("\nBot Configuration: %s\n", pformat(bot_config))
-
-old_umask = os.umask(0o022)
-logging.info("New umask=0o022, old umask=%s", oct(old_umask))
-
-NAME = bot_config["name"]
-LOGIN = bot_config["login"]
-APPLICATION_ID = bot_config["application_id"]
-GUILD_ID = bot_config["guild_id"]
 
 PREFIX = bot_config["prefix"]
 RABBITMQ = bot_config.get("rabbitmq", None)

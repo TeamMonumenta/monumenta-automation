@@ -1,0 +1,232 @@
+prefix: '~'
+
+rabbitmq:
+    host: "rabbitmq"
+    # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
+    name: "automation-bot"
+    # Whether the queue will persist when the connection is closed
+    durable: True
+    # Whether this queue will be able to receive messages or not
+    process_messages: True
+    # Messages greater than this will be logged to stdout
+    # Levels - from https://docs.python.org/3/library/logging.html#levels
+    log_level: 20
+
+    # build-mod-alerts
+    audit_severe_channel: 1167973755549667410
+    # mail-audit-log
+    mail_audit_channel: 1255928805969891419
+    # build-admin-notices
+    admin_channel: 1167973800940412988
+
+k8s_namespace: "volt"
+
+reactions_enabled: True
+
+ignored_reaction_channels:
+    # rules - doesn't actually matter, just a placeholder for volt bot
+    - 704049401588613161,
+
+channels:
+    # volt-bot (dev discord)
+    - 1160660685982806106
+
+# volt-status (dev discord)
+status_channel: 1193446138062327878
+
+server_dir: /home/epic/volt/m12
+
+cpu_count: 12
+
+stage_source:
+    m12:
+        queue_name: automation-bot-m12
+        shards:
+            - velocity-12
+    m17:
+        queue_name: automation-bot
+        shards:
+            - cyan
+            - brown
+            - skt
+            - forum
+            - yellow
+            - zenith
+            - blue
+            - corridors
+            - lightgray
+            - lime
+            - pink
+            - plots
+            - teal
+            - lightblue
+            - magenta
+            - orange
+            - playerplots
+            - reverie
+            - ring
+            - rush
+            - white
+            - willows
+            - depths
+            - isles
+            - labs
+            - shiftingcity
+            - tutorial
+            - build
+            - gallery
+            - gray
+            - purgatory
+            - purple
+            - server_config
+            - valley
+            - hexfall
+
+common_weekly_update_tasks: true
+
+dynmap_dir: /home/epic/volt/maps
+
+shards:
+    blue: /home/epic/volt/m12/blue/
+    brown: /home/epic/volt/m12/brown/
+    build: /home/epic/volt/m12/build/
+    velocity-12: /home/epic/volt/m12/velocity-12/
+    corridors: /home/epic/volt/m12/corridors/
+    cyan: /home/epic/volt/m12/cyan/
+    depths: /home/epic/volt/m12/depths/
+    forum: /home/epic/volt/m12/forum/
+    gallery: /home/epic/volt/m12/gallery/
+    gray: /home/epic/volt/m12/gray/
+    hexfall: /home/epic/volt/m12/hexfall/
+    isles: /home/epic/volt/m12/isles/
+    labs: /home/epic/volt/m12/labs/
+    lightblue: /home/epic/volt/m12/lightblue/
+    lightgray: /home/epic/volt/m12/lightgray/
+    lime: /home/epic/volt/m12/lime/
+    magenta: /home/epic/volt/m12/magenta/
+    orange: /home/epic/volt/m12/orange/
+    pink: /home/epic/volt/m12/pink/
+    playerplots: /home/epic/volt/m12/playerplots/
+    plots: /home/epic/volt/m12/plots/
+    purgatory: /home/epic/volt/m12/purgatory/
+    purple: /home/epic/volt/m12/purple/
+    reverie: /home/epic/volt/m12/reverie/
+    ring: /home/epic/volt/m12/ring/
+    rush: /home/epic/volt/m12/rush/
+    shiftingcity: /home/epic/volt/m12/shiftingcity/
+    skt: /home/epic/volt/m12/skt/
+    teal: /home/epic/volt/m12/teal/
+    tutorial: /home/epic/volt/m12/tutorial/
+    valley: /home/epic/volt/m12/valley/
+    white: /home/epic/volt/m12/white/
+    willows: /home/epic/volt/m12/willows/
+    yellow: /home/epic/volt/m12/yellow/
+    zenith: /home/epic/volt/m12/zenith/
+
+commands:
+    - apply stage bundle
+    - broadcastcommand
+    - broadcastproxycommand
+    - broadcastminecraftcommand
+    - lockout
+    - lockout check *
+    - lockout check
+    - lockout clear
+    - lockout claim
+    - debug
+    - get raffle seed
+    - run test raffle
+    - fetch update bundle
+    - help
+    - get timestamp
+    - remind
+    - remind me
+    - list bots
+    - list shards
+    - badname
+    - player find
+    - player rollback
+    - player shard
+    - player transfer
+    - player wipe
+    - restart
+    - select
+    - skill info
+    - stage
+    - start
+    - stop
+    - stop at
+    - stop and backup
+    - weekly update
+    - test
+    - testpriv
+    - testunpriv
+    - verbose
+    - view scores
+    - get score
+    - set score
+    - update avatar
+
+permissions:
+    users:
+        302298391969267712: {"name": "Combustible", "rights": [ "@root" ]}
+        228226807353180162: {"name": "NickNackGus", "rights": [ "@root" ]}
+        225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]}
+        122593763490004992: {"name": "Hazerdous",   "rights": [ "@root" ]}
+        257887001834029056: {"name": "rayman520",   "rights": [ "@root" ]}
+        192645668592943104: {"name": "Njol",        "rights": [ "@root" ]}
+        222170304577929218: {"name": "U5B_",        "rights": [ "@root" ]}
+        503202330284392452: {"name": "Floweynt",    "rights": [ "@root" ]}
+
+    groups_by_role:
+        # Team Monumenta (Private discord)
+        341032989787947008: "@team monumenta"
+        # Intern (Private discord)
+        390269554657460226: "@intern"
+
+    groups:
+        "@root":
+            - "+*"
+            - "-testunpriv"
+        "@team monumenta":
+            - "@intern"
+        "@intern":
+            - "+broadcastcommand"
+            - "+broadcastproxycommand"
+            - "+broadcastminecraftcommand"
+            - "+lockout"
+            - "+lockout check *"
+            - "+lockout check"
+            - "+lockout clear"
+            - "+lockout claim"
+            - "+debug"
+            - "+help"
+            - "+get timestamp"
+            - "+remind"
+            - "+remind me"
+            - "+list bots"
+            - "+get errors"
+            - "+list shards"
+            - "+badname"
+            - "+player find"
+            - "+player rollback"
+            - "+player shard"
+            - "+player transfer"
+            - "+player wipe"
+            - "+apply stage bundle"
+            - "+stage"
+            - "+restart"
+            - "+start"
+            - "+stop"
+            - "+stop at"
+            - "+test"
+            - "+testpriv"
+            - "+view scores"
+            - "+get score"
+            - "+set score"
+            - "+verbose"
+        "@everyone":
+            - "+select"
+            - "+help"
+            - "+get timestamp"
+            - "+remind me"
