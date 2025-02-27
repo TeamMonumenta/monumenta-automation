@@ -39,8 +39,10 @@ from lib_py3.lib_sockets import SocketManager
 from lib_py3.redis_scoreboard import RedisRBoard
 from minecraft.world import World
 
-import config
+from config import Config
 from automation_bot_lib import datestr, escape_triple_backtick, split_string
+
+config = Config()
 
 class Listening():
     """Class to keep track of whether a bot is listening to a user or not"""

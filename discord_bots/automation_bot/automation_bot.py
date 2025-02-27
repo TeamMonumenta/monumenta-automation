@@ -16,7 +16,7 @@ from discord.ext import tasks
 
 import pika
 
-import config
+from config import Config
 from automation_bot_lib import split_string
 from automation_bot_instance import AutomationBotInstance
 
@@ -27,6 +27,8 @@ _top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 from lib_py3.lockout import LockoutException
+
+config = Config()
 
 class GracefulKiller:
     """Class to catch signals (CTRL+C, SIGTERM) and gracefully save databases and stop the bot"""
