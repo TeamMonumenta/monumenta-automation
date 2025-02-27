@@ -2,13 +2,11 @@
 
 import os
 import sys
-import re
 import logging
 import traceback
 import datetime
 import signal
 import asyncio
-from pprint import pformat
 
 logging.basicConfig(level=logging.INFO)
 
@@ -117,6 +115,8 @@ class AutomationBot(commands.Bot):
                 except Exception:
                     logging.error("Cannot connect to channel: %s", config.CHANNELS)
 
+            await self.instance.load_raffle_reaction()
+
     @tasks.loop(seconds=60)
     async def update_avatar_task(self):
         await self.instance.check_updated_avatar()
@@ -199,6 +199,13 @@ class AutomationBot(commands.Bot):
     async def on_raw_reaction_add(self, payload):
         """Bot detected reaction add"""
         try:
+            reaction_name = payload.emoji.name
+            if isinstance(reaction_name, (discord.Emoji, discord.PartialEmoji)):
+                reaction_name = reaction_name.name
+            if '\U0001f441' in reaction_name:
+                # Ignore the raffle indicator reaction
+                return
+
             if payload.user_id == self.user.id:
                 # Don't handle self changes
                 return
@@ -217,59 +224,7 @@ class AutomationBot(commands.Bot):
                     self.rlogger.warning("Permission denied retrieving reaction message in channel %s", channel.name)
                     return
 
-                msg_contents = re.sub("''*", "'", msg.clean_content).replace('\\', '')
-                if len(msg_contents) < 1:
-                    return
-
-                # Conditionally timezone aware cutoff time
-                if msg.created_at.tzinfo is None:
-                    time_cutoff = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-                else:
-                    time_cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7)
-
-                self.rlogger.debug("time_cutoff=%s      msg.created_at=%s", time_cutoff, msg.created_at)
-                if msg.created_at > time_cutoff:
-                    self.rlogger.debug("Reaction was new enough")
-
-                    # If we want to prevent users from using a particular reaction type, you can
-                    # This requires manage message perms though...
-                    #if '\U0001f441' in payload.emoji.name:
-                    #    user = self.get_user(payload.user_id)
-                    #    await msg.remove_reaction(payload.emoji, user)
-                    #    return
-
-                    highest_reaction_count = 0
-                    self.rlogger.debug("Reactions: %s", msg.reactions)
-                    for reaction in msg.reactions:
-                        if '\U0001f441' in reaction.emoji:
-                            continue
-
-                        if reaction.count > highest_reaction_count:
-                            highest_reaction_count = reaction.count
-
-                    if (highest_reaction_count > self.rreact["count"] or (time_cutoff > self.rreact["timestamp"])):
-
-                        # If the bot can't react to a message due to permission issues, don't mark it as the winning message
-                        try:
-                            await msg.add_reaction('\U0001f441')
-                        except Exception:
-                            self.rlogger.warning("Permission denied adding reaction in channel %s", channel.name)
-                            return
-
-                        if self.rreact["msg"] is not None:
-                            try:
-                                await self.rreact["msg"].remove_reaction('\U0001f441', self.user)
-                            except Exception:
-                                self.rlogger.warning("Failed to remove previous reaction in %s", channel.name)
-                                self.rlogger.warning(traceback.format_exc())
-
-                        self.rreact["message_id"] = payload.message_id
-                        self.rreact["channel_id"] = payload.channel_id
-                        self.rreact["msg_contents"] = msg_contents
-                        self.rreact["count"] = highest_reaction_count
-                        self.rreact["timestamp"] = msg.created_at
-                        self.rreact["msg"] = msg
-                        self.rlogger.debug("Current rreact = %s", pformat(self.rreact))
+                await self.instance.update_raffle_reaction(channel, msg)
 
         except Exception:
             self.rlogger.error("Failed to handle adding reaction")
@@ -285,32 +240,10 @@ class AutomationBot(commands.Bot):
             if config.REACTIONS_ENABLED:
                 self.rlogger.debug("Processing removed reaction")
 
-                if self.rreact["channel_id"] == payload.channel_id and self.rreact["message_id"] == payload.message_id:
-                    channel = self.get_channel(payload.channel_id)
-                    msg = await channel.fetch_message(payload.message_id)
+                channel = self.get_channel(payload.channel_id)
+                msg = await channel.fetch_message(payload.message_id)
 
-                    # Same message as the current winner - update counts
-                    highest_reaction_count = 0
-                    for reaction in msg.reactions:
-                        self.rlogger.debug("Reactions: %s", msg.reactions)
-                        if '\U0001f441' in reaction.emoji:
-                            continue
-                        if reaction.count > highest_reaction_count:
-                            highest_reaction_count = reaction.count
-
-                    if highest_reaction_count <= 0:
-                        # This no longer has any other reactions
-                        self.rreact["message_id"] = None
-                        self.rreact["channel_id"] = None
-                        self.rreact["msg_contents"] = None
-                        self.rreact["msg"] = None
-                        self.rreact["count"] = 0
-                        self.rreact["timestamp"] = datetime.datetime.now()
-                        await msg.remove_reaction('\U0001f441', self.user)
-                        self.rlogger.debug("Cleared currently leading raffle reaction because it has no more reactions")
-                    else:
-                        self.rreact["count"] = highest_reaction_count
-                        self.rlogger.debug("Set count to %s", highest_reaction_count)
+                await self.instance.update_raffle_reaction(channel, msg)
 
         except Exception:
             self.rlogger.error("Failed to handle removing reaction")
@@ -322,15 +255,7 @@ class AutomationBot(commands.Bot):
             if config.REACTIONS_ENABLED:
                 self.rlogger.debug("Processing cleared reaction")
 
-                if self.rreact["channel_id"] == payload.channel_id and self.rreact["message_id"] == payload.message_id:
-                    # This is no longer the winner
-                    self.rreact["message_id"] = None
-                    self.rreact["channel_id"] = None
-                    self.rreact["msg_contents"] = None
-                    self.rreact["msg"] = None
-                    self.rreact["count"] = 0
-                    self.rreact["timestamp"] = datetime.datetime.now()
-                    self.rlogger.debug("Cleared currently leading raffle reaction")
+                await self.instance.clear_raffle_reaction(channel_id=payload.channel_id, message_id=payload.message_id)
 
         except Exception:
             self.rlogger.error("Failed to handle removing reaction")
