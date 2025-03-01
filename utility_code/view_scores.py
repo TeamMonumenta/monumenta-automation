@@ -1,7 +1,8 @@
 #!/usr/bin/env pypy3
-'''view scores [-d] Conditions [Order]
+'''view scores [-d] [-S] <Conditions> [Order]
 
   -d shows duplicate scores only (ie, same apartment)
+  -S only shows a summary of how many players matched
 
   Conditions can be mixed and matched, so long as none of them are used twice in
 one command (ie, you can't show multiple score ranges at once). They must never
@@ -35,29 +36,36 @@ if __name__ == '__main__':
     sys.argv.pop(0)
 
     if len(sys.argv) == 0:
-        print( __doc__ )
-        exit()
+        print(__doc__)
+        sys.exit()
 
+    summaryOnly = False
     duplicatesOnly = False
-    if sys.argv[0] == '-d':
-        duplicatesOnly = True
-        sys.argv.pop(0)
+
+    while len(sys.argv) > 0 and sys.argv[0].startswith('-'):
+        if sys.argv[0] == '-S':
+            summaryOnly = True
+            sys.argv.pop(0)
+
+        if sys.argv[0] == '-d':
+            duplicatesOnly = True
+            sys.argv.pop(0)
 
     if len(sys.argv) == 0:
-        print( __doc__ )
-        exit()
+        print(__doc__)
+        sys.exit()
 
     Conditions = ast.literal_eval(sys.argv[0])
     sys.argv.pop(0)
 
-    components = ("Objective","Name","Score","Locked")
+    components = ("Objective", "Name", "Score", "Locked")
 
     # Order will contain all fields in the end
     Order = []
     if len(sys.argv) > 0:
         Order = list(sys.argv[:4])
 
-    for i in range(len(Order)-1,-1,-1):
+    for i in range(len(Order) - 1, -1, -1):
         if Order[i] not in components:
             Order.pop(i)
 
@@ -74,7 +82,7 @@ if __name__ == '__main__':
     alignment = ""
     for i in Order:
         maxCharCounts.append(len(i))
-        if i in ("Score","Locked"):
+        if i in ("Score", "Locked"):
             alignment += ">"
         else:
             alignment += "<"
@@ -108,47 +116,49 @@ if __name__ == '__main__':
         for i in range(2):
             key = Order[i]
             val = score.at_path(key).value
-            maxCharCounts[i] = max(maxCharCounts[i],len(str(val)))
+            maxCharCounts[i] = max(maxCharCounts[i], len(str(val)))
             if val not in pointer:
                 pointer[val] = {}
             pointer = pointer[val]
         key = score.at_path(Order[2]).value
-        maxCharCounts[2] = max(maxCharCounts[2],len(str(key)))
+        maxCharCounts[2] = max(maxCharCounts[2], len(str(key)))
         val = score.at_path(Order[3]).value
-        maxCharCounts[3] = max(maxCharCounts[3],len(str(val)))
+        maxCharCounts[3] = max(maxCharCounts[3], len(str(val)))
         pointer[key] = val
 
-    # Header
     result = ""
-    for i in range(4):
-        strFormat = '{:^' + str( maxCharCounts[i] ) + '},'
-        result += strFormat.format(Order[i])
 
-    result += '\n'
+    if not summaryOnly:
+        # Header
+        for i in range(4):
+            strFormat = '{:^' + str(maxCharCounts[i]) + '},'
+            result += strFormat.format(Order[i])
+
+        result += '\n'
 
     # Table contents
-    score = ['','','','']
+    score = ['', '', '', '']
     matching_scores = 0
     for keyA in sorted(scoreMap.keys()):
-        strFormat = '{:' + alignment[0] + str( maxCharCounts[0] ) + '},'
+        strFormat = '{:' + alignment[0] + str(maxCharCounts[0]) + '},'
         score[0] = strFormat.format(keyA)
         mapA = scoreMap[keyA]
         for keyB in sorted(mapA.keys()):
-            strFormat = '{:' + alignment[1] + str( maxCharCounts[1] ) + '},'
+            strFormat = '{:' + alignment[1] + str(maxCharCounts[1]) + '},'
             score[1] = strFormat.format(keyB)
             mapB = mapA[keyB]
             for keyC in sorted(mapB.keys()):
-                strFormat = '{:' + alignment[2] + str( maxCharCounts[2] ) + '},'
+                strFormat = '{:' + alignment[2] + str(maxCharCounts[2]) + '},'
                 score[2] = strFormat.format(keyC)
                 keyD = mapB[keyC]
 
-                strFormat = '{:' + alignment[3] + str( maxCharCounts[3] ) + '},'
+                strFormat = '{:' + alignment[3] + str(maxCharCounts[3]) + '},'
                 score[3] = strFormat.format(keyD)
 
-                result += ''.join(score) + '\n'
+                if not summaryOnly:
+                    result += ''.join(score) + '\n'
                 matching_scores += 1
 
     result += f'matches,{matching_scores}\n'
 
-    print( result )
-
+    print(result)
