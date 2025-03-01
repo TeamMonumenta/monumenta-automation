@@ -1120,7 +1120,7 @@ Examples:
             shards = []
             for _, shards_at_timestamp in sorted(bucket["shards"].items()):
                 shards += shards_at_timestamp
-            msg.append(f'{bucket["reaction"]}: ' + ', '.join(shards))
+            msg.append(f'{bucket["reaction"]}: ' + ' '.join(shards))
 
         return "\n".join(msg)
 
