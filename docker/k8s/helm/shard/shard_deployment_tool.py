@@ -8,6 +8,14 @@ import tempfile
 import re
 import yaml
 
+# TODO: This is ugly and needs updating if we ever move this file
+_file_depth = 5
+_file = Path(__file__).absolute()
+_top_level = _file.parents[_file_depth-1]
+
+sys.path.append(str(_top_level / "discord_bots" / "automation_bot"))
+from config import Config as AutomationConfig
+
 
 with open("shard_deployment_tool_config.yaml", "r", encoding="utf-8-sig") as fp:
     tool_config = yaml.load(fp, Loader=yaml.FullLoader)
@@ -118,75 +126,75 @@ def test_shard(namespace, shard):
 
     shard_dir = None
     if namespace == 'build':
-        bot_config_path = secrets_dir / namespace / node / 'config.yml'
-        if not bot_config_path.exists():
-            print(f"{namespace} {shard}: No config for {namespace} {node} bot secret", file=sys.stderr)
+        bot_auth_path = secrets_dir / namespace / node / 'config.yml'
+        if not bot_auth_path.exists():
+            print(f"{namespace} {shard}: No config for {namespace} {node} bot config", file=sys.stderr)
             found_problem = True
 
         else:
-            with open(bot_config_path, 'r', encoding='utf-8-sig') as fp:
-                bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+            bot_config = AutomationConfig(auth_path=bot_auth_path)
 
-                shard_dir = bot_config["shards"].get(shard, None)
-                if shard_dir is None:
-                    print(f"{namespace} {shard}: Path not specified in {namespace} bot secret", file=sys.stderr)
-                    found_problem = True
+            shard_dir = bot_config.SHARDS.get(shard, None)
+            if shard_dir is None:
+                print(f"{namespace} {shard}: Path not specified in {namespace} bot config", file=sys.stderr)
+                found_problem = True
 
     elif namespace in ('stage', 'volt'):
-        bot_config_path = secrets_dir / namespace / node / 'config.yml'
-        if not bot_config_path.exists():
-            print(f"{namespace} {shard}: No config for {namespace} {node} bot secret", file=sys.stderr)
+        bot_auth_path = secrets_dir / namespace / node / 'config.yml'
+        if not bot_auth_path.exists():
+            print(f"{namespace} {shard}: No config for {namespace} {node} bot config", file=sys.stderr)
             found_problem = True
 
         else:
-            with open(bot_config_path, 'r', encoding='utf-8-sig') as fp:
-                bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+            bot_config = AutomationConfig(auth_path=bot_auth_path)
 
-                shard_dir = bot_config["shards"].get(shard, None)
-                if shard_dir is None:
-                    print(f"{namespace} {shard}: Path not specified in {namespace} {node} bot secret", file=sys.stderr)
-                    found_problem = True
+            shard_dir = bot_config.SHARDS.get(shard, None)
+            if shard_dir is None:
+                print(f"{namespace} {shard}: Path not specified in {namespace} {node} bot config", file=sys.stderr)
+                found_problem = True
 
     elif namespace == 'play':
-        bot_config_path = secrets_dir / namespace / node / 'config.yml'
-        if not bot_config_path.exists():
-            print(f"{namespace} {shard}: No config for {namespace} {node} bot secret", file=sys.stderr)
+        bot_auth_path = secrets_dir / namespace / node / 'config.yml'
+        if not bot_auth_path.exists():
+            print(f"{namespace} {shard}: No config for {namespace} {node} bot config", file=sys.stderr)
             found_problem = True
 
         else:
             queue_name = None
-            with open(bot_config_path, 'r', encoding='utf-8-sig') as fp:
-                bot_config = yaml.load(fp, Loader=yaml.FullLoader)
-                queue_name = bot_config["rabbitmq"]["name"]
+            bot_config = AutomationConfig(auth_path=bot_auth_path)
+            queue_name = bot_config.RABBITMQ["name"]
 
-                shard_dir = bot_config["shards"].get(shard, None)
-                if shard_dir is None:
-                    print(f"{namespace} {shard}: Path not specified in {namespace} {node} bot secret", file=sys.stderr)
-                    found_problem = True
+            shard_dir = bot_config.SHARDS.get(shard, None)
+            if shard_dir is None:
+                print(f"{namespace} {shard}: Path not specified in {namespace} {node} bot config", file=sys.stderr)
+                found_problem = True
 
             stage_required = shard.endswith("-1") or not shard[-1].isdigit()
-            stage_found = False
-            for stage_node in node_info:
-                bot_config_path = secrets_dir / 'stage' / stage_node / 'config.yml'
-                if not bot_config_path.is_file():
-                    continue
+            for stage_name in (
+                "stage",
+                "volt"
+            ):
+                stage_found = False
+                for stage_node in node_info:
+                    bot_auth_path = secrets_dir / stage_name / stage_node / 'config.yml'
+                    if not bot_auth_path.is_file():
+                        continue
 
-                with open(bot_config_path, 'r', encoding='utf-8-sig') as fp:
-                    bot_config = yaml.load(fp, Loader=yaml.FullLoader)
+                    bot_config = AutomationConfig(auth_path=bot_auth_path)
 
-                    stage_source = bot_config.get("stage_source", {}).get(node, {})
+                    stage_source = {} if bot_config.STAGE_SOURCE is None else bot_config.STAGE_SOURCE.get(node, {})
                     if shard not in stage_source.get("shards", []):
                         continue
 
                     stage_found = True
 
                     if stage_source.get("queue_name", None) != queue_name or queue_name is None:
-                        print(f"{namespace} {shard}: RabbitMQ queue name set incorrectly for play bot ({node}) or stage bot ({stage_node})", file=sys.stderr)
+                        print(f"{namespace} {shard}: RabbitMQ queue name set incorrectly for play bot ({node}) or {stage_name} bot ({stage_node})", file=sys.stderr)
                         found_problem = True
 
-            if stage_required and not stage_found:
-                print(f"{namespace} {shard}: Not listed as a stage source", file=sys.stderr)
-                found_problem = True
+                if stage_required and not stage_found:
+                    print(f"{namespace} {shard}: Not listed as a {stage_name} source", file=sys.stderr)
+                    found_problem = True
 
 
     if shard_dir is not None:

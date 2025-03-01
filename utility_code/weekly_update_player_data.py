@@ -35,6 +35,8 @@ def process_player(player):
     player.full_heal()
     tags = set(player.tags)
     tags.add("resetMessage")
+    if "ValentineDailyHotfix" in tags:
+        tags.remove("ValentineDailyHotfix")
     player.tags = tags
     upgrade_entity(player.nbt)
 

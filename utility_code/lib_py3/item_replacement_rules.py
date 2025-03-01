@@ -348,6 +348,8 @@ class PreserveTotemOfTransposing(GlobalRule):
         self.channel = None
         if item.nbt.has_path('tag.TransposingID') and isinstance(item.tag.at_path('TransposingID').value, int):
             self.channel = item.tag.at_path('TransposingID').value
+        if item.nbt.has_path('tag.Monumenta.PlayerModified.TransposingID') and isinstance(item.tag.at_path('Monumenta.PlayerModified.TransposingID').value, int):
+            self.channel = item.tag.at_path('Monumenta.PlayerModified.TransposingID').value
 
     def postprocess(self, item):
         if self.channel is not None:
@@ -356,6 +358,13 @@ class PreserveTotemOfTransposing(GlobalRule):
             for i, oldLoreTag in enumerate(item.tag.at_path('display.Lore').value):
                 if 'Transposing Channel:' in oldLoreTag.value:
                     item.tag.value['TransposingID'] = nbt.TagInt(self.channel)
+
+                    if not item.tag.has_path('Monumenta'):
+                        item.tag.value['Monumenta'] = nbt.TagCompound({})
+                    if not item.tag.has_path('Monumenta.PlayerModified'):
+                        item.tag.at_path('Monumenta').value['PlayerModified'] = nbt.TagCompound({})
+                    item.tag.at_path('Monumenta.PlayerModified').value['TransposingID'] = nbt.TagInt(self.channel)
+
                     item.tag.at_path('display.Lore').value[i].value = '{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","extra":[{"text":"Transposing Channel: "},{"text":"$TRANSPOSING_ID$"}],"text":""}'.replace('$TRANSPOSING_ID$', str(self.channel))
                     plain_tag_path = 'plain.display.Lore[$INDEX$]'.replace('$INDEX$', str(i))
                     if item.tag.has_path(plain_tag_path):

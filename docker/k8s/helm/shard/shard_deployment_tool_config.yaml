@@ -61,23 +61,25 @@
 
     # R3
     "ring": {
-        "play":  { "node": "m17", "hugePageGB": 7   , "cpuActiveProcessorCount": 4},
+        "play":  { "node": "m17", "hugePageGB": 8   , "cpuActiveProcessorCount": 4},
         "build": { "node": "m12", "hugePageGB": 6   , },
         "stage": { "node": "m13", "hugePageGB": 3   , },
         "volt" : { "node": "m12", "hugePageGB": 3   , },
     },
     "ring-2":  {
-        "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4},
+        "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4},
         "stage": { "node": "m13", "hugePageGB": 3   , },
     },
-    "ring-3":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
-    "ring-4":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
-    "ring-5":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
-    "ring-6":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
-    "ring-7":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
-    "ring-8":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
-    "ring-9":  { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
-    "ring-10": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
+    "ring-3":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-4":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-5":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-6":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-7":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-8":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-9":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-10": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-11": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-12": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
 
     # Plots
     "plots": {

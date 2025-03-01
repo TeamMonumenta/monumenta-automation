@@ -1,0 +1,166 @@
+prefix: '~'
+
+rabbitmq:
+    host: "rabbitmq"
+    # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
+    name: "automation-bot"
+    # Whether the queue will persist when the connection is closed
+    durable: True
+    # Whether this queue will be able to receive messages or not
+    process_messages: True
+    # Messages greater than this will be logged to stdout
+    # Levels - from https://docs.python.org/3/library/logging.html#levels
+    log_level: 20
+
+    # build-mod-alerts
+    audit_severe_channel: 1037060288945586186
+    # build-admin-notices
+    admin_channel: 1037060429186342932
+
+k8s_namespace: "build"
+
+reactions_enabled: True
+
+ignored_reaction_channels:
+    # rules - doesn't actually matter, just a placeholder for build bot
+    - 704049401588613161,
+
+channels:
+    # monumenta-bot (dev discord)
+    - 420045459177078795
+
+cpu_count: 4
+
+# build-status (dev discord)
+status_channel: 1201184258279079967
+
+server_dir: /home/epic/project_epic
+
+shards:
+    mobs: /home/epic/project_epic/mobs/
+    dev1: /home/epic/project_epic/dev1/
+    dev2: /home/epic/project_epic/dev2/
+    dev3: /home/epic/project_epic/dev3/
+    dev4: /home/epic/project_epic/dev4/
+    futurama: /home/epic/project_epic/futurama/
+    purgatory: /home/epic/project_epic/purgatory/
+    valley: /home/epic/project_epic/valley/
+    isles: /home/epic/project_epic/isles/
+    ring: /home/epic/project_epic/ring/
+    dungeon: /home/epic/project_epic/dungeon/
+    event: /home/epic/project_epic/event/
+    test: /home/epic/project_epic/test/
+    velocity-12: /home/epic/project_epic/velocity-12/
+
+commands:
+    - broadcastcommand
+    - broadcastbungeecommand
+    - broadcastminecraftcommand
+    - broadcastproxycommand
+    - lockout
+    - lockout check *
+    - lockout check
+    - lockout clear
+    - lockout claim
+    - find loot problems
+    - instances
+    - generate demo release
+    - generate instances
+    - get commands
+    - get raffle seed
+    - help
+    - get timestamp
+    - remind
+    - remind me
+    - list bots
+    - list world loot
+    - list shards
+    - badname
+    - player shard
+    - prepare stage bundle
+    - prepare update bundle
+    - restart
+    - run replacements
+    - select
+    - set score
+    - start
+    - stop
+    - test
+    - testpriv
+    - testunpriv
+    - update avatar
+    - update item
+    - verbose
+    - view scores
+
+permissions:
+    users:
+        302298391969267712: {"name": "Combustible", "rights": [ "@root" ]}
+        228226807353180162: {"name": "NickNackGus", "rights": [ "@root" ]}
+        225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]}
+        122593763490004992: {"name": "Hazerdous",   "rights": [ "@root" ]}
+        257887001834029056: {"name": "rayman520",   "rights": [ "@root" ]}
+        192645668592943104: {"name": "Njol",        "rights": [ "@root" ]}
+        222170304577929218: {"name": "U5B_",        "rights": [ "@root" ]}
+        503202330284392452: {"name": "Floweynt",    "rights": [ "@root" ]}
+
+    groups_by_role:
+        # Team Monumenta (Private discord)
+        341032989787947008: "@team monumenta"
+        # Intern (Private discord)
+        390269554657460226: "@intern"
+
+    groups:
+        "@root":
+            - "+*"
+            - "-testunpriv"
+        "@team monumenta":
+            - "@intern"
+            - "+generate demo release"
+            - "+broadcastcommand"
+            - "+broadcastbungeecommand"
+            - "+broadcastminecraftcommand"
+            - "+broadcastproxycommand"
+            - "+prepare update bundle"
+            - "+generate instances"
+        "@intern":
+            - "+lockout"
+            - "+lockout check *"
+            - "+lockout check"
+            - "+lockout clear"
+            - "+lockout claim"
+            - "+address to english"
+            - "+debug"
+            - "+dump error commands"
+            - "+dungeon loot"
+            - "+find loot problems"
+            - "+instances"
+            - "+get commands"
+            - "+get errors"
+            - "+help"
+            - "+get timestamp"
+            - "+remind"
+            - "+remind me"
+            - "+kaul"
+            - "+list bots"
+            - "+list shards"
+            - "+badname"
+            - "+player shard"
+            - "+prepare stage bundle"
+            - "+restart"
+            - "+list world loot"
+            - "+run replacements"
+            - "+select"
+            - "+set score"
+            - "+start"
+            - "+stop"
+            - "+test"
+            - "+testpriv"
+            - "+update item"
+            - "+verbose"
+            - "+view scores"
+        "@everyone":
+            - "+debug"
+            - "+help"
+            - "+get timestamp"
+            - "+remind me"

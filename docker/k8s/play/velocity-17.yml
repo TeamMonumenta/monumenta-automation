@@ -126,6 +126,8 @@ spec:
           value: "-Dlog4j2.configurationFile=log4j2-velocity.xml"
         - name: "NETWORK_RELAY_NAME"
           value: velocity-17
+        - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
+          value: "true"
         - name: "PLAN_SERVER_ID"
           value: velocity-17
         - name: "PLAN_SERVER_UUID"

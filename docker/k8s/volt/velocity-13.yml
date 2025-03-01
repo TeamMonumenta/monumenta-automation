@@ -81,6 +81,8 @@ spec:
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
           value: velocity-13
+        - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
+          value: "false"
         readinessProbe:
           tcpSocket:
             port: 25566

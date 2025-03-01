@@ -79,6 +79,20 @@ def get_masterwork_level_from_nbt(item_tag: nbt.TagCompound, err_print_on_inval=
     return None
 
 
+def uuid_int_array_to_uuid(int_array: nbt.TagIntArray) -> uuid.UUID:
+    """Converts an NBT UUID integer array into a UUID"""
+    if not (isinstance(int_array, nbt.TagIntArray) and len(int_array.value) == 4):
+        return None
+
+    uuid_int = 0
+    for part in int_array.value:
+        uuid_int <<= 32
+        if part < 0:
+            part += 1<<32
+        uuid_int += part
+    return uuid.UUID(int=uuid_int)
+
+
 def get_entity_uuid(entity: nbt.TagCompound) -> uuid.UUID:
     """Returns UUID or None for any entity with a UUID, including 1.16"""
     result = None
@@ -96,13 +110,7 @@ def get_entity_uuid(entity: nbt.TagCompound) -> uuid.UUID:
         result = uuid.UUID(int=uuid_int)
 
     elif entity.has_path("UUID") and isinstance(entity.at_path("UUID"), nbt.TagIntArray) and len(entity.at_path("UUID").value) == 4:
-        uuid_int = 0
-        for part in entity.at_path("UUID").value:
-            uuid_int <<= 32
-            if part < 0:
-                part += 1<<32
-            uuid_int += part
-        result = uuid.UUID(int=uuid_int)
+        result = uuid_int_array_to_uuid(entity.at_path("UUID"))
 
     return result
 
