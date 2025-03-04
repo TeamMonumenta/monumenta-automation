@@ -1100,8 +1100,7 @@ Examples:
         for name, state in shards.items():
             reaction = state['reaction']
             reaction_order = state['reaction_order']
-            last_change = state['last_change']
-            last_change_formatted = self.get_discord_timestamp(last_change, ':R')
+            last_change = (state['last_change'] // 60) * 60 # Round to the nearest minute
 
             if reaction_order not in buckets:
                 buckets[reaction_order] = {
@@ -1111,16 +1110,18 @@ Examples:
             bucket_shards = buckets[reaction_order]["shards"]
             if last_change not in bucket_shards:
                 bucket_shards[last_change] = []
-            bucket_shards[last_change].append(f'{name} ({last_change_formatted})')
+            bucket_shards[last_change].append(name)
 
         msg = []
         if len(shards) <= 0:
             msg.append("No shards to list")
         for _, bucket in sorted(buckets.items()):
-            shards = []
-            for _, shards_at_timestamp in sorted(bucket["shards"].items()):
-                shards += shards_at_timestamp
-            msg.append(f'{bucket["reaction"]}: ' + ' '.join(shards))
+            formatted_shards = []
+            for last_change, shards_at_timestamp in sorted(bucket["shards"].items()):
+                last_change_formatted = self.get_discord_timestamp(last_change, ':R')
+                shards_at_timestamp = ', '.join(shards_at_timestamp)
+                formatted_shards.append(f'{shards_at_timestamp} ({last_change_formatted})')
+            msg.append(f'{bucket["reaction"]}: ' + '; '.join(formatted_shards))
 
         return "\n".join(msg)
 
@@ -1162,6 +1163,7 @@ Examples:
         return "\n".join(msg)
 
     async def get_utc_offset(self):
+        """Get the UTC offset used by the server network"""
         utc_offset_path = self._persistence_path / 'utc_offset.json'
         config = {
             "hours": -17
