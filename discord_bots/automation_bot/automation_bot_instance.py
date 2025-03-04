@@ -654,6 +654,8 @@ class AutomationBotInstance(commands.Cog):
 
             modify_time = "Last updated " + self.get_discord_timestamp(now, ":R")
             formatted_message = f'**{header}** {modify_time}\n{new_message}'
+            if len(formatted_message) >= 2000:
+                formatted_message = f'**{header}** {modify_time}\nStatus message character limit exceeded; please wait...'
             if msg is None:
                 msg = await self._status_channel.send(formatted_message)
                 message_id = msg.id
