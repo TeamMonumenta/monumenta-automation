@@ -118,7 +118,11 @@ spec:
       terminationGracePeriodSeconds: 90
       containers:
       - name: {{ .Values.name }}
+{{- if eq .Values.name "dev4" }}
+        image: "ghcr.io/teammonumenta/monumenta-automation/{{ .Values.imageJbr }}"
+{{- else }}
         image: "ghcr.io/teammonumenta/monumenta-automation/{{ .Values.image }}"
+{{- end }}
         tty: true
         stdin: true
         ports:
@@ -144,7 +148,10 @@ spec:
           value: {{ .Values.name }}
         - name: "NETWORK_RELAY_SERVER_ADDRESS"
           value: "{{ .Values.name }}:25566"
-{{- if eq .Values.namespace "build" }}
+{{- if eq .Values.name "dev4" }}
+        - name: "JAVA_ARG"
+          value: "-XX:ActiveProcessorCount={{ .Values.cpuActiveProcessorCount }} -DPaper.IgnoreJavaVersion=true -Ddisable.watchdog -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9000 -Dlog4j2.configurationFile=log4j2-shard.xml -XX:+AllowRedefinitionToAddDeleteMethods -XX:+AllowEnhancedClassRedefinition"
+{{- else if eq .Values.namespace "build" }}
         - name: "JAVA_ARG"
           value: "-XX:ActiveProcessorCount={{ .Values.cpuActiveProcessorCount }} -DPaper.IgnoreJavaVersion=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9000 -Dlog4j2.configurationFile=log4j2-shard.xml"
 {{- else if eq .Values.namespace "stage" }}
