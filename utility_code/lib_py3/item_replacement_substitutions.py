@@ -288,8 +288,10 @@ class SubtituteItems(SubstitutionRule):
                 # ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
                 # Boots of Deleting -> Infused Cloth Shoes
                 ["minecraft:golden_boots", "Boots of Deleting", "minecraft:leather_boots", "Infused Cloth Shoes"],
-                # 1.20.4 Balance changes
-                ["minecraft:blaze_powder", "Swift Divine Flare Charm", "minecraft:blaze_powder", "Focused Divine Flare Charm"],
+                # Typo fix for Aggripa's Gearshredder
+                ["minecraft:iron_sword", "Agrippa's Gearshredder", "minecraft:iron_sword", "Aggripa's Gearshredder"],
+                # Please let this finally get rid of vanilla Suspicious Stews
+                ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution

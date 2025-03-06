@@ -3,9 +3,12 @@
 import sys
 import os
 import re
+import uuid
 import copy
-
 from pathlib import Path
+import yaml
+
+MONUMENTA_NAMESPACE = uuid.UUID('444c3990-e4e4-4c28-97c7-a8f6b1f09d30')
 
 def get_alt_version(alt_version, original_path_str, relative_to=Path('.')):
     """Returns alternate versions of a path, or the original if not found.
@@ -175,6 +178,24 @@ def gen_server_config(servername):
             os.makedirs(os.path.dirname(linkname), mode=0o775)
 
         os.symlink(targetname, linkname)
+
+    ################################################################################
+    # Fix plan UUIDs
+    ################################################################################
+
+    plan_server_info_path = f"{servername}/plugins/Plan/ServerInfoFile.yml"
+    if os.path.isfile(plan_server_info_path):
+        with open(plan_server_info_path, 'r') as fp:
+            plan_server_info_contents = yaml.load(fp, Loader=yaml.FullLoader)
+
+        shard_uuid = uuid.uuid5(MONUMENTA_NAMESPACE, servername)
+        shard_numeric_id = hash(shard_uuid)
+
+        plan_server_info_contents["Server"]["ID"] = shard_numeric_id
+        plan_server_info_contents["Server"]["UUID"] = str(shard_uuid)
+
+        with open(plan_server_info_path, 'w') as fp:
+            yaml.dump(plan_server_info_contents, fp, indent=4, allow_unicode=True, sort_keys=False)
 
     print("Success - " + servername)
 
