@@ -23,9 +23,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../qu
 from quarry.types import nbt
 
 
-PROCESSES = 8
-
-
 GUILDPLOTS_ORIGIN_BY_FACING = {
       0: [ -33, 47,  139],
      90: [-125, 47,   56],
@@ -163,9 +160,11 @@ def main():
     # Parse arguments
     arg_parser = argparse.ArgumentParser(description=__doc__)
     arg_parser.add_argument('host_path', type=Path, help='The path to the host server containing both plots and playerplots')
+    arg_parser.add_argument('-j', '--num-threads', type=int, default=8)
     args = arg_parser.parse_args()
 
     host_path = args.host_path
+    num_threads = args.num_threads
 
 
     # Set up shortcuts for various frequently used path variables
@@ -203,7 +202,7 @@ def main():
 
 
     timings.nextStep("Migrating mailboxes")
-    with multiprocessing.Pool(processes=PROCESSES) as pool:
+    with multiprocessing.Pool(processes=num_threads) as pool:
         for guild_name in pool.map(
                 migrate_guild_with_packed_args,
                 iter_migrate_args(
