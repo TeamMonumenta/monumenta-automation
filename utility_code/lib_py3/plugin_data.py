@@ -126,6 +126,11 @@ class PluginData(NbtPathDebug):
         return MonumentaCharms(self._data.get("R3DepthsCharms", {}), self)
 
 
+    def charm_bag(self):
+        """Get the charm bag stored on a player, if it exists."""
+        return MonumentaWallet(self._data.get("CharmBag", {}), self)
+
+
     def wallet(self):
         """Get the wallet stored on a player, if it exists."""
         return MonumentaWallet(self._data.get("Wallet", {}), self)
