@@ -1939,15 +1939,39 @@ Must be run before starting the update on the play server
         await self.display(ctx, "Copying purgatory...")
         await self.run(ctx, "cp -a /home/epic/project_epic/purgatory /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
-        await self.display(ctx, "Copying server_config...")
-        await self.run(ctx, "cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
-
         await self.display(ctx, "Sanitizing R1's items area...")
         await self.run(ctx, os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/Project_Epic-valley --pos1 1140,0,2564 --pos2 1275,123,2811")
         await self.display(ctx, "Sanitizing R2's items area...")
         await self.run(ctx, os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/Project_Epic-isles --pos1 1140,0,2564 --pos2 1275,123,2811")
         await self.display(ctx, "Sanitizing R3's items area...")
         await self.run(ctx, os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/Project_Epic-ring --pos1 1140,0,2564 --pos2 1275,123,2811")
+
+        await self.display(ctx, "Copying server_config...")
+        await self.run(ctx, "cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
+
+        # This collection of git commands creates a "blobless" clone of the data repo for deployment to the play server
+        # This is much smaller than the full repo, only containing the current working set & commit history
+        # All local changes and index are preserved exactly as if it was a full copy
+        # To check out or interact with files on other branches, will require a way to authenticate against the minecraft-data git repo
+        await self.display(ctx, "Compacting data git repo...")
+        await self.cd(ctx, "/home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config")
+        await self.run(ctx, "mv data data.orig")
+        if debug:
+            await self.run(ctx, "du -hs data.orig")
+        await self.run(ctx, "git config --global uploadpack.allowFilter true")
+        await self.run(ctx, "git clone --no-local --filter=blob:none --no-checkout data.orig data")
+        if debug:
+            await self.run(ctx, "du -hs data")
+        await self.run(ctx, "rsync -a --exclude=.git data.orig/ data/")
+        if debug:
+            await self.run(ctx, "du -hs data")
+        await self.run(ctx, "rm -rf data.orig")
+        await self.cd(ctx, "data")
+        await self.run(ctx, "git reset .", suppressStdErr=True)
+        await self.run(ctx, "git remote set-url origin git@github.com:TeamMonumenta/minecraft-data.git")
+        await self.cd(ctx, "..")
+        if debug:
+            await self.run(ctx, "du -hs data")
 
         await self.display(ctx, "Packaging up update bundle...")
         await self.cd(ctx, "/home/epic/5_SCRATCH/tmpreset")
