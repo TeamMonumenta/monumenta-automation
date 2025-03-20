@@ -94,6 +94,11 @@
         "volt" : { "node": "m12", "hugePageGB": 4, },
     },
 
+    "guildplots": {
+        "stage": { "node": "m13", "hugePageGB": 6, },
+        "volt" : { "node": "m12", "hugePageGB": 6, },
+    },
+
     # Player build shard
     "build": {
         "play" : { "node": "m17", "hugePageGB": 3   , "gsheetCredentials": "false" },

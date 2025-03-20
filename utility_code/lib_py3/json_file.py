@@ -1,12 +1,11 @@
 # Don't rename this to json.py - it'll break things
 
-import codecs
 import json
 from collections import OrderedDict
 
 from lib_py3.common import eprint
 
-class jsonFile(object):
+class jsonFile():
     """
     A json utility for json files;
 
@@ -28,16 +27,13 @@ class jsonFile(object):
         if path is None:
             self.dict = {}
             return
-        with open(path, 'r', encoding='utf-8-sig') as f:
+        with open(path, 'r', encoding='utf-8-sig') as fp:
             try:
-                fContent = f.read()
-                if fContent[0] == chr(0xfeff):
-                    fContent = fContent[1:]
-                self.dict = json.loads(fContent, object_pairs_hook=OrderedDict)
+                self.dict = json.load(fp, object_pairs_hook=OrderedDict)
             except Exception:
                 eprint("Error loading {!r}:".format(path))
                 raise
-            f.close()
+            fp.close()
 
     def save(self, path=None, indent=2, separators=(',', ': '), sort_keys=False):
         """
@@ -47,15 +43,14 @@ class jsonFile(object):
             path = self.path
             if path is None:
                 raise TypeError("Path not specified for json file")
-        with open(path, 'w', encoding='utf-8') as f:
+        with open(path, 'w', encoding='utf-8') as fp:
             json.dump(
                 self.dict,
-                f,
+                fp,
                 ensure_ascii=False,
                 indent=indent,
                 separators=separators,
                 sort_keys=sort_keys
             )
-            f.write("\n")
-            f.close()
-
+            fp.write("\n")
+            fp.close()

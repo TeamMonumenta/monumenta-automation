@@ -130,6 +130,7 @@ class AutomationBotInstance(commands.Cog):
             "view scores": self.action_view_scores,
             "get score": self.action_get_player_scores,
             "set score": self.action_set_player_scores,
+            "set guild plot scores": self.action_set_guildplot_scores,
 
             "badname": self.action_bad_name,
             "player find": self.action_player_find,
@@ -742,8 +743,31 @@ class AutomationBotInstance(commands.Cog):
         for chunk in split_string(msg):
             await ctx.send(chunk)
 
-    async def run(self, ctx: discord.ext.commands.Context, cmd, ret=0, displayOutput=False, suppressStdErr=False):
+    async def _read_stream(self, queue, stream, process_line, terminator):
+        """Reads a stream of text, such as from a pipe, and passes it into a queue one line at a time.
+
+        When a new line is ready, `process_line(line)` is run to handle any formatting or class-wrapping that is required
+
+        When all lines have been read, adds the specified terminator to the queue to mark the stream as done.
+        """
+        loop = asyncio.get_event_loop()
+        while True:
+            line = await stream.readline()
+            if line:
+                asyncio.run_coroutine_threadsafe(queue.put(process_line(line)), loop)
+            else:
+                asyncio.run_coroutine_threadsafe(queue.put(terminator), loop)
+                break
+
+    async def run(self, ctx: discord.ext.commands.Context, cmd, ret=0, displayOutput=False, suppressStdErr=False, streamOutput=False):
         """Run a shell command"""
+        # TODO HERE:
+        '''
+        https://stackoverflow.com/questions/2996887/how-to-replicate-tee-behavior-in-python-when-using-subprocess
+        https://kevinmccarthy.org/2016/07/25/streaming-subprocess-stdin-and-stdout-with-asyncio-in-python/
+        https://docs.python.org/3.10/library/asyncio-subprocess.html?ref=kevinmccarthy.org#examples
+        https://docs.python.org/3/library/asyncio-dev.html#concurrency-and-multithreading
+        '''
         if not isinstance(cmd, list):
             # For simple stuff, splitting on spaces is enough
             splitCmd = cmd.split(' ')
@@ -759,7 +783,7 @@ class AutomationBotInstance(commands.Cog):
 
         stdout = stdout.decode('utf-8')
         if stdout:
-            await self.debug(ctx, f"stdout from command {cmd}:")
+            await self.debug(ctx, f"stdout from command `{cmd}`:")
             logger.debug(stdout)
 
             if self._debug or displayOutput:
@@ -767,14 +791,14 @@ class AutomationBotInstance(commands.Cog):
 
         stderr = stderr.decode('utf-8')
         if stderr and not suppressStdErr:
-            await ctx.send(f"stderr from command {cmd}:")
+            await ctx.send(f"stderr from command `{cmd}`:")
             await self.display_verbatim(ctx, stderr)
 
         if isinstance(ret, int) and rc != ret:
-            raise ValueError(f"Expected result {ret}, got result {rc} while processing {cmd!r}")
+            raise ValueError(f"Expected result {ret}, got result {rc} while processing `{cmd!r}`")
 
         if isinstance(ret, (list, tuple, set)) and rc not in ret:
-            raise ValueError(f"Expected result in {ret}, got result {rc} while processing {cmd!r}")
+            raise ValueError(f"Expected result in {ret}, got result {rc} while processing `{cmd!r}`")
 
         return stdout
 
@@ -1508,11 +1532,51 @@ Do not use for debugging quests or other scores that are likely to change often.
             value = commandArgs[2]
             message = f'Set score {objective}={value} via bot'
 
-            await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", self._k8s.namespace, name, objective, value, message], displayOutput=(len(lines) < 5))
+            ns = self._k8s.namespace
+            if ns in ('stage', 'volt'):
+                ns = 'play'
+
+            await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, value, message], displayOutput=(len(lines) < 5))
             self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": f"execute if entity {name} run scoreboard players set {name} {objective} {value}"})
             setscores += 1
 
         await self.display(ctx, f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)")
+
+    async def action_set_guildplot_scores(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Sets player Guild scores if they've been exported by an earlier step'''
+        if 'plots' not in self._shards:
+            await self.display(ctx, "Aborting: This bot doesn't have access to the plots shard")
+            return
+
+        plots_shard_path = Path(self._shards['plots'])
+        guild_plots_json_file = plots_shard_path / 'plugins/Monumenta/plots_guild_bounds.json'
+
+        if not guild_plots_json_file.is_file():
+            await self.display(ctx, f"Aborting: Could not find required file {guild_plots_json_file!r}")
+            return
+
+        objective = 'Guild'
+        message = 'Set Guild score for guildplots migration'
+
+        ns = self._k8s.namespace
+        if ns in ('stage', 'volt'):
+            ns = 'play'
+
+        # Load list of guild plot bounds/coordinates
+        guild_plots_json = {}
+        with open(guild_plots_json_file, 'r', encoding='utf-8') as fp:
+            guild_plots_json = json.load(fp)
+
+        setscores = 0
+        for guild_details in guild_plots_json.values():
+            value = guild_details['plot_number']
+            members = guild_details['members']
+            for name in members:
+                await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, str(value), message], displayOutput=False, ret=[0, 1])
+                self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": f"execute if entity {name} run scoreboard players set {name} {objective} {value}"})
+                setscores += 1
+
+        await self.display(ctx, f"Set previously visited guildplot score for {setscores} players")
 
     async def action_player_shard(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''A tool to check what shard a player is on, or transfer one more more offline players.
