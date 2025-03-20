@@ -118,10 +118,25 @@ class RedisScoreboard(object):
     def load(self):
         r = redis.Redis(host=self._redis_host, port=self._redis_port)
 
-        for key in r.scan_iter("{}:playerdata:*:scores".format(self._domain)):
-            split = key.decode("utf-8").split(":")
-            uuid = split[2]
-            self._players[uuid] = json.loads(r.lindex(key, 0))
+        # Fetch all player scores in batches from the redis server
+        # Batches are needed to deal with high latency
+        cursor = 0
+        while True:
+            cursor, keys = r.scan(cursor=cursor, match="{}:playerdata:*:scores".format(self._domain), count=5000)
+
+            if len(keys) > 0:
+                pipe = r.pipeline()
+                for key in keys:
+                    pipe.lindex(key, 0)
+                results = pipe.execute()
+                for i in range(len(keys)):
+                    split = keys[i].decode("utf-8").split(":")
+                    uuid = split[2]
+                    self._players[uuid] = json.loads(results[i])
+
+            # Only done when cursor is 0. The keys are allowed to sometimes be empty even when still iterating
+            if cursor == 0:
+                break
 
         self._uuid2name = {k.decode("utf-8"): v.decode("utf-8") for k, v in r.hgetall("uuid2name").items()}
         self._name2uuid = {k.decode("utf-8"): v.decode("utf-8") for k, v in r.hgetall("name2uuid").items()}
@@ -385,4 +400,3 @@ class RedisRBoard(object):
                 eprint(pformat(expected_values))
                 eprint(f"Got these values:")
                 eprint(pformat(values))
-
