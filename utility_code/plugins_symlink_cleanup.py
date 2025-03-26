@@ -6,15 +6,16 @@ import argparse
 from pathlib import Path
 from datetime import datetime
 
-RETENTION_PERIOD = 14 * 24 * 60 * 60  # Two weeks in seconds
-MINIMUM_KEPT = 3
+DEFAULT_RETENTION_PERIOD_DAYS = 14
+DEFAULT_MINIMUM_KEPT = 3
 
-def get_files_to_remove(targetdir):
+def get_files_to_remove(targetdir, retention_period, minimum_kept):
     now = time.time()
     return_data = {}
 
     symlinks = [f for f in Path(targetdir).iterdir() if f.is_symlink()]
     tracked_basenames = {}
+    ignore_basenames = set()
     symlink_names = {}
     symlink_targets = {}
 
@@ -28,6 +29,10 @@ def get_files_to_remove(targetdir):
             continue
 
         basename = match.group(1)
+        if basename in symlink_names:
+            print(f"\033[91mWarning: Symlinks '{symlink.name}' and '{symlink_names[basename]}' both have the same basename '{basename}'; neither will be processed\033[0m")
+            ignore_basenames.add(basename)
+
         symlink_targets[basename] = target.stem + target.suffix
         symlink_names[basename] = symlink.stem + symlink.suffix
 
@@ -39,20 +44,33 @@ def get_files_to_remove(targetdir):
                 continue
             tracked_basenames[basename].append((fname, fname.stat().st_mtime))
 
+    for basename in ignore_basenames:
+        del tracked_basenames[basename]
+        del symlink_names[basename]
+        del symlink_targets[basename]
+
     for basename, files in tracked_basenames.items():
         files.sort(key=lambda x: x[1], reverse=True)  # Sort by modification time, newest first
 
         to_keep = []
         old_versions = []
 
+        # Find the current link target and remove it from the list of files by modification time
+        # Add it to the to-keep list immediately so it certainly will be kept, even if a newer version is present
         for fname, mtime in files:
-            if now - mtime <= RETENTION_PERIOD:
+            if fname.name == symlink_targets[basename]:
+                to_keep.append((fname, mtime))
+                files.remove((fname, mtime))
+                break
+
+        for fname, mtime in files:
+            if now - mtime <= retention_period:
                 to_keep.append((fname, mtime))
             else:
                 old_versions.append((fname, mtime))
 
-        if len(to_keep) < MINIMUM_KEPT:
-            to_keep.extend(old_versions[:MINIMUM_KEPT - len(to_keep)])
+        if len(to_keep) < minimum_kept:
+            to_keep.extend(old_versions[:minimum_kept - len(to_keep)])
 
         return_data[basename] = {
             "target": symlink_targets[basename],
@@ -63,8 +81,8 @@ def get_files_to_remove(targetdir):
 
     return return_data
 
-def delete_old_files(targetdir, dry_run=False):
-    files_to_process = get_files_to_remove(targetdir)
+def delete_old_files(targetdir, retention_period, minimum_kept, dry_run=False):
+    files_to_process = get_files_to_remove(targetdir, retention_period, minimum_kept)
 
     for _, file_groups in files_to_process.items():
         print(f"{file_groups['linkname']}  ->  {file_groups['target']}")
@@ -77,7 +95,7 @@ def delete_old_files(targetdir, dry_run=False):
         if len(file_groups["remove"]) > 0:
             print(f"  remove:")
             for fname, mtime in file_groups["remove"]:
-                print(f"    {fname.name.ljust(max_width)}    {datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')}")
+                print(f"\033[91m    {fname.name.ljust(max_width)}    {datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M:%S')}\033[0m")
                 if not dry_run:
                     fname.unlink()
 
@@ -85,6 +103,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Deletes old versions of symlinked jar files. Run with --dry-run to examine output.")
     parser.add_argument("target_directory", help="Path to server_config/plugins directory containing JAR files and symlinks")
     parser.add_argument("--dry-run", action="store_true", help="Print what would be kept/deleted without deleting anything")
+    parser.add_argument("--retention-period", type=int, default=DEFAULT_RETENTION_PERIOD_DAYS, help=f"Retention period in days (default: {DEFAULT_RETENTION_PERIOD_DAYS})")
+    parser.add_argument("--minimum-kept", type=int, default=DEFAULT_MINIMUM_KEPT, help=f"Minimum number of files to keep (default: {DEFAULT_MINIMUM_KEPT})")
     args = parser.parse_args()
 
-    delete_old_files(args.target_directory, args.dry_run)
+    retention_period_seconds = args.retention_period * 24 * 60 * 60
+    delete_old_files(args.target_directory, retention_period_seconds, args.minimum_kept, args.dry_run)
