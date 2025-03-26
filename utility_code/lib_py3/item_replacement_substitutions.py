@@ -10,6 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../..
 from quarry.types.text_format import unformat_text
 from quarry.types import nbt
 
+
 class SubstitutionRule():
     """Base substitution rule for item replacements, used to preserve and edit data."""
     # Edit this for all new objects:
@@ -52,6 +53,7 @@ substitution_rules = []
 ################################################################################
 # Substitution rules begin
 
+
 class ResetDirty(SubstitutionRule):
     """Rule to reset the dirty flag"""
     name = "Reset Dirty tag"
@@ -62,6 +64,7 @@ class ResetDirty(SubstitutionRule):
         item.tag.at_path('Monumenta').value.pop('Dirty')
         if len(item.nbt.at_path('tag.Monumenta').value) == 0:
             item.tag.value.pop('Monumenta')
+
 
 class NameUnnamedItems(SubstitutionRule):
     """Rule to apply a name to unnamed items"""
@@ -155,6 +158,7 @@ class NameUnnamedItems(SubstitutionRule):
                 item_tag.at_path('display.Lore').value.append(nbt.TagString('''{"text":"Don't skip this if it's missing lore!"}'''))
                 return
 
+
 class FixBookTitles(SubstitutionRule):
     """Rule to identify books by title if the name is not set"""
     name = "Fix book titles"
@@ -164,6 +168,7 @@ class FixBookTitles(SubstitutionRule):
             return
         title = item.tag.at_path('title').value
         item_meta['name'] = unformat_text(parse_name_possibly_json(title))
+
 
 class FixBrokenSectionSymbols(SubstitutionRule):
     """Rule to fix section symbols with the wrong character encoding"""
@@ -188,6 +193,7 @@ class FixBrokenSectionSymbols(SubstitutionRule):
             new_lore = self._fix(lore)
             lore_line.value = new_lore
 
+
 class FixDoubleJsonNames(SubstitutionRule):
     """Rule to fix item names that are json inside of json"""
     name = "Fixed json in json names"
@@ -202,6 +208,7 @@ class FixDoubleJsonNames(SubstitutionRule):
             item.tag.at_path('display.Name').value = name_json
             item_meta['name'] = unformat_text(name_json_json)
 
+
 class FixEscapedNames(SubstitutionRule):
     """Rule to un-escape valid json characters"""
     name = "Fixed escaped characters in json names"
@@ -215,6 +222,7 @@ class FixEscapedNames(SubstitutionRule):
         name_json = parse_name_possibly_json(name)
         item.tag.at_path('display.Name').value = name
         item_meta['name'] = unformat_text(name_json)
+
 
 class FixPlainTag(SubstitutionRule):
     """Rule to update the plain tag"""
@@ -236,38 +244,25 @@ class MarkPlayerModifiedDirty(SubstitutionRule):
             mark_dirty(item)
 
 
-class UpdateQuivers(SubstitutionRule):
+class UpdateBrokenCrossbows(SubstitutionRule):
     """Note: only has to be run once"""
-    name = "Update quivers to new format as arrows"
+    name = "Update crossbows with invalid loaded ammo"
 
     def process(self, item_meta, item):
-        if (not item_meta['id'].endswith('shulker_box')
-                or item_meta['name'] is None
-                or not item_meta['name'].endswith(' Quiver')):
-            return
+        if item.nbt.has_path('tag.ChargedProjectiles'):
+            # A crossbow
 
-        item_meta['id'] = 'minecraft:tipped_arrow'
-        if item_meta['name'] == "Novice's Quiver":
-            item_meta['name'] = "Scout's Quiver"
+            if item.nbt.has_path('tag.ChargedProjectiles[0]'):
+                # Has tags that should be items;
+                # an empty list is invalid and deletes the mob, so skip outside the if statement
 
-        if item.tag.has_path('BlockEntityTag.Items'):
-            arrows = item.tag.at_path('BlockEntityTag.Items')
-            for arrow in arrows.value:
-                count = arrow.at_path('Count').value
-                arrow.at_path('Count').value = 1
-                if not arrow.has_path('tag'):
-                    arrow.value['tag'] = nbt.TagCompound({})
-                if not arrow.has_path('tag.Monumenta'):
-                    arrow.at_path('tag').value['Monumenta'] = nbt.TagCompound({})
-                if not arrow.has_path('tag.Monumenta.PlayerModified'):
-                    arrow.at_path('tag.Monumenta').value['PlayerModified'] = nbt.TagCompound({})
-                arrow.at_path('tag.Monumenta.PlayerModified').value['AmountInContainer'] = nbt.TagLong(count)
-            if not item.tag.has_path('Monumenta'):
-                item.tag.value['Monumenta'] = nbt.TagCompound({})
-            if not item.tag.has_path('Monumenta.PlayerModified'):
-                item.tag.at_path('Monumenta').value['PlayerModified'] = nbt.TagCompound({})
-            item.tag.at_path('Monumenta.PlayerModified').value['Items'] = arrows
-            del item.tag.value['BlockEntityTag']
+                if isinstance(item.nbt.at_path('tag.ChargedProjectiles[0]').value, nbt.TagCompound):
+                    # Loaded with *probably* valid data, or empty slots, either is ok;
+                    # all tags in a TagList are always the same type, no need to check the others
+                    return
+
+            # Removing the ChargedProjectiles tag is valid
+            item.nbt.at_path('tag').value.pop('ChargedProjectiles')
 
 
 class SubtituteItems(SubstitutionRule):
