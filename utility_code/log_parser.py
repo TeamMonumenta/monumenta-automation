@@ -89,7 +89,7 @@ if __name__ == '__main__':
             current_severity = None
 
             for line in fp:
-                if line.startswith("["):
+                if line.startswith("[") and "]:" in line:
                     part = line.split("] [", 1)
                     time = part[0][1:]
 

@@ -2972,7 +2972,7 @@ Syntax:
                     await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                     await self.run(ctx, os.path.join(_top_level, f"utility_code/prune_empty_regions.py {shard}"))
                     await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up - change again in case something else changed bot's directory
-                    await self.run(ctx, os.path.join(_top_level, f"utility_code/defragment.py {shard}"))
+                    await self.run(ctx, os.path.join(_top_level, f"utility_code/prune_empty_chunks.py {shard}"))
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard}"), displayOutput=True)
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
