@@ -31,6 +31,7 @@ _file = os.path.abspath(__file__)
 _top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
+from lib_py3.zfs_snapshot_manager import ZFSSnapshotManager
 from lib_py3.common import decode_escapes, int_to_ordinal
 from lib_py3.lockout import LockoutAPI
 from lib_py3.raffle import vote_raffle
@@ -209,6 +210,10 @@ class AutomationBotInstance(commands.Cog):
             self._status_messages["Developer Lockouts"] = self._get_lockout_message
 
         self._gameplay_events = {}
+
+        self._zfs_snapshot_manager = None
+        if config.ZFS_SNAPSHOT_MANAGER_CONFIG is not None:
+            self._zfs_snapshot_manager = ZFSSnapshotManager(config.ZFS_SNAPSHOT_MANAGER_CONFIG["host"], config.ZFS_SNAPSHOT_MANAGER_CONFIG["port"])
 
         try:
             self._name = config.NAME
@@ -2346,11 +2351,6 @@ old coreprotect data will be removed at the 5 minute mark.
 Brings down all play server shards and backs them up in preparation for weekly update.
 DELETES DUNGEON CORE PROTECT DATA'''
 
-        debug = False
-        if message.content[len(config.PREFIX + cmd) + 1:].strip() == "--debug":
-            debug = True
-            await self.display(ctx, "Debug mode enabled! Will not actually make backups")
-
         await self.display(ctx, "Stopping all shards...")
 
         shards = await self._k8s.list()
@@ -2411,14 +2411,15 @@ DELETES DUNGEON CORE PROTECT DATA'''
             await self.display(ctx, "Copying market data from redis")
             await self.run(ctx, os.path.join(_top_level, "utility_code/market_itemdb_export.py") + f" redis play {self._server_dir}/server_config/redis_data_final")
 
-        if debug:
-            await self.display(ctx, "WARNING! Skipping backup!")
+        if self._zfs_snapshot_manager is None:
+            await self.display(ctx, "**WARNING! Skipping snapshot! No ZFS snapshot manager configured!**")
         else:
-            await self.display(ctx, "Performing backup...")
-            await self.cd(ctx, f"{self._server_dir}/..")
-            await self.run(ctx, "mkdir -p /home/epic/1_ARCHIVE")
-            folder_name = self._server_dir.strip("/").split("/")[-1]
-            await self.run(ctx, ["tar", f"--exclude={folder_name}/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/{folder_name}_pre_reset_{datestr()}.tgz", folder_name])
+            freespace = self._zfs_snapshot_manager.free("pool/nfs/play")
+            await self.display(ctx, f"Currently {freespace} GB space available on this server")
+            dataset = f"pool/nfs/play/{self._name}"
+            snap = f"weekly_update_{datetime.now().strftime('%Y_%m_%d')}_pre"
+            self._zfs_snapshot_manager.create(dataset, snap)
+            await self.display(ctx, f"Snapshot created: {dataset}@{snap}")
 
         await self.display(ctx, "Backups complete! Ready for update.")
         await self.display(ctx, message.author.mention)
@@ -2619,8 +2620,20 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.display(ctx, "Checking for broken symbolic links...")
             await self.run(ctx, f"find {self._server_dir} -xtype l", displayOutput=True)
 
-        await self.cd(ctx, "/home/epic")
         if min_phase <= 24:
+            await self.display(ctx, "Deleting 0_PREVIOUS...")
+            await self.run(ctx, f"rm -rf {self._server_dir}/0_PREVIOUS")
+
+        if min_phase <= 25:
+            if self._zfs_snapshot_manager is None:
+                await self.display(ctx, "**WARNING! Skipping snapshot! No ZFS snapshot manager configured!**")
+            else:
+                dataset = f"pool/nfs/play/{self._name}"
+                snap = f"weekly_update_{datetime.now().strftime('%Y_%m_%d')}_post"
+                self._zfs_snapshot_manager.create(dataset, snap)
+                await self.display(ctx, f"Snapshot created: {dataset}@{snap}")
+
+        if min_phase <= 26:
             # XXX NOTE
             # This logic is run the same on play/stage/volt/etc
             # This means that test weekly updates on stage/volt will overwrite real play server backups in 1_ARCHIVE if run on the same day
@@ -2629,10 +2642,6 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.cd(ctx, f"{self._server_dir}/..")
             folder_name = self._server_dir.strip("/").split("/")[-1]
             await self.run(ctx, ["tar", f"--exclude={folder_name}/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/{folder_name}_post_reset_{datestr()}.tgz", folder_name])
-
-        if min_phase <= 25:
-            await self.display(ctx, "Deleting 0_PREVIOUS...")
-            await self.run(ctx, f"rm -rf {self._server_dir}/0_PREVIOUS")
 
         await self.display(ctx, f"Done at <t:{int(time.time())}:F>.")
         await self.display(ctx, message.author.mention)

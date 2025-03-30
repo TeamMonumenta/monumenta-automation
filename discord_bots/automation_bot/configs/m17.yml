@@ -1,5 +1,8 @@
 prefix: '~'
 
+zfs-snapshot-manager:
+    host: "zfs-snapshot-manager-m17.kube-system"
+    port: 8080
 rabbitmq:
     host: "rabbitmq"
     # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
@@ -25,7 +28,7 @@ rabbitmq:
     # mod-audit-log (play)
     audit_channel: 651674581148368927
     # player-audit-log (play)
-    player_audit_channel:  1257080302745030656
+    player_audit_channel: 1257080302745030656
     # report-audit-log (play)
     report_audit_channel: 1257035872763645982
     # admin-notices (build)
@@ -168,7 +171,6 @@ shards:
     yellow: /home/epic/play/m17/yellow/
     zenith: /home/epic/play/m17/zenith/
     zenith-2: /home/epic/play/m17/zenith-2/
-
 
 commands:
     - address to english
