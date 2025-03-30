@@ -12,13 +12,14 @@ from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
-from quarry.types import nbt
 from quarry.types.chunk import BlockArray
+
 
 class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
     """A base chunk that is common to all types, loaded from a tag."""
     __CLASS_UNINITIALIZED = True
     __MULTIPATHS = TypeMultipathMap()
+
 
     def __init__(self, nbt, region):
         """Load an entity from an NBT tag.
@@ -37,6 +38,7 @@ class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
 
         self.nbt_path_init(nbt, region, self, nbt.at_path('DataVersion').value)
 
+
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
         multipaths[BlockEntity] |= frozenset({
@@ -48,8 +50,10 @@ class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
             'Entities[]',
         })
 
+
     def get_debug_str(self):
         return str(self)
+
 
     @property
     def pos(self):
@@ -58,20 +62,25 @@ class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
         """
         return None
 
+
 class Chunk(BaseChunk):
     """A 'region' chunk"""
+
 
     def __str__(self):
         return f'Chunk ({self.cx}, {self.cz})'
 
+
     def __repr__(self):
         return f'Chunk(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
+
 
     @property
     def cx(self):
         if self.nbt.has_path("Level"): # 1.17 and before
             return self.nbt.at_path('Level.xPos').value
         return self.nbt.at_path('xPos').value
+
 
     @cx.setter
     def cx(self, value):
@@ -80,11 +89,13 @@ class Chunk(BaseChunk):
         else:
             self.nbt.at_path('xPos').value = value
 
+
     @property
     def cz(self):
         if self.nbt.has_path("Level"): # 1.17 and before
             return self.nbt.at_path('Level.zPos').value
         return self.nbt.at_path('zPos').value
+
 
     @cz.setter
     def cz(self, value):
@@ -93,12 +104,14 @@ class Chunk(BaseChunk):
         else:
             self.nbt.at_path('zPos').value = value
 
+
     @property
     def sections(self):
         path = "sections[]"
         if self.nbt.has_path("Level"): # 1.17 and before
             path = "Level.Sections[]"
         yield from self.nbt.iter_multipath(path)
+
 
     def get_block(self, pos: [int, int, int]):
         """
@@ -110,25 +123,23 @@ class Chunk(BaseChunk):
         """
         x, y, z = (int(pos[0]), int(pos[1]), int(pos[2]))
         # bx, by, bz are block coordinates within the chunk section
-        rx, bx = divmod(x, 512)
+        bx = x % 512
         by = y
-        rz, bz = divmod(z, 512)
-        cx, bx = divmod(bx, 16)
+        bz = z % 512
+        bx = bx % 16
         cy, by = divmod(by, 16)
-        cz, bz = divmod(bz, 16)
+        bz = bz % 16
 
         if self.cx != x // 16 or self.cz != z // 16:
             raise Exception("Coordinates don't match this chunk!")
 
-        section_not_found = True
         for section in self.sections:
             if section.at_path('Y').value == cy:
-                section_not_found = False
                 blocks = BlockArray.from_nbt(section, block_map)
                 return blocks[256 * by + 16 * bz + bx]
 
-        if section_not_found:
-            raise Exception("Chunk section not found")
+        raise Exception("Chunk section not found")
+
 
     def set_block(self, pos: [int, int, int], block):
         """
@@ -164,6 +175,7 @@ class Chunk(BaseChunk):
 
         if section_not_found:
             raise Exception("Chunk section not found")
+
 
     def fill_blocks(self, pos1, pos2, block):
         """
@@ -205,53 +217,69 @@ class Chunk(BaseChunk):
                         blocks[256 * by + 16 * bz + bx] = block
 
         if len(required_sections_left) != 0:
+            rx = self.region.rx
+            rz = self.region.rz
             raise KeyError(f'Could not find cy={required_sections_left} in chunk {self.cx},{self.cz} of region file {rx},{rz} in world {self.path}')
+
 
 class EntitiesChunk(BaseChunk):
     """An 'entities' chunk"""
 
+
     def __str__(self):
         return f'EntitiesChunk ({self.cx}, {self.cz})'
 
+
     def __repr__(self):
         return f'EntitiesChunk(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
+
 
     @property
     def cx(self):
         return ctypes.c_int32(self.nbt.at_path('Position').value[0]).value
 
+
     @cx.setter
     def cx(self, value):
         self.nbt.at_path('Position').value[0] = ctypes.c_uint32(value).value
+
 
     @property
     def cz(self):
         return ctypes.c_int32(self.nbt.at_path('Position').value[1]).value
 
+
     @cz.setter
     def cz(self, value):
         self.nbt.at_path('Position').value[1] = ctypes.c_uint32(value).value
 
+
 class PoiChunk(BaseChunk):
     """An 'entities' chunk"""
+
 
     def __str__(self):
         return f'PoiChunk ({self.cx}, {self.cz})'
 
+
     def __repr__(self):
         return f'PoiChunk(nbt.TagCompound.from_mojangson({self.nbt.to_mojangson()!r}))'
+
 
     @property
     def cx(self):
         raise NotImplementedError
 
+
     @cx.setter
     def cx(self, value):
         raise NotImplementedError
 
+
     @property
     def cz(self):
         raise NotImplementedError
+
 
     @cz.setter
     def cz(self, value):
