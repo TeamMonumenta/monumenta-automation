@@ -1,3 +1,5 @@
+import json
+import math
 import os
 import sys
 import ctypes
@@ -11,6 +13,7 @@ from minecraft.chunk_format.entity import Entity
 from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
 
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
 from quarry.types.chunk import BlockArray
 
@@ -65,6 +68,55 @@ class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
 
 class Chunk(BaseChunk):
     """A 'region' chunk"""
+
+
+    def yield_wallet_block(self):
+        world_path = self.region.get_world_path()
+
+        cx = self.cx
+        cz = self.cz
+        rx = cx // 32
+        rz = cz // 32
+
+        monumenta_chunk_path = world_path / 'monumenta' / f'r.{rx}.{rz}' / f'c.{cx}.{cz}'
+
+        for wallet_block_path in monumenta_chunk_path.glob('wallet_block.*.json'):
+            wallet_block_temp_path = wallet_block_path.parent / (wallet_block_path.name + '.tmp')
+            json_data = None
+
+            try:
+                with open(wallet_block_path, 'r', encoding='utf-8-sig') as fp:
+                    json_data = json.load(fp)
+            except Exception:
+                print("Error loading {!r}:".format(wallet_block_path), file=sys.stderr)
+                raise
+
+            from lib_py3.plugin_data import MonumentaWallet
+            yield MonumentaWallet(json_data, self)
+
+            try:
+                with open(wallet_block_temp_path, 'w', encoding='utf-8') as fp:
+                    json.dump(json_data, fp, ensure_ascii=False)
+
+                wallet_block_path.unlink()
+                wallet_block_temp_path.rename(wallet_block_path)
+            except Exception:
+                print("Error saving {!r}:".format(wallet_block_path), file=sys.stderr)
+                raise
+
+
+    def iter_all_types(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
+        yield from super().iter_all_types(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z)
+
+        for wallet_block in self.yield_wallet_block():
+            yield from wallet_block.iter_all_types()
+
+
+    def iter_items(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
+        yield from super().iter_items(min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf)
+
+        for wallet_block in self.yield_wallet_block():
+            yield from wallet_block.iter_items()
 
 
     def __str__(self):
@@ -219,7 +271,7 @@ class Chunk(BaseChunk):
         if len(required_sections_left) != 0:
             rx = self.region.rx
             rz = self.region.rz
-            raise KeyError(f'Could not find cy={required_sections_left} in chunk {self.cx},{self.cz} of region file {rx},{rz} in world {self.path}')
+            raise KeyError(f'Could not find cy={required_sections_left} in chunk {self.cx},{self.cz} of region file {rx},{rz} in world {self.region.get_world_path()}')
 
 
 class EntitiesChunk(BaseChunk):
