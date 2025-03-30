@@ -1,13 +1,12 @@
-import json
-import math
 import os
 import sys
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
 
 from lib_py3.common import parse_name_possibly_json
 from minecraft.util.debug_util import NbtPathDebug
 from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMap
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
+from quarry.types import nbt
 
 class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
     """An object for editing a block entity (1.13+)."""
@@ -44,35 +43,6 @@ class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
             'RecordItem',
         })
 
-    def yield_wallet_block(self):
-        if self.nbt.has_path('PublicBukkitValues."monumenta:wallet_block"'):
-            json_str = self.nbt.at_path('PublicBukkitValues."monumenta:wallet_block"').value
-
-            json_data = None
-            try:
-                json_data = json.loads(json_str)
-            except Exception:
-                return
-
-            from lib_py3.plugin_data import MonumentaWallet
-            yield MonumentaWallet(json_data, self)
-
-            json_str = json.dumps(json_data, ensure_ascii=False)
-
-            self.nbt.at_path('PublicBukkitValues."monumenta:wallet_block"').value = json_str
-
-    def iter_all_types(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
-        yield from super().iter_all_types(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z)
-
-        for wallet_block in self.yield_wallet_block():
-            yield from wallet_block.iter_all_types()
-
-    def iter_items(self, min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf):
-        yield from super().iter_items(min_x=-math.inf, min_y=-math.inf, min_z=-math.inf, max_x=math.inf, max_y=math.inf, max_z=math.inf)
-
-        for wallet_block in self.yield_wallet_block():
-            yield from wallet_block.iter_items()
-
     def get_debug_str(self):
         name = None
         if self.nbt.has_path("CustomName"):
@@ -88,11 +58,11 @@ class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
     def id(self):
         if self.nbt.has_path("id"):
             return self.nbt.at_path("id").value
-        if self.nbt.has_path("Id"):
+        elif self.nbt.has_path("Id"):
             return self.nbt.at_path("Id").value
-
-        # TODO Try getting ID from parent
-        return "unknown_check_parent"
+        else:
+            # TODO Try getting ID from parent
+            return "unknown_check_parent"
 
     @property
     def pos(self):
@@ -104,14 +74,15 @@ class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
         if self.parent is not None and self.parent.pos is not None:
             return self.parent.pos
 
-        if self.nbt.has_path('x') and self.nbt.has_path('y') and self.nbt.has_path('z'):
+        elif self.nbt.has_path('x') and self.nbt.has_path('y') and self.nbt.has_path('z'):
             x = self.nbt.at_path('x').value
             y = self.nbt.at_path('y').value
             z = self.nbt.at_path('z').value
 
             return (x, y, z)
 
-        return None
+        else:
+            return None
 
     @pos.setter
     def pos(self, pos):
@@ -123,11 +94,10 @@ class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
         """
         if self.root is not self:
             return
-
-        if len(pos) != 3:
+        elif len(pos) != 3:
             raise IndexError('pos must have 3 entries; x, y, z')
 
-        if self.nbt.has_path('x') and self.nbt.has_path('y') and self.nbt.has_path('z'):
+        elif self.nbt.has_path('x') and self.nbt.has_path('y') and self.nbt.has_path('z'):
             self.nbt.at_path('x').value = pos[0]
             self.nbt.at_path('y').value = pos[1]
             self.nbt.at_path('z').value = pos[2]
