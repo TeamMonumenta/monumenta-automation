@@ -3,8 +3,8 @@
 
 import argparse
 import json
-import multiprocessing
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -14,6 +14,104 @@ from minecraft.world import World
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 from quarry.types import nbt
+
+
+UNNATURAL_CHARACTERS_RE = re.compile('[^a-zA-Z0-9]+')
+LOWERCASE_NAME_PREFIXES = set()
+for x in (
+    # Tlaxan
+    "C'",
+    "R'",
+    "Ta'",
+    "T'",
+    "Z'",
+
+    # English articles
+    "An ",
+    "A ",
+    "The ",
+
+    # English honorifics (wikipedia: https://en.wikipedia.org/wiki/English_honorifics)
+    # Common titles
+    "Master ",
+    "Mr ",
+    "Mr. ",
+    "Mister ", # For some reason not explicitly listed
+    "Miss ",
+    "Mrs ",
+    "Mrs. ",
+    "Ms ",
+    "Ms. ",
+    "Mx ",
+    "Mx. ",
+
+    # Formal titles
+    "Sir ",
+    "Gentleman ",
+    "Sire ",
+    "Mistress ",
+    "Madam ",
+    "Ma'am ",
+    "Dame ",
+    "Lord ",
+    "Baron ",
+    "Viscount ",
+    "Count ",
+    "Earl ",
+    "Marquess ",
+    "Lady ",
+    "Baroness ",
+    "Viscountess ",
+    "Countess ",
+    "Marchioness ",
+    "Esq ",
+    "Excellency ",
+    "His Honor ",
+    "His Honour ",
+    "Her Honor ",
+    "Her Honour ",
+    "The Honorable ",
+    "The Honourable ",
+    "The Right Honorable ",
+    "The Right Honourable ",
+    "The Most Honorable ",
+    "The Most Honourable ",
+
+    # Academic and professional titles
+    "Dr ",
+    "Dr. ",
+    "Doctor ",
+    "Doc ",
+    "PhD ",
+    "Ph.D. ",
+    "MD ",
+    "M.D. ",
+    "Professor ",
+    "Prof ",
+    "Cl ",
+    "SCl ",
+    "Chancellor ",
+    "Vice-Chancellor ",
+    "Principal ",
+    "Vice-Principal ",
+    "President ",
+    "Vice-President ",
+    # "Master ", already listed above
+    "Warden ",
+    "Dean ",
+    "Regent ",
+    "Rector ",
+    "Provost ",
+    "Director ",
+    "Chief Executive ",
+
+    # How are these not listed?
+    "King ",
+    "Queen ",
+    "Duchess "
+):
+    LOWERCASE_NAME_PREFIXES.add(x.lower())
+LOWERCASE_NAME_PREFIXES = sorted(LOWERCASE_NAME_PREFIXES)
 
 
 # Copied from deprecated/plot_migrate_lock.py
@@ -134,7 +232,33 @@ def lock_guild(guild_name, guild_details, plots_world):
     )
 
     print(f'{prefix}: Done')
-    return guild_name
+
+
+def get_longest_prefix(str_with_prefix):
+    longest_prefix = ''
+
+    for x in LOWERCASE_NAME_PREFIXES:
+        if str_with_prefix.startswith(x) and len(x) > len(longest_prefix):
+            longest_prefix = x
+
+    return longest_prefix
+
+
+def sort_key(dict_entry):
+    key = dict_entry[0]
+    sort_prefix = key.lower()
+    prefixes = []
+    while True:
+        prefix = get_longest_prefix(sort_prefix)
+        if not prefix:
+            break
+        prefixes.append(prefix)
+        sort_prefix = sort_prefix[len(prefix):]
+    string_builder = sort_prefix
+    for prefix in prefixes:
+        string_builder += prefix
+    natural_same_case = UNNATURAL_CHARACTERS_RE.sub('', string_builder)
+    return f'{natural_same_case} {key}'
 
 
 def main():
@@ -173,14 +297,16 @@ def main():
 
 
     timings.nextStep("Locking guild plots")
-    for guild_name, guild_details in guild_plots_json.items():
-        lock_guild(guild_name, guild_details, plots_world)
+    i = 0
+    num_guilds = len(guild_plots_json)
+    for guild_name, guild_details in sorted(guild_plots_json.items(), key=sort_key):
+        i += 1
+        lock_guild(f'[{i}/{num_guilds}] {guild_name}', guild_details, plots_world)
 
-    timings.nextStep("Locking guild plots")
+    timings.nextStep("Locked guild plots")
 
 
 if __name__ == '__main__':
-    multiprocessing.set_start_method("spawn")
     try:
         main()
     except KeyboardInterrupt:
