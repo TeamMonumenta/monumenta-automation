@@ -20,8 +20,9 @@ nodeFull: "monumenta-8"
 # Amount of base hugepages memory (hugepages allocated will be a bit more than this)
 hugePageMB: 6144
 
-# Amount of overhead memory for other tasks. Used for blue's pregeneration
-memMB: 1536
+# Amount of overhead memory for other tasks, including instance pregeneration
+# via copy_world.py and netty I/O threads needed per-player
+memMB: 2048
 
 # Whether performance metrics will be scraped every few seconds or tens of seconds
 fastMetrics: false
