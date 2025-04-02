@@ -234,10 +234,8 @@ spec:
           mountPath: /home/epic/5_SCRATCH
         resources:
           limits:
-            # Set this to 1Gi
             # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
-            # It should not need much/any...
-            # TEMP: Set to 4GB to avoid OOMkilling the copy_world on blue
+            # This is used for netty IO threads as well as copy_world.py which pregenerates dungeon instances
             memory: {{ .Values.memMB }}Mi
             # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
             # Tried making this 64 extra, low-memory shards still crash with this
