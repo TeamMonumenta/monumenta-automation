@@ -39,6 +39,13 @@ if __name__ == '__main__':
         # All dungeons fit in a region file; even corrupted sierhaven is only 30x24 chunks
 
         "dungeons": {
+            "guildplots": {
+                "world": [
+                    "Project_Epic-guildplots",
+                    "guildplots_template",
+                ],
+                "objective":"Guild"
+            },
             "labs": {
                 "world": [
                     "labs",
@@ -277,31 +284,34 @@ if __name__ == '__main__':
     for name in config["dungeons"]:
         print(f"Generating {name} instances...")
         dungeon = config["dungeons"][name]
+        main_world_name = f"Project_Epic-{name}"
+        template_worlds = dungeon["world"]
         # Compute where the new world will be
         new_shard_path = os.path.join(out_folder, f"{name}")
-        new_world_path = os.path.join(new_shard_path, f"Project_Epic-{name}")
+        new_world_path = os.path.join(new_shard_path, main_world_name)
         dungeon_template_world_path = os.path.join(dungeon_path, "Project_Epic-dungeon")
 
-        # Create target directories
-        for region_type in ('entities', 'poi', 'region'):
-            if not os.path.isdir(os.path.join(new_world_path, region_type)):
-                os.makedirs(os.path.join(new_world_path, region_type), mode=0o775)
+        if main_world_name not in template_worlds:
+            # Create target directories
+            for region_type in ('entities', 'poi', 'region'):
+                if not os.path.isdir(os.path.join(new_world_path, region_type)):
+                    os.makedirs(os.path.join(new_world_path, region_type), mode=0o775)
 
-        # Copy files/directories
-        copy_paths(dungeon_template_world_path, new_world_path, config["copy_paths"])
-        copy_maps(dungeon_template_world_path, new_world_path)
+            # Copy files/directories
+            copy_paths(dungeon_template_world_path, new_world_path, config["copy_paths"])
+            copy_maps(dungeon_template_world_path, new_world_path)
 
-        # Load new and old worlds
-        ref_world = World(dungeon_template_world_path)
-        new_world = World(new_world_path)
+            # Load new and old worlds
+            ref_world = World(dungeon_template_world_path)
+            new_world = World(new_world_path)
 
-        # Copy spawn chunks
-        spawn_region = config["spawn_region"]
-        ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True, region_type=Region).copy_to(new_world, spawn_region["x"], spawn_region["z"])
-        ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True, region_type=EntitiesRegion).copy_to(new_world, spawn_region["x"], spawn_region["z"])
+            # Copy spawn chunks
+            spawn_region = config["spawn_region"]
+            ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True, region_type=Region).copy_to(new_world, spawn_region["x"], spawn_region["z"])
+            ref_world.get_region(spawn_region["x"], spawn_region["z"], read_only=True, region_type=EntitiesRegion).copy_to(new_world, spawn_region["x"], spawn_region["z"])
 
         ################ Copy the template world that instances will be created from
-        for template_world in dungeon["world"]:
+        for template_world in template_worlds:
             source_template_world = World(os.path.join(dungeon_path, template_world))
             dest_template_world = source_template_world.copy_to(os.path.join(new_shard_path, template_world), clear_world_uuid=True)
 

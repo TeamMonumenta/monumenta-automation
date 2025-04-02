@@ -760,6 +760,7 @@ if __name__ == '__main__':
         'depths': 5,
         'test': 8,
         'playerplots': 6,
+        'guildplots': 6,
 
         'gallery': 8,
         'hexfall': 8,

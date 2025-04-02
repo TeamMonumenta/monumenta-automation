@@ -15,7 +15,43 @@ from minecraft.util.iter_util import RecursiveMinecraftIterator, TypeMultipathMa
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../"))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../../quarry"))
+from quarry.types import nbt
 from quarry.types.chunk import BlockArray
+
+
+def _entity_coordinates_failed_check(entity_data, min_x, min_y, min_z, max_x, max_y, max_z, inside_is_bad):
+    x = None
+    if entity_data.has_path('x'):
+        x = entity_data.at_path('x').value
+    elif entity_data.has_path('Pos[0]'):
+        x = entity_data.at_path('Pos[0]').value
+    else:
+        return True
+
+    y = None
+    if entity_data.has_path('y'):
+        y = entity_data.at_path('y').value
+    elif entity_data.has_path('Pos[1]'):
+        y = entity_data.at_path('Pos[1]').value
+    else:
+        return True
+
+    z = None
+    if entity_data.has_path('z'):
+        z = entity_data.at_path('z').value
+    elif entity_data.has_path('Pos[2]'):
+        z = entity_data.at_path('Pos[2]').value
+    else:
+        return True
+
+    if (
+            x <= min_x and x < max_x and
+            y <= min_y and y < max_y and
+            z <= min_z and z < max_z
+    ):
+        return inside_is_bad
+
+    return not inside_is_bad
 
 
 class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
@@ -32,6 +68,7 @@ class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
         region should be a reference to the parent region that contains this chunk
             (which will further be of region_type region, entities, poi)
         """
+        super().__init__()
         if type(self).__CLASS_UNINITIALIZED:
             self._init_multipaths(type(self).__MULTIPATHS)
             type(self).__CLASS_UNINITIALIZED = False
@@ -64,6 +101,97 @@ class BaseChunk(RecursiveMinecraftIterator, NbtPathDebug):
         because everything inside a chunk should have a position
         """
         return None
+
+
+    @property
+    def cx(self):
+        raise NotImplementedError
+
+
+    @cx.setter
+    def cx(self, value):
+        raise NotImplementedError
+
+
+    @property
+    def cz(self):
+        raise NotImplementedError
+
+
+    @cz.setter
+    def cz(self, value):
+        raise NotImplementedError
+
+
+    def copy_from_bounding_box(self, src_chunk, min_x, min_y, min_z, max_x, max_y, max_z, src_x, src_y, src_z, fix_entity_nbt_function, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
+        pass
+
+
+    def _copy_entity_list_from_bounding_box(
+            self, entity_list_path, src_chunk,
+            min_x, min_y, min_z,
+            max_x, max_y, max_z,
+            src_x, src_y, src_z,
+            fix_entity_nbt_function, regenerate_uuids=True,
+            clear_world_uuid=False, clear_score_data=False
+    ):
+        dx = min_x - src_x
+        dy = min_y - src_y
+        dz = min_z - src_z
+
+        src_max_x = max_x - dx
+        src_max_y = max_y - dy
+        src_max_z = max_z - dz
+
+        dst_new_entities = []
+
+        if self.nbt.has_path(entity_list_path):
+            for entity_data in self.nbt.at_path(entity_list_path).value:
+                if _entity_coordinates_failed_check(
+                        entity_data,
+                        min_x,
+                        min_y,
+                        min_z,
+                        max_x,
+                        max_y,
+                        max_z,
+                        True
+                ):
+                    continue
+
+                dst_new_entities.append(entity_data)
+
+        if src_chunk.nbt.has_path(entity_list_path):
+            for entity_data in src_chunk.nbt.at_path(entity_list_path).value:
+                if _entity_coordinates_failed_check(
+                        entity_data,
+                        src_x,
+                        src_y,
+                        src_z,
+                        src_max_x,
+                        src_max_y,
+                        src_max_z,
+                        False
+                ):
+                    continue
+
+                entity_data = entity_data.deep_copy()
+                if clear_score_data:
+                    from lib_py3.entity_scores import set_entity_scores
+                    entity = Entity(entity_data, self, self.root)
+                    set_entity_scores(entity, {})
+                    entity_data = entity.nbt
+                fix_entity_nbt_function(
+                    dx,
+                    dz,
+                    entity_data,
+                    regenerate_uuids=regenerate_uuids,
+                    clear_world_uuid=clear_world_uuid,
+                    dy=dy
+                )
+                dst_new_entities.append(entity_data)
+
+        self.nbt.value[entity_list_path] = nbt.TagList(dst_new_entities)
 
 
 class Chunk(BaseChunk):
@@ -155,6 +283,51 @@ class Chunk(BaseChunk):
             self.nbt.at_path('Level.zPos').value = value
         else:
             self.nbt.at_path('zPos').value = value
+
+
+    def copy_from_bounding_box(self, src_chunk, min_x, min_y, min_z, max_x, max_y, max_z, src_x, src_y, src_z, fix_entity_nbt_function, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
+        super().copy_from_bounding_box(src_chunk, min_x, min_y, min_z, max_x, max_y, max_z, src_x, src_y, src_z, fix_entity_nbt_function, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
+        dx = min_x - src_x
+        dy = min_y - src_y
+        dz = min_z - src_z
+
+        for dst_bx in range(int(min_x), int(max_x)):
+            src_bx = dst_bx - dx
+            for dst_bz in range(int(min_z), int(max_z)):
+                src_bz = dst_bz - dz
+                for dst_by in range(int(min_y), int(max_y)):
+                    src_by = dst_by - dy
+
+                    src_coord = (src_bx, src_by, src_bz)
+                    dst_coord = (dst_bx, dst_by, dst_bz)
+
+                    block = src_chunk.get_block(src_coord)
+                    self.set_block(dst_coord, block)
+
+        self._copy_entity_list_from_bounding_box(
+            'block_entities', src_chunk,
+            min_x, min_y, min_z,
+            max_x, max_y, max_z,
+            src_x, src_y, src_z,
+            fix_entity_nbt_function, regenerate_uuids=regenerate_uuids,
+            clear_world_uuid=clear_world_uuid, clear_score_data=False
+        )
+        self._copy_entity_list_from_bounding_box(
+            'fluid_ticks', src_chunk,
+            min_x, min_y, min_z,
+            max_x, max_y, max_z,
+            src_x, src_y, src_z,
+            fix_entity_nbt_function, regenerate_uuids=regenerate_uuids,
+            clear_world_uuid=clear_world_uuid, clear_score_data=False
+        )
+        self._copy_entity_list_from_bounding_box(
+            'block_ticks', src_chunk,
+            min_x, min_y, min_z,
+            max_x, max_y, max_z,
+            src_x, src_y, src_z,
+            fix_entity_nbt_function, regenerate_uuids=regenerate_uuids,
+            clear_world_uuid=clear_world_uuid, clear_score_data=False
+        )
 
 
     @property
@@ -269,9 +442,9 @@ class Chunk(BaseChunk):
                         blocks[256 * by + 16 * bz + bx] = block
 
         if len(required_sections_left) != 0:
-            rx = self.region.rx
-            rz = self.region.rz
-            raise KeyError(f'Could not find cy={required_sections_left} in chunk {self.cx},{self.cz} of region file {rx},{rz} in world {self.region.get_world_path()}')
+            rx = min_x // 512
+            rz = min_z // 512
+            raise KeyError(f'Could not find cy={required_sections_left} in chunk {self.cx},{self.cz} of region file {rx},{rz} in world {self.region.path}')
 
 
 class EntitiesChunk(BaseChunk):
@@ -306,6 +479,18 @@ class EntitiesChunk(BaseChunk):
         self.nbt.at_path('Position').value[1] = ctypes.c_uint32(value).value
 
 
+    def copy_from_bounding_box(self, src_chunk, min_x, min_y, min_z, max_x, max_y, max_z, src_x, src_y, src_z, fix_entity_nbt_function, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
+        super().copy_from_bounding_box(src_chunk, min_x, min_y, min_z, max_x, max_y, max_z, src_x, src_y, src_z, fix_entity_nbt_function, regenerate_uuids=regenerate_uuids, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
+        self._copy_entity_list_from_bounding_box(
+            'Entities', src_chunk,
+            min_x, min_y, min_z,
+            max_x, max_y, max_z,
+            src_x, src_y, src_z,
+            fix_entity_nbt_function, regenerate_uuids=regenerate_uuids,
+            clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data
+        )
+
+
 class PoiChunk(BaseChunk):
     """An 'entities' chunk"""
 
@@ -335,4 +520,7 @@ class PoiChunk(BaseChunk):
 
     @cz.setter
     def cz(self, value):
+        raise NotImplementedError
+
+    def copy_from_bounding_box(self, src_chunk, min_x, min_y, min_z, max_x, max_y, max_z, src_x, src_y, src_z, fix_entity_nbt_function, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
         raise NotImplementedError

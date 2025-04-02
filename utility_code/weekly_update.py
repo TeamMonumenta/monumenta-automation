@@ -7,7 +7,6 @@ import os
 from pathlib import Path
 import sys
 import traceback
-import yaml
 import copy
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
@@ -68,7 +67,6 @@ def process_region(region_config):
         eprint(f"Caught chunk error processing {world_name} region {rx}.{rz}:", ex)
         eprint(traceback.format_exc())
 
-    replacements_log = {}
     num_replacements = 0
     for chunk in region.iter_chunks(autosave=True, on_exception=on_chunk_exception):
         for item in chunk.recursive_iter_items():
@@ -149,6 +147,15 @@ if __name__ == '__main__':
         "replace_items_globally": True,
     }
 
+    guildplots = {
+        "server":"guildplots",
+        "move_base_from":"previous",
+        "datapacks":datapacks_base + ['file/guildplots'],
+        "move_previous_paths":["Project_Epic-guildplots/stats", "Project_Epic-guildplots/data/scoreboard.dat", "plugins/CoreProtect", "plugins/MonumentaWarps"],
+        "move_from_build_if_missing": True,
+        "replace_items_globally": True,
+    }
+
     tutorial = {
         "server":"tutorial",
         "move_base_from":"build",
@@ -179,6 +186,7 @@ if __name__ == '__main__':
     available_configs = {
         "plots": plots,
         "playerplots": playerplots,
+        "guildplots": guildplots,
         "valley": valley,
         "isles": isles,
         "ring": ring,
@@ -293,30 +301,39 @@ if __name__ == '__main__':
 
         # Move or copy base first - either from build or previously existing data
         if "move_base_from" in config:
+            src_path = None
             if config["move_base_from"] == "build":
-                for from_world_path in World.enumerate_worlds(build_path):
-                    output_world_path = output_path / from_world_path.relative_to(build_path)
-                    print(f"  {server} - Moving world from {from_world_path} to {output_world_path}")
-                    move_folder(from_world_path, output_world_path)
-
+                src_path = build_path
             elif config["move_base_from"] == "previous":
-                for from_world_path in World.enumerate_worlds(previous_path):
-                    output_world_path = output_path / from_world_path.relative_to(previous_path)
+                src_path = previous_path
+
+            if src_path is not None:
+                for from_world_path in World.enumerate_worlds(src_path):
+                    output_world_path = output_path / from_world_path.relative_to(src_path)
                     print(f"  {server} - Moving world from {from_world_path} to {output_world_path}")
                     move_folder(from_world_path, output_world_path)
 
         if "copy_base_from" in config:
+            src_path = None
             if config["copy_base_from"] == "build":
-                for from_world_path in World.enumerate_worlds(build_path):
-                    output_world_path = output_path / from_world_path.relative_to(build_path)
+                src_path = build_path
+            elif config["copy_base_from"] == "previous":
+                src_path = previous_path
+
+            if src_path is not None:
+                for from_world_path in World.enumerate_worlds(src_path):
+                    output_world_path = output_path / from_world_path.relative_to(src_path)
                     print(f"  {server} - Copying world from {from_world_path} to {output_world_path}")
                     copy_folder(from_world_path, output_world_path)
 
-            elif config["copy_base_from"] == "previous":
-                for from_world_path in World.enumerate_worlds(previous_path):
-                    output_world_path = output_path / from_world_path.relative_to(previous_path)
-                    print(f"  {server} - Copying world from {from_world_path} to {output_world_path}")
-                    copy_folder(from_world_path, output_world_path)
+        if config.get("move_from_build_if_missing", False):
+            for from_world_path in World.enumerate_worlds(build_path):
+                output_world_path = output_path / from_world_path.relative_to(build_path)
+                if output_world_path.exists():
+                    print(f"  {server} - Not moving world from {from_world_path} to {output_world_path}, as it already exists there")
+                else:
+                    print(f"  {server} - Moving world from {from_world_path} to {output_world_path}, as it is missing")
+                    move_folder(from_world_path, output_world_path)
 
         # Move any dungeon instances that should be preserved
         if "preserve_instances" in config:

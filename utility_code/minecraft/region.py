@@ -28,35 +28,37 @@ def shorten_path(path):
     return path
 
 
-def _fix_entity_nbt(dx, dz, entity, regenerate_uuids, clear_world_uuid=False):
+def _fix_entity_nbt(dx, dz, entity, regenerate_uuids, clear_world_uuid=False, dy=0):
     nbtPaths = (
-        ('x', 'z'),
-        ('AX', 'AZ'),
-        ('APX', 'APZ'),
-        ('BeamTarget.X', 'BeamTarget.Z'),
-        ('BoundX', 'BoundZ'),
-        ('Brain.memories.{}.value.pos[0]', 'Brain.memories.{}.value.pos[-1]'),
-        ('enteredNetherPosition.x', 'enteredNetherPosition.z'),
-        ('ExitPortal.X', 'ExitPortal.Z'),
-        ('HomePosX', 'HomePosZ'),
-        ('Leash.X', 'Leash.Z'),
-        ('Pos[0]', 'Pos[2]'),
-        ('SleepingX', 'SleepingZ'),
-        ('SpawnX', 'SpawnZ'),
-        ('TileX', 'TileZ'), # Painting/item frame
-        ('TreasurePosX', 'TreasurePosZ'),
-        ('TravelPosX', 'TravelPosZ'),
-        ('xTile', 'zTile'),
+        ('x', 'y', 'z'),
+        ('AX', 'AY', 'AZ'),
+        ('APX', 'APY', 'APZ'),
+        ('BeamTarget.X', 'BeamTarget.Y', 'BeamTarget.Z'),
+        ('BoundX', 'BoundY', 'BoundZ'),
+        ('Brain.memories.{}.value.pos[0]', 'Brain.memories.{}.value.pos[1]', 'Brain.memories.{}.value.pos[2]'),
+        ('enteredNetherPosition.x', 'enteredNetherPosition.y', 'enteredNetherPosition.z'),
+        ('ExitPortal.X', 'ExitPortal.Y', 'ExitPortal.Z'),
+        ('HomePosX', 'HomePosY', 'HomePosZ'),
+        ('Leash.X', 'Leash.Y', 'Leash.Z'),
+        ('Pos[0]', 'Pos[1]', 'Pos[2]'),
+        ('SleepingX', 'SleepingY', 'SleepingZ'),
+        ('SpawnX', 'SpawnY', 'SpawnZ'),
+        ('TileX', 'TileY', 'TileZ'), # Painting/item frame
+        ('TreasurePosX', 'TreasurePosY', 'TreasurePosZ'),
+        ('TravelPosX', 'TravelPosY', 'TravelPosZ'),
+        ('xTile', 'yTile', 'zTile'),
     )
 
     for nbtPath in nbtPaths:
         if (
                 bool(entity.count_multipath(nbtPath[0])) and
-                bool(entity.count_multipath(nbtPath[1]))
+                bool(entity.count_multipath(nbtPath[2]))
         ):
             for xTag in entity.iter_multipath(nbtPath[0]):
                 xTag.value += dx
-            for zTag in entity.iter_multipath(nbtPath[1]):
+            for yTag in entity.iter_multipath(nbtPath[1]):
+                yTag.value += dy
+            for zTag in entity.iter_multipath(nbtPath[2]):
                 zTag.value += dz
 
     # Generate new UUIDs
@@ -73,6 +75,11 @@ def _fix_entity_nbt(dx, dz, entity, regenerate_uuids, clear_world_uuid=False):
 
 class BaseRegion(MutableMapping, NbtPathDebug):
     """A base region file that is common to all types"""
+
+
+    @classmethod
+    def folder_name(cls):
+        raise NotImplementedError('Base class should not be used!')
 
 
     def __init__(self, path, rx, rz, read_only=False):
@@ -105,6 +112,30 @@ class BaseRegion(MutableMapping, NbtPathDebug):
             # Region file is not in a world folder (probably a temporary region file)
             return None
         return world_path
+
+
+    def min_block_x_inclusive(self):
+        return 512 * self.rx
+
+
+    def min_block_z_inclusive(self):
+        return 512 * self.rz
+
+
+    def max_block_x_inclusive(self):
+        return 512 * (1 + self.rx) - 1
+
+
+    def max_block_z_inclusive(self):
+        return 512 * (1 + self.rz) - 1
+
+
+    def max_block_x_exclusive(self):
+        return 512 * (1 + self.rx)
+
+
+    def max_block_z_exclusive(self):
+        return 512 * (1 + self.rz)
 
 
     def has_chunk(self, cx, cz):
@@ -248,6 +279,178 @@ class BaseRegion(MutableMapping, NbtPathDebug):
         return type(self)(new_path, rx, rz)
 
 
+    def copy_from_bounding_box(self, src_world, min_x, min_y, min_z, max_x, max_y, max_z, src_x, src_y, src_z, regenerate_uuids=True, clear_world_uuid=False, clear_score_data=True):
+        """Copies a bounding box from one region file to another; assumes it does not write to the same region it is reading from"""
+
+        dx = min_x - src_x
+        dy = min_y - src_y
+        dz = min_z - src_z
+
+        dst_region_min_x = max(min_x, self.min_block_x_inclusive())
+        dst_region_min_z = max(min_z, self.min_block_z_inclusive())
+        dst_region_max_x = min(max_x, self.max_block_x_exclusive())
+        dst_region_max_z = min(max_z, self.max_block_z_exclusive())
+
+        if (
+                dst_region_min_x == dst_region_max_x or
+                dst_region_min_z == dst_region_max_z
+        ):
+            return
+
+        if dst_region_min_x // 512 != (dst_region_max_x - 1) // 512:
+            print(f'Coordinate error - min and (max - 1) dst rx do not match: dst_region_min_x={dst_region_min_x} dst_region_max_x={dst_region_max_x} dst_region_min_rx={dst_region_min_x // 512} dst_region_max_rx={(dst_region_max_x - 1) // 512}')
+            print(f'dst_region_min_x = max(min_x={min_x}, self.min_block_x_inclusive()={self.min_block_x_inclusive()})')
+            print(f'dst_region_max_x = min(max_x={max_x}, self.max_block_x_exclusive()={self.max_block_x_exclusive()})')
+            raise Exception('Math error occured here!')
+        if dst_region_min_z // 512 != (dst_region_max_z - 1) // 512:
+            print(f'Coordinate error - min and (max - 1) dst rz do not match: dst_region_min_z={dst_region_min_z} dst_region_max_z={dst_region_max_z} dst_region_min_rz={dst_region_min_z // 512} dst_region_max_rz={(dst_region_max_z - 1) // 512}')
+            print(f'dst_region_min_z = max(min_z={min_z}, self.min_block_z_inclusive()={self.min_block_z_inclusive()})')
+            print(f'dst_region_max_z = min(max_z={max_z}, self.max_block_z_exclusive()={self.max_block_z_exclusive()})')
+            raise Exception('Math error occured here!')
+
+        for dst_chunk in self.iter_chunks(
+                min_x=dst_region_min_x,
+                min_y=min_y,
+                min_z=dst_region_min_z,
+                max_x=dst_region_max_x,
+                max_y=max_y,
+                max_z=dst_region_max_z,
+                autosave=True
+        ):
+            dst_chunk_min_x = max(min_x, 16 * dst_chunk.cx)
+            dst_chunk_min_z = max(min_z, 16 * dst_chunk.cz)
+            dst_chunk_max_x = min(max_x, 16 * dst_chunk.cx + 16)
+            dst_chunk_max_z = min(max_z, 16 * dst_chunk.cz + 16)
+
+            if (
+                    dst_chunk_min_x == dst_chunk_max_x or
+                    dst_chunk_min_z == dst_chunk_max_z
+            ):
+                continue
+
+            if dst_chunk_min_x // 16 != (dst_chunk_max_x - 1) // 16:
+                print(f'Coordinate error - min and (max - 1) dst cx do not match: dst_chunk_min_x={dst_chunk_min_x} dst_chunk_max_x={dst_chunk_max_x} dst_chunk_min_cx={dst_chunk_min_x // 16} dst_chunk_max_cx={(dst_chunk_max_x - 1) // 16}')
+                print(f'dst_chunk_min_x = max(min_x={min_x}, 16 * <dst_chunk.cx={dst_chunk.cx}>)')
+                print(f'dst_chunk_max_x = min(max_x={max_x}, 16 * <dst_chunk.cx={dst_chunk.cx}> + 16)')
+                raise Exception('Math error occured here!')
+            if dst_chunk_min_z // 16 != (dst_chunk_max_z - 1) // 16:
+                print(f'Coordinate error - min and (max - 1) dst cz do not match: dst_chunk_min_z={dst_chunk_min_z} dst_chunk_max_z={dst_chunk_max_z} dst_chunk_min_cz={dst_chunk_min_z // 16} dst_chunk_max_cz={(dst_chunk_max_z - 1) // 16}')
+                print(f'dst_chunk_min_z = max(min_z={min_z}, 16 * <dst_chunk.cz={dst_chunk.cz}>)')
+                print(f'dst_chunk_max_z = min(max_z={max_z}, 16 * <dst_chunk.cz={dst_chunk.cz}> + 16)')
+                raise Exception('Math error occured here!')
+
+            for src_region in src_world.iter_regions(
+                    min_x=dst_chunk_min_x - dx,
+                    min_y=src_y,
+                    min_z=dst_chunk_min_z - dz,
+                    max_x=dst_chunk_max_x - dx,
+                    max_y=max_y - dy,
+                    max_z=dst_chunk_max_z - dz,
+                    read_only=True,
+                    region_types=(type(self),)
+            ):
+                src_region_min_x = max(dst_chunk_min_x - dx, src_region.min_block_x_inclusive())
+                src_region_min_z = max(dst_chunk_min_z - dz, src_region.min_block_z_inclusive())
+                src_region_max_x = min(dst_chunk_max_x - dx, src_region.max_block_x_exclusive())
+                src_region_max_z = min(dst_chunk_max_z - dz, src_region.max_block_z_exclusive())
+
+                if (
+                        src_region_min_x == src_region_max_x or
+                        src_region_min_z == src_region_max_z
+                ):
+                    continue
+
+                if src_region_min_x // 512 != (src_region_max_x - 1) // 512:
+                    print(f'Coordinate error - min and (max - 1) dst rx do not match: src_region_min_x={src_region_min_x} src_region_max_x={src_region_max_x} src_region_min_rx={src_region_min_x // 512} src_region_max_rx={(src_region_max_x - 1) // 512}')
+                    print(f'src_region_min_x = max(<dst_chunk_min_x={dst_chunk_min_x}> - <dx={dx}>, <src_region.min_block_x_inclusive()={src_region.min_block_x_inclusive()}>)')
+                    print(f'src_region_max_x = min(<dst_chunk_max_x={dst_chunk_max_x}> - <dx={dx}>, <src_region.max_block_x_exclusive()={src_region.max_block_x_exclusive()}>)')
+                    raise Exception('Math error occured here!')
+                if src_region_min_z // 512 != (src_region_max_z - 1) // 512:
+                    print(f'Coordinate error - min and (max - 1) dst rz do not match: src_region_min_z={src_region_min_z} src_region_max_z={src_region_max_z} src_region_min_rz={src_region_min_z // 512} src_region_max_rz={(src_region_max_z - 1) // 512}')
+                    print(f'src_region_min_z = max(<dst_chunk_min_z={dst_chunk_min_z}> - <dz={dz}>, <src_region.min_block_z_inclusive()={src_region.min_block_z_inclusive()}>)')
+                    print(f'src_region_max_z = min(<dst_chunk_max_z={dst_chunk_max_z}> - <dz={dz}>, <src_region.max_block_z_exclusive()={src_region.max_block_z_exclusive()}>)')
+                    raise Exception('Math error occured here!')
+
+                for src_chunk in src_region.iter_chunks(
+                        min_x=src_region_min_x,
+                        min_y=src_y,
+                        min_z=src_region_min_z,
+                        max_x=src_region_max_x,
+                        max_y=max_y - dy,
+                        max_z=src_region_max_z,
+                        autosave=False
+                ):
+                    src_chunk_min_x = max(src_region_min_x, 16 * src_chunk.cx)
+                    src_chunk_min_z = max(src_region_min_z, 16 * src_chunk.cz)
+                    src_chunk_max_x = min(src_region_max_x, 16 * src_chunk.cx + 16)
+                    src_chunk_max_z = min(src_region_max_z, 16 * src_chunk.cz + 16)
+
+                    if (
+                            src_chunk_min_x == src_chunk_max_x or
+                            src_chunk_min_z == src_chunk_max_z
+                    ):
+                        continue
+
+                    if src_chunk_min_x // 16 != (src_chunk_max_x - 1) // 16:
+                        print(f'Coordinate error - min and (max - 1) src chunk cx do not match: src_chunk_min_x={src_chunk_min_x} src_chunk_max_x={src_chunk_max_x} src_chunk_min_cx={src_chunk_min_x // 16} src_chunk_max_cx={(src_chunk_max_x - 1) // 16}')
+                        print(f'src_chunk_min_x = max(<src_region_min_x={src_region_min_x}>, 16 * <src_chunk.cx={src_chunk.cx}>)')
+                        print(f'src_chunk_max_x = min(<src_region_max_x={src_region_max_x}>, 16 * <src_chunk.cx={src_chunk.cx}> + 16)')
+                        raise Exception('Math error occured here!')
+                    if src_chunk_min_z // 16 != (src_chunk_max_z - 1) // 16:
+                        print(f'Coordinate error - min and (max - 1) src chunk cz do not match: src_chunk_min_z={src_chunk_min_z} src_chunk_max_z={src_chunk_max_z} src_chunk_min_cz={src_chunk_min_z // 16} src_chunk_max_cz={(src_chunk_max_z - 1) // 16}')
+                        print(f'src_chunk_min_z = max(<src_region_min_z={src_region_min_z}>, 16 * <src_chunk.cz={src_chunk.cz}>)')
+                        print(f'src_chunk_max_z = min(<src_region_max_z={src_region_max_z}>, 16 * <src_chunk.cz={src_chunk.cz}> + 16)')
+                        raise Exception('Math error occured here!')
+
+                    dst_final_min_x = max(dst_chunk_min_x, src_chunk_min_x + dx)
+                    dst_final_min_z = max(dst_chunk_min_z, src_chunk_min_z + dz)
+                    dst_final_max_x = min(dst_chunk_max_x, src_chunk_max_x + dx)
+                    dst_final_max_z = min(dst_chunk_max_z, src_chunk_max_z + dz)
+                    src_final_min_x = max(dst_chunk_min_x - dx, src_chunk_min_x)
+                    src_final_min_z = max(dst_chunk_min_z - dz, src_chunk_min_z)
+                    src_final_max_x = min(dst_chunk_max_x - dx, src_chunk_max_x)
+                    src_final_max_z = min(dst_chunk_max_z - dz, src_chunk_max_z)
+
+                    if (
+                            dst_final_min_x == dst_final_max_x or
+                            dst_final_min_z == dst_final_max_z or
+                            src_final_min_x == src_final_max_x or
+                            src_final_min_z == src_final_max_z
+                    ):
+                        continue
+
+                    if dst_final_min_x // 16 != (dst_final_max_x - 1) // 16:
+                        print(f'Coordinate error - min and (max - 1) dst final chunk cx do not match: dst_final_min_x={dst_final_min_x} dst_final_max_x={dst_final_max_x} dst_final_min_cx={dst_final_min_x // 16} dst_final_max_cx={(dst_final_max_x - 1) // 16}')
+                        print(f'dst_final_min_x = max(<dst_chunk_min_x={dst_chunk_min_x}>, <src_chunk_min_x={src_chunk_min_x}> + <dx={dx}>)')
+                        print(f'dst_final_max_x = min(<dst_chunk_max_x={dst_chunk_max_x}>, <src_chunk_max_x={src_chunk_max_x}> + <dx={dx}>)')
+                        raise Exception('Math error occured here!')
+                    if dst_final_min_z // 16 != (dst_final_max_z - 1) // 16:
+                        print(f'Coordinate error - min and (max - 1) dst final chunk cz do not match: dst_final_min_z={dst_final_min_z} dst_final_max_z={dst_final_max_z} dst_final_min_cz={dst_final_min_z // 16} dst_final_max_cz={(dst_final_max_z - 1) // 16}')
+                        print(f'dst_final_min_z = max(<dst_chunk_min_z={dst_chunk_min_z}>, <src_chunk_min_z={src_chunk_min_z}> + <dz={dz}>)')
+                        print(f'dst_final_max_z = min(<dst_chunk_max_z={dst_chunk_max_z}>, <src_chunk_max_z={src_chunk_max_z}> + <dz={dz}>)')
+                        raise Exception('Math error occured here!')
+                    if src_final_min_x // 16 != (src_final_max_x - 1) // 16:
+                        print(f'Coordinate error - min and (max - 1) src final chunk cx do not match: src_final_min_x={src_final_min_x} src_final_max_x={src_final_max_x} src_final_min_cx={src_final_min_x // 16} src_final_max_cx={(src_final_max_x - 1) // 16}')
+                        print(f'src_final_min_x = max(<dst_chunk_min_x={dst_chunk_min_x}> - <dx={dx}>, <src_chunk_min_x={src_chunk_min_x}>)')
+                        print(f'src_final_max_x = min(<dst_chunk_max_x={dst_chunk_max_x}> - <dx={dx}>, <src_chunk_max_x={src_chunk_max_x}>)')
+                        raise Exception('Math error occured here!')
+                    if src_final_min_z // 16 != (src_final_max_z - 1) // 16:
+                        print(f'Coordinate error - min and (max - 1) src final chunk cz do not match: src_final_min_z={src_final_min_z} src_final_max_z={src_final_max_z} src_final_min_cz={src_final_min_z // 16} src_final_max_cz={(src_final_max_z - 1) // 16}')
+                        print(f'src_final_min_z = max(<dst_chunk_min_z={dst_chunk_min_z}> - <dz={dz}>, <src_chunk_min_z={src_chunk_min_z}>)')
+                        print(f'src_final_max_z = min(<dst_chunk_max_z={dst_chunk_max_z}> - <dz={dz}>, <src_chunk_max_z={src_chunk_max_z}>)')
+                        raise Exception('Math error occured here!')
+
+                    dst_chunk.copy_from_bounding_box(
+                        src_chunk,
+                        dst_final_min_x, min_y, dst_final_min_z,
+                        dst_final_max_x, max_y, dst_final_max_z,
+                        src_final_min_x, src_y, src_final_min_z,
+                        fix_entity_nbt_function=_fix_entity_nbt, regenerate_uuids=regenerate_uuids,
+                        clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data
+                    )
+                    self.save_chunk(dst_chunk)
+
+
     def move_to(self, world, rx, rz, overwrite=False, clear_world_uuid=False, clear_score_data=False):
         region = self.copy_to(world, rx, rz, overwrite=overwrite, regenerate_uuids=False, clear_world_uuid=clear_world_uuid, clear_score_data=clear_score_data)
         self._region.close()
@@ -314,7 +517,8 @@ class BaseRegion(MutableMapping, NbtPathDebug):
             return False
 
 
-    def _entry_valid(self, entry):
+    @classmethod
+    def _entry_valid(cls, entry):
         entry = entry & 0xffffffff
         offset, length = entry >> 8, entry & 0xff
         return offset > 0 and length > 0

@@ -123,6 +123,7 @@ shards:
     forum: /home/epic/play/m17/forum/
     gallery: /home/epic/play/m17/gallery/
     gray: /home/epic/play/m17/gray/
+    guildplots: /home/epic/stage/m13/guildplots/
     hexfall: /home/epic/play/m17/hexfall/
     isles: /home/epic/play/m17/isles/
     isles-2: /home/epic/play/m17/isles-2/
@@ -192,6 +193,7 @@ commands:
     - run test raffle
     - select
     - set score
+    - set guild plot scores
     - start
     - stop
     - stop and backup

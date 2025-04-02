@@ -97,6 +97,7 @@ shards:
     forum: /home/epic/volt/m12/forum/
     gallery: /home/epic/volt/m12/gallery/
     gray: /home/epic/volt/m12/gray/
+    guildplots: /home/epic/volt/m12/guildplots/
     hexfall: /home/epic/volt/m12/hexfall/
     isles: /home/epic/volt/m12/isles/
     labs: /home/epic/volt/m12/labs/
@@ -165,6 +166,7 @@ commands:
     - view scores
     - get score
     - set score
+    - set guild plot scores
     - update avatar
 
 permissions:

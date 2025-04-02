@@ -96,6 +96,7 @@ shards:
     forum: /home/epic/stage/m13/forum/
     gallery: /home/epic/stage/m13/gallery/
     gray: /home/epic/stage/m13/gray/
+    guildplots: /home/epic/stage/m13/guildplots/
     hexfall: /home/epic/stage/m13/hexfall/
     isles: /home/epic/stage/m13/isles/
     labs: /home/epic/stage/m13/labs/
@@ -167,6 +168,7 @@ commands:
     - view scores
     - get score
     - set score
+    - set guild plot scores
     - update avatar
 
 permissions:
