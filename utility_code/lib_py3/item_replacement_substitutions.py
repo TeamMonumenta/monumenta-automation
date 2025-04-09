@@ -287,10 +287,6 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:iron_sword", "Agrippa's Gearshredder", "minecraft:iron_sword", "Aggripa's Gearshredder"],
                 # Please let this finally get rid of vanilla Suspicious Stews
                 ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
-                # April Fools 2025 cleanup
-                ["minecraft:paper", "Chargingbuck", "minecraft:rotten_flesh", "Decayed Item"],
-                ["minecraft:poisonous_potato", "Emblem of Slop", "minecraft:rotten_flesh", "Decayed Item"],
-                ["minecraft:player_head", "Extinguished Horseman's Head", "minecraft:rotten_flesh", "Decayed Item"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
