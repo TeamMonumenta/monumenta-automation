@@ -195,7 +195,6 @@ commands:
     - run test raffle
     - select
     - set score
-    - set guild plot scores
     - start
     - stop
     - stop and backup

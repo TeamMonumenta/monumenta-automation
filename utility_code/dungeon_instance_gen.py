@@ -39,13 +39,6 @@ if __name__ == '__main__':
         # All dungeons fit in a region file; even corrupted sierhaven is only 30x24 chunks
 
         "dungeons": {
-            "guildplots": {
-                "world": [
-                    "Project_Epic-guildplots",
-                    "guildplots_template",
-                ],
-                "objective":"Guild"
-            },
             "labs": {
                 "world": [
                     "labs",

@@ -55,6 +55,7 @@ stage_source:
             - forum
             - gallery
             - gray
+            - guildplots
             - hexfall
             - isles
             - labs
@@ -168,7 +169,6 @@ commands:
     - view scores
     - get score
     - set score
-    - set guild plot scores
     - update avatar
 
 permissions:

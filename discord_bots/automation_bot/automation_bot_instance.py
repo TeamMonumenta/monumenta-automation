@@ -131,7 +131,6 @@ class AutomationBotInstance(commands.Cog):
             "view scores": self.action_view_scores,
             "get score": self.action_get_player_scores,
             "set score": self.action_set_player_scores,
-            "set guild plot scores": self.action_set_guildplot_scores,
 
             "badname": self.action_bad_name,
             "player find": self.action_player_find,
@@ -1546,42 +1545,6 @@ Do not use for debugging quests or other scores that are likely to change often.
             setscores += 1
 
         await self.display(ctx, f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)")
-
-    async def action_set_guildplot_scores(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
-        '''Sets player Guild scores if they've been exported by an earlier step'''
-        if 'plots' not in self._shards:
-            await self.display(ctx, "Aborting: This bot doesn't have access to the plots shard")
-            return
-
-        plots_shard_path = Path(self._shards['plots'])
-        guild_plots_json_file = plots_shard_path / 'plugins/Monumenta/plots_guild_bounds.json'
-
-        if not guild_plots_json_file.is_file():
-            await self.display(ctx, f"Aborting: Could not find required file {guild_plots_json_file!r}")
-            return
-
-        objective = 'Guild'
-        message = 'Set Guild score for guildplots migration'
-
-        ns = self._k8s.namespace
-        if ns in ('stage', 'volt'):
-            ns = 'play'
-
-        # Load list of guild plot bounds/coordinates
-        guild_plots_json = {}
-        with open(guild_plots_json_file, 'r', encoding='utf-8') as fp:
-            guild_plots_json = json.load(fp)
-
-        setscores = 0
-        for guild_details in guild_plots_json.values():
-            value = guild_details['plot_number']
-            members = guild_details['members']
-            for name in members:
-                await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, str(value), message], displayOutput=False, ret=[0, 1])
-                self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": f"execute if entity {name} run scoreboard players set {name} {objective} {value}"})
-                setscores += 1
-
-        await self.display(ctx, f"Set previously visited guildplot score for {setscores} players")
 
     async def action_player_shard(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''A tool to check what shard a player is on, or transfer one more more offline players.

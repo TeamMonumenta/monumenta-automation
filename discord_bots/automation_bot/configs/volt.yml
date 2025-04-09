@@ -46,41 +46,42 @@ stage_source:
     m17:
         queue_name: automation-bot
         shards:
-            - cyan
-            - brown
-            - skt
-            - forum
-            - yellow
-            - zenith
             - blue
+            - brown
+            - build
             - corridors
+            - cyan
+            - depths
+            - forum
+            - gallery
+            - gray
+            - guildplots
+            - hexfall
+            - isles
+            - labs
+            - lightblue
             - lightgray
             - lime
-            - pink
-            - plots
-            - teal
-            - lightblue
             - magenta
             - orange
+            - pink
             - playerplots
+            - plots
+            - purgatory
+            - purple
             - reverie
             - ring
             - rush
+            - server_config
+            - shiftingcity
+            - skt
+            - teal
+            - tutorial
+            - valley
             - white
             - willows
-            - depths
-            - isles
-            - labs
-            - shiftingcity
-            - tutorial
-            - build
-            - gallery
-            - gray
-            - purgatory
-            - purple
-            - server_config
-            - valley
-            - hexfall
+            - yellow
+            - zenith
 
 common_weekly_update_tasks: true
 
@@ -166,7 +167,6 @@ commands:
     - view scores
     - get score
     - set score
-    - set guild plot scores
     - update avatar
 
 permissions:

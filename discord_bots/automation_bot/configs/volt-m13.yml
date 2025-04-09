@@ -46,6 +46,7 @@ stage_source:
         shards:
             - server_config
             - valley-2
+            - ring-2
             - zenith-2
 
 common_weekly_update_tasks: false
@@ -53,6 +54,7 @@ common_weekly_update_tasks: false
 shards:
     velocity-13: /home/epic/volt/m13/velocity-13/
     valley-2: /home/epic/volt/m13/valley-2/
+    ring-2: /home/epic/volt/m13/ring-2/
     zenith-2: /home/epic/volt/m13/zenith-2/
 
 commands:

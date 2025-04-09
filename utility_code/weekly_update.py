@@ -152,7 +152,6 @@ if __name__ == '__main__':
         "move_base_from":"previous",
         "datapacks":datapacks_base + ['file/guildplots'],
         "move_previous_paths":["Project_Epic-guildplots/stats", "Project_Epic-guildplots/data/scoreboard.dat", "plugins/CoreProtect", "plugins/MonumentaWarps"],
-        "move_from_build_if_missing": True,
         "replace_items_globally": True,
     }
 
