@@ -69,6 +69,7 @@
     "ring-2":  {
         "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4},
         "stage": { "node": "m13", "hugePageGB": 3   , },
+        "volt":  { "node": "m13", "hugePageGB": 3   , },
     },
     "ring-3":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-4":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
