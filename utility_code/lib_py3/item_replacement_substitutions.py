@@ -287,6 +287,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:iron_sword", "Agrippa's Gearshredder", "minecraft:iron_sword", "Aggripa's Gearshredder"],
                 # Please let this finally get rid of vanilla Suspicious Stews
                 ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
+                # Remove the Extinguished Horseman's Head from April Fools
+                ["minecraft:player_head", "Extinguished Horseman's Head", "minecraft:rotten_flesh", "Decayed Item"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
