@@ -1,5 +1,8 @@
 prefix: '~'
 
+zfs-snapshot-manager:
+    host: "zfs-snapshot-manager-m12.kube-system"
+    port: 8080
 rabbitmq:
     host: "rabbitmq"
     # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot

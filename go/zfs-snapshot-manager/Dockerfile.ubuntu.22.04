@@ -1,0 +1,39 @@
+# Stage 1: Build the Go application
+FROM golang:1.24-alpine AS builder
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the Go source code into the container
+COPY . .
+
+# Fetch Go dependencies (if using Go modules)
+RUN go mod tidy
+
+# Build the Go application binary
+RUN GOOS=linux GOARCH=amd64 go build -o /app/zfs-snapshot-manager .
+
+# Stage 2: Create the final minimal image
+FROM ubuntu:22.04
+
+# Set non-interactive mode to avoid prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install necessary runtime dependencies (e.g., libc and ZFS)
+RUN apt-get update && apt-get install -y zfsutils-linux \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the compiled binary from the builder stage
+COPY --from=builder /app/zfs-snapshot-manager .
+
+# Expose the application port (e.g., for the API)
+EXPOSE 8080
+
+# Run the application with root privileges (useful for ZFS access)
+USER root
+
+# Command to run the Go application
+ENTRYPOINT ["/app/zfs-snapshot-manager"]
