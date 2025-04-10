@@ -1,6 +1,6 @@
 prefix: '~'
 
-zfs-snapshot-manager:
+zfs_snapshot_manager:
     host: "zfs-snapshot-manager-m13.kube-system"
     port: 8080
 rabbitmq:
