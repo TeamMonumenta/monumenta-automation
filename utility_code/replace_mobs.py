@@ -33,6 +33,12 @@ def is_entity_in_spawner(entity) -> bool:
 def match_id(target_id: str, chain=lambda mob: True):
     return lambda mob: chain(mob) and ((mob.has_path("id") and mob.at_path("id").value == target_id) or (mob.has_path("Id") and mob.at_path("Id").value == target_id))
 
+def match_explosion_radius(explosion_radius: int, chain=lambda mob: True):
+    return lambda mob: chain(mob) and (mob.has_path("ExplosionRadius") and mob.at_path("ExplosionRadius").value == explosion_radius)
+
+def match_fuse(fuse_amount: int, chain=lambda mob: True):
+    return lambda mob: chain(mob) and (mob.has_path("Fuse") and mob.at_path("Fuse").value == fuse_amount)
+
 def match_armor(armor: [str], chain=lambda mob: True):
     return lambda mob: chain(mob) and get_named_armor_items(mob) == armor
 
