@@ -244,27 +244,6 @@ class MarkPlayerModifiedDirty(SubstitutionRule):
             mark_dirty(item)
 
 
-class UpdateBrokenCrossbows(SubstitutionRule):
-    """Note: only has to be run once"""
-    name = "Update crossbows with invalid loaded ammo"
-
-    def process(self, item_meta, item):
-        if item.nbt.has_path('tag.ChargedProjectiles'):
-            # A crossbow
-
-            if item.nbt.has_path('tag.ChargedProjectiles[0]'):
-                # Has tags that should be items;
-                # an empty list is invalid and deletes the mob, so skip outside the if statement
-
-                if isinstance(item.nbt.at_path('tag.ChargedProjectiles[0]').value, nbt.TagCompound):
-                    # Loaded with *probably* valid data, or empty slots, either is ok;
-                    # all tags in a TagList are always the same type, no need to check the others
-                    return
-
-            # Removing the ChargedProjectiles tag is valid
-            item.nbt.at_path('tag').value.pop('ChargedProjectiles')
-
-
 class SubtituteItems(SubstitutionRule):
     """Rule to replace items by ID/name"""
     name = "Substitute the ID and name of items, ignoring other NBT"
