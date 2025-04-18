@@ -514,10 +514,7 @@ if __name__ == '__main__':
         #   Tab complete=9999 in spigot.yml
 
         'valley':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ],
+            'config':server_config_to_copy,
             'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/InfinityTower/InfinityFloors.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityFloors.json'),
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/valley/Monumenta/bounties'),
@@ -526,8 +523,6 @@ if __name__ == '__main__':
 
         'isles':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
             'linked':server_config + base_plugins + [
@@ -537,8 +532,6 @@ if __name__ == '__main__':
 
         'ring':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
             'linked':server_config + base_plugins + [
@@ -566,10 +559,7 @@ if __name__ == '__main__':
         },
 
         'dungeon':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=12'),
-                ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ],
+            'config':server_config_to_copy,
             'linked':server_config + base_plugins + dynmap + [
                 ('plugins/Roguelite', '../../server_config/data/Roguelite'),
                 ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
@@ -597,8 +587,6 @@ if __name__ == '__main__':
         'build':{
             'config':server_config_to_copy + [
                 ('server.properties', 'white-list', 'white-list=true'),
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
                 ('server.properties', 'difficulty', 'difficulty=peaceful'),
                 ('server.properties', 'gamemode', 'gamemode=creative'),
@@ -617,8 +605,6 @@ if __name__ == '__main__':
 
         'mobs':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
                 ('plugins/LibraryOfSouls/config.yml', 'read_only', 'read_only: false'),
             ],
@@ -626,17 +612,12 @@ if __name__ == '__main__':
         },
 
         'event':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ],
+            'config':server_config_to_copy,
             'linked':server_config + base_plugins + dynmap,
         },
 
         'dev1':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
             'linked':server_config + base_plugins + dynmap,
@@ -644,8 +625,6 @@ if __name__ == '__main__':
 
         'dev2':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
             'linked':server_config + base_plugins + dynmap,
@@ -653,8 +632,6 @@ if __name__ == '__main__':
 
         'dev3':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
             'linked':server_config + base_plugins + dynmap,
@@ -662,8 +639,6 @@ if __name__ == '__main__':
 
         'dev4':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
             'linked':server_config + base_plugins,
@@ -671,8 +646,6 @@ if __name__ == '__main__':
 
         'plots':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 # plots optimization for players with bad PCs
                 # TODO: this is hardcoded to the defaults - if they change, this will break
                 # TODO: you'll know this breaks when players complain about lag in market again :suffer:
@@ -686,10 +659,7 @@ if __name__ == '__main__':
         },
 
         'shiftingcity':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=15'),
-                ('spigot.yml', 'view-distance', '    view-distance: 15'),
-            ],
+            'config':server_config_to_copy,
             'linked':server_config + base_plugins + [
                 ('plugins/Roguelite', '../../server_config/data/Roguelite'),
                 ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
@@ -698,8 +668,6 @@ if __name__ == '__main__':
 
         'purgatory':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=4'),
-                ('spigot.yml', 'view-distance', '    view-distance: 4'),
                 ('server.properties', 'force-gamemode', 'force-gamemode=true'),
                 ('server.properties', 'gamemode', 'gamemode=adventure'),
                 ('server.properties', 'enable-command-block', 'enable-command-block=false'),
@@ -737,31 +705,45 @@ if __name__ == '__main__':
     simple_view_distance_config = {
         'blue': 8,
         'brown': 11,
+        'build': 8,
         'corridors': 8,
         'cyan': 8,
         'depths': 5,
+        'dev1': 6,
+        'dev2': 6,
+        'dev3': 6,
+        'dev4': 6,
+        'dungeon': 12,
+        'event': 8,
         'forum': 8,
         'gallery': 8,
         'gray': 8,
         'guildplots': 6,
         'hexfall': 8,
+        'isles': 8,
         'labs': 10,
         'lightblue': 12,
         'lightgray': 11,
         'lime': 9,
         'magenta': 12,
+        'mobs': 6,
         'orange': 12,
         'pink': 8,
         'playerplots': 6,
+        'plots': 6,
         'portal': 8,
+        'purgatory': 4,
         'purple': 10,
         'reverie': 10,
+        'ring': 8,
         'ruin': 8,
         'rush': 5,
         'skt': 8,
+        'shiftingcity': 15,
         'teal': 9,
         'test': 8,
         'tutorial': 9,
+        'valley': 8,
         'white': 8,
         'willows': 8,
         'yellow': 8,
