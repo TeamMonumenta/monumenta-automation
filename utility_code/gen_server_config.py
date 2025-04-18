@@ -773,6 +773,10 @@ if __name__ == '__main__':
 
     for key, shard_config in config.items():
         distance = simple_simulation_distance_config.get(key, 10)
+        view_distance = simple_view_distance_config.get(key, None)
+        if view_distance is not None:
+            # If simulation distance is larger, it overrides the view distance
+            distance = min(distance, view_distance)
 
         shard_config_changes = shard_config.get('config', None)
         if shard_config_changes is None:
