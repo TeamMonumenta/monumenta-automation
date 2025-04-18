@@ -890,7 +890,7 @@ if __name__ == '__main__':
                     shard_config['linked'] += proxy_plan
                     continue
                 if "build" in key:
-                    configshard_config['linked'] += plan
+                    shard_config['linked'] += plan
                 else:
                     shard_config['linked'] += plan
 
