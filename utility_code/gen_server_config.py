@@ -716,7 +716,7 @@ if __name__ == '__main__':
         'forum': 8,
         'gallery': 8,
         'gray': 8,
-        'guildplots': 6,
+        'guildplots': 12,
         'hexfall': 8,
         'isles': 8,
         'labs': 10,
@@ -768,6 +768,7 @@ if __name__ == '__main__':
         ]
 
     simple_simulation_distance_config = {
+        'guildplots': 6,
     }
 
     for key, shard_config in config.items():
