@@ -43,15 +43,13 @@ def get_alt_version(alt_version, original_path_str, relative_to=Path('.')):
 # config should be the entire config map
 # data should be a tuple like ('server.properties', 'difficulty', 'difficulty=peaceful')
 def add_config_if_not_set(config, data):
-    for key in config:
+    for key, shard_config in config.items():
         exists = False
-        for replacement in config[key]['config']:
+        for replacement in shard_config['config']:
             if len(replacement) == 3 and data[0] in replacement[0] and data[1] in replacement[1]:
                 exists = True
         if not exists:
-            config[key]['config'] += [data]
-
-    return config
+            shard_config['config'] += [data]
 
 def get_server_domain(servername):
     if servername == 'purgatory':
@@ -750,8 +748,7 @@ if __name__ == '__main__':
         'zenith': 5,
     }
 
-    for key in simple_view_distance_config:
-        distance = simple_view_distance_config[key]
+    for key, distance in simple_view_distance_config.items():
         config[key] = {
             'config':server_config_to_copy + [
                 ('server.properties', 'view-distance', 'view-distance={}'.format(distance)),
@@ -835,8 +832,7 @@ if __name__ == '__main__':
         "velocity-17": "velocity",
     }
 
-    for key in copied_shard_config:
-        copy_of = copied_shard_config[key]
+    for key, copy_of in copied_shard_config.items():
         config[key] = copy.deepcopy(config[copy_of])
         config[key]["copy_of"] = copy_of
 
@@ -847,25 +843,25 @@ if __name__ == '__main__':
 
     # Config additions that are specific to build or play server
     if SERVER_TYPE == 'build':
-        config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=peaceful'))
-        config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
-        config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
-        config = add_config_if_not_set(config, ('server.properties', 'player-idle-timeout', 'player-idle-timeout=60'))
+        add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=peaceful'))
+        add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
+        add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
+        add_config_if_not_set(config, ('server.properties', 'player-idle-timeout', 'player-idle-timeout=60'))
     else:
-        config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=normal'))
-        config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
-        config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
+        add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=normal'))
+        add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
+        add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
 
         # Player analytics plugin only for play server
-        for key in config:
+        for key, shard_config in config.items():
             if not "purgatory" in key:
                 if "velocity" in key:
-                    config[key]['linked'] = config[key]['linked'] + proxy_plan
+                    shard_config['linked'] += proxy_plan
                     continue
                 if "build" in key:
-                    config[key]['linked'] = config[key]['linked'] + plan
+                    configshard_config['linked'] += plan
                 else:
-                    config[key]['linked'] = config[key]['linked'] + plan
+                    shard_config['linked'] += plan
 
 
     for servername in server_list:
