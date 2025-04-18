@@ -43,15 +43,13 @@ def get_alt_version(alt_version, original_path_str, relative_to=Path('.')):
 # config should be the entire config map
 # data should be a tuple like ('server.properties', 'difficulty', 'difficulty=peaceful')
 def add_config_if_not_set(config, data):
-    for key in config:
+    for shard_config in config.values():
         exists = False
-        for replacement in config[key]['config']:
+        for replacement in shard_config['config']:
             if len(replacement) == 3 and data[0] in replacement[0] and data[1] in replacement[1]:
                 exists = True
         if not exists:
-            config[key]['config'] += [data]
-
-    return config
+            shard_config['config'] += [data]
 
 def get_server_domain(servername):
     if servername == 'purgatory':
@@ -74,7 +72,6 @@ def gen_server_config(servername):
     serverConfig = dest["config"]
 
     # If this was a copy of another shard, get the other shard name to be used for {servername} replacements
-    is_copy = "copy_of" in dest
     serverNameForReplacements = dest.get("copy_of", servername)
     server_domain = get_server_domain(serverNameForReplacements)
 
@@ -514,10 +511,7 @@ if __name__ == '__main__':
         #   Tab complete=9999 in spigot.yml
 
         'valley':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ],
+            'config':server_config_to_copy,
             'linked':server_config + base_plugins + [
                 ('plugins/Monumenta/InfinityTower/InfinityFloors.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityFloors.json'),
                 ('plugins/Monumenta/bounties', '../../../server_config/data/plugins/valley/Monumenta/bounties'),
@@ -526,8 +520,6 @@ if __name__ == '__main__':
 
         'isles':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
             'linked':server_config + base_plugins + [
@@ -537,8 +529,6 @@ if __name__ == '__main__':
 
         'ring':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', '      villagers:', '      villagers: 25'),
             ],
             'linked':server_config + base_plugins + [
@@ -566,10 +556,7 @@ if __name__ == '__main__':
         },
 
         'dungeon':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=12'),
-                ('spigot.yml', 'view-distance', '    view-distance: 12'),
-            ],
+            'config':server_config_to_copy,
             'linked':server_config + base_plugins + dynmap + [
                 ('plugins/Roguelite', '../../server_config/data/Roguelite'),
                 ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
@@ -597,8 +584,6 @@ if __name__ == '__main__':
         'build':{
             'config':server_config_to_copy + [
                 ('server.properties', 'white-list', 'white-list=true'),
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
                 ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
                 ('server.properties', 'difficulty', 'difficulty=peaceful'),
                 ('server.properties', 'gamemode', 'gamemode=creative'),
@@ -617,8 +602,6 @@ if __name__ == '__main__':
 
         'mobs':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
                 ('plugins/LibraryOfSouls/config.yml', 'read_only', 'read_only: false'),
             ],
@@ -626,17 +609,12 @@ if __name__ == '__main__':
         },
 
         'event':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=8'),
-                ('spigot.yml', 'view-distance', '    view-distance: 8'),
-            ],
+            'config':server_config_to_copy,
             'linked':server_config + base_plugins + dynmap,
         },
 
         'dev1':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
             'linked':server_config + base_plugins + dynmap,
@@ -644,8 +622,6 @@ if __name__ == '__main__':
 
         'dev2':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
             'linked':server_config + base_plugins + dynmap,
@@ -653,8 +629,6 @@ if __name__ == '__main__':
 
         'dev3':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
             'linked':server_config + base_plugins + dynmap,
@@ -662,8 +636,6 @@ if __name__ == '__main__':
 
         'dev4':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 ('server.properties', 'difficulty', 'difficulty=normal'),
             ],
             'linked':server_config + base_plugins,
@@ -671,8 +643,6 @@ if __name__ == '__main__':
 
         'plots':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=6'),
-                ('spigot.yml', 'view-distance', '    view-distance: 6'),
                 # plots optimization for players with bad PCs
                 # TODO: this is hardcoded to the defaults - if they change, this will break
                 # TODO: you'll know this breaks when players complain about lag in market again :suffer:
@@ -686,10 +656,7 @@ if __name__ == '__main__':
         },
 
         'shiftingcity':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=15'),
-                ('spigot.yml', 'view-distance', '    view-distance: 15'),
-            ],
+            'config':server_config_to_copy,
             'linked':server_config + base_plugins + [
                 ('plugins/Roguelite', '../../server_config/data/Roguelite'),
                 ('plugins/Roguelite.jar', '../../server_config/plugins/Roguelite.jar'),
@@ -698,8 +665,6 @@ if __name__ == '__main__':
 
         'purgatory':{
             'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance=4'),
-                ('spigot.yml', 'view-distance', '    view-distance: 4'),
                 ('server.properties', 'force-gamemode', 'force-gamemode=true'),
                 ('server.properties', 'gamemode', 'gamemode=adventure'),
                 ('server.properties', 'enable-command-block', 'enable-command-block=false'),
@@ -735,50 +700,92 @@ if __name__ == '__main__':
     }
 
     simple_view_distance_config = {
-        'white': 8,
-        'orange': 12,
-        'magenta': 12,
-        'lightblue': 12,
-        'yellow': 8,
-        'lime': 9,
-        'pink': 8,
-        'gray': 8,
-        'lightgray': 11,
-        'cyan': 8,
-        'purple': 10,
         'blue': 8,
         'brown': 11,
-        'teal': 9,
-        'forum': 8,
-
-        'tutorial': 9,
-        'labs': 10,
-        'willows': 8,
+        'build': 8,
         'corridors': 8,
-        'reverie': 10,
-        'rush': 5,
+        'cyan': 8,
         'depths': 5,
-        'test': 8,
-        'playerplots': 6,
-        'guildplots': 6,
-
+        'dev1': 6,
+        'dev2': 6,
+        'dev3': 6,
+        'dev4': 6,
+        'dungeon': 12,
+        'event': 8,
+        'forum': 8,
         'gallery': 8,
+        'gray': 8,
+        'guildplots': 12,
         'hexfall': 8,
+        'isles': 8,
+        'labs': 10,
+        'lightblue': 12,
+        'lightgray': 11,
+        'lime': 9,
+        'magenta': 12,
+        'mobs': 6,
+        'orange': 12,
+        'pink': 8,
+        'playerplots': 6,
+        'plots': 6,
         'portal': 8,
+        'purgatory': 4,
+        'purple': 10,
+        'reverie': 10,
+        'ring': 8,
         'ruin': 8,
+        'rush': 5,
         'skt': 8,
+        'shiftingcity': 15,
+        'teal': 9,
+        'test': 8,
+        'tutorial': 9,
+        'valley': 8,
+        'white': 8,
+        'willows': 8,
+        'yellow': 8,
         'zenith': 5,
     }
 
-    for key in simple_view_distance_config:
-        distance = simple_view_distance_config[key]
-        config[key] = {
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance={}'.format(distance)),
-                ('spigot.yml', 'view-distance', '    view-distance: {}'.format(distance)),
-            ],
-            'linked':server_config + base_plugins,
-        }
+    for key, distance in simple_view_distance_config.items():
+        shard_config = config.get(key, None)
+        if shard_config is None:
+            shard_config = {
+                'config': server_config_to_copy,
+                'linked': server_config + base_plugins,
+            }
+            config[key] = shard_config
+
+        shard_config_changes = shard_config.get('config', None)
+        if shard_config_changes is None:
+            shard_config_changes = server_config_to_copy
+            shard_config['config'] = shard_config_changes
+
+        shard_config_changes += [
+            ('server.properties', 'view-distance', 'view-distance={}'.format(distance)),
+            ('spigot.yml', 'view-distance', '    view-distance: {}'.format(distance)),
+        ]
+
+    simple_simulation_distance_config = {
+        'guildplots': 6,
+    }
+
+    for key, shard_config in config.items():
+        distance = simple_simulation_distance_config.get(key, 10)
+        view_distance = simple_view_distance_config.get(key, None)
+        if view_distance is not None:
+            # If simulation distance is larger, it overrides the view distance
+            distance = min(distance, view_distance)
+
+        shard_config_changes = shard_config.get('config', None)
+        if shard_config_changes is None:
+            shard_config_changes = server_config_to_copy
+            shard_config['config'] = shard_config_changes
+
+        shard_config_changes += [
+            ('server.properties', 'simulation-distance', 'simulation-distance={}'.format(distance)),
+            ('spigot.yml', 'simulation-distance', '    simulation-distance: {}'.format(distance)),
+        ]
 
 
     # These shards are copies of another shard, using that other shard's name for {servername} replacements
@@ -855,8 +862,7 @@ if __name__ == '__main__':
         "velocity-17": "velocity",
     }
 
-    for key in copied_shard_config:
-        copy_of = copied_shard_config[key]
+    for key, copy_of in copied_shard_config.items():
         config[key] = copy.deepcopy(config[copy_of])
         config[key]["copy_of"] = copy_of
 
@@ -867,25 +873,25 @@ if __name__ == '__main__':
 
     # Config additions that are specific to build or play server
     if SERVER_TYPE == 'build':
-        config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=peaceful'))
-        config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
-        config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
-        config = add_config_if_not_set(config, ('server.properties', 'player-idle-timeout', 'player-idle-timeout=60'))
+        add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=peaceful'))
+        add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 0'))
+        add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=true'))
+        add_config_if_not_set(config, ('server.properties', 'player-idle-timeout', 'player-idle-timeout=60'))
     else:
-        config = add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=normal'))
-        config = add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
-        config = add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
+        add_config_if_not_set(config, ('server.properties', 'difficulty', 'difficulty=normal'))
+        add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
+        add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
 
         # Player analytics plugin only for play server
-        for key in config:
+        for key, shard_config in config.items():
             if not "purgatory" in key:
                 if "velocity" in key:
-                    config[key]['linked'] = config[key]['linked'] + proxy_plan
+                    shard_config['linked'] += proxy_plan
                     continue
                 if "build" in key:
-                    config[key]['linked'] = config[key]['linked'] + plan
+                    shard_config['linked'] += plan
                 else:
-                    config[key]['linked'] = config[key]['linked'] + plan
+                    shard_config['linked'] += plan
 
 
     for servername in server_list:
