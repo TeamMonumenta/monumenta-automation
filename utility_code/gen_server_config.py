@@ -749,13 +749,23 @@ if __name__ == '__main__':
     }
 
     for key, distance in simple_view_distance_config.items():
-        config[key] = {
-            'config':server_config_to_copy + [
-                ('server.properties', 'view-distance', 'view-distance={}'.format(distance)),
-                ('spigot.yml', 'view-distance', '    view-distance: {}'.format(distance)),
-            ],
-            'linked':server_config + base_plugins,
-        }
+        shard_config = config.get(key, None)
+        if shard_config is None:
+            shard_config = {
+                'config': server_config_to_copy,
+                'linked': server_config + base_plugins,
+            }
+            config[key] = shard_config
+
+        shard_config_changes = shard_config.get('config', None)
+        if shard_config_changes is None:
+            shard_config_changes = server_config_to_copy
+            shard_config['config'] = shard_config_changes
+
+        shard_config_changes += [
+            ('server.properties', 'view-distance', 'view-distance={}'.format(distance)),
+            ('spigot.yml', 'view-distance', '    view-distance: {}'.format(distance)),
+        ]
 
 
     # These shards are copies of another shard, using that other shard's name for {servername} replacements
