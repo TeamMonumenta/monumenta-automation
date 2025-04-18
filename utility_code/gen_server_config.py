@@ -767,6 +767,22 @@ if __name__ == '__main__':
             ('spigot.yml', 'view-distance', '    view-distance: {}'.format(distance)),
         ]
 
+    simple_simulation_distance_config = {
+    }
+
+    for key, shard_config in config.items():
+        distance = simple_simulation_distance_config.get(key, 10)
+
+        shard_config_changes = shard_config.get('config', None)
+        if shard_config_changes is None:
+            shard_config_changes = server_config_to_copy
+            shard_config['config'] = shard_config_changes
+
+        shard_config_changes += [
+            ('server.properties', 'simulation-distance', 'simulation-distance={}'.format(distance)),
+            ('spigot.yml', 'simulation-distance', '    simulation-distance: {}'.format(distance)),
+        ]
+
 
     # These shards are copies of another shard, using that other shard's name for {servername} replacements
     copied_shard_config = {
