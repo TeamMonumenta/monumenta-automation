@@ -43,7 +43,7 @@ def get_alt_version(alt_version, original_path_str, relative_to=Path('.')):
 # config should be the entire config map
 # data should be a tuple like ('server.properties', 'difficulty', 'difficulty=peaceful')
 def add_config_if_not_set(config, data):
-    for key, shard_config in config.items():
+    for shard_config in config.values():
         exists = False
         for replacement in shard_config['config']:
             if len(replacement) == 3 and data[0] in replacement[0] and data[1] in replacement[1]:
@@ -72,7 +72,6 @@ def gen_server_config(servername):
     serverConfig = dest["config"]
 
     # If this was a copy of another shard, get the other shard name to be used for {servername} replacements
-    is_copy = "copy_of" in dest
     serverNameForReplacements = dest.get("copy_of", servername)
     server_domain = get_server_domain(serverNameForReplacements)
 
