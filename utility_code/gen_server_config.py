@@ -69,7 +69,7 @@ def gen_server_config(servername):
         return
 
     dest = config[servername]
-    serverConfig = dest["config"]
+    serverConfig = dest['config']
 
     # If this was a copy of another shard, get the other shard name to be used for {servername} replacements
     serverNameForReplacements = dest.get("copy_of", servername)
@@ -128,6 +128,7 @@ def gen_server_config(servername):
         elif len(replacement) == 3:
             os.rename(filename, filename + ".old")
 
+            print(repr(replacement))
             with open(filename + ".old", "rt") as fin:
                 with open(filename, "wt") as fout:
                     for line in fin:
@@ -751,15 +752,15 @@ if __name__ == '__main__':
         shard_config = config.get(key, None)
         if shard_config is None:
             shard_config = {
-                'config': server_config_to_copy,
+                'config': copy.deepcopy(server_config_to_copy),
                 'linked': server_config + base_plugins,
             }
             config[key] = shard_config
 
-        shard_config_changes = shard_config.get('config', None)
+        shard_config_changes = copy.deepcopy(shard_config.get('config', None))
         if shard_config_changes is None:
-            shard_config_changes = server_config_to_copy
-            shard_config['config'] = shard_config_changes
+            shard_config_changes = copy.deepcopy(server_config_to_copy)
+        shard_config['config'] = shard_config_changes
 
         shard_config_changes += [
             ('server.properties', 'view-distance', 'view-distance={}'.format(distance)),
@@ -777,10 +778,10 @@ if __name__ == '__main__':
             # If simulation distance is larger, it overrides the view distance
             distance = min(distance, view_distance)
 
-        shard_config_changes = shard_config.get('config', None)
+        shard_config_changes = copy.deepcopy(shard_config.get('config', None))
         if shard_config_changes is None:
-            shard_config_changes = server_config_to_copy
-            shard_config['config'] = shard_config_changes
+            shard_config_changes = copy.deepcopy(server_config_to_copy)
+        shard_config['config'] = shard_config_changes
 
         shard_config_changes += [
             ('server.properties', 'simulation-distance', 'simulation-distance={}'.format(distance)),
