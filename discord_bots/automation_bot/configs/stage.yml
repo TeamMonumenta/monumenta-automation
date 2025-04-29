@@ -181,6 +181,7 @@ permissions:
         192645668592943104: {"name": "Njol",        "rights": [ "@root" ]}
         222170304577929218: {"name": "U5B_",        "rights": [ "@root" ]}
         503202330284392452: {"name": "Floweynt",    "rights": [ "@root" ]}
+        301924109007454217: {"name": "shotoh",      "rights": [ "@root" ]}
 
     groups_by_role:
         # Team Monumenta (Private discord)
