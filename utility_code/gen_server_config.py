@@ -128,7 +128,6 @@ def gen_server_config(servername):
         elif len(replacement) == 3:
             os.rename(filename, filename + ".old")
 
-            print(repr(replacement))
             with open(filename + ".old", "rt") as fin:
                 with open(filename, "wt") as fout:
                     for line in fin:
@@ -269,7 +268,7 @@ if __name__ == '__main__':
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
-        ('plugins/RedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
+        ('plugins/RedisSync.jar', '../../server_config/plugins/RedisSync.jar'),
         ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
     ]
 
@@ -298,7 +297,7 @@ if __name__ == '__main__':
         ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
-        ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
+        ('plugins/RedisSync.jar', '../../server_config/plugins/RedisSync.jar'),
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
         ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
