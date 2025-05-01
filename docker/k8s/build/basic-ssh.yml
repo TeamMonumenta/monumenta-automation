@@ -63,6 +63,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/build/m12/dev1/plugins
+        - name: nfs-dev1-mods
+          hostPath:
+            type: Directory
+            path: /nfs/build/m12/dev1/mods
         - name: nfs-dev2-logs
           hostPath:
             type: Directory
@@ -71,6 +75,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/build/m12/dev2/plugins
+        - name: nfs-dev2-mods
+          hostPath:
+            type: Directory
+            path: /nfs/build/m12/dev2/mods
         - name: nfs-dev3-logs
           hostPath:
             type: Directory
@@ -79,6 +87,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/build/m12/dev3/plugins
+        - name: nfs-dev3-mods
+          hostPath:
+            type: Directory
+            path: /nfs/build/m12/dev3/mods
         - name: nfs-dev4-logs
           hostPath:
             type: Directory
@@ -87,6 +99,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/build/m12/dev4/plugins
+        - name: nfs-dev4-mods
+          hostPath:
+            type: Directory
+            path: /nfs/build/m12/dev4/mods
         - name: nfs-futurama-all
           hostPath:
             type: Directory
@@ -201,18 +217,26 @@ spec:
           mountPath: /home/epic/dev1_shard_logs
         - name: nfs-dev1-plugins
           mountPath: /home/epic/dev1_shard_plugins
+        - name: nfs-dev1-mods
+          mountPath: /home/epic/dev1_shard_mods
         - name: nfs-dev2-logs
           mountPath: /home/epic/dev2_shard_logs
         - name: nfs-dev2-plugins
           mountPath: /home/epic/dev2_shard_plugins
+        - name: nfs-dev2-mods
+          mountPath: /home/epic/dev2_shard_mods
         - name: nfs-dev3-logs
           mountPath: /home/epic/dev3_shard_logs
         - name: nfs-dev3-plugins
           mountPath: /home/epic/dev3_shard_plugins
+        - name: nfs-dev3-mods
+          mountPath: /home/epic/dev3_shard_mods
         - name: nfs-dev4-logs
           mountPath: /home/epic/dev4_shard_logs
         - name: nfs-dev4-plugins
           mountPath: /home/epic/dev4_shard_plugins
+        - name: nfs-dev4-mods
+          mountPath: /home/epic/dev4_shard_mods
         - name: nfs-futurama-all
           mountPath: /home/epic/futurama
         - name: nfs-futurama-logs
