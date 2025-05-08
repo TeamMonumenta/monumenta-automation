@@ -12,7 +12,7 @@ RUN apt-get update && \
 	rm -f pypy3.8-v7.3.9-linux64.tar.bz2 && \
 	ln -s /opt/pypy3.8-v7.3.9-linux64/bin/pypy3 /usr/local/bin/pypy3 && \
 	ln -s /opt/pypy3.8-v7.3.9-linux64/bin/pypy /usr/local/bin/pypy && \
-	wget https://bootstrap.pypa.io/get-pip.py && \
+	wget https://bootstrap.pypa.io/pip/3.8/get-pip.py && \
 	pypy3 get-pip.py && \
 	rm -f get-pip.py && \
 	pypy3 -m pip install wheel && \
