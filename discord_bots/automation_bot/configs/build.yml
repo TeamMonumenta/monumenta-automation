@@ -76,7 +76,11 @@ commands:
     - list world loot
     - list shards
     - badname
+    - player find
+    - player rollback
     - player shard
+    - player transfer
+    - player wipe
     - prepare stage bundle
     - prepare update bundle
     - restart
@@ -146,7 +150,11 @@ permissions:
             - "+list bots"
             - "+list shards"
             - "+badname"
+            - "+player find"
+            - "+player rollback"
             - "+player shard"
+            - "+player transfer"
+            - "+player wipe"
             - "+prepare stage bundle"
             - "+restart"
             - "+list world loot"
