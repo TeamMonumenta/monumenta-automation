@@ -131,26 +131,26 @@ spec:
           hostPath:
             type: Directory
             path: "/nfs/4_SHARED/sound_pack"
-        - name: nfs-stage
+        - name: nfs-stage-m17
           hostPath:
             type: Directory
-            path: /nfs/stage/m13
-        - name: nfs-volt
+            path: /nfs/stage/m17
+        - name: nfs-stage-m18
           hostPath:
             type: Directory
-            path: /nfs/volt/m12
-        - name: nfs-volt-m13
+            path: /nfs/stage/m18
+        - name: nfs-volt-m17
           hostPath:
             type: Directory
-            path: /nfs/volt/m13
+            path: /nfs/volt/m17
+        - name: nfs-volt-m18
+          hostPath:
+            type: Directory
+            path: /nfs/volt/m18
         - name: nfs-community-m12
           hostPath:
             type: Directory
             path: /nfs/community/m12
-        - name: nfs-community-m13
-          hostPath:
-            type: Directory
-            path: /nfs/community/m13
         - name: nfs-r1
           hostPath:
             type: Directory
@@ -251,16 +251,16 @@ spec:
           mountPath: /home/epic/schematics
         - name: nfs-sound-pack
           mountPath: /home/epic/sound_pack
-        - name: nfs-stage
-          mountPath: /home/epic/stage/m13
-        - name: nfs-volt
-          mountPath: /home/epic/volt/m12
-        - name: nfs-volt-m13
-          mountPath: /home/epic/volt/m13
+        - name: nfs-stage-m17
+          mountPath: /home/epic/stage/m17
+        - name: nfs-stage-m18
+          mountPath: /home/epic/stage/m18
+        - name: nfs-volt-m17
+          mountPath: /home/epic/volt/m17
+        - name: nfs-volt-m18
+          mountPath: /home/epic/volt/m18
         - name: nfs-community-m12
           mountPath: /home/epic/community/m12
-        - name: nfs-community-m13
-          mountPath: /home/epic/community/m13
         - name: nfs-r1
           mountPath: /home/epic/valley
         - name: nfs-lockouts

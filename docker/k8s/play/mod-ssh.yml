@@ -59,14 +59,14 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/play/m12/server_config/data/plugins/all/MonumentaNetworkChat/help
-        - name: chat-help-m13
-          hostPath:
-            type: Directory
-            path: /nfs/play/m13/server_config/data/plugins/all/MonumentaNetworkChat/help
         - name: chat-help-m17
           hostPath:
             type: Directory
             path: /nfs/play/m17/server_config/data/plugins/all/MonumentaNetworkChat/help
+        - name: chat-help-m18
+          hostPath:
+            type: Directory
+            path: /nfs/play/m18/server_config/data/plugins/all/MonumentaNetworkChat/help
         - name: compass-files-m17
           hostPath:
             type: Directory
@@ -87,10 +87,10 @@ spec:
           mountPath: /home/epic/global_chat_filters
         - name: chat-help-m12
           mountPath: /home/epic/m12/MonumentaNetworkChat/help
-        - name: chat-help-m13
-          mountPath: /home/epic/m13/MonumentaNetworkChat/help
         - name: chat-help-m17
           mountPath: /home/epic/m17/MonumentaNetworkChat/help
+        - name: chat-help-m18
+          mountPath: /home/epic/m18/MonumentaNetworkChat/help
         - name: compass-files-m17
           readOnly: true
           mountPath: /home/epic/m17/scriptedquests/compass

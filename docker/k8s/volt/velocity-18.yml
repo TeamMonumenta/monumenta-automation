@@ -3,15 +3,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: velocity-13
-  namespace: stage
+  name: velocity-18
+  namespace: volt
   labels:
-    app: velocity-13
+    app: velocity-18
     k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
-    app: velocity-13
+    app: velocity-18
   ports:
   - name: monumenta-socket
     port: 9576
@@ -27,21 +27,21 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: velocity-13
-  namespace: stage
+  name: velocity-18
+  namespace: volt
   labels:
-    app: velocity-13
+    app: velocity-18
 spec:
   strategy:
     type: Recreate
   replicas: 0
   selector:
     matchLabels:
-      app: velocity-13
+      app: velocity-18
   template:
     metadata:
       labels:
-        app: velocity-13
+        app: velocity-18
     spec:
       affinity:
         nodeAffinity:
@@ -51,22 +51,22 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-13
+                - monumenta-18
       volumes:
         - name: nfs-volume
           hostPath:
             type: Directory
-            path: /nfs/stage/m13
+            path: /nfs/volt/m18
       containers:
-      - name: velocity-13
+      - name: velocity-18
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
         tty: true
         stdin: true
         ports:
         # Primary Minecraft port
         - containerPort: 25566
-          hostPort: 9002
-          hostIP: "15.235.54.193" # The node's external facing IP address
+          hostPort: 9012
+          hostIP: "37.187.56.103" # The node's external facing IP address
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
@@ -76,11 +76,11 @@ spec:
         - name: "JAVA_JAR"
           value: "velocity.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/stage/m13/velocity-13"
+          value: "/home/epic/volt/m18/velocity-18"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
-          value: velocity-13
+          value: velocity-18
         - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
           value: "false"
         readinessProbe:
@@ -97,7 +97,7 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/stage/m13
+          mountPath: /home/epic/volt/m18
         resources:
           limits:
             memory: 1Gi

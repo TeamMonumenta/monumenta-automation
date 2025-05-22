@@ -1,65 +1,19 @@
 
-# This is a service account for the bot's pod to use to talk to the controller
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: automation-bot-service-account
-  namespace: volt
-
----
-
-# This is the permission object that will be attached to the above service account
-# This specifies what the pod is allowed to do
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: automation-bot-role
-  namespace: volt
-rules:
-  - apiGroups:
-      - ""
-      - "apps"
-    resources:
-      - deployments
-      # TODO: Don't need this?
-      - pods
-    verbs:
-      - list
-      - patch
-      # TODO: Don't need this?
-      - update
-
----
-
-# This binds the role to the service account, giving it perms
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: automation-bot-role-binding
-  namespace: volt
-roleRef:
-  kind: Role
-  name: automation-bot-role
-  apiGroup: rbac.authorization.k8s.io
-subjects:
- - kind: ServiceAccount
-   name: automation-bot-service-account
-   namespace: volt
-
----
+# NOTE: This depends on the service account stuff already existing that's set up by automation-bot.yaml
+# This is just the deployment for the 2nd bot
 
 # Service / internal network ports (for loading play data)
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: automation-bot
+  name: automation-bot-m18
   namespace: volt
   labels:
-    app: automation-bot
+    app: automation-bot-m18
 spec:
   selector:
-    app: automation-bot
+    app: automation-bot-m18
   ports:
   - name: volt1
     port: 1111
@@ -79,25 +33,24 @@ spec:
 
 ---
 
-# This is the actual bot's deployment, specifying what it should run
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: automation-bot
+  name: automation-bot-m18
   namespace: volt
   labels:
-    app: automation-bot
+    app: automation-bot-m18
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: automation-bot
+      app: automation-bot-m18
   template:
     metadata:
       labels:
-        app: automation-bot
+        app: automation-bot-m18
     spec:
       affinity:
         nodeAffinity:
@@ -107,13 +60,13 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - monumenta-18
       serviceAccountName: automation-bot-service-account
       volumes:
         - name: nfs-data
           hostPath:
             type: Directory
-            path: /nfs/volt/m12
+            path: /nfs/volt/m18
         - name: nfs-redis
           hostPath:
             type: Directory
@@ -132,7 +85,7 @@ spec:
             path: /nfs/5_SCRATCH
         - name: secret-config
           secret:
-            secretName: automation-bot-config
+            secretName: automation-bot-m18-config
       containers:
       - name: automation-bot
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-volt
@@ -153,7 +106,7 @@ spec:
               key: password
         volumeMounts:
         - name: nfs-data
-          mountPath: /home/epic/volt/m12
+          mountPath: /home/epic/volt/m18
         - name: nfs-redis
           mountPath: /home/epic/volt/redis
           # XXX NOTE

@@ -904,6 +904,7 @@ if __name__ == '__main__':
         "velocity-12": "velocity",
         "velocity-13": "velocity",
         "velocity-17": "velocity",
+        "velocity-18": "velocity",
     }
 
     for key, copy_of in copied_shard_config.items():

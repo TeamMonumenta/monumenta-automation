@@ -60,7 +60,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-13
+                - monumenta-18
       containers:
       - image: mariadb:11
         name: mysql
