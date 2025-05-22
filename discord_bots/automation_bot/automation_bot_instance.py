@@ -1959,6 +1959,7 @@ Must be run before starting the update on the play server
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/Project_Epic-ring /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/ampedcoven /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/godspore /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ring/intruder /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/land_of_storms /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/portal /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
@@ -2228,7 +2229,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.display(ctx, "Checking for broken symbolic links...")
         await self.run(ctx, "find . -xtype l", displayOutput=True)
 
-        await self.display(ctx, "Done.")
+        await self.display(ctx, "Done. Note that this includes all worlds on overworld shards, and weekly update does not!")
         await self.display(ctx, message.author.mention)
 
 
