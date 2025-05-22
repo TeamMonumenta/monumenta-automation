@@ -3,7 +3,7 @@ prefix: '~'
 rabbitmq:
     host: "rabbitmq"
     # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
-    name: "automation-bot"
+    name: "automation-bot-m18"
     # Whether the queue will persist when the connection is closed
     durable: True
     # Whether this queue will be able to receive messages or not
@@ -21,7 +21,7 @@ rabbitmq:
 
 k8s_namespace: "volt"
 
-reactions_enabled: True
+reactions_enabled: False
 
 ignored_reaction_channels:
     # rules - doesn't actually matter, just a placeholder for volt bot
@@ -34,15 +34,11 @@ channels:
 # volt-status (dev discord)
 status_channel: 1193446138062327878
 
-server_dir: /home/epic/volt/m12
+server_dir: /home/epic/volt/m18
 
 cpu_count: 12
 
 stage_source:
-    m12:
-        queue_name: automation-bot-m12
-        shards:
-            - velocity-12
     m17:
         queue_name: automation-bot
         shards:
@@ -72,7 +68,6 @@ stage_source:
             - reverie
             - ring
             - rush
-            - server_config
             - shiftingcity
             - skt
             - teal
@@ -82,48 +77,53 @@ stage_source:
             - willows
             - yellow
             - zenith
+    m18:
+        queue_name: automation-bot-m18
+        shards:
+            - server_config
+            - velocity-18
 
 common_weekly_update_tasks: true
 
 dynmap_dir: /home/epic/volt/maps
 
 shards:
-    blue: /home/epic/volt/m12/blue/
-    brown: /home/epic/volt/m12/brown/
-    build: /home/epic/volt/m12/build/
-    velocity-12: /home/epic/volt/m12/velocity-12/
-    corridors: /home/epic/volt/m12/corridors/
-    cyan: /home/epic/volt/m12/cyan/
-    depths: /home/epic/volt/m12/depths/
-    forum: /home/epic/volt/m12/forum/
-    gallery: /home/epic/volt/m12/gallery/
-    gray: /home/epic/volt/m12/gray/
-    guildplots: /home/epic/volt/m12/guildplots/
-    hexfall: /home/epic/volt/m12/hexfall/
-    isles: /home/epic/volt/m12/isles/
-    labs: /home/epic/volt/m12/labs/
-    lightblue: /home/epic/volt/m12/lightblue/
-    lightgray: /home/epic/volt/m12/lightgray/
-    lime: /home/epic/volt/m12/lime/
-    magenta: /home/epic/volt/m12/magenta/
-    orange: /home/epic/volt/m12/orange/
-    pink: /home/epic/volt/m12/pink/
-    playerplots: /home/epic/volt/m12/playerplots/
-    plots: /home/epic/volt/m12/plots/
-    purgatory: /home/epic/volt/m12/purgatory/
-    purple: /home/epic/volt/m12/purple/
-    reverie: /home/epic/volt/m12/reverie/
-    ring: /home/epic/volt/m12/ring/
-    rush: /home/epic/volt/m12/rush/
-    shiftingcity: /home/epic/volt/m12/shiftingcity/
-    skt: /home/epic/volt/m12/skt/
-    teal: /home/epic/volt/m12/teal/
-    tutorial: /home/epic/volt/m12/tutorial/
-    valley: /home/epic/volt/m12/valley/
-    white: /home/epic/volt/m12/white/
-    willows: /home/epic/volt/m12/willows/
-    yellow: /home/epic/volt/m12/yellow/
-    zenith: /home/epic/volt/m12/zenith/
+    blue: /home/epic/volt/m18/blue/
+    brown: /home/epic/volt/m18/brown/
+    build: /home/epic/volt/m18/build/
+    corridors: /home/epic/volt/m18/corridors/
+    cyan: /home/epic/volt/m18/cyan/
+    depths: /home/epic/volt/m18/depths/
+    forum: /home/epic/volt/m18/forum/
+    gallery: /home/epic/volt/m18/gallery/
+    gray: /home/epic/volt/m18/gray/
+    guildplots: /home/epic/volt/m18/guildplots/
+    hexfall: /home/epic/volt/m18/hexfall/
+    isles: /home/epic/volt/m18/isles/
+    labs: /home/epic/volt/m18/labs/
+    lightblue: /home/epic/volt/m18/lightblue/
+    lightgray: /home/epic/volt/m18/lightgray/
+    lime: /home/epic/volt/m18/lime/
+    magenta: /home/epic/volt/m18/magenta/
+    orange: /home/epic/volt/m18/orange/
+    pink: /home/epic/volt/m18/pink/
+    playerplots: /home/epic/volt/m18/playerplots/
+    plots: /home/epic/volt/m18/plots/
+    purgatory: /home/epic/volt/m18/purgatory/
+    purple: /home/epic/volt/m18/purple/
+    reverie: /home/epic/volt/m18/reverie/
+    ring: /home/epic/volt/m18/ring/
+    rush: /home/epic/volt/m18/rush/
+    shiftingcity: /home/epic/volt/m18/shiftingcity/
+    skt: /home/epic/volt/m18/skt/
+    teal: /home/epic/volt/m18/teal/
+    tutorial: /home/epic/volt/m18/tutorial/
+    valley: /home/epic/volt/m18/valley/
+    velocity-18: /home/epic/volt/m18/velocity-18/
+    white: /home/epic/volt/m18/white/
+    willows: /home/epic/volt/m18/willows/
+    yellow: /home/epic/volt/m18/yellow/
+    zenith: /home/epic/volt/m18/zenith/
 
 commands:
     - apply stage bundle

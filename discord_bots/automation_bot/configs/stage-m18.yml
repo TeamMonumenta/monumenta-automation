@@ -34,17 +34,13 @@ channels:
 # stage-status (dev discord)
 status_channel: 1200853620271349764
 
-server_dir: /home/epic/stage/m13
+server_dir: /home/epic/stage/m18
 
 cpu_count: 12
 
 stage_source:
-    m13:
-        queue_name: automation-bot-m13
-        shards:
-            - velocity-13
     m17:
-        queue_name: automation-bot
+        queue_name: automation-bot-m17
         shards:
             - blue
             - brown
@@ -73,7 +69,6 @@ stage_source:
             - ring
             - ring-2
             - rush
-            - server_config
             - shiftingcity
             - skt
             - teal
@@ -84,48 +79,53 @@ stage_source:
             - willows
             - yellow
             - zenith
+    m18:
+        queue_name: automation-bot-m18
+        shards:
+            - server_config
+            - velocity-18
 
 dynmap_dir: /home/epic/stage/maps
 
 shards:
-    blue: /home/epic/stage/m13/blue/
-    brown: /home/epic/stage/m13/brown/
-    build: /home/epic/stage/m13/build/
-    corridors: /home/epic/stage/m13/corridors/
-    cyan: /home/epic/stage/m13/cyan/
-    depths: /home/epic/stage/m13/depths/
-    forum: /home/epic/stage/m13/forum/
-    gallery: /home/epic/stage/m13/gallery/
-    gray: /home/epic/stage/m13/gray/
-    guildplots: /home/epic/stage/m13/guildplots/
-    hexfall: /home/epic/stage/m13/hexfall/
-    isles: /home/epic/stage/m13/isles/
-    labs: /home/epic/stage/m13/labs/
-    lightblue: /home/epic/stage/m13/lightblue/
-    lightgray: /home/epic/stage/m13/lightgray/
-    lime: /home/epic/stage/m13/lime/
-    magenta: /home/epic/stage/m13/magenta/
-    orange: /home/epic/stage/m13/orange/
-    pink: /home/epic/stage/m13/pink/
-    playerplots: /home/epic/stage/m13/playerplots/
-    plots: /home/epic/stage/m13/plots/
-    purgatory: /home/epic/stage/m13/purgatory/
-    purple: /home/epic/stage/m13/purple/
-    reverie: /home/epic/stage/m13/reverie/
-    ring: /home/epic/stage/m13/ring/
-    ring-2: /home/epic/stage/m13/ring-2/
-    rush: /home/epic/stage/m13/rush/
-    shiftingcity: /home/epic/stage/m13/shiftingcity/
-    skt: /home/epic/stage/m13/skt/
-    teal: /home/epic/stage/m13/teal/
-    tutorial: /home/epic/stage/m13/tutorial/
-    valley-2: /home/epic/stage/m13/valley-2/
-    valley: /home/epic/stage/m13/valley/
-    velocity-13: /home/epic/stage/m13/velocity-13/
-    white: /home/epic/stage/m13/white/
-    willows: /home/epic/stage/m13/willows/
-    yellow: /home/epic/stage/m13/yellow/
-    zenith: /home/epic/stage/m13/zenith/
+    blue: /home/epic/stage/m18/blue/
+    brown: /home/epic/stage/m18/brown/
+    build: /home/epic/stage/m18/build/
+    corridors: /home/epic/stage/m18/corridors/
+    cyan: /home/epic/stage/m18/cyan/
+    depths: /home/epic/stage/m18/depths/
+    forum: /home/epic/stage/m18/forum/
+    gallery: /home/epic/stage/m18/gallery/
+    gray: /home/epic/stage/m18/gray/
+    guildplots: /home/epic/stage/m18/guildplots/
+    hexfall: /home/epic/stage/m18/hexfall/
+    isles: /home/epic/stage/m18/isles/
+    labs: /home/epic/stage/m18/labs/
+    lightblue: /home/epic/stage/m18/lightblue/
+    lightgray: /home/epic/stage/m18/lightgray/
+    lime: /home/epic/stage/m18/lime/
+    magenta: /home/epic/stage/m18/magenta/
+    orange: /home/epic/stage/m18/orange/
+    pink: /home/epic/stage/m18/pink/
+    playerplots: /home/epic/stage/m18/playerplots/
+    plots: /home/epic/stage/m18/plots/
+    purgatory: /home/epic/stage/m18/purgatory/
+    purple: /home/epic/stage/m18/purple/
+    reverie: /home/epic/stage/m18/reverie/
+    ring: /home/epic/stage/m18/ring/
+    ring-2: /home/epic/stage/m18/ring-2/
+    rush: /home/epic/stage/m18/rush/
+    shiftingcity: /home/epic/stage/m18/shiftingcity/
+    skt: /home/epic/stage/m18/skt/
+    teal: /home/epic/stage/m18/teal/
+    tutorial: /home/epic/stage/m18/tutorial/
+    valley-2: /home/epic/stage/m18/valley-2/
+    valley: /home/epic/stage/m18/valley/
+    velocity-18: /home/epic/stage/m18/velocity-18/
+    white: /home/epic/stage/m18/white/
+    willows: /home/epic/stage/m18/willows/
+    yellow: /home/epic/stage/m18/yellow/
+    zenith: /home/epic/stage/m18/zenith/
 
 commands:
     - apply stage bundle

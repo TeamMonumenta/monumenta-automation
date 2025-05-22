@@ -3,7 +3,7 @@ prefix: '~'
 rabbitmq:
     host: "rabbitmq"
     # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
-    name: "automation-bot-m13"
+    name: "automation-bot-m17"
     # Whether the queue will persist when the connection is closed
     durable: True
     # Whether this queue will be able to receive messages or not
@@ -11,11 +11,6 @@ rabbitmq:
     # Messages greater than this will be logged to stdout
     # Levels - from https://docs.python.org/3/library/logging.html#levels
     log_level: 20
-
-    # build-mod-alerts
-    audit_severe_channel: 1167973755549667410
-    # build-admin-notices
-    admin_channel: 1167973800940412988
 
 k8s_namespace: "volt"
 
@@ -29,33 +24,27 @@ channels:
     # volt-bot (dev discord)
     - 1160660685982806106
 
-# volt-status (dev discord)
-#status_channel: 1193446138062327878
-
-server_dir: /home/epic/volt/m13
+server_dir: /home/epic/volt/m17
 
 cpu_count: 12
 
 stage_source:
-    m13:
-        queue_name: automation-bot-m13
-        shards:
-            - velocity-13
     m17:
         queue_name: automation-bot
         shards:
+            - ring-2
             - server_config
             - valley-2
-            - ring-2
+            - velocity-17
             - zenith-2
 
 common_weekly_update_tasks: false
 
 shards:
-    velocity-13: /home/epic/volt/m13/velocity-13/
-    valley-2: /home/epic/volt/m13/valley-2/
-    ring-2: /home/epic/volt/m13/ring-2/
-    zenith-2: /home/epic/volt/m13/zenith-2/
+    ring-2: /home/epic/volt/m17/ring-2/
+    valley-2: /home/epic/volt/m17/valley-2/
+    velocity-17: /home/epic/volt/m17/velocity-17/
+    zenith-2: /home/epic/volt/m17/zenith-2/
 
 commands:
     - apply stage bundle

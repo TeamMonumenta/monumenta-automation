@@ -1,12 +1,12 @@
 prefix: '~'
 
 zfs_snapshot_manager:
-    host: "zfs-snapshot-manager-m13.kube-system"
+    host: "zfs-snapshot-manager-m18.kube-system"
     port: 8080
 rabbitmq:
     host: "rabbitmq"
     # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
-    name: "automation-bot-m13"
+    name: "automation-bot-m18"
     # Whether the queue will persist when the connection is closed
     durable: True
     # Whether this queue will be able to receive messages or not
@@ -36,12 +36,12 @@ channels:
 
 cpu_count: -1
 
-server_dir: /home/epic/play/m13
+server_dir: /home/epic/play/m18
 
 common_weekly_update_tasks: False
 
 shards:
-    velocity-13: /home/epic/play/m13/velocity-13/
+    velocity-18: /home/epic/play/m18/velocity-18/
 
 commands:
     - fetch update bundle
