@@ -6,17 +6,21 @@ def main():
     src = os.path.expanduser("~/project_epic/server_config")
     dst = os.path.expanduser(os.path.join(os.getcwd(), "server_config"))
 
-    for jar in list(Path(src).glob("*.jar")):
-        if "-" not in jar.name:
-            shutil.copy(jar, dst)
-            print(f"Copied {jar} to {dst}")
+    jar_dir = [
+        ".",
+        "plugins",
+        "mods"
+    ]
+    for dir in jar_dir:
 
-    os.makedirs(os.path.join(dst, 'plugins'), exist_ok=True)
-    
-    for jar in list(Path(os.path.join(src, 'plugins')).glob("*.jar")):
-        if "-" not in jar.name:
-            shutil.copy(jar, os.path.join(dst, 'plugins'))
-            print(f"Copied {jar} to {os.path.join(dst, 'plugins')}")
+        p = os.path.join(dst, dir)
+        if not p.exists():
+            os.makedirs(p, exist_ok=True)
+
+        for jar in list(Path(os.path.join(src, dir)).glob("*.jar")):
+            if "-" not in jar.name:
+                shutil.copy(jar, p)
+                print(f"Copied {jar} to {p}")
 
     data_include = [
         "server_config_template"
