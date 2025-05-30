@@ -14,7 +14,8 @@ def main():
     for dir in jar_dir:
 
         p = os.path.join(dst, dir)
-        if not p.exists():
+        if not Path(p).exists():
+            print(f"Creating {p}")
             os.makedirs(p, exist_ok=True)
 
         for jar in list(Path(os.path.join(src, dir)).glob("*.jar")):
