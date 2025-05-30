@@ -23,9 +23,10 @@ def main():
     ]
 
     for item in data_include:
-        shutil.copy(
+        shutil.copytree(
             os.path.join(src, "data", item),
-            os.path.join(dst, "data", item)
+            os.path.join(dst, "data", item),
+            dirs_exist_ok=True
         )
     
 if __name__ == "__main__":
