@@ -4,7 +4,7 @@ from pathlib import Path
 
 def main():
     src = os.path.expanduser("~/project_epic/server_config")
-    dst = os.path.expanduser(os.getcwd(), "server_config")
+    dst = os.path.expanduser(os.path.join(os.getcwd(), "server_config"))
 
     for jar in list(Path(src).glob("*.jar")):
         if "-" not in jar.name:
