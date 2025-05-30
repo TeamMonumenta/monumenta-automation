@@ -9,12 +9,12 @@ def main():
     for jar in list(Path(src).glob("*.jar")):
         if "-" not in jar.name:
             shutil.copy(jar, dst)
-        print(f"Copied {jar} to {dst}")
+            print(f"Copied {jar} to {dst}")
     
     for jar in list(Path(os.path.join(src, 'plugins')).glob("*.jar")):
         if "-" not in jar.name:
             shutil.copy(jar, os.path.join(dst, 'plugins'))
-        print(f"Copied {jar} to {os.path.join(dst, 'plugins')}")
+            print(f"Copied {jar} to {os.path.join(dst, 'plugins')}")
     
 if __name__ == "__main__":
     main()
