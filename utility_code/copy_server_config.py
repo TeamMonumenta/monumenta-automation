@@ -27,6 +27,9 @@ def main():
         "server_config_template"
     ]
 
+    if not Path(os.path.join(dst, "data")).exists():
+        os.makedirs(os.path.join(dst, "data"), exist_ok=True)
+
     for item in data_include:
         shutil.copytree(
             os.path.join(src, "data", item),
@@ -44,6 +47,9 @@ def main():
         "ChestSort",
         "MonumentaNetworkChat"
     ]
+
+    if not Path(os.path.join(dst, "data/plugins/all")).exists():
+        os.makedirs(os.path.join(dst, "data/plugins/all"), exist_ok=True)   
 
     for item in data_plugins_all_include:
         shutil.copytree(
