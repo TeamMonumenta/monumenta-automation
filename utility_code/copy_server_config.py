@@ -21,7 +21,7 @@ def main():
         for jar in list(Path(os.path.join(src, dir)).glob("*.jar")):
             if "-" not in jar.name:
                 shutil.copy(jar, p)
-                print(f"Copied {jar} to {p}")
+                print(jar.name)
 
     data_include = [
         "server_config_template"
@@ -33,6 +33,25 @@ def main():
             os.path.join(dst, "data", item),
             dirs_exist_ok=True
         )
-    
+        print(item)
+
+    data_plugins_all_include = [
+        "dynmap",
+        "goPaint",
+        "goBrush",
+        "LibraryOfSouls",
+        "Monumenta",
+        "ChestSort",
+        "MonumentaNetworkChat"
+    ]
+
+    for item in data_plugins_all_include:
+        shutil.copytree(
+            os.path.join(src, "data/plugins/all", item),
+            os.path.join(dst, "data/plugins/all", item),
+            dirs_exist_ok=True
+        )
+        print(item)
+
 if __name__ == "__main__":
     main()
