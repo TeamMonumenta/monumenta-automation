@@ -58,7 +58,9 @@ def main():
         "LibraryOfSouls",
         "Monumenta",
         "ChestSort",
-        "MonumentaNetworkChat"
+        "MonumentaNetworkChat",
+        "AxiomPaper",
+        "HeadDatabase",
     ]
 
     if not Path(os.path.join(dst, "data/plugins/all")).exists():
