@@ -25,21 +25,21 @@
     "purgatory": {
         "play" : { "node": "m17", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "build": { "node": "m12", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
-        "stage": { "node": "m13", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
-        "volt" : { "node": "m12", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+        "stage": { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+        "volt" : { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
     },
 
     # R1
     "valley": {
         "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
         "build": { "node": "m12", "hugePageGB": 6, },
-        "stage": { "node": "m13", "hugePageGB": 3, },
-        "volt" : { "node": "m12", "hugePageGB": 3, },
+        "stage": { "node": "m18", "hugePageGB": 3, },
+        "volt" : { "node": "m18", "hugePageGB": 3, },
     },
     "valley-2": {
         "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
-        "stage": { "node": "m13", "hugePageGB": 3, },
-        "volt" : { "node": "m13", "hugePageGB": 3, },
+        "stage": { "node": "m18", "hugePageGB": 3, },
+        "volt" : { "node": "m17", "hugePageGB": 3, },
     },
     "valley-3": {
         "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
@@ -49,8 +49,8 @@
     "isles": {
         "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4},
         "build": { "node": "m12", "hugePageGB": 6, },
-        "stage": { "node": "m13", "hugePageGB": 4, },
-        "volt" : { "node": "m12", "hugePageGB": 4, },
+        "stage": { "node": "m18", "hugePageGB": 4, },
+        "volt" : { "node": "m18", "hugePageGB": 4, },
     },
     "isles-2": {
         "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4},
@@ -63,13 +63,13 @@
     "ring": {
         "play":  { "node": "m17", "hugePageGB": 8   , "cpuActiveProcessorCount": 4},
         "build": { "node": "m12", "hugePageGB": 6   , },
-        "stage": { "node": "m13", "hugePageGB": 3   , },
-        "volt" : { "node": "m12", "hugePageGB": 3   , },
+        "stage": { "node": "m18", "hugePageGB": 3   , },
+        "volt" : { "node": "m18", "hugePageGB": 3   , },
     },
     "ring-2":  {
         "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4},
-        "stage": { "node": "m13", "hugePageGB": 3   , },
-        "volt":  { "node": "m13", "hugePageGB": 3   , },
+        "stage": { "node": "m18", "hugePageGB": 3   , },
+        "volt":  { "node": "m17", "hugePageGB": 3   , },
     },
     "ring-3":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-4":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
@@ -85,173 +85,173 @@
     # Plots
     "plots": {
         "play" : { "node": "m17", "hugePageGB": 8, },
-        "stage": { "node": "m13", "hugePageGB": 6, },
-        "volt" : { "node": "m12", "hugePageGB": 6, },
+        "stage": { "node": "m18", "hugePageGB": 6, },
+        "volt" : { "node": "m18", "hugePageGB": 6, },
     },
 
     "playerplots": {
         "play":  { "node": "m17", "hugePageGB": 12, },
-        "stage": { "node": "m13", "hugePageGB": 4, },
-        "volt" : { "node": "m12", "hugePageGB": 4, },
+        "stage": { "node": "m18", "hugePageGB": 4, },
+        "volt" : { "node": "m18", "hugePageGB": 4, },
     },
 
     "guildplots": {
         "play":  { "node": "m17", "hugePageGB": 12, },
-        "stage": { "node": "m13", "hugePageGB": 6, },
-        "volt" : { "node": "m12", "hugePageGB": 6, },
+        "stage": { "node": "m18", "hugePageGB": 6, },
+        "volt" : { "node": "m18", "hugePageGB": 6, },
     },
 
     # Player build shard
     "build": {
         "play" : { "node": "m17", "hugePageGB": 3   , "gsheetCredentials": "false" },
-        "stage": { "node": "m13", "hugePageMB": 1536, "gsheetCredentials": "false" },
-        "volt" : { "node": "m12", "hugePageMB": 1536, "gsheetCredentials": "false" },
+        "stage": { "node": "m18", "hugePageMB": 1536, "gsheetCredentials": "false" },
+        "volt" : { "node": "m18", "hugePageMB": 1536, "gsheetCredentials": "false" },
     },
 
     # Dungeons
     "cyan": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "depths": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "depths-2": { "play" : { "node": "m17", "hugePageGB": 3, }, },
     "forum": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
-        "stage": { "node": "m13", "hugePageMB": 2048, },
-        "volt" : { "node": "m12", "hugePageMB": 2048, },
+        "stage": { "node": "m18", "hugePageMB": 2048, },
+        "volt" : { "node": "m18", "hugePageMB": 2048, },
     },
     "gray": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": m18", "hugePageMB": 1536, },
     },
     "labs": {
         "play" : { "node": "m17", "hugePageGB": 6   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "lightblue": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "lightgray": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "lime": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "magenta": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "orange": {
         "play" : { "node": "m17", "hugePageGB": 3, },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "pink": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "purple": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "reverie": {
         "play" : { "node": "m17", "hugePageGB": 6   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "corridors": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "rush": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "shiftingcity": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageGB": 3   , },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageGB": 3   , },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "teal": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "tutorial": {
         "play" : { "node": "m17", "hugePageGB": 5   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "white": {
         "play" : { "node": "m17", "hugePageGB": 3, },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "willows": {
         "play" : { "node": "m17", "hugePageGB": 5,    },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "yellow": {
         "play" : { "node": "m17", "hugePageGB": 5   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
 
     "gallery": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
-        "stage": { "node": "m13", "hugePageGB": 3   , },
-        "volt" : { "node": "m12", "hugePageGB": 3   , },
+        "stage": { "node": "m18", "hugePageGB": 3   , },
+        "volt" : { "node": "m18", "hugePageGB": 3   , },
     },
 
     "blue": {
         "play" : { "node": "m17", "hugePageGB": 5   , "memGB": 4 },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
 
     "brown": {
         "play" : { "node": "m17", "hugePageGB": 5   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
 
     "hexfall": {
         "play" : { "node": "m17", "hugePageGB": 5   , },
-        "stage": { "node": "m13", "hugePageGB": 3   , },
-        "volt" : { "node": "m12", "hugePageGB": 3   , },
+        "stage": { "node": "m18", "hugePageGB": 3   , },
+        "volt" : { "node": "m18", "hugePageGB": 3   , },
     },
     "skt": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
-        "stage": { "node": "m13", "hugePageMB": 1536, },
-        "volt" : { "node": "m12", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "zenith": {
         "play" : { "node": "m17", "hugePageGB":    4, },
-        "stage": { "node": "m13", "hugePageGB":    3, },
-        "volt" : { "node": "m12", "hugePageGB":    3, },
+        "stage": { "node": "m18", "hugePageGB":    3, },
+        "volt" : { "node": "m18", "hugePageGB":    3, },
     },
     "zenith-2":  {
         "play": { "node": "m17", "hugePageGB": 4, },
-        "volt": { "node": "m13", "hugePageGB": 3, },
+        "volt": { "node": "m17", "hugePageGB": 3, },
     },
 }
 
@@ -268,6 +268,7 @@
     "m12": { "full_name": "monumenta-12", "mem_total_kB": 131621592, "huge_pages":  43000, "huge_page_size_kB": 2048 },
     "m13": { "full_name": "monumenta-13", "mem_total_kB": 131841792, "huge_pages":  48000, "huge_page_size_kB": 2048 },
     "m17": { "full_name": "monumenta-17", "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048 },
+    "m18": { "full_name": "monumenta-18", "mem_total_kB": 263971944, "huge_pages":  85000, "huge_page_size_kB": 2048 },
 
     # These are not real hosts and exist purely for planning where to put new shards
     "new": { "full_name": "monumenta-new", "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048 },

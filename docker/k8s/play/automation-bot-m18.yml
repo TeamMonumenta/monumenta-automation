@@ -5,21 +5,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: automation-bot-m13
+  name: automation-bot-m18
   namespace: play
   labels:
-    app: automation-bot-m13
+    app: automation-bot-m18
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: automation-bot-m13
+      app: automation-bot-m18
   template:
     metadata:
       labels:
-        app: automation-bot-m13
+        app: automation-bot-m18
     spec:
       affinity:
         nodeAffinity:
@@ -29,13 +29,13 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-13
+                - monumenta-18
       serviceAccountName: automation-bot-service-account
       volumes:
-        - name: nfs-play-m13
+        - name: nfs-play-m18
           hostPath:
             type: Directory
-            path: /nfs/play/m13
+            path: /nfs/play/m18
         - name: nfs-old-backups
           hostPath:
             type: Directory
@@ -58,15 +58,15 @@ spec:
             path: /nfs/5_SCRATCH
         - name: secret-config
           secret:
-            secretName: automation-bot-m13-config
+            secretName: automation-bot-m18-config
       containers:
       - name: automation-bot
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
         tty: false
         stdin: false
         volumeMounts:
-        - name: nfs-play-m13
-          mountPath: /home/epic/play/m13
+        - name: nfs-play-m18
+          mountPath: /home/epic/play/m18
         - name: nfs-old-backups
           mountPath: /home/epic/0_OLD_BACKUPS
           # XXX NOTE

@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: zfs-snapshot-manager-m13
+  name: zfs-snapshot-manager-m18
   namespace: kube-system
 spec:
   selector:
-    app: zfs-snapshot-manager-m13
+    app: zfs-snapshot-manager-m18
   clusterIP: None
   ports:
   - name: api
@@ -16,7 +16,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: zfs-snapshot-manager-m13-config
+  name: zfs-snapshot-manager-m18-config
   namespace: kube-system
 data:
   config.yaml: |
@@ -31,21 +31,21 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zfs-snapshot-manager-m13
+  name: zfs-snapshot-manager-m18
   namespace: kube-system
   labels:
-    app: zfs-snapshot-manager-m13
+    app: zfs-snapshot-manager-m18
 spec:
   strategy:
     type: Recreate
   replicas: 1
   selector:
     matchLabels:
-      app: zfs-snapshot-manager-m13
+      app: zfs-snapshot-manager-m18
   template:
     metadata:
       labels:
-        app: zfs-snapshot-manager-m13
+        app: zfs-snapshot-manager-m18
     spec:
       affinity:
         nodeAffinity:
@@ -55,11 +55,11 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-13
+                - monumenta-18
       volumes:
-        - name: zfs-snapshot-manager-m13-config
+        - name: zfs-snapshot-manager-m18-config
           configMap:
-            name: zfs-snapshot-manager-m13-config
+            name: zfs-snapshot-manager-m18-config
         - name: zfs-device
           hostPath:
             path: /dev/zfs
@@ -76,7 +76,7 @@ spec:
         - containerPort: 8080
           name: api
         volumeMounts:
-        - name: zfs-snapshot-manager-m13-config
+        - name: zfs-snapshot-manager-m18-config
           mountPath: /app/config.yaml
           subPath: config.yaml
         - name: zfs-device

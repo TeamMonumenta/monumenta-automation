@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 	"zfs-snapshot-manager/internal/config"
 )
@@ -60,7 +61,7 @@ func FreeHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 		return
 	}
 
-	cmd := exec.Command("zfs", "list", dataset)
+	cmd := exec.Command("zfs", "list", "-p", dataset)
 	log.Printf("Running command: %s", cmd.String())
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -80,17 +81,12 @@ func FreeHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 		return
 	}
 
-	free := parseSize(fields[2])
-	respondWithJSON(w, http.StatusOK, map[string]string{"free": free})
-}
-
-func parseSize(size string) string {
-	if strings.HasSuffix(size, "G") {
-		return strings.TrimSuffix(size, "G")
-	} else if strings.HasSuffix(size, "M") {
-		return "0"
+	freeBytes, err := strconv.ParseInt(fields[2], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Unexpected value of free space '%s': %v'", fields[2], err), http.StatusInternalServerError)
 	}
-	return "0"
+	free := fmt.Sprintf("%d", freeBytes/(1024*1024*1024))
+	respondWithJSON(w, http.StatusOK, map[string]string{"free": free})
 }
 
 func ListHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {

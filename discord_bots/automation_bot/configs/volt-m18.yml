@@ -3,7 +3,7 @@ prefix: '~'
 rabbitmq:
     host: "rabbitmq"
     # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
-    name: "automation-bot"
+    name: "automation-bot-m18"
     # Whether the queue will persist when the connection is closed
     durable: True
     # Whether this queue will be able to receive messages or not
@@ -13,36 +13,32 @@ rabbitmq:
     log_level: 20
 
     # build-mod-alerts
-    audit_severe_channel: 1167973574427029555
-    # build-admin-notices
-    admin_channel: 1167973644115386459
+    audit_severe_channel: 1167973755549667410
     # mail-audit-log
-    mail_audit_channel: 1291153788161495091
+    mail_audit_channel: 1255928805969891419
+    # build-admin-notices
+    admin_channel: 1167973800940412988
 
-k8s_namespace: "stage"
+k8s_namespace: "volt"
 
-reactions_enabled: True
+reactions_enabled: False
 
 ignored_reaction_channels:
-    # rules - doesn't actually matter, just a placeholder for stage bot
+    # rules - doesn't actually matter, just a placeholder for volt bot
     - 704049401588613161,
 
 channels:
-    # stage-bot (dev discord)
-    - 673309184564920347
+    # volt-bot (dev discord)
+    - 1160660685982806106
 
-# stage-status (dev discord)
-status_channel: 1200853620271349764
+# volt-status (dev discord)
+status_channel: 1193446138062327878
 
-server_dir: /home/epic/stage/m13
+server_dir: /home/epic/volt/m18
 
 cpu_count: 12
 
 stage_source:
-    m13:
-        queue_name: automation-bot-m13
-        shards:
-            - velocity-13
     m17:
         queue_name: automation-bot
         shards:
@@ -71,67 +67,69 @@ stage_source:
             - purple
             - reverie
             - ring
-            - ring-2
             - rush
-            - server_config
             - shiftingcity
             - skt
             - teal
             - tutorial
             - valley
-            - valley-2
             - white
             - willows
             - yellow
             - zenith
+    m18:
+        queue_name: automation-bot-m18
+        shards:
+            - server_config
+            - velocity-18
 
-dynmap_dir: /home/epic/stage/maps
+common_weekly_update_tasks: true
+
+dynmap_dir: /home/epic/volt/maps
 
 shards:
-    blue: /home/epic/stage/m13/blue/
-    brown: /home/epic/stage/m13/brown/
-    build: /home/epic/stage/m13/build/
-    corridors: /home/epic/stage/m13/corridors/
-    cyan: /home/epic/stage/m13/cyan/
-    depths: /home/epic/stage/m13/depths/
-    forum: /home/epic/stage/m13/forum/
-    gallery: /home/epic/stage/m13/gallery/
-    gray: /home/epic/stage/m13/gray/
-    guildplots: /home/epic/stage/m13/guildplots/
-    hexfall: /home/epic/stage/m13/hexfall/
-    isles: /home/epic/stage/m13/isles/
-    labs: /home/epic/stage/m13/labs/
-    lightblue: /home/epic/stage/m13/lightblue/
-    lightgray: /home/epic/stage/m13/lightgray/
-    lime: /home/epic/stage/m13/lime/
-    magenta: /home/epic/stage/m13/magenta/
-    orange: /home/epic/stage/m13/orange/
-    pink: /home/epic/stage/m13/pink/
-    playerplots: /home/epic/stage/m13/playerplots/
-    plots: /home/epic/stage/m13/plots/
-    purgatory: /home/epic/stage/m13/purgatory/
-    purple: /home/epic/stage/m13/purple/
-    reverie: /home/epic/stage/m13/reverie/
-    ring: /home/epic/stage/m13/ring/
-    ring-2: /home/epic/stage/m13/ring-2/
-    rush: /home/epic/stage/m13/rush/
-    shiftingcity: /home/epic/stage/m13/shiftingcity/
-    skt: /home/epic/stage/m13/skt/
-    teal: /home/epic/stage/m13/teal/
-    tutorial: /home/epic/stage/m13/tutorial/
-    valley-2: /home/epic/stage/m13/valley-2/
-    valley: /home/epic/stage/m13/valley/
-    velocity-13: /home/epic/stage/m13/velocity-13/
-    white: /home/epic/stage/m13/white/
-    willows: /home/epic/stage/m13/willows/
-    yellow: /home/epic/stage/m13/yellow/
-    zenith: /home/epic/stage/m13/zenith/
+    blue: /home/epic/volt/m18/blue/
+    brown: /home/epic/volt/m18/brown/
+    build: /home/epic/volt/m18/build/
+    corridors: /home/epic/volt/m18/corridors/
+    cyan: /home/epic/volt/m18/cyan/
+    depths: /home/epic/volt/m18/depths/
+    forum: /home/epic/volt/m18/forum/
+    gallery: /home/epic/volt/m18/gallery/
+    gray: /home/epic/volt/m18/gray/
+    guildplots: /home/epic/volt/m18/guildplots/
+    hexfall: /home/epic/volt/m18/hexfall/
+    isles: /home/epic/volt/m18/isles/
+    labs: /home/epic/volt/m18/labs/
+    lightblue: /home/epic/volt/m18/lightblue/
+    lightgray: /home/epic/volt/m18/lightgray/
+    lime: /home/epic/volt/m18/lime/
+    magenta: /home/epic/volt/m18/magenta/
+    orange: /home/epic/volt/m18/orange/
+    pink: /home/epic/volt/m18/pink/
+    playerplots: /home/epic/volt/m18/playerplots/
+    plots: /home/epic/volt/m18/plots/
+    purgatory: /home/epic/volt/m18/purgatory/
+    purple: /home/epic/volt/m18/purple/
+    reverie: /home/epic/volt/m18/reverie/
+    ring: /home/epic/volt/m18/ring/
+    rush: /home/epic/volt/m18/rush/
+    shiftingcity: /home/epic/volt/m18/shiftingcity/
+    skt: /home/epic/volt/m18/skt/
+    teal: /home/epic/volt/m18/teal/
+    tutorial: /home/epic/volt/m18/tutorial/
+    valley: /home/epic/volt/m18/valley/
+    velocity-18: /home/epic/volt/m18/velocity-18/
+    white: /home/epic/volt/m18/white/
+    willows: /home/epic/volt/m18/willows/
+    yellow: /home/epic/volt/m18/yellow/
+    zenith: /home/epic/volt/m18/zenith/
 
 commands:
     - apply stage bundle
     - broadcastcommand
-    - broadcastminecraftcommand
     - broadcastproxycommand
+    - broadcastminecraftcommand
     - lockout
     - lockout check *
     - lockout check
@@ -181,6 +179,7 @@ permissions:
         192645668592943104: {"name": "Njol",        "rights": [ "@root" ]}
         222170304577929218: {"name": "U5B_",        "rights": [ "@root" ]}
         503202330284392452: {"name": "Floweynt",    "rights": [ "@root" ]}
+        301924109007454217: {"name": "shotoh",      "rights": [ "@root" ]}
 
     groups_by_role:
         # Team Monumenta (Private discord)
@@ -195,43 +194,40 @@ permissions:
         "@team monumenta":
             - "@intern"
         "@intern":
-            - "+apply stage bundle"
             - "+broadcastcommand"
-            - "+broadcastminecraftcommand"
             - "+broadcastproxycommand"
-            - "+debug"
-            - "+fetch update bundle"
-            - "+get errors"
-            - "+get score"
-            - "+get timestamp"
-            - "+help"
-            - "+list bots"
-            - "+list shards"
-            - "+badname"
+            - "+broadcastminecraftcommand"
+            - "+lockout"
             - "+lockout check *"
             - "+lockout check"
-            - "+lockout claim"
             - "+lockout clear"
-            - "+lockout"
+            - "+lockout claim"
+            - "+debug"
+            - "+help"
+            - "+get timestamp"
+            - "+remind"
+            - "+remind me"
+            - "+list bots"
+            - "+get errors"
+            - "+list shards"
+            - "+badname"
             - "+player find"
             - "+player rollback"
             - "+player shard"
             - "+player transfer"
             - "+player wipe"
-            - "+remind me"
-            - "+remind"
-            - "+restart"
-            - "+set score"
+            - "+apply stage bundle"
             - "+stage"
+            - "+restart"
             - "+start"
-            - "+stop and backup"
-            - "+stop at"
             - "+stop"
+            - "+stop at"
             - "+test"
             - "+testpriv"
-            - "+verbose"
             - "+view scores"
-            - "+weekly update"
+            - "+get score"
+            - "+set score"
+            - "+verbose"
         "@everyone":
             - "+select"
             - "+help"

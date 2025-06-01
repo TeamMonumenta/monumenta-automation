@@ -13,6 +13,9 @@ from quarry.types import nbt
 from quarry.types.chunk import PackedArray
 
 
+MONUMENTA_NAMESPACE = uuid.UUID('444c3990-e4e4-4c28-97c7-a8f6b1f09d30')
+
+
 def eprint(*args, **kwargs):
     """
     Convenience function identical to print() but to stderr
@@ -127,6 +130,11 @@ def uuid_to_mc_uuid_tag_int_array(uuid: uuid):
         uuid_components_centered.append(uuid_component)
 
     return nbt.TagIntArray(PackedArray.from_int_list(uuid_components_centered, 32))
+
+
+def get_shard_uuid(server_name: str) -> uuid.UUID:
+    """Returns a shard's UUID as generated from its name"""
+    return uuid.uuid5(MONUMENTA_NAMESPACE, server_name)
 
 
 def json_text_to_plain_text(json_text):
