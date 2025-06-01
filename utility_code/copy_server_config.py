@@ -3,6 +3,9 @@ import os
 from pathlib import Path
 
 def main():
+    if not Path(os.path.join(os.getcwd(), "server_config")).exists():
+        os.makedirs(os.path.join(os.getcwd(), "server_config"), exist_ok=True)
+        
     src = os.path.expanduser("~/project_epic/server_config")
     dst = os.path.expanduser(os.path.join(os.getcwd(), "server_config"))
 
@@ -12,17 +15,27 @@ def main():
         "mods"
     ]
     for dir in jar_dir:
-
         p = os.path.join(dst, dir)
         if not Path(p).exists():
             print(f"Creating {p}")
             os.makedirs(p, exist_ok=True)
 
         for jar in list(Path(os.path.join(src, dir)).glob("*.jar")):
-            if "-" not in jar.name:
+            if not any(c.isdigit() for c in jar.name):
                 shutil.copy(jar, p)
                 print(jar.name)
 
+    for dir in [p for p in Path(os.path.join(src, "plugins")).iterdir() if p.is_dir()]:
+        p = os.path.join(dst, "plugins", dir.name)
+        if not Path(p).exists():
+            print(f"Creating {p}")
+            os.makedirs(p, exist_ok=True)
+        shutil.copytree(
+            os.path.join(src, "plugins", dir.name),
+            os.path.join(dst, "plugins", dir.name),
+            dirs_exist_ok=True
+        )
+        
     data_include = [
         "server_config_template"
     ]
