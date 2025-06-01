@@ -59,5 +59,27 @@ def main():
         )
         print(item)
 
+    data_datapacks_include = [
+        "base",
+        "bukkit",
+        "vanilla"
+    ]
+
+    
+    if not Path(os.path.join(dst, "data/datapacks")).exists():
+        os.makedirs(os.path.join(dst, "data/datapacks"), exist_ok=True)   
+
+    for item in data_datapacks_include:
+        shutil.copytree(
+            os.path.join(src, "data/datapacks", item),
+            os.path.join(dst, "data/datapacks", item),
+            dirs_exist_ok=True
+        )
+        print(item)
+    
+    if not Path(os.path.join(dst, "data/generated")).exists():
+        os.makedirs(os.path.join(dst, "data/generated"), exist_ok=True)   
+
+
 if __name__ == "__main__":
     main()
