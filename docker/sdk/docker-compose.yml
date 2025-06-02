@@ -1,0 +1,71 @@
+name: monumenta-sdk
+services:
+    rabbitmq:
+        container_name: rabbitmq
+        image: rabbitmq:3.12-management
+        networks:
+            - sdk-network
+        restart: unless-stopped
+        volumes:
+            - ./rabbitmq.conf:/etc/rabbitmq/conf.d/20-monumenta-custom.conf
+    redis:
+        container_name: redis
+        image: redis:7.4.0
+        networks:
+            - sdk-network
+        restart: unless-stopped
+        volumes:
+            - ./redis/data:/data
+            - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+        command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+        user: "${UID}:${GID}"
+    velocity:
+        container_name: velocity
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-jbr-shard-21
+        depends_on:
+            - redis
+            - rabbitmq
+        networks:
+            - sdk-network
+        restart: unless-stopped
+        volumes:
+            - .:/home/epic/sdk
+        environment:
+            SERVER_DIR: /home/epic/sdk/velocity/
+            JAVA_JAR: velocity.jar
+            JAVA_MEM: 1G
+        user: "${UID}:${GID}"
+    sdk1:
+        container_name: sdk1
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-jbr-shard-21
+        depends_on:
+            - redis
+            - rabbitmq
+        networks:
+            - sdk-network
+        restart: unless-stopped
+        volumes:
+            - .:/home/epic/sdk
+        environment:
+            SERVER_DIR: /home/epic/sdk/sdk1/
+            JAVA_JAR: server.jar
+            JAVA_MEM: 2G
+        user: "${UID}:${GID}"
+    sdk2:
+        container_name: sdk2
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-jbr-shard-21
+        depends_on:
+            - redis
+            - rabbitmq
+        networks:
+            - sdk-network
+        restart: unless-stopped
+        volumes:
+            - .:/home/epic/sdk
+        environment:
+            SERVER_DIR: /home/epic/sdk/sdk2/
+            JAVA_JAR: server.jar
+            JAVA_MEM: 2G
+        user: "${UID}:${GID}"
+networks:
+    sdk-network:
