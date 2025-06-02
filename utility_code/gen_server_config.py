@@ -613,20 +613,6 @@ if __name__ == '__main__':
             'linked':server_config + base_plugins + dynmap,
         },
 
-        'sdk1':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'difficulty', 'difficulty=normal'),
-            ],
-            'linked':server_config + base_plugins + dynmap,
-        },
-
-        'sdk2':{
-            'config':server_config_to_copy + [
-                ('server.properties', 'difficulty', 'difficulty=normal'),
-            ],
-            'linked':server_config + base_plugins + dynmap,
-        },
-
         'dev1':{
             'config':server_config_to_copy + [
                 ('server.properties', 'difficulty', 'difficulty=normal'),
@@ -714,8 +700,6 @@ if __name__ == '__main__':
     }
 
     simple_view_distance_config = {
-        'sdk1': 10,
-        'sdk2': 10,
         'blue': 10,
         'brown': 11,
         'build': 10,
@@ -783,8 +767,6 @@ if __name__ == '__main__':
         ]
 
     simple_simulation_distance_config = {
-        'sdk1': 6,
-        'sdk2': 6,
         'blue': 8,
         'brown': 10,
         'build': 8,
