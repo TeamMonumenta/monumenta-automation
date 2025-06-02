@@ -16,6 +16,9 @@ def main():
         "plugins",
         "mods"
     ]
+    jar_exclude = [
+        "velocity-prometheus-exporter.jar"
+    ]
     for dir in jar_dir:
         p = os.path.join(dst, dir)
         if not Path(p).exists():
@@ -23,7 +26,7 @@ def main():
             os.makedirs(p, exist_ok=True)
 
         for jar in list(Path(os.path.join(src, dir)).glob("*.jar")):
-            if not any(c.isdigit() for c in jar.name):
+            if not (any(c.isdigit() for c in jar.name) or jar.name in jar_exclude):
                 shutil.copy(jar, p)
                 print(jar.name)
 
