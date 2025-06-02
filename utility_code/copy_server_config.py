@@ -98,8 +98,24 @@ def main():
         print(item)
     
     data_plugins_proxy_include = [
-        
+        "litebans",
+        "monumenta-network-relay",
+        "monumenta-redisapi",
+        "monumenta-velocity",
+        "nuvotifier",
+        "premiumvanish"
     ]
+
+    if not Path(os.path.join(dst, "data/plugins/proxy")).exists():
+        os.makedirs(os.path.join(dst, "data/plugins/proxy"), exist_ok=True)
+        
+    for item in data_plugins_proxy_include:
+        shutil.copytree(
+            os.path.join(src, "data/plugins/proxy", item),
+            os.path.join(dst, "data/plugins/proxy", item),
+            dirs_exist_ok=True
+        )
+        print(item)
     
     if not Path(os.path.join(dst, "data/generated")).exists():
         os.makedirs(os.path.join(dst, "data/generated"), exist_ok=True)   
