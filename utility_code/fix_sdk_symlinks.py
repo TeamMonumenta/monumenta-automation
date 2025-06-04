@@ -6,8 +6,8 @@ from pathlib import Path
 
 def main():
     symlinked_paths = [
-        ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
-        ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
+        ('velocity/plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
+        ('velocity/plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
     ]
 
     for src, dst in symlinked_paths:
