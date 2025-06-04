@@ -15,7 +15,7 @@ def main():
         dst_path = Path(dst)
 
         os.unlink(dst_path)
-        shutil.copy2(src_path, dst_path)
+        shutil.copy2(dst_path, src_path)
 
         print(f"Updated symlink: {dst_path} -> {src_path}")
 
