@@ -277,8 +277,6 @@ if __name__ == '__main__':
         ('plugins/monumenta-redisapi/config.yaml',),
         ('velocity.toml',),
         ('forwarding.secret',),
-        ('plugins/monumenta-network-relay/config.yaml',),
-        ('plugins/monumenta-velocity/config.yaml')
     ]
 
     proxy_link = [
@@ -295,7 +293,9 @@ if __name__ == '__main__':
         ('plugins/luckperms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
         ('plugins/Maintenance-Velocity.jar', '../../server_config/plugins/Maintenance-Velocity.jar'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
+        ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
+        ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
         ('plugins/RedisSync.jar', '../../server_config/plugins/RedisSync.jar'),
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
