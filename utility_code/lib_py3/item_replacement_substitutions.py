@@ -268,6 +268,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
                 # Remove the Extinguished Horseman's Head from April Fools
                 ["minecraft:player_head", "Extinguished Horseman's Head", "minecraft:rotten_flesh", "Decayed Item"],
+                # Weak Shield -> Rusty Shield
+                ["minecraft:shield", "Weak Shield", "minecraft:shield", "Rusty Shield"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
