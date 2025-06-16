@@ -113,9 +113,7 @@ spec:
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
-          value: "2G"
-        - name: "JAVA_META_MEM"
-          value: "256M"
+          value: "8G"
         - name: "JAVA_JAR"
           value: "velocity.jar"
         - name: "SERVER_DIR"
@@ -154,9 +152,9 @@ spec:
         resources:
           limits:
             cpu: "8"
-            memory: 2608Mi
-            hugepages-2Mi: 4608Mi
+            memory: 12Gi
+            hugepages-2Mi: 12Gi
           requests:
             cpu: "1"
-            memory: 2608Mi
-            hugepages-2Mi: 4608Mi
+            memory: 12Gi
+            hugepages-2Mi: 12Gi
