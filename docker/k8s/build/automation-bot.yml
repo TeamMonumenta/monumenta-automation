@@ -76,13 +76,13 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - monumenta-18
       serviceAccountName: automation-bot-service-account
       volumes:
         - name: nfs-data
           hostPath:
             type: Directory
-            path: /nfs/build/m12
+            path: /nfs/build/m18
         - name: nfs-old-backups
           hostPath:
             type: Directory

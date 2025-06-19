@@ -26,7 +26,7 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                    - monumenta-12
+                    - monumenta-18
           serviceAccountName: automation-bot-service-account
           volumes:
           - name: secret-config
@@ -35,7 +35,7 @@ spec:
           - name: nfs-data
             hostPath:
               type: Directory
-              path: /nfs/build/m12/bungee/plugins/BungeeDisplay
+              path: /nfs/build/m18/bungee/plugins/BungeeDisplay
           containers:
           - name: cron-automated-restart
             image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot

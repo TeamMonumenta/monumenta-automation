@@ -12,19 +12,19 @@ rabbitmq:
     # Levels - from https://docs.python.org/3/library/logging.html#levels
     log_level: 20
 
-k8s_namespace: "volt"
+k8s_namespace: "stage"
 
 reactions_enabled: False
 
 ignored_reaction_channels:
-    # rules - doesn't actually matter, just a placeholder for volt bot
+    # rules - doesn't actually matter, just a placeholder for stage bot
     - 704049401588613161,
 
 channels:
-    # volt-bot (dev discord)
-    - 1160660685982806106
+    # stage-bot (dev discord)
+    - 673309184564920347
 
-server_dir: /home/epic/volt/m17
+server_dir: /home/epic/stage/m17
 
 cpu_count: 6
 
@@ -41,10 +41,10 @@ stage_source:
 common_weekly_update_tasks: false
 
 shards:
-    ring-2: /home/epic/volt/m17/ring-2/
-    valley-2: /home/epic/volt/m17/valley-2/
-    velocity-17: /home/epic/volt/m17/velocity-17/
-    zenith-2: /home/epic/volt/m17/zenith-2/
+    ring-2: /home/epic/stage/m17/ring-2/
+    valley-2: /home/epic/stage/m17/valley-2/
+    velocity-17: /home/epic/stage/m17/velocity-17/
+    zenith-2: /home/epic/stage/m17/zenith-2/
 
 commands:
     - apply stage bundle

@@ -50,7 +50,7 @@ shards:
     dungeon: /home/epic/project_epic/dungeon/
     event: /home/epic/project_epic/event/
     test: /home/epic/project_epic/test/
-    velocity-12: /home/epic/project_epic/velocity-12/
+    velocity-18: /home/epic/project_epic/velocity-18/
 
 commands:
     - broadcastcommand

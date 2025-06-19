@@ -1,0 +1,128 @@
+# Service / internal network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: velocity-18
+  namespace: build
+  labels:
+    app: velocity-18
+    k8s-app: monumenta-metrics
+spec:
+  type: ClusterIP
+  selector:
+    app: velocity-18-nodeport
+  ports:
+  - name: monumenta-socket
+    port: 9576
+    targetPort: 9576
+  - name: metrics
+    port: 9225
+    targetPort: 9225
+
+---
+
+# Service / external network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: velocity-18-nodeport
+  namespace: build
+  labels:
+    app: velocity-18
+spec:
+  type: NodePort
+  #externalTrafficPolicy: Local
+  selector:
+    app: velocity-18
+  ports:
+  - name: minecraft
+    port: 9001
+    nodePort: 9001
+    targetPort: 25566
+
+---
+
+# Deployment / the actual running application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velocity-18
+  namespace: build
+  labels:
+    app: velocity-18
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: velocity-18
+  template:
+    metadata:
+      labels:
+        app: velocity-18
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-18
+      volumes:
+        - name: nfs-volume
+          hostPath:
+            type: Directory
+            path: /nfs/build/m18
+      containers:
+      - name: velocity-18
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 25566
+        - containerPort: 9225
+        env:
+        - name: "JAVA_MEM"
+          value: "512M"
+        - name: "JAVA_META_MEM"
+          value: "128M"
+        - name: "JAVA_JAR"
+          value: "velocity.jar"
+        - name: "SERVER_DIR"
+          value: "/home/epic/build/m18/velocity-18"
+        - name: "JAVA_LARGE_PAGES"
+          value: "yes"
+        - name: "NETWORK_RELAY_NAME"
+          value: velocity-18
+        - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
+          value: "false"
+        readinessProbe:
+          tcpSocket:
+            port: 25566
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 25566
+          initialDelaySeconds: 240
+          timeoutSeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /home/epic/build/m18
+        resources:
+          limits:
+            cpu: 4
+            memory: 2Gi
+            hugepages-2Mi: 1024Mi
+          requests:
+            cpu: 1
+            memory: 64Mi
+            hugepages-2Mi: 1024Mi

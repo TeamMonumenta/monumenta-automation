@@ -36,7 +36,7 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - monumenta-18
       containers:
       - image: redis:5
         name: redistest

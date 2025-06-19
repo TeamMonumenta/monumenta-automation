@@ -55,10 +55,6 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/4_SHARED/global_chat_filters
-        - name: chat-help-m12
-          hostPath:
-            type: Directory
-            path: /nfs/play/m12/server_config/data/plugins/all/MonumentaNetworkChat/help
         - name: chat-help-m17
           hostPath:
             type: Directory
@@ -85,8 +81,6 @@ spec:
         volumeMounts:
         - name: chat-global-filters
           mountPath: /home/epic/global_chat_filters
-        - name: chat-help-m12
-          mountPath: /home/epic/m12/MonumentaNetworkChat/help
         - name: chat-help-m17
           mountPath: /home/epic/m17/MonumentaNetworkChat/help
         - name: chat-help-m18

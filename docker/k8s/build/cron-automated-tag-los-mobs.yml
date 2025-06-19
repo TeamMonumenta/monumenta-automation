@@ -24,12 +24,12 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                    - monumenta-12
+                    - monumenta-18
           volumes:
           - name: nfs-data
             hostPath:
               type: Directory
-              path: /nfs/build/m12
+              path: /nfs/build/m18
           containers:
           - name: cron-automated-tag-los-mobs
             image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot

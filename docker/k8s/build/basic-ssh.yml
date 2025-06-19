@@ -49,80 +49,80 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - monumenta-18
       volumes:
         - name: nfs-data
           hostPath:
             type: Directory
-            path: /nfs/build/m12/server_config/data
+            path: /nfs/build/m18/server_config/data
         - name: nfs-dev1-logs
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev1/logs
+            path: /nfs/build/m18/dev1/logs
         - name: nfs-dev1-plugins
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev1/plugins
+            path: /nfs/build/m18/dev1/plugins
         - name: nfs-dev1-mods
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev1/mods
+            path: /nfs/build/m18/dev1/mods
         - name: nfs-dev2-logs
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev2/logs
+            path: /nfs/build/m18/dev2/logs
         - name: nfs-dev2-plugins
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev2/plugins
+            path: /nfs/build/m18/dev2/plugins
         - name: nfs-dev2-mods
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev2/mods
+            path: /nfs/build/m18/dev2/mods
         - name: nfs-dev3-logs
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev3/logs
+            path: /nfs/build/m18/dev3/logs
         - name: nfs-dev3-plugins
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev3/plugins
+            path: /nfs/build/m18/dev3/plugins
         - name: nfs-dev3-mods
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev3/mods
+            path: /nfs/build/m18/dev3/mods
         - name: nfs-dev4-logs
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev4/logs
+            path: /nfs/build/m18/dev4/logs
         - name: nfs-dev4-plugins
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev4/plugins
+            path: /nfs/build/m18/dev4/plugins
         - name: nfs-dev4-mods
           hostPath:
             type: Directory
-            path: /nfs/build/m12/dev4/mods
+            path: /nfs/build/m18/dev4/mods
         - name: nfs-futurama-all
           hostPath:
             type: Directory
-            path: /nfs/build/m12/futurama
+            path: /nfs/build/m18/futurama
         - name: nfs-futurama-logs
           hostPath:
             type: Directory
-            path: /nfs/build/m12/futurama/logs
+            path: /nfs/build/m18/futurama/logs
         - name: nfs-futurama-plugins
           hostPath:
             type: Directory
-            path: /nfs/build/m12/futurama/plugins
+            path: /nfs/build/m18/futurama/plugins
         - name: nfs-mobs-logs
           hostPath:
             type: Directory
-            path: /nfs/build/m12/mobs/logs
+            path: /nfs/build/m18/mobs/logs
         - name: nfs-mobs-plugins
           hostPath:
             type: Directory
-            path: /nfs/build/m12/mobs/plugins
+            path: /nfs/build/m18/mobs/plugins
         - name: nfs-schematics
           hostPath:
             type: Directory
@@ -147,14 +147,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/volt/m18
-        - name: nfs-community-m12
-          hostPath:
-            type: Directory
-            path: /nfs/community/m12
         - name: nfs-r1
           hostPath:
             type: Directory
-            path: /nfs/build/m12/valley
+            path: /nfs/build/m18/valley
         - name: nfs-lockouts
           hostPath:
             type: Directory
@@ -259,8 +255,6 @@ spec:
           mountPath: /home/epic/volt/m17
         - name: nfs-volt-m18
           mountPath: /home/epic/volt/m18
-        - name: nfs-community-m12
-          mountPath: /home/epic/community/m12
         - name: nfs-r1
           mountPath: /home/epic/valley
         - name: nfs-lockouts

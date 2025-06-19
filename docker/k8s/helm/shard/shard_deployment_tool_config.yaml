@@ -10,21 +10,21 @@
 #   memGB OR memMB
 "shard_config": {
     # Shards that only exist on build
-    "dev1"               : { "build": { "node": "m12", "hugePageMB": 2560, }, },
-    "dev2"               : { "build": { "node": "m12", "hugePageMB": 2560, }, },
-    "dev3"               : { "build": { "node": "m12", "hugePageMB": 2560, }, },
-    "dev4"               : { "build": { "node": "m12", "hugePageMB": 2560, }, },
-    "mobs"               : { "build": { "node": "m12", "hugePageMB": 2560, }, },
-    "dungeon"            : { "build": { "node": "m12", "hugePageGB": 8   , }, },
-    #"futurama"           : { "build": { "node": "m12", "hugePageGB": 3   , }, }, # Re-enable later
-    #"test"               : { "build": { "node": "m12", "hugePageGB": 3   , }, }, # Re-enable later
-    "event"              : { "build": { "node": "m12", "hugePageGB": 3   , }, },
-    "monumenta-sdk"      : { "build": { "node": "m12", "hugePageGB": 3   , "nodePort": 22221, }, },
+    "dev1"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
+    "dev2"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
+    "dev3"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
+    "dev4"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
+    "mobs"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
+    "dungeon"            : { "build": { "node": "m18", "hugePageGB": 8   , }, },
+    #"futurama"           : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
+    #"test"               : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
+    "event"              : { "build": { "node": "m18", "hugePageGB": 3   , }, },
+    "monumenta-sdk"      : { "build": { "node": "m18", "hugePageGB": 3   , "nodePort": 22221, }, },
 
     # Purgatory
     "purgatory": {
         "play" : { "node": "m17", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
-        "build": { "node": "m12", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+        "build": { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "stage": { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
         "volt" : { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
     },
@@ -32,13 +32,13 @@
     # R1
     "valley": {
         "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
-        "build": { "node": "m12", "hugePageGB": 6, },
+        "build": { "node": "m18", "hugePageGB": 6, },
         "stage": { "node": "m18", "hugePageGB": 3, },
         "volt" : { "node": "m18", "hugePageGB": 3, },
     },
     "valley-2": {
         "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
-        "stage": { "node": "m18", "hugePageGB": 3, },
+        "stage": { "node": "m17", "hugePageGB": 3, },
         "volt" : { "node": "m17", "hugePageGB": 3, },
     },
     "valley-3": {
@@ -48,7 +48,7 @@
     # R2
     "isles": {
         "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4},
-        "build": { "node": "m12", "hugePageGB": 6, },
+        "build": { "node": "m18", "hugePageGB": 6, },
         "stage": { "node": "m18", "hugePageGB": 4, },
         "volt" : { "node": "m18", "hugePageGB": 4, },
     },
@@ -62,13 +62,13 @@
     # R3
     "ring": {
         "play":  { "node": "m17", "hugePageGB": 8   , "cpuActiveProcessorCount": 4},
-        "build": { "node": "m12", "hugePageGB": 6   , },
+        "build": { "node": "m18", "hugePageGB": 6   , },
         "stage": { "node": "m18", "hugePageGB": 3   , },
         "volt" : { "node": "m18", "hugePageGB": 3   , },
     },
     "ring-2":  {
         "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4},
-        "stage": { "node": "m18", "hugePageGB": 3   , },
+        "stage": { "node": "m17", "hugePageGB": 3   , },
         "volt":  { "node": "m17", "hugePageGB": 3   , },
     },
     "ring-3":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
@@ -254,9 +254,10 @@
         "stage": { "node": "m18", "hugePageGB":    3, },
         "volt" : { "node": "m18", "hugePageGB":    3, },
     },
-    "zenith-2":  {
-        "play": { "node": "m17", "hugePageGB": 4, },
-        "volt": { "node": "m17", "hugePageGB": 3, },
+    "zenith-2": {
+        "play":  { "node": "m17", "hugePageGB": 4, },
+        "stage": { "node": "m17", "hugePageGB": 3, },
+        "volt":  { "node": "m17", "hugePageGB": 3, },
     },
 }
 

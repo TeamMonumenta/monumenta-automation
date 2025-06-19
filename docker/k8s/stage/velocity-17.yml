@@ -3,15 +3,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: velocity-12
-  namespace: build
+  name: velocity-17
+  namespace: stage
   labels:
-    app: velocity-12
+    app: velocity-17
     k8s-app: monumenta-metrics
 spec:
   type: ClusterIP
   selector:
-    app: velocity-12-nodeport
+    app: velocity-17
   ports:
   - name: monumenta-socket
     port: 9576
@@ -22,48 +22,26 @@ spec:
 
 ---
 
-# Service / external network ports
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: velocity-12-nodeport
-  namespace: build
-  labels:
-    app: velocity-12
-spec:
-  type: NodePort
-  #externalTrafficPolicy: Local
-  selector:
-    app: velocity-12
-  ports:
-  - name: minecraft
-    port: 9001
-    nodePort: 9001
-    targetPort: 25566
-
----
-
 # Deployment / the actual running application
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: velocity-12
-  namespace: build
+  name: velocity-17
+  namespace: stage
   labels:
-    app: velocity-12
+    app: velocity-17
 spec:
   strategy:
     type: Recreate
-  replicas: 1
+  replicas: 0
   selector:
     matchLabels:
-      app: velocity-12
+      app: velocity-17
   template:
     metadata:
       labels:
-        app: velocity-12
+        app: velocity-17
     spec:
       affinity:
         nodeAffinity:
@@ -73,19 +51,22 @@ spec:
               - key: kubernetes.io/hostname
                 operator: In
                 values:
-                - monumenta-12
+                - monumenta-17
       volumes:
         - name: nfs-volume
           hostPath:
             type: Directory
-            path: /nfs/build/m12
+            path: /nfs/stage/m17
       containers:
-      - name: velocity-12
+      - name: velocity-17
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
         tty: true
         stdin: true
         ports:
+        # Primary Minecraft port
         - containerPort: 25566
+          hostPort: 9002
+          hostIP: "15.235.84.119" # The node's external facing IP address
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
@@ -95,11 +76,11 @@ spec:
         - name: "JAVA_JAR"
           value: "velocity.jar"
         - name: "SERVER_DIR"
-          value: "/home/epic/build/m12/velocity-12"
+          value: "/home/epic/stage/m17/velocity-17"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
-          value: velocity-12
+          value: velocity-17
         - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
           value: "false"
         readinessProbe:
@@ -116,13 +97,11 @@ spec:
           periodSeconds: 10
         volumeMounts:
         - name: nfs-volume
-          mountPath: /home/epic/build/m12
+          mountPath: /home/epic/stage/m17
         resources:
           limits:
-            cpu: 4
-            memory: 2Gi
-            hugepages-2Mi: 1024Mi
+            memory: 1Gi
+            hugepages-2Mi: 704Mi
           requests:
-            cpu: 1
             memory: 64Mi
-            hugepages-2Mi: 1024Mi
+            hugepages-2Mi: 704Mi
