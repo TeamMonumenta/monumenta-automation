@@ -39,6 +39,7 @@ if __name__ == '__main__':
         "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
         "skt": get_dungeon_config("skt", "DSKTAccess"),
         "hexfall": get_dungeon_config("hexfall", "DHFAccess"),
+        "indigo": get_dungeon_config("indigo", "DIAccess"),
     }
 
     # PLAY

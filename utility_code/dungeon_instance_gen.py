@@ -203,6 +203,12 @@ if __name__ == '__main__':
                 ],
                 "objective":"DSKTAccess"
             },
+            "indigo": {
+                "world": [
+                    "indigo",
+                ],
+                "objective":"DIAccess"
+            },
             "zenith": {
                 "world": [
                     "zenith",

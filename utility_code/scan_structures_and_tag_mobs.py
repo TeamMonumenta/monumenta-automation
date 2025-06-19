@@ -154,6 +154,7 @@ if __name__ == '__main__':
         "portal":{"path": "ring/portal"},
         "ruin":{"path": "ring/ruin"},
         "skt":{"world": "SKT"},
+        "indigo":{"world": "indigo"},
     }
 
 

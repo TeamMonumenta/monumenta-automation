@@ -399,6 +399,11 @@ dungeons = {
             "-282 73 7589",
         ],
     },
+    "indigo": {
+        "whitelisted_lore_lines":["Architect's Ring : Trophy",],
+        "container_whitelist":[
+        ],
+    },
     "zenith": {
         "container_whitelist":[],
     },

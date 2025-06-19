@@ -239,6 +239,11 @@
         "stage": { "node": "m18", "hugePageGB": 3   , },
         "volt" : { "node": "m18", "hugePageGB": 3   , },
     },
+    "indigo": {
+        #"play" : { "node": "m17", "hugePageGB": 5   , },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
+    },
     "skt": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },

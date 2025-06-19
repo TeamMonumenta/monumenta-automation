@@ -170,34 +170,35 @@ class AutomationBotInstance(commands.Cog):
         self._all_commands = set(self._commands.keys())
 
         self._dungeons = {
-            "labs": "D0Access",
-            "white": "D1Access",
-            "orange": "D2Access",
-            "magenta": "D3Access",
-            "lightblue": "D4Access",
-            "yellow": "D5Access",
-            "lime": "D6Access",
-            "pink": "D7Access",
-            "gray": "D8Access",
-            "lightgray": "D9Access",
-            "cyan": "D10Access",
-            "purple": "D11Access",
             "blue": "D12Access",
             "brown": "D13Access",
-            "willows": "DB1Access",
             "corridors": "DRAccess",
-            "reverie": "DCAccess",
-            "tutorial": "DTAccess",
-            "shiftingcity": "DRL2Access",
-            "teal": "DTLAccess",
-            "forum": "DFFAccess",
-            "rush": "DRDAccess",
+            "cyan": "D10Access",
             "depths": "DDAccess",
+            "forum": "DFFAccess",
             "gallery": "DGAccess",
-            "portal": "DPSAccess",
-            "ruin": "DMASAccess",
+            "gray": "D8Access",
             "hexfall": "DHFAccess",
+            "indigo": "DIAccess",
+            "labs": "D0Access",
+            "lightblue": "D4Access",
+            "lightgray": "D9Access",
+            "lime": "D6Access",
+            "magenta": "D3Access",
+            "orange": "D2Access",
+            "pink": "D7Access",
+            "portal": "DPSAccess",
+            "purple": "D11Access",
+            "reverie": "DCAccess",
+            "rush": "DRDAccess",
+            "ruin": "DMASAccess",
+            "shiftingcity": "DRL2Access",
             "skt": "DSKTAccess",
+            "teal": "DTLAccess",
+            "tutorial": "DTAccess",
+            "white": "D1Access",
+            "willows": "DB1Access",
+            "yellow": "D5Access",
             "zenith": "DCZAccess",
         }
 
@@ -2051,7 +2052,7 @@ Examples:
                 await self.display(ctx, "--skip-replacements specified, will not run replacements on copied worlds")
             elif shard in ("valley", "isles", "ring",):
                 main_shards.append(shard)
-            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "willows", "shiftingcity", "labs", "depths", "corridors", "gallery", "portal", "ruin", "hexfall", "skt", "zenith"]:
+            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "willows", "shiftingcity", "labs", "depths", "corridors", "gallery", "portal", "ruin", "hexfall", "skt", "zenith", "indigo"]:
                 instance_gen_required.append(shard)
             else:
                 await self.display(ctx, f"Unknown shard specified: {shard}")
