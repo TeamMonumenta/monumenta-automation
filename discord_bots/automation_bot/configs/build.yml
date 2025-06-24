@@ -17,6 +17,11 @@ rabbitmq:
     # build-admin-notices
     admin_channel: 1037060429186342932
 
+redis_backup_config:
+    worm_file: "/dev/null"
+    scratch_backup_folder: "/home/epic/5_SCRATCH/redis_dumps/build"
+    domain: "build"
+
 k8s_namespace: "build"
 
 reactions_enabled: True

@@ -19,6 +19,11 @@ rabbitmq:
     # build-admin-notices
     admin_channel: 1167973800940412988
 
+redis_backup_config:
+    worm_file: "/home/epic/volt/m18/server_config/redis_initial/key_dump.tgz"
+    scratch_backup_folder: "/home/epic/5_SCRATCH/redis_dumps/volt"
+    domain: "play"
+
 k8s_namespace: "volt"
 
 reactions_enabled: False
