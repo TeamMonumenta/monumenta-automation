@@ -1,0 +1,89 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: maven
+  namespace: web
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "600m"
+    nginx.org/client-max-body-size: "600m"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - maven.playmonumenta.com
+  rules:
+  - host: maven.playmonumenta.com
+    http:
+      paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: maven
+              port:
+                number: 80
+
+---
+
+
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: maven
+  namespace: web
+  labels:
+    app: maven
+spec:
+  type: ClusterIP
+  selector:
+    app: maven
+  ports:
+  - name: "8080"
+    port: 80
+    targetPort: 8080
+
+---
+# actual repo
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maven
+  namespace: web
+  labels:
+    app: maven
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: maven
+  template:
+    metadata:
+       labels:
+         app: maven
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-18
+      volumes:
+        - name: nfs-maven-data
+          hostPath:
+            path: /nfs/maven/
+            type: Directory
+      containers:
+      - name: maven
+        image: ghcr.io/dzikoysk/reposilite
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: nfs-maven-data
+          mountPath: /app/data
+          readOnly: false
+        stdin: true
