@@ -2565,13 +2565,26 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(ctx, os.path.join(_top_level, "rust/bin/redis_playerdata_save_load") + f" redis://redis/ play --input {self._server_dir}/server_config/redis_data_initial 1")
 
         if min_phase <= 13 and config.COMMON_WEEKLY_UPDATE_TASKS:
-            await self.display(ctx, "Loading market data back into redis")
+            await self.display(ctx, "Loading market data back into redis...")
             await self.run(ctx, os.path.join(_top_level, "utility_code/market_itemdb_import.py") + f" redis play {self._server_dir}/server_config/redis_data_initial")
+
+        if min_phase <= 14 and config.COMMON_WEEKLY_UPDATE_TASKSREDIS_BACKUP_CONFIG:
+            await self.display(ctx, "Backing up data in redis...")
+            await self.run(ctx, [
+                os.path.join(_top_level, "utility_code/redis_backups.py"),
+                '--worm_backup_file',
+                config.COMMON_WEEKLY_UPDATE_TASKSREDIS_BACKUP_CONFIG["worm_file"],
+                '--scratch_backup_folder',
+                config.COMMON_WEEKLY_UPDATE_TASKSREDIS_BACKUP_CONFIG["scratch_backup_folder"],
+                '--domain',
+                config.COMMON_WEEKLY_UPDATE_TASKSREDIS_BACKUP_CONFIG["domain"],
+                'create_worm_backup'
+            ])
 
         ########################################
         # Raffle
 
-        if min_phase <= 14 and config.COMMON_WEEKLY_UPDATE_TASKS:
+        if min_phase <= 15 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Raffle results:")
             raffle_seed = self.get_raffle_seed()
             if self._rreact["msg_contents"] is not None:
@@ -2584,19 +2597,19 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         # Raffle
         ########################################
 
-        if min_phase <= 15 and config.COMMON_WEEKLY_UPDATE_TASKS:
+        if min_phase <= 16 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Refreshing leaderboards")
             await self.run(ctx, os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
 
-        if min_phase <= 16 and config.COMMON_WEEKLY_UPDATE_TASKS:
+        if min_phase <= 17 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Restarting rabbitmq")
             await self.restart(ctx, "rabbitmq", owner=message)
 
-        if min_phase <= 17 and config.COMMON_WEEKLY_UPDATE_TASKS:
+        if min_phase <= 18 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Marking common tasks as complete")
             r.set('monumenta:automation:weekly_update_common_done', 'True')
 
-        if min_phase <= 18:
+        if min_phase <= 19:
             await self.display(ctx, "Waiting for common tasks to complete...")
             while True:
                 common_done = r.get('monumenta:automation:weekly_update_common_done').decode("utf-8")
@@ -2607,17 +2620,17 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                 # Not done yet, wait a bit before polling
                 await asyncio.sleep(5)
 
-        if min_phase <= 19:
+        if min_phase <= 20:
             await self.display(ctx, "Running actual weekly update (this will take a while!)...")
             await self.run(ctx, os.path.join(_top_level, f"utility_code/weekly_update.py --last_week_dir {self._server_dir}/0_PREVIOUS/ --output_dir {self._server_dir}/ --build_template_dir /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ -j {config.CPU_COUNT} " + " ".join(self._shards)))
 
-        if min_phase <= 20:
+        if min_phase <= 21:
             await self.display(ctx, "Pruning scores from expired instances...")
             for shard in self._shards:
                 if shard not in ["build",] and not shard.startswith("bungee") and not shard.startswith("velocity"):
                     await self.run(ctx, os.path.join(_top_level, f"utility_code/prune_scores.py -j {config.CPU_COUNT} {self._shards[shard]}"))
 
-        if min_phase <= 21:
+        if min_phase <= 22:
             for shard in self._shards:
                 if shard not in ["build",] and not shard.startswith("bungee") and not shard.startswith("velocity"):
                     await self.run(ctx, f"cp -af /home/epic/4_SHARED/op-ban-sync/valley/banned-ips.json {self._shards[shard]}/")
@@ -2642,19 +2655,19 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                 #   await self.run(ctx, ["perl", "-p", "-i", "-e", "s|enabled: *false|enabled: true|g", f"{self._shards[shard]}/plugins/BungeeDisplay/config.yml"])
 
         await self.cd(ctx, self._server_dir)
-        if min_phase <= 22:
+        if min_phase <= 23:
             await self.display(ctx, "Generating per-shard config...")
             await self.run(ctx, os.path.join(_top_level, "utility_code/gen_server_config.py --play " + " ".join(self._shards.keys())))
 
-        if min_phase <= 23:
+        if min_phase <= 24:
             await self.display(ctx, "Checking for broken symbolic links...")
             await self.run(ctx, f"find {self._server_dir} -xtype l", displayOutput=True)
 
-        if min_phase <= 24:
+        if min_phase <= 25:
             await self.display(ctx, "Deleting 0_PREVIOUS...")
             await self.run(ctx, f"rm -rf {self._server_dir}/0_PREVIOUS")
 
-        if min_phase <= 25:
+        if min_phase <= 26:
             if self._zfs_snapshot_manager is None:
                 await self.display(ctx, "**WARNING! Skipping snapshot! No ZFS snapshot manager configured!**")
             else:
@@ -2663,7 +2676,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
                 self._zfs_snapshot_manager.create(dataset, snap)
                 await self.display(ctx, f"Snapshot created: {dataset}@{snap}")
 
-        if min_phase <= 26:
+        if min_phase <= 27:
             # XXX NOTE
             # This logic is run the same on play/stage/volt/etc
             # This means that test weekly updates on stage/volt will overwrite real play server backups in 1_ARCHIVE if run on the same day
