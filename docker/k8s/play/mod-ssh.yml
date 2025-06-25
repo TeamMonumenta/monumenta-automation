@@ -74,6 +74,7 @@ spec:
       containers:
       - name: basic-ssh
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-basic-ssh
+        imagePullPolicy: Always
         tty: false
         stdin: false
         ports:
