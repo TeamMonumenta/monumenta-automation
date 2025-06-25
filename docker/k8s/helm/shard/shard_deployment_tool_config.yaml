@@ -241,8 +241,8 @@
     },
     "indigo": {
         #"play" : { "node": "m17", "hugePageGB": 5   , },
-        "stage": { "node": "m18", "hugePageMB": 1536, },
-        "volt" : { "node": "m18", "hugePageMB": 1536, },
+        "stage": { "node": "m18", "hugePageMB": 3072, },
+        "volt" : { "node": "m18", "hugePageMB": 3072, },
     },
     "skt": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
