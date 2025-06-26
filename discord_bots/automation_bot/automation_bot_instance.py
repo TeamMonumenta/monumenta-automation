@@ -2568,16 +2568,16 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.display(ctx, "Loading market data back into redis...")
             await self.run(ctx, os.path.join(_top_level, "utility_code/market_itemdb_import.py") + f" redis play {self._server_dir}/server_config/redis_data_initial")
 
-        if min_phase <= 14 and config.COMMON_WEEKLY_UPDATE_TASKSREDIS_BACKUP_CONFIG:
+        if min_phase <= 14 and config.REDIS_BACKUP_CONFIG:
             await self.display(ctx, "Backing up data in redis...")
             await self.run(ctx, [
                 os.path.join(_top_level, "utility_code/redis_backups.py"),
                 '--worm_backup_file',
-                config.COMMON_WEEKLY_UPDATE_TASKSREDIS_BACKUP_CONFIG["worm_file"],
+                config.REDIS_BACKUP_CONFIG["worm_file"],
                 '--scratch_backup_folder',
-                config.COMMON_WEEKLY_UPDATE_TASKSREDIS_BACKUP_CONFIG["scratch_backup_folder"],
+                config.REDIS_BACKUP_CONFIG["scratch_backup_folder"],
                 '--domain',
-                config.COMMON_WEEKLY_UPDATE_TASKSREDIS_BACKUP_CONFIG["domain"],
+                config.REDIS_BACKUP_CONFIG["domain"],
                 'create_worm_backup'
             ])
 
