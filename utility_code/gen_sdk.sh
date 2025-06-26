@@ -1,13 +1,18 @@
 #!/bin/sh
 
+rm -rf sdk
+mkdir sdk
+
 rm -rf purgatory sdk1 sdk2 velocity server_config
 cd monumenta-automation
 git pull
 cd ..
+
+# prep sdk
+cd sdk
 python3 monumenta-automation/utility_code/copy_server_config.py
 python3 monumenta-automation/utility_code/gen_sdk_config.py purgatory sdk1 sdk2 velocity
 python3 monumenta-automation/utility_code/fix_sdk_symlinks.py
-
 cp monumenta-automation/docker/sdk/docker-compose.yml .
 cp monumenta-automation/docker/sdk/rabbitmq.conf .
 mkdir redis
