@@ -18,7 +18,7 @@ Each file in the `keys` directory is a binary dump file with the filename matchi
 
 
 from collections import Counter
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 import io
 import json
 from pathlib import Path
@@ -140,7 +140,7 @@ class RedisBackupManager():
 
                 RedisBackupManager._add_json_to_tarfile(tf, 'key_expiries_ms.json', key_expiries_ms)
 
-                now = datetime.now(UTC)
+                now = datetime.now(timezone.utc)
                 RedisBackupManager._add_json_to_tarfile(tf, 'summary.json', {
                     "human_timestamp_utc": now.isoformat(),
                     "unix_timestamp": now.timestamp(),
@@ -169,7 +169,7 @@ class RedisBackupManager():
     def _add_binary_blob_to_tarfile(tar_file, path, binary_blob):
         tar_info = tarfile.TarInfo(path)
         tar_info.size = len(binary_blob)
-        tar_info.mtime = datetime.now(UTC).timestamp()
+        tar_info.mtime = datetime.now(timezone.utc).timestamp()
         tar_info.mode = 0o644
         tar_file.addfile(tar_info, io.BytesIO(binary_blob))
 
@@ -240,7 +240,7 @@ class RedisBackupManager():
                 if not RedisBackupManager._check_version(redis_info_dict, backup_info_dict):
                     sys.exit('This backup was created for a different version of Redis, and cannot be restored in this way.')
 
-                now = datetime.now(UTC)
+                now = datetime.now(timezone.utc)
                 now_ms = 1000 * now.timestamp()
                 key_expiries_ms = RedisBackupManager._read_json_from_tarfile(tf, 'key_expiries_ms.json')
 
