@@ -62,6 +62,7 @@ class Config():
         self.STAGE_SOURCE = bot_config.get("stage_source", None)
         self.COMMON_WEEKLY_UPDATE_TASKS = bot_config.get("common_weekly_update_tasks", True)
         self.ZFS_SNAPSHOT_MANAGER_CONFIG = bot_config.get("zfs_snapshot_manager", None)
+        self.REDIS_BACKUP_CONFIG = bot_config.get("redis_backup_config", None)
 
         self.CPU_COUNT = bot_config.get("cpu_count", -1)
         if self.CPU_COUNT < 1:
