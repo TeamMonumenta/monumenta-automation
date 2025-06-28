@@ -405,7 +405,7 @@ def do_redact(dst):
     os.remove(os.path.join(dst, "data/plugins/all/LibraryOfSouls/soul_pools_database.json"))
     os.remove(os.path.join(dst, "data/plugins/all/LibraryOfSouls/soul_parties_database.json"))
 
-    with open(os.path.join(dst, "data/plugins/all/LibraryOfSouls/souls_database.json"), "r") as f:
+    with open(os.path.join(dst, "data/plugins/all/LibraryOfSouls/souls_database.json"), "w") as f:
         f.write('{"souls":[],"data_version": 3700}')
 
 def main():
