@@ -31,9 +31,12 @@ services:
         volumes:
             - .:/home/epic/sdk
         environment:
-            SERVER_DIR: /home/epic/sdk/velocity/
-            JAVA_JAR: velocity.jar
             JAVA_MEM: 1G
+            JAVA_JAR: velocity.jar
+            SERVER_DIR: /home/epic/sdk/velocity/
+            JAVA_ARG: -Dlog4j2.configurationFile=log4j2-velocity.xml
+            NETWORK_RELAY_NAME: velocity
+            ALLOW_PACKETS_PUBLICIZE_CONTENT: true
         user: "${UID}:${GID}"
     sdk1:
         container_name: sdk1
@@ -47,9 +50,12 @@ services:
         volumes:
             - .:/home/epic/sdk
         environment:
-            SERVER_DIR: /home/epic/sdk/sdk1/
-            JAVA_JAR: server.jar
             JAVA_MEM: 2G
+            JAVA_JAR: server.jar
+            SERVER_DIR: /home/epic/sdk/sdk1/
+            NETWORK_NAMESPACE: build
+            NETWORK_RELAY_NAME: sdk1
+            JAVA_ARG: -DPaper.IgnoreJavaVersion=true -Ddisable.watchdog -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9000 -Dlog4j2.configurationFile=log4j2-shard.xml -XX:+AllowEnhancedClassRedefinition
         user: "${UID}:${GID}"
     sdk2:
         container_name: sdk2
@@ -63,9 +69,12 @@ services:
         volumes:
             - .:/home/epic/sdk
         environment:
-            SERVER_DIR: /home/epic/sdk/sdk2/
-            JAVA_JAR: server.jar
             JAVA_MEM: 2G
+            JAVA_JAR: server.jar
+            SERVER_DIR: /home/epic/sdk/sdk2/
+            NETWORK_NAMESPACE: build
+            NETWORK_RELAY_NAME: sdk2
+            JAVA_ARG: -DPaper.IgnoreJavaVersion=true -Ddisable.watchdog -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9000 -Dlog4j2.configurationFile=log4j2-shard.xml -XX:+AllowEnhancedClassRedefinition
         user: "${UID}:${GID}"
 networks:
     sdk-network:

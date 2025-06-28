@@ -285,10 +285,6 @@ if __name__ == '__main__':
         ('plugins/AdvancedServerList-Velocity.jar', '../../server_config/plugins/AdvancedServerList-Velocity.jar'),
         ('plugins/advancedserverlist/config.yml', '../../../server_config/data/server_config_template/plugins/AdvancedServerList/config.yml'),
         ('plugins/advancedserverlist/profiles', '../../../server_config/data/server_config_template/plugins/AdvancedServerList/profiles/{}'.format(SERVER_TYPE)),
-        ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
-        ('plugins/litebans/config.yml', '../../../server_config/data/plugins/proxy/litebans/config.yml'),
-        ('plugins/litebans/messages.yml', '../../../server_config/data/plugins/proxy/litebans/messages.yml'),
-        ('plugins/litebans/webhooks.yml', f'../../../server_config/data/plugins/proxy/litebans/{SERVER_TYPE}/webhooks.yml'),
         ('plugins/LuckPerms-Velocity.jar', '../../server_config/plugins/LuckPerms-Velocity.jar'),
         ('plugins/luckperms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
         ('plugins/Maintenance-Velocity.jar', '../../server_config/plugins/Maintenance-Velocity.jar'),
@@ -299,17 +295,9 @@ if __name__ == '__main__':
         ('plugins/RedisSync.jar', '../../server_config/plugins/RedisSync.jar'),
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
-        ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
-        ('plugins/premiumvanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
         ('plugins/spark-velocity.jar', '../../server_config/plugins/spark-velocity.jar'),
-        ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
         #('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
         #('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
-    ]
-
-    proxy_plan = [
-        ('plugins/Plan.jar', '../../server_config/plugins/Plan.jar'), # TODO: how to use same config?
-        ('plugins/plan/config.yml', '../../../server_config/data/server_config_template/plugins/plan/config.yml'),
     ]
 
     server_config_min = purgatory_min + [
@@ -355,7 +343,6 @@ if __name__ == '__main__':
         ('plugins/HolographicDisplays.jar', '../../server_config/plugins/HolographicDisplays.jar'),
         ('plugins/HolographicDisplays/database.yml', '../../../server_config/data/plugins/{servername}/HolographicDisplays/database.yml'),
         ('plugins/spark.jar', '../../server_config/plugins/spark.jar'),
-        ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
         ('plugins/ScriptedQuests/translations', f'/home/epic/3_DOMAIN_SHARED/translations'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
@@ -390,11 +377,6 @@ if __name__ == '__main__':
         ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
         ('plugins/TAB.jar', '../../server_config/plugins/TAB.jar'),
-    ]
-
-    vanish = [
-        ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
-        ('plugins/PremiumVanish/config.yml', '../../../server_config/data/plugins/all/PremiumVanish/config.yml'),
     ]
 
     coreprotect = [
@@ -449,44 +431,13 @@ if __name__ == '__main__':
         ('plugins/MetaBrushes.jar', '../../server_config/plugins/MetaBrushes.jar'),
     ]
 
-    # Analytics plugin - only for the play server!
-    plan = [
-        ('plugins/Plan.jar', '../../server_config/plugins/Plan.jar'),
-        ('plugins/Plan', '../../server_config/data/plugins/{servername}/Plan'),
-    ]
-
-    gobrush = [
-        ('plugins/Arceon.jar', '../../server_config/plugins/Arceon.jar'),
-        ('plugins/Arceon', '../../server_config/plugins/Arceon'),
-        ('plugins/goBrush.jar', '../../server_config/plugins/goBrush.jar'),
-        ('plugins/goBrush', '../../server_config/data/plugins/all/goBrush'),
-        ('plugins/goPaint.jar', '../../server_config/plugins/goPaint.jar'),
-        ('plugins/goPaint', '../../server_config/data/plugins/all/goPaint'),
-        ('plugins/HeadDatabase.jar', '../../server_config/plugins/HeadDatabase.jar'),
-        ('plugins/HeadDatabase', '../../server_config/data/plugins/all/HeadDatabase'),
-    ]
-
-    litebans = [
-        ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
-        ('plugins/LiteBans/config.yml', '../../../server_config/data/plugins/all/LiteBans/config.yml'),
-        ('plugins/LiteBans/messages.yml', '../../../server_config/data/plugins/all/LiteBans/messages.yml'),
-        ('plugins/LiteBans/webhooks.yml', f'../../../server_config/data/plugins/all/LiteBans/{SERVER_TYPE}/webhooks.yml'),
-    ]
-
-    axiom = [
-        ('plugins/AxiomPaper.jar', '../../server_config/plugins/AxiomPaper.jar'),
-        ('plugins/AxiomPaper', '../../server_config/data/plugins/all/AxiomPaper'),
-    ]
-
     # Index of nodes:
     #   server_config
     #   structures
 
     base_plugins = mixins + luckperms + monumenta + openinv + worldedit + coreprotect + nbteditor + network_chat
     if SERVER_TYPE == 'build':
-        base_plugins += speedchanger + voxelsniper + gobrush + axiom
-    else:
-        base_plugins += vanish + litebans
+        base_plugins += speedchanger + voxelsniper
 
     # String replacements:
     # {servername} - server name
@@ -587,7 +538,7 @@ if __name__ == '__main__':
                 ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
                 ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
             ],
-            'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + vanish + [
+            'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + [
                 ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
                 ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/build/MonumentaNetworkChat/config.yml'),
                 ('plugins/MonumentaNetworkChat/help', '../../../server_config/data/plugins/all/MonumentaNetworkChat/help'),
