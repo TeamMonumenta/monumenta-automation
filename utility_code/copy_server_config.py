@@ -402,11 +402,19 @@ def redact_loot_tables(dst):
 def do_redact(dst):
     redact_loot_tables(dst)
     shutil.rmtree(os.path.join(dst, "data/datapacks/base/data/monumenta/"))
-    os.remove(os.path.join(dst, "data/plugins/all/LibraryOfSouls/soul_pools_database.json"))
-    os.remove(os.path.join(dst, "data/plugins/all/LibraryOfSouls/soul_parties_database.json"))
+    with open(os.path.join(dst, "data/plugins/all/LibraryOfSouls/soul_pools_database.json"), "w") as f:
+        f.write('[]')
+
+    with open(os.path.join(dst, "data/plugins/all/LibraryOfSouls/soul_parties_database.json"), "w") as f:
+        f.write('[]')
 
     with open(os.path.join(dst, "data/plugins/all/LibraryOfSouls/souls_database.json"), "w") as f:
         f.write('{"souls":[],"data_version": 3700}')
+
+    shutil.rmtree(os.path.join(dst, "data/plugins/all/Monumenta/seasonalevents/2025"))
+
+    with open(os.path.join(dst, "data/plugins/all/Monumenta/mmquest.json"), "w") as f:
+        f.write('{"mQuestArrayList":[]"}')
 
 def main():
     if not Path(os.path.join(os.getcwd(), "server_config")).exists():
@@ -420,6 +428,7 @@ def main():
         "plugins",
         "mods"
     ]
+
     jar_exclude = [
         "velocity-prometheus-exporter.jar",
         "prometheus-exporter.jar",
@@ -430,7 +439,9 @@ def main():
         "LiteBans.jar",
         "Arceon.jar",
         "MetaBrushes.jar",
-        "MetaEdits.jar"
+        "MetaEdits.jar",
+        "goPaint.jar",
+        "goBrush.jar"
     ]
 
     for dir in jar_dir:
@@ -533,7 +544,8 @@ def main():
     removed_dirs = [
         "plugins/1_19_4_staging",
         "plugins/LuckPerms/build/libs",
-        "plugins/LuckPerms/play/libs"
+        "plugins/LuckPerms/play/libs",
+        "plugins/Arceon"
     ]
 
     for item in removed_dirs:
