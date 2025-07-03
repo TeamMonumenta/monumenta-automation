@@ -270,6 +270,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:player_head", "Extinguished Horseman's Head", "minecraft:rotten_flesh", "Decayed Item"],
                 # Weak Shield -> Rusty Shield
                 ["minecraft:shield", "Weak Shield", "minecraft:shield", "Rusty Shield"],
+                # Winter's Bounty golden helm -> golden pants
+                ["minecraft:golden_helmet", "Winter's Bounty", "minecraft:golden_leggings", "Winter's Bounty"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
