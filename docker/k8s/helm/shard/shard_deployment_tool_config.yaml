@@ -10,10 +10,10 @@
 #   memGB OR memMB
 "shard_config": {
     # Shards that only exist on build
-    "dev1"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
-    "dev2"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
-    "dev3"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
-    "dev4"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
+    "dev1"               : { "build": { "node": "m18", "hugePageMB": 2560, "useHTTPForProbes": false, "useSocketForProbes": false }, },
+    "dev2"               : { "build": { "node": "m18", "hugePageMB": 2560, "useHTTPForProbes": false, "useSocketForProbes": false }, },
+    "dev3"               : { "build": { "node": "m18", "hugePageMB": 2560, "useHTTPForProbes": false, "useSocketForProbes": false }, },
+    "dev4"               : { "build": { "node": "m18", "hugePageMB": 2560, "useHTTPForProbes": false, "useSocketForProbes": false }, },
     "mobs"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
     "dungeon"            : { "build": { "node": "m18", "hugePageGB": 8   , }, },
     #"futurama"           : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
@@ -98,7 +98,7 @@
     "guildplots": {
         "play":  { "node": "m17", "hugePageGB": 12, },
         "stage": { "node": "m18", "hugePageGB": 6, },
-        "volt" : { "node": "m18", "hugePageGB": 6, },
+        "volt" : { "node": "m18", "hugePageGB": 12, },
     },
 
     # Player build shard

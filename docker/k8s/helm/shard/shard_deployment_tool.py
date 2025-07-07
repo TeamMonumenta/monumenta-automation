@@ -77,6 +77,7 @@ def run_helm_for_shard(namespace, shard):
     output_conf["name"] = shard
     output_conf["namespace"] = namespace
     node = shard_namespaced["node"]
+
     output_conf["nodeFull"] = abbrev_node_to_full.get(node, f"monumenta-bad-lookup-{node}")
     if "hugePageGB" in output_conf:
         output_conf["hugePageMB"] = output_conf["hugePageGB"] * 1024
