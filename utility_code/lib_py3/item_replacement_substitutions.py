@@ -272,6 +272,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:shield", "Weak Shield", "minecraft:shield", "Rusty Shield"],
                 # Winter's Bounty golden helm -> golden pants
                 ["minecraft:golden_helmet", "Winter's Bounty", "minecraft:golden_leggings", "Winter's Bounty"],
+                # Swift Spritual Charm -> Swift Spiritual Charm
+                ["minecraft:sunflower", "Swift Spritual Charm", "minecraft:sunflower", "Swift Spiritual Charm"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
