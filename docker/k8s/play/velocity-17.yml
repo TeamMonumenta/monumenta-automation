@@ -113,7 +113,7 @@ spec:
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
-          value: "8G"
+          value: "5G"
         - name: "JAVA_JAR"
           value: "velocity.jar"
         - name: "SERVER_DIR"
