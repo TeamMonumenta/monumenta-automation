@@ -103,11 +103,11 @@
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "depths": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 4   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
-    "depths-2": { "play" : { "node": "m17", "hugePageGB": 3, }, },
+    "depths-2": { "play" : { "node": "m17", "hugePageGB": 4, }, },
     "forum": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
         "stage": { "node": "m18", "hugePageMB": 2048, },

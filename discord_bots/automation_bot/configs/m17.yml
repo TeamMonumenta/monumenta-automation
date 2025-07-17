@@ -128,9 +128,16 @@ shards:
     gray: /home/epic/play/m17/gray/
     guildplots: /home/epic/play/m17/guildplots/
     hexfall: /home/epic/play/m17/hexfall/
+    indigo: /home/epic/play/m17/indigo/
+    indigo-2: /home/epic/play/m17/indigo-2/
+    indigo-3: /home/epic/play/m17/indigo-3/
+    indigo-4: /home/epic/play/m17/indigo-4/
+    indigo-5: /home/epic/play/m17/indigo-5/
+    indigo-6: /home/epic/play/m17/indigo-6/
+    indigo-7: /home/epic/play/m17/indigo-7/
+    indigo-8: /home/epic/play/m17/indigo-8/
     isles: /home/epic/play/m17/isles/
     isles-2: /home/epic/play/m17/isles-2/
-    isles-3: /home/epic/play/m17/isles-3/
     labs: /home/epic/play/m17/labs/
     lightblue: /home/epic/play/m17/lightblue/
     lightgray: /home/epic/play/m17/lightgray/
@@ -150,11 +157,6 @@ shards:
     ring-5: /home/epic/play/m17/ring-5/
     ring-6: /home/epic/play/m17/ring-6/
     ring-7: /home/epic/play/m17/ring-7/
-    ring-8: /home/epic/play/m17/ring-8/
-    ring-9: /home/epic/play/m17/ring-9/
-    ring-10: /home/epic/play/m17/ring-10/
-    ring-11: /home/epic/play/m17/ring-11/
-    ring-12: /home/epic/play/m17/ring-12/
     rush: /home/epic/play/m17/rush/
     shiftingcity: /home/epic/play/m17/shiftingcity/
     skt: /home/epic/play/m17/skt/
