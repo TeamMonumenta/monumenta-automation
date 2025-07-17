@@ -38,8 +38,6 @@
     },
     "valley-2": {
         "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
-        "stage": { "node": "m17", "hugePageGB": 3, },
-        "volt" : { "node": "m17", "hugePageGB": 3, },
     },
     "valley-3": {
         "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
@@ -55,9 +53,6 @@
     "isles-2": {
         "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4},
     },
-    "isles-3": {
-        "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4},
-    },
 
     # R3
     "ring": {
@@ -68,19 +63,12 @@
     },
     "ring-2":  {
         "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4},
-        "stage": { "node": "m17", "hugePageGB": 3   , },
-        "volt":  { "node": "m17", "hugePageGB": 3   , },
     },
     "ring-3":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-4":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-5":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-6":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-7":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-8":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-9":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-10": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-11": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-12": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
 
     # Plots
     "plots": {
@@ -98,7 +86,7 @@
     "guildplots": {
         "play":  { "node": "m17", "hugePageGB": 12, },
         "stage": { "node": "m18", "hugePageGB": 6, },
-        "volt" : { "node": "m18", "hugePageGB": 12, },
+        "volt" : { "node": "m18", "hugePageGB": 6, },
     },
 
     # Player build shard
@@ -128,7 +116,7 @@
     "gray": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
-        "volt" : { "node": m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "labs": {
         "play" : { "node": "m17", "hugePageGB": 6   , },
@@ -240,10 +228,19 @@
         "volt" : { "node": "m18", "hugePageGB": 3   , },
     },
     "indigo": {
-        #"play" : { "node": "m17", "hugePageGB": 5   , },
+        "play" : { "node": "m17", "hugePageGB": 8   , "cpuActiveProcessorCount": 4, },
         "stage": { "node": "m18", "hugePageMB": 3072, },
         "volt" : { "node": "m18", "hugePageMB": 3072, },
     },
+    "indigo-2":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "indigo-3":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "indigo-4":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "indigo-5":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "indigo-6":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "indigo-7":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "indigo-8":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "indigo-9":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+
     "skt": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
@@ -256,8 +253,6 @@
     },
     "zenith-2": {
         "play":  { "node": "m17", "hugePageGB": 4, },
-        "stage": { "node": "m17", "hugePageGB": 3, },
-        "volt":  { "node": "m17", "hugePageGB": 3, },
     },
 }
 

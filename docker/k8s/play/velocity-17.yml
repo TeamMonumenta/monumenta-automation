@@ -152,9 +152,9 @@ spec:
         resources:
           limits:
             cpu: "8"
-            memory: 12Gi
-            hugepages-2Mi: 12Gi
+            memory: 6Gi
+            hugepages-2Mi: 6Gi
           requests:
             cpu: "1"
-            memory: 12Gi
-            hugepages-2Mi: 12Gi
+            memory: 6Gi
+            hugepages-2Mi: 6Gi
