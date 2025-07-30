@@ -164,7 +164,7 @@ for item_type in mgr.item_map:
         out_map[item_type] = items
 
 
-# Both R1 and R2 /warp items are at these same locations
+# All /warp items for every region are at the same location
 min_x = 1140
 min_y = 0
 min_z = 2564
@@ -172,7 +172,7 @@ max_x = 1275
 max_y = 123
 max_z = 2811
 
-# Scan through warp items for R1, R2, and R3 and make note of what block each item is above
+# Scan through warp items in every region and make note of what block each item is above
 items_at_warp_items = {}
 load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/valley/Project_Epic-valley'), min_x, min_y, min_z, max_x, max_y, max_z)
 load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/isles/Project_Epic-isles'), min_x, min_y, min_z, max_x, max_y, max_z)
