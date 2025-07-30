@@ -172,7 +172,7 @@ max_x = 1275
 max_y = 123
 max_z = 2811
 
-# Scan through warp items for R1 and R2 and R3 and make note of what block each item is above
+# Scan through warp items for R1, R2, and R3 and make note of what block each item is above
 items_at_warp_items = {}
 load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/valley/Project_Epic-valley'), min_x, min_y, min_z, max_x, max_y, max_z)
 load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/isles/Project_Epic-isles'), min_x, min_y, min_z, max_x, max_y, max_z)
