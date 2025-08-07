@@ -1555,6 +1555,7 @@ Usage:
 `{cmdPrefix}player shard transfer NickNackGus playerplots` - sends NickNackGus to playerplots shard
 `{cmdPrefix}player shard bulk_transfer depths-2,depths-3 depths` - sends everyone on depths-2/3 to the depths shard
 `{cmdPrefix}player shard bulk_transfer betaplots,plots valley,valley-2,valley-3` - sends everyone on betaplots and plots to one of three valley shards
+`{cmdPrefix}player shard reset NickNackGus` - resets which shard NickNackGus is on; this sends him to the tutorial
 '''
 
         commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()

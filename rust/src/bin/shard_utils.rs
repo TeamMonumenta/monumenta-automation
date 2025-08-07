@@ -11,6 +11,7 @@ fn usage() {
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> histogram");
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> transfer <player_name> <shard>");
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> bulk_transfer <comma_separated_sources> <comma_separated_destinations>");
+    println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> reset <player_name>");
 }
 
 fn main() -> anyhow::Result<()> {
@@ -42,6 +43,9 @@ fn main() -> anyhow::Result<()> {
         },
         "bulk_transfer" => {
             bulk_transfer(&mut con, &locations_key, &mut args)
+        },
+        "reset" => {
+            reset(&mut con, &locations_key, &mut args)
         },
         _ => {
             usage();
@@ -195,6 +199,22 @@ fn bulk_transfer(con: &mut redis::Connection, locations_key: &String, args: &mut
         con.hset(&locations_key, &player_uuid_str, &to_shard)?;
     }
     println!("Transferred {} players", &to_update.len());
+
+    return Ok(());
+}
+
+fn reset(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
+    if args.len() != 1 {
+        usage();
+        return Ok(());
+    }
+
+    let player_name = args.remove(0);
+    let player_uuid_str: String = con.hget("name2uuid", &player_name)?;
+
+    con.hdel(&locations_key, &player_uuid_str)?;
+
+    println!("Reset the shard for {}", player_name);
 
     return Ok(());
 }
