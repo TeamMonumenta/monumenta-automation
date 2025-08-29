@@ -2162,9 +2162,20 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.run(ctx, "rm -f /home/epic/5_SCRATCH/tmpreset/stage_bundle.tgz", None)
 
         await self.cd(ctx, "/home/epic/5_SCRATCH/tmpreset/TEMPLATE")
-        folders_to_update = [d for d in os.listdir(os.getcwd()) if os.path.isdir(d)]
+        folders_to_update = []
+        expected_folders = ['server_config'] + list(self._shards.keys())
+
+        for d in os.listdir(os.getcwd()):
+            if not os.path.isdir(d):
+                continue
+
+            if d not in expected_folders:
+                continue
+
+            folders_to_update.append(d)
+
         if len(folders_to_update) < 1:
-            await self.display(ctx, "Error: No stage folders to process?")
+            await self.display(ctx, "Error: No stage folders to process? This is ok if this bundle doesn't include shards or server_config on this host.")
             await self.display(ctx, message.author.mention)
             return
 
@@ -2200,6 +2211,11 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
             await self.display(ctx, "Getting new server config...")
             await self.run(ctx, f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/server_config {self._server_dir}/")
             folders_to_update.remove("server_config")
+
+        if not folders_to_update:
+            await self.display(ctx, "Done. Note that only server_config was updated on this host!")
+            await self.display(ctx, message.author.mention)
+            return
 
         await self.display(ctx, "Running actual weekly update (this will take a while!)...")
 
