@@ -2056,7 +2056,8 @@ Examples:
             elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "willows", "shiftingcity", "labs", "depths", "corridors", "gallery", "portal", "ruin", "hexfall", "skt", "zenith", "indigo"]:
                 instance_gen_required.append(shard)
             else:
-                await self.display(ctx, f"Unknown shard specified: {shard}")
+                await self.display(ctx, f"Unknown shard specified: {shard}; aborting")
+                await self.display(ctx, message.author.mention)
                 return
 
         await self.display(ctx, "Starting stage bundle preparation for shards: [{}]".format(" ".join(shards)))
