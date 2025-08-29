@@ -149,7 +149,7 @@ commands:
     - player find
     - player rollback
     - player shard
-    - player transfer
+    - player account transfer
     - player wipe
     - restart
     - select
@@ -215,7 +215,7 @@ permissions:
             - "+player find"
             - "+player rollback"
             - "+player shard"
-            - "+player transfer"
+            - "+player account transfer"
             - "+player wipe"
             - "+remind me"
             - "+remind"

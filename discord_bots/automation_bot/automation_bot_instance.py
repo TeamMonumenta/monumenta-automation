@@ -136,7 +136,7 @@ class AutomationBotInstance(commands.Cog):
             "player find": self.action_player_find,
             "player rollback": self.action_player_rollback,
             "player shard": self.action_player_shard,
-            "player transfer": self.action_player_transfer,
+            "player account transfer": self.action_player_account_transfer,
             "player wipe": self.action_player_wipe,
 
             "update item": self.action_update_items,
@@ -1569,12 +1569,12 @@ Usage:
             ns = 'play'
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/shard_utils"), "redis://redis/", ns, *commandArgs], displayOutput=True)
 
-    async def action_player_transfer(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+    async def action_player_account_transfer(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Transfers player data from one account to another.
 
-Usage: {cmdPrefix}player transfer <sourceplayer> <destplayer>
+Usage: {cmdPrefix}player account transfer <sourceplayer> <destplayer>
 
-This will transfer everything from <sourceplayer> to <destplayer> except their guild and plot access. Guild must be done manually by you. Plot access will have to be recreated by the player.
+This will transfer everything from <sourceplayer> to <destplayer> except their luckperms and plot access. You'll get a command to tranfer their luckperms info, including guilds. Plot access will have to be recreated by the player.
 
 After transferring, source player data is backed up and then deleted. The source player can play again as a new player.
 
@@ -1584,7 +1584,7 @@ After transferring, source player data is backed up and then deleted. The source
         commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()
 
         if len(commandArgs) != 2:
-            await self.help_internal(ctx, ["player transfer"], message.author)
+            await self.help_internal(ctx, ["player account transfer"], message.author)
             return
 
         fromplayer = commandArgs[0]

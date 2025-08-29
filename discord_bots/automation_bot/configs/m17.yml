@@ -191,7 +191,7 @@ commands:
     - player find
     - player rollback
     - player shard
-    - player transfer
+    - player account transfer
     - player wipe
     - restart
     - run test raffle
@@ -244,7 +244,7 @@ permissions:
             - "+broadcastbungeecommand"
             - "+broadcastminecraftcommand"
             - "+player rollback"
-            - "+player transfer"
+            - "+player account transfer"
             - "+player wipe"
         "@team monumenta":
             - "@everyone"
