@@ -68,14 +68,12 @@ stage_source:
             - purple
             - reverie
             - ring
-            - ring-2
             - rush
             - shiftingcity
             - skt
             - teal
             - tutorial
             - valley
-            - valley-2
             - white
             - willows
             - yellow
@@ -115,13 +113,11 @@ shards:
     purple: /home/epic/stage/m18/purple/
     reverie: /home/epic/stage/m18/reverie/
     ring: /home/epic/stage/m18/ring/
-    ring-2: /home/epic/stage/m18/ring-2/
     rush: /home/epic/stage/m18/rush/
     shiftingcity: /home/epic/stage/m18/shiftingcity/
     skt: /home/epic/stage/m18/skt/
     teal: /home/epic/stage/m18/teal/
     tutorial: /home/epic/stage/m18/tutorial/
-    valley-2: /home/epic/stage/m18/valley-2/
     valley: /home/epic/stage/m18/valley/
     velocity-18: /home/epic/stage/m18/velocity-18/
     white: /home/epic/stage/m18/white/
