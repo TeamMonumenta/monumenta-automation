@@ -80,6 +80,7 @@ commands:
     - player rollback
     - player shard
     - player account transfer
+    - player transfer
     - player wipe
     - prepare stage bundle
     - prepare update bundle
@@ -154,6 +155,7 @@ permissions:
             - "+player rollback"
             - "+player shard"
             - "+player account transfer"
+            - "+player transfer"
             - "+player wipe"
             - "+prepare stage bundle"
             - "+restart"

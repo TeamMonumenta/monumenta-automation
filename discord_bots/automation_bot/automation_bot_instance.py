@@ -137,6 +137,7 @@ class AutomationBotInstance(commands.Cog):
             "player rollback": self.action_player_rollback,
             "player shard": self.action_player_shard,
             "player account transfer": self.action_player_account_transfer,
+            "player transfer": self.action_player_transfer,
             "player wipe": self.action_player_wipe,
 
             "update item": self.action_update_items,
@@ -1596,6 +1597,20 @@ After transferring, source player data is backed up and then deleted. The source
         await self.display(ctx, f"`{toplayer}` has had their data overwritten by the data from {fromplayer}. If this was a mistake, you can roll the player back to before the transfer using the in-game /rollback command")
         await self.display(ctx, f"**You still have to fix the player's LuckPerms data.**")
         await self.display(ctx, f"To do this, go in-game and run\n```\n/transferpermissions {fromplayer} {toplayer}\n```\nNote that `{fromplayer}` needs to be offline, and `{toplayer}` needs to be online. This will update all LuckPerms data (guilds, roles, etc) in one go.")
+
+    async def action_player_transfer(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        """This command has been renamed to avoid confusion. Run one of these instead:
+
+`{cmdPrefix}player shard transfer NickNackGus playerplots` - sends NickNackGus to playerplots shard
+`{cmdPrefix}player shard bulk_transfer depths-2,depths-3 depths` - sends everyone on depths-2/3 to the depths shard
+`{cmdPrefix}player shard bulk_transfer betaplots,plots valley,valley-2,valley-3` - sends everyone on betaplots and plots to one of three valley shards
+`{cmdPrefix}player account transfer <sourceplayer> <destplayer>` - replaces `<destplayer>`'s data with that of `<sourceplayer>`
+
+See these two help commands:
+`{cmdPrefix}help player shard`
+`{cmdPrefix}help player account transfer`
+"""
+        await self.help_internal(ctx, ["player transfer"], message.author)
 
     async def action_player_rollback(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Rolls a player back to the most recent weekly update

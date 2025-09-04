@@ -150,6 +150,7 @@ commands:
     - player rollback
     - player shard
     - player account transfer
+    - player transfer
     - player wipe
     - restart
     - select
@@ -216,6 +217,7 @@ permissions:
             - "+player rollback"
             - "+player shard"
             - "+player account transfer"
+            - "+player transfer"
             - "+player wipe"
             - "+remind me"
             - "+remind"

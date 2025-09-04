@@ -192,6 +192,7 @@ commands:
     - player rollback
     - player shard
     - player account transfer
+    - player transfer
     - player wipe
     - restart
     - run test raffle
@@ -259,6 +260,7 @@ permissions:
             - "+list shards"
             - "+badname"
             - "+player shard"
+            - "+player transfer"
             - "+restart"
             - "+select"
             - "+set score"
