@@ -260,20 +260,8 @@ class SubtituteItems(SubstitutionRule):
                 # ["minecraft:example_vanilla_item", None, "minecraft:new_id", "Example New Name"],
                 # Example item type change:
                 # ["minecraft:bow", "Blazing Crossbow", "minecraft:crossbow", "Blazing Crossbow"],
-                # Boots of Deleting -> Infused Cloth Shoes
-                ["minecraft:golden_boots", "Boots of Deleting", "minecraft:leather_boots", "Infused Cloth Shoes"],
-                # Typo fix for Aggripa's Gearshredder
-                ["minecraft:iron_sword", "Agrippa's Gearshredder", "minecraft:iron_sword", "Aggripa's Gearshredder"],
-                # Please let this finally get rid of vanilla Suspicious Stews
-                ["minecraft:suspicious_stew", None, "minecraft:suspicious_stew", "Dichen Specialty Stew"],
-                # Remove the Extinguished Horseman's Head from April Fools
-                ["minecraft:player_head", "Extinguished Horseman's Head", "minecraft:rotten_flesh", "Decayed Item"],
-                # Weak Shield -> Rusty Shield
-                ["minecraft:shield", "Weak Shield", "minecraft:shield", "Rusty Shield"],
-                # Winter's Bounty golden helm -> golden pants
-                ["minecraft:golden_helmet", "Winter's Bounty", "minecraft:golden_leggings", "Winter's Bounty"],
-                # Swift Spritual Charm -> Swift Spiritual Charm
-                ["minecraft:sunflower", "Swift Spritual Charm", "minecraft:sunflower", "Swift Spiritual Charm"],
+                # Tormented Fragment base item change
+                ["minecraft:netherrack", "Tormented Fragment", "minecraft:netherite_scrap", "Tormented Fragment"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
