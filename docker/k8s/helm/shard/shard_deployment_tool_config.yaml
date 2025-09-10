@@ -8,6 +8,9 @@
 #   useHTTPForProbes
 #   nodePort
 #   memGB OR memMB
+#   cpuReqs
+#   cpuLimits
+#   cpuActiveProcessorCount
 "shard_config": {
     # Shards that only exist on build
     "dev1"               : { "build": { "node": "m18", "hugePageMB": 2560, "useHTTPForProbes": false, "useSocketForProbes": false }, },
@@ -56,10 +59,10 @@
 
     # R3
     "ring": {
-        "play":  { "node": "m17", "hugePageGB": 8   , "cpuActiveProcessorCount": 4},
-        "build": { "node": "m18", "hugePageGB": 6   , },
-        "stage": { "node": "m18", "hugePageGB": 3   , },
-        "volt" : { "node": "m18", "hugePageGB": 3   , },
+        "play":  { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 8, "cpuLimits": "10"}, # usb's experiment
+        "build": { "node": "m18", "hugePageGB": 6, },
+        "stage": { "node": "m18", "hugePageGB": 3, },
+        "volt" : { "node": "m18", "hugePageGB": 3, },
     },
     "ring-2":  {
         "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4},
