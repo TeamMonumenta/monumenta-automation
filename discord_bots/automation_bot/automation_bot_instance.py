@@ -1920,23 +1920,24 @@ Must be run before starting the update on the play server
 
         tz = timezone.utc
         now = datetime.now(tz)
-        stop_time = now + timedelta(seconds=30)
+        seconds_delay = 60
+        stop_time = now + timedelta(seconds=seconds_delay)
         if not skip_replacements:
             self.broadcast_json_msg([
                 "",
-                {"text":"[Alert] ", "color":"red"},
-                {"text":"We're preparing an update bundle in 30 seconds. The ", "color":"white"}
-                {"text":"overworld and dungeon", "color":"red"}
-                {"text":" shards will be stopped temporarily. Other shards remain available.", "color":"white"}
+                {"text": "[Alert] ", "color":"red"},
+                {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"}
+                {"text": "overworld and dungeon", "color":"red"}
+                {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"}
             ])
             self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
         elif not debug:
             self.broadcast_json_msg([
                 "",
-                {"text":"[Alert] ", "color":"red"},
-                {"text":"We're preparing an update bundle in 30 seconds. The ", "color":"white"}
-                {"text":"overworld", "color":"red"}
-                {"text":" shards will be stopped temporarily. Other shards remain available.", "color":"white"}
+                {"text": "[Alert] ", "color":"red"},
+                {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"}
+                {"text": "overworld", "color":"red"}
+                {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"}
             ])
             self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
 
