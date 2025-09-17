@@ -1947,6 +1947,7 @@ Must be run before starting the update on the play server
             self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
 
         async def await_warning_delay():
+            await self.display(ctx, "Giving devs time to wrap up what they're doing")
             remaining_seconds = (stop_time - datetime.now(tz)) / timedelta(seconds=1)
             if remaining_seconds < 0:
                 return
