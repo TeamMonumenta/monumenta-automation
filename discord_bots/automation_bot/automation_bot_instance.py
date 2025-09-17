@@ -867,6 +867,19 @@ class AutomationBotInstance(commands.Cog):
 
         return raffle_seed
 
+    def broadcast_command(self, cmd, server_type="minecraft", shard="*"):
+        """Broadcasts a command to all servers"""
+        data = {
+            "command": cmd
+        }
+        if server_type is not None:
+            data["server_type"] = server_type
+        self._socket.send_packet(shard, "monumentanetworkrelay.command", data)
+
+    def broadcast_json_msg(self, json_msg):
+        """Broadcasts a command to all servers"""
+        self.broadcast_command("tellraw @a[all_worlds=true] " + json.dumps(json_msg, ensure_ascii=False, separators=(',', ':')))
+
     async def _gameplay_event_summary(self):
         msg = []
 
@@ -1360,7 +1373,7 @@ Syntax:
         """Check shards for active lockouts
 
 Syntax:
-`{cmdPrefix}lockout check bungee valley isles orange'''
+`{cmdPrefix}lockout check velocity valley isles orange'''
 """
 
         shards = message.content[len(config.PREFIX + cmd) + 1:].split()
@@ -1543,7 +1556,7 @@ Do not use for debugging quests or other scores that are likely to change often.
                 ns = 'play'
 
             await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, value, message], displayOutput=(len(lines) < 5))
-            self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": f"execute if entity {name} run scoreboard players set {name} {objective} {value}"})
+            self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
             setscores += 1
 
         await self.display(ctx, f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)")
@@ -1905,6 +1918,34 @@ Must be run before starting the update on the play server
             skip_generation = True
             await self.display(ctx, "--skip-generation mode enabled! Will not run instance generation. **This probably isn't what you want.**")
 
+        tz = timezone.utc
+        now = datetime.now(tz)
+        stop_time = now + timedelta(seconds=30)
+        if not skip_replacements:
+            self.broadcast_json_msg([
+                "",
+                {"text":"[Alert] ", "color":"red"},
+                {"text":"We're preparing an update bundle in 30 seconds. The ", "color":"white"}
+                {"text":"overworld and dungeon", "color":"red"}
+                {"text":" shards will be stopped temporarily. Other shards remain available.", "color":"white"}
+            ])
+            self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
+        elif not debug:
+            self.broadcast_json_msg([
+                "",
+                {"text":"[Alert] ", "color":"red"},
+                {"text":"We're preparing an update bundle in 30 seconds. The ", "color":"white"}
+                {"text":"overworld", "color":"red"}
+                {"text":" shards will be stopped temporarily. Other shards remain available.", "color":"white"}
+            ])
+            self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
+
+        async def await_warning_delay():
+            remaining_seconds = (stop_time - datetime.now(tz)) / second
+            if remaining_seconds < 0:
+                return
+            await asyncio.sleep(remaining_seconds)
+
         if not skip_commit:
             repo = git.Repo('/home/epic/project_epic/server_config/data')
             tags = sorted(repo.tags, key=lambda t: t.commit.committed_datetime)
@@ -1933,6 +1974,7 @@ Must be run before starting the update on the play server
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle post autoformat", '-s'], ret=[0, 1])
 
         if not skip_replacements:
+            await await_warning_delay()
             await self.run_replacements_internal(ctx, ["valley", "isles", "ring", "dungeon", "structures"], do_prune=True, owner=message)
 
         if not skip_commit:
@@ -1946,6 +1988,7 @@ Must be run before starting the update on the play server
 
         if not debug:
             await self.display(ctx, "Stopping valley, isles, ring...")
+            await await_warning_delay()
             await self.stop(ctx, ["valley", "isles", "ring"], owner=message)
 
         await self.display(ctx, "Copying valley...")
@@ -2283,7 +2326,7 @@ Downloads the weekly update bundle from the build server and unpacks it'''
         await self.display(ctx, message.author.mention)
 
     async def action_stop_at_minute(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
-        '''Starts a bungee shutdown timer the next HH:MM for the minute specified
+        '''Starts a proxy shutdown timer the next HH:MM for the minute specified
 
 Optionally, set a reason. The default reason is "maintenance":
 {cmdPrefix}stop at 15
@@ -2339,14 +2382,13 @@ old coreprotect data will be removed at the 5 minute mark.
             1,
         ], reverse=True)
 
-        self._socket.send_packet("*", "monumentanetworkrelay.command",
-                                 {"command": '''tellraw @a[all_worlds=true] ''' + json.dumps([
-                                     "",
-                                     {"text":"[Alert] ", "color":"red"},
-                                     {"text":"Monumenta is going down at ", "color":"white"},
-                                     {"text":stop_time.strftime('%I:%M %p UTC'), "color":"red"},
-                                     {"text":". " + reason + ". Check our discord for details.", "color":"white"}
-                                 ], ensure_ascii=False, separators=(',', ':'))})
+        self.broadcast_json_msg([
+                                 "",
+                                 {"text":"[Alert] ", "color":"red"},
+                                 {"text":"Monumenta is going down at ", "color":"white"},
+                                 {"text":stop_time.strftime('%I:%M %p UTC'), "color":"red"},
+                                 {"text":". " + reason + ". Check our discord for details.", "color":"white"}
+                             ])
         await self.display(ctx, f"Server stopping at <t:{int(stop_time.timestamp())}> (<t:{int(stop_time.timestamp())}:R>)")
 
         def seconds_to_string(seconds):
@@ -2362,15 +2404,14 @@ old coreprotect data will be removed at the 5 minute mark.
                 return "1 minute"
             return f"{minutes} minutes"
 
-        async def send_broadcast_msg(time_left):
-            self._socket.send_packet("*", "monumentanetworkrelay.command",
-                                     {"command": '''tellraw @a[all_worlds=true] ''' + json.dumps([
-                                         "",
-                                         {"text":"[Alert] ", "color":"red"},
-                                         {"text":"The Monumenta server is stopping in ", "color":"white"},
-                                         {"text":time_left, "color":"red"},
-                                         {"text":". " + reason + ". Check our discord for details."}
-                                     ], ensure_ascii=False, separators=(',', ':'))})
+        async def send_broadcast_stop_msg(time_left):
+            self.broadcast_json_msg([[
+                                 "",
+                                 {"text":"[Alert] ", "color":"red"},
+                                 {"text":"The Monumenta server is stopping in ", "color":"white"},
+                                 {"text":time_left, "color":"red"},
+                                 {"text":". " + reason + ". Check our discord for details."}
+                             ])
             await self.display(ctx, f"{time_left} to stop")
 
         while countdown_targets:
@@ -2384,22 +2425,16 @@ old coreprotect data will be removed at the 5 minute mark.
                 await self.display(ctx, "Clearing coreprotect data older than 30 days")
                 for shard in self._shards:
                     if shard in ["plots", "playerplots", "guildplot"]:
-                        self._socket.send_packet(shard, "monumentanetworkrelay.command", {
-                            "server_type": "minecraft",
-                            "command": 'co purge t:180d'
-                        })
+                        self.broadcast_command('co purge t:180d', shard=shard)
                     elif shard not in ["build",]:
-                        self._socket.send_packet(shard, "monumentanetworkrelay.command", {
-                            "server_type": "minecraft",
-                            "command": 'co purge t:30d'
-                        })
+                        self.broadcast_command('co purge t:30d', shard=shard)
             if next_target == 15:
-                self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "minecraft", "command": 'save-all'})
+                self.broadcast_command('save-all')
 
-            await send_broadcast_msg(seconds_to_string(next_target))
+            await send_broadcast_stop_msg(seconds_to_string(next_target))
 
         # Stop velocity (I guess you could uh... run maintenance?)
-        self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "proxy", "command": 'maintenance on'})
+        self.broadcast_command('maintenance on', server_type="proxy")
         await asyncio.sleep(5)
         # TODO: don't hardcode velocity instances here
         shards = await self._k8s.list()
@@ -2560,11 +2595,11 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(ctx, "rm -rf 0_PREVIOUS")
             await self.run(ctx, "mkdir 0_PREVIOUS")
 
-        # Move everything to 0_PREVIOUS except bungee and build
+        # Move everything to 0_PREVIOUS except proxies and build
         if min_phase <= 4:
-            await self.display(ctx, "Moving everything except bungee, and build to 0_PREVIOUS...")
+            await self.display(ctx, "Moving everything except proxies and build to 0_PREVIOUS...")
             for f in files:
-                if f not in ["0_PREVIOUS", "build",] and not f.startswith("bungee"):
+                if f not in ["0_PREVIOUS", "build",] and not f.startswith("bungee") and not f.startswith("velocity"):
                     await self.run(ctx, "mv {} 0_PREVIOUS/".format(f))
 
         if min_phase <= 5:
@@ -3102,7 +3137,7 @@ Syntax:
         await self.display(ctx, message.author.mention)
 
     async def action_broadcastcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
-        '''Sends a command to all shards and bungeecord instances
+        '''Sends a command to all shards and proxy instances
 Syntax:
 `{cmdPrefix}broadcastcommand <command>`'''
         commandArgs = message.content[len(config.PREFIX + cmd)+1:].strip()
@@ -3110,7 +3145,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, "Broadcasting command {!r} to all servers".format(commandArgs))
-        self._socket.send_packet("*", "monumentanetworkrelay.command", {"command": commandArgs})
+        self.broadcast_command(commandArgs, server_type=None)
 
     async def action_broadcastbungeecommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all bungeecord instances
@@ -3121,7 +3156,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, "Broadcasting command {!r} to all bungee servers".format(commandArgs))
-        self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "bungee", "command": commandArgs})
+        self.broadcast_command(commandArgs, server_type: "bungee")
 
     async def action_broadcastminecraftcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all minecraft instances
@@ -3132,7 +3167,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, "Broadcasting command {!r} to all minecraft servers".format(commandArgs))
-        self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "minecraft", "command": commandArgs})
+        self.broadcast_command(commandArgs)
 
     async def action_broadcastproxycommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all proxy instances
@@ -3143,7 +3178,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, "Broadcasting command {!r} to all proxy servers".format(commandArgs))
-        self._socket.send_packet("*", "monumentanetworkrelay.command", {"server_type": "proxy", "command": commandArgs})
+        self.broadcast_command(commandArgs, server_type="proxy")
 
 
     async def action_update_avatar(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
