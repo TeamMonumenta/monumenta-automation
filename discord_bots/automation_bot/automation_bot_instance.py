@@ -508,6 +508,11 @@ class AutomationBotInstance(commands.Cog):
             try:
                 await self._rreact["msg"].remove_reaction('\U0001f441', self._bot.user)
             except Exception:
+                try:
+                    channel = self._bot.get_channel(channel_id)
+                except Exception:
+                    return
+
                 self._bot.rlogger.warning("Failed to remove previous reaction in %s", channel.name)
                 self._bot.rlogger.warning(traceback.format_exc())
 
@@ -552,7 +557,7 @@ class AutomationBotInstance(commands.Cog):
 
         # Conditionally timezone aware cutoff time
         if msg.created_at.tzinfo is None:
-            time_cutoff = datetime.utcnow() - datetime.timedelta(days=7)
+            time_cutoff = datetime.utcnow() - timedelta(days=7)
         else:
             time_cutoff = datetime.now(timezone.utc) - timedelta(days=7)
         self._bot.rlogger.debug("time_cutoff=%s      msg.created_at=%s", time_cutoff, msg.created_at)
@@ -1926,23 +1931,23 @@ Must be run before starting the update on the play server
             self.broadcast_json_msg([
                 "",
                 {"text": "[Alert] ", "color":"red"},
-                {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"}
-                {"text": "overworld and dungeon", "color":"red"}
-                {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"}
+                {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"},
+                {"text": "overworld and dungeon", "color":"red"},
+                {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
             self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
         elif not debug:
             self.broadcast_json_msg([
                 "",
                 {"text": "[Alert] ", "color":"red"},
-                {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"}
-                {"text": "overworld", "color":"red"}
-                {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"}
+                {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"},
+                {"text": "overworld", "color":"red"},
+                {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
             self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
 
         async def await_warning_delay():
-            remaining_seconds = (stop_time - datetime.now(tz)) / second
+            remaining_seconds = (stop_time - datetime.now(tz)) / timedelta(seconds=1)
             if remaining_seconds < 0:
                 return
             await asyncio.sleep(remaining_seconds)
@@ -2406,7 +2411,7 @@ old coreprotect data will be removed at the 5 minute mark.
             return f"{minutes} minutes"
 
         async def send_broadcast_stop_msg(time_left):
-            self.broadcast_json_msg([[
+            self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
                                  {"text":"The Monumenta server is stopping in ", "color":"white"},
@@ -3157,7 +3162,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, "Broadcasting command {!r} to all bungee servers".format(commandArgs))
-        self.broadcast_command(commandArgs, server_type: "bungee")
+        self.broadcast_command(commandArgs, server_type="bungee")
 
     async def action_broadcastminecraftcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all minecraft instances
