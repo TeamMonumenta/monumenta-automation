@@ -163,6 +163,14 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/web-files/files/resource-packs
+        - name: nfs-spark-m17
+          hostPath:
+            path: /nfs/6_REMOTE_SCRATCH/m17/spark
+            type: Directory
+        - name: nfs-spark-m18
+          hostPath:
+            path: /nfs/6_REMOTE_SCRATCH/m18/spark
+            type: Directory
         - name: authorized-keys-config
           secret:
             secretName: authorized-keys-config
@@ -264,6 +272,12 @@ spec:
           mountPath: /home/epic/global_chat_filters
         - name: nfs-resource-packs
           mountPath: /home/epic/resource-packs
+        - name: nfs-spark-m17
+          readOnly: true
+          mountPath: /home/epic/spark/m17
+        - name: nfs-spark-m18
+          readOnly: true
+          mountPath: /home/epic/spark/m18
         - name: authorized-keys-config
           mountPath: /home/epic/.ssh/authorized_keys
           subPath: authorized_keys
