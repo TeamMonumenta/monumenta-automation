@@ -303,10 +303,8 @@ class AutomationBotInstance(commands.Cog):
 
                             if self._status_channel:
                                 if message_channel == "monumenta.eventbroadcast.update":
-                                    logger.warning("Got Monumenta gameplay event message")
                                     event_data = message.get("data", None)
                                     if event_data is None:
-                                        logger.warning("...but it had no data")
                                         return
 
                                     event_shard = event_data.get("shard", None)
@@ -318,10 +316,7 @@ class AutomationBotInstance(commands.Cog):
                                             isinstance(event_name, str),
                                             isinstance(event_time_left, int),
                                     ]):
-                                        logger.warning(f"...but the data types were invalid: event_shard: {type(event_shard)},  event_name: {type(event_name)},  event_time_left: {type(event_time_left)}")
                                         return
-
-                                    logger.warning(f"Event details: event_shard: {event_shard},  event_name: {event_name},  event_time_left: {event_time_left}")
 
                                     event_map = self._gameplay_events.get(event_name, {})
                                     self._gameplay_events[event_name] = event_map
@@ -331,7 +326,6 @@ class AutomationBotInstance(commands.Cog):
                                             del event_map[event_shard]
                                         if len(event_map) == 0:
                                             del self._gameplay_events[event_name]
-                                        logger.warning("...but it timed out!")
                                         return
 
                                     now = datetime.utcnow()
@@ -343,12 +337,10 @@ class AutomationBotInstance(commands.Cog):
                                     gameplay_event["last_update"] = now
                                     if event_time_left > 0:
                                         gameplay_event["ETA"] = now + timedelta(seconds=event_time_left)
-                                        logger.warning(f"...and it starts in {event_time_left} seconds!")
                                     else:
                                         gameplay_event.pop("ETA", False)
-                                        logger.warning(f"...and it started!")
                         except Exception as e:
-                            logger.warning("Error handling message type %s", json.dumps(
+                            logger.warning("Error handling message: %s", json.dumps(
                                 message,
                                 ensure_ascii=False,
                                 indent=2,
