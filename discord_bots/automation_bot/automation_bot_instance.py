@@ -206,7 +206,7 @@ class AutomationBotInstance(commands.Cog):
         self._status_messages = {
             "Shard Status": self._get_list_shards_str_status,
             "Server Time": self._time_summary,
-            #"Public Events": self._gameplay_event_summary, # TODO Bot cannot see these messages for reasons unknown
+            "Public Events": self._gameplay_event_summary,
         }
         if config.K8S_NAMESPACE != "play":
             self._status_messages["Developer Lockouts"] = self._get_lockout_message
@@ -240,7 +240,6 @@ class AutomationBotInstance(commands.Cog):
 
                     # Get the event loop on the main thread
                     loop = asyncio.get_event_loop()
-                    seen_channel_ids = set()
 
                     def send_message_to_channel(message, channel):
                         # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
@@ -253,93 +252,109 @@ class AutomationBotInstance(commands.Cog):
                         if not message_channel:
                             return
 
-                        if message_channel not in seen_channel_ids:
-                            seen_channel_ids.add(message_channel)
-                            logger.warning('First occurance of channel %s: %s', repr(message_channel), message)
-
                         if message_channel == "monumentanetworkrelay.heartbeat":
                             return
 
-                        #logger.info("Got socket message: %s", pformat(message))
-                        if self._audit_channel:
-                            if message_channel == "Monumenta.Automation.AuditLog":
-                                # Schedule the display coroutine back on the main event loop
-                                send_message_to_channel(message["data"]["message"], self._audit_channel)
+                        try:
+                            #logger.info("Got socket message: %s", pformat(message))
+                            if self._audit_channel:
+                                if message_channel == "Monumenta.Automation.AuditLog":
+                                    # Schedule the display coroutine back on the main event loop
+                                    send_message_to_channel(message["data"]["message"], self._audit_channel)
 
-                        if self._admin_channel:
-                            if message_channel == "Monumenta.Automation.AdminNotification":
-                                send_message_to_channel(message["data"]["message"], self._admin_channel)
+                            if self._admin_channel:
+                                if message_channel == "Monumenta.Automation.AdminNotification":
+                                    send_message_to_channel(message["data"]["message"], self._admin_channel)
 
-                        if self._audit_severe_channel:
-                            if message_channel == "Monumenta.Automation.AuditLogSevere":
-                                send_message_to_channel(message["data"]["message"], self._audit_severe_channel)
+                            if self._audit_severe_channel:
+                                if message_channel == "Monumenta.Automation.AuditLogSevere":
+                                    send_message_to_channel(message["data"]["message"], self._audit_severe_channel)
 
-                        if self._chat_mod_audit_channel:
-                            if message_channel == "Monumenta.Automation.ChatModAuditLog":
-                                send_message_to_channel(message["data"]["message"], self._chat_mod_audit_channel)
+                            if self._chat_mod_audit_channel:
+                                if message_channel == "Monumenta.Automation.ChatModAuditLog":
+                                    send_message_to_channel(message["data"]["message"], self._chat_mod_audit_channel)
 
-                        if self._death_audit_channel:
-                            if message_channel == "Monumenta.Automation.DeathAuditLog":
-                                send_message_to_channel(message["data"]["message"], self._death_audit_channel)
+                            if self._death_audit_channel:
+                                if message_channel == "Monumenta.Automation.DeathAuditLog":
+                                    send_message_to_channel(message["data"]["message"], self._death_audit_channel)
 
-                        if self._player_audit_channel:
-                            if message_channel == "Monumenta.Automation.PlayerAuditLog":
-                                send_message_to_channel(message["data"]["message"], self._player_audit_channel)
+                            if self._player_audit_channel:
+                                if message_channel == "Monumenta.Automation.PlayerAuditLog":
+                                    send_message_to_channel(message["data"]["message"], self._player_audit_channel)
 
-                        if self._mail_audit_channel:
-                            if message_channel == "Monumenta.Automation.MailAuditLog":
-                                send_message_to_channel(message["data"]["message"], self._mail_audit_channel)
+                            if self._mail_audit_channel:
+                                if message_channel == "Monumenta.Automation.MailAuditLog":
+                                    send_message_to_channel(message["data"]["message"], self._mail_audit_channel)
 
-                        if self._market_audit_channel:
-                            if message_channel == "Monumenta.Automation.MarketAuditLog":
-                                send_message_to_channel(message["data"]["message"], self._market_audit_channel)
+                            if self._market_audit_channel:
+                                if message_channel == "Monumenta.Automation.MarketAuditLog":
+                                    send_message_to_channel(message["data"]["message"], self._market_audit_channel)
 
-                        if self._report_audit_channel:
-                            if message_channel == "Monumenta.Automation.ReportAuditLog":
-                                send_message_to_channel(message["data"]["message"], self._report_audit_channel)
+                            if self._report_audit_channel:
+                                if message_channel == "Monumenta.Automation.ReportAuditLog":
+                                    send_message_to_channel(message["data"]["message"], self._report_audit_channel)
 
-                        if self._stage_notify_channel:
-                            if message_channel == "Monumenta.Automation.stage":
-                                # Schedule the display coroutine back on the main event loop
-                                # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
-                                # Probably hard to fix though
-                                asyncio.run_coroutine_threadsafe(self.stage_data_request(self._stage_notify_channel, message["data"]), loop)
+                            if self._stage_notify_channel:
+                                if message_channel == "Monumenta.Automation.stage":
+                                    # Schedule the display coroutine back on the main event loop
+                                    # TODO: This is sort of cheating - channel isn't really a context, but it does have a .send()...
+                                    # Probably hard to fix though
+                                    asyncio.run_coroutine_threadsafe(self.stage_data_request(self._stage_notify_channel, message["data"]), loop)
 
-                        if self._status_channel:
-                            if message_channel == "monumenta.eventbroadcast.update":
-                                logger.warning("Got Monumenta gameplay event message: %s", pformat(message))
-                                event_data = message["data"]
+                            if self._status_channel:
+                                if message_channel == "monumenta.eventbroadcast.update":
+                                    logger.warning("Got Monumenta gameplay event message")
+                                    event_data = message.get("data", None)
+                                    if event_data is None:
+                                        logger.warning("...but it had no data")
+                                        return
 
-                                event_shard = event_data.get("shard", None)
-                                event_name = event_data.get("eventName", None)
-                                event_time_left = event_data.get("timeLeft", None)
+                                    event_shard = event_data.get("shard", None)
+                                    event_name = event_data.get("eventName", None)
+                                    event_time_left = event_data.get("timeLeft", None)
 
-                                if not all(
-                                        isinstance(event_shard, str),
-                                        isinstance(event_name, str),
-                                        isinstance(event_time_left, int),
-                                ):
-                                    return
+                                    if not all([
+                                            isinstance(event_shard, str),
+                                            isinstance(event_name, str),
+                                            isinstance(event_time_left, int),
+                                    ]):
+                                        logger.warning(f"...but the data types were invalid: event_shard: {type(event_shard)},  event_name: {type(event_name)},  event_time_left: {type(event_time_left)}")
+                                        return
 
-                                event_map = self._gameplay_events.get(event_name, {})
-                                self._gameplay_events[event_name] = event_map
+                                    logger.warning(f"Event details: event_shard: {event_shard},  event_name: {event_name},  event_time_left: {event_time_left}")
 
-                                if event_time_left < 0:
-                                    del event_map[event_shard]
-                                    if len(event_map) == 0:
-                                        del self._gameplay_events[event_name]
-                                    return
+                                    event_map = self._gameplay_events.get(event_name, {})
+                                    self._gameplay_events[event_name] = event_map
 
-                                now = datetime.utcnow()
-                                gameplay_event = event_map.get("event_shard", {
-                                    "shard": event_shard,
-                                    "event_name": event_name,
-                                })
-                                gameplay_event["last_update"] = now
-                                if event_time_left > 0:
-                                    gameplay_event["ETA"] = now + timedelta(seconds=event_time_left)
-                                else:
-                                    gameplay_event.pop("ETA", False)
+                                    if event_time_left < 0:
+                                        if event_shard in event_map:
+                                            del event_map[event_shard]
+                                        if len(event_map) == 0:
+                                            del self._gameplay_events[event_name]
+                                        logger.warning("...but it timed out!")
+                                        return
+
+                                    now = datetime.utcnow()
+                                    gameplay_event = event_map.get("event_shard", {
+                                        "shard": event_shard,
+                                        "event_name": event_name,
+                                    })
+                                    event_map[event_shard] = gameplay_event
+                                    gameplay_event["last_update"] = now
+                                    if event_time_left > 0:
+                                        gameplay_event["ETA"] = now + timedelta(seconds=event_time_left)
+                                        logger.warning(f"...and it starts in {event_time_left} seconds!")
+                                    else:
+                                        gameplay_event.pop("ETA", False)
+                                        logger.warning(f"...and it started!")
+                        except Exception as e:
+                            logger.warning("Error handling message type %s", json.dumps(
+                                message,
+                                ensure_ascii=False,
+                                indent=2,
+                                separators=(',', ': ')
+                            ))
+                            logger.warning(traceback.format_exc())
 
                     log_level = config.RABBITMQ.get("log_level", 20)
                     self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level)
