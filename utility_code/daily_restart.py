@@ -12,7 +12,7 @@ import yaml
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.lib_k8s import KubernetesManager
 
-def send_broadcast_time(time_left):
+def send_broadcast_time(socket, time_left):
     """Broadcasts a restart warning with how much time is remaining to all players"""
     raw_json_text = [
         "",
@@ -21,43 +21,43 @@ def send_broadcast_time(time_left):
         {"text": time_left, "color": "red"},
         {"text": ". This helps reduce lag! The server will be down for ~120 seconds."}
     ]
-    send_broadcast_message(raw_json_text)
+    send_broadcast_message(socket, raw_json_text)
 
 
-def send_broadcast_message(raw_json_text):
+def send_broadcast_message(socket, raw_json_text):
     """Broadcasts an arbitrary raw json text message to all players"""
     command = '''tellraw @a[all_worlds=true] ''' + json.dumps(raw_json_text, ensure_ascii=False, separators=(',', ':'))
     socket.send_packet("*", "monumentanetworkrelay.command",
                        {"command": command})
 
 
-async def main():
+async def main(k8s):
     """Perform a scheduled restart with warnings"""
     # Short wait to make sure socket connects correctly
     await asyncio.sleep(3)
 
     try:
-        send_broadcast_time("15 minutes")
+        send_broadcast_time(socket, "15 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("14 minutes")
+        send_broadcast_time(socket, "14 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("13 minutes")
+        send_broadcast_time(socket, "13 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("12 minutes")
+        send_broadcast_time(socket, "12 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("11 minutes")
+        send_broadcast_time(socket, "11 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("10 minutes")
+        send_broadcast_time(socket, "10 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("9 minutes")
+        send_broadcast_time(socket, "9 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("8 minutes" )
+        send_broadcast_time(socket, "8 minutes" )
         await asyncio.sleep(60)
-        send_broadcast_time("7 minutes")
+        send_broadcast_time(socket, "7 minutes")
         await asyncio.sleep(60)
 
         # TODO: add shutoff to creating dungeon instances and starting world bosses
-        send_broadcast_time("6 minutes")
+        send_broadcast_time(socket, "6 minutes")
         await asyncio.sleep(60)
 
         # Set all shards to restart the next time they are empty (many will restart immediately) at 5 minutes
@@ -65,23 +65,23 @@ async def main():
         socket.send_packet("*", "monumentanetworkrelay.command",
                            {"command": 'restart-empty', "server_type": 'minecraft'})
 
-        send_broadcast_time("5 minutes")
+        send_broadcast_time(socket, "5 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("4 minutes")
+        send_broadcast_time(socket, "4 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("3 minutes")
+        send_broadcast_time(socket, "3 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("2 minutes")
+        send_broadcast_time(socket, "2 minutes")
         await asyncio.sleep(60)
-        send_broadcast_time("1 minute")
+        send_broadcast_time(socket, "1 minute")
         await asyncio.sleep(30)
-        send_broadcast_time("30 seconds")
+        send_broadcast_time(socket, "30 seconds")
         await asyncio.sleep(15)
-        send_broadcast_time("15 seconds")
+        send_broadcast_time(socket, "15 seconds")
         await asyncio.sleep(5)
-        send_broadcast_time("10 seconds")
+        send_broadcast_time(socket, "10 seconds")
         await asyncio.sleep(5)
-        send_broadcast_time("5 seconds")
+        send_broadcast_time(socket, "5 seconds")
         await asyncio.sleep(5)
     except Exception:
         print("Failed to notify players about pending restart: {}".format(traceback.format_exc()))
@@ -116,7 +116,7 @@ async def main():
                            {"command": 'maintenance off', "server_type": 'proxy'})
     except Exception:
         print("Failed to restart the server: {}".format(traceback.format_exc()))
-        send_broadcast_message([
+        send_broadcast_message(socket, [
             "",
             {"text": "[Alert] ", "color": "red"},
             {"text": "Monumenta has failed to perform its daily restart"}
@@ -163,4 +163,4 @@ if __name__ == '__main__':
     ################################################################################
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    loop.run_until_complete(main(k8s))
