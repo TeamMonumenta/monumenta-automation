@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 logging.getLogger("pika").setLevel(logging.WARNING)
 
 class SocketManager(object):
+    BROADCAST_EXCHANGE_NAME = "broadcast"
     HEARTBEAT_CHANNEL = "monumentanetworkrelay.heartbeat"
 
     # Default log level is INFO
@@ -48,11 +49,21 @@ class SocketManager(object):
 
         while True:
             try:
-                # Create the connection and declare the queue
+                # Create the connection
                 connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
                 channel = connection.channel()
+
+                # Create the exchange for broadcast messages
+                logger.debug("Declaring exchange {}".format(self.BROADCAST_EXCHANGE_NAME))
+                channel.exchange_declare(self.BROADCAST_EXCHANGE_NAME, exchange_type="fanout")
+
+                # Declare the queue
                 logger.debug("Declaring queue {}".format(self._queue_name))
                 channel.queue_declare(queue=self._queue_name, durable=self._durable_queue)
+
+                # Bind queue to the exchange
+                logger.debug("Binding queue {} to exchange ".format(self._queue_name, self.BROADCAST_EXCHANGE_NAME))
+                channel.queue_bind(self._queue_name, self.BROADCAST_EXCHANGE_NAME, routing_key="")
 
                 ## Start consuming messages
                 logger.info("Started rabbitmq message consumer for queue {}".format(self._queue_name))
