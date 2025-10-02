@@ -18,9 +18,9 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - build.playmonumenta.com
+    - build-maps.playmonumenta.com
   rules:
-  - host: build.playmonumenta.com
+  - host: build-maps.playmonumenta.com
     http:
       paths:
         - pathType: Prefix
