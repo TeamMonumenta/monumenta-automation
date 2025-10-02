@@ -19,7 +19,7 @@ def send_broadcast_time(socket, time_left):
         {"text": "[Alert] ", "color": "red"},
         {"text": "Monumenta will perform its daily restart in ", "color": "white"},
         {"text": time_left, "color": "red"},
-        {"text": ". This helps reduce lag! The server will be down for ~120 seconds."}
+        {"text": ". This helps reduce lag! The server will be down for ~180 seconds."}
     ]
     send_broadcast_message(socket, raw_json_text)
 
