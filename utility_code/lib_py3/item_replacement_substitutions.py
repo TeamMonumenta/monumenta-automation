@@ -276,6 +276,14 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:sunflower", "Swift Spritual Charm", "minecraft:sunflower", "Swift Spiritual Charm"],
                 # Tormented Fragment base item change
                 ["minecraft:netherrack", "Tormented Fragment", "minecraft:netherite_scrap", "Tormented Fragment"],
+                # Orison -> Transcendent Charms
+                ["minecraft:white_glazed_terracotta", "Lesser Orison Charm", "minecraft:large_amethyst_bud", "Lesser Transcendent Charm"],
+                ["minecraft:white_glazed_terracotta", "Greater Orison Charm", "minecraft:large_amethyst_bud", "Greater Transcendent Charm"],
+                ["minecraft:white_glazed_terracotta", "Explosive Orison Charm", "minecraft:large_amethyst_bud", "Explosive Transcendent Charm"],
+                ["minecraft:white_glazed_terracotta", "Swift Orison Charm", "minecraft:large_amethyst_bud", "Swift Transcendent Charm"],
+                # Thurible -> Sentinel Charms
+                ["minecraft:glowstone_dust", "Lesser Thurible Charm", "minecraft:glowstone_dust", "Lesser Sentinel Charm"],
+                ["minecraft:glowstone_dust", "Greater Thurible Charm", "minecraft:glowstone_dust", "Greater Sentinel Charm"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
