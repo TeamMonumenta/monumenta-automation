@@ -244,6 +244,24 @@ class MarkPlayerModifiedDirty(SubstitutionRule):
             mark_dirty(item)
 
 
+class FixIdlessChests(SubstitutionRule):
+    """Rule to fix chests with a BlockEntityTag but no BlockEntityTag.id value"""
+    name = "Fix missing BlockEntityTag.id tags on chests"
+
+    def process(self, item_meta, item):
+        if not item.id in ("minecraft:chest", "chest"):
+            return
+        if not item.nbt.has_path("tag.BlockEntityTag"):
+            return
+
+        block_entity_tag = item.nbt.at_path("tag.BlockEntityTag")
+
+        if block_entity_tag.has_path("id"):
+            return
+
+        block_entity_tag.value["id"] = nbt.TagString("minecraft:chest")
+
+
 class SubtituteItems(SubstitutionRule):
     """Rule to replace items by ID/name"""
     name = "Substitute the ID and name of items, ignoring other NBT"
