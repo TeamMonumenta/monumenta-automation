@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -69,6 +70,7 @@ class ResetDirty(SubstitutionRule):
 class NameUnnamedItems(SubstitutionRule):
     """Rule to apply a name to unnamed items"""
     name = "Name Unnamed Items"
+    NAME_TABLE_INITIALIZED = False
     NAME_TABLE = {}
 
     @classmethod
@@ -83,18 +85,14 @@ class NameUnnamedItems(SubstitutionRule):
         # addition of the display name for the sake of replacements. If the NBT otherwise matches exactly, the name and
         # lore text are set on the items before continuing with item updates.
         unnamed_chests = (
-            # OLD EXAMPLE, DO NOT USE. This is pre 1.19 data
-            # r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:golden_apple",tag:{display:{Name:'{"text":"Kingfruit"}'},plain:{display:{Name:"Kingfruit"}}}},{Count:1b,Slot:1b,id:"minecraft:enchanted_golden_apple",tag:{display:{Name:'{"text":"Soulfruit"}'},plain:{display:{Name:"Soulfruit"}}}}]}''',
-            # Somehow some Summoning Crystals ended up with no lore after they were added to the loot tables
-            r'''{Items:[{Count:1b,Slot:0b,id:"minecraft:yellow_dye",tag:{display:{Name:'{"extra":[{"bold":true,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gold","text":"Summoning Crystal"}],"text":""}'},plain:{display:{Name:"Summoning Crystal"}}}}]}''',
+            # Blast Prot 100 boots again
+            r'''{Items:[{Count:1b,Slot:13b,id:"minecraft:golden_boots",tag:{AttributeModifiers:[{Amount:1.0d,AttributeName:"minecraft:generic.armor_toughness",Name:"MMDummy",Operation:2,UUID:[I;0,0,0,0]}],Damage:0,Enchantments:[{id:"minecraft:power",lvl:1s}],HideFlags:3,Monumenta:{Stock:{Enchantments:{"Blast Protection":{Level:100}}}},display:{Name:'"Boots of Deleting"',Lore:['{"italic":false,"color":"gray","text":"Blast Protection C"}']},plain:{display:{Name:"Boots of Deleting",Lore:["Blast Protection C"]}}}}]}''',
         )
 
         # These items have no lore text, which means they're assumed to be on mobs and will be skipped to prevent them
         # from dropping or changing stats. Items that match exactly will be given a temporary line of lore so they can
         # be replaced.
         named_chests = (
-            # Blast Prot 100 boots again
-            r'''{Items:[{Count:1b,Slot:13b,id:"minecraft:golden_boots",tag:{AttributeModifiers:[{Amount:1.0d,AttributeName:"minecraft:generic.armor_toughness",Name:"MMDummy",Operation:2,UUID:[I;0,0,0,0]}],Damage:0,Enchantments:[{id:"minecraft:power",lvl:1s}],HideFlags:3,Monumenta:{Stock:{Enchantments:{"Blast Protection":{Level:100}}}},display:{Lore:['{"italic":false,"color":"gray","text":"Blast Protection C"}'],Name:'{"bold":false,"italic":false,"underlined":false,"color":"#81D434","text":"Boots of Deleting"}'},plain:{display:{Lore:["Blast Protection C"],Name:"Boots of Deleting"}}}}]}''',
         )
 
         for chest_mojangson in unnamed_chests:
@@ -117,6 +115,8 @@ class NameUnnamedItems(SubstitutionRule):
                 if item_id not in NameUnnamedItems.NAME_TABLE:
                     NameUnnamedItems.NAME_TABLE[item_id] = {}
                 NameUnnamedItems.NAME_TABLE[item_id][item_tag] = item_name
+                if len(item_tag.value) == 0:
+                    NameUnnamedItems.NAME_TABLE[item_id][None] = item_name
 
         for chest_mojangson in named_chests:
             chest = nbt.TagCompound.from_mojangson(chest_mojangson)
@@ -128,9 +128,13 @@ class NameUnnamedItems(SubstitutionRule):
                 if item_id not in NameUnnamedItems.NAME_TABLE:
                     NameUnnamedItems.NAME_TABLE[item_id] = {}
                 NameUnnamedItems.NAME_TABLE[item_id][item_tag] = item_name
+                if len(item_tag.value) == 0:
+                    NameUnnamedItems.NAME_TABLE[item_id][None] = item_name
+
+        NameUnnamedItems.NAME_TABLE_INITIALIZED = True
 
     def process(self, item_meta, item):
-        if NameUnnamedItems.NAME_TABLE is None:
+        if not NameUnnamedItems.NAME_TABLE_INITIALIZED:
             NameUnnamedItems._init_unnamed_items()
 
         item_map = NameUnnamedItems.NAME_TABLE.get(item_meta['id'], None)
@@ -138,12 +142,14 @@ class NameUnnamedItems(SubstitutionRule):
             return
         item_tag = item.nbt.value.get('tag', None)
         if item_tag is None:
-            item_meta['name'] = item_map.get(None, None)
-            if item_meta['name'] is not None:
+            new_name = item_map.get(None, None)
+            if new_name is not None:
+                item_meta['name'] = new_name
                 item.nbt.value['tag'] = nbt.TagCompound({
                     'display': nbt.TagCompound({
+                        'Name': nbt.TagString(json.dumps(new_name)),
                         'Lore': nbt.TagList([
-                            nbt.TagString('''{"text":"Don't skip this if it's missing lore!"}''')
+                            nbt.TagString('"Dummy lore text for item replacements"')
                         ])
                     })
                 })
@@ -153,9 +159,13 @@ class NameUnnamedItems(SubstitutionRule):
                 item_meta['name'] = new_name
                 if not item_tag.has_path('display'):
                     item_tag.value['display'] = nbt.TagCompound({})
+                if not item_tag.has_path('display.Name'):
+                    item_tag.at_path('display').value['Name'] = nbt.TagString(json.dumps(new_name))
+                else:
+                    item_tag.at_path('display.Name').value = json.dumps(new_name)
                 if not item_tag.has_path('display.Lore'):
                     item_tag.at_path('display').value['Lore'] = nbt.TagList([])
-                item_tag.at_path('display.Lore').value.append(nbt.TagString('''{"text":"Don't skip this if it's missing lore!"}'''))
+                item_tag.at_path('display.Lore').value.append(nbt.TagString('"Dummy lore text for item replacements"'))
                 return
 
 
@@ -242,6 +252,24 @@ class MarkPlayerModifiedDirty(SubstitutionRule):
         """Note: This is only useful for items that aren't in the loot tables."""
         if item.nbt.has_path('tag.Monumenta.PlayerModified'):
             mark_dirty(item)
+
+
+class FixIdlessChests(SubstitutionRule):
+    """Rule to fix chests with a BlockEntityTag but no BlockEntityTag.id value"""
+    name = "Fix missing BlockEntityTag.id tags on chests"
+
+    def process(self, item_meta, item):
+        if not item.id in ("minecraft:chest", "chest"):
+            return
+        if not item.nbt.has_path("tag.BlockEntityTag"):
+            return
+
+        block_entity_tag = item.nbt.at_path("tag.BlockEntityTag")
+
+        if block_entity_tag.has_path("id"):
+            return
+
+        block_entity_tag.value["id"] = nbt.TagString("minecraft:chest")
 
 
 class SubtituteItems(SubstitutionRule):
