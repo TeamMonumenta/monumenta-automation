@@ -130,8 +130,13 @@ shards:
 commands:
     - apply stage bundle
     - broadcastcommand
+    - broadcastcommand deop
+    - broadcastcommand op
     - broadcastproxycommand
     - broadcastminecraftcommand
+    - sendcommand
+    - deop
+    - op
     - lockout
     - lockout check *
     - lockout check
@@ -151,6 +156,7 @@ commands:
     - player find
     - player rollback
     - player shard
+    - player shard transfer
     - player account transfer
     - player transfer
     - player wipe
@@ -177,7 +183,6 @@ permissions:
         302298391969267712: {"name": "Combustible", "rights": [ "@root" ]}
         228226807353180162: {"name": "NickNackGus", "rights": [ "@root" ]}
         225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]}
-        122593763490004992: {"name": "Hazerdous",   "rights": [ "@root" ]}
         257887001834029056: {"name": "rayman520",   "rights": [ "@root" ]}
         192645668592943104: {"name": "Njol",        "rights": [ "@root" ]}
         222170304577929218: {"name": "U5B_",        "rights": [ "@root" ]}
@@ -189,6 +194,10 @@ permissions:
         341032989787947008: "@team monumenta"
         # Intern (Private discord)
         390269554657460226: "@intern"
+        # Moderator (Private discord)
+        824391828836450345: "@moderator"
+        # Beta Tester (Private discord)
+        824393198554054686: "@beta tester"
 
     groups:
         "@root":
@@ -197,41 +206,52 @@ permissions:
         "@team monumenta":
             - "@intern"
         "@intern":
+            - "@moderator"
+            - "+apply stage bundle"
+            - "+fetch update bundle"
+            - "+debug"
+            - "+get errors"
+            - "+stage"
+            - "+stop and backup"
+            - "+weekly update"
+        "@moderator":
+            - "@beta tester"
             - "+broadcastcommand"
-            - "+broadcastproxycommand"
             - "+broadcastminecraftcommand"
-            - "+lockout"
+            - "+broadcastproxycommand"
+            - "+sendcommand"
+            - "+get score"
+            - "+list bots"
+            - "+badname"
             - "+lockout check *"
             - "+lockout check"
-            - "+lockout clear"
             - "+lockout claim"
-            - "+debug"
-            - "+help"
-            - "+get timestamp"
-            - "+remind"
-            - "+remind me"
-            - "+list bots"
-            - "+get errors"
-            - "+list shards"
-            - "+badname"
+            - "+lockout clear"
+            - "+lockout"
             - "+player find"
             - "+player rollback"
-            - "+player shard"
             - "+player account transfer"
-            - "+player transfer"
+            - "+player shard"
             - "+player wipe"
-            - "+apply stage bundle"
-            - "+stage"
+            - "+remind"
             - "+restart"
+            - "+set score"
             - "+start"
-            - "+stop"
             - "+stop at"
+            - "+stop"
             - "+test"
             - "+testpriv"
-            - "+view scores"
-            - "+get score"
-            - "+set score"
             - "+verbose"
+            - "+view scores"
+        "@beta tester":
+            - "@everyone"
+            - "+broadcastcommand deop"
+            - "+broadcastcommand op"
+            - "+deop"
+            - "+op"
+            - "+player shard transfer"
+            - "+player transfer"
+            - "+list shards"
         "@everyone":
             - "+select"
             - "+help"

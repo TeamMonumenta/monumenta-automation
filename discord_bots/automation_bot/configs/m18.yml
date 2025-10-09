@@ -90,10 +90,8 @@ permissions:
             - "+verbose"
         "@discord manager":
             - "@team monumenta"
-            - "+broadcastcommand"
         "@team monumenta":
             - "@everyone"
-            - "+address to english"
             - "+list bots"
             - "+restart"
             - "+select"

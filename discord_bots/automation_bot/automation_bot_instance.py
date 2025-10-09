@@ -136,6 +136,7 @@ class AutomationBotInstance(commands.Cog):
             "player find": self.action_player_find,
             "player rollback": self.action_player_rollback,
             "player shard": self.action_player_shard,
+            "player shard transfer": self.action_player_shard,
             "player account transfer": self.action_player_account_transfer,
             "player transfer": self.action_player_transfer,
             "player wipe": self.action_player_wipe,
@@ -160,9 +161,14 @@ class AutomationBotInstance(commands.Cog):
             "stage": self.action_stage,
             "generate demo release": self.action_gen_demo_release,
             "broadcastcommand": self.action_dummy,
+            "broadcastcommand deop": self.action_dummy,
+            "broadcastcommand op": self.action_dummy,
             "broadcastbungeecommand": self.action_dummy,
             "broadcastminecraftcommand": self.action_dummy,
             "broadcastproxycommand": self.action_dummy,
+            "deop": self.action_dummy,
+            "op": self.action_dummy,
+            "sendcommand": self.action_dummy,
 
             "get timestamp": self.action_get_timestamp,
             "remind": self.action_remind,
@@ -353,9 +359,14 @@ class AutomationBotInstance(commands.Cog):
 
                     # Add commands that require the sockets here!
                     self._commands["broadcastcommand"] = self.action_broadcastcommand
+                    self._commands["broadcastcommand deop"] = self.action_broadcastcommand
+                    self._commands["broadcastcommand op"] = self.action_broadcastcommand
                     self._commands["broadcastbungeecommand"] = self.action_broadcastbungeecommand
                     self._commands["broadcastminecraftcommand"] = self.action_broadcastminecraftcommand
                     self._commands["broadcastproxycommand"] = self.action_broadcastproxycommand
+                    self._commands["deop"] = self.action_deop
+                    self._commands["op"] = self.action_op
+                    self._commands["sendcommand"] = self.action_sendcommand
                     self._all_commands = set(self._commands.keys())
 
                     self._audit_channel = None
@@ -1584,7 +1595,7 @@ Usage:
 `{cmdPrefix}player shard reset NickNackGus` - resets which shard NickNackGus is on; this sends him to the tutorial
 '''
 
-        commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()
+        commandArgs = message.content[len(config.PREFIX + "player shard") + 1:].split()
 
         if len(commandArgs) == 0:
             await self.help_internal(ctx, ["player shard"], message.author)
@@ -2032,6 +2043,7 @@ Must be run before starting the update on the play server
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/Project_Epic-ring /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/ampedcoven /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/ring/aurora /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/godspore /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/intruder /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/land_of_storms /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
@@ -3154,7 +3166,7 @@ Syntax:
         '''Sends a command to all shards and proxy instances
 Syntax:
 `{cmdPrefix}broadcastcommand <command>`'''
-        commandArgs = message.content[len(config.PREFIX + cmd)+1:].strip()
+        commandArgs = message.content[len(config.PREFIX + "broadcastcommand")+1:].strip()
         if commandArgs.startswith("/"):
             commandArgs = commandArgs[1:]
 
@@ -3193,6 +3205,70 @@ Syntax:
 
         await self.display(ctx, "Broadcasting command {!r} to all proxy servers".format(commandArgs))
         self.broadcast_command(commandArgs, server_type="proxy")
+
+
+    async def action_deop(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Revokes operator status on a player on all shards
+Syntax:
+`{cmdPrefix}op <player>`'''
+        playerArg = message.content[len(config.PREFIX + cmd)+1:].strip()
+        commandArgs = "deop " + playerArg
+
+        await self.display(ctx, "Broadcasting command {!r} to all servers".format(commandArgs))
+        self.broadcast_command(commandArgs, server_type=None)
+
+
+    async def action_op(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Gives operator status to a player on all shards
+Syntax:
+`{cmdPrefix}op <player>`'''
+        playerArg = message.content[len(config.PREFIX + cmd)+1:].strip()
+        commandArgs = "op " + playerArg
+
+        await self.display(ctx, "Broadcasting command {!r} to all servers".format(commandArgs))
+        self.broadcast_command(commandArgs, server_type=None)
+
+
+    async def action_sendcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Sends a command to a specific shard or proxy instance
+Syntax:
+`{cmdPrefix}sendcommand <shard> <command>`
+Examples:
+`{cmdPrefix}sendcommand ring-2 restart-empty`
+`{cmdPrefix}sendcommand valley.* rq`'''
+        commandArgParts = message.content[len(config.PREFIX + cmd)+1:].strip().split(maxsplit=1)
+        if len(commandArgParts) < 2:
+            await self.display(ctx, "You need to specify a shard to send your command to.")
+            return
+        shard_re_str, shard_cmd = commandArgParts
+
+        try:
+            shard_re = re.compile(shard_re_str)
+        except re.error as re_ex:
+            await self.display(ctx, f"Invalid regular expression for the shard you wish to send to:")
+            if re_ex.pos is None:
+                await self.display_verbatim(ctx, str(re_ex) + ":\n"
+                    + shard_re_str
+                )
+            else:
+                await self.display_verbatim(ctx, str(re_ex) + ":\n"
+                    + shard_re_str + "\n"
+                    + " " * re_ex.pos + "^"
+                )
+            return
+
+        shards = []
+        for shard in self._shards.keys():
+            if shard_re.fullmatch(shard):
+                shards.append(shard)
+
+        if shard_cmd.startswith("/"):
+            shard_cmd = shard_cmd[1:]
+
+        await self.display(ctx, f"Broadcasting command {shard_cmd!r} to {shards!r}")
+        for shard in shards:
+            self.broadcast_command(shard_cmd, shard=shard)
+        await self.display(ctx, "Done!")
 
 
     async def action_update_avatar(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):

@@ -172,11 +172,13 @@ shards:
     zenith-2: /home/epic/play/m17/zenith-2/
 
 commands:
-    - address to english
     - batch
     - broadcastcommand
     - broadcastminecraftcommand
     - broadcastproxycommand
+    - sendcommand
+    - deop
+    - op
     - fetch update bundle
     - get raffle seed
     - get score
@@ -191,6 +193,7 @@ commands:
     - player find
     - player rollback
     - player shard
+    - player shard transfer
     - player account transfer
     - player transfer
     - player wipe
@@ -242,14 +245,16 @@ permissions:
         "@discord manager":
             - "@team monumenta"
             - "+broadcastcommand"
-            - "+broadcastbungeecommand"
             - "+broadcastminecraftcommand"
+            - "+broadcastproxycommand"
+            - "+sendcommand"
+            - "+deop"
+            - "+op"
             - "+player rollback"
             - "+player account transfer"
             - "+player wipe"
         "@team monumenta":
             - "@everyone"
-            - "+address to english"
             - "+batch"
             - "+get raffle seed"
             - "+get score"
@@ -259,8 +264,6 @@ permissions:
             - "+list bots"
             - "+list shards"
             - "+badname"
-            - "+player shard"
-            - "+player transfer"
             - "+restart"
             - "+select"
             - "+set score"
@@ -269,6 +272,8 @@ permissions:
             - "+stop at"
             - "+player find"
             - "+player shard"
+            - "+player shard transfer"
+            - "+player transfer"
             - "+test"
             - "+testpriv"
             - "+view scores"
