@@ -6,7 +6,6 @@ import os
 import sys
 import traceback
 from pprint import pprint
-from pathlib import Path
 import yaml
 
 from lib_py3.lib_sockets import SocketManager
@@ -31,7 +30,7 @@ def send_broadcast_message(socket, raw_json_text):
                        {"command": command})
 
 
-async def main(k8s):
+async def main(socket, k8s):
     """Perform a scheduled restart with warnings"""
     # Short wait to make sure socket connects correctly
     await asyncio.sleep(3)
@@ -84,7 +83,7 @@ async def main(k8s):
         send_broadcast_time(socket, "5 seconds")
         await asyncio.sleep(5)
     except Exception:
-        print("Failed to notify players about pending restart: {}".format(traceback.format_exc()))
+        print(f"Failed to notify players about pending restart: {traceback.format_exc()}")
 
     try:
         # Turn on Maintenance
@@ -115,7 +114,7 @@ async def main(k8s):
         socket.send_packet("*", "monumentanetworkrelay.command",
                            {"command": 'maintenance off', "server_type": 'proxy'})
     except Exception:
-        print("Failed to restart the server: {}".format(traceback.format_exc()))
+        print(f"Failed to restart the server: {traceback.format_exc()}")
         send_broadcast_message(socket, [
             "",
             {"text": "[Alert] ", "color": "red"},
@@ -135,10 +134,10 @@ if __name__ == '__main__':
         config_path = os.path.join(config_dir, "automated-restart.yml")
 
     # Read the bot's config files
-    with open(config_path, 'r') as ymlfile:
+    with open(config_path, 'r', encoding='utf-8') as ymlfile:
         config = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
-    pprint("Config: \n{}".format(config))
+    pprint(f"Config: \n{config}")
 
     socket = None
     k8s = None
@@ -155,7 +154,7 @@ if __name__ == '__main__':
 
         k8s = KubernetesManager(config["k8s_namespace"])
     except KeyError as e:
-        sys.exit('Config missing key: {}'.format(e))
+        sys.exit(f'Config missing key: {e}')
 
     os.umask(0o022)
 
@@ -163,4 +162,4 @@ if __name__ == '__main__':
     ################################################################################
 
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(k8s))
+    loop.run_until_complete(main(socket, k8s))
