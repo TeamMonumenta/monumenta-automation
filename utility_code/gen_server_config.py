@@ -186,7 +186,7 @@ def gen_server_config(servername):
             plan_server_info_contents = yaml.load(fp, Loader=yaml.FullLoader)
 
         shard_uuid = uuid.uuid5(MONUMENTA_NAMESPACE, servername)
-        shard_numeric_id = hash(shard_uuid) & (1 << 31)
+        shard_numeric_id = hash(shard_uuid) & ((1 << 31) - 1)
 
         plan_server_info_contents["Server"]["ID"] = shard_numeric_id
         plan_server_info_contents["Server"]["UUID"] = str(shard_uuid)
