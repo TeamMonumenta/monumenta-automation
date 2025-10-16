@@ -31,6 +31,26 @@ fn update_instance_scores(scores: &mut HashMap<String, i32>, days_since_epoch: i
     }
 }
 
+fn fix_rush_scores(scores: &mut HashMap<String, i32>) {
+    let remnant_objective: &str = "RemnantUnlocked";
+
+    let rush_down_objective: &str = "RushDown";
+    if let Some(rush_down_score) = scores.get(rush_down_objective) {
+        if *rush_down_score > 40 {
+            scores.insert(remnant_objective.to_string(), 1);
+        }
+        scores.insert(rush_down_objective.to_string(), 0);
+    }
+
+    let rush_duo_objective: &str = "RushDuo";
+    if let Some(rush_duo_score) = scores.get(rush_duo_objective) {
+        if *rush_duo_score > 80 {
+            scores.insert(remnant_objective.to_string(), 1);
+        }
+        scores.insert(rush_duo_objective.to_string(), 0);
+    }
+}
+
 #[allow(non_snake_case)]
 fn fix_total_level(scores: &mut HashMap<String, i32>) {
     let White = *scores.get("White").unwrap_or(&0);
@@ -74,6 +94,9 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
 
         /* DelveDungeon score also resets as if it was a dungeon score */
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
+
+        /* Temporary change to reset Rush wave completion leaderboards and grant access to the Remnant */
+        fix_rush_scores(scores);
 
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
