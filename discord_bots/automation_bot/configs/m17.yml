@@ -6,7 +6,7 @@ zfs_snapshot_manager:
 rabbitmq:
     host: "rabbitmq"
     # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
-    name: "automation-bot"
+    name: "automation-bot-m17"
     # Whether the queue will persist when the connection is closed
     durable: True
     # Whether this queue will be able to receive messages or not
