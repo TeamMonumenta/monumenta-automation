@@ -39,7 +39,8 @@ fn fix_rush_scores(scores: &mut HashMap<String, i32>) {
         if *rush_down_score > 40 {
             scores.insert(remnant_objective.to_string(), 1);
         }
-        scores.insert(rush_down_objective.to_string(), 0);
+        // Additional plugin code required first
+        //scores.insert(rush_down_objective.to_string(), 0);
     }
 
     let rush_duo_objective: &str = "RushDuo";
@@ -47,7 +48,8 @@ fn fix_rush_scores(scores: &mut HashMap<String, i32>) {
         if *rush_duo_score > 80 {
             scores.insert(remnant_objective.to_string(), 1);
         }
-        scores.insert(rush_duo_objective.to_string(), 0);
+        // Additional plugin code required first
+        //scores.insert(rush_duo_objective.to_string(), 0);
     }
 }
 
