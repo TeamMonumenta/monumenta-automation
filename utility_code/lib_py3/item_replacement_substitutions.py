@@ -115,6 +115,8 @@ class NameUnnamedItems(SubstitutionRule):
                 if item_id not in NameUnnamedItems.NAME_TABLE:
                     NameUnnamedItems.NAME_TABLE[item_id] = {}
                 NameUnnamedItems.NAME_TABLE[item_id][item_tag] = item_name
+                # If the tag is empty (tag:{}), also accept not having a `tag` tag.
+                # Vanilla *usually* deletes empty tags, but sometimes fails to do so.
                 if len(item_tag.value) == 0:
                     NameUnnamedItems.NAME_TABLE[item_id][None] = item_name
 
