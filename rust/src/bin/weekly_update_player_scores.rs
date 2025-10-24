@@ -36,7 +36,7 @@ fn fix_rush_scores(scores: &mut HashMap<String, i32>) {
 
     let rush_down_objective: &str = "RushDown";
     if let Some(rush_down_score) = scores.get(rush_down_objective) {
-        if *rush_down_score > 40 {
+        if *rush_down_score >= 40 {
             scores.insert(remnant_objective.to_string(), 1);
         }
         // Additional plugin code required first
@@ -45,7 +45,7 @@ fn fix_rush_scores(scores: &mut HashMap<String, i32>) {
 
     let rush_duo_objective: &str = "RushDuo";
     if let Some(rush_duo_score) = scores.get(rush_duo_objective) {
-        if *rush_duo_score > 80 {
+        if *rush_duo_score >= 80 {
             scores.insert(remnant_objective.to_string(), 1);
         }
         // Additional plugin code required first
