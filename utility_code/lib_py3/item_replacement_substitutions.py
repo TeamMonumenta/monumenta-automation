@@ -314,6 +314,8 @@ class SubtituteItems(SubstitutionRule):
                 # Thurible -> Sentinel Charms
                 ["minecraft:glowstone_dust", "Lesser Thurible Charm", "minecraft:glowstone_dust", "Lesser Sentinel Charm"],
                 ["minecraft:glowstone_dust", "Greater Thurible Charm", "minecraft:glowstone_dust", "Greater Sentinel Charm"],
+                # Focused -> Swift for Sanctified Armor
+                ["minecraft:large_amethyst_bud", "Focused Consecrated Charm", "minecraft:large_amethyst_bud", "Swift Consecrated Charm"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
