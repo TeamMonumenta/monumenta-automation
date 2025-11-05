@@ -30,7 +30,7 @@ cpu_count: 6
 
 stage_source:
     m17:
-        queue_name: automation-bot
+        queue_name: automation-bot-m17
         shards:
             - ring-2
             - server_config
