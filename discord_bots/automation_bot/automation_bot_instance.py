@@ -216,6 +216,8 @@ class AutomationBotInstance(commands.Cog):
         }
         if config.K8S_NAMESPACE != "play":
             self._status_messages["Developer Lockouts"] = self._get_lockout_message
+        if config.STAGE_SOURCE:
+            self._status_messages["Last `~stage` Sync"] = self._get_last_stage_sync_message
 
         self._gameplay_events = {}
 
@@ -940,6 +942,23 @@ class AutomationBotInstance(commands.Cog):
             msg.append('🔓 No lockouts are currently active')
 
         return "\n".join(msg)
+
+    async def _get_last_stage_sync_message(self):
+        last_stage_update_path = self._persistence_path / 'last_stage_sync.json'
+        if not last_stage_update_path.is_file():
+            return "Last sync was before the 4th of November, 2025"
+
+        try:
+            with open(last_stage_update_path, 'r', encoding='utf-8') as fp:
+                stage_data = json.load(fp)
+                unix_timestamp = int(stage_data.get("unix_timestamp", 0))
+                absolute_timestamp = self.get_discord_timestamp(unix_timestamp, ':F')
+                relative_timestamp = self.get_discord_timestamp(unix_timestamp, ':R')
+                return f"Last sync was {absolute_timestamp} ({relative_timestamp})"
+        except Exception:
+            return "Could not read last stage sync file, despite it existing?"
+
+        return "Could not get last sync time"
 
     # Infrastructure
     ################################################################################
@@ -2916,6 +2935,22 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             ]
             with open(config_path, "w") as f:
                 yaml.dump(bungeeconfig, f, width=2147483647, allow_unicode=True)
+
+        last_stage_update_path = self._persistence_path / 'last_stage_sync.json'
+        with open(last_stage_update_path, 'w', encoding='utf-8') as fp:
+            now = datetime.now(timezone.utc)
+            stage_data = {
+                "human_time": str(now),
+                "unix_timestamp": now.timestamp(),
+            }
+            print(
+                json.dumps(
+                    stage_data,
+                    ensure_ascii=False,
+                    indent=2
+                ),
+                file=fp
+            )
 
         await self.display(ctx, f"{self._k8s.namespace} server loaded with current play server data")
         await self.display(ctx, message.author.mention)
