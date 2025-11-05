@@ -133,7 +133,6 @@ permissions:
             - "+sendcommand"
             - "+deop"
             - "+op"
-            - "+prepare update bundle"
             - "+generate instances"
         "@intern":
             - "+lockout"
@@ -164,6 +163,7 @@ permissions:
             - "+player account transfer"
             - "+player transfer"
             - "+player wipe"
+            - "+prepare update bundle"
             - "+prepare stage bundle"
             - "+restart"
             - "+list world loot"
