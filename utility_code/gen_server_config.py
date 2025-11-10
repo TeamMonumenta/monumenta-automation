@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+"""Generates server configuration for Monumenta's shards"""
 
-import sys
+import argparse
 import os
 import re
 import uuid
@@ -197,27 +198,21 @@ def gen_server_config(servername):
     print("Success - " + servername)
 
 if __name__ == '__main__':
-    SERVER_TYPE = 'build'
 
     # Main entry point
-    if len(sys.argv) < 2:
-        sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> [dir2] ...")
+    arg_parser = argparse.ArgumentParser(description=__doc__)
+    arg_parser.add_argument('--play', action='store_true', help="Uses play server configuration, rather than the build server's")
+    arg_parser.add_argument('shard_path', type=Path, nargs='+', help="The shards/proxies to configure")
+    args = arg_parser.parse_args()
 
-    server_list = []
-    for arg in sys.argv[1:]:
-        if arg == "--play":
-            SERVER_TYPE = 'play'
-        else:
-            server_list += [arg,]
+    is_play = args.play
+    SERVER_TYPE = 'play' if is_play else 'build'
+    server_list = args.shard_path
 
-    if len(server_list) < 1:
-        print("ERROR: No folders specified")
-        sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> [dir2] ...")
-
-    if SERVER_TYPE == 'build':
-        print("Using build server settings!")
-    else:
+    if is_play:
         print("Using play server settings!")
+    else:
+        print("Using build server settings!")
 
     server_config_to_copy = [
         ('bukkit.yml',),
@@ -950,5 +945,8 @@ if __name__ == '__main__':
                     shard_config['linked'] += plan
 
 
-    for servername in server_list:
-        gen_server_config(servername)
+    original_wd = Path('.').resolve()
+    for server_path in server_list:
+        os.chdir(server_path.parent)
+        gen_server_config(server_path.name)
+    os.chdir(original_wd)
