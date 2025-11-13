@@ -13,4 +13,4 @@ if __name__ == '__main__':
     else:
         player = PlayerFile(args[1]).player
 
-        player.nbt.tree()
+        player.nbt.tree(highlight=False)
