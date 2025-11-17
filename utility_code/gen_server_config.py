@@ -292,7 +292,7 @@ if __name__ == '__main__':
         ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
-        ('plugins/RedisSync.jar', '../../server_config/plugins/RedisSync.jar'),
+        ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
         ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
@@ -322,15 +322,15 @@ if __name__ == '__main__':
     ]
 
     network_chat = [
-        ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
+        ('plugins/MonumentaNetworkChat.jar', '../../server_config/plugins/MonumentaNetworkChat.jar'),
         ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/all/MonumentaNetworkChat/config.yml'),
         ('plugins/MonumentaNetworkChat/global_filters', '/home/epic/4_SHARED/global_chat_filters'),
         ('plugins/MonumentaNetworkChat/help', '../../../server_config/data/plugins/all/MonumentaNetworkChat/help'),
     ]
 
     monumenta = [
-        ('plugins/NetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
-        ('plugins/WorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
+        ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
+        ('plugins/MonumentaWorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
         ('plugins/MonumentaWorldManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaWorldManagement/config.yml'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
         ('plugins/Monumenta/experiencinator_config.json', '../../../server_config/data/plugins/all/Monumenta/experiencinator_config.json'),
@@ -347,7 +347,7 @@ if __name__ == '__main__':
         ('plugins/Monumenta/InfinityTower/InfinityTowerDefault.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityTowerDefault.json'),
         ('plugins/Monumenta/properties/CommonProperties.json', '../../../../server_config/data/plugins/all/Monumenta/properties/CommonProperties.json'),
         ('plugins/Monumenta/properties/LocalProperties.json', '../../../../server_config/data/plugins/{servername}/Monumenta/properties/LocalProperties.json'),
-        ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
+        ('plugins/MonumentaWarps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
         ('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
         ('plugins/HolographicDisplays.jar', '../../server_config/plugins/HolographicDisplays.jar'),
@@ -385,7 +385,7 @@ if __name__ == '__main__':
         ('plugins/ScriptedQuests/zone_properties/common', '../../../../server_config/data/scriptedquests/zone_properties/common'),
         ('plugins/ScriptedQuests/zone_property_groups/{servername}', '../../../../server_config/data/scriptedquests/zone_property_groups/{servername}'),
         ('plugins/ScriptedQuests/zone_property_groups/common', '../../../../server_config/data/scriptedquests/zone_property_groups/common'),
-        ('plugins/StructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
+        ('plugins/MonumentaStructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
         ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
         ('plugins/TAB.jar', '../../server_config/plugins/TAB.jar'),
@@ -587,7 +587,7 @@ if __name__ == '__main__':
                 ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
             ],
             'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + vanish + [
-                ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
+                ('plugins/MonumentaNetworkChat.jar', '../../server_config/plugins/MonumentaNetworkChat.jar'),
                 ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/build/MonumentaNetworkChat/config.yml'),
                 ('plugins/MonumentaNetworkChat/help', '../../../server_config/data/plugins/all/MonumentaNetworkChat/help'),
                 ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
