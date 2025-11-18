@@ -1,6 +1,6 @@
 name: Build and publish master
 # This is a common script, so we only listen to workflow_call
-on: 
+on:
   workflow_call:
     secrets:
       MAVEN_TOKEN:
@@ -8,16 +8,16 @@ on:
 # Jobs
 jobs:
   publish:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v4
-    # Set up JDK, we might want to bump this to Java 21
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
+      uses: actions/checkout@v5
+    # Set up JDK, we might want to bump this to Java 25
+    - name: Set up JDK 21
+      uses: actions/setup-java@v5
       with:
         distribution: zulu
-        java-version: 17
+        java-version: 21
         check-latest: true
     # Git config, not sure why this is needed?
     - name: Apply global Git config
