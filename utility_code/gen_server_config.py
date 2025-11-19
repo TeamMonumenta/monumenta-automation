@@ -263,7 +263,7 @@ if __name__ == '__main__':
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
-        ('plugins/RedisSync.jar', '../../server_config/plugins/RedisSync.jar'),
+        ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
     ]
 
@@ -273,6 +273,7 @@ if __name__ == '__main__':
         ('plugins/monumenta-redisapi/config.yaml',),
         ('velocity.toml',),
         ('forwarding.secret',),
+        ('plugins/monumenta-velocity/config.yaml',),
     ]
 
     proxy_link = [
@@ -289,7 +290,7 @@ if __name__ == '__main__':
         ('plugins/luckperms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
         ('plugins/Maintenance-Velocity.jar', '../../server_config/plugins/Maintenance-Velocity.jar'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
-        ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
+        # ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
         ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
@@ -688,6 +689,7 @@ if __name__ == '__main__':
             'config': proxy_copy + [
                 ('plugins/maintenance/config.yml', 'maintenance-enabled:', 'maintenance-enabled: true'),
                 ('velocity.toml', 'failover-on-unexpected-server-disconnect =', 'failover-on-unexpected-server-disconnect = {}'.format("true" if SERVER_TYPE == 'build' else "false")),
+                ('plugins/monumenta-velocity/config.yaml', 'join_messages_enabled:', 'join_messages_enabled: {}'.format("true" if SERVER_TYPE == 'build' else "false")),
             ],
             'linked': proxy_link
         }
