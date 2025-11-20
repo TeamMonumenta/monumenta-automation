@@ -5,7 +5,7 @@ ENV PIP_BREAK_SYSTEM_PACKAGES=true
 RUN apt-get update && \
 	apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core wget bzip2 python3 python3-yaml python3-pip python3-setuptools python3-numpy && \
 	pip3 install wheel && \
-	pip3 install "bitstring<4.1.0" git+https://github.com/gentlegiantJGC/mutf8.git && \
+	pip3 install "bitstring<4.1.0" mutf8 && \
 	cd /opt && \
 	wget https://downloads.python.org/pypy/pypy3.8-v7.3.9-linux64.tar.bz2 && \
 	tar xjf pypy3.8-v7.3.9-linux64.tar.bz2 && \
@@ -16,7 +16,7 @@ RUN apt-get update && \
 	pypy3 get-pip.py && \
 	rm -f get-pip.py && \
 	pypy3 -m pip install wheel && \
-	pypy3 -m pip install "bitstring<4.1.0" git+https://github.com/gentlegiantJGC/mutf8.git
+	pypy3 -m pip install "bitstring<4.1.0" mutf8
 
 RUN mkdir /jbr
 WORKDIR /jbr

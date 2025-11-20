@@ -19,7 +19,7 @@ RUN apt-get update && \
 	rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install wheel && \
-	pip3 install discord.py kubernetes pika "redis<4.2.0" "bitstring<4.1.0" kanboard flask git+https://github.com/gentlegiantJGC/mutf8.git && \
+	pip3 install discord.py kubernetes pika "redis<4.2.0" "bitstring<4.1.0" kanboard flask mutf8 && \
 	pip3 install -U pyyaml
 
 # Install rclone
@@ -53,7 +53,7 @@ RUN cd /tmp && \
 	curl -O https://bootstrap.pypa.io/get-pip.py && \
 	pypy3 get-pip.py && \
 	rm get-pip.py && \
-	pypy3 -m pip install wheel pika redis "bitstring<4.1.0" kanboard flask git+https://github.com/gentlegiantJGC/mutf8.git pyyaml && \
+	pypy3 -m pip install wheel pika redis "bitstring<4.1.0" kanboard flask mutf8 pyyaml && \
 	git config --global user.name "Automation Bot" && \
 	git config --global user.email "monumentammo@gmail.com"
 
