@@ -2104,11 +2104,11 @@ Must be run before starting the update on the play server
         await self.run(ctx, "rsync -a --exclude=.git data.orig/ data/")
         if debug:
             await self.run(ctx, "du -hs data")
-        await self.run(ctx, "rm -rf data.orig")
         await self.cd(ctx, "data")
         await self.run(ctx, "git reset .", suppressStdErr=True)
         await self.run(ctx, "git remote set-url origin git@github.com:TeamMonumenta/minecraft-data.git")
         await self.cd(ctx, "..")
+        await self.run(ctx, "rm -rf data.orig")
         if debug:
             await self.run(ctx, "du -hs data")
 
