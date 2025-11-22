@@ -29,7 +29,7 @@ fn main() -> anyhow::Result<()> {
     // Get and read locations yaml
     let locations = args.remove(0);
     let locations = std::fs::File::open(locations)?;
-    let locations: HashMap<String, String> = serde_yml::from_reader(locations)?;
+    let locations: HashMap<String, String> = serde_norway::from_reader(locations)?;
     // Convert the string/string map to uuid/string, dropping any keys that are not uuids
     let locations: HashMap<Uuid, &String> = locations.iter().map(|(k, v)| (Uuid::parse_str(k), v)).filter_map(|(k, v)| if let Ok(res) = k {Some((res, v))} else {None}).collect();
 
