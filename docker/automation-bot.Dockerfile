@@ -42,11 +42,11 @@ RUN apt-get update && \
 	groupadd -g $GID $USERNAME && \
 	# NOTE! -l flag prevents creation of gigabytes of sparse log file for some reason
 	useradd -lms /bin/bash -u $UID -g $GID $USERNAME && \
-	wget https://downloads.python.org/pypy/pypy3.8-v7.3.9-linux64.tar.bz2 && \
-	tar xjf pypy3.8-v7.3.9-linux64.tar.bz2 && \
-	rm -f pypy3.8-v7.3.9-linux64.tar.bz2 && \
-	ln -s /opt/pypy3.8-v7.3.9-linux64/bin/pypy3 /usr/local/bin/pypy3 && \
-	ln -s /opt/pypy3.8-v7.3.9-linux64/bin/pypy /usr/local/bin/pypy && \
+	wget https://downloads.python.org/pypy/pypy3.11-v7.3.20-linux64.tar.bz2 && \
+	tar xjf pypy3.11-v7.3.20-linux64.tar.bz2 && \
+	rm -f pypy3.11-v7.3.20-linux64.tar.bz2 && \
+	ln -s /opt/pypy3.11-v7.3.20-linux64/bin/pypy3 /usr/local/bin/pypy3 && \
+	ln -s /opt/pypy3.11-v7.3.20-linux64/bin/pypy /usr/local/bin/pypy && \
 	pypy3 -m pip install wheel pika redis "bitstring<4.1.0" kanboard git+https://github.com/gentlegiantJGC/mutf8.git
 
 # These are included in Debian (and thus Ubuntu) and need to be skipped:
