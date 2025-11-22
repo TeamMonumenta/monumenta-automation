@@ -129,5 +129,3 @@ spec:
         resources:
           limits:
             cpu: "4"
-      imagePullSecrets:
-      - name: githubcred
