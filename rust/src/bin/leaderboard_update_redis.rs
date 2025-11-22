@@ -51,7 +51,7 @@ fn main() -> anyhow::Result<()> {
     // Get and read leaderboards yaml
     let leaderboards = args.remove(0);
     let leaderboards = std::fs::File::open(leaderboards)?;
-    let leaderboards: Vec<String> = serde_yml::from_reader(leaderboards)?;
+    let leaderboards: Vec<String> = serde_norway::from_reader(leaderboards)?;
 
     println!("Updating leaderboards:");
     for leaderboard in leaderboards.iter() {
