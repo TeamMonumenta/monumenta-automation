@@ -3,7 +3,7 @@ FROM ubuntu:24.04
 ENV PIP_BREAK_SYSTEM_PACKAGES=true
 
 RUN apt-get update && \
-	apt-get install -y --no-install-recommends fontconfig fonts-dejavu-core wget bzip2 python3 python3-yaml python3-pip python3-setuptools python3-numpy && \
+	apt-get install -y --no-install-recommends bzip2 fontconfig fonts-dejavu-core git wget python3 python3-yaml python3-pip python3-setuptools python3-numpy && \
 	pip3 install wheel && \
 	pip3 install "bitstring<4.1.0" git+https://github.com/gentlegiantJGC/mutf8.git && \
 	cd /opt && \
