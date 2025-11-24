@@ -14,6 +14,11 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../qu
 
 from quarry.types import nbt
 
+
+global ERROR_COUNT
+ERROR_COUNT = 0
+
+
 def process_entity(entity, source_name):
     if entity.nbt.has_path("CustomName"):
         if entity.nbt.has_path("id"):
@@ -79,6 +84,7 @@ def processSchematic(root: str, fname: str, override: str = ""):
     except Exception as e:
         print(f"An exception occured when reading: {fname}")
         traceback.print_exc()
+        ERROR_COUNT += 1
 
 if __name__ == '__main__':
     mob_pos = {}
@@ -207,3 +213,5 @@ if __name__ == '__main__':
         print("  {} - {}".format(name, mob_pos[name]))
 
     los.save()
+
+    print(f'{ERROR_COUNT} exception(s) occurred during this scan.')

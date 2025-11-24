@@ -32,7 +32,7 @@ class Schematic(RecursiveMinecraftIterator, NbtPathDebug):
         name = os.path.basename(path)
         self._schematic_name = os.path.splitext(name)[0]
 
-        self._nbtfile = nbt.NBTFile.load(path)
+        self._nbtfile = nbt.NBTFile.load(path, use_mutf8=False)
 
         # TODO Probably can set the DataVersion version to something?
         self.nbt_path_init(self._nbtfile.root_tag, None, self, None)
@@ -70,7 +70,7 @@ class Schematic(RecursiveMinecraftIterator, NbtPathDebug):
         return f'Schematic(self.root_tag.to_mojangson())'
 
     def save(self):
-        self._nbtfile.save(self.path)
+        self._nbtfile.save(self.path, use_mutf8=False)
 
     @classmethod
     def iter_schematics_parallel(cls, path, func, err_func, num_processes=4, autosave=False, additional_args=(), initializer=None, initargs=()):
