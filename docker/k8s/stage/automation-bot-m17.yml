@@ -112,5 +112,3 @@ spec:
             cpu: "0"
           limits:
             cpu: "12"
-      imagePullSecrets:
-      - name: githubcred
