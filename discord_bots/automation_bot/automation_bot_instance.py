@@ -11,6 +11,7 @@ import sys
 import tempfile
 import time
 import traceback
+import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from pprint import pformat
@@ -752,10 +753,10 @@ class AutomationBotInstance(commands.Cog):
 
         return result
 
-    async def display_verbatim(self, ctx: discord.ext.commands.Context, text: str):
+    async def display_verbatim(self, ctx: discord.ext.commands.Context, text: str, text_format=""):
         """Respond with verbatim text split into chunks that fit the message size"""
         for chunk in split_string(escape_triple_backtick(text)):
-            await ctx.send("```\n" + chunk + "\n```")
+            await ctx.send("```" + text_format + "\n" + chunk + "\n```")
 
     async def debug(self, ctx: discord.ext.commands.Context, text: str):
         """Log debug text to the console, and if verbose mode is on, respond with it also"""
@@ -3389,12 +3390,12 @@ Usage:
 
         user = self._bot.user
         if user is None:
-            raise Exception(f'Bot has no user object; is it not signed in?')
+            raise Exception('Bot has no user object; is it not signed in?')
 
         try:
             await user.edit(avatar=file_contents)
         except Exception:
-            raise Exception(f'Failed to change avatar; check https://discordpy.readthedocs.io/en/stable/api.html#discord.ClientUser.edit')
+            raise Exception('Failed to change avatar; check https://discordpy.readthedocs.io/en/stable/api.html#discord.ClientUser.edit')
 
         try:
             # Set current and previous bot image files
@@ -3488,19 +3489,25 @@ And the first message on the developer server is:
 
         await self.display(ctx, output_message)
 
-    RE_REMINDER_ARGS = re.compile(r'(me|@[a-z0-9_.]{2,32}|@.{3,32}#[0-9]{4}|\<@\d{1,32}\>|`@[a-z0-9_.]{2,32}`|`@.{3,32}#[0-9]{4}`|`\<@\d{1,32}\>`)\s\"((?:[^\\\"]+|\\.)+)\"\s(.*)')
+    RE_REMINDER_ARGS = re.compile(
+        r'(me|@[a-z0-9_.]{2,32}|@.{3,32}#[0-9]{4}|\<@\d{1,32}\>|`@[a-z0-9_.]{2,32}`|`@.{3,32}#[0-9]{4}`|`\<@\d{1,32}\>`)\s\"((?:[^\\\"]+|\\.)+)\"\s(.*)',
+        flags=re.DOTALL
+    )
+    RE_REMINDER_FILE_NAME = re.compile(r'(-?[0-9]+)_([0-9a-fA-F-]+).json')
+    REMINDER_ERRORS_REPORTED = set()
 
     async def action_remind(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sets a reminder
 
 Examples:
 ~remind me "in 3 seconds" Do the stuff!
-~remind @NickNackGus#2442 "5 PM tomorrow EST" Play the thing!
-~remind `@NickNackGus#2442` "8:20 PM EST" Delayed surprise ping!
+~remind @nicknackgus "5 PM tomorrow EST" Play the thing!
+~remind `@nicknackgus` "8:20 PM EST" Delayed surprise ping!
 
 See `~help get timestamp` for valid time formats
 '''
 
+        # Parse args
         if cmd.endswith(' me'):
             cmd = cmd[:-3]
 
@@ -3519,6 +3526,7 @@ See `~help get timestamp` for valid time formats
         if mention == "me":
             mention = message.author.mention
 
+        # Find ping target
         target_member = None
         if mention.startswith('@'):
             has_discriminator = '#' in mention
@@ -3541,16 +3549,134 @@ See `~help get timestamp` for valid time formats
             await self.display(ctx, f"`{mention}` won't ping anyone in this channel.")
             return
 
+        # Parse time
         time_description = decode_escapes(escaped_time_description)
 
         selected_time = await self.time_from_description(ctx, time_description)
+        selected_unix_time = selected_time.timestamp()
         discord_timestamp = self.get_discord_timestamp(selected_time, ":R")
 
-        await self.display(ctx, f"Ok, {discord_timestamp} I'll send `@{target_member.name}#{target_member.discriminator}` this message:")
-        await self.display(ctx, f"```md\n{reminder}\n```")
-
+        # Sanity check - ignore past events
         remaining_seconds = (selected_time - datetime.now(timezone.utc)) / timedelta(seconds=1)
-        if remaining_seconds > 0:
-            await asyncio.sleep(remaining_seconds)
+        if remaining_seconds <= 0.0:
+            await self.display(ctx, f"Can't set a reminder {discord_timestamp} in the past!")
+            return
 
-        await self.display(ctx, f'{reminder}\n{mention}')
+        # Handle persistence
+        reminder_id = uuid.uuid4()
+        reminder_data = {
+            "id": str(reminder_id),
+            "author": message.author.id,
+            "target": target_member.id,
+            "channel_id": message.channel.id,
+            "request_message_id": message.id,
+            "reminder_time": selected_unix_time,
+            "reminder_message": reminder,
+        }
+
+        reminder_filename = f'{int(selected_unix_time)}_{reminder_id}.json'
+        reminders_path = (self._persistence_path / 'reminders').expanduser().resolve()
+        reminders_path.mkdir(mode=0o775, parents=True, exist_ok=True)
+        reminder_path = reminders_path / reminder_filename
+
+        with open(reminder_path, 'w', encoding='utf-8') as fp:
+            print(
+                json.dumps(
+                    reminder_data,
+                    ensure_ascii=False,
+                    indent=2,
+                    separators=(',', ': ')
+                ),
+                file=fp
+            )
+
+        # Send confirmation
+        await self.display(ctx, f"Ok, {discord_timestamp} I'll send `@{target_member.name}` this message:")
+        await self.display_verbatim(ctx, reminder, text_format="md")
+
+
+    def sort_reminder_files_key(self, file_name):
+        """Simple sort key for reminder files; allows aborting early"""
+
+        reminder_file_match = self.RE_REMINDER_FILE_NAME.fullmatch(file_name.name)
+        if not reminder_file_match:
+            return math.inf
+
+        return int(reminder_file_match[1])
+
+
+    async def reminders_tick(self):
+        """Displays scheduled reminders"""
+
+        now = datetime.now(timezone.utc)
+        now_unix_timestamp = int(now.timestamp())
+
+        # Get list of reminder files
+        reminders_path = (self._persistence_path / 'reminders').expanduser().resolve()
+
+        if not reminders_path.is_dir():
+            return
+
+        for reminder_file in sorted(reminders_path.iterdir(), key=self.sort_reminder_files_key):
+            if reminder_file.name in self.REMINDER_ERRORS_REPORTED:
+                continue
+
+            reminder_file_match = self.RE_REMINDER_FILE_NAME.fullmatch(reminder_file.name)
+            if not reminder_file_match:
+                continue
+
+            # Ignore reminders that haven't happened yet
+            reminder_unix_timestamp = int(reminder_file_match[1])
+            if reminder_unix_timestamp >= now_unix_timestamp:
+                break
+
+            try:
+                # Get reminder data (if possible, otherwise skip)
+                reminder_data = None
+                with open(reminder_file, 'r', encoding='utf-8-sig') as fp:
+                    reminder_data = json.load(fp)
+
+                # Parse required data
+                author_id = reminder_data["author"]
+                target_id = reminder_data["target"]
+                channel_id = reminder_data["channel_id"]
+                request_message_id = reminder_data["request_message_id"]
+                reminder_message = reminder_data["reminder_message"]
+
+                # Get the request message
+                channel = self._bot.get_channel(channel_id)
+                message = None
+                try:
+                    message = await channel.fetch_message(request_message_id)
+                except discord.errors.NotFound:
+                    # Assume it's cancelled and delete the reminder file
+                    reminder_file.unlink(missing_ok=True)
+                    continue
+                message_link = message.jump_url
+
+                # Get the author and target
+                author = None
+                target = None
+                for member in message.channel.members:
+                    if member.id == author_id:
+                        author = member
+                    if member.id == target_id:
+                        target = member
+                    if author is not None and target is not None:
+                        break
+
+                # Ping
+                if author_id == target_id:
+                    await self.display(channel, f'{target.mention} - you have a reminder from yourself: {message_link}')
+                else:
+                    await self.display(channel, f'{target.mention} - you have a reminder from {author.mention}: {message_link}')
+                await self.display(channel, reminder_message)
+
+                # Delete reminder file
+                reminder_file.unlink(missing_ok=True)
+
+            except Exception:
+                self.REMINDER_ERRORS_REPORTED.add(reminder_file.name)
+                logger.warning('Error handling reminder file: %s', reminder_file)
+                logger.warning(traceback.format_exc())
+                continue
