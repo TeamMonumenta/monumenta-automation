@@ -16,7 +16,6 @@ pkgs.mkShell rec {
         rustup
         pkg-config
         openssl
-        qemu
     ];
     RUSTC_VERSION = overrides.toolchain.channel;
     LIBCLANG_PATH = pkgs.lib.makeLibraryPath [ pkgs.llvmPackages_latest.libclang.lib ];
