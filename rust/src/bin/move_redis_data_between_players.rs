@@ -68,9 +68,9 @@ fn main() -> anyhow::Result<()> {
     }
 
     // Delete the location record for bungee, moving the player back to the default
-    con.hdel(&bungeelocs, inputuuid.hyphenated().to_string())?;
+    con.hdel::<_, _, ()>(&bungeelocs, inputuuid.hyphenated().to_string())?;
     // Move the new player to the location of the old player
-    con.hset(&bungeelocs, outputuuid.hyphenated().to_string(), inputlocation)?;
+    con.hset::<_, _, _, ()>(&bungeelocs, outputuuid.hyphenated().to_string(), inputlocation)?;
 
     info!("Successfully deleted original player data for user {} domain {}", &inputname, &domain);
 

@@ -48,7 +48,7 @@ fn main() -> anyhow::Result<()> {
             }
         }
         if confirm {
-            pipe.query(&mut con)?;
+            pipe.query::<()>(&mut con)?;
         }
     }
 

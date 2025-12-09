@@ -153,7 +153,7 @@ fn transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<
     let player_uuid_str: String = con.hget("name2uuid", &player_name)?;
 
     let shard: String = args.remove(0);
-    con.hset(&locations_key, &player_uuid_str, &shard)?;
+    con.hset::<_, _, _, ()>(&locations_key, &player_uuid_str, &shard)?;
 
     println!("Transferred {} to {}", player_name, shard);
 
@@ -196,7 +196,7 @@ fn bulk_transfer(con: &mut redis::Connection, locations_key: &String, args: &mut
     for player_uuid_str in &to_update {
         let to_shard: &String = &to_shards_vec.get(to_index).unwrap();
         to_index = (to_index + 1) % &to_shards_vec.len();
-        con.hset(&locations_key, &player_uuid_str, &to_shard)?;
+        con.hset::<_, _, _, ()>(&locations_key, &player_uuid_str, &to_shard)?;
     }
     println!("Transferred {} players", &to_update.len());
 
@@ -212,7 +212,7 @@ fn reset(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<Str
     let player_name = args.remove(0);
     let player_uuid_str: String = con.hget("name2uuid", &player_name)?;
 
-    con.hdel(&locations_key, &player_uuid_str)?;
+    con.hdel::<_, _, ()>(&locations_key, &player_uuid_str)?;
 
     println!("Reset the shard for {}", player_name);
 

@@ -217,22 +217,22 @@ impl Player {
     }
 
     pub fn trim_redis_history(&mut self, domain: &str, con: &mut redis::Connection, count: isize) -> anyhow::Result<()> {
-        con.ltrim(format!("{}:playerdata:{}:history", domain, self.uuid.hyphenated().to_string()), 0, count - 1)?;
-        con.ltrim(format!("{}:playerdata:{}:scores", domain, self.uuid.hyphenated().to_string()), 0, count - 1)?;
-        con.ltrim(format!("{}:playerdata:{}:plugins", domain, self.uuid.hyphenated().to_string()), 0, count - 1)?;
-        con.ltrim(format!("{}:playerdata:{}:advancements", domain, self.uuid.hyphenated().to_string()), 0, count - 1)?;
-        con.ltrim(format!("{}:playerdata:{}:data", domain, self.uuid.hyphenated().to_string()), 0, count - 1)?;
+        con.ltrim::<_, ()>(format!("{}:playerdata:{}:history", domain, self.uuid.hyphenated().to_string()), 0, count - 1)?;
+        con.ltrim::<_, ()>(format!("{}:playerdata:{}:scores", domain, self.uuid.hyphenated().to_string()), 0, count - 1)?;
+        con.ltrim::<_, ()>(format!("{}:playerdata:{}:plugins", domain, self.uuid.hyphenated().to_string()), 0, count - 1)?;
+        con.ltrim::<_, ()>(format!("{}:playerdata:{}:advancements", domain, self.uuid.hyphenated().to_string()), 0, count - 1)?;
+        con.ltrim::<_, ()>(format!("{}:playerdata:{}:data", domain, self.uuid.hyphenated().to_string()), 0, count - 1)?;
         Ok(())
     }
 
     pub fn del(&mut self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
-        con.del(format!("{}:playerdata:{}:history", domain, self.uuid.hyphenated().to_string()))?;
-        con.del(format!("{}:playerdata:{}:scores", domain, self.uuid.hyphenated().to_string()))?;
-        con.del(format!("{}:playerdata:{}:plugins", domain, self.uuid.hyphenated().to_string()))?;
-        con.del(format!("{}:playerdata:{}:advancements", domain, self.uuid.hyphenated().to_string()))?;
-        con.del(format!("{}:playerdata:{}:data", domain, self.uuid.hyphenated().to_string()))?;
-        con.del(format!("{}:playerdata:{}:sharddata", domain, self.uuid.hyphenated().to_string()))?;
-        con.del(format!("{}:playerdata:{}:remotedata", domain, self.uuid.hyphenated().to_string()))?;
+        con.del::<_, ()>(format!("{}:playerdata:{}:history", domain, self.uuid.hyphenated().to_string()))?;
+        con.del::<_, ()>(format!("{}:playerdata:{}:scores", domain, self.uuid.hyphenated().to_string()))?;
+        con.del::<_, ()>(format!("{}:playerdata:{}:plugins", domain, self.uuid.hyphenated().to_string()))?;
+        con.del::<_, ()>(format!("{}:playerdata:{}:advancements", domain, self.uuid.hyphenated().to_string()))?;
+        con.del::<_, ()>(format!("{}:playerdata:{}:data", domain, self.uuid.hyphenated().to_string()))?;
+        con.del::<_, ()>(format!("{}:playerdata:{}:sharddata", domain, self.uuid.hyphenated().to_string()))?;
+        con.del::<_, ()>(format!("{}:playerdata:{}:remotedata", domain, self.uuid.hyphenated().to_string()))?;
         Ok(())
     }
 
@@ -358,7 +358,7 @@ impl Player {
 
     fn save_redis_advancements(&self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
         if let Some(advancements) = &self.advancements {
-            con.lpush(format!("{}:playerdata:{}:advancements", domain, self.uuid.hyphenated().to_string()), advancements.to_string())?;
+            con.lpush::<_, _, ()>(format!("{}:playerdata:{}:advancements", domain, self.uuid.hyphenated().to_string()), advancements.to_string())?;
         }
         Ok(())
     }
@@ -366,7 +366,7 @@ impl Player {
     fn save_redis_scores(&self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
         if let Some(scores) = &self.scores {
             let scores: String = serde_json::to_string(scores)?;
-            con.lpush(format!("{}:playerdata:{}:scores", domain, self.uuid.hyphenated().to_string()), scores)?;
+            con.lpush::<_, _, ()>(format!("{}:playerdata:{}:scores", domain, self.uuid.hyphenated().to_string()), scores)?;
         }
         Ok(())
     }
@@ -375,7 +375,7 @@ impl Player {
     pub fn save_redis_plugindata(&self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
         if let Some(plugindata) = &self.plugindata {
             let plugindata: String = serde_json::to_string(plugindata)?;
-            con.lpush(format!("{}:playerdata:{}:plugins", domain, self.uuid.hyphenated().to_string()), plugindata)?;
+            con.lpush::<_, _, ()>(format!("{}:playerdata:{}:plugins", domain, self.uuid.hyphenated().to_string()), plugindata)?;
         }
         Ok(())
     }
@@ -383,7 +383,7 @@ impl Player {
     fn save_redis_sharddata(&self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
         if let Some(sharddata) = &self.sharddata {
             let redis_path = format!("{}:playerdata:{}:sharddata", domain, self.uuid.hyphenated().to_string());
-            con.del(&redis_path)?;
+            con.del::<_, ()>(&redis_path)?;
             for (key, val) in sharddata.iter() {
                 let _: () = con.hset(&redis_path, key, val)?;
             }
@@ -394,7 +394,7 @@ impl Player {
     fn save_redis_remotedata(&self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
         if let Some(remotedata) = &self.remotedata {
             let redis_path = format!("{}:playerdata:{}:remotedata", domain, self.uuid.hyphenated().to_string());
-            con.del(&redis_path)?;
+            con.del::<_, ()>(&redis_path)?;
             for (key, val) in remotedata.iter() {
                 let _: () = con.hset(&redis_path, key, val)?;
             }
@@ -404,7 +404,7 @@ impl Player {
 
     fn save_redis_history(&self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
         if let Some(history) = &self.history {
-            con.lpush(format!("{}:playerdata:{}:history", domain, self.uuid.hyphenated().to_string()), history)?;
+            con.lpush::<_, _, ()>(format!("{}:playerdata:{}:history", domain, self.uuid.hyphenated().to_string()), history)?;
         }
         Ok(())
     }
