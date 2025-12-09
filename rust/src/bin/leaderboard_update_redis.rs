@@ -1,6 +1,5 @@
 use monumenta::player::Player;
 
-use anyhow;
 use log::warn;
 use redis::Commands;
 use simplelog::*;
@@ -12,18 +11,22 @@ fn usage() {
     println!("Usage: leaderboard_update_redis 'redis://127.0.0.1/' <domain> leaderboards.yaml");
 }
 
-fn update_player_leaderboards(uuid: &Uuid, player: &mut Player,
-                              leaderboards: &Vec<String>, con: &mut redis::Connection,
-                              domain: &str) -> anyhow::Result<()> {
-    player.load_redis_scores(&domain, con)?;
+fn update_player_leaderboards(
+    uuid: &Uuid,
+    player: &mut Player,
+    leaderboards: &[String],
+    con: &mut redis::Connection,
+    domain: &str,
+) -> anyhow::Result<()> {
+    player.load_redis_scores(domain, con)?;
 
     let name: String = con.hget("uuid2name", uuid.hyphenated().to_string())?;
 
     for leaderboard in leaderboards.iter() {
-        if let Some(score) = player.scores.as_ref().unwrap().get(leaderboard) {
-            if *score > 0 {
-                let _: () = con.zadd(format!("{}:leaderboard:{}", domain, leaderboard), &name, *score as f32)?;
-            }
+        if let Some(score) = player.scores.as_ref().unwrap().get(leaderboard)
+            && *score > 0
+        {
+            let _: () = con.zadd(format!("{}:leaderboard:{}", domain, leaderboard), &name, *score as f32)?;
         }
     }
 
@@ -31,9 +34,13 @@ fn update_player_leaderboards(uuid: &Uuid, player: &mut Player,
 }
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 

@@ -1,16 +1,17 @@
-use anyhow;
 use redis::Commands;
 
 use std::{
     collections::{BTreeMap, HashSet},
-    env
+    env,
 };
 
 fn usage() {
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> get <player_name>");
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> histogram");
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> transfer <player_name> <shard>");
-    println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> bulk_transfer <comma_separated_sources> <comma_separated_destinations>");
+    println!(
+        "Usage: shard_utils 'redis://127.0.0.1/' <domain> bulk_transfer <comma_separated_sources> <comma_separated_destinations>"
+    );
     println!("Usage: shard_utils 'redis://127.0.0.1/' <domain> reset <player_name>");
 }
 
@@ -26,32 +27,22 @@ fn main() -> anyhow::Result<()> {
 
     let redis_uri = args.remove(0);
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     let domain = args.remove(0);
     let locations_key = format!("{}:bungee:locations", domain);
 
-    return match &args.remove(0)[..] {
-        "get" => {
-            get(&mut con, &locations_key, &mut args)
-        },
-        "histogram" => {
-            histogram(&mut con, &locations_key, &mut args)
-        },
-        "transfer" => {
-            transfer(&mut con, &locations_key, &mut args)
-        },
-        "bulk_transfer" => {
-            bulk_transfer(&mut con, &locations_key, &mut args)
-        },
-        "reset" => {
-            reset(&mut con, &locations_key, &mut args)
-        },
+    match &args.remove(0)[..] {
+        "get" => get(&mut con, &locations_key, &mut args),
+        "histogram" => histogram(&mut con, &locations_key, &mut args),
+        "transfer" => transfer(&mut con, &locations_key, &mut args),
+        "bulk_transfer" => bulk_transfer(&mut con, &locations_key, &mut args),
+        "reset" => reset(&mut con, &locations_key, &mut args),
         _ => {
             usage();
             Ok(())
         }
-    };
+    }
 }
 
 fn get(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
@@ -63,15 +54,15 @@ fn get(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<Strin
     let player_name = args.remove(0);
     let player_uuid_str: String = con.hget("name2uuid", &player_name)?;
 
-    let shard: String = con.hget(&locations_key, &player_uuid_str)?;
+    let shard: String = con.hget(locations_key, &player_uuid_str)?;
 
     println!("{} is on {}", player_name, shard);
 
-    return Ok(());
+    Ok(())
 }
 
-fn histogram(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
-    if args.len() != 0 {
+fn histogram(con: &mut redis::Connection, locations_key: &String, args: &mut [String]) -> anyhow::Result<()> {
+    if !args.is_empty() {
         usage();
         return Ok(());
     }
@@ -79,13 +70,13 @@ fn histogram(con: &mut redis::Connection, locations_key: &String, args: &mut Vec
     println!("Histogram:");
     let mut total_players: usize = 0;
     let mut player_counts: BTreeMap<String, usize> = BTreeMap::new();
-    let iter: redis::Iter<'_, (String, String)> = con.hscan(&locations_key)?;
+    let iter: redis::Iter<'_, (String, String)> = con.hscan(locations_key)?;
     for (_, shard) in iter {
         total_players += 1;
         match player_counts.get(&shard) {
             Some(&old_count) => {
                 player_counts.insert(shard, 1 + old_count);
-            },
+            }
             None => {
                 player_counts.insert(shard, 1);
             }
@@ -99,48 +90,48 @@ fn histogram(con: &mut redis::Connection, locations_key: &String, args: &mut Vec
     let mut max_shard_width: usize = header_shard.len();
     let mut max_count_width: usize = header_count.len();
     for (shard, count) in &player_counts {
-        let test_size: usize = format!("{shard}", shard=shard).len();
+        let test_size: usize = shard.to_string().len();
         if test_size > max_shard_width {
             max_shard_width = test_size;
         }
 
-        let test_size: usize = format!("{count}", count=count).len();
+        let test_size: usize = format!("{count}", count = count).len();
         if test_size > max_count_width {
             max_count_width = test_size;
         }
     }
 
-    println!("{shard:<max_shard_width$} │ {count:>max_count_width$} │ {bar}",
-        shard=header_shard,
-        max_shard_width=max_shard_width,
-        count=header_count,
-        max_count_width=max_count_width,
-        bar=header_histogram
+    println!(
+        "{shard:<max_shard_width$} │ {count:>max_count_width$} │ {bar}",
+        shard = header_shard,
+        max_shard_width = max_shard_width,
+        count = header_count,
+        max_count_width = max_count_width,
+        bar = header_histogram
     );
-    println!("{}─┼─{}─┼─{}",
+    println!(
+        "{}─┼─{}─┼─{}",
         "─".repeat(max_shard_width),
         "─".repeat(max_count_width),
         "─".repeat(header_histogram.len())
     );
     for (shard, count) in &player_counts {
-        println!("{shard:<max_shard_width$} │ {count:>max_count_width$} │ {bar}",
-            shard=shard,
-            max_shard_width=max_shard_width,
-            count=count,
-            max_count_width=max_count_width,
-            bar="━".repeat(histogram_len(*count))
+        println!(
+            "{shard:<max_shard_width$} │ {count:>max_count_width$} │ {bar}",
+            shard = shard,
+            max_shard_width = max_shard_width,
+            count = count,
+            max_count_width = max_count_width,
+            bar = "━".repeat(histogram_len(*count))
         );
     }
 
     println!("There are {} players across {} shards.", total_players, player_counts.len());
-    return Ok(());
+    Ok(())
 }
 
 fn histogram_len(count: usize) -> usize {
-    if count <= 0 {
-        return 0;
-    }
-    return (count as f32 + 1.).log2().ceil() as usize;
+    (count as f32 + 1.).log2().ceil() as usize
 }
 
 fn transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
@@ -157,7 +148,7 @@ fn transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<
 
     println!("Transferred {} to {}", player_name, shard);
 
-    return Ok(());
+    Ok(())
 }
 
 fn bulk_transfer(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
@@ -185,7 +176,7 @@ fn bulk_transfer(con: &mut redis::Connection, locations_key: &String, args: &mut
 
     println!("Getting list to modify...");
     let mut to_update: HashSet<String> = HashSet::new();
-    let iter: redis::Iter<'_, (String, String)> = con.hscan(&locations_key)?;
+    let iter: redis::Iter<'_, (String, String)> = con.hscan(locations_key)?;
     for (player_uuid_str, from_shard) in iter {
         if from_shards.contains(&from_shard) {
             to_update.insert(player_uuid_str);
@@ -194,13 +185,13 @@ fn bulk_transfer(con: &mut redis::Connection, locations_key: &String, args: &mut
     println!("Applying changes...");
     let mut to_index: usize = 0;
     for player_uuid_str in &to_update {
-        let to_shard: &String = &to_shards_vec.get(to_index).unwrap();
-        to_index = (to_index + 1) % &to_shards_vec.len();
+        let to_shard: &String = to_shards_vec.get(to_index).unwrap();
+        to_index = (to_index + 1) % to_shards_vec.len();
         con.hset::<_, _, _, ()>(&locations_key, &player_uuid_str, &to_shard)?;
     }
     println!("Transferred {} players", &to_update.len());
 
-    return Ok(());
+    Ok(())
 }
 
 fn reset(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<String>) -> anyhow::Result<()> {
@@ -216,5 +207,5 @@ fn reset(con: &mut redis::Connection, locations_key: &String, args: &mut Vec<Str
 
     println!("Reset the shard for {}", player_name);
 
-    return Ok(());
+    Ok(())
 }

@@ -1,7 +1,5 @@
 use monumenta::scoreboard;
 
-use anyhow;
-
 use std::env;
 
 fn usage() {
@@ -21,7 +19,7 @@ fn main() -> anyhow::Result<()> {
     let domain = args.remove(0);
 
     let client = redis::Client::open("redis://127.0.0.1/")?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     let mut scoreboards = scoreboard::ScoreboardCollection::new();
     let scoreboard = scoreboard::Scoreboard::load_redis(&domain, &mut con)?;
@@ -41,7 +39,7 @@ fn main() -> anyhow::Result<()> {
 
     println!("\n\nUnused objectives:");
     for objective_name in unused_vec.iter() {
-            println!("{}", objective_name);
+        println!("{}", objective_name);
     }
 
     Ok(())

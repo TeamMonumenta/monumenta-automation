@@ -9,21 +9,28 @@ use uuid::Uuid;
 use std::env;
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 
     if args.len() != 6 {
-        bail!("Usage: {} 'redis://127.0.0.1/' <domain> <from_player_name> <to_player_name> <backup_dir>", args.remove(0));
+        bail!(
+            "Usage: {} 'redis://127.0.0.1/' <domain> <from_player_name> <to_player_name> <backup_dir>",
+            args.remove(0)
+        );
     }
 
     args.remove(0);
 
     let redis_uri = args.remove(0);
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     let domain = args.remove(0);
 
@@ -73,7 +80,6 @@ fn main() -> anyhow::Result<()> {
     con.hset::<_, _, _, ()>(&bungeelocs, outputuuid.hyphenated().to_string(), inputlocation)?;
 
     info!("Successfully deleted original player data for user {} domain {}", &inputname, &domain);
-
 
     Ok(())
 }

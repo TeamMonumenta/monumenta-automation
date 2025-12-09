@@ -1,7 +1,6 @@
 use std::{
     cell::{OnceCell, RefCell},
     io::{Error, Read},
-    iter,
 };
 
 use anyhow::{Result, anyhow};
@@ -15,10 +14,8 @@ use crate::{
     id::Id,
 };
 fn read_nocopy<'a>(this: &mut &'a [u8], size: usize) -> Result<&'a [u8], Error> {
-    this.split_off(..size).ok_or(Error::new(
-        std::io::ErrorKind::UnexpectedEof,
-        "not enough contents left in buffer",
-    ))
+    this.split_off(..size)
+        .ok_or(Error::new(std::io::ErrorKind::UnexpectedEof, "not enough contents left in buffer"))
 }
 
 enum JVMValue<T: Id> {
@@ -52,23 +49,6 @@ impl<T: Id> JVMValue<T> {
             x => return Err(anyhow!("unknown jvm value type: {x}")),
         })
     }
-}
-
-struct JVMClass<T: Id> {
-    statics: SmallVec<[(T, JVMValue<T>); 4]>,
-    instance: SmallVec<[(T, u8); 8]>,
-}
-
-#[repr(packed)]
-struct JVMObj<'a, T: Id> {
-    st_seqial: u32,
-    data: JVMObjData<'a, T>,
-}
-
-enum JVMObjData<'a, T: Id> {
-    Obj { class: T, fields: &'a [u8] },
-    Array { class: T, entries: &'a [u8] },
-    PrimVec { ty: u8, entries: &'a [u8] },
 }
 
 trait HeapDumpRecord<'a, T: Id>: Sized {
@@ -286,7 +266,7 @@ impl<'a, T: Id> HeapDumpRecord<'a, T> for GcClassDump<T> {
 }
 
 impl<T: Id> GcClassDump<T> {
-    fn iter_fields<F: FnMut(T, T, JVMValue<T>) -> ()>(
+    fn iter_fields<F: FnMut(T, T, JVMValue<T>)>(
         &self,
         mut data: &[u8],
         classes: &IntMap<T, GcClassDump<T>>,
@@ -296,11 +276,7 @@ impl<T: Id> GcClassDump<T> {
 
         loop {
             for (name_id, ty) in &class.instance {
-                handler(
-                    class.id,
-                    *name_id,
-                    JVMValue::read_with_type(*ty, &mut data)?,
-                )
+                handler(class.id, *name_id, JVMValue::read_with_type(*ty, &mut data)?)
             }
 
             if class.super_id == T::NULL {
@@ -417,27 +393,27 @@ enum HeapDumpEntry<'a, T: Id> {
 }
 
 enum GcRootData<T: Id> {
-    RootJniGlobal(GcRootJniGlobal<T>),
-    RootJniLocal(GcRootJniLocal<T>),
-    RootJavaFrame(GcRootJavaFrame<T>),
-    RootNativeStack(GcRootNativeStack<T>),
-    RootStickyClass(GcRootStickyClass<T>),
-    RootThreadBlock(GcRootThreadBlock<T>),
-    RootMonitorUsed(GcRootMonitorUsed<T>),
-    RootThreadObj(GcRootThreadObj<T>),
+    JniGlobal(GcRootJniGlobal<T>),
+    JniLocal(GcRootJniLocal<T>),
+    JavaFrame(GcRootJavaFrame<T>),
+    NativeStack(GcRootNativeStack<T>),
+    StickyClass(GcRootStickyClass<T>),
+    ThreadBlock(GcRootThreadBlock<T>),
+    MonitorUsed(GcRootMonitorUsed<T>),
+    ThreadObj(GcRootThreadObj<T>),
 }
 
 impl<T: Id> GcRootData<T> {
     fn id(&self) -> T {
         match self {
-            GcRootData::RootJniGlobal(x) => x.id,
-            GcRootData::RootJniLocal(x) => x.id,
-            GcRootData::RootJavaFrame(x) => x.id,
-            GcRootData::RootNativeStack(x) => x.id,
-            GcRootData::RootStickyClass(x) => x.id,
-            GcRootData::RootThreadBlock(x) => x.id,
-            GcRootData::RootMonitorUsed(x) => x.id,
-            GcRootData::RootThreadObj(x) => x.id,
+            GcRootData::JniGlobal(x) => x.id,
+            GcRootData::JniLocal(x) => x.id,
+            GcRootData::JavaFrame(x) => x.id,
+            GcRootData::NativeStack(x) => x.id,
+            GcRootData::StickyClass(x) => x.id,
+            GcRootData::ThreadBlock(x) => x.id,
+            GcRootData::MonitorUsed(x) => x.id,
+            GcRootData::ThreadObj(x) => x.id,
         }
     }
 }
@@ -447,34 +423,18 @@ impl<'a, T: Id> HeapDumpEntry<'a, T> {
         let tag = record.read_u8()?;
 
         let entry = match tag {
-            GcRootJniGlobal::<T>::ID => {
-                HeapDumpEntry::RootJniGlobal(GcRootJniGlobal::read(record)?)
-            }
+            GcRootJniGlobal::<T>::ID => HeapDumpEntry::RootJniGlobal(GcRootJniGlobal::read(record)?),
             GcRootJniLocal::<T>::ID => HeapDumpEntry::RootJniLocal(GcRootJniLocal::read(record)?),
-            GcRootJavaFrame::<T>::ID => {
-                HeapDumpEntry::RootJavaFrame(GcRootJavaFrame::read(record)?)
-            }
-            GcRootNativeStack::<T>::ID => {
-                HeapDumpEntry::RootNativeStack(GcRootNativeStack::read(record)?)
-            }
-            GcRootStickyClass::<T>::ID => {
-                HeapDumpEntry::RootStickyClass(GcRootStickyClass::read(record)?)
-            }
-            GcRootThreadBlock::<T>::ID => {
-                HeapDumpEntry::RootThreadBlock(GcRootThreadBlock::read(record)?)
-            }
-            GcRootMonitorUsed::<T>::ID => {
-                HeapDumpEntry::RootMonitorUsed(GcRootMonitorUsed::read(record)?)
-            }
-            GcRootThreadObj::<T>::ID => {
-                HeapDumpEntry::RootThreadObj(GcRootThreadObj::read(record)?)
-            }
+            GcRootJavaFrame::<T>::ID => HeapDumpEntry::RootJavaFrame(GcRootJavaFrame::read(record)?),
+            GcRootNativeStack::<T>::ID => HeapDumpEntry::RootNativeStack(GcRootNativeStack::read(record)?),
+            GcRootStickyClass::<T>::ID => HeapDumpEntry::RootStickyClass(GcRootStickyClass::read(record)?),
+            GcRootThreadBlock::<T>::ID => HeapDumpEntry::RootThreadBlock(GcRootThreadBlock::read(record)?),
+            GcRootMonitorUsed::<T>::ID => HeapDumpEntry::RootMonitorUsed(GcRootMonitorUsed::read(record)?),
+            GcRootThreadObj::<T>::ID => HeapDumpEntry::RootThreadObj(GcRootThreadObj::read(record)?),
             GcClassDump::<T>::ID => HeapDumpEntry::ClassDump(GcClassDump::read(record)?),
             GcInstanceDump::<T>::ID => HeapDumpEntry::InstanceDump(GcInstanceDump::read(record)?),
             GcObjArrayDump::<T>::ID => HeapDumpEntry::ObjArrayDump(GcObjArrayDump::read(record)?),
-            GcPrimArrayDump::<T>::ID => {
-                HeapDumpEntry::PrimArrayDump(GcPrimArrayDump::read(record)?)
-            }
+            GcPrimArrayDump::<T>::ID => HeapDumpEntry::PrimArrayDump(GcPrimArrayDump::read(record)?),
 
             other => {
                 return Err(anyhow!("Unknown heap dump tag: {other:#x}"));
@@ -510,9 +470,9 @@ static CLASS_NAMES: phf::Map<&'static [u8], ClassNames> = phf_map! {
 fn visit_prof<
     'a,
     T: Id,
-    U: FnMut(T, &'a [u8]) -> (),
-    V: FnMut(T, T) -> (),
-    X: FnMut(GcRootData<T>) -> (),
+    U: FnMut(T, &'a [u8]),
+    V: FnMut(T, T),
+    X: FnMut(GcRootData<T>),
     Y: FnMut(HeapDumpEntry<'a, T>) -> Result<()>,
 >(
     mut file: &'a [u8],
@@ -542,30 +502,14 @@ fn visit_prof<
             0x0c | 0x1c => {
                 while !record.is_empty() {
                     match HeapDumpEntry::<T>::read(&mut record)? {
-                        HeapDumpEntry::RootJniGlobal(root) => {
-                            on_gc_root(GcRootData::RootJniGlobal(root))
-                        }
-                        HeapDumpEntry::RootJniLocal(root) => {
-                            on_gc_root(GcRootData::RootJniLocal(root))
-                        }
-                        HeapDumpEntry::RootJavaFrame(root) => {
-                            on_gc_root(GcRootData::RootJavaFrame(root))
-                        }
-                        HeapDumpEntry::RootNativeStack(root) => {
-                            on_gc_root(GcRootData::RootNativeStack(root))
-                        }
-                        HeapDumpEntry::RootStickyClass(root) => {
-                            on_gc_root(GcRootData::RootStickyClass(root))
-                        }
-                        HeapDumpEntry::RootThreadBlock(root) => {
-                            on_gc_root(GcRootData::RootThreadBlock(root))
-                        }
-                        HeapDumpEntry::RootMonitorUsed(root) => {
-                            on_gc_root(GcRootData::RootMonitorUsed(root))
-                        }
-                        HeapDumpEntry::RootThreadObj(root) => {
-                            on_gc_root(GcRootData::RootThreadObj(root))
-                        }
+                        HeapDumpEntry::RootJniGlobal(root) => on_gc_root(GcRootData::JniGlobal(root)),
+                        HeapDumpEntry::RootJniLocal(root) => on_gc_root(GcRootData::JniLocal(root)),
+                        HeapDumpEntry::RootJavaFrame(root) => on_gc_root(GcRootData::JavaFrame(root)),
+                        HeapDumpEntry::RootNativeStack(root) => on_gc_root(GcRootData::NativeStack(root)),
+                        HeapDumpEntry::RootStickyClass(root) => on_gc_root(GcRootData::StickyClass(root)),
+                        HeapDumpEntry::RootThreadBlock(root) => on_gc_root(GcRootData::ThreadBlock(root)),
+                        HeapDumpEntry::RootMonitorUsed(root) => on_gc_root(GcRootData::MonitorUsed(root)),
+                        HeapDumpEntry::RootThreadObj(root) => on_gc_root(GcRootData::ThreadObj(root)),
                         x => on_heap_entry(x)?,
                     }
                 }
@@ -629,10 +573,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
             }
         },
         |root: GcRootData<T>| {
-            gc_roots
-                .entry(root.id())
-                .or_insert(SmallVec::new())
-                .push(root);
+            gc_roots.entry(root.id()).or_insert(SmallVec::new()).push(root);
         },
         |entry| {
             match entry {
@@ -660,22 +601,20 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
                         world_server_instances.push(inst.id);
                     } else if inst.class_id == get_class_id(DedicatedServerClass) {
                         class.iter_fields(inst.data, &classes, |_, name_id, value| {
-                            if str_dict.borrow()[&name_id] == b"Q" {
-                                if let JVMValue::Obj(child) = value {
-                                    non_leak_root_sources.push(child);
-                                    eprintln!(
-                                        "found non-leak root: DedicatedServer#levels: {child:x}"
-                                    );
-                                }
+                            if str_dict.borrow()[&name_id] == b"Q"
+                                && let JVMValue::Obj(child) = value
+                            {
+                                non_leak_root_sources.push(child);
+                                eprintln!("found non-leak root: DedicatedServer#levels: {child:x}");
                             }
                         })?;
                     } else if inst.class_id == get_class_id(CraftServerClass) {
                         class.iter_fields(inst.data, &classes, |_, name_id, value| {
-                            if str_dict.borrow()[&name_id] == b"worlds" {
-                                if let JVMValue::Obj(child) = value {
-                                    non_leak_root_sources.push(child);
-                                    eprintln!("found non-leak root: CraftServer#worlds: {child:x}");
-                                }
+                            if str_dict.borrow()[&name_id] == b"worlds"
+                                && let JVMValue::Obj(child) = value
+                            {
+                                non_leak_root_sources.push(child);
+                                eprintln!("found non-leak root: CraftServer#worlds: {child:x}");
                             }
                         })?;
                     } else if inst.class_id == get_class_id(CraftSchedulerClass)
@@ -721,25 +660,15 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
 
     eprintln!("found {:?} instances", world_server_instances.len());
 
-    let globally_reachable = is_reachable(
-        &edges,
-        |f| gc_roots.contains_key(&f),
-        &world_server_instances,
-    );
+    let globally_reachable = is_reachable(&edges, |f| gc_roots.contains_key(&f), &world_server_instances);
 
-    let non_leaked_instances = is_reachable(
-        &edges,
-        |f| non_leak_root_sources.contains(&f),
-        &world_server_instances,
-    );
+    let non_leaked_instances = is_reachable(&edges, |f| non_leak_root_sources.contains(&f), &world_server_instances);
 
     let mut leak_candidates = Vec::new();
 
-    for (inst, global, non_leak) in izip!(
-        world_server_instances.iter(),
-        globally_reachable.iter(),
-        non_leaked_instances.iter(),
-    ) {
+    for (inst, global, non_leak) in
+        izip!(world_server_instances.iter(), globally_reachable.iter(), non_leaked_instances.iter(),)
+    {
         if !*global {
             continue;
         }
@@ -754,15 +683,10 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
     eprintln!("finding leaked object paths-to-root");
     eprintln!("found {} likely leak candidates", leak_candidates.len());
 
-    let candidate_paths: Vec<Vec<_>> = find_paths(
-        &edges,
-        |f| leak_root_sources.contains(&f),
-        &leak_candidates,
-        64,
-    )
-    .iter()
-    .map(|f| f.iter().map(|f| to_vec(f)).collect())
-    .collect();
+    let candidate_paths: Vec<Vec<_>> = find_paths(&edges, |f| leak_root_sources.contains(&f), &leak_candidates, 64)
+        .iter()
+        .map(|f| f.iter().map(|f| to_vec(f)).collect())
+        .collect();
 
     eprintln!("re-gathering instance data");
 
@@ -770,7 +694,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
 
     let mut relevant_inst: IntSet<T> = IntSet::default();
     let mut inst_data: IntMap<T, HeapDumpEntry<'a, T>> = IntMap::default();
-    relevant_inst.extend(candidate_paths.iter().map(|f| f).flatten().flatten());
+    relevant_inst.extend(candidate_paths.iter().flatten().flatten());
 
     let mut on_data = |id: T, data: HeapDumpEntry<'a, T>| {
         if relevant_inst.contains(&id) {
@@ -785,12 +709,8 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
         |_| {},
         |inst| {
             match inst {
-                HeapDumpEntry::InstanceDump(inst) => {
-                    on_data(inst.id, HeapDumpEntry::InstanceDump(inst))
-                }
-                HeapDumpEntry::ObjArrayDump(inst) => {
-                    on_data(inst.id, HeapDumpEntry::ObjArrayDump(inst))
-                }
+                HeapDumpEntry::InstanceDump(inst) => on_data(inst.id, HeapDumpEntry::InstanceDump(inst)),
+                HeapDumpEntry::ObjArrayDump(inst) => on_data(inst.id, HeapDumpEntry::ObjArrayDump(inst)),
                 _ => {}
             }
             Ok(())
@@ -813,21 +733,21 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
                                 let class = classes.get(&inst.class_id).unwrap();
                                 let class_name_id = class_names.get(&class.id).unwrap();
                                 let dict = str_dict.borrow();
-                                let class_name = dict.get(&class_name_id).unwrap();
+                                let class_name = dict.get(class_name_id).unwrap();
                                 str::from_utf8(class_name)?.into()
                             }
                             Some(HeapDumpEntry::ObjArrayDump(inst)) => {
                                 let class = classes.get(&inst.class_id).unwrap();
                                 let class_name_id = class_names.get(&class.id).unwrap();
                                 let dict = str_dict.borrow();
-                                let class_name = dict.get(&class_name_id).unwrap();
+                                let class_name = dict.get(class_name_id).unwrap();
                                 format!("{}[]", str::from_utf8(class_name)?)
                             }
                             None => {
                                 let class = classes.get(ele).unwrap();
                                 let class_name_id = class_names.get(&class.id).unwrap();
                                 let dict = str_dict.borrow();
-                                let class_name = dict.get(&class_name_id).unwrap();
+                                let class_name = dict.get(class_name_id).unwrap();
                                 format!("Class<{}>", str::from_utf8(class_name)?)
                             }
                             _ => unreachable!(),
@@ -850,13 +770,11 @@ pub fn read_prof(mut hprof_file: &[u8]) -> Result<()> {
     hprof_file.read_exact(&mut header)?;
 
     if *HEADER != header {
-        return Err(anyhow!(
-            "bad header, expected {HEADER:?} but got {header:?}"
-        ));
+        return Err(anyhow!("bad header, expected {HEADER:?} but got {header:?}"));
     }
 
     let id_size = hprof_file.read_u32::<BigEndian>()?;
-    let micros = hprof_file.read_u64::<BigEndian>()?;
+    let _micros = hprof_file.read_u64::<BigEndian>()?;
 
     if id_size == 4 {
         do_read_prof::<u32>(hprof_file)?;

@@ -3,11 +3,7 @@ use crate::scoreboard::Scoreboard;
 use anyhow::{self, bail};
 use uuid::Uuid;
 
-use std::{
-    collections::HashMap,
-    fs::File,
-    path::Path
-};
+use std::{collections::HashMap, fs::File, path::Path};
 
 pub struct World {
     basepath: String,
@@ -16,12 +12,15 @@ pub struct World {
 
 impl World {
     pub fn new(basepath: &str) -> anyhow::Result<World> {
-        Ok(World{basepath: basepath.to_string(), scoreboard: None})
+        Ok(World {
+            basepath: basepath.to_string(),
+            scoreboard: None,
+        })
     }
 
     pub fn load_scoreboard(&mut self) -> anyhow::Result<()> {
         // Load scoreboard only if not already loaded
-        if let Some(_) = self.scoreboard {
+        if self.scoreboard.is_some() {
             return Ok(());
         }
 
@@ -44,7 +43,12 @@ impl World {
     }
 
     pub fn get_name(&self) -> String {
-        Path::new(&self.basepath).file_name().unwrap().to_str().unwrap().to_string()
+        Path::new(&self.basepath)
+            .file_name()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string()
     }
 
     pub fn get_player_scores(&self, player_name: &str) -> anyhow::Result<HashMap<String, i32>> {
@@ -52,15 +56,15 @@ impl World {
     }
 
     pub fn get_player_data_file(&self, uuid: &Uuid) -> anyhow::Result<File> {
-        World::get_file_common(&Path::new(&self.basepath).join(format!("playerdata/{}.dat", uuid.hyphenated().to_string())))
+        World::get_file_common(&Path::new(&self.basepath).join(format!("playerdata/{}.dat", uuid.hyphenated())))
     }
 
     pub fn get_player_advancements_file(&self, uuid: &Uuid) -> anyhow::Result<File> {
-        World::get_file_common(&Path::new(&self.basepath).join(format!("advancements/{}.json", uuid.hyphenated().to_string())))
+        World::get_file_common(&Path::new(&self.basepath).join(format!("advancements/{}.json", uuid.hyphenated())))
     }
 
     pub fn get_player_stats_file(&self, uuid: &Uuid) -> anyhow::Result<File> {
-        World::get_file_common(&Path::new(&self.basepath).join(format!("stats/{}.json", uuid.hyphenated().to_string())))
+        World::get_file_common(&Path::new(&self.basepath).join(format!("stats/{}.json", uuid.hyphenated())))
     }
 
     pub fn get_file_common(path: &Path) -> anyhow::Result<File> {
@@ -68,7 +72,7 @@ impl World {
         if !path.is_file() {
             bail!("path {} does not exist or is not a file", strpath);
         }
-        match File::open(strpath.to_string()) {
+        match File::open(strpath) {
             Ok(file) => Ok(file),
             Err(err) => bail!("Failed to open file {}: {}", strpath, err),
         }

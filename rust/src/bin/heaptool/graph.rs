@@ -22,11 +22,11 @@ pub struct ConsNode<T>(T, Option<ConsList<T>>);
 pub type ConsList<T> = Rc<ConsNode<T>>;
 
 fn cons<T>(val: T) -> ConsList<T> {
-    return Rc::new(ConsNode(val, None));
+    Rc::new(ConsNode(val, None))
 }
 
 fn cons_list<T>(val: T, next: ConsList<T>) -> ConsList<T> {
-    return Rc::new(ConsNode(val, Some(next)));
+    Rc::new(ConsNode(val, Some(next)))
 }
 
 pub fn to_vec<T: Clone>(list: &ConsList<T>) -> Vec<T> {
@@ -42,11 +42,7 @@ pub fn to_vec<T: Clone>(list: &ConsList<T>) -> Vec<T> {
     out
 }
 
-pub fn is_reachable<T: Id, U: Fn(T) -> bool>(
-    graph: &[(T, T)],
-    root_pred: U,
-    start_nodes: &[T],
-) -> Vec<bool> {
+pub fn is_reachable<T: Id, U: Fn(T) -> bool>(graph: &[(T, T)], root_pred: U, start_nodes: &[T]) -> Vec<bool> {
     let mut reachable: IntMap<T, bool> = IntMap::default();
     let mut temp_vis: IntSet<T> = IntSet::default();
 
@@ -87,7 +83,7 @@ pub fn is_reachable<T: Id, U: Fn(T) -> bool>(
 
         temp_vis.remove(&u);
 
-        reachable.insert(u, found.clone());
+        reachable.insert(u, found);
 
         found
     }
@@ -137,14 +133,7 @@ pub fn find_paths<T: Id, U: Fn(T) -> bool>(
         let mut idx = graph.partition_point(|&(src, _)| src < u);
 
         while idx < graph.len() && graph[idx].0 == u {
-            for node in dfs(
-                graph[idx].1,
-                graph,
-                root_pred,
-                reachable,
-                temp_vis,
-                max_paths,
-            ) {
+            for node in dfs(graph[idx].1, graph, root_pred, reachable, temp_vis, max_paths) {
                 found.push(cons_list(u, node));
                 if found.len() >= max_paths {
                     break;
@@ -167,14 +156,7 @@ pub fn find_paths<T: Id, U: Fn(T) -> bool>(
 
     let mut res = Vec::new();
     for &s in start_nodes {
-        res.push(dfs(
-            s,
-            graph,
-            &root_pred,
-            &mut reachable,
-            &mut temp_vis,
-            max_paths,
-        ));
+        res.push(dfs(s, graph, &root_pred, &mut reachable, &mut temp_vis, max_paths));
     }
 
     res

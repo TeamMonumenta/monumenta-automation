@@ -1,8 +1,8 @@
-use std::env;
 use anyhow::bail;
 use chrono::Duration;
 use monumenta::lockout_lib::{LockoutAPI, LockoutEntry};
 use serde_json::json;
+use std::env;
 
 fn usage() {
     println!("Usage: lockout <domain> claim <shard> <owner> <duration in minutes> <reason>");
@@ -46,23 +46,15 @@ fn main() -> anyhow::Result<()> {
 
     let domain = args.remove(0);
 
-    return match &args.remove(0)[..] {
-        "claim" => {
-            claim(&domain, &mut args)
-        },
-        "check" => {
-            check(&domain, &mut args)
-        },
-        "checkall" => {
-            check_all(&domain, &mut args)
-        },
-        "clear" => {
-            clear(&domain, &mut args)
-        }
+    match &args.remove(0)[..] {
+        "claim" => claim(&domain, &mut args),
+        "check" => check(&domain, &mut args),
+        "checkall" => check_all(&domain, &mut args),
+        "clear" => clear(&domain, &mut args),
         _ => {
             usage();
             Ok(())
-        },
+        }
     }
 }
 
@@ -83,7 +75,7 @@ fn claim(domain: &str, args: &mut Vec<String>) -> anyhow::Result<()> {
     }
     let duration = Duration::minutes(num_minutes);
 
-    let new_lockout = LockoutEntry::new(&owner, duration, &domain, &shard, &reason)?;
+    let new_lockout = LockoutEntry::new(&owner, duration, domain, &shard, &reason)?;
     let mut api: LockoutAPI = LockoutAPI::load(domain)?;
     let found_lockout = api.start_lockout(new_lockout.clone());
     api.save()?;
@@ -123,8 +115,8 @@ fn check(domain: &str, args: &mut Vec<String>) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn check_all(domain: &str, args: &mut Vec<String>) -> anyhow::Result<()> {
-    if args.len() != 0 {
+fn check_all(domain: &str, args: &mut [String]) -> anyhow::Result<()> {
+    if !args.is_empty() {
         usage();
         return Ok(());
     }
@@ -159,4 +151,3 @@ fn clear(domain: &str, args: &mut Vec<String>) -> anyhow::Result<()> {
     print!("{}", result_json);
     Ok(())
 }
-

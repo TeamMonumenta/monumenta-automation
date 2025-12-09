@@ -6,10 +6,10 @@ use clap::Parser;
 use memmap2::Mmap;
 use reader::read_prof;
 
-mod graph;
 mod alloc;
-mod reader;
+mod graph;
 mod id;
+mod reader;
 
 #[derive(Parser, Debug)]
 struct Cli {
