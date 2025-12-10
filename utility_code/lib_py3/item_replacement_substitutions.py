@@ -316,6 +316,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:glowstone_dust", "Greater Thurible Charm", "minecraft:glowstone_dust", "Greater Sentinel Charm"],
                 # Focused -> Swift for Sanctified Armor
                 ["minecraft:large_amethyst_bud", "Focused Consecrated Charm", "minecraft:large_amethyst_bud", "Swift Consecrated Charm"],
+                # Earthquake Staff Charm, new base item
+                ["minecraft:warped_fungus_on_a_stick", "Earthquake Staff", "minecraft:pointed_dripstone", "Earthquake Staff"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
