@@ -1,17 +1,18 @@
 use monumenta::player::Player;
 
-use anyhow;
 use log::warn;
 use simplelog::*;
 
 use std::env;
 
-fn increment_player_start_dates(con: &mut redis::Connection,
-                                domain: &str,
-                                player: &mut Player,
-                                amount: i32,
-                                history: &str) -> anyhow::Result<()> {
-    player.load_redis_scores(&domain, con)?;
+fn increment_player_start_dates(
+    con: &mut redis::Connection,
+    domain: &str,
+    player: &mut Player,
+    amount: i32,
+    history: &str,
+) -> anyhow::Result<()> {
+    player.load_redis_scores(domain, con)?;
     if let Some(scores) = &mut player.scores {
         for (objective, value) in scores.iter_mut() {
             if !(*objective).contains("StartDate") {
@@ -23,16 +24,20 @@ fn increment_player_start_dates(con: &mut redis::Connection,
             *value += amount;
         }
     }
-    player.update_history(&history);
-    player.save_redis(&domain, con)?;
+    player.update_history(history);
+    player.save_redis(domain, con)?;
 
     Ok(())
 }
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 
@@ -51,7 +56,7 @@ fn main() -> anyhow::Result<()> {
     let history = args.remove(0);
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     println!("Incrementing player start dates by {}", amount);
     for (uuid, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {

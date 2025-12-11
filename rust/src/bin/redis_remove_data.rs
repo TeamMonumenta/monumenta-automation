@@ -1,4 +1,3 @@
-use anyhow;
 use redis::Commands;
 use simplelog::*;
 
@@ -9,9 +8,13 @@ fn usage() {
 }
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 
@@ -26,7 +29,7 @@ fn main() -> anyhow::Result<()> {
     let pattern = args.remove(0);
 
     let mut confirm = false;
-    if args.len() > 0 {
+    if !args.is_empty() {
         let confirm_arg = args.remove(0);
         if confirm_arg == "--confirm" {
             confirm = true;
@@ -34,7 +37,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     println!("Removing data matching '{}'", pattern);
     let keys: Vec<String> = con.keys(pattern)?;
@@ -48,11 +51,11 @@ fn main() -> anyhow::Result<()> {
             }
         }
         if confirm {
-            pipe.query(&mut con)?;
+            pipe.query::<()>(&mut con)?;
         }
     }
 
-    if keys.len() == 0 {
+    if keys.is_empty() {
         println!("No matching data found");
     } else if !confirm {
         println!("Matched {} keys\nTo actually execute this operation, add --confirm", keys.len());

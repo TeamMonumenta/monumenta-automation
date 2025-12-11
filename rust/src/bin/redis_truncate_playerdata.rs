@@ -4,8 +4,8 @@ use anyhow::{self, bail};
 use clap::Parser;
 use rayon::prelude::*;
 use simplelog::*;
-use uuid::Uuid;
 use std::cell::RefCell;
+use uuid::Uuid;
 
 #[derive(Parser, Debug)]
 /// Tool to move playerdata between redis to and from a local directory
@@ -25,12 +25,16 @@ pub struct Opts {
 
 // Thread-local connection used to loop over players reusing the same
 // connection per thread in the pool
-thread_local!(static THREAD_CONNECTIONS: RefCell<Option<redis::Connection>> = RefCell::new(None));
+thread_local!(static THREAD_CONNECTIONS: RefCell<Option<redis::Connection>> = const { RefCell::new(None) });
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let args = Opts::parse();
 
@@ -40,11 +44,22 @@ fn main() -> anyhow::Result<()> {
 
     // Open the top-level redis client, and a connection for initial use
     let client = redis::Client::open(args.redis_uri.clone())?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     println!("Determining player uuids...");
-    let uuids: Vec<Uuid> = Player::get_redis_players(&args.domain, &mut con)?.keys().map(|uuid: &Uuid| uuid.clone()).collect();
-    println!("Truncating data for {} players to {} {}", uuids.len(), args.history_amount_to_keep, (if args.history_amount_to_keep == 1 {"entry"} else {"entries"}));
+
+    let uuids: Vec<Uuid> = Player::get_redis_players(&args.domain, &mut con)?
+        .keys()
+        .copied()
+        .collect();
+
+    println!(
+        "Truncating data for {} players to {} {}",
+        uuids.len(),
+        args.history_amount_to_keep,
+        (if args.history_amount_to_keep == 1 { "entry" } else { "entries" })
+    );
+
     uuids.par_iter().for_each(|uuid: &Uuid| {
         THREAD_CONNECTIONS.with(|cell| {
             let mut local_con = cell.borrow_mut();
@@ -59,16 +74,21 @@ fn main() -> anyhow::Result<()> {
                     *local_con = Some(con);
                 }
             }
-            let mut con = local_con.as_mut().unwrap();
+            let con = local_con.as_mut().unwrap();
 
             let mut player = Player::new(uuid.to_owned());
-            if let Err(err) = player.trim_redis_history(&args.domain, &mut con, args.history_amount_to_keep as isize) {
-                eprintln!("Failed to trim history for player {}: {}", uuid,  err);
-                return;
+            if let Err(err) = player.trim_redis_history(&args.domain, con, args.history_amount_to_keep as isize) {
+                eprintln!("Failed to trim history for player {}: {}", uuid, err);
             }
         });
     });
-    println!("Data for {} players truncated to {} {}", uuids.len(), args.history_amount_to_keep, (if args.history_amount_to_keep == 1 {"entry"} else {"entries"}));
+
+    println!(
+        "Data for {} players truncated to {} {}",
+        uuids.len(),
+        args.history_amount_to_keep,
+        (if args.history_amount_to_keep == 1 { "entry" } else { "entries" })
+    );
 
     Ok(())
 }

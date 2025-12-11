@@ -1,6 +1,5 @@
 use monumenta::player::Player;
 
-use anyhow;
 use redis::Commands;
 use simplelog::*;
 use uuid::Uuid;
@@ -8,14 +7,20 @@ use uuid::Uuid;
 use std::env;
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 
     if args.len() != 7 {
-        println!("Usage: redis_set_offline_player_score <redis_uri> <domain> <player> <objective> <value> <description>");
+        println!(
+            "Usage: redis_set_offline_player_score <redis_uri> <domain> <player> <objective> <value> <description>"
+        );
         println!("For example:");
         println!("  redis_set_offline_player_score 'redis://127.0.0.1/' play Combustible temp 0 'Reset temp value'");
         return Ok(());
@@ -31,7 +36,7 @@ fn main() -> anyhow::Result<()> {
     let history = args.remove(0);
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     println!("Loading {}", playername);
     let uuid_str: String = con.hget("name2uuid", playername.to_string())?;

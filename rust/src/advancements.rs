@@ -1,9 +1,6 @@
 use anyhow::{self, bail};
 
-use std::{
-    fs::File,
-    io::Read
-};
+use std::{fs::File, io::Read};
 
 #[derive(Clone)]
 pub struct Advancements(serde_json::Map<String, serde_json::Value>);
