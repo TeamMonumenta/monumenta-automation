@@ -13,22 +13,47 @@ logging.getLogger("pika").setLevel(logging.WARNING)
 
 
 class SocketManager():
+    """A manager for RabbitMQ sockets"""
     BROADCAST_EXCHANGE_NAME = "broadcast"
     HEARTBEAT_CHANNEL = "monumentanetworkrelay.heartbeat"
 
 
     # Default log level is INFO
-    def __init__(self, rabbit_host, queue_name, durable=False, callback=None, log_level=20, server_type="bot"):
+    def __init__(
+        self,
+        rabbit_host,
+        queue_name,
+        durable=False,
+        callback=None,
+        log_level=20,
+        server_type="bot",
+        track_heartbeats=False
+    ):
+        """SocketManager constructor:
+
+        rabbit_host: the address of the RabbitMQ server to connect to
+        queue_name: the name of the queue to use for this connection
+        durable: whether or not the queue for this socket should persist for a while after the connection is lost
+        callback: a method that accepts a `message` dictionary as transmitted via json;
+                  see the MonumentaNetworkRelay source code
+        log_level: the log level to use for this SocketManager as defined by the `logging` Python library
+        server_type: the server type to advertise to other servers using MonumentaNetworkRelay; used for broadcasting commands
+        track_heartbeats: if True, keeps track of the last heartbeat from each online server
+        """
         self._queue_name = queue_name
         self._callback = callback
         self._rabbit_host = rabbit_host
         self._durable_queue = durable
         self._server_type = server_type
         self._heartbeat_threshhold = datetime.min
+        self._track_heartbeats = track_heartbeats
+
+        self._remote_heartbeats = {}
+
         logger.setLevel(log_level)
 
         # Create a thread to connect to the queue and block / consume messages
-        if callback is not None:
+        if callback is not None or self._track_heartbeats:
             self.thread = threading.Thread(target=self._subscriber)
             self.thread.daemon = True
             self.thread.start()
@@ -38,11 +63,42 @@ class SocketManager():
         def callback(channel, method_frame, header_frame, body):
             try:
                 dec = json.JSONDecoder()
-                obj = dec.decode(body.decode('utf8'))
+                message = dec.decode(body.decode('utf8'))
 
-                logger.debug("Got packet: %s", pformat(obj))
+                logger.debug("Got packet: %s", pformat(message))
+
+                if self._track_heartbeats:
+                    now = datetime.utcnow()
+
+                    try:
+                        heartbeat_source = message.get("source", None)
+                        heartbeat_data = message.get("pluginData", {}).get("monumentanetworkrelay", None)
+                        if heartbeat_source is not None and heartbeat_data is not None:
+                            if message.get("online", False):
+                                self._remote_heartbeats[heartbeat_source] = {
+                                    "last_heartbeat": now,
+                                    "heartbeat_data": heartbeat_data,
+                                }
+
+                            else:
+                                if heartbeat_source in self._remote_heartbeats:
+                                    del self._remote_heartbeats[heartbeat_source]
+                    except Exception:
+                        logger.warning("Failed to process remote heartbeat in message: %s", repr(body))
+                        logger.warning(traceback.format_exc())
+
+                    try:
+                        expiry_time = now - timedelta(seconds=10)
+
+                        for source, full_heartbeat_data in list(self._remote_heartbeats.items()):
+                            if expiry_time >= full_heartbeat_data["last_heartbeat"]:
+                                del self._remote_heartbeats[source]
+                    except Exception:
+                        logger.warning("Failed to remove outdated remote heartbeats: %s", repr(body))
+                        logger.warning(traceback.format_exc())
+
                 if self._callback is not None:
-                    self._callback(obj)
+                    self._callback(message)
 
             except Exception:
                 logger.warning("Failed to process rabbitmq message: %s", repr(body))
@@ -82,6 +138,25 @@ class SocketManager():
 
     def send_heartbeat(self):
         self.send_packet("*", self.HEARTBEAT_CHANNEL, {})
+
+
+    def remote_heartbeats(self):
+        result = {}
+        for source, full_heartbeat_data in self._remote_heartbeats.items():
+            result[source] = full_heartbeat_data.get("heartbeat_data", None)
+        return result
+
+
+    def remote_heartbeat(self, source):
+        return self._remote_heartbeats.get(source, {}).get("heartbeat_data", None)
+
+
+    def shard_type(self, source):
+        return self._remote_heartbeats.get(source, {}).get("heartbeat_data", {}).get("server-type", "minecraft")
+
+
+    def shard_health_data(self, source):
+        return self._remote_heartbeats.get(source, {}).get("heartbeat_data", {}).get("shard_health", None)
 
 
     def send_packet(self, destination, operation, data, heartbeat_data=None, online=True):
