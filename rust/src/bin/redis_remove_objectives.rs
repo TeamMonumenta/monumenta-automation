@@ -1,18 +1,21 @@
 use monumenta::player::Player;
 
-use anyhow;
 use simplelog::*;
 
 use std::{
     env,
     fs::File,
-    io::{prelude::*, BufReader}
+    io::{BufReader, prelude::*},
 };
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 
@@ -25,7 +28,7 @@ fn main() -> anyhow::Result<()> {
 
     let domain = args.remove(0);
     let objectives_file = args.remove(0);
-    let mut objectives = vec!();
+    let mut objectives = vec![];
 
     let file = File::open(objectives_file)?;
     let reader = BufReader::new(file);
@@ -42,7 +45,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     let client = redis::Client::open("redis://127.0.0.1/")?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     println!("Removing objectives...");
 
@@ -55,7 +58,7 @@ fn main() -> anyhow::Result<()> {
             }
             player.update_history(&format!("Removed {} scoreboard objectives", objectives.len()));
             player.save_redis(&domain, &mut con)?;
-            num_players = num_players + 1;
+            num_players += 1;
         }
     }
 

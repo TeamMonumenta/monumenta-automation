@@ -6,11 +6,7 @@ use rayon::prelude::*;
 use simplelog::*;
 use uuid::Uuid;
 
-use std::{
-    cell::RefCell,
-    fs,
-    path::Path
-};
+use std::{cell::RefCell, fs, path::Path};
 
 #[derive(Parser, Debug)]
 /// Tool to move playerdata between redis to and from a local directory
@@ -44,36 +40,39 @@ pub struct OutputOpts {
     player_name: Option<String>,
 }
 
-
 #[derive(Subcommand, Debug, Clone)]
 enum Commands {
     #[command(name = "--input")]
     /// Input player data from the directory specified into redis
-    INPUT(InputOpts),
+    Input(InputOpts),
 
     #[command(name = "--output")]
     /// Output player data from redis to the directory specified
-    OUTPUT(OutputOpts),
+    Output(OutputOpts),
 }
 
 // Thread-local connection used to loop over players reusing the same
 // connection per thread in the pool
-thread_local!(static THREAD_CONNECTIONS: RefCell<Option<redis::Connection>> = RefCell::new(None));
+thread_local!(static THREAD_CONNECTIONS: RefCell<Option<redis::Connection>> = const { RefCell::new(None) });
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let args = Opts::parse();
 
     // Make sure directory exists / does not exist as appropriate for command
-    if let Commands::OUTPUT(outargs) = &args.command {
-        if Path::new(&outargs.path).is_dir() {
-            bail!("Supplied output directory already exists!");
-        }
+    if let Commands::Output(outargs) = &args.command
+        && Path::new(&outargs.path).is_dir()
+    {
+        bail!("Supplied output directory already exists!");
     }
-    if let Commands::INPUT(inargs) = &args.command {
+    if let Commands::Input(inargs) = &args.command {
         if !Path::new(&inargs.path).is_dir() {
             bail!("Supplied input directory does not exist");
         }
@@ -84,33 +83,35 @@ fn main() -> anyhow::Result<()> {
 
     // Open the top-level redis client, and a connection for initial use
     let client = redis::Client::open(args.redis_uri.clone())?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     match &args.command {
-        Commands::OUTPUT(outargs) => {
+        Commands::Output(outargs) => {
             if let Some(player_name) = &outargs.player_name {
                 // Caller requested just one player - fetch them
                 let player = Player::from_name(player_name, &mut con)?;
                 output_player(&player, &client, &args.domain, &outargs.path)
             } else {
                 // Caller didn't specify a player to pull - fetch all of them
-                Player::get_redis_players(&args.domain, &mut con)?.par_iter().for_each(|(_, player)| {
-                    output_player(player, &client, &args.domain, &outargs.path)
-                })
+                Player::get_redis_players(&args.domain, &mut con)?
+                    .par_iter()
+                    .for_each(|(_, player)| output_player(player, &client, &args.domain, &outargs.path))
             }
         }
-        Commands::INPUT(inargs) => {
+        Commands::Input(inargs) => {
             let basedir = Path::new(&inargs.path);
             /* Need to do more work to figure out what uuids are being loaded */
-            let uuids: Vec<Uuid> = fs::read_dir(Path::new(&basedir).join("playerdata"))?.filter_map(|entry| {
-                if let Ok(file) = entry {
-                    let path = file.path();
-                    if path.extension().unwrap() == "dat" {
-                        return Some(Uuid::parse_str(path.file_stem().unwrap().to_str().unwrap()).unwrap());
+            let uuids: Vec<Uuid> = fs::read_dir(Path::new(&basedir).join("playerdata"))?
+                .filter_map(|entry| {
+                    if let Ok(file) = entry {
+                        let path = file.path();
+                        if path.extension().unwrap() == "dat" {
+                            return Some(Uuid::parse_str(path.file_stem().unwrap().to_str().unwrap()).unwrap());
+                        }
                     }
-                }
-                return None;
-            }).collect();
+                    None
+                })
+                .collect();
 
             uuids.par_iter().for_each(|uuid| {
                 THREAD_CONNECTIONS.with(|cell| {
@@ -126,24 +127,23 @@ fn main() -> anyhow::Result<()> {
                             *local_con = Some(con);
                         }
                     }
-                    let mut con = local_con.as_mut().unwrap();
+                    let con = local_con.as_mut().unwrap();
 
                     /* Now that we have a UUID, load it from the base path and push it to redis */
                     let mut player = Player::new(uuid.to_owned());
                     if let Err(err) = player.load_dir(basedir.to_str().unwrap()) {
                         eprintln!("Failed to load player {} from dir {}: {}", player, basedir.to_str().unwrap(), err);
+                    } else if let Err(err) = player.save_redis(&args.domain, con) {
+                        eprintln!("Failed to save player {} to redis: {}", player, err);
                     } else {
-                        if let Err(err) = player.save_redis(&args.domain, &mut con) {
-                            eprintln!("Failed to save player {} to redis: {}", player, err);
-                        } else {
-                            if inargs.history_amount_to_keep < u16::MAX {
-                                if let Err(err) = player.trim_redis_history(&args.domain, &mut con, inargs.history_amount_to_keep as isize) {
-                                    eprintln!("Failed to trim player's redis history {}: {}", player, err);
-                                }
-                            }
-
-                            println!("{}", player);
+                        if inargs.history_amount_to_keep < u16::MAX
+                            && let Err(err) =
+                                player.trim_redis_history(&args.domain, con, inargs.history_amount_to_keep as isize)
+                        {
+                            eprintln!("Failed to trim player's redis history {}: {}", player, err);
                         }
+
+                        println!("{}", player);
                     }
                 });
             });
@@ -153,7 +153,7 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn output_player(player: &Player, client: &redis::Client, domain: &str, basedir: &str) -> () {
+fn output_player(player: &Player, client: &redis::Client, domain: &str, basedir: &str) {
     THREAD_CONNECTIONS.with(|cell| {
         /*
          * Clone the player, which at this point is just the UUID.
@@ -175,11 +175,11 @@ fn output_player(player: &Player, client: &redis::Client, domain: &str, basedir:
                 *local_con = Some(con);
             }
         }
-        let mut con = local_con.as_mut().unwrap();
+        let con = local_con.as_mut().unwrap();
 
         // Use the connection to load a player and save it to the output directory
-        let result = player.load_redis(domain, &mut con);
-        if let Ok(_) = result {
+        let result = player.load_redis(domain, con);
+        if result.is_ok() {
             if let Err(err) = player.save_dir(basedir) {
                 eprintln!("Failed to save player data for {}: {}", player, err);
             }

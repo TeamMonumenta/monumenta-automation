@@ -4,8 +4,8 @@ use std::fmt::Formatter;
 use std::fs::{create_dir_all, read_to_string, write};
 
 use anyhow::{self, bail};
-use chrono::{DateTime, Duration, Utc};
 use chrono::serde::ts_seconds;
+use chrono::{DateTime, Duration, Utc};
 use redis::{Commands, RedisResult};
 use serde::{Deserialize, Serialize};
 
@@ -18,7 +18,7 @@ pub struct LockoutAPI {
 impl LockoutAPI {
     fn default(domain: &str) -> LockoutAPI {
         let entries: HashMap<String, LockoutEntry> = HashMap::new();
-        LockoutAPI{
+        LockoutAPI {
             domain: domain.to_string(),
             entries,
             dirty: false,
@@ -26,21 +26,19 @@ impl LockoutAPI {
     }
 
     pub fn load(domain: &str) -> anyhow::Result<LockoutAPI> {
-        if let Err(_) = create_dir_all("/home/epic/4_SHARED/lockouts") {
+        if create_dir_all("/home/epic/4_SHARED/lockouts").is_err() {
             bail!("Unable to create lockouts directory")
         }
         let lockout_path = format!("/home/epic/4_SHARED/lockouts/{}.json", domain);
         let lockout_json_text = match read_to_string(lockout_path) {
-            Ok(data) => {data}
+            Ok(data) => data,
             Err(_) => {
                 return Ok(Self::default(domain));
             }
         };
 
-        let raw_entries: serde_json::Map<String, serde_json::Value> = match serde_json::from_str(&*lockout_json_text) {
-            Ok(data) => {
-                data
-            },
+        let raw_entries: serde_json::Map<String, serde_json::Value> = match serde_json::from_str(&lockout_json_text) {
+            Ok(data) => data,
             Err(_) => {
                 return Ok(Self::default(domain));
             }
@@ -48,14 +46,14 @@ impl LockoutAPI {
 
         let mut entries: HashMap<String, LockoutEntry> = HashMap::new();
         for (shard, raw_entry) in raw_entries {
-            if let Ok(entry) = serde_json::from_value::<LockoutEntry>(raw_entry) {
-                if entry.is_current() {
-                    entries.insert(shard, entry);
-                }
+            if let Ok(entry) = serde_json::from_value::<LockoutEntry>(raw_entry)
+                && entry.is_current()
+            {
+                entries.insert(shard, entry);
             }
-        };
+        }
 
-        return Ok(LockoutAPI{
+        Ok(LockoutAPI {
             domain: domain.to_string(),
             entries,
             dirty: false,
@@ -66,15 +64,15 @@ impl LockoutAPI {
         if !self.dirty {
             return Ok(());
         }
-        if let Err(_) = create_dir_all("/home/epic/4_SHARED/lockouts") {
+        if create_dir_all("/home/epic/4_SHARED/lockouts").is_err() {
             bail!("Unable to create lockouts directory")
         }
         let lockout_path = format!("/home/epic/4_SHARED/lockouts/{}.json", self.domain);
         let serialized = serde_json::to_string_pretty(&self.entries);
-        if let Err(_) = serialized {
+        if serialized.is_err() {
             bail!("Unable to serialize lockouts");
         }
-        if let Err(_) = write(lockout_path, serialized.unwrap()) {
+        if write(lockout_path, serialized.unwrap()).is_err() {
             bail!("Unable to save lockouts")
         }
         Ok(())
@@ -93,22 +91,22 @@ impl LockoutAPI {
             self.entries.clear();
         } else {
             // Check for an existing entries from other owners
-            if let Some(&ref existing_entry) = self.entries.get("*") {
-                if entry.owner != existing_entry.owner {
-                    return existing_entry.clone();
-                }
+            if let Some(existing_entry) = self.entries.get("*")
+                && entry.owner != existing_entry.owner
+            {
+                return existing_entry.clone();
             }
-            if let Some(&ref existing_entry) = self.entries.get(&entry.shard) {
-                if entry.owner != existing_entry.owner {
-                    return existing_entry.clone();
-                }
+            if let Some(existing_entry) = self.entries.get(&entry.shard)
+                && entry.owner != existing_entry.owner
+            {
+                return existing_entry.clone();
             }
 
             // Remove existing entries from the same owner if there are no conflicts
-            if let Some(&ref existing_entry) = self.entries.clone().get("*") {
+            if let Some(existing_entry) = self.entries.clone().get("*") {
                 self.entries.remove(&existing_entry.owner);
             }
-            if let Some(&ref existing_entry) = self.entries.clone().get(&entry.shard) {
+            if let Some(existing_entry) = self.entries.clone().get(&entry.shard) {
                 self.entries.remove(&existing_entry.owner);
             }
         }
@@ -119,20 +117,12 @@ impl LockoutAPI {
     }
 
     pub fn get_lockout(&mut self, shard: &str) -> Option<LockoutEntry> {
-        match self.entries.get("*") {
-            Some(&ref entry) => {
-                return Some(entry.clone());
-            }
-            None => {
-            }
+        if let Some(entry) = self.entries.get("*") {
+            return Some(entry.clone());
         }
 
-        match self.entries.get(shard) {
-            Some(&ref entry) => {
-                return Some(entry.clone());
-            }
-            None => {
-            }
+        if let Some(entry) = self.entries.get(shard) {
+            return Some(entry.clone());
         }
 
         None
@@ -170,12 +160,10 @@ pub struct LockoutEntry {
 
 impl fmt::Display for LockoutEntry {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{} {} is locked by {} until {} for {}",
-            self.domain,
-            self.shard,
-            self.owner,
-            self.expiration,
-            self.reason,
+        write!(
+            f,
+            "{} {} is locked by {} until {} for {}",
+            self.domain, self.shard, self.owner, self.expiration, self.reason,
         )
     }
 }
@@ -184,17 +172,13 @@ impl fmt::Debug for LockoutEntry {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match serde_json::to_string(self) {
             Ok(value) => {
-                write!(f, "{}",
-                    value
-                )
+                write!(f, "{}", value)
             }
             Err(_) => {
-                write!(f, "LockoutEntry{{{}, {}, {}, {}, {}}}",
-                       self.domain,
-                       self.shard,
-                       self.owner,
-                       self.expiration,
-                       self.reason,
+                write!(
+                    f,
+                    "LockoutEntry{{{}, {}, {}, {}, {}}}",
+                    self.domain, self.shard, self.owner, self.expiration, self.reason,
                 )
             }
         }
@@ -202,7 +186,13 @@ impl fmt::Debug for LockoutEntry {
 }
 
 impl LockoutEntry {
-    pub fn new(owner: &str, duration: Duration, domain: &str, shard: &str, reason: &str) -> anyhow::Result<LockoutEntry> {
+    pub fn new(
+        owner: &str,
+        duration: Duration,
+        domain: &str,
+        shard: &str,
+        reason: &str,
+    ) -> anyhow::Result<LockoutEntry> {
         let opt_expiration: Option<DateTime<Utc>> = Utc::now().checked_add_signed(duration);
         if opt_expiration.is_none() {
             bail!("Invalid duration option")
@@ -217,7 +207,7 @@ impl LockoutEntry {
     }
 
     pub fn keep_after_clear(&self, shard: &str, owner: &str) -> bool {
-        return !((shard == "*" || shard == self.shard) && (owner == "*" || owner == self.owner));
+        !((shard == "*" || shard == self.shard) && (owner == "*" || owner == self.owner))
     }
 
     pub fn rescind(&self, con: &mut redis::Connection) -> RedisResult<i64> {

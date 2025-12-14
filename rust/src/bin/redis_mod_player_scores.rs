@@ -1,6 +1,5 @@
 use std::{env, thread};
 
-use anyhow;
 use redis::Commands;
 use redis::RedisError;
 use simplelog::*;
@@ -619,9 +618,13 @@ fn main() -> anyhow::Result<()> {
         "zwrbowo" => 172
     );
 
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 
@@ -635,15 +638,15 @@ fn main() -> anyhow::Result<()> {
     let domain = "play";
     let objective = "HorsemanWins";
     let history = "Reverted HorsemanWins";
-    let mut threads = vec!();
+    let mut threads = vec![];
 
     for (playername, add_val) in changes {
-        let thread = thread::spawn(move|| {
+        let thread = thread::spawn(move || {
             let client = redis::Client::open("redis://127.0.0.1/");
             if let Err(redis_err) = client {
                 println!("Failed to create client to redis: {}", redis_err);
             } else if let Ok(client) = client {
-                let con : Result<redis::Connection, RedisError> = client.get_connection();
+                let con: Result<redis::Connection, RedisError> = client.get_connection();
                 if let Err(redis_err) = con {
                     println!("Failed to connect to redis: {}", redis_err);
                 } else if let Ok(mut con) = con {
@@ -653,7 +656,7 @@ fn main() -> anyhow::Result<()> {
                         let uuid: Uuid = Uuid::parse_str(&uuid_str).unwrap();
 
                         let mut player = Player::new(uuid);
-                        if let Err(redis_err) = player.load_redis(&domain, &mut con) {
+                        if let Err(redis_err) = player.load_redis(domain, &mut con) {
                             println!("Failed to load player data {} : {}", playername, redis_err);
                         } else {
                             if let Some(scores) = &mut player.scores {
@@ -661,7 +664,7 @@ fn main() -> anyhow::Result<()> {
                                 let new_score = add_val;
                                 scores.insert(objective.to_string(), new_score);
                                 player.update_history(history);
-                                if let Err(redis_err) = player.save_redis(&domain, &mut con) {
+                                if let Err(redis_err) = player.save_redis(domain, &mut con) {
                                     println!("Failed to save player data {} : {}", playername, redis_err);
                                 }
                             }

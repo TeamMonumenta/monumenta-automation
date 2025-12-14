@@ -9,9 +9,13 @@ use uuid::Uuid;
 use std::env;
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 
@@ -24,14 +28,17 @@ fn main() -> anyhow::Result<()> {
 
     let redis_uri = args.remove(0);
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     let domain = args.remove(0);
 
     let inputname = args.remove(0);
     let inputuuid: RedisResult<String> = con.hget("name2uuid", &inputname);
     if let Err(err) = inputuuid {
-        warn!("Failed to look up player's UUID, possibly name spelled wrong? (It is case sensitive). Error was: {}", err);
+        warn!(
+            "Failed to look up player's UUID, possibly name spelled wrong? (It is case sensitive). Error was: {}",
+            err
+        );
         return Err(anyhow!(err));
     }
 
@@ -53,7 +60,6 @@ fn main() -> anyhow::Result<()> {
     }
 
     info!("Successfully deleted original player data for user {} domain {}", &inputname, &domain);
-
 
     Ok(())
 }
