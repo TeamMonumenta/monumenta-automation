@@ -9,10 +9,14 @@ use itertools::izip;
 use phf::phf_map;
 use smallvec::SmallVec;
 
-use crate::{
+use crate::hprof::{
     graph::{IntMap, IntSet, clean_graph, find_paths, is_reachable, to_vec},
     id::Id,
 };
+
+mod graph;
+mod id;
+
 fn read_nocopy<'a>(this: &mut &'a [u8], size: usize) -> Result<&'a [u8], Error> {
     this.split_off(..size)
         .ok_or(Error::new(std::io::ErrorKind::UnexpectedEof, "not enough contents left in buffer"))

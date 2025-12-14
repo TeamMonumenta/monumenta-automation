@@ -3,7 +3,7 @@ use std::{
     rc::Rc,
 };
 
-use crate::id::Id;
+use crate::hprof::id::Id;
 
 pub type IntMap<K, V> = HashMap<K, V>;
 pub type IntSet<K> = HashSet<K>;
