@@ -8,6 +8,8 @@ from datetime import datetime
 from datetime import timedelta
 import pika
 
+from lib_py3.shard_health import ShardHealth
+
 logger = logging.getLogger(__name__)
 logging.getLogger("pika").setLevel(logging.WARNING)
 
@@ -156,7 +158,10 @@ class SocketManager():
 
 
     def shard_health_data(self, source):
-        return self._remote_heartbeats.get(source, {}).get("heartbeat_data", {}).get("shard_health", None)
+        json_data = self._remote_heartbeats.get(source, {}).get("heartbeat_data", {}).get("shard_health", None)
+        if json_data:
+            return ShardHealth(json_data)
+        return ShardHealth.zero_health()
 
 
     def send_packet(self, destination, operation, data, heartbeat_data=None, online=True):
