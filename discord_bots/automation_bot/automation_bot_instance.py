@@ -357,8 +357,8 @@ class AutomationBotInstance(commands.Cog):
                             ))
                             logger.warning(traceback.format_exc())
 
-                    log_level = config.RABBITMQ.get("log_level", 20)
-                    self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level, track_heartbeats=conf.get("track_heartbeats", False))
+                    log_level = conf.get("log_level", 20)
+                    self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level, track_heartbeats=(conf.get("track_heartbeats", False)))
 
                     # Add commands that require the sockets here!
                     self._commands["broadcastcommand"] = self.action_broadcastcommand
@@ -834,7 +834,7 @@ class AutomationBotInstance(commands.Cog):
 
         return stdout
 
-    async def stop(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
+    async def stop(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None, wait_heartbeat=False):
         """Stop shards"""
         if not isinstance(shards, list):
             shards = [shards,]
@@ -865,7 +865,7 @@ class AutomationBotInstance(commands.Cog):
             await self.debug(ctx, f"Starting shards [{','.join(shards)}]...")
             await self._k8s.start(shards, wait=wait)
 
-            if wait_heartbeat and self._socket is not None and conf.get("track_heartbeats", False):
+            if wait_heartbeat and self._socket is not None and config.RABBITMQ and config.RABBITMQ.get("track_heartbeats", False):
                 waiting_set = set(shards)
                 async with asyncio.timeout(180):
                     while waiting_set - set(self._socket.remote_heartbeats()):
@@ -873,7 +873,7 @@ class AutomationBotInstance(commands.Cog):
 
             await self.debug(ctx, f"Started shards [{','.join(shards)}]")
 
-    async def restart(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
+    async def restart(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None, wait_heartbeat=False):
         """Restart shards"""
         if not isinstance(shards, list):
             shards = [shards,]
@@ -888,7 +888,7 @@ class AutomationBotInstance(commands.Cog):
             await self.debug(ctx, f"Restarting shards [{','.join(shards)}]...")
             await self._k8s.restart(shards, wait=wait)
 
-            if wait_heartbeat and self._socket is not None and conf.get("track_heartbeats", False):
+            if wait_heartbeat and self._socket is not None and config.RABBITMQ and config.RABBITMQ.get("track_heartbeats", False):
                 waiting_set = set(shards)
                 async with asyncio.timeout(180):
                     while waiting_set - set(self._socket.remote_heartbeats()):
@@ -1341,7 +1341,7 @@ Examples:
         return lockout
 
     # pylint: disable=comparison-with-callable
-    async def _start_stop_restart_common(self, ctx: discord.ext.commands.Context, cmd, message, action):
+    async def _start_stop_restart_common(self, ctx: discord.ext.commands.Context, cmd, message, action, wait_heartbeat=False):
         arg_str = message.content[len(config.PREFIX + cmd)+1:].strip()
         if arg_str.startswith("shard "):
             arg_str = arg_str[len("shard "):].strip()
@@ -1373,7 +1373,7 @@ Examples:
             elif action == self.restart:
                 await self.display(ctx, f"Restarting shards [{','.join(shards_changed)}]...")
 
-            await action(ctx, shards_changed, owner=message)
+            await action(ctx, shards_changed, owner=message, wait_heartbeat=wait_heartbeat)
 
             if action == self.stop:
                 await self.display(ctx, f"Stopped shards [{','.join(shards_changed)}]")
@@ -1537,7 +1537,7 @@ Syntax:
 Syntax:
 `{cmdPrefix}start shard *`
 `{cmdPrefix}start shard valley isles orange'''
-        await self._start_stop_restart_common(ctx, cmd, message, self.start)
+        await self._start_stop_restart_common(ctx, cmd, message, self.start, wait_heartbeat=True)
 
     async def action_stop(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Stop specified shards.
@@ -1551,7 +1551,7 @@ Syntax:
 Syntax:
 `{cmdPrefix}restart shard *`
 `{cmdPrefix}restart shard valley isles orange'''
-        await self._start_stop_restart_common(ctx, cmd, message, self.restart)
+        await self._start_stop_restart_common(ctx, cmd, message, self.restart, wait_heartbeat=True)
 
 
     async def action_view_scores(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
