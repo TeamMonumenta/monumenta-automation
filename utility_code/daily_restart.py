@@ -213,5 +213,4 @@ if __name__ == '__main__':
     # Config / Environment
     ################################################################################
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(socket, k8s))
+    asyncio.run(main(socket, k8s))
