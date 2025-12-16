@@ -155,10 +155,9 @@ class AutomationBot(commands.Bot):
         if not (self.instance and self.instance._socket):
             return
 
-        if self.retry_delays["heartbeat"] > 0.0:
-            self.retry_delays["heartbeat"] -= 1.0
-            if self.retry_delays["heartbeat"] < 0.0:
-                self.retry_delays["heartbeat"] = 0.0
+        heartbeat_delay = self.retry_delays["heartbeat"] - 1.0
+        if heartbeat_delay > 0.0:
+            self.retry_delays["heartbeat"] = max(0.0, heartbeat_delay)
             return
 
         try:
@@ -168,10 +167,10 @@ class AutomationBot(commands.Bot):
         except pika.exceptions.StreamLostError as ex:
             self.rlogger.debug("Heartbeat stream lost, will retry shortly: %s", f"{ex}")
 
+        self.retry_delays["heartbeat"] = self.retry_delays["heartbeat_retry_backoff"]
         self.retry_delays["heartbeat_retry_backoff"] *= 2.0
         if self.retry_delays["heartbeat_retry_backoff"] > 60.0:
             self.retry_delays["heartbeat_retry_backoff"] = 60.0
-        self.retry_delays["heartbeat"] = self.retry_delays["heartbeat_retry_backoff"]
 
     @heartbeat_task.before_loop
     async def before_heartbeat_task(self):
