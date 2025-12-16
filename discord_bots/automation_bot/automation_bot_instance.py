@@ -355,7 +355,7 @@ class AutomationBotInstance(commands.Cog):
                             logger.warning(traceback.format_exc())
 
                     log_level = config.RABBITMQ.get("log_level", 20)
-                    self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level)
+                    self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level, track_heartbeats=conf.get("track_heartbeats", False))
 
                     # Add commands that require the sockets here!
                     self._commands["broadcastcommand"] = self.action_broadcastcommand
@@ -847,7 +847,7 @@ class AutomationBotInstance(commands.Cog):
             await self._k8s.stop(shards, wait=wait)
             await self.debug(ctx, f"Stopped shards [{','.join(shards)}]")
 
-    async def start(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
+    async def start(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None, wait_heartbeat=False):
         """Start shards"""
         if not isinstance(shards, list):
             shards = [shards,]
@@ -861,6 +861,13 @@ class AutomationBotInstance(commands.Cog):
         async with ctx.typing():
             await self.debug(ctx, f"Starting shards [{','.join(shards)}]...")
             await self._k8s.start(shards, wait=wait)
+
+            if wait_heartbeat and self._socket is not None and conf.get("track_heartbeats", False):
+                waiting_set = set(shards)
+                async with asyncio.timeout(180):
+                    while waiting_set - set(self._socket.remote_heartbeats()):
+                        await asyncio.sleep(1)
+
             await self.debug(ctx, f"Started shards [{','.join(shards)}]")
 
     async def restart(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
@@ -877,6 +884,13 @@ class AutomationBotInstance(commands.Cog):
         async with ctx.typing():
             await self.debug(ctx, f"Restarting shards [{','.join(shards)}]...")
             await self._k8s.restart(shards, wait=wait)
+
+            if wait_heartbeat and self._socket is not None and conf.get("track_heartbeats", False):
+                waiting_set = set(shards)
+                async with asyncio.timeout(180):
+                    while waiting_set - set(self._socket.remote_heartbeats()):
+                        await asyncio.sleep(1)
+
             await self.debug(ctx, f"Restarted shards [{','.join(shards)}]")
 
     def get_raffle_seed(self):
