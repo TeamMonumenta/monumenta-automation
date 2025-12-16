@@ -1,18 +1,18 @@
 use monumenta::player::Player;
 
-use anyhow;
 use redis::Commands;
 use simplelog::*;
 
-use std::{
-    collections::HashMap,
-    env
-};
+use std::{collections::HashMap, env};
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 
@@ -29,7 +29,7 @@ fn main() -> anyhow::Result<()> {
     let mut uuid2name: HashMap<String, String> = HashMap::new();
 
     let client = redis::Client::open(redis_uri)?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     for (uuid, player) in Player::get_redis_players(&domain, &mut con)?.iter_mut() {
         player.load_redis(&domain, &mut con)?;

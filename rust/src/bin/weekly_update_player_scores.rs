@@ -1,8 +1,7 @@
 use std::{
     collections::{HashMap, HashSet},
-    env,
-    fs,
-    path::Path
+    env, fs,
+    path::Path,
 };
 
 use anyhow::{self, bail};
@@ -17,10 +16,19 @@ fn usage() {
     println!("Usage: weekly_update_players path/to/directory");
 }
 
-fn update_instance_scores(scores: &mut HashMap<String, i32>, days_since_epoch: i32, start_objective: &str, max_days: i32, additional_objectives_to_reset: &[&str]) {
+fn update_instance_scores(
+    scores: &mut HashMap<String, i32>,
+    days_since_epoch: i32,
+    start_objective: &str,
+    max_days: i32,
+    additional_objectives_to_reset: &[&str],
+) {
     if let Some(start) = scores.get(start_objective) {
         if *start != i32::MAX && days_since_epoch < *start {
-            eprintln!("Got dungeon {} start {} which is in the future! Current days since epoch: {}", start_objective, *start, days_since_epoch);
+            eprintln!(
+                "Got dungeon {} start {} which is in the future! Current days since epoch: {}",
+                start_objective, *start, days_since_epoch
+            );
         } else if *start == i32::MAX || days_since_epoch - *start >= max_days {
             /* Reset all specified objectives on expiration */
             scores.insert(start_objective.to_string(), 0);
@@ -29,6 +37,28 @@ fn update_instance_scores(scores: &mut HashMap<String, i32>, days_since_epoch: i
             }
         }
     }
+}
+
+fn fix_rush_scores(scores: &mut HashMap<String, i32>) {
+    let remnant_objective: &str = "RemnantUnlocked";
+
+    let rush_down_objective: &str = "RushDown";
+    if let Some(rush_down_score) = scores.get(rush_down_objective)
+        && *rush_down_score >= 40
+    {
+        scores.insert(remnant_objective.to_string(), 1);
+    }
+    // Additional plugin code required first
+    //scores.insert(rush_down_objective.to_string(), 0);
+
+    let rush_duo_objective: &str = "RushDuo";
+    if let Some(rush_duo_score) = scores.get(rush_duo_objective)
+        && *rush_duo_score >= 80
+    {
+        scores.insert(remnant_objective.to_string(), 1);
+    }
+    // Additional plugin code required first
+    //scores.insert(rush_duo_objective.to_string(), 0);
 }
 
 #[allow(non_snake_case)]
@@ -41,7 +71,15 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
     let Lime = *scores.get("Lime").unwrap_or(&0);
     let Cyan = *scores.get("Cyan").unwrap_or(&0);
     let LightGray = *scores.get("LightGray").unwrap_or(&0);
-    let CorrectedLevel = 2 + if White > 0 {1} else {0} + if Orange > 0 {1} else {0} + if Magenta > 0 {1} else {0} + if LightBlue > 0 {1} else {0} + if Yellow > 0 {1} else {0} + if Lime > 0 {1} else {0} + if Cyan > 0 {1} else {0} + if LightGray > 0 {1} else {0};
+    let CorrectedLevel = 2
+        + if White > 0 { 1 } else { 0 }
+        + if Orange > 0 { 1 } else { 0 }
+        + if Magenta > 0 { 1 } else { 0 }
+        + if LightBlue > 0 { 1 } else { 0 }
+        + if Yellow > 0 { 1 } else { 0 }
+        + if Lime > 0 { 1 } else { 0 }
+        + if Cyan > 0 { 1 } else { 0 }
+        + if LightGray > 0 { 1 } else { 0 };
 
     scores.insert("TotalLevel".to_string(), CorrectedLevel);
 }
@@ -75,6 +113,9 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         /* DelveDungeon score also resets as if it was a dungeon score */
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
 
+        /* Temporary change to reset Rush wave completion leaderboards and grant access to the Remnant */
+        fix_rush_scores(scores);
+
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
         scores.insert("DRDAccess".to_string(), 0);
@@ -97,9 +138,13 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
 }
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 
@@ -129,8 +174,7 @@ fn main() -> anyhow::Result<()> {
     let start = Utc::now().time(); // START
 
     /* Enumerate all the UUIDs by looking at the core playerdata folder */
-    let uuids : HashSet<Uuid> = fs::read_dir(Path::new(&basedir).join("playerdata"))?
-        .into_iter()
+    let uuids: HashSet<Uuid> = fs::read_dir(Path::new(&basedir).join("playerdata"))?
         .filter_map(|entry| entry.ok())
         .filter(|path| path.path().extension().unwrap() == "dat")
         .map(|path| Uuid::parse_str(path.path().file_stem().unwrap().to_str().unwrap()).unwrap())
@@ -184,7 +228,6 @@ fn main() -> anyhow::Result<()> {
         */
 
         player.save_dir(basedirpath).unwrap();
-        ()
     });
 
     let end = Utc::now().time(); // STOP

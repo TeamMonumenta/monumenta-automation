@@ -3,17 +3,12 @@ use monumenta::scoreboard::ScoreboardCollection;
 
 use anyhow::{self, bail};
 use lazy_static::lazy_static;
-use log::{info, error, warn};
+use log::{error, info, warn};
 use regex::Regex;
 use simplelog::*;
 use walkdir::WalkDir;
 
-use std::{
-    collections::HashMap,
-    env,
-    fmt,
-    fs
-};
+use std::{collections::HashMap, env, fmt, fs};
 
 #[derive(PartialEq, Eq, Hash, Clone)]
 enum NamespaceType {
@@ -44,9 +39,23 @@ impl NamespacedKey {
                 let key = split[1];
 
                 if key.ends_with(".json") && key.starts_with("advancements") {
-                    return Ok(NamespacedKey{key_type: NamespaceType::Advancement, namespace: namespace.to_string(), key: key.trim_start_matches("advancements/").trim_end_matches(".json").to_string()});
+                    return Ok(NamespacedKey {
+                        key_type: NamespaceType::Advancement,
+                        namespace: namespace.to_string(),
+                        key: key
+                            .trim_start_matches("advancements/")
+                            .trim_end_matches(".json")
+                            .to_string(),
+                    });
                 } else if key.ends_with(".mcfunction") && key.starts_with("functions") {
-                    return Ok(NamespacedKey{key_type: NamespaceType::Function, namespace: namespace.to_string(), key: key.trim_start_matches("functions/").trim_end_matches(".mcfunction").to_string()});
+                    return Ok(NamespacedKey {
+                        key_type: NamespaceType::Function,
+                        namespace: namespace.to_string(),
+                        key: key
+                            .trim_start_matches("functions/")
+                            .trim_end_matches(".mcfunction")
+                            .to_string(),
+                    });
                 }
             }
         } else if path.ends_with(".json") {
@@ -57,7 +66,11 @@ impl NamespacedKey {
                 let key = split[1];
 
                 if key.ends_with(".json") {
-                    return Ok(NamespacedKey{key_type: NamespaceType::Quest, namespace: namespace.to_string(), key: key.trim_end_matches(".json").to_string()});
+                    return Ok(NamespacedKey {
+                        key_type: NamespaceType::Quest,
+                        namespace: namespace.to_string(),
+                        key: key.trim_end_matches(".json").to_string(),
+                    });
                 }
             }
         }
@@ -67,13 +80,21 @@ impl NamespacedKey {
     fn from_str(path: &str, key_type: NamespaceType) -> anyhow::Result<NamespacedKey> {
         let split: Vec<&str> = path.splitn(2, ":").collect();
         if split.len() == 2 {
-            return Ok(NamespacedKey{key_type: key_type, namespace: split[0].to_string(), key: split[1].to_string()});
+            return Ok(NamespacedKey {
+                key_type,
+                namespace: split[0].to_string(),
+                key: split[1].to_string(),
+            });
         }
         bail!("Failed to split string {} on ':'", path);
     }
 
     fn from_command(world: &str, coords: &str) -> NamespacedKey {
-        NamespacedKey{ key_type: NamespaceType::Command, namespace: world.to_string(), key: coords.to_string() }
+        NamespacedKey {
+            key_type: NamespaceType::Command,
+            namespace: world.to_string(),
+            key: coords.to_string(),
+        }
     }
 }
 
@@ -220,14 +241,14 @@ impl NamespacedItem {
     }
 }
 
-fn get_function<'c>(advancement: &'c serde_json::Value) -> Option<NamespacedKey> {
-    if let Some(serde_json::Value::Object(rewards)) = advancement.get("rewards") {
-        if let Some(serde_json::Value::String(function)) = rewards.get("function") {
-            if let Ok(ns_key) = NamespacedKey::from_str(function, NamespaceType::Function) {
-                return Some(ns_key);
-            } else {
-                warn!("Advancement contains unparseable reward function {}", function);
-            }
+fn get_function(advancement: &serde_json::Value) -> Option<NamespacedKey> {
+    if let Some(serde_json::Value::Object(rewards)) = advancement.get("rewards")
+        && let Some(serde_json::Value::String(function)) = rewards.get("function")
+    {
+        if let Ok(ns_key) = NamespacedKey::from_str(function, NamespaceType::Function) {
+            return Some(ns_key);
+        } else {
+            warn!("Advancement contains unparseable reward function {}", function);
         }
     }
     None
@@ -239,7 +260,16 @@ fn load_datapack_file(path: String, datapacks_path: &str) -> anyhow::Result<Opti
         if path.ends_with(".json") {
             if let Ok(json) = serde_json::from_str(&file) {
                 if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
-                    return Ok(Some((namespace, NamespacedItem::Advancement(Advancement{ path: vec!(path), children: vec!(), used: false, data: vec!(file), json_data: vec!(json) }))))
+                    return Ok(Some((
+                        namespace,
+                        NamespacedItem::Advancement(Advancement {
+                            path: vec![path],
+                            children: vec![],
+                            used: false,
+                            data: vec![file],
+                            json_data: vec![json],
+                        }),
+                    )));
                 } else {
                     /* Suppress warnings about intentionally failing objects */
                     if !path.contains("loot_tables") && !path.contains("recipes") && !path.contains("/tags/") {
@@ -251,7 +281,15 @@ fn load_datapack_file(path: String, datapacks_path: &str) -> anyhow::Result<Opti
             }
         } else if path.ends_with(".mcfunction") {
             if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(datapacks_path)) {
-                return Ok(Some((namespace, NamespacedItem::Function(Function{ path: vec!(path), children: vec!(), used: false, data: vec!(file) }))))
+                return Ok(Some((
+                    namespace,
+                    NamespacedItem::Function(Function {
+                        path: vec![path],
+                        children: vec![],
+                        used: false,
+                        data: vec![file],
+                    }),
+                )));
             } else {
                 warn!("Failed to create namespaced key for: {}", path);
             }
@@ -262,20 +300,27 @@ fn load_datapack_file(path: String, datapacks_path: &str) -> anyhow::Result<Opti
 }
 
 fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> anyhow::Result<()> {
-    for entry in WalkDir::new(dir).follow_links(true) {
-        if let Ok(entry) = entry {
-            let path = entry.path().to_str().unwrap();
-            if entry.path().is_file() && path.ends_with(".json") {
-                let file = fs::read_to_string(&path)?;
-                if let Ok(json @ serde_json::value::Value::Object(_)) = serde_json::from_str(&file) {
-                    if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(dir)) {
-                        items.insert(namespace, NamespacedItem::Quest(Quest{ path: vec!(path.to_string()), children: vec!(), used: false, data: vec!(file), json_data: json }));
-                    } else {
-                        warn!("Failed to create namespaced key for: {}", path);
-                    }
+    for entry in WalkDir::new(dir).follow_links(true).into_iter().flatten() {
+        let path = entry.path().to_str().unwrap();
+        if entry.path().is_file() && path.ends_with(".json") {
+            let file = fs::read_to_string(path)?;
+            if let Ok(json @ serde_json::value::Value::Object(_)) = serde_json::from_str(&file) {
+                if let Ok(namespace) = NamespacedKey::from_path(path.trim_start_matches(dir)) {
+                    items.insert(
+                        namespace,
+                        NamespacedItem::Quest(Quest {
+                            path: vec![path.to_string()],
+                            children: vec![],
+                            used: false,
+                            data: vec![file],
+                            json_data: json,
+                        }),
+                    );
                 } else {
-                    bail!("Failed to parse file as json object: {}", path);
+                    warn!("Failed to create namespaced key for: {}", path);
                 }
+            } else {
+                bail!("Failed to parse file as json object: {}", path);
             }
         }
     }
@@ -284,19 +329,18 @@ fn load_quests(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) ->
 
 fn load_datapack(items: &mut HashMap<NamespacedKey, NamespacedItem>, dir: &str) -> anyhow::Result<()> {
     for entry in WalkDir::new(dir).follow_links(true) {
-        if let Ok(entry) = entry {
-            if entry.path().is_file() {
-                if let Some((namespace, item)) = load_datapack_file(entry.path().to_str().unwrap().to_string(), dir)? {
-                    /*
-                     * If an existing item already exists with this path, add it as a variant to
-                     * the existing node
-                     */
-                    if let Some(existing) = items.get_mut(&namespace) {
-                        existing.add_variant(item);
-                    } else {
-                        items.insert(namespace, item);
-                    }
-                }
+        if let Ok(entry) = entry
+            && entry.path().is_file()
+            && let Some((namespace, item)) = load_datapack_file(entry.path().to_str().unwrap().to_string(), dir)?
+        {
+            /*
+             * If an existing item already exists with this path, add it as a variant to
+             * the existing node
+             */
+            if let Some(existing) = items.get_mut(&namespace) {
+                existing.add_variant(item);
+            } else {
+                items.insert(namespace, item);
             }
         }
     }
@@ -313,10 +357,10 @@ fn link_quest_file_recursive(path: &str, children: &mut Vec<NamespacedKey>, valu
         serde_json::value::Value::Object(obj) => {
             for (key, value) in obj.iter() {
                 if key == "command" {
-                    if let serde_json::value::Value::String(command) = value {
-                        if let Some(key) = get_command_target_namespacedkey(command) {
-                            children.push(key);
-                        }
+                    if let serde_json::value::Value::String(command) = value
+                        && let Some(key) = get_command_target_namespacedkey(command)
+                    {
+                        children.push(key);
                     }
                 } else if key == "function" {
                     if let serde_json::value::Value::String(function) = value {
@@ -331,23 +375,28 @@ fn link_quest_file_recursive(path: &str, children: &mut Vec<NamespacedKey>, valu
                 }
             }
         }
-        _ => ()
+        _ => (),
     }
 }
 
 fn load_commands_file(items: &mut HashMap<NamespacedKey, NamespacedItem>, path: &str) -> anyhow::Result<()> {
-    let file = fs::read_to_string(&path)?;
+    let file = fs::read_to_string(path)?;
     if let Ok(json) = serde_json::from_str(&file) {
         if let serde_json::value::Value::Array(array) = json {
             for item in array.iter() {
                 if let serde_json::value::Value::Object(obj) = item {
                     if let Some(serde_json::value::Value::String(command)) = obj.get("command") {
                         if let Some(serde_json::value::Value::Array(pos)) = obj.get("pos") {
-                            if let Some(serde_json::value::Value::Number(x)) = pos.get(0) {
+                            if let Some(serde_json::value::Value::Number(x)) = pos.first() {
                                 if let Some(serde_json::value::Value::Number(y)) = pos.get(1) {
                                     if let Some(serde_json::value::Value::Number(z)) = pos.get(2) {
-                                        let namespace = NamespacedKey::from_command(path, &format!("{} {} {}", x, y, z));
-                                        let val = NamespacedItem::Command(Command{ path: vec!(namespace.to_string()), children: vec!(), data: vec!(command.to_string()) });
+                                        let namespace =
+                                            NamespacedKey::from_command(path, &format!("{} {} {}", x, y, z));
+                                        let val = NamespacedItem::Command(Command {
+                                            path: vec![namespace.to_string()],
+                                            children: vec![],
+                                            data: vec![command.to_string()],
+                                        });
                                         if let Some(existing) = items.get_mut(&namespace) {
                                             existing.add_variant(val);
                                         } else {
@@ -384,7 +433,9 @@ fn load_commands_file(items: &mut HashMap<NamespacedKey, NamespacedItem>, path: 
 fn get_command_target_namespacedkey(command: &str) -> Option<NamespacedKey> {
     lazy_static! {
         static ref RE_FUNC: Regex = Regex::new(r"function [a-z][^ :]*:[a-z][^ :]*").unwrap();
-        static ref RE_ADV: Regex = Regex::new(r"advancement (grant|revoke) .* (everything|from|only|through|until) [a-z][^ :]*:[a-z][^ :]*").unwrap();
+        static ref RE_ADV: Regex =
+            Regex::new(r"advancement (grant|revoke) .* (everything|from|only|through|until) [a-z][^ :]*:[a-z][^ :]*")
+                .unwrap();
         static ref RE_ADV_ONLY: Regex = Regex::new(r" only [a-z][^ :]*:[a-z][^ :]*").unwrap();
     }
 
@@ -417,7 +468,6 @@ fn get_command_target_namespacedkey(command: &str) -> Option<NamespacedKey> {
 }
 
 fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
-
     /* Create links between the various files */
     for (_, val) in items.iter_mut() {
         match val {
@@ -426,7 +476,7 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
 
                 /* Link to parent advancement as dependency */
                 /* TODO: Is this needed? */
-                if let Some(serde_json::Value::String(parent)) = advancement.json_data.get(0).unwrap().get("parent") {
+                if let Some(serde_json::Value::String(parent)) = advancement.json_data.first().unwrap().get("parent") {
                     if let Ok(key) = NamespacedKey::from_str(parent, NamespaceType::Advancement) {
                         advancement.children.push(key);
                     } else {
@@ -436,7 +486,7 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
 
                 /* Link to function */
                 for data in advancement.json_data.iter() {
-                    if let Some(run_func) = get_function(&data) {
+                    if let Some(run_func) = get_function(data) {
                         advancement.children.push(run_func);
                     }
                 }
@@ -465,10 +515,10 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
                 /* Create reference links for functions */
                 for data in function.data.iter() {
                     for line in data.lines() {
-                        if !line.trim().starts_with("#") {
-                            if let Some(key) = get_command_target_namespacedkey(line) {
-                                function.children.push(key);
-                            }
+                        if !line.trim().starts_with("#")
+                            && let Some(key) = get_command_target_namespacedkey(line)
+                        {
+                            function.children.push(key);
                         }
                     }
                 }
@@ -476,7 +526,7 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
             NamespacedItem::Quest(quest) => {
                 /* TODO: Quest is always used */
                 quest.used = true;
-                link_quest_file_recursive(&quest.path.get(0).unwrap(), &mut quest.children, &quest.json_data);
+                link_quest_file_recursive(quest.path.first().unwrap(), &mut quest.children, &quest.json_data);
             }
             NamespacedItem::Command(command) => {
                 for data in command.data.iter() {
@@ -489,7 +539,10 @@ fn create_links(items: &mut HashMap<NamespacedKey, NamespacedItem>) {
     }
 }
 
-fn find_unused_scoreboards(scoreboards: &ScoreboardCollection, items: &HashMap<NamespacedKey, NamespacedItem>) -> anyhow::Result<()> {
+fn find_unused_scoreboards(
+    scoreboards: &ScoreboardCollection,
+    items: &HashMap<NamespacedKey, NamespacedItem>,
+) -> anyhow::Result<()> {
     let mut used_objectives: HashMap<&String, Vec<&NamespacedKey>> = HashMap::new();
 
     for objective in scoreboards.objectives() {
@@ -497,7 +550,7 @@ fn find_unused_scoreboards(scoreboards: &ScoreboardCollection, items: &HashMap<N
             'outer: for data in val.get_data() {
                 for line in data.lines() {
                     if !line.trim().starts_with("#") && line.contains(objective) {
-                        used_objectives.entry(objective).or_insert(vec!()).push(key);
+                        used_objectives.entry(objective).or_insert(vec![]).push(key);
                         break 'outer;
                     }
                 }
@@ -506,29 +559,36 @@ fn find_unused_scoreboards(scoreboards: &ScoreboardCollection, items: &HashMap<N
     }
 
     let scoreboard_usage = scoreboards.get_objective_usage_sorted();
-    let mut unused_objectives: Vec<&(String, f64)> = scoreboard_usage.iter().filter(|(objective, _)| !used_objectives.contains_key(objective)).collect();
-    unused_objectives.sort_by(|(a1, a2), (b1, b2)| if a2 == b2 { a1.partial_cmp(b1).unwrap() } else { a2.partial_cmp(b2).unwrap() });
+    let mut unused_objectives: Vec<&(String, f64)> = scoreboard_usage
+        .iter()
+        .filter(|(objective, _)| !used_objectives.contains_key(objective))
+        .collect();
+    unused_objectives
+        .sort_by(|(a1, a2), (b1, b2)| if a2 == b2 { a1.partial_cmp(b1).unwrap() } else { a2.partial_cmp(b2).unwrap() });
 
     println!("\n\n\nUnused Objectives (not used by any datapacks/quests/commands) : % of entities with nonzero score");
     for (objective, percentage) in unused_objectives.iter() {
         println!("{0: <20}{1}", objective, percentage);
     }
-    println!("\nTotal unused objectives (not used by any datapacks/quests/commands) : {}", unused_objectives.len());
+    println!(
+        "\nTotal unused objectives (not used by any datapacks/quests/commands) : {}",
+        unused_objectives.len()
+    );
 
     println!("\n\n\nLow usage objectives (low usage but referenced somewhere) : % of entities with nonzero score");
     let mut low_usage = 0;
     for (objective, percentage) in scoreboard_usage {
-        if percentage <= 0.01f64 {
-            if let Some(used_locs) = used_objectives.get(&objective) {
-                low_usage += 1;
-                println!("{0: <20}{1}", objective, percentage);
-                if used_locs.len() <= 5 {
-                    for loc in used_locs {
-                        println!("  {}", loc);
-                    }
-                } else {
-                    println!("  <{} locations>", used_locs.len());
+        if percentage <= 0.01f64
+            && let Some(used_locs) = used_objectives.get(&objective)
+        {
+            low_usage += 1;
+            println!("{0: <20}{1}", objective, percentage);
+            if used_locs.len() <= 5 {
+                for loc in used_locs {
+                    println!("  {}", loc);
                 }
+            } else {
+                println!("  <{} locations>", used_locs.len());
             }
         }
     }
@@ -545,13 +605,20 @@ const REDIS_SCOREBOARDS_ARG: &str = "--redis-scoreboards";
 
 fn usage() {
     error!("Usage: find_unused_components -- --type1 file1 file2 ... --type2 file1 ... ...");
-    error!("   Where --type is one of {} {} {} {} {}", DATAPACKS_ARG, COMMANDS_ARG, QUESTS_ARG, SCOREBOARDS_ARG, REDIS_SCOREBOARDS_ARG);
+    error!(
+        "   Where --type is one of {} {} {} {} {}",
+        DATAPACKS_ARG, COMMANDS_ARG, QUESTS_ARG, SCOREBOARDS_ARG, REDIS_SCOREBOARDS_ARG
+    );
 }
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     /* A map of all of the advancements and functions that have been loaded */
     let mut items: HashMap<NamespacedKey, NamespacedItem> = HashMap::new();
@@ -570,28 +637,28 @@ fn main() -> anyhow::Result<()> {
     let mut separator = "";
 
     args.remove(0);
-    while args.len() > 0 {
+    while !args.is_empty() {
         match &args.remove(0)[..] {
             DATAPACKS_ARG => {
                 info!("Loading datapacks...");
                 separator = DATAPACKS_ARG;
-            },
+            }
             COMMANDS_ARG => {
                 info!("Loading commands...");
                 separator = COMMANDS_ARG;
-            },
+            }
             QUESTS_ARG => {
                 info!("Loading quests...");
                 separator = QUESTS_ARG;
-            },
+            }
             SCOREBOARDS_ARG => {
                 info!("Loading scoreboards...");
                 separator = SCOREBOARDS_ARG;
-            },
+            }
             REDIS_SCOREBOARDS_ARG => {
                 info!("Loading redis scoreboards...");
                 separator = REDIS_SCOREBOARDS_ARG;
-            },
+            }
             arg => {
                 if separator == DATAPACKS_ARG {
                     info!("Loading datapack {}", arg);
@@ -608,8 +675,8 @@ fn main() -> anyhow::Result<()> {
                 } else if separator == REDIS_SCOREBOARDS_ARG {
                     info!("Loading redis scoreboard for domain {}", arg);
                     let client = redis::Client::open("redis://127.0.0.1/")?;
-                    let mut con : redis::Connection = client.get_connection()?;
-                    let scoreboard = Scoreboard::load_redis(&arg, &mut con)?;
+                    let mut con: redis::Connection = client.get_connection()?;
+                    let scoreboard = Scoreboard::load_redis(arg, &mut con)?;
                     scoreboards.add_existing_scoreboard(scoreboard)?;
                 } else {
                     error!("Got unexpected argument: {}", arg);
@@ -644,8 +711,7 @@ fn main() -> anyhow::Result<()> {
     let mut missing: HashMap<NamespacedKey, Vec<String>> = HashMap::new();
 
     /* Iterate through the pending list and mark things as used */
-    while pending.len() > 0 {
-        let (key, paths) = pending.pop().unwrap();
+    while let Some((key, paths)) = pending.pop() {
         if let Some(map_value) = items.get_mut(&key) {
             /*
              * Only do work on nodes not marked as used. If a node is already
@@ -660,7 +726,7 @@ fn main() -> anyhow::Result<()> {
                 }
             }
         } else {
-            missing.entry(key).or_insert(vec!()).extend(paths);
+            missing.entry(key).or_insert(vec![]).extend(paths);
         }
     }
 
@@ -674,7 +740,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     /* Collect all unused items to a vector */
-    let unused_items: Vec<&NamespacedItem> = items.iter().map(| (_, val) | val).filter(| val | !val.is_used()).collect();
+    let unused_items: Vec<&NamespacedItem> = items.values().filter(|val| !val.is_used()).collect();
     let mut unused_paths: Vec<&String> = Vec::new();
     for item in unused_items {
         unused_paths.extend(item.get_paths().iter());

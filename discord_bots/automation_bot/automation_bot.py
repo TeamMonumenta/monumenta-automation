@@ -84,6 +84,7 @@ class AutomationBot(commands.Bot):
             "heartbeat": 0.0,
             "heartbeat_retry_backoff": 1.0,
             "status": 0.0,
+            "reminders": 0.0,
         }
 
         # start tasks to run in the background
@@ -92,6 +93,7 @@ class AutomationBot(commands.Bot):
         self.update_avatar_task.start()
         self.heartbeat_task.start()
         self.shard_status_task.start()
+        self.reminders_task.start()
 
     async def on_ready(self):
         """Bot ready"""
@@ -174,6 +176,29 @@ class AutomationBot(commands.Bot):
 
     @heartbeat_task.before_loop
     async def before_heartbeat_task(self):
+        await self.wait_until_ready()  # wait until the bot logs in
+
+    @tasks.loop(seconds=1)
+    async def reminders_task(self):
+        if self.retry_delays["reminders"] > 0.0:
+            self.retry_delays["reminders"] -= 1.0
+            if self.retry_delays["reminders"] < 0.0:
+                self.retry_delays["reminders"] = 0.0
+            return
+
+        try:
+            await self.instance.reminders_tick()
+        except discord.errors.DiscordServerError:
+            self.rlogger.debug("A 5xx server error occurred on Discord's end, trying again later")
+            self.retry_delays["reminders"] = 60.0
+        # Future version?
+        #except discord.errors.RateLimited as rate_limited:
+        #    retry_after = rate_limited.retry_after
+        #    self.rlogger.debug("%s", f"Rate limited (messages might not have sent in the first place); retrying after {retry_after}")
+        #    self.retry_delays["reminders"] = retry_after
+
+    @reminders_task.before_loop
+    async def before_reminders_task(self):
         await self.wait_until_ready()  # wait until the bot logs in
 
     async def on_message(self, message):

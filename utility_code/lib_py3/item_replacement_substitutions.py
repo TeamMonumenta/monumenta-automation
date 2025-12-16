@@ -115,6 +115,8 @@ class NameUnnamedItems(SubstitutionRule):
                 if item_id not in NameUnnamedItems.NAME_TABLE:
                     NameUnnamedItems.NAME_TABLE[item_id] = {}
                 NameUnnamedItems.NAME_TABLE[item_id][item_tag] = item_name
+                # If the tag is empty (tag:{}), also accept not having a `tag` tag.
+                # Vanilla *usually* deletes empty tags, but sometimes fails to do so.
                 if len(item_tag.value) == 0:
                     NameUnnamedItems.NAME_TABLE[item_id][None] = item_name
 
@@ -312,6 +314,10 @@ class SubtituteItems(SubstitutionRule):
                 # Thurible -> Sentinel Charms
                 ["minecraft:glowstone_dust", "Lesser Thurible Charm", "minecraft:glowstone_dust", "Lesser Sentinel Charm"],
                 ["minecraft:glowstone_dust", "Greater Thurible Charm", "minecraft:glowstone_dust", "Greater Sentinel Charm"],
+                # Focused -> Swift for Sanctified Armor
+                ["minecraft:large_amethyst_bud", "Focused Consecrated Charm", "minecraft:large_amethyst_bud", "Swift Consecrated Charm"],
+                # Earthquake Staff Charm, new base item
+                ["minecraft:warped_fungus_on_a_stick", "Earthquake Staff", "minecraft:pointed_dripstone", "Earthquake Staff"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution

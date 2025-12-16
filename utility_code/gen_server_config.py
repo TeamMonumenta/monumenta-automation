@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+"""Generates server configuration for Monumenta's shards"""
 
-import sys
+import argparse
 import os
 import re
 import uuid
@@ -186,7 +187,7 @@ def gen_server_config(servername):
             plan_server_info_contents = yaml.load(fp, Loader=yaml.FullLoader)
 
         shard_uuid = uuid.uuid5(MONUMENTA_NAMESPACE, servername)
-        shard_numeric_id = hash(shard_uuid) & (1 << 31)
+        shard_numeric_id = hash(shard_uuid) & ((1 << 31) - 1)
 
         plan_server_info_contents["Server"]["ID"] = shard_numeric_id
         plan_server_info_contents["Server"]["UUID"] = str(shard_uuid)
@@ -197,27 +198,21 @@ def gen_server_config(servername):
     print("Success - " + servername)
 
 if __name__ == '__main__':
-    SERVER_TYPE = 'build'
 
     # Main entry point
-    if len(sys.argv) < 2:
-        sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> [dir2] ...")
+    arg_parser = argparse.ArgumentParser(description=__doc__)
+    arg_parser.add_argument('--play', action='store_true', help="Uses play server configuration, rather than the build server's")
+    arg_parser.add_argument('shard_path', type=Path, nargs='+', help="The shards/proxies to configure")
+    args = arg_parser.parse_args()
 
-    server_list = []
-    for arg in sys.argv[1:]:
-        if arg == "--play":
-            SERVER_TYPE = 'play'
-        else:
-            server_list += [arg,]
+    is_play = args.play
+    SERVER_TYPE = 'play' if is_play else 'build'
+    server_list = args.shard_path
 
-    if len(server_list) < 1:
-        print("ERROR: No folders specified")
-        sys.exit("Usage: " + sys.argv[0] + " [--play] <minecraft_directory> [dir2] ...")
-
-    if SERVER_TYPE == 'build':
-        print("Using build server settings!")
-    else:
+    if is_play:
         print("Using play server settings!")
+    else:
+        print("Using build server settings!")
 
     server_config_to_copy = [
         ('bukkit.yml',),
@@ -268,7 +263,7 @@ if __name__ == '__main__':
         ('plugins/ProtocolLib.jar', '../../server_config/plugins/ProtocolLib.jar'),
         ('plugins/PlaceholderAPI.jar', '../../server_config/plugins/PlaceholderAPI.jar'),
         ('plugins/CommandAPI.jar', '../../server_config/plugins/CommandAPI.jar'),
-        ('plugins/RedisSync.jar', '../../server_config/plugins/RedisSync.jar'),
+        ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'),
     ]
 
@@ -278,6 +273,7 @@ if __name__ == '__main__':
         ('plugins/monumenta-redisapi/config.yaml',),
         ('velocity.toml',),
         ('forwarding.secret',),
+        ('plugins/monumenta-velocity/config.yaml',),
     ]
 
     proxy_link = [
@@ -294,10 +290,10 @@ if __name__ == '__main__':
         ('plugins/luckperms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
         ('plugins/Maintenance-Velocity.jar', '../../server_config/plugins/Maintenance-Velocity.jar'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
-        ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
+        # ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
-        ('plugins/RedisSync.jar', '../../server_config/plugins/RedisSync.jar'),
+        ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
         ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
@@ -327,15 +323,15 @@ if __name__ == '__main__':
     ]
 
     network_chat = [
-        ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
+        ('plugins/MonumentaNetworkChat.jar', '../../server_config/plugins/MonumentaNetworkChat.jar'),
         ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/all/MonumentaNetworkChat/config.yml'),
         ('plugins/MonumentaNetworkChat/global_filters', '/home/epic/4_SHARED/global_chat_filters'),
         ('plugins/MonumentaNetworkChat/help', '../../../server_config/data/plugins/all/MonumentaNetworkChat/help'),
     ]
 
     monumenta = [
-        ('plugins/NetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
-        ('plugins/WorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
+        ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
+        ('plugins/MonumentaWorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
         ('plugins/MonumentaWorldManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaWorldManagement/config.yml'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
         ('plugins/Monumenta/experiencinator_config.json', '../../../server_config/data/plugins/all/Monumenta/experiencinator_config.json'),
@@ -352,7 +348,7 @@ if __name__ == '__main__':
         ('plugins/Monumenta/InfinityTower/InfinityTowerDefault.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityTowerDefault.json'),
         ('plugins/Monumenta/properties/CommonProperties.json', '../../../../server_config/data/plugins/all/Monumenta/properties/CommonProperties.json'),
         ('plugins/Monumenta/properties/LocalProperties.json', '../../../../server_config/data/plugins/{servername}/Monumenta/properties/LocalProperties.json'),
-        ('plugins/Warps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
+        ('plugins/MonumentaWarps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
         ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
         ('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
         ('plugins/HolographicDisplays.jar', '../../server_config/plugins/HolographicDisplays.jar'),
@@ -390,7 +386,7 @@ if __name__ == '__main__':
         ('plugins/ScriptedQuests/zone_properties/common', '../../../../server_config/data/scriptedquests/zone_properties/common'),
         ('plugins/ScriptedQuests/zone_property_groups/{servername}', '../../../../server_config/data/scriptedquests/zone_property_groups/{servername}'),
         ('plugins/ScriptedQuests/zone_property_groups/common', '../../../../server_config/data/scriptedquests/zone_property_groups/common'),
-        ('plugins/StructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
+        ('plugins/MonumentaStructureManagement.jar', '../../server_config/plugins/MonumentaStructureManagement.jar'),
         ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
         ('plugins/TAB.jar', '../../server_config/plugins/TAB.jar'),
@@ -592,7 +588,7 @@ if __name__ == '__main__':
                 ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
             ],
             'linked':server_config_min + luckperms_standalone + monumenta + worldedit + speedchanger + voxelsniper + dynmap + coreprotect + gobrush + vanish + [
-                ('plugins/NetworkChat.jar', '../../server_config/plugins/NetworkChat.jar'),
+                ('plugins/MonumentaNetworkChat.jar', '../../server_config/plugins/MonumentaNetworkChat.jar'),
                 ('plugins/MonumentaNetworkChat/config.yml', '../../../server_config/data/plugins/build/MonumentaNetworkChat/config.yml'),
                 ('plugins/MonumentaNetworkChat/help', '../../../server_config/data/plugins/all/MonumentaNetworkChat/help'),
                 ('plugins/nbteditor.jar', '../../server_config/plugins/nbteditor.jar'),
@@ -693,6 +689,7 @@ if __name__ == '__main__':
             'config': proxy_copy + [
                 ('plugins/maintenance/config.yml', 'maintenance-enabled:', 'maintenance-enabled: true'),
                 ('velocity.toml', 'failover-on-unexpected-server-disconnect =', 'failover-on-unexpected-server-disconnect = {}'.format("true" if SERVER_TYPE == 'build' else "false")),
+                ('plugins/monumenta-velocity/config.yaml', 'join_messages_enabled:', 'join_messages_enabled: {}'.format("true" if SERVER_TYPE == 'build' else "false")),
             ],
             'linked': proxy_link
         }
@@ -950,5 +947,8 @@ if __name__ == '__main__':
                     shard_config['linked'] += plan
 
 
-    for servername in server_list:
-        gen_server_config(servername)
+    original_wd = Path('.').resolve()
+    for server_path in server_list:
+        os.chdir(server_path.parent)
+        gen_server_config(server_path.name)
+    os.chdir(original_wd)

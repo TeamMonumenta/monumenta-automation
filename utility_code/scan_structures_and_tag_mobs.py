@@ -3,6 +3,7 @@
 import math
 import os
 import sys
+import traceback
 
 from lib_py3.common import parse_name_possibly_json
 from lib_py3.library_of_souls import LibraryOfSouls
@@ -12,6 +13,11 @@ from minecraft.world import World
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../quarry"))
 
 from quarry.types import nbt
+
+
+global ERROR_COUNT
+ERROR_COUNT = 0
+
 
 def process_entity(entity, source_name):
     if entity.nbt.has_path("CustomName"):
@@ -62,6 +68,24 @@ def process_entity(entity, source_name):
                     not_found_unique_mobs[f"{name}  {entity_id}"] = entity.nbt
                 mob_pos[f"{name}  {entity_id}"] = (entity.pos, source_name)
 
+def processSchematic(root: str, fname: str, override: str = ""):
+    try:
+        fPath = os.path.join(root, fname)
+        print(f"Attempting to read: {fPath}")
+
+        schem = Schematic(fPath)
+        if not override:
+            override = schem.name
+
+        print("Processing schematic: {}".format(schem.name))
+
+        for entity in schem.recursive_iter_entities():
+            process_entity(entity, override)
+    except Exception as e:
+        print(f"An exception occured when reading: {fname}")
+        traceback.print_exc()
+        ERROR_COUNT += 1
+
 if __name__ == '__main__':
     mob_pos = {}
     not_found_different_mobs = set()
@@ -91,28 +115,19 @@ if __name__ == '__main__':
         for root, subdirs, files in os.walk(basedir):
             for fname in files:
                 if fname.endswith(".schematic"):
-                    schem = Schematic(os.path.join(root, fname))
-
-                    print("Processing schematic: {}".format(schem.name))
-
-                    for entity in schem.recursive_iter_entities():
-                        process_entity(entity, schem.name)
+                    processSchematic(root, fname)
 
     print("Processing shiftingcity schematics...")
     for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/roguelite"):
         for fname in files:
             if fname.endswith(".schematic"):
-                schem = Schematic(os.path.join(root, fname))
-                for entity in schem.recursive_iter_entities():
-                    process_entity(entity, "shiftingcity")
+                processSchematic(root, fname, "shiftingcity")
 
     print("Processing corridors schematics...")
     for root, subdirs, files in os.walk("/home/epic/project_epic/server_config/data/structures/dungeon/rogue"):
         for fname in files:
             if fname.endswith(".schematic"):
-                schem = Schematic(os.path.join(root, fname))
-                for entity in schem.recursive_iter_entities():
-                    process_entity(entity, "corridors")
+                processSchematic(root, fname, "corridors")
 
     dungeons = {
         "white":{"world": "white"},
@@ -198,3 +213,5 @@ if __name__ == '__main__':
         print("  {} - {}".format(name, mob_pos[name]))
 
     los.save()
+
+    print(f'{ERROR_COUNT} exception(s) occurred during this scan.')

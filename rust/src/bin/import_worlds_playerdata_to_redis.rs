@@ -6,16 +6,16 @@ use log::warn;
 use simplelog::*;
 use uuid::Uuid;
 
-use std::{
-    collections::HashMap,
-    env,
-    path::Path
-};
+use std::{collections::HashMap, env, path::Path};
 
 fn main() -> anyhow::Result<()> {
-    let mut multiple = vec![];
-    multiple.push(TermLogger::new(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto) as Box<dyn SharedLogger>);
-    CombinedLogger::init(multiple).unwrap();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        Config::default(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    ) as Box<dyn SharedLogger>])
+    .unwrap();
 
     let mut args: Vec<String> = env::args().collect();
 
@@ -29,9 +29,13 @@ fn main() -> anyhow::Result<()> {
     // Get and read locations yaml
     let locations = args.remove(0);
     let locations = std::fs::File::open(locations)?;
-    let locations: HashMap<String, String> = serde_yml::from_reader(locations)?;
+    let locations: HashMap<String, String> = serde_norway::from_reader(locations)?;
     // Convert the string/string map to uuid/string, dropping any keys that are not uuids
-    let locations: HashMap<Uuid, &String> = locations.iter().map(|(k, v)| (Uuid::parse_str(k), v)).filter_map(|(k, v)| if let Ok(res) = k {Some((res, v))} else {None}).collect();
+    let locations: HashMap<Uuid, &String> = locations
+        .iter()
+        .map(|(k, v)| (Uuid::parse_str(k), v))
+        .filter_map(|(k, v)| if let Ok(res) = k { Some((res, v)) } else { None })
+        .collect();
 
     // Get the path to the project_epic directory
     let basedir = args.remove(0);
@@ -44,7 +48,7 @@ fn main() -> anyhow::Result<()> {
     let mut uuid2name: HashMap<Uuid, String> = HashMap::new();
 
     let client = redis::Client::open("redis://127.0.0.1/")?;
-    let mut con : redis::Connection = client.get_connection()?;
+    let mut con: redis::Connection = client.get_connection()?;
 
     for (uuid, world_name) in locations {
         if !worlds.contains_key(world_name) {
@@ -60,7 +64,7 @@ fn main() -> anyhow::Result<()> {
 
             let mut player = Player::new(uuid);
 
-            if let Err(err) = player.load_world(&world) {
+            if let Err(err) = player.load_world(world) {
                 warn!("Failed to load player {} on {}: {}", uuid, world_name, err);
                 continue;
             }
