@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env pypy3
 
 import asyncio
 import json
@@ -30,10 +30,49 @@ def send_broadcast_message(socket, raw_json_text):
                        {"command": command})
 
 
+def get_shards_by_type(socket, shard_type):
+    """Gets a set of currently running shard names"""
+    minecraft_shards = set()
+    for shard in socket.remote_heartbeats():
+        if socket.shard_type(shard) == "minecraft":
+            minecraft_shards.add(shard)
+    return minecraft_shards
+
+
+async def await_stopped_inner(socket, pending_stop):
+    """Waits for all shards in pending_stop to stop or time out"""
+    # While there are entries in the pending_stop set...
+    while pending_stop:
+        running_shards = get_shards_by_type(socket, "minecraft")
+        # ...remove entries that aren't in both running and pending_stop sets... (some might be back up before done)
+        pending_stop.intersection_update(running_shards)
+        # ...and wait.
+        await asyncio.sleep(1)
+
+
+async def await_stopped(socket, k8s, pending_stop):
+    """Waits for all shards in pending_stop to stop or time out
+
+    This force-restarts shards after 1 minute, then resumes waiting
+    """
+
+    try:
+        async with asyncio.timeout(60):
+            await await_stopped_inner(socket, pending_stop)
+    except TimeoutError:
+        await k8s.restart(list(pending_stop), wait=False)
+
+    await await_stopped_inner(socket, pending_stop)
+
+
 async def main(socket, k8s):
     """Perform a scheduled restart with warnings"""
     # Short wait to make sure socket connects correctly
     await asyncio.sleep(3)
+
+    previous_shards = get_shards_by_type(socket, "minecraft")
+    pending_stop = set(previous_shards)
+    stop_task = None
 
     try:
         send_broadcast_time(socket, "15 minutes")
@@ -61,6 +100,7 @@ async def main(socket, k8s):
 
         # Set all shards to restart the next time they are empty (many will restart immediately) at 5 minutes
         print("Broadcasting restart-empty command to all shards...")
+        stop_task = asyncio.create_task(await_stopped(socket, k8s, pending_stop))
         socket.send_packet("*", "monumentanetworkrelay.command",
                            {"command": 'restart-empty', "server_type": 'minecraft'})
 
@@ -102,13 +142,28 @@ async def main(socket, k8s):
         # At this point shards that didn't already restart will do so
 
         # Restart proxies
-        # TODO: don't hardcode velocity instances here
-        shards = await k8s.list()
-        velocityShards = list(filter(lambda x: (x.startswith("velocity")), shards))
-        await k8s.restart(velocityShards)
+        await k8s.restart(list(get_shards_by_type(socket, "proxy")))
 
-        # Some time for everything to stabilize
-        await asyncio.sleep(120)
+        # Wait for shards to fully stop
+        if stop_task is None:
+            print("stop_task is None for some reason; waiting 2 minutes")
+            await asyncio.sleep(120)
+        else:
+            stop_coroutine = stop_task.get_coro()
+            if stop_coroutine:
+                print("stop_task coroutine is None; all shards were likely already stopped? Possible bug otherwise?")
+            else:
+                print("Awaiting stop_task coroutine")
+                await stop_coroutine
+                print(f"Done waiting on stop_task; {len(pending_stop)} shards are still in pending_stop (should be 0 unless this is cloned by coroutines)")
+
+            print("Waiting for shards to start back up with a timeout of 3 minutes")
+            try:
+                async with asyncio.timeout(180):
+                    while previous_shards != get_shards_by_type(socket, "minecraft"):
+                        await asyncio.sleep(1)
+            except TimeoutError:
+                print("Timed out waiting for shards to start back up; continuing anyway")
 
         # Turn maintenance mode back off
         socket.send_packet("*", "monumentanetworkrelay.command",
@@ -145,12 +200,9 @@ if __name__ == '__main__':
 
         if "rabbitmq" in config:
             conf = config["rabbitmq"]
-            if "log_level" in conf:
-                log_level = conf["log_level"]
-            else:
-                log_level = 20
+            log_level = conf.get("log_level", 20)
 
-            socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level, server_type="daily-restart")
+            socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level, server_type="daily-restart", track_heartbeats=True)
 
         k8s = KubernetesManager(config["k8s_namespace"])
     except KeyError as e:
