@@ -11,8 +11,23 @@ import yaml
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.lib_k8s import KubernetesManager
 
-def send_broadcast_time(socket, time_left):
+def send_broadcast_time(socket, seconds_left):
     """Broadcasts a restart warning with how much time is remaining to all players"""
+    minutes_left, seconds_in_minute = divmod(seconds_left, 60)
+    time_left = []
+
+    if minutes_left > 1:
+        time_left += [str(minutes_left), "minutes"]
+    elif minutes_left == 1:
+        time_left += ["1", "minute"]
+
+    if seconds_in_minute > 1:
+        time_left += [str(seconds_in_minute), "seconds"]
+    elif seconds_in_minute == 1:
+        time_left += ["1", "second"]
+
+    time_left = " ".join(time_left)
+
     raw_json_text = [
         "",
         {"text": "[Alert] ", "color": "red"},
@@ -20,6 +35,7 @@ def send_broadcast_time(socket, time_left):
         {"text": time_left, "color": "red"},
         {"text": ". This helps reduce lag! The server will be down for ~180 seconds."}
     ]
+    send_tablist_event(socket, seconds_left)
     send_broadcast_message(socket, raw_json_text)
 
 
@@ -28,6 +44,17 @@ def send_broadcast_message(socket, raw_json_text):
     command = '''tellraw @a[all_worlds=true] ''' + json.dumps(raw_json_text, ensure_ascii=False, separators=(',', ':'))
     socket.send_packet("*", "monumentanetworkrelay.command",
                        {"command": command})
+
+
+def send_tablist_event(socket, time):
+    """Sends a daily restart event to display in the tab list"""
+    event_data = {
+        "shard": "server",
+        "eventName": "DAILY_RESTART",
+        "timeLeft": time,
+        "status": "STARTING" if time > 0 else "IN_PROGRESS",
+    }
+    socket.send_packet("*", "monumenta.eventbroadcast.update", event_data)
 
 
 def get_shards_by_type(socket, shard_type):
@@ -71,31 +98,32 @@ async def main(socket, k8s):
     await asyncio.sleep(3)
 
     previous_shards = get_shards_by_type(socket, "minecraft")
+    print(f'Preparing to restart: {previous_shards}')
     pending_stop = set(previous_shards)
     stop_task = None
 
     try:
-        send_broadcast_time(socket, "15 minutes")
+        send_broadcast_time(socket, 15 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "14 minutes")
+        send_broadcast_time(socket, 14 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "13 minutes")
+        send_broadcast_time(socket, 13 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "12 minutes")
+        send_broadcast_time(socket, 12 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "11 minutes")
+        send_broadcast_time(socket, 11 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "10 minutes")
+        send_broadcast_time(socket, 10 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "9 minutes")
+        send_broadcast_time(socket, 9 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "8 minutes" )
+        send_broadcast_time(socket, 8 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "7 minutes")
+        send_broadcast_time(socket, 7 * 60)
         await asyncio.sleep(60)
 
         # TODO: add shutoff to creating dungeon instances and starting world bosses
-        send_broadcast_time(socket, "6 minutes")
+        send_broadcast_time(socket, 6 * 60)
         await asyncio.sleep(60)
 
         # Set all shards to restart the next time they are empty (many will restart immediately) at 5 minutes
@@ -104,24 +132,25 @@ async def main(socket, k8s):
         socket.send_packet("*", "monumentanetworkrelay.command",
                            {"command": 'restart-empty', "server_type": 'minecraft'})
 
-        send_broadcast_time(socket, "5 minutes")
+        send_broadcast_time(socket, 5 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "4 minutes")
+        send_broadcast_time(socket, 4 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "3 minutes")
+        send_broadcast_time(socket, 3 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "2 minutes")
+        send_broadcast_time(socket, 2 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "1 minute")
+        send_broadcast_time(socket, 60)
         await asyncio.sleep(30)
-        send_broadcast_time(socket, "30 seconds")
+        send_broadcast_time(socket, 30)
         await asyncio.sleep(15)
-        send_broadcast_time(socket, "15 seconds")
+        send_broadcast_time(socket, 15)
         await asyncio.sleep(5)
-        send_broadcast_time(socket, "10 seconds")
+        send_broadcast_time(socket, 10)
         await asyncio.sleep(5)
-        send_broadcast_time(socket, "5 seconds")
+        send_broadcast_time(socket, 5)
         await asyncio.sleep(5)
+        send_tablist_event(socket, 0)
     except Exception:
         print(f"Failed to notify players about pending restart: {traceback.format_exc()}")
 
@@ -157,15 +186,16 @@ async def main(socket, k8s):
                 await stop_coroutine
                 print(f"Done waiting on stop_task; {len(pending_stop)} shards are still in pending_stop (should be 0 unless this is cloned by coroutines)")
 
-            print("Waiting for shards to start back up with a timeout of 3 minutes")
+            print("Waiting for shards to start back up with a timeout of 5 minutes")
             try:
-                async with asyncio.timeout(180):
+                async with asyncio.timeout(300):
                     while previous_shards != get_shards_by_type(socket, "minecraft"):
                         await asyncio.sleep(1)
             except TimeoutError:
                 print("Timed out waiting for shards to start back up; continuing anyway")
 
         # Turn maintenance mode back off
+        send_tablist_event(socket, -1)
         socket.send_packet("*", "monumentanetworkrelay.command",
                            {"command": 'maintenance off', "server_type": 'proxy'})
     except Exception:
