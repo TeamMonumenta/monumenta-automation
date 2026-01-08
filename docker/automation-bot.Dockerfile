@@ -12,8 +12,8 @@ ENV USERHOME=/home/$USERNAME
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=true
 
-RUN apt-get update && \
-	apt-get install -y build-essential curl && \
+RUN apt update && \
+	apt install -y build-essential curl && \
 # Install redis tools
 	cd /tmp && \
 	curl -O https://download.redis.io/releases/redis-7.4.0.tar.gz && \
@@ -21,11 +21,12 @@ RUN apt-get update && \
 	cd redis-7.4.0 && \
 	make -j 4 && \
 	make install && \
-	apt-get update && \
-	apt-get install -y software-properties-common && \
+	apt update && \
+	apt install -y software-properties-common && \
 	add-apt-repository -y ppa:pypy/ppa && \
-	apt-get update && \
-	apt-get install -y --no-install-recommends python3 python3-yaml python3-pip python3-setuptools python3-numpy python3-git zip unzip pigz python3-dev libtool curl liblz4-tool netcat-openbsd pypy3 git parallel patch mariadb-client rsync wget bzip2 && \
+	apt update && \
+	apt upgrade && \
+	apt install -y --no-install-recommends python3 python3-flask python3-yaml python3-pip python3-setuptools python3-numpy python3-git zip unzip pigz python3-dev libtool curl liblz4-tool netcat-openbsd pypy3 git parallel patch mariadb-client rsync wget bzip2 && \
 	rm -rf /var/lib/apt/lists/* && \
 	pip3 install wheel discord.py kubernetes pika "redis<4.2.0" "bitstring<4.1.0" kanboard git+https://github.com/gentlegiantJGC/mutf8.git && \
 # Install rclone
@@ -50,12 +51,10 @@ RUN apt-get update && \
 	pypy3 -m pip install wheel pika redis "bitstring<4.1.0" kanboard git+https://github.com/gentlegiantJGC/mutf8.git
 
 # These are included in Debian (and thus Ubuntu) and need to be skipped:
-	#pip3 install flask && \
 	#pip3 install -U pyyaml && \
 	#wget https://bootstrap.pypa.io/pip/3.8/get-pip.py && \
 	#pypy3 get-pip.py && \
 	#rm -f get-pip.py && \
-	#pypy3 -m pip install flask && \
 	#pypy3 -m pip install pyyaml
 
 USER $USERNAME
