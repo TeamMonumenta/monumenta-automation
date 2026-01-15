@@ -1,18 +1,16 @@
+from datetime import datetime
+from datetime import timedelta
 from pprint import pformat
 import json
 import logging
 import threading
-import traceback
 import time
-from datetime import datetime
-from datetime import timedelta
+import traceback
 import pika
-
 from lib_py3.shard_health import ShardHealth
 
 logger = logging.getLogger(__name__)
 logging.getLogger("pika").setLevel(logging.WARNING)
-
 
 class SocketManager():
     """A manager for RabbitMQ sockets"""
@@ -42,6 +40,10 @@ class SocketManager():
         server_type: the server type to advertise to other servers using MonumentaNetworkRelay; used for broadcasting commands
         track_heartbeats: if True, keeps track of the last heartbeat from each online server
         """
+        # Used only for sending packets to RabbitMQ - receiving will open its own connection
+        self._connection = None
+        self._channel = None
+
         self._queue_name = queue_name
         self._callback = callback
         self._rabbit_host = rabbit_host
@@ -103,19 +105,21 @@ class SocketManager():
                     self._callback(message)
 
             except Exception:
-                logger.warning("Failed to process rabbitmq message: %s", repr(body))
+                logger.warning("Failed to process rabbitmq message: %r", body)
                 logger.warning(traceback.format_exc())
 
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
         while True:
+            connection = None
+            channel = None
             try:
                 # Create the connection
                 connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
                 channel = connection.channel()
 
                 # Create the exchange for broadcast messages
-                logger.debug("Declaring exchange %s", repr(self.BROADCAST_EXCHANGE_NAME))
+                logger.debug("Declaring exchange %s", self.BROADCAST_EXCHANGE_NAME)
                 channel.exchange_declare(self.BROADCAST_EXCHANGE_NAME, exchange_type="fanout")
 
                 # Declare the queue
@@ -131,11 +135,32 @@ class SocketManager():
                 channel.basic_consume(queue=self._queue_name, on_message_callback=callback)
                 channel.start_consuming()
             except Exception as e:
-                logger.warning('Rabbitmq consumer thread failed: %s', e)
+                logger.warning("Rabbitmq consumer thread failed: %s", e)
                 logger.warning(traceback.format_exc())
 
-            logger.warning('Attempting to reconnect rabbitmq consumer...')
+                if channel is not None and channel.is_open:
+                    channel.close()
+                if connection is not None and connection.is_open:
+                    connection.close()
+
+            logger.warning("Attempting to reconnect rabbitmq consumer...")
             time.sleep(10)
+
+
+    def _ensure_channel_open_for_sending(self):
+        '''
+        Opens a connection and channel if one doesn't exist or it timed out, reuse channel otherwise
+        '''
+        if self._connection is None or self._connection.is_closed:
+            self._connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
+
+        if self._channel is None or self._channel.is_closed:
+            self._channel = self._connection.channel()
+
+        if self._channel.is_closed:
+            raise ConnectionError("Failed to send message to rabbitmq despite attempting to reconnect")
+
+        return self._channel
 
 
     def send_heartbeat(self):
@@ -174,11 +199,7 @@ class SocketManager():
         if heartbeat_data is None:
             heartbeat_data = {}
 
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
-        channel = connection.channel()
-
-        if channel.is_closed:
-            raise Exception("Failed to send message to rabbitmq despite attempting to reconnect")
+        channel = self._ensure_channel_open_for_sending()
 
         packet = {
             "data": data,
@@ -194,7 +215,10 @@ class SocketManager():
         ):
             self._heartbeat_threshhold = now + timedelta(seconds=0.5)
 
-            network_relay_data = heartbeat_data.get("monumentanetworkrelay", {})
+            network_relay_data = heartbeat_data.get("monumentanetworkrelay", None)
+            if network_relay_data is None:
+                network_relay_data = {}
+                heartbeat_data["monumentanetworkrelay"] = network_relay_data
             heartbeat_data["monumentanetworkrelay"] = network_relay_data
 
             network_relay_data["server-type"] = self._server_type
