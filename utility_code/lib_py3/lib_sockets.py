@@ -52,6 +52,8 @@ class SocketManager():
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
         while True:
+            connection = None
+            channel = None
             try:
                 # Create the connection
                 connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
@@ -77,9 +79,9 @@ class SocketManager():
                 logger.warning("Rabbitmq consumer thread failed: %s", e)
                 logger.warning(traceback.format_exc())
 
-                if channel.is_open:
+                if channel is not None and channel.is_open:
                     channel.close()
-                if connection.is_open:
+                if connection is not None and connection.is_open:
                     connection.close()
 
             logger.warning("Attempting to reconnect rabbitmq consumer...")
