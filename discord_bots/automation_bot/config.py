@@ -51,7 +51,10 @@ class Config():
         self.K8S_NAMESPACE = bot_config["k8s_namespace"]
         self.REACTIONS_ENABLED = bot_config["reactions_enabled"]
         self.REACTIONS_LOG_LEVEL = logging.DEBUG # TODO configurable
-        self.IGNORED_REACTION_CHANNELS = bot_config["ignored_reaction_channels"]
+        if self.REACTIONS_ENABLED:
+            self.IGNORED_REACTION_CHANNELS = bot_config["ignored_reaction_channels"]
+        else:
+            self.IGNORED_REACTION_CHANNELS = []
         self.CHANNELS = bot_config["channels"]
         self.NO_READY_MESSAGE_CHANNELS = bot_config.get("no_ready_message_channels", [])
         self.STATUS_CHANNEL = bot_config.get("status_channel", None)
