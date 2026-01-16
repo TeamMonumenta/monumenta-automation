@@ -84,7 +84,7 @@ async def await_stopped(socket, k8s, pending_stop):
     """
 
     try:
-        async with asyncio.timeout(60):
+        async with asyncio.timeout(7 * 60):
             await await_stopped_inner(socket, pending_stop)
     except TimeoutError:
         await k8s.restart(list(pending_stop), wait=False)
@@ -122,6 +122,8 @@ async def main(socket, k8s):
         send_broadcast_time(socket, 7 * 60)
         await asyncio.sleep(60)
 
+        previous_shards |= get_shards_by_type(socket, "minecraft")
+        pending_stop |= previous_shards
         # TODO: add shutoff to creating dungeon instances and starting world bosses
         send_broadcast_time(socket, 6 * 60)
         await asyncio.sleep(60)
