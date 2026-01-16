@@ -80,7 +80,7 @@ async def await_stopped_inner(socket, pending_stop):
 async def await_stopped(socket, k8s, pending_stop):
     """Waits for all shards in pending_stop to stop or time out
 
-    This force-restarts shards after 1 minute, then resumes waiting
+    This force-restarts shards after timeout, then resumes waiting
     """
 
     try:
@@ -188,7 +188,7 @@ async def main(socket, k8s):
                 await stop_coroutine
                 print(f"Done waiting on stop_task; {len(pending_stop)} shards are still in pending_stop (should be 0 unless this is cloned by coroutines)")
 
-            print("Waiting for shards to start back up with a timeout of 5 minutes")
+            print("Waiting for shards to start back up with a timeout")
             try:
                 async with asyncio.timeout(600):
                     while previous_shards != get_shards_by_type(socket, "minecraft"):
