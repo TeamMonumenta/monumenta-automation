@@ -57,6 +57,15 @@ def send_tablist_event(socket, time):
     socket.send_packet("*", "monumenta.eventbroadcast.update", event_data)
 
 
+def send_admin_alert(socket, message):
+    """Sends an admin alert seeking help"""
+    print(message)
+    event_data = {
+        "message": message,
+    }
+    socket.send_packet("*", "Monumenta.Automation.AdminNotification", event_data)
+
+
 def get_shards_by_type(socket, shard_type):
     """Gets a set of currently running shard names"""
     minecraft_shards = set()
@@ -154,7 +163,7 @@ async def main(socket, k8s):
         await asyncio.sleep(5)
         send_tablist_event(socket, 0)
     except Exception:
-        print(f"Failed to notify players about pending restart: {traceback.format_exc()}")
+        send_admin_alert(socket, f"Failed to notify players about pending restart: {traceback.format_exc()}")
 
     try:
         # Turn on Maintenance
@@ -177,12 +186,12 @@ async def main(socket, k8s):
 
         # Wait for shards to fully stop
         if stop_task is None:
-            print("stop_task is None for some reason; waiting 2 minutes")
+            send_admin_alert(socket, "stop_task is None for some reason; waiting 2 minutes")
             await asyncio.sleep(120)
         else:
             stop_coroutine = stop_task.get_coro()
             if stop_coroutine:
-                print("stop_task coroutine is None; all shards were likely already stopped? Possible bug otherwise?")
+                send_admin_alert(socket, "stop_task coroutine is None; all shards were likely already stopped? Possible bug otherwise?")
             else:
                 print("Awaiting stop_task coroutine")
                 await stop_coroutine
@@ -201,7 +210,7 @@ async def main(socket, k8s):
         socket.send_packet("*", "monumentanetworkrelay.command",
                            {"command": 'maintenance off', "server_type": 'proxy'})
     except Exception:
-        print(f"Failed to restart the server: {traceback.format_exc()}")
+        send_admin_alert(socket, f"Failed to restart the server: {traceback.format_exc()}")
         send_broadcast_message(socket, [
             "",
             {"text": "[Alert] ", "color": "red"},
