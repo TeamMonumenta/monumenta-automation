@@ -202,6 +202,7 @@ async def main(socket, k8s):
                 async with asyncio.timeout(600):
                     while previous_shards != get_shards_by_type(socket, "minecraft"):
                         await asyncio.sleep(1)
+                        send_tablist_event(socket, 0)
             except TimeoutError:
                 print("Timed out waiting for shards to start back up; continuing anyway")
 
