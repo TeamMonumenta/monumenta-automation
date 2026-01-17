@@ -910,7 +910,7 @@ class AutomationBotInstance(commands.Cog):
     def send_tablist_event(self, event_name, time):
     """Sends an event to display in the tab list"""
         event_data = {
-            "shard": "server",
+            "shard": config.RABBITMQ["host"],
             "eventName": event_name,
             "timeLeft": time,
             "status": "STARTING" if time > 0 else "IN_PROGRESS",
