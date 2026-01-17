@@ -190,9 +190,7 @@ async def main(socket, k8s):
             await asyncio.sleep(120)
         else:
             stop_coroutine = stop_task.get_coro()
-            if stop_coroutine:
-                send_admin_alert(socket, "stop_task coroutine is None; all shards were likely already stopped? Possible bug otherwise?")
-            else:
+            if stop_coroutine is not None: # If stop_task coroutine is None, all shards were already stopped
                 print("Awaiting stop_task coroutine")
                 await stop_coroutine
                 print(f"Done waiting on stop_task; {len(pending_stop)} shards are still in pending_stop (should be 0 unless this is cloned by coroutines)")
