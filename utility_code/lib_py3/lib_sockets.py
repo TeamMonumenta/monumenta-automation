@@ -7,6 +7,7 @@ import threading
 import time
 import traceback
 import pika
+from pika.exceptions import StreamLostError
 from lib_py3.shard_health import ShardHealth
 
 logger = logging.getLogger(__name__)
@@ -151,14 +152,21 @@ class SocketManager():
         '''
         Opens a connection and channel if one doesn't exist or it timed out, reuse channel otherwise
         '''
-        if self._connection is None or self._connection.is_closed:
-            self._connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
+        for retry_count in range(1, 3+1):
+            try:
+                if self._connection is None or self._connection.is_closed:
+                    self._connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
 
-        if self._channel is None or self._channel.is_closed:
-            self._channel = self._connection.channel()
+                if self._channel is None or self._channel.is_closed:
+                    self._channel = self._connection.channel()
 
-        if self._channel.is_closed:
-            raise ConnectionError("Failed to send message to rabbitmq despite attempting to reconnect")
+                if self._channel.is_closed:
+                    raise ConnectionError("Failed to send message to rabbitmq despite attempting to reconnect")
+
+                break
+            except StreamLostError:
+                if retry_count == 3:
+                    raise
 
         return self._channel
 
