@@ -907,6 +907,16 @@ class AutomationBotInstance(commands.Cog):
 
         return raffle_seed
 
+    def send_tablist_event(self, event_name, time):
+    """Sends an event to display in the tab list"""
+        event_data = {
+            "shard": "server",
+            "eventName": event_name,
+            "timeLeft": time,
+            "status": "STARTING" if time > 0 else "IN_PROGRESS",
+        }
+        self._socket.send_packet("*", "monumenta.eventbroadcast.update", event_data)
+
     def broadcast_command(self, cmd, server_type="minecraft", shard="*"):
         """Broadcasts a command to all servers"""
         data = {
@@ -2442,6 +2452,7 @@ old coreprotect data will be removed at the 5 minute mark.
             1,
         ], reverse=True)
 
+        self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
         self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
@@ -2464,7 +2475,9 @@ old coreprotect data will be removed at the 5 minute mark.
                 return "1 minute"
             return f"{minutes} minutes"
 
-        async def send_broadcast_stop_msg(time_left):
+        async def send_broadcast_stop_msg(seconds):
+            self.send_tablist_event("SCHEDULED_MAINTENANCE", seconds)
+            time_left = seconds_to_string(seconds)
             self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
@@ -2491,7 +2504,7 @@ old coreprotect data will be removed at the 5 minute mark.
             if next_target == 15:
                 self.broadcast_command('save-all')
 
-            await send_broadcast_stop_msg(seconds_to_string(next_target))
+            await send_broadcast_stop_msg(next_target)
 
         # Stop velocity (I guess you could uh... run maintenance?)
         self.broadcast_command('maintenance on', server_type="proxy")
@@ -2502,6 +2515,7 @@ old coreprotect data will be removed at the 5 minute mark.
         await self.stop(ctx, velocityShards, owner=message)
 
         await self.display(ctx, message.author.mention)
+        self.send_tablist_event("SCHEDULED_MAINTENANCE", -1)
 
     async def action_stop_and_backup(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Dangerous!
