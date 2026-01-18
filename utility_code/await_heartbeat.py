@@ -4,6 +4,7 @@
 
 import argparse
 import asyncio
+from get_deployment_address import get_deployment_address
 from pathlib import Path
 import subprocess
 import sys
@@ -42,13 +43,7 @@ def main():
     # Get RabbitMQ address
     hostname = args.address
     if not hostname:
-        utility_code_path = Path(__file__).parent
-        get_deployment_addr_path = utility_code_path / 'get_deployment_address.sh'
-
-        get_address_subprocess = subprocess.run([str(get_deployment_addr_path), args.namespace, args.deployment], capture_output=True)
-        if get_address_subprocess.returncode:
-            sys.exit(f'Could not get RabbitMQ address: {get_address_subprocess.stderr}')
-        hostname = get_address_subprocess.stdout.decode(encoding='utf-8').strip()
+        hostname = get_deployment_address(args.namespace, args.deployment)
 
     # Wait for shards to have active heartbeats
     heartbeat_waiter = HeartbeatWaiter(hostname, args.shard)
