@@ -79,6 +79,8 @@ spec:
           value: "/home/epic/stage/m18/velocity-18"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        - name: "MONUMENTA_WHITELIST"
+          value: monumenta.whitelist.beta
         - name: "NETWORK_RELAY_NAME"
           value: velocity-18
         - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"

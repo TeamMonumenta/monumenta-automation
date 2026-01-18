@@ -79,8 +79,12 @@ spec:
           value: "/home/epic/volt/m17/velocity-17"
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
+        - name: "MONUMENTA_WHITELIST"
+          value: monumenta.whitelist.beta
         - name: "NETWORK_RELAY_NAME"
           value: velocity-17
+        - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
+          value: "false"
         readinessProbe:
           tcpSocket:
             port: 25566
