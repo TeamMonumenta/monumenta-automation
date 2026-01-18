@@ -348,7 +348,7 @@ class AutomationBotInstance(commands.Cog):
                                         gameplay_event["ETA"] = now + timedelta(seconds=event_time_left)
                                     else:
                                         gameplay_event.pop("ETA", False)
-                        except Exception as e:
+                        except Exception:
                             logger.warning("Error handling message: %s", json.dumps(
                                 message,
                                 ensure_ascii=False,
@@ -357,8 +357,8 @@ class AutomationBotInstance(commands.Cog):
                             ))
                             logger.warning(traceback.format_exc())
 
-                    log_level = config.RABBITMQ.get("log_level", 20)
-                    self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level)
+                    log_level = conf.get("log_level", 20)
+                    self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level, track_heartbeats=(conf.get("track_heartbeats", False)))
 
                     # Add commands that require the sockets here!
                     self._commands["broadcastcommand"] = self.action_broadcastcommand
@@ -747,7 +747,7 @@ class AutomationBotInstance(commands.Cog):
                     already_checked.add(perm)
                     user_rights = self._permissions["groups"][perm] + user_rights
                 continue
-            givenPerm = (perm[0] == "+")
+            givenPerm = perm[0] == "+"
             if (perm[1:] == command or perm[1:] == "*"):
                 result = givenPerm
 
@@ -834,7 +834,7 @@ class AutomationBotInstance(commands.Cog):
 
         return stdout
 
-    async def stop(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
+    async def stop(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None, wait_heartbeat=False):
         """Stop shards"""
         if not isinstance(shards, list):
             shards = [shards,]
@@ -850,7 +850,7 @@ class AutomationBotInstance(commands.Cog):
             await self._k8s.stop(shards, wait=wait)
             await self.debug(ctx, f"Stopped shards [{','.join(shards)}]")
 
-    async def start(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
+    async def start(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None, wait_heartbeat=False):
         """Start shards"""
         if not isinstance(shards, list):
             shards = [shards,]
@@ -864,9 +864,16 @@ class AutomationBotInstance(commands.Cog):
         async with ctx.typing():
             await self.debug(ctx, f"Starting shards [{','.join(shards)}]...")
             await self._k8s.start(shards, wait=wait)
+
+            if wait_heartbeat and self._socket is not None and config.RABBITMQ and config.RABBITMQ.get("track_heartbeats", False):
+                waiting_set = set(shards)
+                async with asyncio.timeout(180):
+                    while waiting_set - set(self._socket.remote_heartbeats()):
+                        await asyncio.sleep(1)
+
             await self.debug(ctx, f"Started shards [{','.join(shards)}]")
 
-    async def restart(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None):
+    async def restart(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None, wait_heartbeat=False):
         """Restart shards"""
         if not isinstance(shards, list):
             shards = [shards,]
@@ -880,6 +887,13 @@ class AutomationBotInstance(commands.Cog):
         async with ctx.typing():
             await self.debug(ctx, f"Restarting shards [{','.join(shards)}]...")
             await self._k8s.restart(shards, wait=wait)
+
+            if wait_heartbeat and self._socket is not None and config.RABBITMQ and config.RABBITMQ.get("track_heartbeats", False):
+                waiting_set = set(shards)
+                async with asyncio.timeout(180):
+                    while waiting_set - set(self._socket.remote_heartbeats()):
+                        await asyncio.sleep(1)
+
             await self.debug(ctx, f"Restarted shards [{','.join(shards)}]")
 
     def get_raffle_seed(self):
@@ -892,6 +906,16 @@ class AutomationBotInstance(commands.Cog):
             raffle_seed = self._rreact["msg_contents"]
 
         return raffle_seed
+
+    def send_tablist_event(self, event_name, time):
+    """Sends an event to display in the tab list"""
+        event_data = {
+            "shard": config.RABBITMQ["host"],
+            "eventName": event_name,
+            "timeLeft": time,
+            "status": "STARTING" if time > 0 else "IN_PROGRESS",
+        }
+        self._socket.send_packet("*", "monumenta.eventbroadcast.update", event_data)
 
     def broadcast_command(self, cmd, server_type="minecraft", shard="*"):
         """Broadcasts a command to all servers"""
@@ -1015,7 +1039,7 @@ class AutomationBotInstance(commands.Cog):
                 )
 
             if helptext is None:
-                helptext = '''Command {!r} does not exist!'''.format(target_command)
+                helptext = f'''Command {target_command!r} does not exist!'''
 
         await ctx.send(helptext)
 
@@ -1072,7 +1096,7 @@ Examples:
 
         self._debug = not self._debug
 
-        await ctx.send("Verbose messages setting: {}".format(self._debug))
+        await ctx.send(f"Verbose messages setting: {self._debug}")
 
     async def action_test(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         '''Simple test action that does nothing'''
@@ -1292,8 +1316,8 @@ Examples:
         inst_str = '```\n'
         inst_str += f"{'Dungeons' : <15}{'Used' : <15}"
         inst_str += "\n"
-        for dungeon in self._dungeons:
-            used = rboard.get("$Last", self._dungeons[dungeon])
+        for dungeon, dungeon_objective in self._dungeons.items():
+            used = rboard.get("$Last", dungeon_objective)
             if used is not None:
                 inst_str += f"{dungeon : <15}{used : <15}"
                 inst_str += "\n"
@@ -1327,7 +1351,7 @@ Examples:
         return lockout
 
     # pylint: disable=comparison-with-callable
-    async def _start_stop_restart_common(self, ctx: discord.ext.commands.Context, cmd, message, action):
+    async def _start_stop_restart_common(self, ctx: discord.ext.commands.Context, cmd, message, action, wait_heartbeat=False):
         arg_str = message.content[len(config.PREFIX + cmd)+1:].strip()
         if arg_str.startswith("shard "):
             arg_str = arg_str[len("shard "):].strip()
@@ -1353,20 +1377,20 @@ Examples:
             await self.display(ctx, "No specified shards on this server.")
         else:
             if action == self.stop:
-                await self.display(ctx, "Stopping shards [{}]...".format(",".join(shards_changed)))
+                await self.display(ctx, f"Stopping shards [{','.join(shards_changed)}]...")
             elif action == self.start:
-                await self.display(ctx, "Starting shards [{}]...".format(",".join(shards_changed)))
+                await self.display(ctx, f"Starting shards [{','.join(shards_changed)}]...")
             elif action == self.restart:
-                await self.display(ctx, "Restarting shards [{}]...".format(",".join(shards_changed)))
+                await self.display(ctx, f"Restarting shards [{','.join(shards_changed)}]...")
 
-            await action(ctx, shards_changed, owner=message)
+            await action(ctx, shards_changed, owner=message, wait_heartbeat=wait_heartbeat)
 
             if action == self.stop:
-                await self.display(ctx, "Stopped shards [{}]".format(",".join(shards_changed)))
+                await self.display(ctx, f"Stopped shards [{','.join(shards_changed)}]")
             elif action == self.start:
-                await self.display(ctx, "Started shards [{}]".format(",".join(shards_changed)))
+                await self.display(ctx, f"Started shards [{','.join(shards_changed)}]")
             elif action == self.restart:
-                await self.display(ctx, "Restarted shards [{}]".format(",".join(shards_changed)))
+                await self.display(ctx, f"Restarted shards [{','.join(shards_changed)}]")
 
             await self.display(ctx, message.author.mention)
 
@@ -1523,7 +1547,7 @@ Syntax:
 Syntax:
 `{cmdPrefix}start shard *`
 `{cmdPrefix}start shard valley isles orange'''
-        await self._start_stop_restart_common(ctx, cmd, message, self.start)
+        await self._start_stop_restart_common(ctx, cmd, message, self.start, wait_heartbeat=True)
 
     async def action_stop(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Stop specified shards.
@@ -1537,7 +1561,7 @@ Syntax:
 Syntax:
 `{cmdPrefix}restart shard *`
 `{cmdPrefix}restart shard valley isles orange'''
-        await self._start_stop_restart_common(ctx, cmd, message, self.restart)
+        await self._start_stop_restart_common(ctx, cmd, message, self.restart, wait_heartbeat=True)
 
 
     async def action_view_scores(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -1598,7 +1622,7 @@ Do not use for debugging quests or other scores that are likely to change often.
             if ns in ('stage', 'volt'):
                 ns = 'play'
 
-            await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, value, message], displayOutput=(len(lines) < 5))
+            await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, value, message], displayOutput=len(lines) < 5)
             self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
             setscores += 1
 
@@ -1651,7 +1675,7 @@ After transferring, source player data is backed up and then deleted. The source
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/move_redis_data_between_players"), "redis://redis/", "play", fromplayer, toplayer, backuppath], displayOutput=True)
         await self.display(ctx, f"`{fromplayer}` has been wiped and moved to the tutorial. If this was a mistake, you can ask an operator to restore it from the backup in `{backuppath}`.")
         await self.display(ctx, f"`{toplayer}` has had their data overwritten by the data from {fromplayer}. If this was a mistake, you can roll the player back to before the transfer using the in-game /rollback command")
-        await self.display(ctx, f"**You still have to fix the player's LuckPerms data.**")
+        await self.display(ctx, "**You still have to fix the player's LuckPerms data.**")
         await self.display(ctx, f"To do this, go in-game and run\n```\n/transferpermissions {fromplayer} {toplayer}\n```\nNote that `{fromplayer}` needs to be offline, and `{toplayer}` needs to be online. This will update all LuckPerms data (guilds, roles, etc) in one go.")
 
     async def action_player_transfer(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -1685,7 +1709,7 @@ This will roll a player back to the most recent weekly update data.
             return
 
         playername = commandArgs[0]
-        rollbackpath = f"/home/epic/play/m17/server_config/redis_data_initial"
+        rollbackpath = "/home/epic/play/m17/server_config/redis_data_initial"
         backuppath = f"/home/epic/0_OLD_BACKUPS/0_PLAYERDATA_CHANGES/rollback_player_{playername}_{datestr()}"
 
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/player_backup_and_rollback"), "redis://redis/", "play", playername, rollbackpath, backuppath], displayOutput=True)
@@ -1737,26 +1761,26 @@ Usage:
 
         if subcommand == "add":
             if len(commandArgs) < 1:
-                await self.display(ctx, f"Expected one or more names to add")
+                await self.display(ctx, "Expected one or more names to add")
                 await self.help_internal(ctx, ["badname"], message.author)
                 return
 
-            await self.display(ctx, f"(NYI) Adding " + " ".join(commandArgs))
+            await self.display(ctx, "(NYI) Adding " + " ".join(commandArgs))
 
         elif subcommand == "remove":
             if len(commandArgs) < 1:
-                await self.display(ctx, f"Expected one or more names to remove")
+                await self.display(ctx, "Expected one or more names to remove")
                 await self.help_internal(ctx, ["badname"], message.author)
                 return
 
-            await self.display(ctx, f"(NYI) Removing " + " ".join(commandArgs))
+            await self.display(ctx, "(NYI) Removing " + " ".join(commandArgs))
 
         elif subcommand == "list":
             starting_text = ''
             requested_page = 0
 
             if len(commandArgs) > 1:
-                await self.display(ctx, f"Expected one or more names to remove")
+                await self.display(ctx, "Expected one or more names to remove")
                 await self.help_internal(ctx, ["badname"], message.author)
                 return
             if len(commandArgs) == 1:
@@ -1770,7 +1794,7 @@ Usage:
             elif starting_text:
                 await self.display(ctx, f"One moment, fetching list starting with {starting_text!r}...")
             else:
-                await self.display(ctx, f"One moment, fetching list...")
+                await self.display(ctx, "One moment, fetching list...")
             badnames_bytes = r.smembers("badnames")
             num_badnames = len(badnames_bytes)
 
@@ -1852,7 +1876,7 @@ Usage: {cmdPrefix}player find <search_string>
                 results[uuidstr] = result_entry
 
                 if len(results) > 500:
-                    await self.display(ctx, f"More than 500 results, try a more specific search string.")
+                    await self.display(ctx, "More than 500 results, try a more specific search string.")
                     return
 
         # Scan through again to find names that don't match the search string but were previous names
@@ -2164,7 +2188,7 @@ Examples:
                 await self.display(ctx, message.author.mention)
                 return
 
-        await self.display(ctx, "Starting stage bundle preparation for shards: [{}]".format(" ".join(shards)))
+        await self.display(ctx, f"Starting stage bundle preparation for shards: [{' '.join(shards)}]")
 
         await self.display(ctx, "Cleaning up old stage data...")
         await self.run(ctx, "rm -rf /home/epic/5_SCRATCH/tmpstage", None)
@@ -2219,7 +2243,7 @@ Examples:
                 args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
                 await self.run(ctx, os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
-            await self.display(ctx, "Generating dungeon instances for [{}]...".format(" ".join(instance_gen_required)))
+            await self.display(ctx, f"Generating dungeon instances for [{' '.join(instance_gen_required)}]...")
             instance_gen_arg = (" --dungeon-path /home/epic/5_SCRATCH/tmpstage/dungeon/" +
                                 " --out-folder /home/epic/5_SCRATCH/tmpstage/TEMPLATE " +
                                 " ".join(instance_gen_required))
@@ -2284,7 +2308,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
             await self.display(ctx, message.author.mention)
             return
 
-        await self.display(ctx, "Loading from stage bundle: [{}]".format(" ".join(folders_to_update)))
+        await self.display(ctx, f"Loading from stage bundle: [{' '.join(folders_to_update)}]")
 
         # Stop all shards
         await self.display(ctx, "Stopping all shards...")
@@ -2428,6 +2452,7 @@ old coreprotect data will be removed at the 5 minute mark.
             1,
         ], reverse=True)
 
+        self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
         self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
@@ -2450,7 +2475,9 @@ old coreprotect data will be removed at the 5 minute mark.
                 return "1 minute"
             return f"{minutes} minutes"
 
-        async def send_broadcast_stop_msg(time_left):
+        async def send_broadcast_stop_msg(seconds):
+            self.send_tablist_event("SCHEDULED_MAINTENANCE", seconds)
+            time_left = seconds_to_string(seconds)
             self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
@@ -2477,7 +2504,7 @@ old coreprotect data will be removed at the 5 minute mark.
             if next_target == 15:
                 self.broadcast_command('save-all')
 
-            await send_broadcast_stop_msg(seconds_to_string(next_target))
+            await send_broadcast_stop_msg(next_target)
 
         # Stop velocity (I guess you could uh... run maintenance?)
         self.broadcast_command('maintenance on', server_type="proxy")
@@ -2488,6 +2515,7 @@ old coreprotect data will be removed at the 5 minute mark.
         await self.stop(ctx, velocityShards, owner=message)
 
         await self.display(ctx, message.author.mention)
+        self.send_tablist_event("SCHEDULED_MAINTENANCE", -1)
 
     async def action_stop_and_backup(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Dangerous!
@@ -2506,7 +2534,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         shards = await self._k8s.list()
         for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
             if shards[shard.replace('_', '')]['replicas'] != 0:
-                await self.display(ctx, "ERROR: shard {!r} is still running!".format(shard))
+                await self.display(ctx, f"ERROR: shard {shard!r} is still running!")
                 await self.display(ctx, message.author.mention)
                 return
 
@@ -2571,7 +2599,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
         '''Gets the current raffle seed based on reactions'''
 
         if self._rreact["msg_contents"] is not None:
-            await self.display(ctx, "Current raffle seed is:\n```\n{}\n```".format(self._rreact["msg_contents"]))
+            await self.display(ctx, f"Current raffle seed is:\n```\n{self._rreact['msg_contents']}\n```")
         else:
             await self.display(ctx, "No current raffle seed")
 
@@ -2591,7 +2619,7 @@ DELETES DUNGEON CORE PROTECT DATA'''
 
         raffle_results = tempfile.mktemp()
         vote_raffle(raffle_seed, 'redis', raffle_results, dry_run=dry_run)
-        await self.run(ctx, "cat {}".format(raffle_results), displayOutput=True)
+        await self.run(ctx, f"cat {raffle_results}", displayOutput=True)
 
     async def action_weekly_update(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Dangerous!
@@ -2621,7 +2649,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             shards = await self._k8s.list()
             for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
                 if shards[shard.replace('_', '')]['replicas'] != 0:
-                    await self.display(ctx, "ERROR: shard {!r} is still running!".format(shard))
+                    await self.display(ctx, f"ERROR: shard {shard!r} is still running!")
                     await self.display(ctx, message.author.mention)
                     return
 
@@ -2646,7 +2674,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.display(ctx, "Moving everything except proxies and build to 0_PREVIOUS...")
             for f in files:
                 if f not in ["0_PREVIOUS", "build",] and not f.startswith("bungee") and not f.startswith("velocity"):
-                    await self.run(ctx, "mv {} 0_PREVIOUS/".format(f))
+                    await self.run(ctx, f"mv {f} 0_PREVIOUS/")
 
         if min_phase <= 5:
             await self.display(ctx, "Getting new server config...")
@@ -2692,7 +2720,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
             raffle_results = tempfile.mktemp()
             vote_raffle(raffle_seed, 'redis', raffle_results)
-            await self.run(ctx, "cat {}".format(raffle_results), displayOutput=True)
+            await self.run(ctx, f"cat {raffle_results}", displayOutput=True)
 
         # Raffle
         ########################################
@@ -2817,9 +2845,9 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
             await self.stop(ctx, "redis", owner=message)
             await self.cd(ctx, f"{self._server_dir}/../redis")
-            await self.run(ctx, f"mv -f dump.rdb dump.rdb.previous")
+            await self.run(ctx, "mv -f dump.rdb dump.rdb.previous")
             await self.display(ctx, "Downloading current redis database from the play server...")
-            await self.run(ctx, f"redis-cli -h redis.play --rdb dump.rdb")
+            await self.run(ctx, "redis-cli -h redis.play --rdb dump.rdb")
             await self.start(ctx, "redis", owner=message)
 
         tasks = []
@@ -2876,11 +2904,11 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             await self.display(ctx, "Syncing with current mysql database from the play server...")
             # Don't need to be in this directory exactly, but need to be in a stable directory
             await self.cd(ctx, f"{self._server_dir}")
-            await self.run(ctx, [os.path.join(_top_level, f"utility_code/sync_mysql.sh"), self._k8s.namespace], displayOutput=True)
+            await self.run(ctx, [os.path.join(_top_level, "utility_code/sync_mysql.sh"), self._k8s.namespace], displayOutput=True)
 
             # Note that this needs to be fairly long after starting redis to give it time to load
-            await self.display(ctx, f"Truncating playerdata history...")
-            await self.run(ctx, [os.path.join(_top_level, f"rust/bin/redis_truncate_playerdata"), 'redis://redis/', 'play', '1'], displayOutput=True)
+            await self.display(ctx, "Truncating playerdata history...")
+            await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_truncate_playerdata"), 'redis://redis/', 'play', '1'], displayOutput=True)
 
         await self.display(ctx, "Disabling Plan and PremiumVanish...")
         await self.run(ctx, f"mv -f {self._server_dir}/server_config/plugins/Plan.jar {self._server_dir}/server_config/plugins/Plan.jar.disabled")
@@ -2893,7 +2921,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             config_path = Path(shard_path) / 'config.yml'
             if not config_path.is_file():
                 continue
-            with open(config_path, "r") as f:
+            with open(config_path, "r", encoding="utf-8") as f:
                 bungeeconfig = yaml.load(f, Loader=yaml.FullLoader)
             bungeeconfig["servers"] = {
                 "dummy": {
@@ -2934,7 +2962,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
                 "valley",
                 "purgatory",
             ]
-            with open(config_path, "w") as f:
+            with open(config_path, "w", encoding="utf-8") as f:
                 yaml.dump(bungeeconfig, f, width=2147483647, allow_unicode=True)
 
         last_stage_update_path = self._persistence_path / 'last_stage_sync.json'
@@ -3002,13 +3030,13 @@ Easiest way to get this is putting an item in a chest, and looking at that chest
             if '{' not in commandArgs:
                 await self.display(ctx, "Arguments should be of the form /setblock ~ ~ ~ minecraft:chest{Items:[...]}")
                 return
-            with open(temppath, "w") as fp:
+            with open(temppath, "w", encoding="utf-8") as fp:
                 fp.write(commandArgs)
 
         userfoldername = re.sub('[^a-z0-9]', '', message.author.name.lower()) + str(message.id)
         userfolderpath = os.path.join("/tmp", userfoldername)
         await self.run(ctx, ["mkdir", userfolderpath])
-        await self.run(ctx, [os.path.join(_top_level, f"utility_code/bulk_update_loottables.py"), "--output-dir", userfolderpath, temppath], displayOutput=True)
+        await self.run(ctx, [os.path.join(_top_level, "utility_code/bulk_update_loottables.py"), "--output-dir", userfolderpath, temppath], displayOutput=True)
         files = [f for f in os.listdir(userfolderpath) if os.path.isfile(os.path.join(userfolderpath, f))]
         if len(files) > 0:
             await self.cd(ctx, "/tmp")
@@ -3058,7 +3086,7 @@ Syntax:
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
                 await self.run(ctx, ["tar", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", "structures"])
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
-                await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --schematics structures --structures generated"), displayOutput=True)
+                await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py --schematics structures --structures generated"), displayOutput=True)
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --structures generated --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
 
@@ -3115,7 +3143,7 @@ Syntax:
 
         for shard in scan_shards:
 
-            await self.display(ctx, "Scanning for command blocks on shard {}".format(shard))
+            await self.display(ctx, f"Scanning for command blocks on shard {shard}")
             scan_results = tempfile.mktemp()
             await self.cd(ctx, self._shards[shard])
             await self.run(ctx, os.path.join(_top_level, f"utility_code/command_block_update_tool.py --output {scan_results} Project_Epic-{shard} "), displayOutput=True)
@@ -3141,7 +3169,7 @@ Syntax:
             await self.display(ctx, f"The shard {shard} is not known by this bot.")
             return
 
-        await self.display(ctx, f"Looking for loot...")
+        await self.display(ctx, "Looking for loot...")
 
         await self.run(ctx, os.path.join(_top_level, f"utility_code/list_world_loot.py {self._shards[shard]}/Project_Epic-{shard}" + "".join([" " + x for x in commandArgs[1:]])), displayOutput=True)
 
@@ -3162,12 +3190,12 @@ Syntax:
 
         # Test if this version already exists
         try:
-            await self.run(ctx, ["test", "!", "-f", "/home/epic/4_SHARED/monumenta_demo/Monumenta Demo - The Halls of Wind and Blood V{}.zip".format(version)])
+            await self.run(ctx, ["test", "!", "-f", f"/home/epic/4_SHARED/monumenta_demo/Monumenta Demo - The Halls of Wind and Blood V{version}.zip"])
         except Exception:
-            await self.display(ctx, "Demo release V{} already exists!".format(version))
+            await self.display(ctx, f"Demo release V{version} already exists!")
             return
 
-        await self.display(ctx, "Generating demo release version V{}...".format(version))
+        await self.display(ctx, f"Generating demo release version V{version}...")
 
         await self.stop(ctx, "white-demo", owner=message)
 
@@ -3190,12 +3218,12 @@ Syntax:
 
         # Package up the release
         await self.cd(ctx, "/home/epic/5_SCRATCH/tmpdemo")
-        await self.run(ctx, ["zip", "-rq", "/home/epic/4_SHARED/monumenta_demo/Monumenta Demo - The Halls of Wind and Blood V{}.zip".format(version), "Monumenta Demo - The Halls of Wind and Blood"])
+        await self.run(ctx, ["zip", "-rq", f"/home/epic/4_SHARED/monumenta_demo/Monumenta Demo - The Halls of Wind and Blood V{version}.zip", "Monumenta Demo - The Halls of Wind and Blood"])
         await self.run(ctx, ["rm", "-rf", "Monumenta Demo - The Halls of Wind and Blood"])
 
         await self.start(ctx, "white-demo", owner=message)
 
-        await self.display(ctx, "Demo release version V{} generated successfully".format(version))
+        await self.display(ctx, f"Demo release version V{version} generated successfully")
         await self.display(ctx, message.author.mention)
 
     async def action_broadcastcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3206,7 +3234,7 @@ Syntax:
         if commandArgs.startswith("/"):
             commandArgs = commandArgs[1:]
 
-        await self.display(ctx, "Broadcasting command {!r} to all servers".format(commandArgs))
+        await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
         self.broadcast_command(commandArgs, server_type=None)
 
     async def action_broadcastbungeecommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3217,7 +3245,7 @@ Syntax:
         if commandArgs.startswith("/"):
             commandArgs = commandArgs[1:]
 
-        await self.display(ctx, "Broadcasting command {!r} to all bungee servers".format(commandArgs))
+        await self.display(ctx, f"Broadcasting command {commandArgs!r} to all bungee servers")
         self.broadcast_command(commandArgs, server_type="bungee")
 
     async def action_broadcastminecraftcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3228,7 +3256,7 @@ Syntax:
         if commandArgs.startswith("/"):
             commandArgs = commandArgs[1:]
 
-        await self.display(ctx, "Broadcasting command {!r} to all minecraft servers".format(commandArgs))
+        await self.display(ctx, f"Broadcasting command {commandArgs!r} to all minecraft servers")
         self.broadcast_command(commandArgs)
 
     async def action_broadcastproxycommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3239,7 +3267,7 @@ Syntax:
         if commandArgs.startswith("/"):
             commandArgs = commandArgs[1:]
 
-        await self.display(ctx, "Broadcasting command {!r} to all proxy servers".format(commandArgs))
+        await self.display(ctx, f"Broadcasting command {commandArgs!r} to all proxy servers")
         self.broadcast_command(commandArgs, server_type="proxy")
 
 
@@ -3250,7 +3278,7 @@ Syntax:
         playerArg = message.content[len(config.PREFIX + cmd)+1:].strip()
         commandArgs = "deop " + playerArg
 
-        await self.display(ctx, "Broadcasting command {!r} to all servers".format(commandArgs))
+        await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
         self.broadcast_command(commandArgs, server_type=None)
 
 
@@ -3261,7 +3289,7 @@ Syntax:
         playerArg = message.content[len(config.PREFIX + cmd)+1:].strip()
         commandArgs = "op " + playerArg
 
-        await self.display(ctx, "Broadcasting command {!r} to all servers".format(commandArgs))
+        await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
         self.broadcast_command(commandArgs, server_type=None)
 
 
@@ -3281,7 +3309,7 @@ Examples:
         try:
             shard_re = re.compile(shard_re_str)
         except re.error as re_ex:
-            await self.display(ctx, f"Invalid regular expression for the shard you wish to send to:")
+            await self.display(ctx, "Invalid regular expression for the shards you wish to send to:")
             if re_ex.pos is None:
                 await self.display_verbatim(ctx, str(re_ex) + ":\n"
                     + shard_re_str
@@ -3330,7 +3358,7 @@ Usage:
                     continue
                 break
             if limit < 0:
-                await self.display(ctx, f"Refusing to search any higher up.")
+                await self.display(ctx, "Refusing to search any higher up.")
                 return
             await self.display(ctx, f"Did find `{test_path}` at least, which contains:")
             await self.display_verbatim(ctx, f'{[item.name for item in test_path.iterdir()]}')
@@ -3382,8 +3410,8 @@ Usage:
 
         try:
             file_contents = avatar_path.read_bytes()
-        except Exception:
-            raise Exception(f'Could not read {avatar_path}')
+        except Exception as ex:
+            raise Exception(f'Could not read {avatar_path}') from ex
 
         if not file_contents.startswith(PNG_HEADER) and not file_contents.startswith(JPG_HEADER):
             raise Exception(f'Avatar file must be a real png or jpg file: {avatar_path}')
@@ -3394,8 +3422,8 @@ Usage:
 
         try:
             await user.edit(avatar=file_contents)
-        except Exception:
-            raise Exception('Failed to change avatar; check https://discordpy.readthedocs.io/en/stable/api.html#discord.ClientUser.edit')
+        except Exception as ex:
+            raise Exception('Failed to change avatar; check https://discordpy.readthedocs.io/en/stable/api.html#discord.ClientUser.edit') from ex
 
         try:
             # Set current and previous bot image files

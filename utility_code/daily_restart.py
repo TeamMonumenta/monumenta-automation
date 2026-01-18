@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env pypy3
 
 import asyncio
 import json
@@ -6,14 +6,28 @@ import os
 import sys
 import traceback
 from pprint import pprint
-from pathlib import Path
 import yaml
 
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.lib_k8s import KubernetesManager
 
-def send_broadcast_time(socket, time_left):
+def send_broadcast_time(socket, seconds_left):
     """Broadcasts a restart warning with how much time is remaining to all players"""
+    minutes_left, seconds_in_minute = divmod(seconds_left, 60)
+    time_left = []
+
+    if minutes_left > 1:
+        time_left += [str(minutes_left), "minutes"]
+    elif minutes_left == 1:
+        time_left += ["1", "minute"]
+
+    if seconds_in_minute > 1:
+        time_left += [str(seconds_in_minute), "seconds"]
+    elif seconds_in_minute == 1:
+        time_left += ["1", "second"]
+
+    time_left = " ".join(time_left)
+
     raw_json_text = [
         "",
         {"text": "[Alert] ", "color": "red"},
@@ -21,6 +35,7 @@ def send_broadcast_time(socket, time_left):
         {"text": time_left, "color": "red"},
         {"text": ". This helps reduce lag! The server will be down for ~180 seconds."}
     ]
+    send_tablist_event(socket, seconds_left)
     send_broadcast_message(socket, raw_json_text)
 
 
@@ -31,60 +46,124 @@ def send_broadcast_message(socket, raw_json_text):
                        {"command": command})
 
 
-async def main(k8s):
+def send_tablist_event(socket, time):
+    """Sends a daily restart event to display in the tab list"""
+    event_data = {
+        "shard": "server",
+        "eventName": "DAILY_RESTART",
+        "timeLeft": time,
+        "status": "STARTING" if time > 0 else "IN_PROGRESS",
+    }
+    socket.send_packet("*", "monumenta.eventbroadcast.update", event_data)
+
+
+def send_admin_alert(socket, message):
+    """Sends an admin alert seeking help"""
+    print(message)
+    event_data = {
+        "message": message,
+    }
+    socket.send_packet("*", "Monumenta.Automation.AdminNotification", event_data)
+
+
+def get_shards_by_type(socket, shard_type):
+    """Gets a set of currently running shard names"""
+    minecraft_shards = set()
+    for shard in socket.remote_heartbeats():
+        if socket.shard_type(shard) == "minecraft":
+            minecraft_shards.add(shard)
+    return minecraft_shards
+
+
+async def await_stopped_inner(socket, pending_stop):
+    """Waits for all shards in pending_stop to stop or time out"""
+    # While there are entries in the pending_stop set...
+    while pending_stop:
+        running_shards = get_shards_by_type(socket, "minecraft")
+        # ...remove entries that aren't in both running and pending_stop sets... (some might be back up before done)
+        pending_stop.intersection_update(running_shards)
+        # ...and wait.
+        await asyncio.sleep(1)
+
+
+async def await_stopped(socket, k8s, pending_stop):
+    """Waits for all shards in pending_stop to stop or time out
+
+    This force-restarts shards after timeout, then resumes waiting
+    """
+
+    try:
+        async with asyncio.timeout(7 * 60):
+            await await_stopped_inner(socket, pending_stop)
+    except TimeoutError:
+        await k8s.restart(list(pending_stop), wait=False)
+
+    await await_stopped_inner(socket, pending_stop)
+
+
+async def main(socket, k8s):
     """Perform a scheduled restart with warnings"""
     # Short wait to make sure socket connects correctly
     await asyncio.sleep(3)
 
+    previous_shards = get_shards_by_type(socket, "minecraft")
+    print(f'Preparing to restart: {previous_shards}')
+    pending_stop = set(previous_shards)
+    stop_task = None
+
     try:
-        send_broadcast_time(socket, "15 minutes")
+        send_broadcast_time(socket, 15 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "14 minutes")
+        send_broadcast_time(socket, 14 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "13 minutes")
+        send_broadcast_time(socket, 13 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "12 minutes")
+        send_broadcast_time(socket, 12 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "11 minutes")
+        send_broadcast_time(socket, 11 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "10 minutes")
+        send_broadcast_time(socket, 10 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "9 minutes")
+        send_broadcast_time(socket, 9 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "8 minutes" )
+        send_broadcast_time(socket, 8 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "7 minutes")
+        send_broadcast_time(socket, 7 * 60)
         await asyncio.sleep(60)
 
+        previous_shards |= get_shards_by_type(socket, "minecraft")
+        pending_stop |= previous_shards
         # TODO: add shutoff to creating dungeon instances and starting world bosses
-        send_broadcast_time(socket, "6 minutes")
+        send_broadcast_time(socket, 6 * 60)
         await asyncio.sleep(60)
 
         # Set all shards to restart the next time they are empty (many will restart immediately) at 5 minutes
         print("Broadcasting restart-empty command to all shards...")
+        stop_task = asyncio.create_task(await_stopped(socket, k8s, pending_stop))
         socket.send_packet("*", "monumentanetworkrelay.command",
                            {"command": 'restart-empty', "server_type": 'minecraft'})
 
-        send_broadcast_time(socket, "5 minutes")
+        send_broadcast_time(socket, 5 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "4 minutes")
+        send_broadcast_time(socket, 4 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "3 minutes")
+        send_broadcast_time(socket, 3 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "2 minutes")
+        send_broadcast_time(socket, 2 * 60)
         await asyncio.sleep(60)
-        send_broadcast_time(socket, "1 minute")
+        send_broadcast_time(socket, 60)
         await asyncio.sleep(30)
-        send_broadcast_time(socket, "30 seconds")
+        send_broadcast_time(socket, 30)
         await asyncio.sleep(15)
-        send_broadcast_time(socket, "15 seconds")
+        send_broadcast_time(socket, 15)
         await asyncio.sleep(5)
-        send_broadcast_time(socket, "10 seconds")
+        send_broadcast_time(socket, 10)
         await asyncio.sleep(5)
-        send_broadcast_time(socket, "5 seconds")
+        send_broadcast_time(socket, 5)
         await asyncio.sleep(5)
+        send_tablist_event(socket, 0)
     except Exception:
-        print("Failed to notify players about pending restart: {}".format(traceback.format_exc()))
+        send_admin_alert(socket, f"Failed to notify players about pending restart: {traceback.format_exc()}")
 
     try:
         # Turn on Maintenance
@@ -103,19 +182,34 @@ async def main(k8s):
         # At this point shards that didn't already restart will do so
 
         # Restart proxies
-        # TODO: don't hardcode velocity instances here
-        shards = await k8s.list()
-        velocityShards = list(filter(lambda x: (x.startswith("velocity")), shards))
-        await k8s.restart(velocityShards)
+        await k8s.restart(list(get_shards_by_type(socket, "proxy")))
 
-        # Some time for everything to stabilize
-        await asyncio.sleep(120)
+        # Wait for shards to fully stop
+        if stop_task is None:
+            send_admin_alert(socket, "stop_task is None for some reason; waiting 2 minutes")
+            await asyncio.sleep(120)
+        else:
+            stop_coroutine = stop_task.get_coro()
+            if stop_coroutine is not None: # If stop_task coroutine is None, all shards were already stopped
+                print("Awaiting stop_task coroutine")
+                await stop_coroutine
+                print(f"Done waiting on stop_task; {len(pending_stop)} shards are still in pending_stop (should be 0 unless this is cloned by coroutines)")
+
+            print("Waiting for shards to start back up with a timeout")
+            try:
+                async with asyncio.timeout(600):
+                    while previous_shards != get_shards_by_type(socket, "minecraft"):
+                        await asyncio.sleep(1)
+                        send_tablist_event(socket, 0)
+            except TimeoutError:
+                print("Timed out waiting for shards to start back up; continuing anyway")
 
         # Turn maintenance mode back off
+        send_tablist_event(socket, -1)
         socket.send_packet("*", "monumentanetworkrelay.command",
                            {"command": 'maintenance off', "server_type": 'proxy'})
     except Exception:
-        print("Failed to restart the server: {}".format(traceback.format_exc()))
+        send_admin_alert(socket, f"Failed to restart the server: {traceback.format_exc()}")
         send_broadcast_message(socket, [
             "",
             {"text": "[Alert] ", "color": "red"},
@@ -135,10 +229,10 @@ if __name__ == '__main__':
         config_path = os.path.join(config_dir, "automated-restart.yml")
 
     # Read the bot's config files
-    with open(config_path, 'r') as ymlfile:
+    with open(config_path, 'r', encoding='utf-8') as ymlfile:
         config = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
-    pprint("Config: \n{}".format(config))
+    pprint(f"Config: \n{config}")
 
     socket = None
     k8s = None
@@ -146,21 +240,17 @@ if __name__ == '__main__':
 
         if "rabbitmq" in config:
             conf = config["rabbitmq"]
-            if "log_level" in conf:
-                log_level = conf["log_level"]
-            else:
-                log_level = 20
+            log_level = conf.get("log_level", 20)
 
-            socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level, server_type="daily-restart")
+            socket = SocketManager(conf["host"], "daily_restart", durable=False, callback=None, log_level=log_level, server_type="daily-restart", track_heartbeats=True)
 
         k8s = KubernetesManager(config["k8s_namespace"])
     except KeyError as e:
-        sys.exit('Config missing key: {}'.format(e))
+        sys.exit(f'Config missing key: {e}')
 
     os.umask(0o022)
 
     # Config / Environment
     ################################################################################
 
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main(k8s))
+    asyncio.run(main(socket, k8s))

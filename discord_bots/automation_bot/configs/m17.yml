@@ -11,6 +11,8 @@ rabbitmq:
     durable: True
     # Whether this queue will be able to receive messages or not
     process_messages: True
+    # Whether to track heartbeats from other servers
+    track_heartbeats: True
     # Messages greater than this will be logged to stdout
     # Levels - from https://docs.python.org/3/library/logging.html#levels
     log_level: 20
