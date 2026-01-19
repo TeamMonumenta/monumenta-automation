@@ -908,7 +908,7 @@ class AutomationBotInstance(commands.Cog):
         return raffle_seed
 
     def send_tablist_event(self, event_name, time):
-    """Sends an event to display in the tab list"""
+        """Sends an event to display in the tab list"""
         event_data = {
             "shard": config.RABBITMQ["host"],
             "eventName": event_name,
