@@ -59,18 +59,18 @@ def send_tablist_event(socket, time):
 
 def send_admin_alert(socket, message):
     """Sends an admin alert seeking help"""
-    print(message)
+    print(message, flush=True)
     event_data = {
         "message": message,
     }
     socket.send_packet("*", "Monumenta.Automation.AdminNotification", event_data)
 
 
-def get_shards_by_type(socket, shard_type):
+def get_shards_by_type(socket, shard_type="minecraft"):
     """Gets a set of currently running shard names"""
     minecraft_shards = set()
     for shard in socket.remote_heartbeats():
-        if socket.shard_type(shard) == "minecraft":
+        if socket.shard_type(shard) == shard_type:
             minecraft_shards.add(shard)
     return minecraft_shards
 
@@ -107,7 +107,7 @@ async def main(socket, k8s):
     await asyncio.sleep(3)
 
     previous_shards = get_shards_by_type(socket, "minecraft")
-    print(f'Preparing to restart: {previous_shards}')
+    print(f'Preparing to restart: {previous_shards}', flush=True)
     pending_stop = set(previous_shards)
     stop_task = None
 
@@ -133,12 +133,11 @@ async def main(socket, k8s):
 
         previous_shards |= get_shards_by_type(socket, "minecraft")
         pending_stop |= previous_shards
-        # TODO: add shutoff to creating dungeon instances and starting world bosses
         send_broadcast_time(socket, 6 * 60)
         await asyncio.sleep(60)
 
         # Set all shards to restart the next time they are empty (many will restart immediately) at 5 minutes
-        print("Broadcasting restart-empty command to all shards...")
+        print("Broadcasting restart-empty command to all shards...", flush=True)
         stop_task = asyncio.create_task(await_stopped(socket, k8s, pending_stop))
         socket.send_packet("*", "monumentanetworkrelay.command",
                            {"command": 'restart-empty', "server_type": 'minecraft'})
@@ -174,7 +173,7 @@ async def main(socket, k8s):
 
         # Kick anyone with ops who bypassed maintenance
         #### TODO: Disabled for now, just stopping bungee directly. Eventually we may want this back so bungee stays up to tell people why it is down.
-        # print("Broadcasting kick @a[all_worlds=true] command to all shards...")
+        # print("Broadcasting kick @a[all_worlds=true] command to all shards...", flush=True)
         # socket.send_packet("*", "monumentanetworkrelay.command",
         #         {"command": 'kick @a[all_worlds=true]'}
         # )
@@ -189,20 +188,18 @@ async def main(socket, k8s):
             send_admin_alert(socket, "stop_task is None for some reason; waiting 2 minutes")
             await asyncio.sleep(120)
         else:
-            stop_coroutine = stop_task.get_coro()
-            if stop_coroutine is not None: # If stop_task coroutine is None, all shards were already stopped
-                print("Awaiting stop_task coroutine")
-                await stop_coroutine
-                print(f"Done waiting on stop_task; {len(pending_stop)} shards are still in pending_stop (should be 0 unless this is cloned by coroutines)")
+            print("Awaiting stop_task coroutine", flush=True)
+            await stop_task
+            print(f"Done waiting on stop_task; {len(pending_stop)} shards are still in pending_stop (should be 0 unless this is cloned by coroutines)", flush=True)
 
-            print("Waiting for shards to start back up with a timeout")
+            print("Waiting for shards to start back up with a timeout", flush=True)
             try:
                 async with asyncio.timeout(600):
                     while previous_shards != get_shards_by_type(socket, "minecraft"):
                         await asyncio.sleep(1)
                         send_tablist_event(socket, 0)
             except TimeoutError:
-                print("Timed out waiting for shards to start back up; continuing anyway")
+                print("Timed out waiting for shards to start back up; continuing anyway", flush=True)
 
         # Turn maintenance mode back off
         send_tablist_event(socket, -1)
@@ -233,6 +230,7 @@ if __name__ == '__main__':
         config = yaml.load(ymlfile, Loader=yaml.FullLoader)
 
     pprint(f"Config: \n{config}")
+    sys.stdout.flush()
 
     socket = None
     k8s = None
