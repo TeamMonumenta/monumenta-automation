@@ -11,6 +11,7 @@ import yaml
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.lib_k8s import KubernetesManager
 
+
 def send_broadcast_time(socket, seconds_left):
     """Broadcasts a restart warning with how much time is remaining to all players"""
     minutes_left, seconds_in_minute = divmod(seconds_left, 60)
@@ -49,7 +50,7 @@ def send_broadcast_message(socket, raw_json_text):
 def send_tablist_event(socket, time):
     """Sends a daily restart event to display in the tab list"""
     event_data = {
-        "shard": "server",
+        "shard": "daily_restart",
         "eventName": "DAILY_RESTART",
         "timeLeft": time,
         "status": "STARTING" if time > 0 else "IN_PROGRESS",
@@ -188,9 +189,12 @@ async def main(socket, k8s):
             send_admin_alert(socket, "stop_task is None for some reason; waiting 2 minutes")
             await asyncio.sleep(120)
         else:
-            print("Awaiting stop_task coroutine", flush=True)
+            print("Awaiting stop_task", flush=True)
             await stop_task
-            print(f"Done waiting on stop_task; {len(pending_stop)} shards are still in pending_stop (should be 0 unless this is cloned by coroutines)", flush=True)
+            if len(pending_stop):
+                send_admin_alert(socket, f"stop_task did not stop everything: {pending_stop}")
+            else:
+                print(f"Done waiting on stop_task", flush=True)
 
             print("Waiting for shards to start back up with a timeout", flush=True)
             try:
@@ -212,6 +216,7 @@ async def main(socket, k8s):
             {"text": "[Alert] ", "color": "red"},
             {"text": "Monumenta has failed to perform its daily restart"}
         ])
+
 
 if __name__ == '__main__':
     ################################################################################
