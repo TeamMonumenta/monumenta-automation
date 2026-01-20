@@ -2492,7 +2492,14 @@ old coreprotect data will be removed at the 5 minute mark.
             remaining_seconds = (stop_time - datetime.now(tz)) / second
             if remaining_seconds < next_target:
                 continue
-            await asyncio.sleep(remaining_seconds - next_target)
+            try:
+                async with asyncio.timeout(remaining_seconds - next_target):
+                    while True:
+                        remaining_seconds = (stop_time - datetime.now(tz)) / second
+                        send_tablist_event(socket, remaining_seconds)
+                        await asyncio.sleep(10)
+            except TimeoutError:
+                pass
 
             if next_target == 60 * 5 and "weekly update" in reason:
                 await self.display(ctx, "Clearing coreprotect data older than 30 days")
