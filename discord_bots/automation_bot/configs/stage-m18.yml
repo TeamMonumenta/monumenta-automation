@@ -21,6 +21,11 @@ rabbitmq:
     # mail-audit-log
     mail_audit_channel: 1291153788161495091
 
+redis_backup_config:
+    worm_file: "/home/epic/stage/m18/server_config/redis_initial/key_dump.tgz"
+    scratch_backup_folder: "/home/epic/5_SCRATCH/redis_dumps/stage"
+    domain: "play"
+
 k8s_namespace: "stage"
 
 reactions_enabled: True
@@ -85,6 +90,8 @@ stage_source:
         shards:
             - server_config
             - velocity-18
+
+common_weekly_update_tasks: true
 
 dynmap_dir: /home/epic/stage/maps
 
