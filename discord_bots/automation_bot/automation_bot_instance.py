@@ -867,7 +867,7 @@ class AutomationBotInstance(commands.Cog):
 
             if wait_heartbeat and self._socket is not None and config.RABBITMQ and config.RABBITMQ.get("track_heartbeats", False):
                 waiting_set = set(shards)
-                async with asyncio.timeout(180):
+                async with asyncio.timeout(600):
                     while waiting_set - set(self._socket.remote_heartbeats()):
                         await asyncio.sleep(1)
 
@@ -890,7 +890,7 @@ class AutomationBotInstance(commands.Cog):
 
             if wait_heartbeat and self._socket is not None and config.RABBITMQ and config.RABBITMQ.get("track_heartbeats", False):
                 waiting_set = set(shards)
-                async with asyncio.timeout(180):
+                async with asyncio.timeout(600):
                     while waiting_set - set(self._socket.remote_heartbeats()):
                         await asyncio.sleep(1)
 

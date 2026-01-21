@@ -1,0 +1,28 @@
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: 192.168.30.17
+  bindPort: 6443
+nodeRegistration:
+  kubeletExtraArgs:
+  - name: "node-ip"
+    value: 192.168.30.17,fd00:e91c:b3a7::17
+skipPhases:
+  - addon/kube-proxy
+
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+imageRepository: registry.k8s.io
+kind: ClusterConfiguration
+networking:
+  serviceSubnet: "10.96.0.0/16,fd00:10:96::/112"
+  podSubnet: "10.244.0.0/24,fd00:10:244::/56"
+  dnsDomain: "cluster.local"
+apiServer:
+  extraArgs:
+  # - name: "advertise-address"
+  #   value: 192.168.30.17
+  # - name: "bind-address"
+  #   value: 192.168.30.17
+  - name: "service-node-port-range"
+    value: 30000-32767
