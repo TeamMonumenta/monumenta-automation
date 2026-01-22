@@ -1,27 +1,3 @@
-# The nodeport service exposing the SSH port
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: build-ssh-nodeport
-  namespace: play
-  labels:
-    app: build-ssh
-spec:
-  type: NodePort
-  selector:
-    app: build-ssh
-  ports:
-  # SSH
-  - name: "22"
-    port: 22
-    nodePort: 6622
-    targetPort: 22
-
----
-
-# The actual container that runs SSH that you can connect to
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -75,6 +51,8 @@ spec:
         stdin: false
         ports:
         - containerPort: 22
+          hostPort: 6622
+          hostIP: "15.235.84.119" # The node's external facing IP address
         volumeMounts:
         - name: scriptedquests
           mountPath: /home/epic/scriptedquests

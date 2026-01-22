@@ -1,0 +1,71 @@
+agent: true
+tunnel: false
+upgradeCompatibility: "1.18"
+
+# ----  Verify this is correct! ----
+k8sServiceHost: 192.168.30.17
+
+k8sServicePort: 6443
+kubeProxyReplacement: true
+bpf:
+  hostLegacyRouting: false
+  datapathMode: netkit
+  masquerade: true
+  distributedLRU:
+    enabled: true
+  mapDynamicSizeRatio: 0.08
+ipv6:
+  enabled: true
+ipv4:
+  enabled: true
+bpfClockProbe: true
+bandwidthManager:
+  enabled: true
+  bbr: true
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+  ui:
+    enabled: true
+  metrics:
+    enableOpenMetrics: true
+    enabled:
+      - dns
+      - drop
+      - tcp
+      - flow
+      - port-distribution
+      - icmp
+prometheus:
+  enabled: true
+operator:
+  prometheus:
+    enabled: true
+nodePort:
+  # range: "3300,32000"
+  range: "30000,32767"
+hostFirewall:
+  enabled: true
+policyAuditMode: false # enable for testing purposes, disable in production
+devices: "lxcbr0" # cilium-dbg status should have [eno1np0 (public), vrack (private), lxcbr0 (admin interface)]
+forceDeviceDetection: true
+
+# direct routing test
+routingMode: "native"
+autoDirectNodeRoutes: true
+ipv4NativeRoutingCIDR: "192.168.30.0/24"
+ipv6NativeRoutingCIDR: "fd00:e91c:b3a7::/48"
+installNoConntrackIptablesRules: true
+
+# other features enabled because we might want to use them later
+# might be useful for routing certain regional connections out of certain proxies
+localRedirectPolicies:
+  enabled: true
+egressGateway:
+  enabled: true
+
+# Future features to explore, current open pull request
+# GatewayAPI (TCPRoute not supported yet... in cilium)
+# gatewayAPI:
+#   enabled: true

@@ -1,27 +1,3 @@
-# The nodeport service exposing the SSH port
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: basic-ssh-nodeport
-  namespace: build
-  labels:
-    app: basic-ssh
-spec:
-  type: NodePort
-  selector:
-    app: basic-ssh
-  ports:
-  # SSH
-  - name: "22"
-    port: 22
-    nodePort: 8822
-    targetPort: 22
-
----
-
-# The actual container that runs SSH that you can connect to
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -215,6 +191,8 @@ spec:
         stdin: false
         ports:
         - containerPort: 22
+          hostPort: 8822
+          hostIP: "37.187.56.103" # The node's external facing IP address
         volumeMounts:
         - name: nfs-data
           mountPath: /home/epic/data

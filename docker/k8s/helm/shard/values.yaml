@@ -37,9 +37,6 @@ gsheetCredentials: false
 useHTTPForProbes: true
 useSocketForProbes: false
 
-# If non-zero, expose the server via a NodePort on that given port
-nodePort: 0
-
 # CPU requests for this shard (the guaranteed amount of cpu time)
 cpuReqs: "250m"
 # CPU limits for this shard (the max number of threads used for this shard)

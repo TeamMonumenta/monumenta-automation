@@ -105,11 +105,11 @@ spec:
         # Primary Minecraft port
         - containerPort: 25566
           hostPort: 25565
-          hostIP: "15.235.84.119" # The node's external facing IP address
+          # hostIP: "15.235.84.119" # The node's external facing IP address
         # Votifier
         - containerPort: 8192
           hostPort: 3333
-          hostIP: "15.235.84.119" # The node's external facing IP address
+          # hostIP: "15.235.84.119" # The node's external facing IP address
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"

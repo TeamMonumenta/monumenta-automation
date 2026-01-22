@@ -6,7 +6,6 @@
 #   fastMetrics
 #   useSocketForProbes
 #   useHTTPForProbes
-#   nodePort
 #   memGB OR memMB
 #   cpuReqs
 #   cpuLimits
@@ -22,7 +21,7 @@
     #"futurama"           : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
     #"test"               : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
     "event"              : { "build": { "node": "m18", "hugePageGB": 3   , }, },
-    "monumenta-sdk"      : { "build": { "node": "m18", "hugePageGB": 3   , "nodePort": 22221, }, },
+    "monumenta-sdk"      : { "build": { "node": "m18", "hugePageGB": 3   , }, },
 
     # Purgatory
     "purgatory": {

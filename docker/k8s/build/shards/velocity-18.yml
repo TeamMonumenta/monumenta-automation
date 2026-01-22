@@ -11,36 +11,11 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: velocity-18-nodeport
+    app: velocity-18
   ports:
-  - name: monumenta-socket
-    port: 9576
-    targetPort: 9576
   - name: metrics
     port: 9225
     targetPort: 9225
-
----
-
-# Service / external network ports
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: velocity-18-nodeport
-  namespace: build
-  labels:
-    app: velocity-18
-spec:
-  type: NodePort
-  #externalTrafficPolicy: Local
-  selector:
-    app: velocity-18
-  ports:
-  - name: minecraft
-    port: 9001
-    nodePort: 9001
-    targetPort: 25566
 
 ---
 
@@ -85,7 +60,10 @@ spec:
         tty: true
         stdin: true
         ports:
+        # Primary Minecraft port
         - containerPort: 25566
+          hostPort: 9001
+          # hostIP: "37.187.56.103" # The node's external facing IP address
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"

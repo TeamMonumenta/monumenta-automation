@@ -1,0 +1,110 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: "monumenta-global-firewall"
+spec:
+  description: ""
+  # nodeSelector: {}
+  nodeSelector:
+    matchExpressions:
+    - key: monumenta-nodename
+      operator: In
+      values:
+      - monumenta-17
+      - monumenta-18
+    # matchLabels:
+    #   # kubectl label nodes monumenta-17 monumenta-nodename=monumenta-17
+    #   monumenta-nodename: monumenta-17
+  ingress:
+    # Loopback / local host processes
+    - fromEntities:
+        - host
+    # Cluster-internal traffic (pods + nodes)
+    - fromEntities:
+        - cluster
+    # Publicly exposed services
+    - fromEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "25565"   # Minecraft
+              protocol: TCP
+            - port: "9001"    # Minecraft alt
+              protocol: TCP
+            - port: "9002"    # Minecraft alt
+              protocol: TCP
+            - port: "9922"    # Admin lxc SSH
+              protocol: TCP
+            - port: "8822"    # Build SSH container
+              protocol: TCP
+            - port: "7722"    # Root SSH
+              protocol: TCP
+    # NFS – strictly via vrack
+    - fromCIDR:
+        - 192.168.30.0/24
+      toPorts:
+        - ports:
+            - port: "111"
+              protocol: TCP
+            - port: "111"
+              protocol: UDP
+            - port: "2049"
+              protocol: TCP
+            - port: "2049"
+              protocol: UDP
+    # Admin LXC Containers
+    - fromCIDR:
+        - 172.31.0.0/16
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+            - port: "67"
+              protocol: TCP
+            - port: "6443"
+              protocol: TCP
+    # Convenience ports node-to-node over vrack
+    - fromCIDR:
+        - 192.168.30.0/24
+      toPorts:
+        - ports:
+            - port: "9998"
+              protocol: TCP
+            - port: "9999"
+              protocol: TCP
+    # ICMP (basic diagnostics)
+    - icmps:
+        - fields:
+            - type: DestinationUnreachable
+              family: IPv4
+        - fields:
+            - type: DestinationUnreachable
+              family: IPv6
+        - fields:
+            - type: TimeExceeded
+              family: IPv4
+        - fields:
+            - type: TimeExceeded
+              family: IPv6
+        - fields:
+            - type: ParameterProblem
+              family: IPv4
+        - fields:
+            - type: ParameterProblem
+              family: IPv6
+        - fields:
+            - type: EchoRequest
+              family: IPv4
+        - fields:
+            - type: EchoRequest
+              family: IPv6
+        - fields:
+            - type: EchoReply
+              family: IPv4
+        - fields:
+            - type: EchoReply
+              family: IPv6
+  # Egress settings
+  egress:
+    - toEntities:
+        - all

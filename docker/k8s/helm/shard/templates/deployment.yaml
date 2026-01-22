@@ -30,30 +30,6 @@ spec:
     targetPort: 9000
 {{- end }}
 
-{{- if .Values.nodePort }}
----
-
-# Service / external network ports
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Values.name }}-nodeport
-  namespace: {{ .Values.namespace }}
-  labels:
-    app: {{ .Values.name }}
-spec:
-  type: NodePort
-  selector:
-    app: {{ .Values.name }}
-  ports:
-  # Main minecraft port
-  - name: "25566"
-    port: {{ .Values.nodePort }}
-    nodePort: {{ .Values.nodePort }}
-    targetPort: 25566
-{{- end }}
-
 ---
 
 # Deployment / the actual running application
