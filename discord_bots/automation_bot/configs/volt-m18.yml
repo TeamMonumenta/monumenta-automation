@@ -129,6 +129,9 @@ shards:
     yellow: /home/epic/volt/m18/yellow/
     zenith: /home/epic/volt/m18/zenith/
 
+heartbeat_free_shards:
+    - purgatory
+
 commands:
     - apply stage bundle
     - broadcastcommand

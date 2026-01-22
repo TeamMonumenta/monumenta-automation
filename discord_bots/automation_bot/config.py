@@ -60,6 +60,7 @@ class Config():
         self.STATUS_CHANNEL = bot_config.get("status_channel", None)
         self.SERVER_DIR = bot_config["server_dir"]
         self.SHARDS = bot_config["shards"]
+        self.HEARTBEAT_FREE_SHARDS = set(bot_config.get("heartbeat_free_shards", []))
         self.COMMANDS = bot_config["commands"]
         self.PERMISSIONS = bot_config["permissions"]
         self.STAGE_SOURCE = bot_config.get("stage_source", None)

@@ -863,13 +863,36 @@ class AutomationBotInstance(commands.Cog):
 
         async with ctx.typing():
             await self.debug(ctx, f"Starting shards [{','.join(shards)}]...")
-            await self._k8s.start(shards, wait=wait)
+            k8_task = asyncio.create_task(self._k8s.start(shards, wait=wait))
 
-            if wait_heartbeat and self._socket is not None and config.RABBITMQ and config.RABBITMQ.get("track_heartbeats", False):
-                waiting_set = set(shards)
-                async with asyncio.timeout(600):
-                    while waiting_set - set(self._socket.remote_heartbeats()):
-                        await asyncio.sleep(1)
+            heartbeat_waiting_set = set(shards) - config.HEARTBEAT_FREE_SHARDS
+            if (
+                wait and wait_heartbeat and heartbeat_waiting_set and
+                self._socket is not None and config.RABBITMQ and config.RABBITMQ.get("track_heartbeats", False)
+            ):
+                try:
+                    async with asyncio.timeout(600):
+                        while heartbeat_waiting_set - set(self._socket.remote_heartbeats()):
+                            await asyncio.sleep(1)
+                except TimeoutError:
+                    if k8_task:
+                        await k8_task
+
+                    started_shards = []
+                    for shard in shards:
+                        if shard not in heartbeat_waiting_set:
+                            started_shards.append(shard)
+
+                    lines = []
+                    if heartbeat_waiting_set:
+                        lines.append(f"Timed out waiting for shards [{','.join(heartbeat_waiting_set)}]")
+                    if started_shards:
+                        lines.append(f"Started shards [{','.join(started_shards)}]")
+                    await self.display(ctx, "\n".join(lines))
+                    raise
+
+            if k8_task:
+                await k8_task
 
             await self.debug(ctx, f"Started shards [{','.join(shards)}]")
 
@@ -886,13 +909,56 @@ class AutomationBotInstance(commands.Cog):
 
         async with ctx.typing():
             await self.debug(ctx, f"Restarting shards [{','.join(shards)}]...")
-            await self._k8s.restart(shards, wait=wait)
+            k8_task = asyncio.create_task(self._k8s.restart(shards, wait=wait))
 
-            if wait_heartbeat and self._socket is not None and config.RABBITMQ and config.RABBITMQ.get("track_heartbeats", False):
-                waiting_set = set(shards)
-                async with asyncio.timeout(600):
-                    while waiting_set - set(self._socket.remote_heartbeats()):
-                        await asyncio.sleep(1)
+            heartbeat_waiting_set = set(shards) - config.HEARTBEAT_FREE_SHARDS
+            if (
+                wait and wait_heartbeat and heartbeat_waiting_set and
+                self._socket is not None and config.RABBITMQ and config.RABBITMQ.get("track_heartbeats", False)
+            ):
+                await self.debug(ctx, f"Restarting shards: waiting for [{','.join(heartbeat_waiting_set)}]")
+                stopping_set = set(heartbeat_waiting_set)
+                starting_set = set()
+                try:
+                    async with asyncio.timeout(600):
+                        while heartbeat_waiting_set:
+                            await asyncio.sleep(1)
+                            current_heartbeats = set(self._socket.remote_heartbeats())
+
+                            just_stopped = stopping_set - current_heartbeats
+                            if just_stopped:
+                                await self.debug(ctx, f"Restarting shards: detected stop for [{','.join(just_stopped)}]")
+                            starting_set |= just_stopped
+                            stopping_set -= just_stopped
+
+                            just_started = starting_set & current_heartbeats
+                            if just_started:
+                                await self.debug(ctx, f"Restarting shards: detected start for [{','.join(just_started)}]")
+                            starting_set -= just_started
+                            heartbeat_waiting_set -= just_started
+                except TimeoutError:
+                    if k8_task:
+                        await self.debug(ctx, f"Restarting shards: Timed out; awaiting k8 task")
+                        await k8_task
+
+                    started_shards = []
+                    for shard in shards:
+                        if shard not in heartbeat_waiting_set:
+                            started_shards.append(shard)
+
+                    lines = []
+                    if heartbeat_waiting_set:
+                        lines.append(f"Timed out waiting for shards [{','.join(heartbeat_waiting_set)}]")
+                    if started_shards:
+                        lines.append(f"Restarted shards [{','.join(started_shards)}]")
+                    lines = "\n".join(lines)
+                    await self.debug(ctx, lines)
+                    await self.display(ctx, lines)
+                    raise
+
+            if k8_task:
+                await self.debug(ctx, f"Restarting shards: Success; awaiting k8 task")
+                await k8_task
 
             await self.debug(ctx, f"Restarted shards [{','.join(shards)}]")
 
@@ -1383,7 +1449,11 @@ Examples:
             elif action == self.restart:
                 await self.display(ctx, f"Restarting shards [{','.join(shards_changed)}]...")
 
-            await action(ctx, shards_changed, owner=message, wait_heartbeat=wait_heartbeat)
+            try:
+                await action(ctx, shards_changed, owner=message, wait_heartbeat=wait_heartbeat)
+            except TimeoutError:
+                await self.display(ctx, message.author.mention)
+                return
 
             if action == self.stop:
                 await self.display(ctx, f"Stopped shards [{','.join(shards_changed)}]")
@@ -2097,7 +2167,7 @@ Must be run before starting the update on the play server
         await self.run(ctx, "cp -a /home/epic/project_epic/ring/skr /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/")
 
         if not debug:
-            await self.display(ctx, "Restarting the ring and ring shards...")
+            await self.display(ctx, "Restarting the ring shards...")
             await self.start(ctx, "ring", wait=False, owner=message)
 
         await self.display(ctx, "Copying purgatory...")

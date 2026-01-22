@@ -127,6 +127,9 @@ shards:
     yellow: /home/epic/stage/m18/yellow/
     zenith: /home/epic/stage/m18/zenith/
 
+heartbeat_free_shards:
+    - purgatory
+
 commands:
     - apply stage bundle
     - broadcastcommand

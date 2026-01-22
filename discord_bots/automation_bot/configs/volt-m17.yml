@@ -48,6 +48,9 @@ shards:
     velocity-17: /home/epic/volt/m17/velocity-17/
     zenith-2: /home/epic/volt/m17/zenith-2/
 
+heartbeat_free_shards:
+    - purgatory
+
 commands:
     - apply stage bundle
     - debug

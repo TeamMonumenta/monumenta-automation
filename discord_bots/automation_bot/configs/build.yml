@@ -54,6 +54,9 @@ shards:
     test: /home/epic/project_epic/test/
     velocity-18: /home/epic/project_epic/velocity-18/
 
+heartbeat_free_shards:
+    - purgatory
+
 commands:
     - broadcastcommand
     - broadcastbungeecommand

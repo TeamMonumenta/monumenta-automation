@@ -173,6 +173,9 @@ shards:
     zenith: /home/epic/play/m17/zenith/
     zenith-2: /home/epic/play/m17/zenith-2/
 
+heartbeat_free_shards:
+    - purgatory
+
 commands:
     - batch
     - broadcastcommand

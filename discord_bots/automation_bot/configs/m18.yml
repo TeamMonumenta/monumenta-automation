@@ -45,6 +45,9 @@ common_weekly_update_tasks: False
 shards:
     velocity-18: /home/epic/play/m18/velocity-18/
 
+heartbeat_free_shards:
+    - purgatory
+
 commands:
     - fetch update bundle
     - help
