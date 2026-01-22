@@ -61,15 +61,6 @@ fn fix_rush_scores(scores: &mut HashMap<String, i32>) {
     //scores.insert(rush_duo_objective.to_string(), 0);
 }
 
-
-fn cap_race_times(scores: &mut HashMap<String, i32>, race_objective: &str, min_time: i32) {
-    if let Some(race_time) = scores.get(race_objective) {
-        if *race_time != 0 && *race_time < min_time {
-            scores.insert(race_objective.to_string(), min_time);
-        }
-    }
-}
-
 #[allow(non_snake_case)]
 fn fix_total_level(scores: &mut HashMap<String, i32>) {
     let White = *scores.get("White").unwrap_or(&0);
@@ -141,97 +132,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("GodsporeAccess".to_string(), 0);
         scores.insert("AzacorAccess".to_string(), 0);
         scores.insert("DCZAccess".to_string(), 0);
-
-        /* Temporary - reset all race scores */
-
-        // All For Nera @ isles/all_for_nera.json
-        cap_race_times(scores, "Race2-01", 57000);
-        // Blood Rush @ white/blood_rush.json
-        cap_race_times(scores, "RaceD-01", 162000);
-        // Bursting Bonus @ willows/bursting_bonus.json
-        cap_race_times(scores, "RaceD-W", 45000);
-        // C'Ircuit @ reverie/circuit.json
-        cap_race_times(scores, "RaceD-R", 298000);
-        // City Tour @ ring/citytour.json
-        cap_race_times(scores, "Race3-CityTour", 24000);
-        // Coastal Circuit @ ring/portmanteau.json
-        cap_race_times(scores, "Race3-CoastalCircuit", 34000);
-        // Delivery Dash @ isles/delivery_dash.json
-        cap_race_times(scores, "DeliveryDash", 91000);
-        // Elemental Shuffle @ valley/elementalshuffle.json
-        cap_race_times(scores, "Race04", 141000);
-        // Fast Whispers @ isles/fast_whispers.json
-        cap_race_times(scores, "Race2-04", 49000);
-        // Get The Cluck Out @ valley/GetTheCluckOut.json
-        cap_race_times(scores, "getthecluckout", 29000);
-        // Grappler Effect @ indigo/grapplereffect.json
-        cap_race_times(scores, "RaceD-17", 550000);
-        // High to Low @ valley/hightolow.json
-        cap_race_times(scores, "Race03", 92000);
-        // Hook Hell @ indigo/hookhell.json
-        cap_race_times(scores, "Race3-HookHell", 37000);
-        // Jungle Jaunt @ valley/jungle_jaunt.json
-        cap_race_times(scores, "Race01New", 29000);
-        // Light Footed @ lightgray/light_footed.json
-        cap_race_times(scores, "RaceD-10", 211000);
-        // Mariya's Game @ valley/mariya_new.json
-        cap_race_times(scores, "Race02New", 50000);
-        // Miasma Theory @ magenta/miasma_theory.json
-        cap_race_times(scores, "RaceD-03", 213000);
-        // Mind's Eye @ cyan/minds_eye.json
-        cap_race_times(scores, "RaceD-11", 314000);
-        // Misty Waters @ isles/misty_waters_new.json
-        cap_race_times(scores, "Race2-03New", 42000);
-        // P-Zero Wintery Shroomland Times @ valley/pzero_wintery_shroomland.json
-        cap_race_times(scores, "PZero-WinteryShroomland", 72000);
-        // Pirate Pass @ purple/pirate_pass.json
-        cap_race_times(scores, "RaceD-12", 216000);
-        // Quicksand @ gray/sand_struggles.json
-        cap_race_times(scores, "RaceD-09", 264000);
-        // Rapid Ascent @ ring/rapidascent.json
-        cap_race_times(scores, "Race3-RapidAscent", 35000);
-        // Royal Gambit @ valley/royalgambit.json
-        cap_race_times(scores, "RoyalGambitRace", 56100);
-        // Ruined Run @ lime/ruined_run.json
-        cap_race_times(scores, "RaceD-07", 210000);
-        // Runners of Mist @ isles/runners_of_mist.json
-        cap_race_times(scores, "Race2-02", 39000);
-        // Season's Grace @ pink/seasons_grace.json
-        cap_race_times(scores, "RaceD-08", 313000);
-        // Shift Clicking @ shiftingcity/shift_clicking.json
-        cap_race_times(scores, "RaceD-SC", 250000);
-        // Silver Surfer @ skt/silver_surfer.json
-        cap_race_times(scores, "RaceD-SKT", 278000);
-        // Six Shot Sprint @ isles/six_shot_sprint.json
-        cap_race_times(scores, "Race2-07", 100000);
-        // Speed Fitness @ isles/speed_fitness.json
-        cap_race_times(scores, "Race2-06", 39000);
-        // Speed Reading @ forum/speed_reading.json
-        cap_race_times(scores, "RaceD-14", 464000);
-        // Speedsworn @ valley/speedsworn.json
-        cap_race_times(scores, "RaceD-04", 598000);
-        // Swift Alchemy @ labs/swift_alchemy.json
-        cap_race_times(scores, "RaceD-00", 59000);
-        // They Toll for Thee @ ring/starpointbellrace.json
-        cap_race_times(scores, "StarpointBellRace", 87000);
-        // Time Flies @ teal/time_flies.json
-        cap_race_times(scores, "RaceD-13", 365000);
-        // Trackmaster @ isles/trackmaster.json
-        cap_race_times(scores, "Race2-05", 59000);
-        // Treks Machina @ brown/treks_machina.json
-        cap_race_times(scores, "RaceD-16", 417000);
-        // Truly Occult @ lightblue/truly_occult.json
-        cap_race_times(scores, "RaceD-05", 350000);
-        // Tutorial+ @ valley/tutorialplus.json
-        cap_race_times(scores, "Race00", 96000);
-        // Velara-ocity @ valley/velaraocity.json
-        cap_race_times(scores, "Velaraocity", 44000);
-        // Wild Waltz @ yellow/wild_waltz.json
-        cap_race_times(scores, "RaceD-06", 598000);
-        // Witchhiking @ blue/witchhiking.json
-        cap_race_times(scores, "RaceD-15", 251000);
-        // Zoo Tour @ orange/zoo_tour.json
-        cap_race_times(scores, "RaceD-02", 125000);
 
         fix_total_level(scores);
     }
