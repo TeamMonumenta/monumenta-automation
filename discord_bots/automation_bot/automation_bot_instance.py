@@ -2565,9 +2565,9 @@ old coreprotect data will be removed at the 5 minute mark.
             try:
                 async with asyncio.timeout(remaining_seconds - next_target):
                     while True:
+                        await asyncio.sleep(3)
                         remaining_seconds = (stop_time - datetime.now(tz)) / second
                         self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
-                        await asyncio.sleep(10)
             except TimeoutError:
                 pass
 

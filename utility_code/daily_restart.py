@@ -1,6 +1,7 @@
 #!/usr/bin/env pypy3
 
 import asyncio
+from datetime import datetime, timedelta, timezone
 import json
 import os
 import sys
@@ -10,6 +11,9 @@ import yaml
 
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.lib_k8s import KubernetesManager
+
+
+ONE_SECOND = timedelta(seconds=1)
 
 
 def send_broadcast_time(socket, seconds_left):
@@ -107,61 +111,45 @@ async def main(socket, k8s):
     # Short wait to make sure socket connects correctly
     await asyncio.sleep(3)
 
+    tz = timezone.utc
+    stop_time = datetime.now(tz) + timedelta(minutes=15, seconds=5)
+
     previous_shards = get_shards_by_type(socket, "minecraft")
     print(f'Preparing to restart: {previous_shards}', flush=True)
     pending_stop = set(previous_shards)
     stop_task = None
 
     try:
-        send_broadcast_time(socket, 15 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 14 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 13 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 12 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 11 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 10 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 9 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 8 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 7 * 60)
-        await asyncio.sleep(60)
+        countdown_targets = sorted([60 * i for i in range(1, 15+1)] + [30, 15, 10, 5, 0], reverse=True)
 
-        previous_shards |= get_shards_by_type(socket, "minecraft")
-        pending_stop |= previous_shards
-        send_broadcast_time(socket, 6 * 60)
-        await asyncio.sleep(60)
+        while countdown_targets:
+            next_target = countdown_targets.pop(0)
+            remaining_seconds = (stop_time - datetime.now(tz)) / ONE_SECOND
+            if remaining_seconds < next_target:
+                continue
 
-        # Set all shards to restart the next time they are empty (many will restart immediately) at 5 minutes
-        print("Broadcasting restart-empty command to all shards...", flush=True)
-        stop_task = asyncio.create_task(await_stopped(socket, k8s, pending_stop))
-        socket.send_packet("*", "monumentanetworkrelay.command",
-                           {"command": 'restart-empty', "server_type": 'minecraft'})
+            try:
+                async with asyncio.timeout(remaining_seconds - next_target):
+                    while True:
+                        await asyncio.sleep(3)
+                        remaining_seconds = (stop_time - datetime.now(tz)) / ONE_SECOND
+                        send_tablist_event(socket, remaining_seconds)
+            except TimeoutError:
+                pass
 
-        send_broadcast_time(socket, 5 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 4 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 3 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 2 * 60)
-        await asyncio.sleep(60)
-        send_broadcast_time(socket, 60)
-        await asyncio.sleep(30)
-        send_broadcast_time(socket, 30)
-        await asyncio.sleep(15)
-        send_broadcast_time(socket, 15)
-        await asyncio.sleep(5)
-        send_broadcast_time(socket, 10)
-        await asyncio.sleep(5)
-        send_broadcast_time(socket, 5)
-        await asyncio.sleep(5)
-        send_tablist_event(socket, 0)
+            if next_target == 60 * 6:
+                previous_shards |= get_shards_by_type(socket, "minecraft")
+                pending_stop |= previous_shards
+
+            if next_target == 60 * 5:
+                # Set all shards to restart the next time they are empty (many will restart immediately) at 5 minutes
+                print("Broadcasting restart-empty command to all shards...", flush=True)
+                stop_task = asyncio.create_task(await_stopped(socket, k8s, pending_stop))
+                socket.send_packet("*", "monumentanetworkrelay.command",
+                                   {"command": 'restart-empty', "server_type": 'minecraft'})
+
+            send_broadcast_time(socket, next_target)
+
     except Exception:
         send_admin_alert(socket, f"Failed to notify players about pending restart: {traceback.format_exc()}")
 
@@ -191,10 +179,10 @@ async def main(socket, k8s):
         else:
             print("Awaiting stop_task", flush=True)
             await stop_task
-            if len(pending_stop):
+            if pending_stop:
                 send_admin_alert(socket, f"stop_task did not stop everything: {pending_stop}")
             else:
-                print(f"Done waiting on stop_task", flush=True)
+                print("Done waiting on stop_task", flush=True)
 
             print("Waiting for shards to start back up with a timeout", flush=True)
             try:
