@@ -30,14 +30,16 @@ def send_broadcast_time(socket, seconds_left):
         time_left += [str(seconds_in_minute), "seconds"]
     elif seconds_in_minute == 1:
         time_left += ["1", "second"]
+    elif minutes_left == 0:
+        time_left = ["now"]
 
     time_left = " ".join(time_left)
 
     raw_json_text = [
         "",
         {"text": "[Alert] ", "color": "red"},
-        {"text": "Monumenta will perform its daily restart in ", "color": "white"},
-        {"text": time_left, "color": "red"},
+        {"text": "Monumenta will perform its daily restart " + ("in " if time_left else ""), "color": "white"},
+        {"text": time_left if time_left else "now", "color": "red"},
         {"text": ". This helps reduce lag! The server will be down for ~180 seconds."}
     ]
     send_tablist_event(socket, seconds_left)
