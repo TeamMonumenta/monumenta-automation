@@ -30,8 +30,6 @@ def send_broadcast_time(socket, seconds_left):
         time_left += [str(seconds_in_minute), "seconds"]
     elif seconds_in_minute == 1:
         time_left += ["1", "second"]
-    elif minutes_left == 0:
-        time_left = ["now"]
 
     time_left = " ".join(time_left)
 
