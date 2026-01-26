@@ -318,6 +318,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:large_amethyst_bud", "Focused Consecrated Charm", "minecraft:large_amethyst_bud", "Swift Consecrated Charm"],
                 # Earthquake Staff Charm, new base item
                 ["minecraft:warped_fungus_on_a_stick", "Earthquake Staff", "minecraft:pointed_dripstone", "Earthquake Staff"],
+                # Fix Pride Launcher being loadable into crossbows by making it not a firework anymore
+                ["minecraft:firework_rocket", "Pride Launcher", "minecraft:firework_star", "Pride Launcher"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
