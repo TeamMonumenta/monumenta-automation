@@ -1,0 +1,202 @@
+prefix: '~'
+
+zfs_snapshot_manager:
+    host: "zfs-snapshot-manager-test1.kube-system"
+    port: 8080
+rabbitmq:
+    host: "rabbitmq"
+    # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
+    name: "automation-bot-test1"
+    # Whether the queue will persist when the connection is closed
+    durable: True
+    # Whether this queue will be able to receive messages or not
+    process_messages: True
+    # Messages greater than this will be logged to stdout
+    # Levels - from https://docs.python.org/3/library/logging.html#levels
+    log_level: 20
+
+k8s_namespace: "play"
+
+reactions_enabled: False
+
+channels:
+    # bot-testing
+    - 1056716914522599454
+
+cpu_count: -1
+
+server_dir: /home/epic/play/test1
+
+common_weekly_update_tasks: True
+
+dynmap_dir: /home/epic/play/maps
+
+shards:
+    velocity-test1: /home/epic/play/test1/velocity-test1/
+    blue: /home/epic/play/test1/blue/
+    brown: /home/epic/play/test1/brown/
+    build: /home/epic/play/test1/build/
+    corridors: /home/epic/play/test1/corridors/
+    cyan: /home/epic/play/test1/cyan/
+    depths: /home/epic/play/test1/depths/
+    depths-2: /home/epic/play/test1/depths-2/
+    forum: /home/epic/play/test1/forum/
+    gallery: /home/epic/play/test1/gallery/
+    gray: /home/epic/play/test1/gray/
+    guildplots: /home/epic/play/test1/guildplots/
+    hexfall: /home/epic/play/test1/hexfall/
+    indigo: /home/epic/play/test1/indigo/
+    indigo-2: /home/epic/play/test1/indigo-2/
+    isles: /home/epic/play/test1/isles/
+    isles-2: /home/epic/play/test1/isles-2/
+    isles-3: /home/epic/play/test1/isles-3/
+    labs: /home/epic/play/test1/labs/
+    lightblue: /home/epic/play/test1/lightblue/
+    lightgray: /home/epic/play/test1/lightgray/
+    lime: /home/epic/play/test1/lime/
+    magenta: /home/epic/play/test1/magenta/
+    orange: /home/epic/play/test1/orange/
+    pink: /home/epic/play/test1/pink/
+    playerplots: /home/epic/play/test1/playerplots/
+    plots: /home/epic/play/test1/plots/
+    purgatory: /home/epic/play/test1/purgatory/
+    purple: /home/epic/play/test1/purple/
+    reverie: /home/epic/play/test1/reverie/
+    ring: /home/epic/play/test1/ring/
+    ring-2: /home/epic/play/test1/ring-2/
+    ring-3: /home/epic/play/test1/ring-3/
+    ring-4: /home/epic/play/test1/ring-4/
+    ring-5: /home/epic/play/test1/ring-5/
+    ring-6: /home/epic/play/test1/ring-6/
+    ring-7: /home/epic/play/test1/ring-7/
+    ring-8: /home/epic/play/test1/ring-8/
+    ring-9: /home/epic/play/test1/ring-9/
+    ring-10: /home/epic/play/test1/ring-10/
+    ring-11: /home/epic/play/test1/ring-11/
+    ring-12: /home/epic/play/test1/ring-12/
+    rush: /home/epic/play/test1/rush/
+    shiftingcity: /home/epic/play/test1/shiftingcity/
+    skt: /home/epic/play/test1/skt/
+    teal: /home/epic/play/test1/teal/
+    tutorial: /home/epic/play/test1/tutorial/
+    valley: /home/epic/play/test1/valley/
+    valley-2: /home/epic/play/test1/valley-2/
+    valley-3: /home/epic/play/test1/valley-3/
+    white: /home/epic/play/test1/white/
+    willows: /home/epic/play/test1/willows/
+    yellow: /home/epic/play/test1/yellow/
+    zenith: /home/epic/play/test1/zenith/
+    zenith-2: /home/epic/play/test1/zenith-2/
+
+commands:
+    - batch
+    - broadcastcommand
+    - broadcastminecraftcommand
+    - broadcastproxycommand
+    - sendcommand
+    - deop
+    - op
+    - fetch update bundle
+    - get raffle seed
+    - get score
+    - help
+    - get timestamp
+    - remind
+    - remind me
+    - instances
+    - list bots
+    - list shards
+    - badname
+    - player find
+    - player rollback
+    - player shard
+    - player shard transfer
+    - player account transfer
+    - player transfer
+    - player wipe
+    - restart
+    - run test raffle
+    - select
+    - set score
+    - start
+    - stop
+    - stop and backup
+    - stop at
+    - test
+    - testpriv
+    - testunpriv
+    - update avatar
+    - verbose
+    - view scores
+    - weekly update
+
+permissions:
+    users:
+        302298391969267712: {"name": "Combustible", "rights": [ "@root" ]}
+        228226807353180162: {"name": "NickNackGus", "rights": [ "@root" ]}
+        225791510636003329: {"name": "Crondis",     "rights": [ "@root" ]}
+        222170304577929218: {"name": "U5B",         "rights": [ "@root" ]}
+        117818457462013955: {"name": "Zig",         "rights": [ "@root" ]}
+        503202330284392452: {"name": "Floweynt",    "rights": [ "@root" ]}
+        301924109007454217: {"name": "shotoh",      "rights": [ "@root" ]}
+
+    groups_by_role:
+        # Team Monumenta (Public discord)
+        313066719365300264: "@team monumenta"
+        # Intern (Private discord)
+        390269554657460226: "@intern"
+        # Moderator (Public)
+        313067199579422722: "@moderator"
+        # Discord Manager (Public)
+        456928886278848514: "@discord manager"
+        # Leads (Public)
+        541004457257861131: "@discord manager"
+
+    groups:
+        "@root":
+            - "+*"
+            - "-testunpriv"
+        "@moderator":
+            - "@discord manager"
+            - "+verbose"
+        "@discord manager":
+            - "@team monumenta"
+            - "+broadcastcommand"
+            - "+broadcastminecraftcommand"
+            - "+broadcastproxycommand"
+            - "+sendcommand"
+            - "+deop"
+            - "+op"
+            - "+player rollback"
+            - "+player account transfer"
+            - "+player wipe"
+        "@team monumenta":
+            - "@everyone"
+            - "+batch"
+            - "+get raffle seed"
+            - "+get score"
+            - "+instances"
+            - "+remind"
+            - "+kaul"
+            - "+list bots"
+            - "+list shards"
+            - "+badname"
+            - "+restart"
+            - "+select"
+            - "+set score"
+            - "+start"
+            - "+stop"
+            - "+stop at"
+            - "+player find"
+            - "+player shard"
+            - "+player shard transfer"
+            - "+player transfer"
+            - "+test"
+            - "+testpriv"
+            - "+view scores"
+        "@everyone":
+            - "+help"
+            - "+get timestamp"
+            - "+remind me"
+        "@restricted":
+            - "-*"

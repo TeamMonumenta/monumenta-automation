@@ -62,7 +62,6 @@ commands:
     - stage
     - start
     - stop
-    - stop at
     - stop and backup
     - weekly update
     - test

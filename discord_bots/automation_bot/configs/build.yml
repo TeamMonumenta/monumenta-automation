@@ -44,7 +44,7 @@ shards:
     dev2: /home/epic/project_epic/dev2/
     dev3: /home/epic/project_epic/dev3/
     dev4: /home/epic/project_epic/dev4/
-    futurama: /home/epic/project_epic/futurama/
+    #futurama: /home/epic/project_epic/futurama/
     purgatory: /home/epic/project_epic/purgatory/
     valley: /home/epic/project_epic/valley/
     isles: /home/epic/project_epic/isles/
@@ -99,6 +99,7 @@ commands:
     - set score
     - start
     - stop
+    - stop at
     - test
     - testpriv
     - testunpriv
