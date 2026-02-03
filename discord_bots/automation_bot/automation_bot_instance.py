@@ -2574,7 +2574,7 @@ old coreprotect data will be removed at the 5 minute mark.
             if next_target == 60 * 5 and "weekly update" in reason:
                 await self.display(ctx, "Clearing coreprotect data older than 30 days")
                 for shard in self._shards:
-                    if shard in ["plots", "playerplots", "guildplot"]:
+                    if "plots" in shard:
                         self.broadcast_command('co purge t:180d', shard=shard)
                     elif shard not in ["build",]:
                         self.broadcast_command('co purge t:30d', shard=shard)
