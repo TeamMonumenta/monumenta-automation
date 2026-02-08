@@ -83,6 +83,7 @@ if __name__ == '__main__':
             "lime": {
                 "world": [
                     "lime",
+                    "limeexalted",
                 ],
                 "objective":"D6Access"
             },

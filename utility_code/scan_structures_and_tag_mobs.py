@@ -146,6 +146,7 @@ if __name__ == '__main__':
         "reverieexalted":{"world": "reverieexalted"},
         "labs":{"world": "labs"},
         "lime":{"world": "lime"},
+        "limeexalted":{"world": "limeexalted"},
         "pink":{"world": "pink"},
         "gray":{"world": "gray"},
         "cyan":{"world": "cyan"},
