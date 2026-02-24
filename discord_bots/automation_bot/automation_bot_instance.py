@@ -2916,17 +2916,6 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         await self.run(ctx, f"rm -rf {self._server_dir}/0_STAGE")
         await self.run(ctx, f"mkdir {self._server_dir}/0_STAGE")
 
-        if config.COMMON_WEEKLY_UPDATE_TASKS:
-            # Download the entire redis database from the play server
-            # Do this early to give it plenty of time to start
-            await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
-            await self.stop(ctx, "redis", owner=message)
-            await self.cd(ctx, f"{self._server_dir}/../redis")
-            await self.run(ctx, "mv -f dump.rdb dump.rdb.previous")
-            await self.display(ctx, "Downloading current redis database from the play server...")
-            await self.run(ctx, "redis-cli -h redis.play --rdb dump.rdb")
-            await self.start(ctx, "redis", owner=message)
-
         tasks = []
         port = 1111
         for server_name in config.STAGE_SOURCE:
@@ -2977,6 +2966,18 @@ Archives the previous stage server contents under 0_PREVIOUS '''
         await self.run(ctx, f"rmdir {self._server_dir}/0_STAGE")
 
         if config.COMMON_WEEKLY_UPDATE_TASKS:
+            # Download the entire redis database from the play server
+            # Note that this does indeed need to be after pulling play server shards
+            # We were encountering situations where redis's "next available dungeon" instance scores were wrong,
+            #   because a player opened a dungeon between the redis transfer and the world transfer
+            await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
+            await self.stop(ctx, "redis", owner=message)
+            await self.cd(ctx, f"{self._server_dir}/../redis")
+            await self.run(ctx, "mv -f dump.rdb dump.rdb.previous")
+            await self.display(ctx, "Downloading current redis database from the play server...")
+            await self.run(ctx, "redis-cli -h redis.play --rdb dump.rdb")
+            await self.start(ctx, "redis", owner=message)
+
             # Download the mysql database from the play server
             await self.display(ctx, "Syncing with current mysql database from the play server...")
             # Don't need to be in this directory exactly, but need to be in a stable directory
@@ -2984,6 +2985,9 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             await self.run(ctx, [os.path.join(_top_level, "utility_code/sync_mysql.sh"), self._k8s.namespace], displayOutput=True)
 
             # Note that this needs to be fairly long after starting redis to give it time to load
+            # Unfortunately, this means we need to add an artificial wait here, since we just pulled redis and can't pull it earlier in the process
+            await asyncio.sleep(300)
+
             await self.display(ctx, "Truncating playerdata history...")
             await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_truncate_playerdata"), 'redis://redis/', 'play', '1'], displayOutput=True)
 
