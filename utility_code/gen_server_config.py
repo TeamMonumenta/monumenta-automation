@@ -390,6 +390,7 @@ if __name__ == '__main__':
         ('plugins/MonumentaStructureManagement/structures', '../../../server_config/data/structures'),
         ('plugins/MonumentaStructureManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaStructureManagement/config.yml'),
         ('plugins/TAB.jar', '../../server_config/plugins/TAB.jar'),
+        ('plugins/MonumentaZones.jar', '../../server_config/plugins/MonumentaZones.jar'),
     ]
 
     vanish = [
