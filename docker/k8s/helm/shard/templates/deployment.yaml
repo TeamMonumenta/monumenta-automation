@@ -122,6 +122,10 @@ spec:
           value: {{ .Values.namespace }}
         - name: "NETWORK_RELAY_NAME"
           value: {{ .Values.name }}
+        - name: "EXCEPTLOG_INGEST_URL"
+          value: "http://exception-logger/ingest"
+        - name: "EXCEPTLOG_SERVER_NAME"
+          value: {{ .Values.name }}
         - name: "NETWORK_RELAY_SERVER_ADDRESS"
           value: "{{ .Values.name }}:25566"
 {{- if eq .Values.namespace "build" }}
