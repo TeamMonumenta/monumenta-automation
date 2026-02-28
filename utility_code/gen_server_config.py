@@ -331,6 +331,7 @@ if __name__ == '__main__':
 
     monumenta = [
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
+        ('plugins/MonumentaExceptionReporter.jar', '../../server_config/plugins/MonumentaExceptionReporter.jar'),
         ('plugins/MonumentaWorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
         ('plugins/MonumentaWorldManagement/config.yml', '../../../server_config/data/plugins/{servername}/MonumentaWorldManagement/config.yml'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
