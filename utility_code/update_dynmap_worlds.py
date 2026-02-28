@@ -117,36 +117,67 @@ def main():
             print(f'-{world_path} (could not read plugins/dynmap/worlds.txt)')
             continue
 
+        world = World(world_path)
+        level_dat = world.level_dat
+        spawn = level_dat.spawn
+        
+
         world_plugin_config = None
+        world_title = None
+        map_configs = []
         for test_world_config in shard_worlds_config.get("worlds", []):
             if test_world_config.get("name", None) == world_name:
                 world_plugin_config = test_world_config
                 break
 
-        world_title = world_plugin_config["title"]
+        if world_plugin_config is None:
+            world_plugin_config = {}
+            world_title = world_name
+            for map_prefix, map_config in deepcopy(reference_maps).items():
+                if map_config is None:
+                    continue
+
+                if not map_config.get("enabled", True):
+                    continue
+
+                if not (world_tiles / map_prefix).is_dir():
+                    continue
+
+                map_configs.append(map_config)
+
+        else:
+            world_title = world_plugin_config["title"]
+            for map_plugin_config in world_plugin_config["maps"]:
+                map_prefix = map_plugin_config["prefix"]
+                map_config = deepcopy(reference_maps.get(map_prefix, None))
+                if map_config is None:
+                    continue
+
+                if not map_config.get("enabled", True):
+                    continue
+
+                if not (world_tiles / map_prefix).is_dir():
+                    continue
+
+                map_config["title"] = map_plugin_config["title"]
+                map_config["lighting"] = map_plugin_config["lighting"]
+                if "background" in map_plugin_config:
+                    map_config["background"] = map_plugin_config["background"]
+                if "icon" in map_plugin_config:
+                    map_config["icon"] = map_plugin_config["icon"]
+
+                map_configs.append(map_config)
 
         sort_key = str((world_title.lower(), world_title))
 
-        map_configs = []
-        for map_plugin_config in world_plugin_config["maps"]:
-            map_prefix = map_plugin_config["prefix"]
-            map_config = deepcopy(reference_maps.get(map_prefix, None))
-            if map_config is None:
-                continue
-
-            map_config["title"] = map_plugin_config["title"]
-            map_config["lighting"] = map_plugin_config["lighting"]
-            if "background" in map_plugin_config:
-                map_config["background"] = map_plugin_config["background"]
-            if "icon" in map_plugin_config:
-                map_config["icon"] = map_plugin_config["icon"]
-
-            map_configs.append(map_config)
-
         world_config = deepcopy(example_world_config)
-        world_config["name"] = world_plugin_config["name"]
+        world_config["name"] = world_plugin_config.get("name", world_name)
         world_config["title"] = world_title
-        world_config["center"] = world_plugin_config["center"]
+        world_config["center"] = {
+            "x": int(spawn[0]),
+            "y": int(spawn[1]),
+            "z": int(spawn[2])
+        }
         world_config["maps"] = map_configs
 
         world_configs[sort_key] = world_config
