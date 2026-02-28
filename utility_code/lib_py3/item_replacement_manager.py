@@ -71,7 +71,7 @@ class ItemReplacementManager():
         new_item_tag = self.item_map.get(item_id, {}).get(item_name, None)
         if not new_item_tag:
             if item_meta["masterwork_level"] is not None:
-                eprint(f"WARNING: Failed to find masterwork item '{item_name}' in loot tables")
+                print(f"Failed to find masterwork item '{item_name}' in loot tables")
             return False
 
         # If the id changed, update the base item
