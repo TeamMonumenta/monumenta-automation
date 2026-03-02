@@ -345,6 +345,51 @@ class SubtituteItems(SubstitutionRule):
                         item_meta['id'] = new_id
                         item_meta['name'] = new_name
 
+
+class FixMasterworkLevels(SubstitutionRule):
+    """Rule to correct invalid masterwork levels"""
+    name = "Change the masterwork level of items"
+
+
+    def __init__(self):
+        super().__init__()
+        self.replacements = {}
+
+        for substitution in [
+                # ["minecraft:example_item_id", "Example Name", "old masterwork level as text", "new masterwork level as text"],
+                ["minecraft:wooden_sword", "Mycotoxicosis", "2", "3"],
+        ]:
+
+            old_id, old_name, old_masterwork, new_masterwork = substitution
+
+            if old_id not in self.replacements:
+                self.replacements[old_id] = {}
+            id_replacements = self.replacements[old_id]
+
+            if old_name not in id_replacements:
+                id_replacements[old_name] = {}
+            masterwork_replacements = id_replacements[old_name]
+
+            masterwork_replacements[old_masterwork] = new_masterwork
+
+
+    def process(self, item_meta, item):
+        old_id = item_meta['id']
+        old_name = item_meta['name']
+        old_masterwork = item_meta['masterwork_level']
+
+        # This way around so always_equal works
+        for replaceable_id, id_replacements in self.replacements.items():
+            if replaceable_id == old_id:
+                # This way around so always_equal works
+                for replaceable_name, masterwork_replacements in id_replacements.items():
+                    if replaceable_name == old_name:
+                        # This way around so always_equal works
+                        for replacement_masterwork, new_masterwork in masterwork_replacements.items():
+                            if replacement_masterwork == old_masterwork:
+                                item_meta['masterwork_level'] = new_masterwork
+
+
 ################################################################################
 # Substitution rules end
 
