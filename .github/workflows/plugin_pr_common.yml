@@ -47,13 +47,13 @@ jobs:
         cat compile.log | reviewdog -efm="%W%f:%l: warning: %m" -efm="%+C%[ %\t]%.%#" -name="Javac" -level=error -fail-level=error -reporter=github-pr-review
 
         # checkstyle
-        for xml in */build/reports/checkstyle/main.xml; do
+        for xml in {*/,}build/reports/checkstyle/main.xml; do
         xmldirname="${xml%%/*}"
         cat "$xml" | reviewdog -f=checkstyle -name="Checkstyle $xmldirname" -level=error -fail-level=error -reporter=github-pr-review
         done
 
         # pmd
-        for xml in */build/reports/pmd/main.xml; do
+        for xml in {*/,}build/reports/pmd/main.xml; do
         xmldirname="${xml%%/*}"
         cat "$xml" | reviewdog -efm='%+P<file name="%f">' -efm='%W<violation beginline="%l%.%#begincolumn="%c%.%#' -efm='%-C<%.%#' -efm='%+C%.%#' -efm='%-Q' -name="PMD $xmldirname" -level=error -fail-level=error -reporter=github-pr-review
         done
