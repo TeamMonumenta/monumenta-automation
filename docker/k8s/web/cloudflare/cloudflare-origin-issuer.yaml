@@ -1,0 +1,19 @@
+# From https://github.com/cloudflare/origin-ca-issuer
+# Creation of secret
+# kubectl create secret generic \
+#     --dry-run \
+#     -n web cloudflare-origin-key \
+#     --from-literal key=cfapi-token -oyaml
+# where cfapi-token is an account api token scoped to "Zone / SSL and Certificates / Edit" permission on cloudflare dashboard
+
+apiVersion: cert-manager.k8s.cloudflare.com/v1
+kind: OriginIssuer
+metadata:
+  name: cloudflare-origin-issuer
+  namespace: web
+spec:
+  requestType: OriginECC
+  auth:
+    tokenRef:
+      name: cloudflare-origin-key
+      key: key

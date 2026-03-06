@@ -1,0 +1,10 @@
+# Install command
+# helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx -f ingress-nginx-values.yaml
+# kubectl apply -f ingress-nginx-configmap.yml
+
+# values pulled from
+# helm show values ingress-nginx --repo https://kubernetes.github.io/ingress-nginx
+namespaceOverride: "web"
+controller:
+  extraArgs:
+    default-ssl-certificate: "web/playmonumenta-cloudflare-tls"
