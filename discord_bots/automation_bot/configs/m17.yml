@@ -177,34 +177,35 @@ heartbeat_free_shards:
     - purgatory
 
 commands:
+    - badname
     - batch
     - broadcastcommand
     - broadcastminecraftcommand
     - broadcastproxycommand
-    - sendcommand
     - deop
-    - op
     - fetch update bundle
+    - gen server config
     - get raffle seed
     - get score
-    - help
     - get timestamp
-    - remind
-    - remind me
+    - help
     - instances
     - list bots
     - list shards
-    - badname
+    - op
+    - player account transfer
     - player find
     - player rollback
     - player shard
     - player shard transfer
-    - player account transfer
     - player transfer
     - player wipe
+    - remind
+    - remind me
     - restart
     - run test raffle
     - select
+    - sendcommand
     - set score
     - start
     - stop

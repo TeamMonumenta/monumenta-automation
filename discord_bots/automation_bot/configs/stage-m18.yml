@@ -132,54 +132,55 @@ heartbeat_free_shards:
 
 commands:
     - apply stage bundle
+    - badname
     - broadcastcommand
     - broadcastcommand deop
     - broadcastcommand op
     - broadcastminecraftcommand
     - broadcastproxycommand
-    - sendcommand
-    - deop
-    - op
-    - lockout
-    - lockout check *
-    - lockout check
-    - lockout clear
-    - lockout claim
     - debug
-    - get raffle seed
-    - run test raffle
+    - deop
     - fetch update bundle
-    - help
+    - gen server config
+    - get raffle seed
+    - get score
     - get timestamp
-    - remind
-    - remind me
+    - help
     - list bots
     - list shards
-    - badname
+    - lockout
+    - lockout check
+    - lockout check *
+    - lockout claim
+    - lockout clear
+    - op
+    - player account transfer
     - player find
     - player rollback
     - player shard
     - player shard transfer
-    - player account transfer
     - player transfer
     - player wipe
+    - remind
+    - remind me
     - restart
+    - run test raffle
     - select
+    - sendcommand
+    - set score
     - skill info
     - stage
     - start
     - stop
-    - stop at
     - stop and backup
-    - weekly update
+    - stop at
     - test
     - testpriv
     - testunpriv
+    - update avatar
     - verbose
     - view scores
-    - get score
-    - set score
-    - update avatar
+    - weekly update
 
 permissions:
     users:
@@ -211,8 +212,9 @@ permissions:
         "@intern":
             - "@moderator"
             - "+apply stage bundle"
-            - "+fetch update bundle"
             - "+debug"
+            - "+fetch update bundle"
+            - "+gen server config"
             - "+get errors"
             - "+stage"
             - "+stop and backup"
