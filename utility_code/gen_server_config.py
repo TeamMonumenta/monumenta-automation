@@ -2,12 +2,15 @@
 """Generates server configuration for Monumenta's shards"""
 
 import argparse
+import glob
 import os
 import re
+import shutil
 import uuid
 import copy
 from pathlib import Path
 import yaml
+from lib_py3.common import eprint
 
 MONUMENTA_NAMESPACE = uuid.UUID('444c3990-e4e4-4c28-97c7-a8f6b1f09d30')
 
@@ -64,7 +67,7 @@ def get_server_domain(servername):
     return SERVER_TYPE
 
 
-def gen_server_config(servername):
+def gen_server_config(servername, force=False):
     if servername not in config:
         print("ERROR: No config available for " + repr(servername))
         return
@@ -93,7 +96,7 @@ def gen_server_config(servername):
         old = template_dir + "/" + filename
         new = servername + "/" + filename
         if os.path.islink(new):
-            print("Warning - file " + repr(new) + " is link; not replacing it")
+            eprint("Warning - file " + repr(new) + " is link; not replacing it")
             continue
 
         if not os.path.isdir(os.path.dirname(new)):
@@ -150,6 +153,7 @@ def gen_server_config(servername):
     ################################################################################
 
     linked = dest["linked"]
+    warned_jars = set()
     for link in linked:
         linkname = servername + "/" + link[0]
         targetname = link[1]
@@ -163,19 +167,52 @@ def gen_server_config(servername):
 
         if os.path.islink(linkname):
             os.unlink(linkname)
+
+        # Check for versioned variants (e.g. Monumenta-1.2.3.jar when link is Monumenta.jar)
+        if linkname.endswith('.jar'):
+            pattern = linkname[:-4] + '-*.jar'
+            for matched in glob.glob(pattern):
+                warned_jars.add(os.path.basename(matched))
+                if force:
+                    os.remove(matched)
+                    eprint("Warning: Non-linked file removed: " + matched)
+                else:
+                    eprint("Warning - file that should be link detected. Please remove this file:")
+                    eprint("  rm -f " + matched)
+
         if os.path.isfile(linkname):
-            print("Warning - file that should be link detected. Please remove this file:")
-            print("  rm -f " + linkname)
-            continue
+            warned_jars.add(os.path.basename(linkname))
+            if force:
+                os.remove(linkname)
+                eprint("Warning: Non-linked file removed: " + linkname)
+            else:
+                eprint("Warning - file that should be link detected. Please remove this file:")
+                eprint("  rm -f " + linkname)
+                continue
         if os.path.isdir(linkname):
-            print("Warning - directory that should be link detected. Please remove this directory:")
-            print("  rm -rf " + linkname)
-            continue
+            if force:
+                shutil.rmtree(linkname)
+                eprint("Warning: Non-linked directory removed: " + linkname)
+            else:
+                eprint("Warning - directory that should be link detected. Please remove this directory:")
+                eprint("  rm -rf " + linkname)
+                continue
 
         if not os.path.isdir(os.path.dirname(linkname)):
             os.makedirs(os.path.dirname(linkname), mode=0o775)
 
         os.symlink(targetname, linkname)
+
+    ################################################################################
+    # Warn about non-symlink jar files in plugins directory
+    ################################################################################
+    plugins_dir = servername + '/plugins'
+    if os.path.isdir(plugins_dir):
+        for filename in os.listdir(plugins_dir):
+            if filename.endswith('.jar'):
+                filepath = plugins_dir + '/' + filename
+                if not os.path.islink(filepath) and filename not in warned_jars:
+                    eprint("Warning: Non-symlink plugin jar detected: " + filename)
 
     ################################################################################
     # Fix plan UUIDs
@@ -202,10 +239,12 @@ if __name__ == '__main__':
     # Main entry point
     arg_parser = argparse.ArgumentParser(description=__doc__)
     arg_parser.add_argument('--play', action='store_true', help="Uses play server configuration, rather than the build server's")
+    arg_parser.add_argument('--force', action='store_true', help="Automatically remove non-symlink files/directories that should be symlinks")
     arg_parser.add_argument('shard_path', type=Path, nargs='+', help="The shards/proxies to configure")
     args = arg_parser.parse_args()
 
     is_play = args.play
+    force = args.force
     SERVER_TYPE = 'play' if is_play else 'build'
     server_list = args.shard_path
 
@@ -358,7 +397,7 @@ if __name__ == '__main__':
         ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
         ('plugins/prometheus-exporter.jar', '../../server_config/plugins/prometheus-exporter.jar'),
         ('plugins/ScriptedQuests.jar', '../../server_config/plugins/ScriptedQuests.jar'),
-        ('plugins/ScriptedQuests/translations', f'/home/epic/3_DOMAIN_SHARED/translations'),
+        ('plugins/ScriptedQuests/translations', '/home/epic/3_DOMAIN_SHARED/translations'),
         ('plugins/ScriptedQuests/compass/{servername}', '../../../../server_config/data/scriptedquests/compass/{servername}'),
         ('plugins/ScriptedQuests/compass/common', '../../../../server_config/data/scriptedquests/compass/common'),
         ('plugins/ScriptedQuests/clickables/{servername}', '../../../../server_config/data/scriptedquests/clickables/{servername}'),
@@ -938,7 +977,7 @@ if __name__ == '__main__':
 
         # Player analytics plugin only for play server
         for key, shard_config in config.items():
-            if not "purgatory" in key:
+            if "purgatory" not in key:
                 if "velocity" in key:
                     shard_config['linked'] += proxy_plan
                     continue
@@ -951,5 +990,5 @@ if __name__ == '__main__':
     original_wd = Path('.').resolve()
     for server_path in server_list:
         os.chdir(server_path.parent)
-        gen_server_config(server_path.name)
+        gen_server_config(server_path.name, force=force)
     os.chdir(original_wd)
