@@ -55,6 +55,7 @@ commands:
     - apply stage bundle
     - debug
     - fetch update bundle
+    - gen server config
     - help
     - list bots
     - restart
@@ -63,12 +64,12 @@ commands:
     - start
     - stop
     - stop and backup
-    - weekly update
     - test
     - testpriv
     - testunpriv
-    - verbose
     - update avatar
+    - verbose
+    - weekly update
 
 permissions:
     users:
@@ -100,8 +101,9 @@ permissions:
         "@intern":
             - "@moderator"
             - "+apply stage bundle"
-            - "+fetch update bundle"
             - "+debug"
+            - "+fetch update bundle"
+            - "+gen server config"
             - "+get errors"
             - "+stage"
             - "+stop and backup"

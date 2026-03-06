@@ -58,44 +58,45 @@ heartbeat_free_shards:
     - purgatory
 
 commands:
-    - broadcastcommand
+    - badname
     - broadcastbungeecommand
+    - broadcastcommand
     - broadcastminecraftcommand
     - broadcastproxycommand
-    - sendcommand
     - deop
-    - op
-    - lockout
-    - lockout check *
-    - lockout check
-    - lockout clear
-    - lockout claim
     - find loot problems
-    - instances
+    - gen server config
     - generate demo release
     - generate instances
     - get commands
     - get raffle seed
-    - help
     - get timestamp
-    - remind
-    - remind me
+    - help
+    - instances
     - list bots
-    - list world loot
     - list shards
-    - badname
+    - list world loot
+    - lockout
+    - lockout check
+    - lockout check *
+    - lockout claim
+    - lockout clear
+    - op
+    - player account transfer
     - player find
     - player rollback
     - player shard
     - player shard transfer
-    - player account transfer
     - player transfer
     - player wipe
     - prepare stage bundle
     - prepare update bundle
+    - remind
+    - remind me
     - restart
     - run replacements
     - select
+    - sendcommand
     - set score
     - start
     - stop
@@ -141,38 +142,39 @@ permissions:
             - "+op"
             - "+generate instances"
         "@intern":
-            - "+lockout"
-            - "+lockout check *"
-            - "+lockout check"
-            - "+lockout clear"
-            - "+lockout claim"
             - "+address to english"
+            - "+badname"
             - "+debug"
             - "+dump error commands"
             - "+dungeon loot"
             - "+find loot problems"
-            - "+instances"
+            - "+gen server config"
             - "+get commands"
             - "+get errors"
-            - "+help"
             - "+get timestamp"
-            - "+remind"
-            - "+remind me"
+            - "+help"
+            - "+instances"
             - "+kaul"
             - "+list bots"
             - "+list shards"
-            - "+badname"
+            - "+list world loot"
+            - "+lockout check *"
+            - "+lockout check"
+            - "+lockout claim"
+            - "+lockout clear"
+            - "+lockout"
+            - "+player account transfer"
             - "+player find"
             - "+player rollback"
-            - "+player shard"
             - "+player shard transfer"
-            - "+player account transfer"
+            - "+player shard"
             - "+player transfer"
             - "+player wipe"
-            - "+prepare update bundle"
             - "+prepare stage bundle"
+            - "+prepare update bundle"
+            - "+remind me"
+            - "+remind"
             - "+restart"
-            - "+list world loot"
             - "+run replacements"
             - "+select"
             - "+set score"

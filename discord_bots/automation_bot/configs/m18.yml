@@ -50,6 +50,7 @@ heartbeat_free_shards:
 
 commands:
     - fetch update bundle
+    - gen server config
     - help
     - list bots
     - restart
