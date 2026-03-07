@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 from pprint import pformat
+import copy
 import json
 import logging
 import threading
@@ -53,6 +54,7 @@ class SocketManager():
         self._heartbeat_threshhold = datetime.min
         self._track_heartbeats = track_heartbeats
 
+        self._remote_heartbeats_lock = threading.Lock()
         self._remote_heartbeats = {}
 
         logger.setLevel(log_level)
@@ -80,14 +82,17 @@ class SocketManager():
                         heartbeat_data = message.get("pluginData", {}).get("monumentanetworkrelay", None)
                         if heartbeat_source is not None and heartbeat_data is not None:
                             if message.get("online", False):
-                                self._remote_heartbeats[heartbeat_source] = {
+                                remote_heartbeat_entry = {
                                     "last_heartbeat": now,
                                     "heartbeat_data": heartbeat_data,
                                 }
+                                with self._remote_heartbeats_lock:
+                                    self._remote_heartbeats[heartbeat_source] = remote_heartbeat_entry
 
                             else:
-                                if heartbeat_source in self._remote_heartbeats:
-                                    del self._remote_heartbeats[heartbeat_source]
+                                with self._remote_heartbeats_lock:
+                                    if heartbeat_source in self._remote_heartbeats:
+                                        del self._remote_heartbeats[heartbeat_source]
                     except Exception:
                         logger.warning("Failed to process remote heartbeat in message: %s", repr(body))
                         logger.warning(traceback.format_exc())
@@ -95,9 +100,10 @@ class SocketManager():
                     try:
                         expiry_time = now - timedelta(seconds=10)
 
-                        for source, full_heartbeat_data in list(self._remote_heartbeats.items()):
-                            if expiry_time >= full_heartbeat_data["last_heartbeat"]:
-                                del self._remote_heartbeats[source]
+                        with self._remote_heartbeats_lock:
+                            for source, full_heartbeat_data in list(self._remote_heartbeats.items()):
+                                if expiry_time >= full_heartbeat_data["last_heartbeat"]:
+                                    del self._remote_heartbeats[source]
                     except Exception:
                         logger.warning("Failed to remove outdated remote heartbeats: %s", repr(body))
                         logger.warning(traceback.format_exc())
@@ -149,9 +155,7 @@ class SocketManager():
 
 
     def _ensure_channel_open_for_sending(self):
-        '''
-        Opens a connection and channel if one doesn't exist or it timed out, reuse channel otherwise
-        '''
+        """Opens a connection and channel if one doesn't exist or it timed out, reuse channel otherwise"""
         for retry_count in range(1, 3+1):
             try:
                 if self._connection is None or self._connection.is_closed:
@@ -172,32 +176,56 @@ class SocketManager():
 
 
     def send_heartbeat(self):
+        """Sends a heartbeat packet, assuming no other data needs to be sent at the moment.
+
+        This does not need to be called when regularly sending data faster than the heartbeat interval.
+        """
         self.send_packet("*", self.HEARTBEAT_CHANNEL, {})
 
 
     def remote_heartbeats(self):
+        """Get heartbeat information about all remote servers"""
         result = {}
-        for source, full_heartbeat_data in self._remote_heartbeats.items():
-            result[source] = full_heartbeat_data.get("heartbeat_data", None)
+        with self._remote_heartbeats_lock:
+            for source, full_heartbeat_data in self._remote_heartbeats.items():
+                result[source] = copy.deepcopy(full_heartbeat_data.get("heartbeat_data", None))
         return result
 
 
     def remote_heartbeat(self, source):
-        return self._remote_heartbeats.get(source, {}).get("heartbeat_data", None)
+        """Get the full remote heartbeat data for a server"""
+        with self._remote_heartbeats_lock:
+            return copy.deepcopy(self._remote_heartbeats.get(source, {}).get("heartbeat_data", None))
 
 
     def shard_type(self, source):
-        return self._remote_heartbeats.get(source, {}).get("heartbeat_data", {}).get("server-type", "minecraft")
+        """Get the type of a remote server
+
+        Expected values include, but are not limited to, "minecraft", "proxy", and "bot"
+        """
+        with self._remote_heartbeats_lock:
+            return copy.deepcopy(self._remote_heartbeats.get(source, {}).get("heartbeat_data", {}).get("server-type", "minecraft"))
 
 
     def shard_health_data(self, source):
-        json_data = self._remote_heartbeats.get(source, {}).get("heartbeat_data", {}).get("shard_health", None)
+        """Get the health data for a remote server"""
+        json_data = None
+        with self._remote_heartbeats_lock:
+            json_data = self._remote_heartbeats.get(source, {}).get("heartbeat_data", {}).get("shard_health", None)
         if json_data:
-            return ShardHealth(json_data)
+            return ShardHealth(copy.deepcopy(json_data))
         return ShardHealth.zero_health()
 
 
     def send_packet(self, destination, operation, data, heartbeat_data=None, online=True):
+        """Sends a json packet over RabbitMQ
+
+        destination is the server to target, or * for all servers
+        operation specifies what channel should listen for this packet
+        data is json data to be processed
+        heartbeat_data, if specified, includes information about the sending server
+        online, if set to False, specifies the sending server is shutting down
+        """
         if destination is None or len(destination) == 0:
             logger.warning("destination can not be None!")
         if operation is None or len(operation) == 0:
