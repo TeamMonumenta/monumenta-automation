@@ -44,7 +44,7 @@ jobs:
         set +o pipefail
 
         # compiler warnings
-        cat compile.log | reviewdog -efm="%W%f:%l: warning: %m" -efm="%+C%[ %\t]%.%#" -name="Javac" -level=error -fail-level=error -reporter=github-pr-review
+        cat compile.log | reviewdog -efm="%W%f:%l: warning: %m" -efm="%+C%[ %\t]%.%#" -efm="%-Z%[%^ %\t]%.%#" -efm="%f:%l:%[ %\t]%#%m" -name="Javac" -level=error -fail-level=error -reporter=github-pr-review
 
         # Allow the * globs below to match 0 files without throwing an error
         # The indentation on the below loops is flat to conform to this yaml file - they won't work indented
