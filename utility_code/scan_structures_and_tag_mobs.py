@@ -171,6 +171,7 @@ if __name__ == '__main__':
         "ruin":{"path": "ring/ruin"},
         "skt":{"world": "SKT"},
         "indigo":{"world": "indigo"},
+        "fortune":{"world": "fortune"},
         "hexfall":{"world": "hexfall"},
     }
 

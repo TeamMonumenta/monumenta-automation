@@ -51,6 +51,7 @@ stage_source:
             - cyan
             - depths
             - forum
+            - fortune
             - gallery
             - gray
             - guildplots
@@ -98,6 +99,7 @@ shards:
     cyan: /home/epic/volt/m18/cyan/
     depths: /home/epic/volt/m18/depths/
     forum: /home/epic/volt/m18/forum/
+    fortune: /home/epic/volt/m18/fortune/
     gallery: /home/epic/volt/m18/gallery/
     gray: /home/epic/volt/m18/gray/
     guildplots: /home/epic/volt/m18/guildplots/

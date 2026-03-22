@@ -126,6 +126,11 @@ shards:
     depths: /home/epic/play/m17/depths/
     depths-2: /home/epic/play/m17/depths-2/
     forum: /home/epic/play/m17/forum/
+    fortune: /home/epic/play/m17/fortune/
+    fortune-2: /home/epic/play/m17/fortune-2/
+    fortune-3: /home/epic/play/m17/fortune-3/
+    fortune-4: /home/epic/play/m17/fortune-4/
+    fortune-5: /home/epic/play/m17/fortune-5/
     gallery: /home/epic/play/m17/gallery/
     gray: /home/epic/play/m17/gray/
     guildplots: /home/epic/play/m17/guildplots/
