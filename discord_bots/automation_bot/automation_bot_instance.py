@@ -1046,7 +1046,7 @@ class AutomationBotInstance(commands.Cog):
                 unix_timestamp = int(stage_data.get("unix_timestamp", 0))
                 absolute_timestamp = self.get_discord_timestamp(unix_timestamp, ':F')
                 relative_timestamp = self.get_discord_timestamp(unix_timestamp, ':R')
-                return f"Last sync was {absolute_timestamp} ({relative_timestamp})"
+                return f"Last sync with play was {absolute_timestamp} ({relative_timestamp})"
         except Exception:
             return "Could not read last stage sync file, despite it existing?"
 
