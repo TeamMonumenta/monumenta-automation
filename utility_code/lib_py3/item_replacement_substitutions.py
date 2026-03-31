@@ -320,6 +320,8 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:warped_fungus_on_a_stick", "Earthquake Staff", "minecraft:pointed_dripstone", "Earthquake Staff"],
                 # Fix Pride Launcher being loadable into crossbows by making it not a firework anymore
                 ["minecraft:firework_rocket", "Pride Launcher", "minecraft:firework_star", "Pride Launcher"],
+                # Rename Chargingbucks (at Charging's request)
+                ["minecraft:paper", "Chargingbuck", "minecraft:paper", "Silverwool Share"],
 
                 # Scout rework!
 
