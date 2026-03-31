@@ -1,3 +1,26 @@
+####
+# Busty & Edmund notes circa March 31 2026
+#
+# prometheus-volume.yml defines the persistent volumes that refer to paths in
+# /nfs/{prometheus, grafana, alertmanager}.
+#
+# Apply this file first, prior to installing the helm chart so the volumes are
+# available to be claimed
+#
+# This file contains helm configuration, to tell these components how to bind
+# those local volumes
+# + some other small config
+#
+# Then install the helm chart:
+# helm install kube-prometheus-stack --values prometheus-helm-values.yml --set grafana.adminPassword=... oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack
+# Default password prom-operator if admin password not passed in
+#
+# Then apply the prometheus-monitors.yml file
+#
+
+kubeProxy:
+  enabled: false
+
 prometheus:
   prometheusSpec:
     storageSpec:
