@@ -116,6 +116,9 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         /* Temporary change to reset Rush wave completion leaderboards and grant access to the Remnant */
         fix_rush_scores(scores);
 
+        // REVERT ME Temporarily reset RecklessSwing for this week
+        scores.insert("RecklessSwing".to_string(), 0);
+
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
         scores.insert("DRDAccess".to_string(), 0);
