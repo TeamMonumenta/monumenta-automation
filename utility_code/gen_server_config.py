@@ -875,6 +875,9 @@ if __name__ == '__main__':
     copied_shard_config = {
         "valley-2": "valley",
         "valley-3": "valley",
+        "valley-4": "valley",
+        "valley-5": "valley",
+        "valley-6": "valley",
         "isles-2": "isles",
         "isles-3": "isles",
         "ring-2": "ring",
