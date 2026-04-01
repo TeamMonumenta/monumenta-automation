@@ -161,6 +161,7 @@ if __name__ == '__main__':
         "verdantstrike":{"path": "valley/verdant", "min": (-1024, 0, 2815), "max": (-768, 255, 3071)},
         "verdantstory":{"path": "valley/verdant", "min": (-767, 0, 2560), "max": (-513, 255, 2815)},
         "sanctum":{"path": "valley/sanctum"},
+        "coalrupted":{"path": "valley/coalrrupted_sierhaven"},
         "rush":{"world": "rush"},
         "mist":{"path": "isles/mist"},
         "remorse":{"path": "isles/remorse"},
