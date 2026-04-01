@@ -91,6 +91,9 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         /* DelveDungeon score also resets as if it was a dungeon score */
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
 
+        // REVERT ME Temporarily reset RecklessSwing for this week
+        scores.insert("RecklessSwing".to_string(), 0);
+
         /* These scores are always reset to 0 */
         scores.insert("DRAccess".to_string(), 0);
         scores.insert("DRDAccess".to_string(), 0);

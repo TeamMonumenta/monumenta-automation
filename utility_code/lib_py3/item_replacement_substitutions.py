@@ -320,6 +320,57 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:warped_fungus_on_a_stick", "Earthquake Staff", "minecraft:pointed_dripstone", "Earthquake Staff"],
                 # Fix Pride Launcher being loadable into crossbows by making it not a firework anymore
                 ["minecraft:firework_rocket", "Pride Launcher", "minecraft:firework_star", "Pride Launcher"],
+                # Rename Chargingbucks (at Charging's request)
+                ["minecraft:paper", "Chargingbuck", "minecraft:paper", "Silverwool Share"],
+
+                # Scout rework!
+
+                # Whirling Blade -> Gale Shot
+                ["minecraft:phantom_membrane", "Lesser Chakram Charm", "minecraft:bone_meal", "Lesser Charm of the Tempest"],
+                ["minecraft:phantom_membrane", "Greater Chakram Charm", "minecraft:bone_meal", "Greater Charm of the Tempest"],
+                ["minecraft:phantom_membrane", "Focused Chakram Charm", "minecraft:bone_meal", "Focused Charm of the Tempest"],
+                ["minecraft:phantom_membrane", "Swift Chakram Charm", "minecraft:bone_meal", "Sedated Charm of the Tempest"],
+                ["minecraft:phantom_membrane", "Strong Chakram Charm", "minecraft:bone_meal", "Sedated Charm of the Tempest"],
+                ["minecraft:phantom_membrane", "Distant Chakram Charm", "minecraft:bone_meal", "Focused Charm of the Tempest"],
+
+                # Pinning Shot -> Lockdown
+                ["minecraft:skeleton_skull", "Lesser Charm of Pinning", "minecraft:ender_eye", "Lesser Charm of Precision"],
+                ["minecraft:skeleton_skull", "Greater Charm of Pinning", "minecraft:ender_eye", "Greater Charm of Precision"],
+                ["minecraft:skeleton_skull", "Focused Charm of Pinning", "minecraft:ender_eye", "Focused Charm of Precision"],
+                ["minecraft:skeleton_skull", "Sedated Charm of Pinning", "minecraft:ender_eye", "Distant Charm of Precision"],
+
+                # Split Arrow -> Quiver Storm
+                ["minecraft:blaze_rod", "Lesser Splitting Charm", "minecraft:blaze_rod", "Lesser Barrage Charm"],
+                ["minecraft:blaze_rod", "Greater Splitting Charm", "minecraft:blaze_rod", "Greater Barrage Charm"],
+                ["minecraft:blaze_rod", "Focused Splitting Charm", "minecraft:blaze_rod", "Focused Barrage Charm"],
+
+                # Eagle Eye -> Parting Shot
+                ["minecraft:ender_eye", "Lesser Rapacious Charm", "minecraft:tripwire_hook", "Lesser Charm of Escape"],
+                ["minecraft:ender_eye", "Greater Rapacious Charm", "minecraft:tripwire_hook", "Hasty Charm of Escape"],
+                ["minecraft:ender_eye", "Empowered Rapacious Charm", "minecraft:tripwire_hook", "Sedated Charm of Escape"],
+                
+                # Swiftness charms removed, replaced with existing Tactical Maneuver charms
+                ["minecraft:rabbit_foot", "Lesser Charm of Swiftness", "minecraft:string", "Lesser Stratagem Charm"],
+                ["minecraft:rabbit_foot", "Greater Charm of Swiftness", "minecraft:string", "Greater Stratagem Charm"],
+
+                # Sharpshooter charms removed, replaced with Lockdown charms
+                ["minecraft:target", "Lesser Marksman's Charm", "minecraft:ender_eye", "Lesser Charm of Precision"],
+                ["minecraft:target", "Greater Marksman's Charm", "minecraft:ender_eye", "Greater Charm of Precision"],
+                ["minecraft:target", "Focused Marksman's Charm", "minecraft:ender_eye", "Focused Charm of Precision"],
+                ["minecraft:target", "Sharpened Marksman's Charm", "minecraft:ender_eye", "Distant Charm of Precision"],
+
+                # Renamed a Hunting Companion charm
+                ["minecraft:feather", "Sedated Hunting Charm", "minecraft:feather", "Explosive Hunting Charm"],
+
+                # Quickdraw -> Shrapnel Bomb
+                ["minecraft:blaze_powder", "Lesser Quickshot Charm", "minecraft:flint", "Lesser Shattering Charm"],
+                ["minecraft:blaze_powder", "Greater Quickshot Charm", "minecraft:flint", "Greater Shattering Charm"],
+                ["minecraft:blaze_powder", "Focused Quickshot Charm", "minecraft:flint", "Focused Shattering Charm"],
+                ["minecraft:blaze_powder", "Swift Quickshot Charm", "minecraft:flint", "Swift Shattering Charm"],
+
+                # Swift Cuts -> Steel Trap
+                ["minecraft:white_dye", "Lesser Charm of Dexterity", "minecraft:chain", "Lesser Charm of Trapping"],
+                ["minecraft:white_dye", "Greater Charm of Dexterity", "minecraft:chain", "Greater Charm of Trapping"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
