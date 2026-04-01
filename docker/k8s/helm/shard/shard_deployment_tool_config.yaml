@@ -33,19 +33,20 @@
 
     # R1
     "valley": {
-        "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
+        "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4},
         "build": { "node": "m18", "hugePageGB": 6, },
         "stage": { "node": "m18", "hugePageGB": 3, },
         "volt" : { "node": "m18", "hugePageGB": 3, },
     },
     "valley-2": {
-        "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
+        "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4},
         "stage": { "node": "m17", "hugePageGB": 3, },
         "volt" : { "node": "m17", "hugePageGB": 3, },
     },
-    "valley-3": {
-        "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
-    },
+    "valley-3": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
+    "valley-4": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
+    "valley-5": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
+    "valley-6": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
 
     # R2
     "isles": {
@@ -80,9 +81,6 @@
     "ring-7":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-8":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-9":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-10":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-11":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-12":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
 
     # Plots
     "plots": {
@@ -246,7 +244,6 @@
         "stage": { "node": "m18", "hugePageMB": 3072, },
         "volt" : { "node": "m18", "hugePageMB": 3072, },
     },
-    "indigo-2":  { "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4}, },
 
     "skt": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
