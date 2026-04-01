@@ -871,96 +871,15 @@ if __name__ == '__main__':
         ]
 
 
-    # These shards are copies of another shard, using that other shard's name for {servername} replacements
-    copied_shard_config = {
-        "valley-2": "valley",
-        "valley-3": "valley",
-        "valley-4": "valley",
-        "valley-5": "valley",
-        "valley-6": "valley",
-        "isles-2": "isles",
-        "isles-3": "isles",
-        "ring-2": "ring",
-        "ring-3": "ring",
-        "ring-4": "ring",
-        "ring-5": "ring",
-        "ring-6": "ring",
-        "ring-7": "ring",
-        "ring-8": "ring",
-        "ring-9": "ring",
-        "ring-10": "ring",
-        "ring-11": "ring",
-        "ring-12": "ring",
-        "ring-13": "ring",
-        "ring-14": "ring",
-        "ring-15": "ring",
-        "ring-16": "ring",
-        "white-2": "white",
-        "orange-2": "orange",
-        "magenta-2": "magenta",
-        "magenta-3": "magenta",
-        "lightblue-2": "lightblue",
-        "lightblue-3": "lightblue",
-        "yellow-2": "yellow",
-        "yellow-3": "yellow",
-        "willows-2": "willows",
-        "willows-3": "willows",
-        "indigo-2": "indigo",
-        "indigo-3": "indigo",
-        "indigo-4": "indigo",
-        "indigo-5": "indigo",
-        "indigo-6": "indigo",
-        "indigo-7": "indigo",
-        "indigo-8": "indigo",
-        "indigo-9": "indigo",
-        "indigo-10": "indigo",
-        "blue-2": "blue",
-        "blue-3": "blue",
-        "blue-4": "blue",
-        "brown-2": "brown",
-        "brown-3": "brown",
-        "reverie-2": "reverie",
-        "reverie-3": "reverie",
-        "gallery-2": "gallery",
-        "gallery-3": "gallery",
-        "skt-2": "skt",
-        "skt-3": "skt",
-        "depths-2": "depths",
-        "zenith-2": "zenith",
-        "zenith-3": "zenith",
-        "zenith-4": "zenith",
-        "zenith-5": "zenith",
-        "zenith-6": "zenith",
-        "zenith-7": "zenith",
-        "zenith-8": "zenith",
-        "zenith-9": "zenith",
-        "zenith-10": "zenith",
-        "zenith-11": "zenith",
-        "zenith-12": "zenith",
-        "hexfall-2": "hexfall",
-        "hexfall-3": "hexfall",
-        "hexfall-4": "hexfall",
-        "hexfall-5": "hexfall",
-        "hexfall-6": "hexfall",
-        "hexfall-7": "hexfall",
-        "hexfall-8": "hexfall",
-        "hexfall-9": "hexfall",
-        "hexfall-10": "hexfall",
-        "hexfall-11": "hexfall",
-        "hexfall-12": "hexfall",
-        "hexfall-13": "hexfall",
-        "hexfall-14": "hexfall",
-        "hexfall-15": "hexfall",
-        "hexfall-16": "hexfall",
-        "velocity-12": "velocity",
-        "velocity-13": "velocity",
-        "velocity-17": "velocity",
-        "velocity-18": "velocity",
-    }
-
-    for key, copy_of in copied_shard_config.items():
-        config[key] = copy.deepcopy(config[copy_of])
-        config[key]["copy_of"] = copy_of
+    # Shards named <base>-<N> are automatically treated as copies of <base>
+    for server_path in server_list:
+        servername = server_path.name
+        m = re.match(r'^(.+)-(\d+)$', servername)
+        if m:
+            base = m.group(1)
+            if base in config and servername not in config:
+                config[servername] = copy.deepcopy(config[base])
+                config[servername]["copy_of"] = base
 
     # For plugins that should only load on the first instance (not very elegant solution, but it should work)
     config["valley"]["linked"] += dynmap
