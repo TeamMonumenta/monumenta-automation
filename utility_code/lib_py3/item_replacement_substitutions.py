@@ -371,6 +371,10 @@ class SubtituteItems(SubstitutionRule):
                 # Swift Cuts -> Steel Trap
                 ["minecraft:white_dye", "Lesser Charm of Dexterity", "minecraft:chain", "Lesser Charm of Trapping"],
                 ["minecraft:white_dye", "Greater Charm of Dexterity", "minecraft:chain", "Greater Charm of Trapping"],
+
+
+                # Remove the Surprise Gift in a Bag from Coalrupted Sierhaven
+                ["minecraft:creeper_spawn_egg", "Surprise Gift in a Bag!", "minecraft:rotten_flesh", "Decayed Item"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
