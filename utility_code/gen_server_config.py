@@ -292,7 +292,7 @@ if __name__ == '__main__':
     ]
 
     mixins = [
-        ('mods/MonumentaMixins.jar', '../../server_config/mods/MonumentaMixins.jar'),
+        ('mods/monumenta-mixins.jar', '../../server_config/mods/monumenta-mixins.jar'),
         ('server.jar', '../server_config/mixinloader.jar'),
     ]
 
