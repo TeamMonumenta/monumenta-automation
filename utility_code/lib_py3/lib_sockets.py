@@ -130,8 +130,9 @@ class SocketManager():
                 channel.exchange_declare(self.BROADCAST_EXCHANGE_NAME, exchange_type="fanout")
 
                 # Declare the queue
+                # x-expires: delete the queue when no consumers are connected to it for 20 minutes
                 logger.debug("Declaring queue %s", self._queue_name)
-                channel.queue_declare(queue=self._queue_name, durable=self._durable_queue)
+                channel.queue_declare(queue=self._queue_name, durable=self._durable_queue, arguments={'x-expires': 1200000})
 
                 # Bind queue to the exchange
                 logger.debug("Binding queue %s to exchange %s", self._queue_name, self.BROADCAST_EXCHANGE_NAME)
