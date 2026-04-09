@@ -135,6 +135,9 @@ class PluginData(NbtPathDebug):
         """Get the wallet stored on a player, if it exists."""
         return MonumentaWallet(self._data.get("Wallet", {}), self)
 
+    def cosmetics(self):
+        """Get the wallet stored on a player, if it exists."""
+        return self._data.get("Cosmetics", {}).get("cosmetics", {})
 
     def __repr__(self):
         return f'PluginData({os.path.basename(self._path)!r})'
