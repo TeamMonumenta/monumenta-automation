@@ -75,8 +75,6 @@ def process_plugin_data(plugin_data):
 
     # Jade cosmetic updater
     for cosmetic in plugin_data.cosmetics():
-        if "ability" not in cosmetic:
-            continue
         if "name" not in cosmetic:
             continue
         match cosmetic["name"]:
