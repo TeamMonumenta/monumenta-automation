@@ -73,6 +73,19 @@ def process_plugin_data(plugin_data):
         if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
             num_replacements += 1
 
+    # Jade cosmetic updater
+    for cosmetic in plugin_data.cosmetics():
+        if "name" not in cosmetic:
+            continue
+        match cosmetic["name"]:
+            case "Everseeing Eye":
+                cosmetic["ability"] = "Parting Shot"
+            case "Prestigious Shot":
+                cosmetic["ability"] = "Lockdown"
+            case "Verdant Razor":
+                cosmetic["ability"] = "Rending Razor"
+
+
     return num_replacements
 
 
