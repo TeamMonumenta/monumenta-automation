@@ -47,7 +47,7 @@ jobs:
         set +o pipefail
 
         # compiler warnings
-        cat compile.log | reviewdog -efm="%W%f:%l: warning: %m" -efm="%+C%[ %\t]%.%#" -efm="%-Z%[%^ %\t]%.%#" -efm="%f:%l:%[ %\t]%#%m" -name="Javac" -level=error -fail-level=error -reporter=github-pr-review
+        cat compile.log | reviewdog -efm="%W%f:%l: warning: %m" -efm="%+C%[ %\t]%.%#" -efm="%-Z%[%^ %\t]%.%#" -efm="%f:%l:%[ %\t]%#%m" -name="Javac" -level=error -fail-level=error -reporter=github-pr-review -filter-mode=file
 
         # Allow the * globs below to match 0 files without throwing an error
         # The indentation on the below loops is flat to conform to this yaml file - they won't work indented
@@ -57,7 +57,7 @@ jobs:
         for xml in */build/reports/checkstyle/main.xml build/reports/checkstyle/main.xml; do
         if [ -f "$xml" ]; then
         xmldirname="${xml%%/*}"
-        cat "$xml" | reviewdog -f=checkstyle -name="Checkstyle $xmldirname" -level=error -fail-level=error -reporter=github-pr-review
+        cat "$xml" | reviewdog -f=checkstyle -name="Checkstyle $xmldirname" -level=error -fail-level=error -reporter=github-pr-review -filter-mode=file
         fi
         done
 
@@ -65,6 +65,6 @@ jobs:
         for xml in */build/reports/pmd/main.xml build/reports/pmd/main.xml; do
         if [ -f "$xml" ]; then
         xmldirname="${xml%%/*}"
-        cat "$xml" | reviewdog -efm='%+P<file name="%f">' -efm='%W<violation beginline="%l%.%#begincolumn="%c%.%#' -efm='%-C<%.%#' -efm='%+C%.%#' -efm='%-Q' -name="PMD $xmldirname" -level=error -fail-level=error -reporter=github-pr-review
+        cat "$xml" | reviewdog -efm='%+P<file name="%f">' -efm='%W<violation beginline="%l%.%#begincolumn="%c%.%#' -efm='%-C<%.%#' -efm='%+C%.%#' -efm='%-Q' -name="PMD $xmldirname" -level=error -fail-level=error -reporter=github-pr-review -filter-mode=file
         fi
         done
