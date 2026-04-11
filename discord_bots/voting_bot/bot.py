@@ -12,7 +12,7 @@ from typing import Optional, Union
 
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from voting.config import VotingConfig
 from voting.store import VoteData, VoteStore
@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 THUMBSUP = "👍"
 THUMBSDOWN = "👎"
+ONE_MONTH_SECS = 30 * 24 * 3600
 
 
 def _format_poll_message(vote: VoteData, force_counts: bool = False) -> str:
@@ -31,8 +32,13 @@ def _format_poll_message(vote: VoteData, force_counts: bool = False) -> str:
     if vote.show_counts or force_counts:
         lines.append(f"{THUMBSUP} : {len(vote.thumbsup)}")
         lines.append(f"{THUMBSDOWN} : {len(vote.thumbsdown)}")
-    if vote.concluded and vote.concluded_by and vote.concluded_at is not None:
-        lines.append(f"Poll concluded by <@{vote.concluded_by}> <t:{vote.concluded_at}:R>")
+    if not vote.concluded and vote.end_at is not None:
+        lines.append(f"Closes <t:{vote.end_at}:R>")
+    if vote.concluded and vote.concluded_at is not None:
+        if vote.concluded_by:
+            lines.append(f"Poll concluded by <@{vote.concluded_by}> <t:{vote.concluded_at}:R>")
+        else:
+            lines.append(f"Poll auto-concluded <t:{vote.concluded_at}:R>")
     return "\n".join(lines)
 
 
@@ -54,6 +60,8 @@ class VotingBot(commands.Bot):
     async def on_ready(self) -> None:
         logger.info("Logged in as %s", self.user)
         await self._catchup_active_polls()
+        if not self._expire_polls_loop.is_running():
+            self._expire_polls_loop.start()
 
     # --- Helpers ---
 
@@ -149,6 +157,34 @@ class VotingBot(commands.Bot):
                 except (discord.Forbidden, discord.HTTPException):
                     logger.warning("Could not update message %s", vote.message_id)
 
+    # --- Poll conclusion ---
+
+    async def _conclude_poll(self, vote: VoteData, concluded_by: Optional[str]) -> None:
+        """Mark a poll concluded, update its Discord message, and remove it from active set."""
+        vote.concluded = True
+        vote.concluded_by = concluded_by
+        vote.concluded_at = int(time.time())
+        self.store.save(vote)
+        self.active_polls.discard(int(vote.message_id))
+
+        channel = await self._fetch_messageable(int(vote.channel_id))
+        if channel is not None:
+            try:
+                message = await channel.fetch_message(int(vote.message_id))
+                await message.clear_reactions()
+                await message.edit(content=_format_poll_message(vote, force_counts=True))
+            except (discord.Forbidden, discord.HTTPException):
+                logger.exception("Failed to finalize poll message %s", vote.message_id)
+
+    @tasks.loop(seconds=60)
+    async def _expire_polls_loop(self) -> None:
+        """Check all active polls and auto-conclude any whose end_at has passed."""
+        now = int(time.time())
+        for vote in self.store.list_active():
+            if vote.end_at is not None and now >= vote.end_at:
+                logger.info("Auto-concluding expired poll %s (end_at=%d)", vote.message_id, vote.end_at)
+                await self._conclude_poll(vote, concluded_by=None)
+
     # --- Reaction handler ---
 
     async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent) -> None:
@@ -202,11 +238,13 @@ class VotingBot(commands.Bot):
         @app_commands.describe(
             show_counts="Whether to show live vote counts during the poll",
             message="The poll question or statement",
+            end_at_timestamp="Unix timestamp when the poll auto-closes (default: 30 days from now)",
         )
         async def cmd_anon_vote(
             interaction: discord.Interaction,
             show_counts: bool,
             message: str,
+            end_at_timestamp: Optional[int] = None,
         ) -> None:
             await interaction.response.defer(ephemeral=True)
             if not self._check_allowed(interaction):
@@ -223,6 +261,7 @@ class VotingBot(commands.Bot):
 
             creator_id = str(interaction.user.id)
             created_at = int(time.time())
+            end_at = end_at_timestamp if end_at_timestamp is not None else created_at + ONE_MONTH_SECS
 
             vote = VoteData(
                 message_id="",  # filled in after posting
@@ -234,6 +273,7 @@ class VotingBot(commands.Bot):
                 concluded=False,
                 concluded_by=None,
                 concluded_at=None,
+                end_at=end_at,
             )
 
             try:
@@ -296,19 +336,5 @@ class VotingBot(commands.Bot):
                 )
                 return
 
-            vote.concluded = True
-            vote.concluded_by = str(interaction.user.id)
-            vote.concluded_at = int(time.time())
-            self.store.save(vote)
-            self.active_polls.discard(int(message_id))
-
-            channel = await self._fetch_messageable(int(vote.channel_id))
-            if channel is not None:
-                try:
-                    message = await channel.fetch_message(int(vote.message_id))
-                    await message.clear_reactions()
-                    await message.edit(content=_format_poll_message(vote, force_counts=True))
-                except (discord.Forbidden, discord.HTTPException):
-                    logger.exception("Failed to finalize poll message %s", message_id)
-
+            await self._conclude_poll(vote, concluded_by=str(interaction.user.id))
             await interaction.followup.send("Poll concluded.", ephemeral=True)

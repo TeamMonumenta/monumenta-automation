@@ -27,6 +27,7 @@ class VoteData:
     concluded_at: Optional[int]
     thumbsup: list[str] = field(default_factory=_str_list)
     thumbsdown: list[str] = field(default_factory=_str_list)
+    end_at: Optional[int] = None
 
 
 class VoteStore:
@@ -59,6 +60,7 @@ class VoteStore:
                 concluded_at=int(data['concluded_at']) if data.get('concluded_at') else None,
                 thumbsup=[str(x) for x in cast(list[Any], data.get('thumbsup') or [])],
                 thumbsdown=[str(x) for x in cast(list[Any], data.get('thumbsdown') or [])],
+                end_at=int(data['end_at']) if data.get('end_at') else None,
             )
         except (yaml.YAMLError, KeyError, TypeError, ValueError):
             logger.exception("Corrupted vote file, skipping: %s", path)
@@ -78,6 +80,7 @@ class VoteStore:
             'concluded_at': vote.concluded_at,
             'thumbsup': vote.thumbsup,
             'thumbsdown': vote.thumbsdown,
+            'end_at': vote.end_at,
         }
         with open(path, 'w', encoding='utf-8') as f:
             yaml.safe_dump(data, f, default_flow_style=False, allow_unicode=True)
