@@ -1,10 +1,13 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 # Copyright (C) 2026 Byron Marohn
+import logging
 import os
 from dataclasses import dataclass, field
 from typing import Any, Optional, cast
 
 import yaml
+
+logger = logging.getLogger(__name__)
 
 
 def _str_list() -> list[str]:
@@ -38,21 +41,28 @@ class VoteStore:
         path = self._path(message_id)
         if not os.path.exists(path):
             return None
-        with open(path, encoding='utf-8') as f:
-            data: dict[str, Any] = yaml.safe_load(f) or {}
-        return VoteData(
-            message_id=str(data['message_id']),
-            channel_id=str(data['channel_id']),
-            creator_id=str(data['creator_id']),
-            created_at=int(data['created_at']),
-            message=str(data['message']),
-            show_counts=bool(data['show_counts']),
-            concluded=bool(data.get('concluded', False)),
-            concluded_by=str(data['concluded_by']) if data.get('concluded_by') else None,
-            concluded_at=int(data['concluded_at']) if data.get('concluded_at') else None,
-            thumbsup=[str(x) for x in cast(list[Any], data.get('thumbsup') or [])],
-            thumbsdown=[str(x) for x in cast(list[Any], data.get('thumbsdown') or [])],
-        )
+        try:
+            with open(path, encoding='utf-8') as f:
+                raw = yaml.safe_load(f)
+            if not isinstance(raw, dict):
+                raise ValueError(f"Expected a YAML mapping, got {type(raw).__name__}")
+            data: dict[str, Any] = cast(dict[str, Any], raw)
+            return VoteData(
+                message_id=str(data['message_id']),
+                channel_id=str(data['channel_id']),
+                creator_id=str(data['creator_id']),
+                created_at=int(data['created_at']),
+                message=str(data['message']),
+                show_counts=bool(data['show_counts']),
+                concluded=bool(data.get('concluded', False)),
+                concluded_by=str(data['concluded_by']) if data.get('concluded_by') else None,
+                concluded_at=int(data['concluded_at']) if data.get('concluded_at') else None,
+                thumbsup=[str(x) for x in cast(list[Any], data.get('thumbsup') or [])],
+                thumbsdown=[str(x) for x in cast(list[Any], data.get('thumbsdown') or [])],
+            )
+        except (yaml.YAMLError, KeyError, TypeError, ValueError):
+            logger.exception("Corrupted vote file, skipping: %s", path)
+            return None
 
     def save(self, vote: VoteData) -> None:
         path = self._path(vote.message_id)

@@ -19,8 +19,8 @@ from voting.store import VoteData, VoteStore
 
 logger = logging.getLogger(__name__)
 
-THUMBSUP = "\U0001f44d"   # 👍
-THUMBSDOWN = "\U0001f44e" # 👎
+THUMBSUP = "👍"
+THUMBSDOWN = "👎"
 
 
 def _format_poll_message(vote: VoteData, force_counts: bool = False) -> str:
@@ -136,12 +136,12 @@ class VotingBot(commands.Bot):
                 try:
                     await message.remove_reaction(THUMBSUP, user)
                 except (discord.Forbidden, discord.HTTPException):
-                    logger.warning("Could not remove 👍 from user %d on message %s", user.id, vote.message_id)
+                    logger.warning("Could not remove %s from user %d on message %s", THUMBSUP, user.id, vote.message_id)
             for user in down_users:
                 try:
                     await message.remove_reaction(THUMBSDOWN, user)
                 except (discord.Forbidden, discord.HTTPException):
-                    logger.warning("Could not remove 👎 from user %d on message %s", user.id, vote.message_id)
+                    logger.warning("Could not remove %s from user %d on message %s", THUMBSDOWN, user.id, vote.message_id)
 
             if changed and vote.show_counts:
                 try:
@@ -155,6 +155,8 @@ class VotingBot(commands.Bot):
         if payload.message_id not in self.active_polls:
             return
         if self.user and payload.user_id == self.user.id:
+            return
+        if payload.member is not None and payload.member.bot:
             return
 
         emoji_str = str(payload.emoji)
@@ -234,14 +236,29 @@ class VotingBot(commands.Bot):
                 concluded_at=None,
             )
 
-            poll_message = await interaction.channel.send(_format_poll_message(vote))
+            try:
+                poll_message = await interaction.channel.send(_format_poll_message(vote))
+            except discord.Forbidden:
+                await interaction.followup.send(
+                    "I don't have permission to send messages in this channel.", ephemeral=True
+                )
+                return
+            except discord.HTTPException as exc:
+                await interaction.followup.send(
+                    f"Failed to post poll: {exc}", ephemeral=True
+                )
+                return
+
             vote.message_id = str(poll_message.id)
 
             self.store.save(vote)
             self.active_polls.add(poll_message.id)
 
-            await poll_message.add_reaction(THUMBSUP)
-            await poll_message.add_reaction(THUMBSDOWN)
+            try:
+                await poll_message.add_reaction(THUMBSUP)
+                await poll_message.add_reaction(THUMBSDOWN)
+            except (discord.Forbidden, discord.HTTPException) as exc:
+                logger.warning("Could not add reactions to poll %s: %s", poll_message.id, exc)
 
             await interaction.followup.send(
                 f"Poll created! Message ID: `{poll_message.id}`", ephemeral=True
