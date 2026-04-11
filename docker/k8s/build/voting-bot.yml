@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: voting-bot-config
+  namespace: build
+data:
+  config.yml: |
+    # Path where poll YAML files are stored.
+    # Each poll (active or concluded) is saved as data/<message_id>.yml
+    data_dir: /data
+
+    discord:
+      # List of Discord role IDs that are allowed to create polls.
+      # If the list is empty, all users in the server can create polls.
+      allowed_role_ids: []
+      # - 123456789012345678
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voting-bot
+  namespace: build
+  labels:
+    app: voting-bot
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: voting-bot
+  template:
+    metadata:
+      labels:
+        app: voting-bot
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-18
+      volumes:
+        - name: voting-bot-storage
+          hostPath:
+            type: Directory
+            path: /nfs/voting-bot/build
+        - name: voting-bot-config
+          configMap:
+            name: voting-bot-config
+      containers:
+      - name: voting-bot
+        image: ghcr.io/teammonumenta/monumenta-automation/voting-bot:latest
+        tty: false
+        stdin: false
+        volumeMounts:
+        - name: voting-bot-storage
+          mountPath: /data
+        - name: voting-bot-config
+          mountPath: /config/config.yml
+          subPath: config.yml
+        env:
+        - name: CONFIG_PATH
+          value: /config/config.yml
+        # Bot token loaded from a Kubernetes secret.
+        # Create the secret with:
+        #   kubectl create secret generic voting-bot --from-literal=discord-token='YOUR_TOKEN_HERE' -n build
+        - name: DISCORD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: voting-bot
+              key: discord-token
+        resources:
+          limits:
+            cpu: 250m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
