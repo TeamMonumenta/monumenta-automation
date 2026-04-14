@@ -321,10 +321,6 @@ if __name__ == '__main__':
         ('plugins/AdvancedServerList-Velocity.jar', '../../server_config/plugins/AdvancedServerList-Velocity.jar'),
         ('plugins/advancedserverlist/config.yml', '../../../server_config/data/server_config_template/plugins/AdvancedServerList/config.yml'),
         ('plugins/advancedserverlist/profiles', '../../../server_config/data/server_config_template/plugins/AdvancedServerList/profiles/{}'.format(SERVER_TYPE)),
-        ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
-        ('plugins/litebans/config.yml', '../../../server_config/data/plugins/proxy/litebans/config.yml'),
-        ('plugins/litebans/messages.yml', '../../../server_config/data/plugins/proxy/litebans/messages.yml'),
-        ('plugins/litebans/webhooks.yml', f'../../../server_config/data/plugins/proxy/litebans/{SERVER_TYPE}/webhooks.yml'),
         ('plugins/LuckPerms-Velocity.jar', '../../server_config/plugins/LuckPerms-Velocity.jar'),
         ('plugins/luckperms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
         ('plugins/Maintenance-Velocity.jar', '../../server_config/plugins/Maintenance-Velocity.jar'),
@@ -335,14 +331,24 @@ if __name__ == '__main__':
         ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
-        ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
-        ('plugins/premiumvanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
         ('plugins/spark-velocity.jar', '../../server_config/plugins/spark-velocity.jar'),
         ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
         #('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
         #('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
         ('plugins/velocity-prometheus-exporter.jar', '../../server_config/plugins/velocity-prometheus-exporter.jar'),
         ('plugins/velocity-prometheus-exporter/config.json', '../../../server_config/data/plugins/proxy/velocity-prometheus-exporter/config.json'),
+    ]
+
+    proxy_litebans = [
+        ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
+        ('plugins/litebans/config.yml', '../../../server_config/data/plugins/proxy/litebans/config.yml'),
+        ('plugins/litebans/messages.yml', '../../../server_config/data/plugins/proxy/litebans/messages.yml'),
+        ('plugins/litebans/webhooks.yml', f'../../../server_config/data/plugins/proxy/litebans/{SERVER_TYPE}/webhooks.yml'),
+    ]
+
+    proxy_vanish = [
+        ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
+        ('plugins/premiumvanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
     ]
 
     proxy_plan = [
@@ -897,11 +903,11 @@ if __name__ == '__main__':
         add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
         add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
 
-        # Player analytics plugin only for play server
+        # Some things only for play server
         for key, shard_config in config.items():
             if "purgatory" not in key:
                 if "velocity" in key:
-                    shard_config['linked'] += proxy_plan
+                    shard_config['linked'] += proxy_plan + proxy_vanish + proxy_litebans
                     continue
                 if "build" in key:
                     shard_config['linked'] += plan
