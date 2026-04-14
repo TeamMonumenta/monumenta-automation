@@ -29,11 +29,15 @@ async def main() -> None:
         "Starting with config:\n"
         "  CONFIG_PATH=%s\n"
         "  data_dir=%s\n"
+        "  guild_id=%s\n"
         "  allowed_role_ids=%s\n"
+        "  logged_role_ids=%s\n"
         "  DISCORD_TOKEN=%s",
         config_path,
         config.data_dir,
+        config.guild_id,
         sorted(config.discord.allowed_role_ids) or '(all users)',
+        sorted(config.discord.logged_role_ids) or '(none)',
         _mask_token(discord_token),
     )
 

@@ -10,8 +10,22 @@ import yaml
 logger = logging.getLogger(__name__)
 
 
-def _str_list() -> list[str]:
-    return []
+def _vote_map() -> dict[str, list[str]]:
+    return {}
+
+
+def _load_vote_map(raw: Any) -> dict[str, list[str]]:
+    """Load thumbsup/thumbsdown from YAML, handling both old list and new dict formats."""
+    if not raw:
+        return {}
+    if isinstance(raw, list):
+        # Old format: plain list of user ID strings → convert to dict with empty role lists
+        return {str(uid): [] for uid in cast(list[Any], raw)}
+    # New format: {user_id: [role_name, ...]}
+    return {
+        str(k): [str(r) for r in cast(list[Any], v or [])]
+        for k, v in cast(dict[Any, Any], raw).items()
+    }
 
 
 @dataclass
@@ -25,8 +39,10 @@ class VoteData:
     concluded: bool
     concluded_by: Optional[str]
     concluded_at: Optional[int]
-    thumbsup: list[str] = field(default_factory=_str_list)
-    thumbsdown: list[str] = field(default_factory=_str_list)
+    # Maps voter user ID → list of logged role names at time of vote.
+    # An empty list means the user had none of the configured logged_role_ids.
+    thumbsup: dict[str, list[str]] = field(default_factory=_vote_map)
+    thumbsdown: dict[str, list[str]] = field(default_factory=_vote_map)
     end_at: Optional[int] = None
 
 
@@ -58,8 +74,8 @@ class VoteStore:
                 concluded=bool(data.get('concluded', False)),
                 concluded_by=str(data['concluded_by']) if data.get('concluded_by') else None,
                 concluded_at=int(data['concluded_at']) if data.get('concluded_at') else None,
-                thumbsup=[str(x) for x in cast(list[Any], data.get('thumbsup') or [])],
-                thumbsdown=[str(x) for x in cast(list[Any], data.get('thumbsdown') or [])],
+                thumbsup=_load_vote_map(data.get('thumbsup')),
+                thumbsdown=_load_vote_map(data.get('thumbsdown')),
                 end_at=int(data['end_at']) if data.get('end_at') else None,
             )
         except (yaml.YAMLError, KeyError, TypeError, ValueError):
@@ -68,6 +84,7 @@ class VoteStore:
 
     def save(self, vote: VoteData) -> None:
         path = self._path(vote.message_id)
+        # Serialize thumbsup/thumbsdown as {user_id: [role_name, ...]} dicts.
         data: dict[str, Any] = {
             'message_id': vote.message_id,
             'channel_id': vote.channel_id,
@@ -78,8 +95,8 @@ class VoteStore:
             'concluded': vote.concluded,
             'concluded_by': vote.concluded_by,
             'concluded_at': vote.concluded_at,
-            'thumbsup': vote.thumbsup,
-            'thumbsdown': vote.thumbsdown,
+            'thumbsup': dict(vote.thumbsup),
+            'thumbsdown': dict(vote.thumbsdown),
             'end_at': vote.end_at,
         }
         with open(path, 'w', encoding='utf-8') as f:

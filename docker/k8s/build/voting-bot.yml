@@ -9,11 +9,21 @@ data:
     # Each poll (active or concluded) is saved as data/<message_id>.yml
     data_dir: /data
 
+    guild_id: 186225508562763776
+
     discord:
       # List of Discord role IDs that are allowed to create polls.
       # If the list is empty, all users in the server can create polls.
       allowed_role_ids: []
       # - 123456789012345678
+
+      # List of Discord role IDs that have their label stored with the user's ID.
+      # For minimal vote auditing without being more revealing than necessary.
+      logged_role_ids:
+      - 390269554657460226 # Intern
+      - 824391828836450345 # Moderator
+      - 514686218576068630 # Inactive
+      - 341032989787947008 # Developer
 ---
 apiVersion: apps/v1
 kind: Deployment

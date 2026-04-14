@@ -5,6 +5,11 @@
 Players create anonymous polls via /anon_vote. Reactions are recorded in YAML
 files and immediately removed to preserve anonymity. Poll creators can end
 voting with /anon_vote_end.
+
+Required Discord privileged intents:
+  - Server Members Intent: needed to fetch member role data when processing
+    reactions that arrived while the bot was offline (catchup on startup).
+    Grant this in the Discord Developer Portal under Bot > Privileged Gateway Intents.
 """
 import logging
 import time
@@ -22,6 +27,11 @@ logger = logging.getLogger(__name__)
 THUMBSUP = "👍"
 THUMBSDOWN = "👎"
 ONE_MONTH_SECS = 30 * 24 * 3600
+
+
+def _get_member_role_names(member: discord.Member, logged_role_ids: set[int]) -> list[str]:
+    """Return the names of the member's roles that appear in logged_role_ids."""
+    return [role.name for role in member.roles if role.id in logged_role_ids]
 
 
 def _format_poll_message(vote: VoteData, force_counts: bool = False) -> str:
@@ -47,6 +57,9 @@ class VotingBot(commands.Bot):
 
     def __init__(self, config: VotingConfig, store: VoteStore) -> None:
         intents = discord.Intents.default()
+        # Server Members Intent: required to fetch member role data during startup
+        # catchup (reactions received while offline). See module docstring.
+        intents.members = True
         super().__init__(command_prefix="!", intents=intents)
         self.config = config
         self.store = store
@@ -89,6 +102,30 @@ class VotingBot(commands.Bot):
             return None
         return channel
 
+    async def _fetch_guild_member(self, user_id: int) -> Optional[discord.Member]:
+        """Fetch a guild member by user ID, returning None if not found."""
+        guild = self.get_guild(self.config.guild_id)
+        if guild is None:
+            logger.warning("Guild %d not found in cache", self.config.guild_id)
+            return None
+        try:
+            return await guild.fetch_member(user_id)
+        except (discord.NotFound, discord.HTTPException):
+            return None
+
+    async def _role_names_for_user(
+        self, user: Union[discord.User, discord.Member]
+    ) -> list[str]:
+        """Return logged role names for a user, fetching member data if needed."""
+        if not self.config.discord.logged_role_ids:
+            return []
+        if isinstance(user, discord.Member):
+            return _get_member_role_names(user, self.config.discord.logged_role_ids)
+        member = await self._fetch_guild_member(user.id)
+        if member is None:
+            return []
+        return _get_member_role_names(member, self.config.discord.logged_role_ids)
+
     # --- Startup catch-up ---
 
     async def _catchup_active_polls(self) -> None:
@@ -125,15 +162,15 @@ class VotingBot(commands.Bot):
             for user in up_users:
                 uid = str(user.id)
                 if uid not in vote.thumbsup and uid not in vote.thumbsdown:
-                    vote.thumbsup.append(uid)
+                    vote.thumbsup[uid] = await self._role_names_for_user(user)
                     changed = True
 
             for user in down_users:
                 uid = str(user.id)
                 if uid in vote.thumbsup:
-                    vote.thumbsup.remove(uid)
+                    vote.thumbsup.pop(uid)
                 if uid not in vote.thumbsdown:
-                    vote.thumbsdown.append(uid)
+                    vote.thumbsdown[uid] = await self._role_names_for_user(user)
                     changed = True
 
             if changed:
@@ -204,16 +241,21 @@ class VotingBot(commands.Bot):
             return
 
         user_id = str(payload.user_id)
+        # payload.member is always populated for guild reactions and carries full
+        # role data without requiring an extra fetch.
+        roles = (
+            _get_member_role_names(payload.member, self.config.discord.logged_role_ids)
+            if payload.member is not None
+            else []
+        )
         if emoji_str == THUMBSUP:
-            if user_id in vote.thumbsdown:
-                vote.thumbsdown.remove(user_id)
+            vote.thumbsdown.pop(user_id, None)
             if user_id not in vote.thumbsup:
-                vote.thumbsup.append(user_id)
+                vote.thumbsup[user_id] = roles
         else:
-            if user_id in vote.thumbsup:
-                vote.thumbsup.remove(user_id)
+            vote.thumbsup.pop(user_id, None)
             if user_id not in vote.thumbsdown:
-                vote.thumbsdown.append(user_id)
+                vote.thumbsdown[user_id] = roles
 
         self.store.save(vote)
 
