@@ -21,11 +21,13 @@ rules:
       - "apps"
     resources:
       - deployments
+      - statefulsets
       # TODO: Don't need this?
       - pods
     verbs:
       - list
       - patch
+      - get
       # TODO: Don't need this?
       - update
 

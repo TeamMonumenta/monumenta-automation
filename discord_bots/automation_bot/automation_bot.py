@@ -115,7 +115,7 @@ class AutomationBot(commands.Bot):
                     channel = self.get_channel(channel_id)
                     self.channels[channel_id] = self.instance
                     if channel_id != 486019840134610965: # TODO: Config... this is the visible weekly update channel
-                        await channel.send(config.NAME + " started and now listening.")
+                        await channel.send(config.NAME + " started and now listening. Edmund v2")
                 except Exception:
                     logging.error("Cannot connect to channel: %s", config.CHANNELS)
 

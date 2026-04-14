@@ -1227,47 +1227,92 @@ Examples:
         shards = await self._k8s.list()
         for name, state in shards.items():
             prev_status = previous_states.get(name, {}).get('status', None)
-            status = 'error'
-            reaction = ':exclamation:'
-            reaction_order = 99
-            if state["replicas"] == 1 and state["available_replicas"] == 1:
-                status = 'started'
-                reaction = ':white_check_mark:'
-                reaction_order = 0
-            elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                status = 'starting'
-                reaction = ':arrow_up:'
-                reaction_order = 1
-            elif state["replicas"] == 0 and "pod_name" in state:
-                status = 'stopping'
-                reaction = ':arrow_down:'
-                reaction_order = 2
-            elif state["replicas"] == 0 and "pod_name" not in state:
-                status = 'stopped'
-                reaction = ':x:'
-                reaction_order = 3
+            if state["type"] == "deployment":
+                status = 'error'
+                reaction = ':exclamation:'
+                reaction_order = 99
+                if state["replicas"] == 1 and state["available_replicas"] == 1:
+                    status = 'started'
+                    reaction = ':white_check_mark:'
+                    reaction_order = 0
+                elif state["replicas"] == 1 and state["available_replicas"] == 0:
+                    status = 'starting'
+                    reaction = ':arrow_up:'
+                    reaction_order = 1
+                elif state["replicas"] == 0 and "pod_name" in state:
+                    status = 'stopping'
+                    reaction = ':arrow_down:'
+                    reaction_order = 2
+                elif state["replicas"] == 0 and "pod_name" not in state:
+                    status = 'stopped'
+                    reaction = ':x:'
+                    reaction_order = 3
 
-            if status == prev_status:
-                current_states[name] = previous_states[name]
-            else:
-                current_state = {
-                    "status": status,
-                    "reaction": reaction,
-                    "reaction_order": reaction_order,
-                    "last_change": int(datetime.now(tz).timestamp()),
-                }
-                current_states[name] = current_state
-                shard_state_path = shard_states_path / f'{name}.json'
-                with open(shard_state_path, 'w', encoding='utf-8') as fp:
-                    print(
-                        json.dumps(
-                            current_state,
-                            ensure_ascii=False,
-                            indent=2,
-                            separators=(',', ': ')
-                        ),
-                        file=fp
-                    )
+                if status == prev_status:
+                    current_states[name] = previous_states[name]
+                else:
+                    current_state = {
+                        "status": status,
+                        "reaction": reaction,
+                        "reaction_order": reaction_order,
+                        "last_change": int(datetime.now(tz).timestamp()),
+                    }
+                    current_states[name] = current_state
+                    shard_state_path = shard_states_path / f'{name}.json'
+                    with open(shard_state_path, 'w', encoding='utf-8') as fp:
+                        print(
+                            json.dumps(
+                                current_state,
+                                ensure_ascii=False,
+                                indent=2,
+                                separators=(',', ': ')
+                            ),
+                            file=fp
+                        )
+            elif state["type"] == "statefulset":
+                for pod in state["pods"]:
+                    name, is_ready = pod[0],pod[1]
+                    status = 'error'
+                    reaction = ':exclamation:'
+                    reaction_order = 99
+                    if is_ready:
+                        status = 'started'
+                        reaction = ':white_check_mark:'
+                        reaction_order = 0
+                    elif not is_ready:
+                        status = 'starting'
+                        reaction = ':arrow_up:'
+                        reaction_order = 1
+                    # elif state["replicas"] == 0 and "pod_name" in state:
+                    #     status = 'stopping'
+                    #     reaction = ':arrow_down:'
+                    #     reaction_order = 2
+                    # elif state["replicas"] == 0 and "pod_name" not in state:
+                    #     status = 'stopped'
+                    #     reaction = ':x:'
+                    #     reaction_order = 3
+
+                    if status == prev_status:
+                        current_states[name] = previous_states[name]
+                    else:
+                        current_state = {
+                            "status": status,
+                            "reaction": reaction,
+                            "reaction_order": reaction_order,
+                            "last_change": int(datetime.now(tz).timestamp()),
+                        }
+                        current_states[name] = current_state
+                        shard_state_path = shard_states_path / f'{name}.json'
+                        with open(shard_state_path, 'w', encoding='utf-8') as fp:
+                            print(
+                                json.dumps(
+                                    current_state,
+                                    ensure_ascii=False,
+                                    indent=2,
+                                    separators=(',', ': ')
+                                ),
+                                file=fp
+                            )
 
         return current_states
 

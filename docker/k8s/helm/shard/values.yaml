@@ -43,3 +43,6 @@ cpuReqs: "250m"
 cpuLimits: "2"
 # CPU ActiveProcessorCount - number of cpu threads this shard can see
 cpuActiveProcessorCount: 2
+
+# Whether this deployment is a StatefulSet (true, experimental) or a Deployment (false, default)
+statefulSet: false

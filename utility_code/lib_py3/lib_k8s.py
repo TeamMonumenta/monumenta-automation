@@ -84,29 +84,79 @@ class KubernetesManager(object):
         await self.start(names, wait, timeout_seconds)
 
     async def list(self):
+        '''
+        Returns a list of all the pods from all the deployments and statefulsets in the following format:
+        {'tutorial': {'available_replicas': 0,
+            'label_selector': 'app=tutorial',
+            'pods': [],
+            'replicas': 0,
+            'type': 'deployment'},
+         'valley': {'available_replicas': 1,
+            'label_selector': 'app=valley',
+            'pods': [('valley-1', True), ('valley-2', False)],
+            'replicas': 2,
+            'type': 'statefulset'},
+         'velocity-17': {'available_replicas': 1,
+            'label_selector': 'app=velocity-17',
+            'pods': [('velocity-17-5f695c955c-r5hgz', True)],
+            'replicas': 1,
+            'type': 'deployment'}}
+        '''
         result = {}
 
         # TODO: Filter by label so only actual shards are returned?
         query = client.AppsV1Api().list_namespaced_deployment(self._namespace)
+        
         for deployment in query.items:
             name = deployment.metadata.name
 
             data = {}
+            data["type"] = "deployment"
             data["replicas"] = deployment.spec.replicas
             if deployment.status.available_replicas is None:
                 data["available_replicas"] = 0
             else:
                 data["available_replicas"] = deployment.status.available_replicas
+            #labels = deployment.spec.selector.match_labels
+            #data["label_selector"] = ",".join([f"{k}={v}" for k, v in labels.items()])
+            #data["pods"] = []
             result[name] = data
 
-        query = client.CoreV1Api().list_namespaced_pod(self._namespace)
-        for pod in query.items:
+        query = client.AppsV1Api().list_namespaced_stateful_set(self._namespace)
+        for statefulset in query.items:
+            name = statefulset.metadata.name
 
-            pod_name = pod.metadata.name
-            for deployment_name in result:
-                if re.fullmatch(deployment_name + '-[0-9a-z]+-[0-9a-z]+', pod_name):
-                    result[deployment_name]["pod_name"] = pod_name
-                    break
+            data = {}
+            data["type"] = "statefulset"
+            data["replicas"] = statefulset.spec.replicas
+            if statefulset.status.available_replicas is None:
+                data["available_replicas"] = 0
+            else:
+                data["available_replicas"] = statefulset.status.available_replicas
+            
+            # TODO: Edmund - We need to now this number so that we can display the correct number of pods
+            # that are offline.
+            data["total_replicas"] = "<replace this with the desired/max number of replicas stored in redis>"
+            
+            labels = statefulset.spec.selector.match_labels
+            data["label_selector"] = ",".join([f"{k}={v}" for k, v in labels.items()])
+            data["pods"] = []
+            result[name] = data
+
+        for item in result:
+            if "label_selector" not in result[item].keys():
+                continue
+            label_selector = result[item]["label_selector"]
+            pods = client.CoreV1Api().list_namespaced_pod(namespace=self._namespace,label_selector=label_selector)
+            
+            for pod in pods.items:
+                pod_name = pod.metadata.name
+                pod_ready = False
+                pod_details = client.CoreV1Api().read_namespaced_pod(name=pod_name, namespace=self._namespace)
+                for condition in pod_details.status.conditions:
+                    if condition.type == 'Ready':
+                        pod_ready = condition.status == 'True'
+                result[item]["pods"].append((pod_name, pod_ready))
 
         logger.debug("Deployment list: {}".format(pformat(result)))
 

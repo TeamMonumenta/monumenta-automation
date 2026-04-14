@@ -14,6 +14,9 @@ metadata:
 {{- end }}
 spec:
   type: ClusterIP
+{{- if .Values.statefulSet }}
+  clusterIP: None        # headless — required for StatefulSet pod DNS
+{{- end }}
   selector:
     app: {{ .Values.name }}
   ports:
@@ -35,15 +38,28 @@ spec:
 # Deployment / the actual running application
 
 apiVersion: apps/v1
+{{- if .Values.statefulSet }}
+kind: StatefulSet
+{{- else }}
 kind: Deployment
+{{- end }}
 metadata:
   name: {{ .Values.name }}
   namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.name }}
 spec:
+{{- if .Values.statefulSet }}
+  serviceName: {{ .Values.name }} # binds to the headless Service above
+  updateStrategy:
+    type: RollingUpdate
+  ordinals:
+    start: 1
+  podManagementPolicy: Parallel
+{{- else }}
   strategy:
     type: Recreate
+{{- end }}
   replicas: 0
   selector:
     matchLabels:
@@ -114,20 +130,40 @@ spec:
           value: "{{ .Values.hugePageMB }}M"
         - name: "JAVA_JAR"
           value: "server.jar"
+        - name: "POD_NAME"
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         - name: "SERVER_DIR"
+{{- if .Values.statefulSet }}
+          value: "/home/epic/{{ .Values.namespace }}/{{ .Values.node }}/$(POD_NAME)"
+{{- else }}
           value: "/home/epic/{{ .Values.namespace }}/{{ .Values.node }}/{{ .Values.name }}"
+{{- end }}
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "NETWORK_NAMESPACE"
           value: {{ .Values.namespace }}
         - name: "NETWORK_RELAY_NAME"
+{{- if .Values.statefulSet }}
+          value: "$(POD_NAME)"
+{{- else }}
           value: {{ .Values.name }}
+{{- end }}
         - name: "EXCEPTLOG_INGEST_URL"
           value: "http://exception-logger/ingest"
         - name: "EXCEPTLOG_SERVER_NAME"
+{{- if .Values.statefulSet }}
+          value: "$(POD_NAME)"
+{{- else }}
           value: {{ .Values.name }}
+{{- end }}
         - name: "NETWORK_RELAY_SERVER_ADDRESS"
+{{- if .Values.statefulSet }}
+          value: "$(POD_NAME).{{ .Values.name }}:25566"
+{{- else }}
           value: "{{ .Values.name }}:25566"
+{{- end }}
 {{- if eq .Values.namespace "build" }}
         - name: "JAVA_ARG"
           value: "-XX:ActiveProcessorCount={{ .Values.cpuActiveProcessorCount }} -DPaper.IgnoreJavaVersion=true -Ddisable.watchdog=true -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:9000 -Dlog4j2.configurationFile=log4j2-shard.xml -XX:+AllowEnhancedClassRedefinition"

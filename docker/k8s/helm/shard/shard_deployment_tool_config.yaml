@@ -19,7 +19,7 @@
     "mobs"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
     "dungeon"            : { "build": { "node": "m18", "hugePageGB": 8   , }, },
     #"futurama"           : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
-    #"test"               : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
+    "test"               : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
     "event"              : { "build": { "node": "m18", "hugePageGB": 3   , }, },
     "monumenta-sdk"      : { "build": { "node": "m18", "hugePageGB": 3   , }, },
 
@@ -36,7 +36,7 @@
         "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4},
         "build": { "node": "m18", "hugePageGB": 6, },
         "stage": { "node": "m18", "hugePageGB": 3, },
-        "volt" : { "node": "m18", "hugePageGB": 3, },
+        "volt" : { "node": "m18", "hugePageGB": 3, "statefulSet": "true"},
     },
     "valley-2": {
         "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4},
