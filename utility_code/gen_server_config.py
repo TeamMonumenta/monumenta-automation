@@ -326,6 +326,7 @@ if __name__ == '__main__':
         ('plugins/Maintenance-Velocity.jar', '../../server_config/plugins/Maintenance-Velocity.jar'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
         # ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
+        ('plugins/MonumentaCommon.jar', '../../server_config/plugins/MonumentaCommon.jar'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
         ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
@@ -375,6 +376,7 @@ if __name__ == '__main__':
     ]
 
     monumenta = [
+        ('plugins/MonumentaCommon.jar', '../../server_config/plugins/MonumentaCommon.jar'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/MonumentaExceptionReporter.jar', '../../server_config/plugins/MonumentaExceptionReporter.jar'),
         ('plugins/MonumentaWorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
