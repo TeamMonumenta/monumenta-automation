@@ -43,3 +43,8 @@ cpuReqs: "250m"
 cpuLimits: "2"
 # CPU ActiveProcessorCount - number of cpu threads this shard can see
 cpuActiveProcessorCount: 2
+
+# Which domain the shard sends exception reports to
+# This exists solely for the build shard to send exception reports to the build server, everything else should be in the same domain
+# null gets defaulted to the namespace
+exceptLogIngestDomain: null
