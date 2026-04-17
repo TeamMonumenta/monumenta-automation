@@ -3,7 +3,10 @@ import re
 from pprint import pformat
 
 import logging
+import urllib3
 logger = logging.getLogger(__name__)
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from kubernetes import client, config
 
@@ -20,6 +23,11 @@ class KubernetesManager(object):
                 config.load_kube_config()
             except config.config_exception.ConfigException as e:
                 raise Exception("Failed to load k8s config - is the environment set up?")
+
+        # Disable SSL verification on the loaded config (needed when connecting via SSH tunnel)
+        conf = client.Configuration.get_default_copy()
+        conf.verify_ssl = False
+        client.Configuration.set_default(conf)
 
     async def _set_replicas(self, deployment_map, wait, timeout_seconds):
         # deployment_map = { deployment_name (string) : replicas (int) }
@@ -83,7 +91,7 @@ class KubernetesManager(object):
         await self.stop(names, wait, timeout_seconds)
         await self.start(names, wait, timeout_seconds)
 
-    async def list(self):
+    async def list(self, shards=None):
         '''
         Returns a list of all the pods from all the deployments and statefulsets in the following format:
         {'tutorial': {'available_replicas': 0,
@@ -103,60 +111,72 @@ class KubernetesManager(object):
             'type': 'deployment'}}
         '''
         result = {}
-
+                
         # TODO: Filter by label so only actual shards are returned?
         query = client.AppsV1Api().list_namespaced_deployment(self._namespace)
         
         for deployment in query.items:
             name = deployment.metadata.name
-
+            if shards is not None and name not in shards:
+                continue
             data = {}
             data["type"] = "deployment"
-            data["replicas"] = deployment.spec.replicas
+            data["current_replicas"] = deployment.spec.replicas
             if deployment.status.available_replicas is None:
                 data["available_replicas"] = 0
             else:
                 data["available_replicas"] = deployment.status.available_replicas
             #labels = deployment.spec.selector.match_labels
             #data["label_selector"] = ",".join([f"{k}={v}" for k, v in labels.items()])
-            #data["pods"] = []
+            data["pods"] = {}
             result[name] = data
 
         query = client.AppsV1Api().list_namespaced_stateful_set(self._namespace)
         for statefulset in query.items:
             name = statefulset.metadata.name
-
+            if shards is not None and name not in shards:
+                continue
             data = {}
             data["type"] = "statefulset"
-            data["replicas"] = statefulset.spec.replicas
+            data["current_replicas"] = statefulset.spec.replicas
             if statefulset.status.available_replicas is None:
                 data["available_replicas"] = 0
             else:
                 data["available_replicas"] = statefulset.status.available_replicas
             
-            # TODO: Edmund - We need to now this number so that we can display the correct number of pods
-            # that are offline.
-            data["total_replicas"] = "<replace this with the desired/max number of replicas stored in redis>"
-            
             labels = statefulset.spec.selector.match_labels
             data["label_selector"] = ",".join([f"{k}={v}" for k, v in labels.items()])
-            data["pods"] = []
+            data["pods"] = {}
             result[name] = data
 
         for item in result:
-            if "label_selector" not in result[item].keys():
-                continue
-            label_selector = result[item]["label_selector"]
-            pods = client.CoreV1Api().list_namespaced_pod(namespace=self._namespace,label_selector=label_selector)
-            
-            for pod in pods.items:
-                pod_name = pod.metadata.name
-                pod_ready = False
-                pod_details = client.CoreV1Api().read_namespaced_pod(name=pod_name, namespace=self._namespace)
-                for condition in pod_details.status.conditions:
-                    if condition.type == 'Ready':
-                        pod_ready = condition.status == 'True'
-                result[item]["pods"].append((pod_name, pod_ready))
+            if result[item]["type"] == "deployment":
+                # TODO: Edmund - If we don't query the pods directly same as statefulsets we can't tell if the pod is terminating because we don't have the current phase.
+                running = "Running" if result[item]["current_replicas"] == 1 else "Stopped"
+                pod_ready = result[item]["available_replicas"] == 1
+                result[item]["pods"][item] = {"phase":running, "ready":pod_ready, "init":True}
+                
+            elif result[item]["type"] == "statefulset" and "label_selector" in result[item].keys():
+                label_selector = result[item]["label_selector"]
+                pods = client.CoreV1Api().list_namespaced_pod(namespace=self._namespace,label_selector=label_selector)
+                
+                for pod in pods.items:
+                    pod_name = pod.metadata.name
+                    
+                    pod_ready = False
+                    initialized = False
+                    try:
+                        pod_details = client.CoreV1Api().read_namespaced_pod(name=pod_name, namespace=self._namespace)
+                    except Exception as e:
+                        print("Error occurred while fetching pod details for {}: {}".format(pod_name, str(e)))
+                        logger.error("Error occurred while fetching pod details for {}: {}".format(pod_name, str(e)))
+                        continue
+                    for condition in pod_details.status.conditions:
+                        if condition.type == 'Ready':
+                            pod_ready = condition.status == 'True'
+                        if condition.type == 'Initialized':
+                            initialized = condition.status == 'True'
+                    result[item]["pods"][pod_name] = {"phase":pod_details.status.phase, "ready":pod_ready, "init":initialized}
 
         logger.debug("Deployment list: {}".format(pformat(result)))
 
