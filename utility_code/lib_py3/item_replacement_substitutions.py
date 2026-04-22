@@ -310,6 +310,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:white_glazed_terracotta", "Lesser Orison Charm", "minecraft:large_amethyst_bud", "Lesser Transcendent Charm"],
                 ["minecraft:white_glazed_terracotta", "Greater Orison Charm", "minecraft:large_amethyst_bud", "Greater Transcendent Charm"],
                 ["minecraft:white_glazed_terracotta", "Explosive Orison Charm", "minecraft:large_amethyst_bud", "Explosive Transcendent Charm"],
+                ["minecraft:white_glazed_terracotta", "Focused Orison Charm", "minecraft:large_amethyst_bud", "Explosive Transcendent Charm"],
                 ["minecraft:white_glazed_terracotta", "Swift Orison Charm", "minecraft:large_amethyst_bud", "Swift Transcendent Charm"],
                 # Thurible -> Sentinel Charms
                 ["minecraft:glowstone_dust", "Lesser Thurible Charm", "minecraft:glowstone_dust", "Lesser Sentinel Charm"],
