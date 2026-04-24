@@ -2058,6 +2058,7 @@ Must be run before starting the update on the play server
 
         tz = timezone.utc
         now = datetime.now(tz)
+        second = timedelta(seconds=1)
         seconds_delay = 60
         stop_time = now + timedelta(seconds=seconds_delay)
         if not skip_replacements:
@@ -2069,6 +2070,7 @@ Must be run before starting the update on the play server
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
             self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
+            self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
         elif not debug:
             self.broadcast_json_msg([
                 "",
@@ -2078,13 +2080,22 @@ Must be run before starting the update on the play server
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
             self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
+            self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
 
         async def await_warning_delay():
             await self.display(ctx, "Giving devs time to wrap up what they're doing")
             remaining_seconds = (stop_time - datetime.now(tz)) / timedelta(seconds=1)
-            if remaining_seconds < 0:
+            if remaining_seconds <= 0:
                 return
-            await asyncio.sleep(remaining_seconds)
+
+            try:
+                async with asyncio.timeout(remaining_seconds):
+                    while True:
+                        await asyncio.sleep(3)
+                        remaining_seconds = (stop_time - datetime.now(tz)) / second
+                        self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
+            except TimeoutError:
+                pass
 
         if not skip_commit:
             repo = git.Repo('/home/epic/project_epic/server_config/data')
