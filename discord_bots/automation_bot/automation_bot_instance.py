@@ -488,7 +488,7 @@ class AutomationBotInstance(commands.Cog):
         if self.check_permissions(match, message.author):
             await self._commands[match](ctx, match, message)
         else:
-            await ctx.send("Sorry " + message.author.mention + ", you do not have permission to run this command")
+            await self.send_with_retry(ctx, "Sorry " + message.author.mention + ", you do not have permission to run this command")
 
     async def load_raffle_reaction(self):
         """Loads persistent raffle reaction ID"""
@@ -754,17 +754,41 @@ class AutomationBotInstance(commands.Cog):
 
         return result
 
+    @staticmethod
+    async def send_with_retry(
+        ctx: discord.ext.commands.Context,
+        content=None, *, tts=False, embed=None, embeds=None, file=None, files=None, stickers=None,
+        delete_after=None, nonce=None, allowed_mentions=None, reference=None,
+        mention_author=None, view=None, suppress_embeds=False, silent=False, poll=None
+    ):
+        tz = timezone.utc
+        abort_timestamp = datetime.now(tz) + timedelta(minutes=10)
+        attempts = 1
+        while True:
+            try:
+                await ctx.send(
+                    content=content, tts=tts, embed=embed, embeds=embeds, file=file, files=files, stickers=stickers,
+                    delete_after=delete_after, nonce=nonce, allowed_mentions=allowed_mentions, reference=reference,
+                    mention_author=mention_author, view=view, suppress_embeds=suppress_embeds, silent=silent, poll=poll
+                )
+                return
+            except discord.errors.DiscordServerError:
+                if datetime.now(tz) >= abort_timestamp:
+                    raise
+                await asyncio.sleep(min(60, 5 * attempts))
+                attempts += 1
+
     async def display_verbatim(self, ctx: discord.ext.commands.Context, text: str, text_format=""):
         """Respond with verbatim text split into chunks that fit the message size"""
         for chunk in split_string(escape_triple_backtick(text)):
-            await ctx.send("```" + text_format + "\n" + chunk + "\n```")
+            await self.send_with_retry(ctx, "```" + text_format + "\n" + chunk + "\n```")
 
     async def debug(self, ctx: discord.ext.commands.Context, text: str):
         """Log debug text to the console, and if verbose mode is on, respond with it also"""
         logger.debug(text)
         if self._debug:
             for chunk in split_string(text):
-                await ctx.send(chunk)
+                await self.send_with_retry(ctx, chunk)
 
     async def cd(self, ctx: discord.ext.commands.Context, path: str):
         """Changes the bot's current working directory. This affects all commands!"""
@@ -774,7 +798,7 @@ class AutomationBotInstance(commands.Cog):
     async def display(self, ctx: discord.ext.commands.Context, msg: str):
         """Respond with text split into chunks that fit the message size"""
         for chunk in split_string(msg):
-            await ctx.send(chunk)
+            await self.send_with_retry(ctx, chunk)
 
     async def _read_stream(self, queue, stream, process_line, terminator):
         """Reads a stream of text, such as from a pipe, and passes it into a queue one line at a time.
@@ -824,7 +848,7 @@ class AutomationBotInstance(commands.Cog):
 
         stderr = stderr.decode('utf-8')
         if stderr and not suppressStdErr:
-            await ctx.send(f"stderr from command `{cmd}`:")
+            await self.send_with_retry(ctx, f"stderr from command `{cmd}`:")
             await self.display_verbatim(ctx, stderr)
 
         if isinstance(ret, int) and rc != ret:
@@ -1108,11 +1132,11 @@ class AutomationBotInstance(commands.Cog):
             if helptext is None:
                 helptext = f'''Command {target_command!r} does not exist!'''
 
-        await ctx.send(helptext)
+        await self.send_with_retry(ctx, helptext)
 
     async def action_list_bots(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         '''Lists currently running bots'''
-        await ctx.send('`' + self._name + '`')
+        await self.send_with_retry(ctx, '`' + self._name + '`')
 
     async def action_select_bot(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Make specified bots start listening for commands; unlisted bots stop listening.
@@ -1163,22 +1187,22 @@ Examples:
 
         self._debug = not self._debug
 
-        await ctx.send(f"Verbose messages setting: {self._debug}")
+        await self.send_with_retry(ctx, f"Verbose messages setting: {self._debug}")
 
     async def action_test(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         '''Simple test action that does nothing'''
 
-        await ctx.send("Testing successful!")
+        await self.send_with_retry(ctx, "Testing successful!")
 
     async def action_test_priv(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         '''Test if user has permission to use restricted commands'''
 
-        await ctx.send("You've got the power")
+        await self.send_with_retry(ctx, "You've got the power")
 
     async def action_test_unpriv(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         '''Test that a restricted command fails for all users'''
 
-        await ctx.send("BUG: You definitely shouldn't have this much power")
+        await self.send_with_retry(ctx, "BUG: You definitely shouldn't have this much power")
 
 
     async def action_list_shards(self, ctx: discord.ext.commands.Context, _, inputMsg: discord.Message):
@@ -1428,7 +1452,7 @@ Examples:
         if arg_str == 'bot' and action in (self.stop, self.restart):
             if await self.check_lockout(ctx, message, self._name):
                 return
-            await ctx.send("Restarting bot. Note: This will not update the bot's image")
+            await self.send_with_retry(ctx, "Restarting bot. Note: This will not update the bot's image")
             sys.exit(0)
 
         shards_changed = []
@@ -3135,10 +3159,10 @@ Easiest way to get this is putting an item in a chest, and looking at that chest
         if len(files) > 0:
             await self.cd(ctx, "/tmp")
             for fname in files:
-                await ctx.send(fname, file=discord.File(os.path.join(userfolderpath, fname)))
+                await self.send_with_retry(ctx, fname, file=discord.File(os.path.join(userfolderpath, fname)))
             if len(files) > 1:
                 await self.run(ctx, f"zip -r {userfoldername}.zip {userfoldername}")
-                await ctx.send("Zip file containing all loot tables generated by this run:", file=discord.File(os.path.join("/tmp", f"{userfoldername}.zip")))
+                await self.send_with_retry(ctx, "Zip file containing all loot tables generated by this run:", file=discord.File(os.path.join("/tmp", f"{userfoldername}.zip")))
 
         await self.display(ctx, message.author.mention)
 
@@ -3270,7 +3294,7 @@ Syntax:
             await self.cd(ctx, self._shards[shard])
             await self.run(ctx, os.path.join(_top_level, f"utility_code/command_block_update_tool.py --output {scan_results} Project_Epic-{shard} "), displayOutput=True)
             await self.run(ctx, f"mv -f {scan_results} /tmp/{shard}.json")
-            await ctx.send(f"{shard} commands:", file=discord.File(f'/tmp/{shard}.json'))
+            await self.send_with_retry(ctx, f"{shard} commands:", file=discord.File(f'/tmp/{shard}.json'))
 
         await self.display(ctx, message.author.mention)
 
