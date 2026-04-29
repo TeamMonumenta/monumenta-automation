@@ -761,6 +761,9 @@ class AutomationBotInstance(commands.Cog):
         delete_after=None, nonce=None, allowed_mentions=None, reference=None,
         mention_author=None, view=None, suppress_embeds=False, silent=False, poll=None
     ):
+        tz = timezone.utc
+        abort_timestamp = datetime.now(tz) + timedelta(minutes=10)
+        attempts = 1
         while True:
             try:
                 await ctx.send(
@@ -770,7 +773,10 @@ class AutomationBotInstance(commands.Cog):
                 )
                 return
             except discord.errors.DiscordServerError:
-                await asyncio.sleep(60)
+                if datetime.now(tz) >= abort_timestamp:
+                    raise
+                await asyncio.sleep(min(60, 5 * attempts))
+                attempts += 1
 
     async def display_verbatim(self, ctx: discord.ext.commands.Context, text: str, text_format=""):
         """Respond with verbatim text split into chunks that fit the message size"""
