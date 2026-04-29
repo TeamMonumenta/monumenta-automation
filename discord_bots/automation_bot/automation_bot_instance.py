@@ -771,7 +771,6 @@ class AutomationBotInstance(commands.Cog):
                 return
             except discord.errors.DiscordServerError:
                 await asyncio.sleep(60)
-                continue
 
     async def display_verbatim(self, ctx: discord.ext.commands.Context, text: str, text_format=""):
         """Respond with verbatim text split into chunks that fit the message size"""
