@@ -2835,6 +2835,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             raffle_results = tempfile.mktemp()
             vote_raffle(raffle_seed, 'redis', raffle_results)
             await self.run(ctx, f"cat {raffle_results}", displayOutput=True)
+            await self.display(ctx, message.author.mention)
 
         # Raffle
         ########################################
