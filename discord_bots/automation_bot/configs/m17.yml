@@ -155,6 +155,9 @@ shards:
     ring-7: /home/epic/play/m17/ring-7/
     ring-8: /home/epic/play/m17/ring-8/
     ring-9: /home/epic/play/m17/ring-9/
+    ring-10: /home/epic/play/m17/ring-10/
+    ring-11: /home/epic/play/m17/ring-11/
+    ring-12: /home/epic/play/m17/ring-12/
     rush: /home/epic/play/m17/rush/
     shiftingcity: /home/epic/play/m17/shiftingcity/
     skt: /home/epic/play/m17/skt/
@@ -163,9 +166,6 @@ shards:
     valley: /home/epic/play/m17/valley/
     valley-2: /home/epic/play/m17/valley-2/
     valley-3: /home/epic/play/m17/valley-3/
-    valley-4: /home/epic/play/m17/valley-4/
-    valley-5: /home/epic/play/m17/valley-5/
-    valley-6: /home/epic/play/m17/valley-6/
     white: /home/epic/play/m17/white/
     willows: /home/epic/play/m17/willows/
     yellow: /home/epic/play/m17/yellow/
