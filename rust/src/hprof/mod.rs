@@ -687,7 +687,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
     eprintln!("finding leaked object paths-to-root");
     eprintln!("found {} likely leak candidates", leak_candidates.len());
 
-    let candidate_paths: Vec<Vec<_>> = find_paths(&edges, |f| leak_root_sources.contains(&f), &leak_candidates, 64)
+    let candidate_paths: Vec<Vec<_>> = find_paths(&edges, |f| leak_root_sources.contains(&f), &leak_candidates, 5)
         .iter()
         .map(|f| f.iter().map(|f| to_vec(f)).collect())
         .collect();
@@ -721,47 +721,97 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
         },
     )?;
 
-    for (paths, candidate) in izip!(candidate_paths.iter(), leak_candidates.iter()) {
-        println!("{candidate:x}");
+    // Group paths by class-name signature to deduplicate across all candidates.
+    // Many candidates may be held alive by the same code pattern (same class chain),
+    // differing only in which specific instances are involved.
+    let mut pattern_order: Vec<Vec<String>> = Vec::new();
+    let mut pattern_candidates: IntMap<Vec<String>, IntSet<T>> = IntMap::default();
+    let mut pattern_example: IntMap<Vec<String>, (T, Vec<(T, String)>)> = IntMap::default();
 
+    for (paths, &candidate) in izip!(candidate_paths.iter(), leak_candidates.iter()) {
         if paths.is_empty() {
-            println!("unk");
-            println!()
-        } else {
-            for path in paths {
-                for ele in path {
-                    println!(
-                        "{ele:x} {}",
-                        match inst_data.get(ele) {
-                            Some(HeapDumpEntry::InstanceDump(inst)) => {
-                                let class = classes.get(&inst.class_id).unwrap();
-                                let class_name_id = class_names.get(&class.id).unwrap();
-                                let dict = str_dict.borrow();
-                                let class_name = dict.get(class_name_id).unwrap();
-                                str::from_utf8(class_name)?.into()
-                            }
-                            Some(HeapDumpEntry::ObjArrayDump(inst)) => {
-                                let class = classes.get(&inst.class_id).unwrap();
-                                let class_name_id = class_names.get(&class.id).unwrap();
-                                let dict = str_dict.borrow();
-                                let class_name = dict.get(class_name_id).unwrap();
-                                format!("{}[]", str::from_utf8(class_name)?)
-                            }
-                            None => {
-                                let class = classes.get(ele).unwrap();
-                                let class_name_id = class_names.get(&class.id).unwrap();
-                                let dict = str_dict.borrow();
-                                let class_name = dict.get(class_name_id).unwrap();
-                                format!("Class<{}>", str::from_utf8(class_name)?)
-                            }
-                            _ => unreachable!(),
-                        }
-                    )
-                }
+            let sig = vec!["<no path found>".to_string()];
+            let is_new = !pattern_candidates.contains_key(&sig);
+            pattern_candidates.entry(sig.clone()).or_default().insert(candidate);
+            if is_new {
+                pattern_order.push(sig.clone());
+                pattern_example.insert(sig, (candidate, vec![]));
+            }
+            continue;
+        }
 
-                println!();
+        for path in paths {
+            let mut sig: Vec<String> = Vec::new();
+            let mut full_path: Vec<(T, String)> = Vec::new();
+
+            for ele in path {
+                let name: String = match inst_data.get(ele) {
+                    Some(HeapDumpEntry::InstanceDump(inst)) => {
+                        let class = classes.get(&inst.class_id).unwrap();
+                        let class_name_id = class_names.get(&class.id).unwrap();
+                        let dict = str_dict.borrow();
+                        let class_name = dict.get(class_name_id).unwrap();
+                        str::from_utf8(class_name)?.to_string()
+                    }
+                    Some(HeapDumpEntry::ObjArrayDump(inst)) => {
+                        let class = classes.get(&inst.class_id).unwrap();
+                        let class_name_id = class_names.get(&class.id).unwrap();
+                        let dict = str_dict.borrow();
+                        let class_name = dict.get(class_name_id).unwrap();
+                        format!("{}[]", str::from_utf8(class_name)?)
+                    }
+                    None => {
+                        let class = classes.get(ele).unwrap();
+                        let class_name_id = class_names.get(&class.id).unwrap();
+                        let dict = str_dict.borrow();
+                        let class_name = dict.get(class_name_id).unwrap();
+                        format!("Class<{}>", str::from_utf8(class_name)?)
+                    }
+                    _ => unreachable!(),
+                };
+                sig.push(name.clone());
+                full_path.push((*ele, name));
+            }
+
+            let is_new = !pattern_candidates.contains_key(&sig);
+            pattern_candidates.entry(sig.clone()).or_default().insert(candidate);
+            if is_new {
+                pattern_order.push(sig.clone());
+                pattern_example.insert(sig, (candidate, full_path));
             }
         }
+    }
+
+    // Most-common patterns first.
+    pattern_order.sort_by(|a, b| pattern_candidates[b].len().cmp(&pattern_candidates[a].len()));
+
+    println!(
+        "=== {} leaked WorldServer instance{}, {} unique retention pattern{} ===\n",
+        leak_candidates.len(),
+        if leak_candidates.len() == 1 { "" } else { "s" },
+        pattern_order.len(),
+        if pattern_order.len() == 1 { "" } else { "s" }
+    );
+
+    for (i, sig) in pattern_order.iter().enumerate() {
+        let candidates = &pattern_candidates[sig];
+        let (_example_candidate, example_path) = &pattern_example[sig];
+
+        println!(
+            "--- Pattern {} ({} instance{}) ---",
+            i + 1,
+            candidates.len(),
+            if candidates.len() == 1 { "" } else { "s" }
+        );
+
+        if example_path.is_empty() {
+            println!("  <no path found from scheduler to this WorldServer>");
+        } else {
+            for (id, name) in example_path {
+                println!("  {id:x} {name}");
+            }
+        }
+        println!();
     }
 
     Ok(())
