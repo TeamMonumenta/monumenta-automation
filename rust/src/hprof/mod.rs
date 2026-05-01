@@ -529,6 +529,16 @@ fn visit_prof<
     Ok(())
 }
 
+fn format_size(bytes: u64) -> String {
+    if bytes < 1024 {
+        format!("{bytes} B")
+    } else if bytes < 1024 * 1024 {
+        format!("{:.1} KB", bytes as f64 / 1024.0)
+    } else {
+        format!("{:.1} MB", bytes as f64 / (1024.0 * 1024.0))
+    }
+}
+
 fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
     use ClassNames::*;
 
@@ -549,12 +559,17 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
 
     let mut leak_root_sources = Vec::new();
 
-    let mut insert_edge = |child: T, parent: T| {
+    let mut edge_field_names: IntMap<(T, T), T> = IntMap::default();
+
+    let mut insert_edge = |child: T, parent: T, field_id: Option<T>| {
         if child == T::NULL {
             return;
         }
         // we want back refs, so child -> parent
         edges.push((child, parent));
+        if let Some(id) = field_id {
+            edge_field_names.entry((child, parent)).or_insert(id);
+        }
     };
 
     let get_class_id = |id: ClassNames| *class_ids[id as usize].get().unwrap();
@@ -588,16 +603,16 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
         |entry| {
             match entry {
                 HeapDumpEntry::ClassDump(class) => {
-                    for (_, static_value) in &class.statics {
+                    for (name_id, static_value) in &class.statics {
                         if let JVMValue::Obj(child) = static_value {
-                            insert_edge(*child, class.id);
+                            insert_edge(*child, class.id, Some(*name_id));
                         }
                     }
 
-                    insert_edge(class.super_id, class.id);
-                    insert_edge(class.class_loader_id, class.id);
-                    insert_edge(class.signers_id, class.id);
-                    insert_edge(class.protection_domain_id, class.id);
+                    insert_edge(class.super_id, class.id, None);
+                    insert_edge(class.class_loader_id, class.id, None);
+                    insert_edge(class.signers_id, class.id, None);
+                    insert_edge(class.protection_domain_id, class.id, None);
 
                     let res = classes.insert(class.id, class);
                     debug_assert!(res.is_none());
@@ -605,7 +620,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
                 HeapDumpEntry::InstanceDump(inst) => {
                     let class = classes.get(&inst.class_id).unwrap();
 
-                    insert_edge(class.id, inst.id);
+                    insert_edge(class.id, inst.id, None);
 
                     if inst.class_id == get_class_id(WorldServerClass) {
                         world_server_instances.push(inst.id);
@@ -638,14 +653,14 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
                         leak_root_sources.push(inst.id);
                     }
 
-                    class.iter_fields(inst.data, &classes, |cl_id, _, value| {
+                    class.iter_fields(inst.data, &classes, |cl_id, name_id, value| {
                         // ignore weak, phantom, etc
                         if cl_id == get_class_id(ReferenceClass) {
                             return;
                         }
 
                         if let JVMValue::Obj(child) = value {
-                            insert_edge(child, inst.id);
+                            insert_edge(child, inst.id, Some(name_id));
                         }
                     })?;
                 }
@@ -653,10 +668,10 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
                     let len = arr.data.len() / size_of::<T>();
                     let mut buf = arr.data;
 
-                    insert_edge(arr.class_id, arr.id);
+                    insert_edge(arr.class_id, arr.id, None);
 
                     for _ in 0..len {
-                        insert_edge(T::read_from(&mut buf)?, arr.id);
+                        insert_edge(T::read_from(&mut buf)?, arr.id, None);
                     }
                 }
                 _ => {}
@@ -716,6 +731,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
     let mut relevant_inst: IntSet<T> = IntSet::default();
     let mut inst_data: IntMap<T, HeapDumpEntry<'a, T>> = IntMap::default();
     relevant_inst.extend(all_paths.iter().flatten().flatten().copied());
+    relevant_inst.extend(all_candidates.iter().flatten().copied());
 
     let mut on_data = |id: T, data: HeapDumpEntry<'a, T>| {
         if relevant_inst.contains(&id) {
@@ -762,9 +778,11 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
                 continue;
             }
 
-            // Resolve class names for every element in the path.
+            // Resolve class names for every element in the path. Field annotations
+            // are collected separately so they don't affect signature matching.
             let mut raw: Vec<(T, String)> = Vec::new();
-            for ele in path {
+            let mut field_annotations: Vec<Option<String>> = Vec::new();
+            for (i, ele) in path.iter().enumerate() {
                 let name: String = match inst_data.get(ele) {
                     Some(HeapDumpEntry::InstanceDump(inst)) => {
                         let class = classes.get(&inst.class_id).unwrap();
@@ -789,7 +807,23 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
                     }
                     _ => unreachable!(),
                 };
+
+                // For element i > 0, look up which field of path[i] holds path[i-1].
+                let annotation = if i > 0 {
+                    let child = path[i - 1];
+                    edge_field_names.get(&(child, *ele)).map(|&field_id| {
+                        let dict = str_dict.borrow();
+                        dict.get(&field_id)
+                            .and_then(|b| str::from_utf8(b).ok())
+                            .unwrap_or("?")
+                            .to_string()
+                    })
+                } else {
+                    None
+                };
+
                 raw.push((*ele, name));
+                field_annotations.push(annotation);
             }
 
             // Signature: collapse consecutive same-class runs to one entry so paths
@@ -802,16 +836,23 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
                 }
             }
 
-            // Display path: same collapsing, but annotate runs with their count.
+            // Display path: same collapsing with run counts, plus field annotations
+            // from the first element of each run.
             let mut full_path: Vec<(T, String)> = Vec::new();
             let mut i = 0;
             while i < raw.len() {
                 let (ele, ref name) = raw[i];
+                let annotation = &field_annotations[i];
                 let mut run = 1;
                 while i + run < raw.len() && raw[i + run].1 == *name {
                     run += 1;
                 }
-                let display = if run > 1 { format!("{name} (×{run})") } else { name.clone() };
+                let base = if run > 1 { format!("{name} (×{run})") } else { name.clone() };
+                let display = if let Some(field) = annotation {
+                    format!("{base}  (.{field})")
+                } else {
+                    base
+                };
                 full_path.push((ele, display));
                 i += run;
             }
@@ -840,11 +881,23 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
             let matching = &pattern_candidates[sig];
             let example_path = &pattern_example[sig];
 
+            let total_bytes: u64 = matching
+                .iter()
+                .filter_map(|c| {
+                    if let Some(HeapDumpEntry::InstanceDump(inst)) = inst_data.get(c) {
+                        classes.get(&inst.class_id).map(|cl| cl.inst_size as u64)
+                    } else {
+                        None
+                    }
+                })
+                .sum();
+
             println!(
-                "--- Pattern {} ({} instance{}) ---",
+                "--- Pattern {} ({} instance{}, ~{} shallow) ---",
                 i + 1,
                 matching.len(),
-                if matching.len() == 1 { "" } else { "s" }
+                if matching.len() == 1 { "" } else { "s" },
+                format_size(total_bytes),
             );
 
             if example_path.is_empty() {
