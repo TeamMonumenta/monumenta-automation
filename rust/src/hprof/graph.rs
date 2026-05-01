@@ -1,9 +1,11 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::VecDeque;
+
+use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::hprof::id::Id;
 
-pub type IntMap<K, V> = HashMap<K, V>;
-pub type IntSet<K> = HashSet<K>;
+pub type IntMap<K, V> = FxHashMap<K, V>;
+pub type IntSet<K> = FxHashSet<K>;
 
 pub fn clean_graph<T: Id + Ord + Copy>(edges: &mut Vec<(T, T)>) {
     if edges.is_empty() {

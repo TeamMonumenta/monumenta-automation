@@ -3,6 +3,9 @@ use std::{
     io::{Error, Read},
 };
 
+#[cfg(target_os = "linux")]
+use libc;
+
 use anyhow::{Result, anyhow};
 use byteorder::{BigEndian, ReadBytesExt};
 use itertools::izip;
@@ -530,6 +533,14 @@ fn visit_prof<
 }
 
 
+fn madvise(file: &[u8], sequential: bool) {
+    #[cfg(target_os = "linux")]
+    unsafe {
+        let advice = if sequential { libc::MADV_SEQUENTIAL } else { libc::MADV_DONTNEED };
+        libc::madvise(file.as_ptr() as *mut libc::c_void, file.len(), advice);
+    }
+}
+
 fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
     use ClassNames::*;
 
@@ -550,22 +561,19 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
 
     let mut leak_root_sources = Vec::new();
 
-    let mut edge_field_names: IntMap<(T, T), T> = IntMap::default();
-
-    let mut insert_edge = |child: T, parent: T, field_id: Option<T>| {
+    let mut insert_edge = |child: T, parent: T| {
         if child == T::NULL {
             return;
         }
         // we want back refs, so child -> parent
         edges.push((child, parent));
-        if let Some(id) = field_id {
-            edge_field_names.entry((child, parent)).or_insert(id);
-        }
     };
 
     let get_class_id = |id: ClassNames| *class_ids[id as usize].get().unwrap();
 
     eprintln!("parsing heap dump");
+
+    madvise(file, true);
 
     visit_prof(
         file,
@@ -594,16 +602,16 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
         |entry| {
             match entry {
                 HeapDumpEntry::ClassDump(class) => {
-                    for (name_id, static_value) in &class.statics {
+                    for (_name_id, static_value) in &class.statics {
                         if let JVMValue::Obj(child) = static_value {
-                            insert_edge(*child, class.id, Some(*name_id));
+                            insert_edge(*child, class.id);
                         }
                     }
 
-                    insert_edge(class.super_id, class.id, None);
-                    insert_edge(class.class_loader_id, class.id, None);
-                    insert_edge(class.signers_id, class.id, None);
-                    insert_edge(class.protection_domain_id, class.id, None);
+                    insert_edge(class.super_id, class.id);
+                    insert_edge(class.class_loader_id, class.id);
+                    insert_edge(class.signers_id, class.id);
+                    insert_edge(class.protection_domain_id, class.id);
 
                     let res = classes.insert(class.id, class);
                     debug_assert!(res.is_none());
@@ -611,7 +619,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
                 HeapDumpEntry::InstanceDump(inst) => {
                     let class = classes.get(&inst.class_id).unwrap();
 
-                    insert_edge(class.id, inst.id, None);
+                    insert_edge(class.id, inst.id);
 
                     if inst.class_id == get_class_id(WorldServerClass) {
                         world_server_instances.push(inst.id);
@@ -644,14 +652,14 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
                         leak_root_sources.push(inst.id);
                     }
 
-                    class.iter_fields(inst.data, &classes, |cl_id, name_id, value| {
+                    class.iter_fields(inst.data, &classes, |cl_id, _name_id, value| {
                         // ignore weak, phantom, etc
                         if cl_id == get_class_id(ReferenceClass) {
                             return;
                         }
 
                         if let JVMValue::Obj(child) = value {
-                            insert_edge(child, inst.id, Some(name_id));
+                            insert_edge(child, inst.id);
                         }
                     })?;
                 }
@@ -659,10 +667,10 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
                     let len = arr.data.len() / size_of::<T>();
                     let mut buf = arr.data;
 
-                    insert_edge(arr.class_id, arr.id, None);
+                    insert_edge(arr.class_id, arr.id);
 
                     for _ in 0..len {
-                        insert_edge(T::read_from(&mut buf)?, arr.id, None);
+                        insert_edge(T::read_from(&mut buf)?, arr.id);
                     }
                 }
                 _ => {}
@@ -706,17 +714,51 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
         }
     }
 
-    eprintln!("finding leaked instance paths-to-root");
     eprintln!("found {} likely leak candidates", candidates.len());
+
+    if candidates.len() < min_leaked {
+        return Ok(false);
+    }
+
+    eprintln!("finding leaked instance paths-to-root");
 
     let candidate_paths: Vec<Vec<T>> = candidates
         .iter()
         .map(|&c| find_shortest_path(&edges, |f| leak_root_sources.contains(&f), c))
         .collect();
 
+    // Build the small sets needed to collect field names in pass 2.
+    // Only edges that appear in candidate paths require a field name annotation.
+    let mut needed_field_edges: IntSet<(T, T)> = IntSet::default();
+    let mut needed_parent_set: IntSet<T> = IntSet::default();
+    for path in &candidate_paths {
+        for w in path.windows(2) {
+            needed_field_edges.insert((w[0], w[1]));
+            needed_parent_set.insert(w[1]);
+        }
+    }
+
+    // Class static field names can be resolved from the already-in-memory `classes` map.
+    let mut edge_field_names: IntMap<(T, T), T> = IntMap::default();
+    for (_, class) in &classes {
+        for (name_id, static_value) in &class.statics {
+            if let JVMValue::Obj(child) = static_value {
+                let edge = (*child, class.id);
+                if needed_field_edges.contains(&edge) {
+                    edge_field_names.entry(edge).or_insert(*name_id);
+                }
+            }
+        }
+    }
+
     eprintln!("re-gathering instance data");
 
     drop(edges);
+
+    // Release page cache for the mmap before re-reading so it doesn't compete
+    // with the in-memory data structures for RAM.
+    madvise(file, false);
+    madvise(file, true);
 
     let mut relevant_inst: IntSet<T> = IntSet::default();
     let mut inst_data: IntMap<T, HeapDumpEntry<'a, T>> = IntMap::default();
@@ -735,17 +777,29 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
         |_| {},
         |inst| {
             match inst {
-                HeapDumpEntry::InstanceDump(inst) => on_data(inst.id, HeapDumpEntry::InstanceDump(inst)),
+                HeapDumpEntry::InstanceDump(inst) => {
+                    // While we have the instance data in hand, collect field names for
+                    // any candidate-path edges where this instance is the parent.
+                    if needed_parent_set.contains(&inst.id) {
+                        let class = classes.get(&inst.class_id).unwrap();
+                        class.iter_fields(inst.data, &classes, |cl_id, name_id, value| {
+                            if cl_id == get_class_id(ReferenceClass) { return; }
+                            if let JVMValue::Obj(child) = value {
+                                let edge = (child, inst.id);
+                                if needed_field_edges.contains(&edge) {
+                                    edge_field_names.entry(edge).or_insert(name_id);
+                                }
+                            }
+                        })?;
+                    }
+                    on_data(inst.id, HeapDumpEntry::InstanceDump(inst))
+                }
                 HeapDumpEntry::ObjArrayDump(inst) => on_data(inst.id, HeapDumpEntry::ObjArrayDump(inst)),
                 _ => {}
             }
             Ok(())
         },
     )?;
-
-    if candidates.len() < min_leaked {
-        return Ok(false);
-    }
 
     // Group paths by class-name signature, deduplicating across all candidate types.
     // Each path is trimmed to start at the last (nearest-to-scheduler) leak target
@@ -911,6 +965,8 @@ pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize) -> Result<bool> {
 
     let id_size = hprof_file.read_u32::<BigEndian>()?;
     let _micros = hprof_file.read_u64::<BigEndian>()?;
+
+    eprintln!("detected {id_size}-byte object IDs ({})", if id_size == 4 { "compressed OOPs" } else { "uncompressed OOPs" });
 
     if id_size == 4 {
         do_read_prof::<u32>(hprof_file, min_leaked)
