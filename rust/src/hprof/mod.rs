@@ -747,9 +747,8 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
             continue;
         }
 
-        let mut sig: Vec<String> = Vec::new();
-        let mut full_path: Vec<(T, String)> = Vec::new();
-
+        // Resolve class names for every element in the path.
+        let mut raw: Vec<(T, String)> = Vec::new();
         for ele in path {
             let name: String = match inst_data.get(ele) {
                 Some(HeapDumpEntry::InstanceDump(inst)) => {
@@ -775,8 +774,31 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
                 }
                 _ => unreachable!(),
             };
-            sig.push(name.clone());
-            full_path.push((*ele, name));
+            raw.push((*ele, name));
+        }
+
+        // Signature: collapse consecutive same-class runs to one entry so paths
+        // that differ only in how many HashMap$Node / TreeNode hops the BFS
+        // traversed (varies by hash-bucket depth) map to the same pattern.
+        let mut sig: Vec<String> = Vec::new();
+        for (_, name) in &raw {
+            if sig.last().map_or(true, |last| last != name) {
+                sig.push(name.clone());
+            }
+        }
+
+        // Display path: same collapsing, but annotate runs with their count.
+        let mut full_path: Vec<(T, String)> = Vec::new();
+        let mut i = 0;
+        while i < raw.len() {
+            let (ele, ref name) = raw[i];
+            let mut run = 1;
+            while i + run < raw.len() && raw[i + run].1 == *name {
+                run += 1;
+            }
+            let display = if run > 1 { format!("{name} (×{run})") } else { name.clone() };
+            full_path.push((ele, display));
+            i += run;
         }
 
         let is_new = !pattern_candidates.contains_key(&sig);
