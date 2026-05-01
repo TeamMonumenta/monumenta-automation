@@ -457,6 +457,8 @@ enum ClassNames {
     CraftAsyncSchedulerClass,
     CraftSchedulerClass,
     ReferenceClass,
+    EntityPlayerClass,
+    CraftPlayerClass,
     Max,
 }
 
@@ -468,7 +470,9 @@ static CLASS_NAMES: phf::Map<&'static [u8], ClassNames> = phf_map! {
     b"org/bukkit/craftbukkit/v1_20_R3/CraftServer" => ClassNames::CraftServerClass,
     b"org/bukkit/craftbukkit/v1_20_R3/scheduler/CraftAsyncScheduler" => ClassNames::CraftAsyncSchedulerClass,
     b"org/bukkit/craftbukkit/v1_20_R3/scheduler/CraftScheduler" => ClassNames::CraftSchedulerClass,
-    b"java/lang/ref/Reference" => ClassNames::ReferenceClass
+    b"java/lang/ref/Reference" => ClassNames::ReferenceClass,
+    b"net/minecraft/server/level/EntityPlayer" => ClassNames::EntityPlayerClass,
+    b"org/bukkit/craftbukkit/v1_20_R3/entity/CraftPlayer" => ClassNames::CraftPlayerClass
 };
 
 fn visit_prof<
@@ -535,6 +539,8 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
 
     let mut edges: Vec<(T, T)> = Vec::new();
     let mut world_server_instances = Vec::new();
+    let mut entity_player_instances = Vec::new();
+    let mut craft_player_instances = Vec::new();
 
     let special_strings = vec![OnceCell::new(); Max as usize];
     let class_ids = vec![OnceCell::new(); Max as usize];
@@ -603,6 +609,10 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
 
                     if inst.class_id == get_class_id(WorldServerClass) {
                         world_server_instances.push(inst.id);
+                    } else if inst.class_id == get_class_id(EntityPlayerClass) {
+                        entity_player_instances.push(inst.id);
+                    } else if inst.class_id == get_class_id(CraftPlayerClass) {
+                        craft_player_instances.push(inst.id);
                     } else if inst.class_id == get_class_id(DedicatedServerClass) {
                         class.iter_fields(inst.data, &classes, |_, name_id, value| {
                             if str_dict.borrow()[&name_id] == b"Q"
@@ -660,37 +670,44 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
 
     clean_graph(&mut edges);
 
-    eprintln!("finding paths to root");
+    let class_types: [(&'static str, &[T]); 3] = [
+        ("WorldServer", &world_server_instances),
+        ("EntityPlayer", &entity_player_instances),
+        ("CraftPlayer", &craft_player_instances),
+    ];
 
-    eprintln!("found {:?} instances", world_server_instances.len());
+    let mut all_candidates: Vec<Vec<T>> = Vec::new();
+    let mut all_paths: Vec<Vec<Vec<T>>> = Vec::new();
 
-    let globally_reachable = is_reachable(&edges, |f| gc_roots.contains_key(&f), &world_server_instances);
+    for (label, instances) in &class_types {
+        eprintln!("finding paths to root for {label}");
+        eprintln!("found {} instances", instances.len());
 
-    let non_leaked_instances = is_reachable(&edges, |f| non_leak_root_sources.contains(&f), &world_server_instances);
+        let globally_reachable = is_reachable(&edges, |f| gc_roots.contains_key(&f), instances);
+        let non_leaked_instances =
+            is_reachable(&edges, |f| non_leak_root_sources.contains(&f), instances);
 
-    let mut leak_candidates = Vec::new();
-
-    for (inst, global, non_leak) in
-        izip!(world_server_instances.iter(), globally_reachable.iter(), non_leaked_instances.iter(),)
-    {
-        if !*global {
-            continue;
+        let mut candidates = Vec::new();
+        for (inst, global, non_leak) in
+            izip!(instances.iter(), globally_reachable.iter(), non_leaked_instances.iter())
+        {
+            if !*global || *non_leak {
+                continue;
+            }
+            candidates.push(*inst);
         }
 
-        if *non_leak {
-            continue;
-        }
+        eprintln!("finding leaked {label} paths-to-root");
+        eprintln!("found {} likely leak candidates", candidates.len());
 
-        leak_candidates.push(*inst);
+        let paths: Vec<Vec<T>> = candidates
+            .iter()
+            .map(|&c| find_shortest_path(&edges, |f| leak_root_sources.contains(&f), c))
+            .collect();
+
+        all_candidates.push(candidates);
+        all_paths.push(paths);
     }
-
-    eprintln!("finding leaked object paths-to-root");
-    eprintln!("found {} likely leak candidates", leak_candidates.len());
-
-    let candidate_paths: Vec<Vec<T>> = leak_candidates
-        .iter()
-        .map(|&c| find_shortest_path(&edges, |f| leak_root_sources.contains(&f), c))
-        .collect();
 
     eprintln!("re-gathering instance data");
 
@@ -698,7 +715,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
 
     let mut relevant_inst: IntSet<T> = IntSet::default();
     let mut inst_data: IntMap<T, HeapDumpEntry<'a, T>> = IntMap::default();
-    relevant_inst.extend(candidate_paths.iter().flatten().copied());
+    relevant_inst.extend(all_paths.iter().flatten().flatten().copied());
 
     let mut on_data = |id: T, data: HeapDumpEntry<'a, T>| {
         if relevant_inst.contains(&id) {
@@ -721,117 +738,124 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
         },
     )?;
 
-    // Group shortest paths by class-name signature to deduplicate across all candidates.
-    // Many candidates may be held alive by the same code pattern (same class chain),
-    // differing only in which specific instances are involved.
-    let mut pattern_order: Vec<Vec<String>> = Vec::new();
-    let mut pattern_candidates: IntMap<Vec<String>, IntSet<T>> = IntMap::default();
-    let mut pattern_example: IntMap<Vec<String>, Vec<(T, String)>> = IntMap::default();
+    for (type_info, (candidates, candidate_paths)) in
+        class_types.iter().zip(all_candidates.iter().zip(all_paths.iter()))
+    {
+        let label = type_info.0;
 
-    for (path, &candidate) in izip!(candidate_paths.iter(), leak_candidates.iter()) {
-        if path.is_empty() {
-            let sig = vec!["<no path found>".to_string()];
+        // Group shortest paths by class-name signature to deduplicate across all candidates.
+        // Many candidates may be held alive by the same code pattern (same class chain),
+        // differing only in which specific instances are involved.
+        let mut pattern_order: Vec<Vec<String>> = Vec::new();
+        let mut pattern_candidates: IntMap<Vec<String>, IntSet<T>> = IntMap::default();
+        let mut pattern_example: IntMap<Vec<String>, Vec<(T, String)>> = IntMap::default();
+
+        for (path, &candidate) in izip!(candidate_paths.iter(), candidates.iter()) {
+            if path.is_empty() {
+                let sig = vec!["<no path found>".to_string()];
+                let is_new = !pattern_candidates.contains_key(&sig);
+                pattern_candidates.entry(sig.clone()).or_default().insert(candidate);
+                if is_new {
+                    pattern_order.push(sig.clone());
+                    pattern_example.insert(sig, vec![]);
+                }
+                continue;
+            }
+
+            // Resolve class names for every element in the path.
+            let mut raw: Vec<(T, String)> = Vec::new();
+            for ele in path {
+                let name: String = match inst_data.get(ele) {
+                    Some(HeapDumpEntry::InstanceDump(inst)) => {
+                        let class = classes.get(&inst.class_id).unwrap();
+                        let class_name_id = class_names.get(&class.id).unwrap();
+                        let dict = str_dict.borrow();
+                        let class_name = dict.get(class_name_id).unwrap();
+                        str::from_utf8(class_name)?.to_string()
+                    }
+                    Some(HeapDumpEntry::ObjArrayDump(inst)) => {
+                        let class = classes.get(&inst.class_id).unwrap();
+                        let class_name_id = class_names.get(&class.id).unwrap();
+                        let dict = str_dict.borrow();
+                        let class_name = dict.get(class_name_id).unwrap();
+                        format!("{}[]", str::from_utf8(class_name)?)
+                    }
+                    None => {
+                        let class = classes.get(ele).unwrap();
+                        let class_name_id = class_names.get(&class.id).unwrap();
+                        let dict = str_dict.borrow();
+                        let class_name = dict.get(class_name_id).unwrap();
+                        format!("Class<{}>", str::from_utf8(class_name)?)
+                    }
+                    _ => unreachable!(),
+                };
+                raw.push((*ele, name));
+            }
+
+            // Signature: collapse consecutive same-class runs to one entry so paths
+            // that differ only in how many HashMap$Node / TreeNode hops the BFS
+            // traversed (varies by hash-bucket depth) map to the same pattern.
+            let mut sig: Vec<String> = Vec::new();
+            for (_, name) in &raw {
+                if sig.last().map_or(true, |last| last != name) {
+                    sig.push(name.clone());
+                }
+            }
+
+            // Display path: same collapsing, but annotate runs with their count.
+            let mut full_path: Vec<(T, String)> = Vec::new();
+            let mut i = 0;
+            while i < raw.len() {
+                let (ele, ref name) = raw[i];
+                let mut run = 1;
+                while i + run < raw.len() && raw[i + run].1 == *name {
+                    run += 1;
+                }
+                let display = if run > 1 { format!("{name} (×{run})") } else { name.clone() };
+                full_path.push((ele, display));
+                i += run;
+            }
+
             let is_new = !pattern_candidates.contains_key(&sig);
             pattern_candidates.entry(sig.clone()).or_default().insert(candidate);
             if is_new {
                 pattern_order.push(sig.clone());
-                pattern_example.insert(sig, vec![]);
-            }
-            continue;
-        }
-
-        // Resolve class names for every element in the path.
-        let mut raw: Vec<(T, String)> = Vec::new();
-        for ele in path {
-            let name: String = match inst_data.get(ele) {
-                Some(HeapDumpEntry::InstanceDump(inst)) => {
-                    let class = classes.get(&inst.class_id).unwrap();
-                    let class_name_id = class_names.get(&class.id).unwrap();
-                    let dict = str_dict.borrow();
-                    let class_name = dict.get(class_name_id).unwrap();
-                    str::from_utf8(class_name)?.to_string()
-                }
-                Some(HeapDumpEntry::ObjArrayDump(inst)) => {
-                    let class = classes.get(&inst.class_id).unwrap();
-                    let class_name_id = class_names.get(&class.id).unwrap();
-                    let dict = str_dict.borrow();
-                    let class_name = dict.get(class_name_id).unwrap();
-                    format!("{}[]", str::from_utf8(class_name)?)
-                }
-                None => {
-                    let class = classes.get(ele).unwrap();
-                    let class_name_id = class_names.get(&class.id).unwrap();
-                    let dict = str_dict.borrow();
-                    let class_name = dict.get(class_name_id).unwrap();
-                    format!("Class<{}>", str::from_utf8(class_name)?)
-                }
-                _ => unreachable!(),
-            };
-            raw.push((*ele, name));
-        }
-
-        // Signature: collapse consecutive same-class runs to one entry so paths
-        // that differ only in how many HashMap$Node / TreeNode hops the BFS
-        // traversed (varies by hash-bucket depth) map to the same pattern.
-        let mut sig: Vec<String> = Vec::new();
-        for (_, name) in &raw {
-            if sig.last().map_or(true, |last| last != name) {
-                sig.push(name.clone());
+                pattern_example.insert(sig, full_path);
             }
         }
 
-        // Display path: same collapsing, but annotate runs with their count.
-        let mut full_path: Vec<(T, String)> = Vec::new();
-        let mut i = 0;
-        while i < raw.len() {
-            let (ele, ref name) = raw[i];
-            let mut run = 1;
-            while i + run < raw.len() && raw[i + run].1 == *name {
-                run += 1;
-            }
-            let display = if run > 1 { format!("{name} (×{run})") } else { name.clone() };
-            full_path.push((ele, display));
-            i += run;
-        }
-
-        let is_new = !pattern_candidates.contains_key(&sig);
-        pattern_candidates.entry(sig.clone()).or_default().insert(candidate);
-        if is_new {
-            pattern_order.push(sig.clone());
-            pattern_example.insert(sig, full_path);
-        }
-    }
-
-    // Most-common patterns first.
-    pattern_order.sort_by(|a, b| pattern_candidates[b].len().cmp(&pattern_candidates[a].len()));
-
-    println!(
-        "=== {} leaked WorldServer instance{}, {} unique retention pattern{} ===\n",
-        leak_candidates.len(),
-        if leak_candidates.len() == 1 { "" } else { "s" },
-        pattern_order.len(),
-        if pattern_order.len() == 1 { "" } else { "s" }
-    );
-
-    for (i, sig) in pattern_order.iter().enumerate() {
-        let candidates = &pattern_candidates[sig];
-        let example_path = &pattern_example[sig];
+        // Most-common patterns first.
+        pattern_order.sort_by(|a, b| pattern_candidates[b].len().cmp(&pattern_candidates[a].len()));
 
         println!(
-            "--- Pattern {} ({} instance{}) ---",
-            i + 1,
+            "=== {} leaked {} instance{}, {} unique retention pattern{} ===\n",
             candidates.len(),
-            if candidates.len() == 1 { "" } else { "s" }
+            label,
+            if candidates.len() == 1 { "" } else { "s" },
+            pattern_order.len(),
+            if pattern_order.len() == 1 { "" } else { "s" }
         );
 
-        if example_path.is_empty() {
-            println!("  <no path found from scheduler to this WorldServer>");
-        } else {
-            for (id, name) in example_path {
-                println!("  {id:x} {name}");
+        for (i, sig) in pattern_order.iter().enumerate() {
+            let matching = &pattern_candidates[sig];
+            let example_path = &pattern_example[sig];
+
+            println!(
+                "--- Pattern {} ({} instance{}) ---",
+                i + 1,
+                matching.len(),
+                if matching.len() == 1 { "" } else { "s" }
+            );
+
+            if example_path.is_empty() {
+                println!("  <no path found from scheduler to this {label}>");
+            } else {
+                for (id, name) in example_path {
+                    println!("  {id:x} {name}");
+                }
             }
+            println!();
         }
-        println!();
     }
 
     Ok(())
