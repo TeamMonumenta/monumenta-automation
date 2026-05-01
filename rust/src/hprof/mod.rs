@@ -558,7 +558,7 @@ fn madvise(file: &[u8], sequential: bool) {
     }
 }
 
-fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
+fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, normalize_inner_classes: bool, show_ids: bool) -> Result<bool> {
     use ClassNames::*;
 
     let str_dict = RefCell::new(IntMap::default());
@@ -898,12 +898,19 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
             field_annotations.push(annotation);
         }
 
-        // Signature: collapse consecutive same-class runs so paths differing only
-        // in HashMap$Node / TreeNode depth map to the same pattern.
+        // Signature: normalize inner class names (if enabled), then collapse
+        // consecutive same-class runs. Normalization strips the $InnerClass suffix so
+        // that e.g. HashMap$Node, HashMap$TreeNode, BossAbilityGroup$1/$2 all map to
+        // the same pattern entry.
         let mut sig: Vec<String> = Vec::new();
         for (_, name) in &raw {
-            if sig.last().map_or(true, |last| last != name) {
-                sig.push(name.clone());
+            let norm = if normalize_inner_classes {
+                normalize_class_name(name)
+            } else {
+                name.clone()
+            };
+            if sig.last().map_or(true, |last| last != &norm) {
+                sig.push(norm);
             }
         }
 
@@ -961,7 +968,11 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
             println!("  <no path found from scheduler>");
         } else {
             for (id, name) in example_path {
-                println!("  {id:x} {name}");
+                if show_ids {
+                    println!("  {id:x} {name}");
+                } else {
+                    println!("  {name}");
+                }
             }
         }
         println!();
@@ -972,7 +983,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
 
 const HEADER: &[u8; 19] = b"JAVA PROFILE 1.0.2\0";
 
-pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize) -> Result<bool> {
+pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize, normalize_inner_classes: bool, show_ids: bool) -> Result<bool> {
     let mut header = [0; HEADER.len()];
     hprof_file.read_exact(&mut header)?;
 
@@ -985,13 +996,30 @@ pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize) -> Result<bool> {
 
     if id_size == 4 {
         eprintln!("detected 4-byte object IDs (compressed OOPs)");
-        do_read_prof::<u32>(hprof_file, min_leaked)
+        do_read_prof::<u32>(hprof_file, min_leaked, normalize_inner_classes, show_ids)
     } else if id_size == 8 {
         // Shifted OOP values for heaps ≤ 32 GB fit in u32, halving edge memory.
         // Fall back to u64 only if a value overflows (heap > 32 GB).
         eprintln!("detected 8-byte object IDs (uncompressed OOPs); using compact u32 storage");
-        do_read_prof::<OopId>(hprof_file, min_leaked)
+        do_read_prof::<OopId>(hprof_file, min_leaked, normalize_inner_classes, show_ids)
     } else {
         Err(anyhow!("illegal id_size: {id_size}"))
+    }
+}
+
+fn normalize_class_name(name: &str) -> String {
+    // Strip inner class suffix (everything from the last '$' to the next ';', '>', or end).
+    // Handles three forms produced by the path-resolution code:
+    //   "org/foo/Bar$Inner"        -> "org/foo/Bar"
+    //   "[Lorg/foo/Bar$Inner;[]"   -> "[Lorg/foo/Bar;[]"
+    //   "Class<org/foo/Bar$Inner>" -> "Class<org/foo/Bar>"
+    if let Some(dollar) = name.rfind('$') {
+        let mut result = name[..dollar].to_string();
+        let rest = &name[dollar + 1..];
+        let skip = rest.find([';', '>']).unwrap_or(rest.len());
+        result.push_str(&rest[skip..]);
+        result
+    } else {
+        name.to_string()
     }
 }
