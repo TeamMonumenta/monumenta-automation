@@ -14,7 +14,7 @@ use smallvec::SmallVec;
 
 use crate::hprof::{
     graph::{IntMap, IntSet, clean_graph, find_shortest_path, is_reachable},
-    id::Id,
+    id::{Id, OopId},
 };
 
 mod graph;
@@ -492,7 +492,24 @@ fn visit_prof<
     mut on_gc_root: X,
     mut on_heap_entry: Y,
 ) -> Result<()> {
+    // Evict already-processed pages in 64 MiB chunks so the kernel can reclaim
+    // them while the rest of the pass is still running.
+    #[cfg(target_os = "linux")]
+    let mmap_start = file.as_ptr();
+    #[cfg(target_os = "linux")]
+    let mut next_dontneed_at: usize = 64 << 20;
+
     while !file.is_empty() {
+        #[cfg(target_os = "linux")]
+        {
+            let consumed = file.as_ptr() as usize - mmap_start as usize;
+            if consumed >= next_dontneed_at {
+                let evict_ptr = (mmap_start as usize + next_dontneed_at - (64 << 20)) as *mut libc::c_void;
+                unsafe { libc::madvise(evict_ptr, 64 << 20, libc::MADV_DONTNEED); }
+                next_dontneed_at += 64 << 20;
+            }
+        }
+
         let tag = file.read_u8()?;
         let _ = file.read_u32::<BigEndian>()?;
         let len: usize = file.read_u32::<BigEndian>()?.try_into()?;
@@ -966,12 +983,14 @@ pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize) -> Result<bool> {
     let id_size = hprof_file.read_u32::<BigEndian>()?;
     let _micros = hprof_file.read_u64::<BigEndian>()?;
 
-    eprintln!("detected {id_size}-byte object IDs ({})", if id_size == 4 { "compressed OOPs" } else { "uncompressed OOPs" });
-
     if id_size == 4 {
+        eprintln!("detected 4-byte object IDs (compressed OOPs)");
         do_read_prof::<u32>(hprof_file, min_leaked)
     } else if id_size == 8 {
-        do_read_prof::<u64>(hprof_file, min_leaked)
+        // Shifted OOP values for heaps ≤ 32 GB fit in u32, halving edge memory.
+        // Fall back to u64 only if a value overflows (heap > 32 GB).
+        eprintln!("detected 8-byte object IDs (uncompressed OOPs); using compact u32 storage");
+        do_read_prof::<OopId>(hprof_file, min_leaked)
     } else {
         Err(anyhow!("illegal id_size: {id_size}"))
     }
