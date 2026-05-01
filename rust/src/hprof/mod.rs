@@ -685,44 +685,43 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
 
     clean_graph(&mut edges);
 
-    let class_types: [(&'static str, &[T]); 3] = [
-        ("WorldServer", &world_server_instances),
-        ("EntityPlayer", &entity_player_instances),
-        ("CraftPlayer", &craft_player_instances),
-    ];
+    // Combine all leak target classes into one pool for unified analysis.
+    let all_leak_target_instances: Vec<T> = world_server_instances
+        .iter()
+        .chain(entity_player_instances.iter())
+        .chain(craft_player_instances.iter())
+        .copied()
+        .collect();
 
-    let mut all_candidates: Vec<Vec<T>> = Vec::new();
-    let mut all_paths: Vec<Vec<Vec<T>>> = Vec::new();
+    // Fast membership test used during path trimming below.
+    let all_leak_target_set: IntSet<T> = all_leak_target_instances.iter().copied().collect();
 
-    for (label, instances) in &class_types {
-        eprintln!("finding paths to root for {label}");
-        eprintln!("found {} instances", instances.len());
+    eprintln!("finding paths to root");
+    eprintln!("found {} total leak target instances", all_leak_target_instances.len());
 
-        let globally_reachable = is_reachable(&edges, |f| gc_roots.contains_key(&f), instances);
-        let non_leaked_instances =
-            is_reachable(&edges, |f| non_leak_root_sources.contains(&f), instances);
+    let globally_reachable =
+        is_reachable(&edges, |f| gc_roots.contains_key(&f), &all_leak_target_instances);
+    let non_leaked_instances =
+        is_reachable(&edges, |f| non_leak_root_sources.contains(&f), &all_leak_target_instances);
 
-        let mut candidates = Vec::new();
-        for (inst, global, non_leak) in
-            izip!(instances.iter(), globally_reachable.iter(), non_leaked_instances.iter())
-        {
-            if !*global || *non_leak {
-                continue;
-            }
+    let mut candidates: Vec<T> = Vec::new();
+    for (inst, global, non_leak) in izip!(
+        all_leak_target_instances.iter(),
+        globally_reachable.iter(),
+        non_leaked_instances.iter()
+    ) {
+        if *global && !*non_leak {
             candidates.push(*inst);
         }
-
-        eprintln!("finding leaked {label} paths-to-root");
-        eprintln!("found {} likely leak candidates", candidates.len());
-
-        let paths: Vec<Vec<T>> = candidates
-            .iter()
-            .map(|&c| find_shortest_path(&edges, |f| leak_root_sources.contains(&f), c))
-            .collect();
-
-        all_candidates.push(candidates);
-        all_paths.push(paths);
     }
+
+    eprintln!("finding leaked instance paths-to-root");
+    eprintln!("found {} likely leak candidates", candidates.len());
+
+    let candidate_paths: Vec<Vec<T>> = candidates
+        .iter()
+        .map(|&c| find_shortest_path(&edges, |f| leak_root_sources.contains(&f), c))
+        .collect();
 
     eprintln!("re-gathering instance data");
 
@@ -730,8 +729,8 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
 
     let mut relevant_inst: IntSet<T> = IntSet::default();
     let mut inst_data: IntMap<T, HeapDumpEntry<'a, T>> = IntMap::default();
-    relevant_inst.extend(all_paths.iter().flatten().flatten().copied());
-    relevant_inst.extend(all_candidates.iter().flatten().copied());
+    relevant_inst.extend(candidate_paths.iter().flatten().copied());
+    relevant_inst.extend(candidates.iter().copied());
 
     let mut on_data = |id: T, data: HeapDumpEntry<'a, T>| {
         if relevant_inst.contains(&id) {
@@ -754,171 +753,172 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
         },
     )?;
 
-    let mut any_exceeded = false;
+    if candidates.len() < min_leaked {
+        return Ok(false);
+    }
 
-    for (type_info, (candidates, candidate_paths)) in
-        class_types.iter().zip(all_candidates.iter().zip(all_paths.iter()))
-    {
-        let label = type_info.0;
+    // Group paths by class-name signature, deduplicating across all candidate types.
+    // Each path is trimmed to start at the last (nearest-to-scheduler) leak target
+    // in the path: a WorldServer leaked only because a CraftPlayer is leaked folds
+    // into the CraftPlayer's pattern rather than creating a redundant WorldServer entry.
+    let mut pattern_order: Vec<Vec<String>> = Vec::new();
+    let mut pattern_terminals: IntMap<Vec<String>, IntSet<T>> = IntMap::default();
+    let mut pattern_example: IntMap<Vec<String>, Vec<(T, String)>> = IntMap::default();
 
-        if candidates.len() < min_leaked {
-            continue;
-        }
-        any_exceeded = true;
-
-        // Group shortest paths by class-name signature to deduplicate across all candidates.
-        // Many candidates may be held alive by the same code pattern (same class chain),
-        // differing only in which specific instances are involved.
-        let mut pattern_order: Vec<Vec<String>> = Vec::new();
-        let mut pattern_candidates: IntMap<Vec<String>, IntSet<T>> = IntMap::default();
-        let mut pattern_example: IntMap<Vec<String>, Vec<(T, String)>> = IntMap::default();
-
-        for (path, &candidate) in izip!(candidate_paths.iter(), candidates.iter()) {
-            if path.is_empty() {
-                let sig = vec!["<no path found>".to_string()];
-                let is_new = !pattern_candidates.contains_key(&sig);
-                pattern_candidates.entry(sig.clone()).or_default().insert(candidate);
-                if is_new {
-                    pattern_order.push(sig.clone());
-                    pattern_example.insert(sig, vec![]);
-                }
-                continue;
-            }
-
-            // Resolve class names for every element in the path. Field annotations
-            // are collected separately so they don't affect signature matching.
-            let mut raw: Vec<(T, String)> = Vec::new();
-            let mut field_annotations: Vec<Option<String>> = Vec::new();
-            for (i, ele) in path.iter().enumerate() {
-                let name: String = match inst_data.get(ele) {
-                    Some(HeapDumpEntry::InstanceDump(inst)) => {
-                        let class = classes.get(&inst.class_id).unwrap();
-                        let class_name_id = class_names.get(&class.id).unwrap();
-                        let dict = str_dict.borrow();
-                        let class_name = dict.get(class_name_id).unwrap();
-                        str::from_utf8(class_name)?.to_string()
-                    }
-                    Some(HeapDumpEntry::ObjArrayDump(inst)) => {
-                        let class = classes.get(&inst.class_id).unwrap();
-                        let class_name_id = class_names.get(&class.id).unwrap();
-                        let dict = str_dict.borrow();
-                        let class_name = dict.get(class_name_id).unwrap();
-                        format!("{}[]", str::from_utf8(class_name)?)
-                    }
-                    None => {
-                        let class = classes.get(ele).unwrap();
-                        let class_name_id = class_names.get(&class.id).unwrap();
-                        let dict = str_dict.borrow();
-                        let class_name = dict.get(class_name_id).unwrap();
-                        format!("Class<{}>", str::from_utf8(class_name)?)
-                    }
-                    _ => unreachable!(),
-                };
-
-                // For element i > 0, look up which field of path[i] holds path[i-1].
-                let annotation = if i > 0 {
-                    let child = path[i - 1];
-                    edge_field_names.get(&(child, *ele)).map(|&field_id| {
-                        let dict = str_dict.borrow();
-                        dict.get(&field_id)
-                            .and_then(|b| str::from_utf8(b).ok())
-                            .unwrap_or("?")
-                            .to_string()
-                    })
-                } else {
-                    None
-                };
-
-                raw.push((*ele, name));
-                field_annotations.push(annotation);
-            }
-
-            // Signature: collapse consecutive same-class runs to one entry so paths
-            // that differ only in how many HashMap$Node / TreeNode hops the BFS
-            // traversed (varies by hash-bucket depth) map to the same pattern.
-            let mut sig: Vec<String> = Vec::new();
-            for (_, name) in &raw {
-                if sig.last().map_or(true, |last| last != name) {
-                    sig.push(name.clone());
-                }
-            }
-
-            // Display path: same collapsing with run counts, plus field annotations
-            // from the first element of each run.
-            let mut full_path: Vec<(T, String)> = Vec::new();
-            let mut i = 0;
-            while i < raw.len() {
-                let (ele, ref name) = raw[i];
-                let annotation = &field_annotations[i];
-                let mut run = 1;
-                while i + run < raw.len() && raw[i + run].1 == *name {
-                    run += 1;
-                }
-                let base = if run > 1 { format!("{name} (×{run})") } else { name.clone() };
-                let display = if let Some(field) = annotation {
-                    format!("{base}  (.{field})")
-                } else {
-                    base
-                };
-                full_path.push((ele, display));
-                i += run;
-            }
-
-            let is_new = !pattern_candidates.contains_key(&sig);
-            pattern_candidates.entry(sig.clone()).or_default().insert(candidate);
+    for (path, &candidate) in izip!(candidate_paths.iter(), candidates.iter()) {
+        if path.is_empty() {
+            let sig = vec!["<no path found>".to_string()];
+            let is_new = !pattern_terminals.contains_key(&sig);
+            pattern_terminals.entry(sig.clone()).or_default().insert(candidate);
             if is_new {
                 pattern_order.push(sig.clone());
-                pattern_example.insert(sig, full_path);
+                pattern_example.insert(sig, vec![]);
+            }
+            continue;
+        }
+
+        // Trim the path to start at the last leak target class encountered walking
+        // from the candidate toward the scheduler root. This collapses e.g.
+        // [WorldServer, EntityPlayer, CraftPlayer, HashMap, ..., CraftScheduler]
+        // into [CraftPlayer, HashMap, ..., CraftScheduler], attributing the leak
+        // to the innermost retained object rather than its transitive dependents.
+        let trimmed_start = path
+            .iter()
+            .rposition(|id| all_leak_target_set.contains(id))
+            .unwrap_or(0);
+        let trimmed = &path[trimmed_start..];
+        let terminal = trimmed[0];
+
+        // Resolve class names. Field annotations are collected separately so they
+        // don't affect signature matching.
+        let mut raw: Vec<(T, String)> = Vec::new();
+        let mut field_annotations: Vec<Option<String>> = Vec::new();
+        for (i, ele) in trimmed.iter().enumerate() {
+            let name: String = match inst_data.get(ele) {
+                Some(HeapDumpEntry::InstanceDump(inst)) => {
+                    let class = classes.get(&inst.class_id).unwrap();
+                    let class_name_id = class_names.get(&class.id).unwrap();
+                    let dict = str_dict.borrow();
+                    let class_name = dict.get(class_name_id).unwrap();
+                    str::from_utf8(class_name)?.to_string()
+                }
+                Some(HeapDumpEntry::ObjArrayDump(inst)) => {
+                    let class = classes.get(&inst.class_id).unwrap();
+                    let class_name_id = class_names.get(&class.id).unwrap();
+                    let dict = str_dict.borrow();
+                    let class_name = dict.get(class_name_id).unwrap();
+                    format!("{}[]", str::from_utf8(class_name)?)
+                }
+                None => {
+                    let class = classes.get(ele).unwrap();
+                    let class_name_id = class_names.get(&class.id).unwrap();
+                    let dict = str_dict.borrow();
+                    let class_name = dict.get(class_name_id).unwrap();
+                    format!("Class<{}>", str::from_utf8(class_name)?)
+                }
+                _ => unreachable!(),
+            };
+
+            // Look up which field of trimmed[i] holds trimmed[i-1].
+            let annotation = if i > 0 {
+                let child = trimmed[i - 1];
+                edge_field_names.get(&(child, *ele)).map(|&field_id| {
+                    let dict = str_dict.borrow();
+                    dict.get(&field_id)
+                        .and_then(|b| str::from_utf8(b).ok())
+                        .unwrap_or("?")
+                        .to_string()
+                })
+            } else {
+                None
+            };
+
+            raw.push((*ele, name));
+            field_annotations.push(annotation);
+        }
+
+        // Signature: collapse consecutive same-class runs so paths differing only
+        // in HashMap$Node / TreeNode depth map to the same pattern.
+        let mut sig: Vec<String> = Vec::new();
+        for (_, name) in &raw {
+            if sig.last().map_or(true, |last| last != name) {
+                sig.push(name.clone());
             }
         }
 
-        // Most-common patterns first.
-        pattern_order.sort_by(|a, b| pattern_candidates[b].len().cmp(&pattern_candidates[a].len()));
-
-        println!(
-            "=== {} leaked {} instance{}, {} unique retention pattern{} ===\n",
-            candidates.len(),
-            label,
-            if candidates.len() == 1 { "" } else { "s" },
-            pattern_order.len(),
-            if pattern_order.len() == 1 { "" } else { "s" }
-        );
-
-        for (i, sig) in pattern_order.iter().enumerate() {
-            let matching = &pattern_candidates[sig];
-            let example_path = &pattern_example[sig];
-
-            let total_bytes: u64 = matching
-                .iter()
-                .filter_map(|c| {
-                    if let Some(HeapDumpEntry::InstanceDump(inst)) = inst_data.get(c) {
-                        classes.get(&inst.class_id).map(|cl| cl.inst_size as u64)
-                    } else {
-                        None
-                    }
-                })
-                .sum();
-
-            println!(
-                "--- Pattern {} ({} instance{}, ~{} shallow) ---",
-                i + 1,
-                matching.len(),
-                if matching.len() == 1 { "" } else { "s" },
-                format_size(total_bytes),
-            );
-
-            if example_path.is_empty() {
-                println!("  <no path found from scheduler to this {label}>");
-            } else {
-                for (id, name) in example_path {
-                    println!("  {id:x} {name}");
-                }
+        // Display path: collapsed runs with counts, plus field annotations.
+        let mut full_path: Vec<(T, String)> = Vec::new();
+        let mut i = 0;
+        while i < raw.len() {
+            let (ele, ref name) = raw[i];
+            let annotation = &field_annotations[i];
+            let mut run = 1;
+            while i + run < raw.len() && raw[i + run].1 == *name {
+                run += 1;
             }
-            println!();
+            let base = if run > 1 { format!("{name} (×{run})") } else { name.clone() };
+            let display = if let Some(field) = annotation {
+                format!("{base}  (.{field})")
+            } else {
+                base
+            };
+            full_path.push((ele, display));
+            i += run;
+        }
+
+        let is_new = !pattern_terminals.contains_key(&sig);
+        pattern_terminals.entry(sig.clone()).or_default().insert(terminal);
+        if is_new {
+            pattern_order.push(sig.clone());
+            pattern_example.insert(sig, full_path);
         }
     }
 
-    Ok(any_exceeded)
+    // Most-common patterns first.
+    pattern_order.sort_by(|a, b| pattern_terminals[b].len().cmp(&pattern_terminals[a].len()));
+
+    println!(
+        "=== {} leaked instance{}, {} unique retention pattern{} ===\n",
+        candidates.len(),
+        if candidates.len() == 1 { "" } else { "s" },
+        pattern_order.len(),
+        if pattern_order.len() == 1 { "" } else { "s" }
+    );
+
+    for (i, sig) in pattern_order.iter().enumerate() {
+        let terminals = &pattern_terminals[sig];
+        let example_path = &pattern_example[sig];
+
+        let total_bytes: u64 = terminals
+            .iter()
+            .filter_map(|c| {
+                if let Some(HeapDumpEntry::InstanceDump(inst)) = inst_data.get(c) {
+                    classes.get(&inst.class_id).map(|cl| cl.inst_size as u64)
+                } else {
+                    None
+                }
+            })
+            .sum();
+
+        println!(
+            "--- Pattern {} ({} instance{}, ~{} shallow) ---",
+            i + 1,
+            terminals.len(),
+            if terminals.len() == 1 { "" } else { "s" },
+            format_size(total_bytes),
+        );
+
+        if example_path.is_empty() {
+            println!("  <no path found from scheduler>");
+        } else {
+            for (id, name) in example_path {
+                println!("  {id:x} {name}");
+            }
+        }
+        println!();
+    }
+
+    Ok(true)
 }
 
 const HEADER: &[u8; 19] = b"JAVA PROFILE 1.0.2\0";
