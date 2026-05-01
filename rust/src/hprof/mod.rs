@@ -539,7 +539,7 @@ fn format_size(bytes: u64) -> String {
     }
 }
 
-fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
+fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
     use ClassNames::*;
 
     let str_dict = RefCell::new(IntMap::default());
@@ -754,10 +754,17 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
         },
     )?;
 
+    let mut any_exceeded = false;
+
     for (type_info, (candidates, candidate_paths)) in
         class_types.iter().zip(all_candidates.iter().zip(all_paths.iter()))
     {
         let label = type_info.0;
+
+        if candidates.len() < min_leaked {
+            continue;
+        }
+        any_exceeded = true;
 
         // Group shortest paths by class-name signature to deduplicate across all candidates.
         // Many candidates may be held alive by the same code pattern (same class chain),
@@ -911,12 +918,12 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
         }
     }
 
-    Ok(())
+    Ok(any_exceeded)
 }
 
 const HEADER: &[u8; 19] = b"JAVA PROFILE 1.0.2\0";
 
-pub fn read_prof(mut hprof_file: &[u8]) -> Result<()> {
+pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize) -> Result<bool> {
     let mut header = [0; HEADER.len()];
     hprof_file.read_exact(&mut header)?;
 
@@ -928,12 +935,10 @@ pub fn read_prof(mut hprof_file: &[u8]) -> Result<()> {
     let _micros = hprof_file.read_u64::<BigEndian>()?;
 
     if id_size == 4 {
-        do_read_prof::<u32>(hprof_file)?;
+        do_read_prof::<u32>(hprof_file, min_leaked)
     } else if id_size == 8 {
-        do_read_prof::<u64>(hprof_file)?;
+        do_read_prof::<u64>(hprof_file, min_leaked)
     } else {
-        return Err(anyhow!("illegal id_size: {id_size}"));
+        Err(anyhow!("illegal id_size: {id_size}"))
     }
-
-    Ok(())
 }
