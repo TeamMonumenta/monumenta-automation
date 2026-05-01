@@ -558,7 +558,7 @@ fn madvise(file: &[u8], sequential: bool) {
     }
 }
 
-fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, normalize_inner_classes: bool, show_ids: bool) -> Result<bool> {
+fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked: usize, normalize_inner_classes: bool, show_ids: bool) -> Result<bool> {
     use ClassNames::*;
 
     let str_dict = RefCell::new(IntMap::default());
@@ -825,6 +825,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, normalize_inner_cl
     let mut pattern_order: Vec<Vec<String>> = Vec::new();
     let mut pattern_terminals: IntMap<Vec<String>, IntSet<T>> = IntMap::default();
     let mut pattern_example: IntMap<Vec<String>, Vec<(T, String)>> = IntMap::default();
+    let mut pattern_example_score: IntMap<Vec<String>, usize> = IntMap::default();
 
     for (path, &candidate) in izip!(candidate_paths.iter(), candidates.iter()) {
         if path.is_empty() {
@@ -934,10 +935,16 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, normalize_inner_cl
             i += run;
         }
 
+        let annotation_score = field_annotations.iter().filter(|a| a.is_some()).count();
+
         let is_new = !pattern_terminals.contains_key(&sig);
         pattern_terminals.entry(sig.clone()).or_default().insert(terminal);
         if is_new {
             pattern_order.push(sig.clone());
+            pattern_example_score.insert(sig.clone(), annotation_score);
+            pattern_example.insert(sig, full_path);
+        } else if annotation_score > pattern_example_score[&sig] {
+            pattern_example_score.insert(sig.clone(), annotation_score);
             pattern_example.insert(sig, full_path);
         }
     }
@@ -945,24 +952,43 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, normalize_inner_cl
     // Most-common patterns first.
     pattern_order.sort_by(|a, b| pattern_terminals[b].len().cmp(&pattern_terminals[a].len()));
 
+    let suppressed = pattern_order
+        .iter()
+        .filter(|sig| pattern_terminals[*sig].len() < min_pattern_leaked)
+        .count();
+    let suppressed_note = if suppressed > 0 {
+        format!(
+            " ({} suppressed by --min-pattern-leaked)",
+            suppressed
+        )
+    } else {
+        String::new()
+    };
+
     println!(
-        "=== {} leaked instance{}, {} unique retention pattern{} ===\n",
+        "=== {} leaked instance{}, {} unique retention pattern{}{} ===\n",
         candidates.len(),
         if candidates.len() == 1 { "" } else { "s" },
         pattern_order.len(),
-        if pattern_order.len() == 1 { "" } else { "s" }
+        if pattern_order.len() == 1 { "" } else { "s" },
+        suppressed_note,
     );
 
-    for (i, sig) in pattern_order.iter().enumerate() {
+    let mut display_index = 1usize;
+    for sig in pattern_order.iter() {
         let terminals = &pattern_terminals[sig];
+        if terminals.len() < min_pattern_leaked {
+            continue;
+        }
         let example_path = &pattern_example[sig];
 
         println!(
             "--- Pattern {} ({} instance{}) ---",
-            i + 1,
+            display_index,
             terminals.len(),
             if terminals.len() == 1 { "" } else { "s" },
         );
+        display_index += 1;
 
         if example_path.is_empty() {
             println!("  <no path found from scheduler>");
@@ -983,7 +1009,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, normalize_inner_cl
 
 const HEADER: &[u8; 19] = b"JAVA PROFILE 1.0.2\0";
 
-pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize, normalize_inner_classes: bool, show_ids: bool) -> Result<bool> {
+pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize, min_pattern_leaked: usize, normalize_inner_classes: bool, show_ids: bool) -> Result<bool> {
     let mut header = [0; HEADER.len()];
     hprof_file.read_exact(&mut header)?;
 
@@ -996,12 +1022,12 @@ pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize, normalize_inner_class
 
     if id_size == 4 {
         eprintln!("detected 4-byte object IDs (compressed OOPs)");
-        do_read_prof::<u32>(hprof_file, min_leaked, normalize_inner_classes, show_ids)
+        do_read_prof::<u32>(hprof_file, min_leaked, min_pattern_leaked, normalize_inner_classes, show_ids)
     } else if id_size == 8 {
         // Shifted OOP values for heaps ≤ 32 GB fit in u32, halving edge memory.
         // Fall back to u64 only if a value overflows (heap > 32 GB).
         eprintln!("detected 8-byte object IDs (uncompressed OOPs); using compact u32 storage");
-        do_read_prof::<OopId>(hprof_file, min_leaked, normalize_inner_classes, show_ids)
+        do_read_prof::<OopId>(hprof_file, min_leaked, min_pattern_leaked, normalize_inner_classes, show_ids)
     } else {
         Err(anyhow!("illegal id_size: {id_size}"))
     }

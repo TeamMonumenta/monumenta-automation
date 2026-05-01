@@ -16,6 +16,11 @@ struct Cli {
     #[arg(long, default_value_t = 1)]
     min_leaked: usize,
 
+    /// Minimum number of leaked instances for a pattern group to be included in output. Groups
+    /// below this threshold are still counted in the header but not printed.
+    #[arg(long, default_value_t = 1)]
+    min_pattern_leaked: usize,
+
     /// Disable inner class name normalization in pattern signatures. By default, inner class
     /// suffixes are stripped (e.g. HashMap$Node and HashMap$TreeNode both become HashMap;
     /// BossAbilityGroup$1 and BossAbilityGroup$2 both become BossAbilityGroup) so that
@@ -33,7 +38,7 @@ struct Cli {
 fn main() -> Result<()> {
     let args = Cli::parse();
     let contents = unsafe { Mmap::map(&File::open(args.file)?)? };
-    let leaks_found = read_prof(&contents, args.min_leaked, !args.no_normalize_inner_classes, args.show_ids)?;
+    let leaks_found = read_prof(&contents, args.min_leaked, args.min_pattern_leaked, !args.no_normalize_inner_classes, args.show_ids)?;
     if leaks_found {
         std::process::exit(1);
     }
