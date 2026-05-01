@@ -10,7 +10,7 @@ use phf::phf_map;
 use smallvec::SmallVec;
 
 use crate::hprof::{
-    graph::{IntMap, IntSet, clean_graph, find_paths, is_reachable, to_vec},
+    graph::{IntMap, IntSet, clean_graph, find_shortest_path, is_reachable},
     id::Id,
 };
 
@@ -694,9 +694,9 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
     eprintln!("finding leaked object paths-to-root");
     eprintln!("found {} likely leak candidates", leak_candidates.len());
 
-    let candidate_paths: Vec<Vec<_>> = find_paths(&edges, |f| leak_root_sources.contains(&f), &leak_candidates, 5)
+    let candidate_paths: Vec<Vec<T>> = leak_candidates
         .iter()
-        .map(|f| f.iter().map(|f| to_vec(f)).collect())
+        .map(|&c| find_shortest_path(&edges, |f| leak_root_sources.contains(&f), c))
         .collect();
 
     eprintln!("re-gathering instance data");
@@ -705,7 +705,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
 
     let mut relevant_inst: IntSet<T> = IntSet::default();
     let mut inst_data: IntMap<T, HeapDumpEntry<'a, T>> = IntMap::default();
-    relevant_inst.extend(candidate_paths.iter().flatten().flatten());
+    relevant_inst.extend(candidate_paths.iter().flatten().copied());
 
     let mut on_data = |id: T, data: HeapDumpEntry<'a, T>| {
         if relevant_inst.contains(&id) {
@@ -728,64 +728,62 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
         },
     )?;
 
-    // Group paths by class-name signature to deduplicate across all candidates.
+    // Group shortest paths by class-name signature to deduplicate across all candidates.
     // Many candidates may be held alive by the same code pattern (same class chain),
     // differing only in which specific instances are involved.
     let mut pattern_order: Vec<Vec<String>> = Vec::new();
     let mut pattern_candidates: IntMap<Vec<String>, IntSet<T>> = IntMap::default();
-    let mut pattern_example: IntMap<Vec<String>, (T, Vec<(T, String)>)> = IntMap::default();
+    let mut pattern_example: IntMap<Vec<String>, Vec<(T, String)>> = IntMap::default();
 
-    for (paths, &candidate) in izip!(candidate_paths.iter(), leak_candidates.iter()) {
-        if paths.is_empty() {
+    for (path, &candidate) in izip!(candidate_paths.iter(), leak_candidates.iter()) {
+        if path.is_empty() {
             let sig = vec!["<no path found>".to_string()];
             let is_new = !pattern_candidates.contains_key(&sig);
             pattern_candidates.entry(sig.clone()).or_default().insert(candidate);
             if is_new {
                 pattern_order.push(sig.clone());
-                pattern_example.insert(sig, (candidate, vec![]));
+                pattern_example.insert(sig, vec![]);
             }
             continue;
         }
 
-        for path in paths {
-            let mut sig: Vec<String> = Vec::new();
-            let mut full_path: Vec<(T, String)> = Vec::new();
+        let mut sig: Vec<String> = Vec::new();
+        let mut full_path: Vec<(T, String)> = Vec::new();
 
-            for ele in path {
-                let name: String = match inst_data.get(ele) {
-                    Some(HeapDumpEntry::InstanceDump(inst)) => {
-                        let class = classes.get(&inst.class_id).unwrap();
-                        let class_name_id = class_names.get(&class.id).unwrap();
-                        let dict = str_dict.borrow();
-                        let class_name = dict.get(class_name_id).unwrap();
-                        str::from_utf8(class_name)?.to_string()
-                    }
-                    Some(HeapDumpEntry::ObjArrayDump(inst)) => {
-                        let class = classes.get(&inst.class_id).unwrap();
-                        let class_name_id = class_names.get(&class.id).unwrap();
-                        let dict = str_dict.borrow();
-                        let class_name = dict.get(class_name_id).unwrap();
-                        format!("{}[]", str::from_utf8(class_name)?)
-                    }
-                    None => {
-                        let class = classes.get(ele).unwrap();
-                        let class_name_id = class_names.get(&class.id).unwrap();
-                        let dict = str_dict.borrow();
-                        let class_name = dict.get(class_name_id).unwrap();
-                        format!("Class<{}>", str::from_utf8(class_name)?)
-                    }
-                    _ => unreachable!(),
-                };
-                sig.push(name.clone());
-                full_path.push((*ele, name));
-            }
+        for ele in path {
+            let name: String = match inst_data.get(ele) {
+                Some(HeapDumpEntry::InstanceDump(inst)) => {
+                    let class = classes.get(&inst.class_id).unwrap();
+                    let class_name_id = class_names.get(&class.id).unwrap();
+                    let dict = str_dict.borrow();
+                    let class_name = dict.get(class_name_id).unwrap();
+                    str::from_utf8(class_name)?.to_string()
+                }
+                Some(HeapDumpEntry::ObjArrayDump(inst)) => {
+                    let class = classes.get(&inst.class_id).unwrap();
+                    let class_name_id = class_names.get(&class.id).unwrap();
+                    let dict = str_dict.borrow();
+                    let class_name = dict.get(class_name_id).unwrap();
+                    format!("{}[]", str::from_utf8(class_name)?)
+                }
+                None => {
+                    let class = classes.get(ele).unwrap();
+                    let class_name_id = class_names.get(&class.id).unwrap();
+                    let dict = str_dict.borrow();
+                    let class_name = dict.get(class_name_id).unwrap();
+                    format!("Class<{}>", str::from_utf8(class_name)?)
+                }
+                _ => unreachable!(),
+            };
+            sig.push(name.clone());
+            full_path.push((*ele, name));
+        }
 
-            let is_new = !pattern_candidates.contains_key(&sig);
-            pattern_candidates.entry(sig.clone()).or_default().insert(candidate);
-            if is_new {
-                pattern_order.push(sig.clone());
-                pattern_example.insert(sig, (candidate, full_path));
-            }
+        let is_new = !pattern_candidates.contains_key(&sig);
+        pattern_candidates.entry(sig.clone()).or_default().insert(candidate);
+        if is_new {
+            pattern_order.push(sig.clone());
+            pattern_example.insert(sig, full_path);
         }
     }
 
@@ -802,7 +800,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
 
     for (i, sig) in pattern_order.iter().enumerate() {
         let candidates = &pattern_candidates[sig];
-        let (_example_candidate, example_path) = &pattern_example[sig];
+        let example_path = &pattern_example[sig];
 
         println!(
             "--- Pattern {} ({} instance{}) ---",
