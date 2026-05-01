@@ -586,7 +586,9 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
         edges.push((child, parent));
     };
 
-    let get_class_id = |id: ClassNames| *class_ids[id as usize].get().unwrap();
+    // Returns T::NULL (0) when a special class wasn't found in the heap dump, which makes every
+    // comparison against it false — effectively disabling that detection path gracefully.
+    let get_class_id = |id: ClassNames| class_ids[id as usize].get().copied().unwrap_or(T::NULL);
 
     eprintln!("parsing heap dump");
 
@@ -607,7 +609,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
             debug_assert!(res.is_none());
 
             for (idx, v) in special_strings.iter().enumerate() {
-                if name_id == *v.get().unwrap() {
+                if v.get().map_or(false, |s| name_id == *s) {
                     let res = class_ids[idx].set(obj_id);
                     debug_assert!(res.is_ok());
                 }
@@ -696,6 +698,30 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
             Ok(())
         },
     )?;
+
+    // Warn when detection-critical classes were not found. This usually means the hardcoded
+    // class name mappings (currently targeting v1_20_R3) are out of date for the Minecraft
+    // version that produced this heap dump.
+    let scheduler_found = class_ids[CraftSchedulerClass as usize].get().is_some()
+        || class_ids[CraftAsyncSchedulerClass as usize].get().is_some();
+    let leak_targets_found = class_ids[WorldServerClass as usize].get().is_some()
+        || class_ids[EntityPlayerClass as usize].get().is_some()
+        || class_ids[CraftPlayerClass as usize].get().is_some();
+    if !scheduler_found {
+        eprintln!(
+            "warning: neither CraftScheduler nor CraftAsyncScheduler was found in the heap dump"
+        );
+        eprintln!(
+            "         no leak root sources can be identified — all paths-to-root will be empty"
+        );
+        eprintln!("         the class name mappings may be out of date (currently target v1_20_R3)");
+    }
+    if !leak_targets_found {
+        eprintln!(
+            "warning: no leak target classes (WorldServer, EntityPlayer, CraftPlayer) were found"
+        );
+        eprintln!("         the class name mappings may be out of date (currently target v1_20_R3)");
+    }
 
     eprintln!("clean graph");
 
