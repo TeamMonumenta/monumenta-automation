@@ -529,15 +529,6 @@ fn visit_prof<
     Ok(())
 }
 
-fn format_size(bytes: u64) -> String {
-    if bytes < 1024 {
-        format!("{bytes} B")
-    } else if bytes < 1024 * 1024 {
-        format!("{:.1} KB", bytes as f64 / 1024.0)
-    } else {
-        format!("{:.1} MB", bytes as f64 / (1024.0 * 1024.0))
-    }
-}
 
 fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
     use ClassNames::*;
@@ -730,7 +721,6 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
     let mut relevant_inst: IntSet<T> = IntSet::default();
     let mut inst_data: IntMap<T, HeapDumpEntry<'a, T>> = IntMap::default();
     relevant_inst.extend(candidate_paths.iter().flatten().copied());
-    relevant_inst.extend(candidates.iter().copied());
 
     let mut on_data = |id: T, data: HeapDumpEntry<'a, T>| {
         if relevant_inst.contains(&id) {
@@ -889,23 +879,11 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
         let terminals = &pattern_terminals[sig];
         let example_path = &pattern_example[sig];
 
-        let total_bytes: u64 = terminals
-            .iter()
-            .filter_map(|c| {
-                if let Some(HeapDumpEntry::InstanceDump(inst)) = inst_data.get(c) {
-                    classes.get(&inst.class_id).map(|cl| cl.inst_size as u64)
-                } else {
-                    None
-                }
-            })
-            .sum();
-
         println!(
-            "--- Pattern {} ({} instance{}, ~{} shallow) ---",
+            "--- Pattern {} ({} instance{}) ---",
             i + 1,
             terminals.len(),
             if terminals.len() == 1 { "" } else { "s" },
-            format_size(total_bytes),
         );
 
         if example_path.is_empty() {
