@@ -344,7 +344,7 @@ impl<'a, T: Id> HeapDumpRecord<'a, T> for GcObjArrayDump<'a, T> {
             id,
             stacktrace_seq,
             class_id,
-            data: read_nocopy(cur, len * size_of::<T>())?,
+            data: read_nocopy(cur, len * T::FILE_SIZE)?,
         })
     }
 }
@@ -681,7 +681,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize) -> Result<bool> {
                     })?;
                 }
                 HeapDumpEntry::ObjArrayDump(arr) => {
-                    let len = arr.data.len() / size_of::<T>();
+                    let len = arr.data.len() / T::FILE_SIZE;
                     let mut buf = arr.data;
 
                     insert_edge(arr.class_id, arr.id);

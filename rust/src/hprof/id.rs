@@ -8,12 +8,15 @@ use byteorder::{BigEndian, ReadBytesExt};
 
 pub trait Id: Sized + Hash + Copy + Eq + Display + LowerHex + Debug + Ord + Default {
     const NULL: Self;
+    /// Bytes occupied by one ID in the HPROF file (may differ from in-memory size).
+    const FILE_SIZE: usize;
 
     fn read_from(buf: &mut &[u8]) -> Result<Self, Error>;
 }
 
 impl Id for u32 {
     const NULL: Self = 0;
+    const FILE_SIZE: usize = 4;
 
     fn read_from(buf: &mut &[u8]) -> Result<Self, Error> {
         buf.read_u32::<BigEndian>()
@@ -22,6 +25,7 @@ impl Id for u32 {
 
 impl Id for u64 {
     const NULL: Self = 0;
+    const FILE_SIZE: usize = 8;
 
     fn read_from(buf: &mut &[u8]) -> Result<Self, Error> {
         let res = buf.read_u64::<BigEndian>()?;
@@ -51,6 +55,7 @@ impl LowerHex for OopId {
 
 impl Id for OopId {
     const NULL: Self = OopId(0);
+    const FILE_SIZE: usize = 8;
 
     fn read_from(buf: &mut &[u8]) -> Result<Self, Error> {
         let raw = buf.read_u64::<BigEndian>()?;
