@@ -525,7 +525,7 @@ fn visit_prof<
     Ok(())
 }
 
-fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
+fn do_read_prof<'a, T: Id>(file: &'a [u8]) -> Result<()> {
     use ClassNames::*;
 
     let str_dict = RefCell::new(IntMap::default());
@@ -533,10 +533,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
     let mut class_names = IntMap::default();
     let mut gc_roots: IntMap<_, SmallVec<[GcRootData<T>; 2]>> = IntMap::default();
 
-    // Pre-size to avoid realloc spikes. Rough heuristic: field-ref edges dominate;
-    // cap at 256M entries (~4GB for u64 IDs) so we don't over-allocate on small heaps.
-    let edge_capacity = (file_len_hint / (size_of::<(T, T)>() * 4)).min(256 * 1024 * 1024);
-    let mut edges: Vec<(T, T)> = Vec::with_capacity(edge_capacity);
+    let mut edges: Vec<(T, T)> = Vec::new();
     let mut world_server_instances = Vec::new();
 
     let special_strings = vec![OnceCell::new(); Max as usize];
@@ -585,16 +582,16 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
         |entry| {
             match entry {
                 HeapDumpEntry::ClassDump(class) => {
-                    // Only track static-field edges: a class object holding a reference to
-                    // some heap object via a static field is a real Java reference and can be
-                    // a leak root. Class hierarchy / classloader edges are JVM-implicit
-                    // relationships that don't represent Java field references and add
-                    // enormous noise to the graph (~4 edges per class, irrelevant to leaks).
                     for (_, static_value) in &class.statics {
                         if let JVMValue::Obj(child) = static_value {
                             insert_edge(*child, class.id);
                         }
                     }
+
+                    insert_edge(class.super_id, class.id);
+                    insert_edge(class.class_loader_id, class.id);
+                    insert_edge(class.signers_id, class.id);
+                    insert_edge(class.protection_domain_id, class.id);
 
                     let res = classes.insert(class.id, class);
                     debug_assert!(res.is_none());
@@ -602,10 +599,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
                 HeapDumpEntry::InstanceDump(inst) => {
                     let class = classes.get(&inst.class_id).unwrap();
 
-                    // Intentionally NOT inserting a class→instance back-edge here.
-                    // That edge represents the JVM vtable pointer (implicit), not a Java
-                    // field reference. For a 16GB heap with ~700M instances it adds ~11GB
-                    // of edges that are never on a real scheduler→WorldServer leak path.
+                    insert_edge(class.id, inst.id);
 
                     if inst.class_id == get_class_id(WorldServerClass) {
                         world_server_instances.push(inst.id);
@@ -649,8 +643,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
                     let len = arr.data.len() / size_of::<T>();
                     let mut buf = arr.data;
 
-                    // Not inserting arr.class_id→arr.id for the same reason as instances:
-                    // it's the JVM element-type pointer, not a Java reference on any leak path.
+                    insert_edge(arr.class_id, arr.id);
 
                     for _ in 0..len {
                         insert_edge(T::read_from(&mut buf)?, arr.id);
@@ -847,8 +840,6 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], file_len_hint: usize) -> Result<()> {
 const HEADER: &[u8; 19] = b"JAVA PROFILE 1.0.2\0";
 
 pub fn read_prof(mut hprof_file: &[u8]) -> Result<()> {
-    let file_len = hprof_file.len();
-
     let mut header = [0; HEADER.len()];
     hprof_file.read_exact(&mut header)?;
 
@@ -860,9 +851,9 @@ pub fn read_prof(mut hprof_file: &[u8]) -> Result<()> {
     let _micros = hprof_file.read_u64::<BigEndian>()?;
 
     if id_size == 4 {
-        do_read_prof::<u32>(hprof_file, file_len)?;
+        do_read_prof::<u32>(hprof_file)?;
     } else if id_size == 8 {
-        do_read_prof::<u64>(hprof_file, file_len)?;
+        do_read_prof::<u64>(hprof_file)?;
     } else {
         return Err(anyhow!("illegal id_size: {id_size}"));
     }
