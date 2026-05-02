@@ -850,7 +850,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
     // into the CraftPlayer's pattern rather than creating a redundant WorldServer entry.
     let mut pattern_order: Vec<Vec<String>> = Vec::new();
     let mut pattern_terminals: IntMap<Vec<String>, IntSet<T>> = IntMap::default();
-    let mut pattern_example: IntMap<Vec<String>, Vec<(T, String)>> = IntMap::default();
+    let mut pattern_example: IntMap<Vec<String>, Vec<(T, String, Option<String>)>> = IntMap::default();
     let mut pattern_example_score: IntMap<Vec<String>, usize> = IntMap::default();
 
     for (path, &candidate) in izip!(candidate_paths.iter(), candidates.iter()) {
@@ -894,8 +894,14 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
                     let class = classes.get(&inst.class_id).unwrap();
                     let class_name_id = class_names.get(&class.id).unwrap();
                     let dict = str_dict.borrow();
-                    let class_name = dict.get(class_name_id).unwrap();
-                    format!("{}[]", str::from_utf8(class_name)?)
+                    let class_name_bytes = dict.get(class_name_id).unwrap();
+                    let class_name = str::from_utf8(class_name_bytes)?;
+                    // Simplify JVM array notation: [Ljava/lang/Object; -> java/lang/Object[]
+                    if class_name.starts_with("[L") && class_name.ends_with(';') {
+                        format!("{}[]", &class_name[2..class_name.len() - 1])
+                    } else {
+                        format!("{}[]", class_name)
+                    }
                 }
                 None => {
                     let class = classes.get(ele).unwrap();
@@ -926,9 +932,9 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
         }
 
         // Signature: normalize inner class names (if enabled), then collapse
-        // consecutive same-class runs. Normalization strips the $InnerClass suffix so
-        // that e.g. HashMap$Node, HashMap$TreeNode, BossAbilityGroup$1/$2 all map to
-        // the same pattern entry.
+        // consecutive same-class runs. Normalization strips the $InnerClass suffix and
+        // the Class<> wrapper so that e.g. HashMap$Node, HashMap$TreeNode,
+        // BossAbilityGroup$1/$2, and Class<X>/X-instance pairs all map to the same sig.
         let mut sig: Vec<String> = Vec::new();
         for (_, name) in &raw {
             let norm = if normalize_inner_classes {
@@ -941,24 +947,37 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
             }
         }
 
-        // Display path: collapsed runs with counts, plus field annotations.
-        let mut full_path: Vec<(T, String)> = Vec::new();
+        // Display path: collapsed runs (count not shown), field annotations, and in
+        // normalize mode Class<X>+X instance pairs merged into one entry.
+        let mut full_path: Vec<(T, String, Option<String>)> = Vec::new();
         let mut i = 0;
         while i < raw.len() {
-            let (ele, ref name) = raw[i];
-            let annotation = &field_annotations[i];
+            let name = raw[i].1.clone();
+            let ele = raw[i].0;
+            let annotation = field_annotations[i].clone();
             let mut run = 1;
-            while i + run < raw.len() && raw[i + run].1 == *name {
+            while i + run < raw.len() && raw[i + run].1 == name {
                 run += 1;
             }
-            let base = if run > 1 { format!("{name} (×{run})") } else { name.clone() };
-            let display = if let Some(field) = annotation {
-                format!("{base}  (.{field})")
-            } else {
-                base
-            };
-            full_path.push((ele, display));
             i += run;
+            // In normalize mode: collapse Class<X> + X instance into one entry.
+            // The class-object entry carries the static field_name; the following
+            // instance entry is only the class-pointer edge and carries no field name.
+            let (class_name, field_name) = if normalize_inner_classes {
+                if let Some(inner) = strip_class_wrapper(&name) {
+                    if i < raw.len() && raw[i].1 == inner {
+                        i += 1;
+                        (inner.to_string(), annotation)
+                    } else {
+                        (name, annotation)
+                    }
+                } else {
+                    (name, annotation)
+                }
+            } else {
+                (name, annotation)
+            };
+            full_path.push((ele, class_name, field_name));
         }
 
         let annotation_score = field_annotations.iter().filter(|a| a.is_some()).count();
@@ -998,14 +1017,15 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
             if pattern_order.len() == 1 { "" } else { "s" },
             suppressed_note,
         );
-        // Serialize the already-compact display strings — same format as text output,
-        // just structured. Each chain entry is a display string like
-        // "java/util/HashMap$Node (×8)  (.key)" or "java/util/HashMap  (.table)".
         let patterns: Vec<serde_json::Value> = pattern_order.iter()
             .filter(|sig| pattern_terminals[*sig].len() >= min_pattern_leaked)
             .map(|sig| {
                 let count = pattern_terminals[sig].len();
-                let chain: Vec<&str> = pattern_example[sig].iter().map(|(_, s)| s.as_str()).collect();
+                let chain: Vec<serde_json::Value> = pattern_example[sig].iter()
+                    .map(|(_, class_name, field_name)| {
+                        serde_json::json!({"class_name": class_name, "field_name": field_name})
+                    })
+                    .collect();
                 serde_json::json!({"instance_count": count, "chain": chain})
             })
             .collect();
@@ -1039,11 +1059,16 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
             if example_path.is_empty() {
                 println!("  <no path found from scheduler>");
             } else {
-                for (id, name) in example_path {
-                    if show_ids {
-                        println!("  {id:x} {name}");
+                for (id, class_name, field_name) in example_path {
+                    let display = if let Some(field) = field_name {
+                        format!("{class_name}  (.{field})")
                     } else {
-                        println!("  {name}");
+                        class_name.clone()
+                    };
+                    if show_ids {
+                        println!("  {id:x} {display}");
+                    } else {
+                        println!("  {display}");
                     }
                 }
             }
@@ -1080,12 +1105,21 @@ pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize, min_pattern_leaked: u
     }
 }
 
+fn strip_class_wrapper(name: &str) -> Option<&str> {
+    if name.starts_with("Class<") && name.ends_with('>') {
+        Some(&name[6..name.len() - 1])
+    } else {
+        None
+    }
+}
+
 fn normalize_class_name(name: &str) -> String {
+    // Strip Class<> wrapper so class objects group with their instances in the sig.
+    let name = strip_class_wrapper(name).unwrap_or(name);
     // Strip inner class suffix (everything from the last '$' to the next ';', '>', or end).
-    // Handles three forms produced by the path-resolution code:
-    //   "org/foo/Bar$Inner"        -> "org/foo/Bar"
-    //   "[Lorg/foo/Bar$Inner;[]"   -> "[Lorg/foo/Bar;[]"
-    //   "Class<org/foo/Bar$Inner>" -> "Class<org/foo/Bar>"
+    //   "org/foo/Bar$Inner"  -> "org/foo/Bar"
+    //   "org/foo/Bar$1"      -> "org/foo/Bar"
+    //   "java/lang/Object[]" -> "java/lang/Object[]"  (no '$', unchanged)
     if let Some(dollar) = name.rfind('$') {
         let mut result = name[..dollar].to_string();
         let rest = &name[dollar + 1..];
