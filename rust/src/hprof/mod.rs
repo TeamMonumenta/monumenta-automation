@@ -558,7 +558,7 @@ fn madvise(file: &[u8], sequential: bool) {
     }
 }
 
-fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked: usize, normalize_inner_classes: bool, show_ids: bool) -> Result<bool> {
+fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked: usize, normalize_inner_classes: bool, show_ids: bool, json: bool) -> Result<bool> {
     use ClassNames::*;
 
     let str_dict = RefCell::new(IntMap::default());
@@ -983,51 +983,72 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
         .filter(|sig| pattern_terminals[*sig].len() < min_pattern_leaked)
         .count();
     let suppressed_note = if suppressed > 0 {
-        format!(
-            " ({} suppressed by --min-pattern-leaked)",
-            suppressed
-        )
+        format!(" ({} suppressed by --min-pattern-leaked)", suppressed)
     } else {
         String::new()
     };
 
-    println!(
-        "=== {} leaked instance{}, {} unique retention pattern{}{} ===\n",
-        candidates.len(),
-        if candidates.len() == 1 { "" } else { "s" },
-        pattern_order.len(),
-        if pattern_order.len() == 1 { "" } else { "s" },
-        suppressed_note,
-    );
-
-    let mut display_index = 1usize;
-    for sig in pattern_order.iter() {
-        let terminals = &pattern_terminals[sig];
-        if terminals.len() < min_pattern_leaked {
-            continue;
-        }
-        let example_path = &pattern_example[sig];
-
-        println!(
-            "--- Pattern {} ({} instance{}) ---",
-            display_index,
-            terminals.len(),
-            if terminals.len() == 1 { "" } else { "s" },
+    if json {
+        // Summary goes to stderr so stdout is clean JSON.
+        eprintln!(
+            "=== {} leaked instance{}, {} unique retention pattern{}{} ===",
+            candidates.len(),
+            if candidates.len() == 1 { "" } else { "s" },
+            pattern_order.len(),
+            if pattern_order.len() == 1 { "" } else { "s" },
+            suppressed_note,
         );
-        display_index += 1;
+        // Serialize the already-compact display strings — same format as text output,
+        // just structured. Each chain entry is a display string like
+        // "java/util/HashMap$Node (×8)  (.key)" or "java/util/HashMap  (.table)".
+        let patterns: Vec<serde_json::Value> = pattern_order.iter()
+            .filter(|sig| pattern_terminals[*sig].len() >= min_pattern_leaked)
+            .map(|sig| {
+                let count = pattern_terminals[sig].len();
+                let chain: Vec<&str> = pattern_example[sig].iter().map(|(_, s)| s.as_str()).collect();
+                serde_json::json!({"instance_count": count, "chain": chain})
+            })
+            .collect();
+        println!("{}", serde_json::to_string(&patterns)?);
+    } else {
+        println!(
+            "=== {} leaked instance{}, {} unique retention pattern{}{} ===\n",
+            candidates.len(),
+            if candidates.len() == 1 { "" } else { "s" },
+            pattern_order.len(),
+            if pattern_order.len() == 1 { "" } else { "s" },
+            suppressed_note,
+        );
 
-        if example_path.is_empty() {
-            println!("  <no path found from scheduler>");
-        } else {
-            for (id, name) in example_path {
-                if show_ids {
-                    println!("  {id:x} {name}");
-                } else {
-                    println!("  {name}");
+        let mut display_index = 1usize;
+        for sig in pattern_order.iter() {
+            let terminals = &pattern_terminals[sig];
+            if terminals.len() < min_pattern_leaked {
+                continue;
+            }
+            let example_path = &pattern_example[sig];
+
+            println!(
+                "--- Pattern {} ({} instance{}) ---",
+                display_index,
+                terminals.len(),
+                if terminals.len() == 1 { "" } else { "s" },
+            );
+            display_index += 1;
+
+            if example_path.is_empty() {
+                println!("  <no path found from scheduler>");
+            } else {
+                for (id, name) in example_path {
+                    if show_ids {
+                        println!("  {id:x} {name}");
+                    } else {
+                        println!("  {name}");
+                    }
                 }
             }
+            println!();
         }
-        println!();
     }
 
     Ok(true)
@@ -1035,7 +1056,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
 
 const HEADER: &[u8; 19] = b"JAVA PROFILE 1.0.2\0";
 
-pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize, min_pattern_leaked: usize, normalize_inner_classes: bool, show_ids: bool) -> Result<bool> {
+pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize, min_pattern_leaked: usize, normalize_inner_classes: bool, show_ids: bool, json: bool) -> Result<bool> {
     let mut header = [0; HEADER.len()];
     hprof_file.read_exact(&mut header)?;
 
@@ -1048,12 +1069,12 @@ pub fn read_prof(mut hprof_file: &[u8], min_leaked: usize, min_pattern_leaked: u
 
     if id_size == 4 {
         eprintln!("detected 4-byte object IDs (compressed OOPs)");
-        do_read_prof::<u32>(hprof_file, min_leaked, min_pattern_leaked, normalize_inner_classes, show_ids)
+        do_read_prof::<u32>(hprof_file, min_leaked, min_pattern_leaked, normalize_inner_classes, show_ids, json)
     } else if id_size == 8 {
         // Shifted OOP values for heaps ≤ 32 GB fit in u32, halving edge memory.
         // Fall back to u64 only if a value overflows (heap > 32 GB).
         eprintln!("detected 8-byte object IDs (uncompressed OOPs); using compact u32 storage");
-        do_read_prof::<OopId>(hprof_file, min_leaked, min_pattern_leaked, normalize_inner_classes, show_ids)
+        do_read_prof::<OopId>(hprof_file, min_leaked, min_pattern_leaked, normalize_inner_classes, show_ids, json)
     } else {
         Err(anyhow!("illegal id_size: {id_size}"))
     }

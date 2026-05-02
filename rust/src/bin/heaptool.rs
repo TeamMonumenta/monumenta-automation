@@ -33,12 +33,18 @@ struct Cli {
     /// output diff-friendly.
     #[arg(long)]
     show_ids: bool,
+
+    /// Emit results as a JSON array to stdout. Each element has an instance_count and a chain
+    /// array of compact display strings matching the normal text output (runs collapsed, field
+    /// annotations included). Progress and summary messages are still written to stderr.
+    #[arg(long)]
+    json: bool,
 }
 
 fn main() -> Result<()> {
     let args = Cli::parse();
     let contents = unsafe { Mmap::map(&File::open(args.file)?)? };
-    let leaks_found = read_prof(&contents, args.min_leaked, args.min_pattern_leaked, !args.no_normalize_inner_classes, args.show_ids)?;
+    let leaks_found = read_prof(&contents, args.min_leaked, args.min_pattern_leaked, !args.no_normalize_inner_classes, args.show_ids, args.json)?;
     if leaks_found {
         std::process::exit(1);
     }
