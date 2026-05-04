@@ -28,3 +28,5 @@ phf = { version = "0.13.1", features = ["macros"] }
 memmap2 = "0.9.9"
 smallvec = { version = "1.15.1", features = ["union"] }
 itertools = "0.14.0"
+rustc-hash = "2"
+libc = "0.2"
