@@ -44,9 +44,6 @@
         "volt" : { "node": "m17", "hugePageGB": 3, },
     },
     "valley-3": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
-    "valley-4": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
-    "valley-5": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
-    "valley-6": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
 
     # R2
     "isles": {
