@@ -48,3 +48,7 @@ cpuActiveProcessorCount: 2
 # This exists solely for the build shard to send exception reports to the build server, everything else should be in the same domain
 # null gets defaulted to the namespace
 exceptLogIngestDomain: null
+
+# Whether automated heap dumps are enabled or not when memory is low
+# Set to anything other than "false" to enable
+autoHeapDumpEnabled: "false"

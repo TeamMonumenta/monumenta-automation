@@ -264,7 +264,7 @@
 
 # Defaults for each namespace
 "namespace_defaults": {
-    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "8", "cpuReqs": "250m" },
+    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "8", "cpuReqs": "250m", "autoHeapDumpEnabled": "true" },
     "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "4", "cpuReqs": "50m" },
     "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
     "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
