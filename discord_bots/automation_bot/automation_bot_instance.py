@@ -2172,6 +2172,7 @@ Must be run before starting the update on the play server
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/azacor /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/coalrrupted_sierhaven /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/sanctum /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/valley/snowspirit /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/verdant /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
 
