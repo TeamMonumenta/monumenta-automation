@@ -191,6 +191,36 @@ class PreserveArmorColor(GlobalRule):
         # Apply color
         item.tag.at_path('display.color').value = self.color
 
+class PreserveBookGeneration(GlobalRule):
+    name = 'Preserve book generation'
+
+    def __init__(self):
+        super().__init__()
+        self.generation = None
+
+    def preprocess(self, template, item):
+        self.generation = None
+        if item.nbt.has_path('tag.generation'):
+            self.generation = item.tag.at_path('generation').value
+
+    def postprocess(self, item):
+        if item.id != 'minecraft:written_book':
+            return
+
+        if self.generation is None:
+            if item.nbt.has_path('tag.generation'):
+                item.tag.value.pop('generation')
+            return
+
+        # Make sure tag exists first
+        if not item.has_tag():
+            item.tag = nbt.TagCompound({})
+        if not item.tag.has_path('generation'):
+            item.tag.value['generation'] = nbt.TagInt(0)
+
+        # Apply generation
+        item.tag.at_path('generation').value = self.generation
+
 class PreserveDamage(GlobalRule):
     name = 'Preserve damage'
 
