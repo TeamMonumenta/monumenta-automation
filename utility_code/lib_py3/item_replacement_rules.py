@@ -1,7 +1,6 @@
 import json
 import os
 import sys
-import yaml
 
 from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
@@ -66,7 +65,6 @@ class GlobalRule():
 
     def __init__(self):
         """Local data storage"""
-        pass
 
     def preprocess(self, template, item):
         """Read the unedited item.
@@ -74,11 +72,9 @@ class GlobalRule():
         Return True to abort replacement and changes.
         Make no edits here.
         """
-        pass
 
     def postprocess(self, item):
         """Edit the item with last stored value"""
-        pass
 
     @classmethod
     def recursive_public_subclasses(cls):
@@ -121,12 +117,12 @@ class AbortNoLore(GlobalRule):
     def preprocess(self, template, item):
         # Items with lore are always replaced
         if item.nbt.has_path('tag.display.Lore[0]'):
-            return
+            return None
 
         # Quest dev request to always update written books - if this fails, it's on them
         if item.id == 'minecraft:written_book':
             if not item.nbt.has_path('tag.title'):
-                return
+                return None
 
             # There are specific books that shouldn't be replaced if a player writes their own book with the same title,
             # which would be missing lore text
@@ -137,7 +133,7 @@ class AbortNoLore(GlobalRule):
                 "I Will Do What I Must",
                 "Magic Beyond Control",
             ):
-                return
+                return None
 
         # Items without lore in spawners never get replaced
         #if item.is_in_spawner():
