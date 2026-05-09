@@ -62,6 +62,12 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
     scores.insert("TotalLevel".to_string(), CorrectedLevel);
 }
 
+fn fix_aurora_highest_rage(scores: &mut HashMap<String, i32>) {
+    if let Some(highest_score) = scores.get("AuroraRageHighestAchieved") && *highest_score > 100 {
+        scores.insert("AuroraRageHighestAchieved".to_string(), 100);
+    }
+}
+
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     if let Some(scores) = &mut player.scores {
         /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
@@ -109,6 +115,8 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("DCZAccess".to_string(), 0);
 
         fix_total_level(scores);
+
+        fix_aurora_highest_rage(scores);
     }
 }
 
