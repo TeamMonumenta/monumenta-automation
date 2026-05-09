@@ -29,14 +29,14 @@ class KubernetesManager(object):
         conf.verify_ssl = False
         client.Configuration.set_default(conf)
 
-    async def _set_replicas(self, deployment_map, wait, timeout_seconds):
+    async def _set_deployment_replicas(self, deployment_map):
         # deployment_map = { deployment_name (string) : replicas (int) }
         # ex: { "bungee" : 1 }
 
         for deployment_name in deployment_map:
             replicas = deployment_map[deployment_name]
             if replicas != 0 and replicas != 1:
-                raise Exception(f"Replicas for {name} must be either 0 or 1, not {replicas}")
+                raise Exception(f"Replicas for {deployment_name} must be either 0 or 1, not {replicas}")
             try:
                 client.AppsV1Api().patch_namespaced_deployment(deployment_name, self._namespace, {'spec': {'replicas': replicas}})
             except client.rest.ApiException as e:
@@ -46,71 +46,90 @@ class KubernetesManager(object):
                 else:
                     # Other error
                     raise e
+    
+    async def _set_statefulset_replicas(self, statefulset_map):
+        # statefulset_map = { statefulset_name (string) : replicas (int) }
+        # ex: { "bungee" : 1 }
 
-        if wait:
-            sleep_count = 0
-            while True:
-                shards = await self.list()
-
-                all_done = True
-                for shard in deployment_map:
-                    if deployment_map[shard] == 0:
-                        # Stopping - check for still alive pods
-                        if "pod_name" in shards[shard]:
-                            all_done = False
-                    else:
-                        # Starting - check available replicas
-                        if shards[shard]['available_replicas'] != 1:
-                            all_done = False
-
-                if all_done:
-                    break
-
-                if sleep_count >= timeout_seconds:
-                    raise Exception(f"Exceeded {timeout_seconds}s waiting for shards to start or stop")
-                sleep_count += 1
-                await asyncio.sleep(1)
+        for statefulset_name in statefulset_map:
+            replicas = statefulset_map[statefulset_name]
+            try:
+                client.AppsV1Api().patch_namespaced_stateful_set(statefulset_name, self._namespace, {'spec': {'replicas': replicas}})
+            except client.rest.ApiException as e:
+                if e.status == 404:
+                    # StatefulSet does not exist
+                    raise Exception("{} not found".format(statefulset_name))
+                else:
+                    # Other error
+                    raise e
 
 
-    async def _start_stop_common(self, names, replicas, wait, timeout_seconds):
+    async def _start_stop_deployment_common(self, names, replicas, timeout_seconds):
         deployment_map = {}
         if type(names) is not list:
             names = [names,]
         for name in names:
             deployment_map[name.replace("_", "")] = replicas
 
-        await self._set_replicas(deployment_map, wait, timeout_seconds)
+        await self._set_deployment_replicas(deployment_map)
 
-    async def start(self, names, wait=True, timeout_seconds=240):
-        await self._start_stop_common(names, 1, wait, timeout_seconds)
+    async def _start_stop_statefulset_common(self, names, replicas):
+        statefulset_map = {}
+        if type(names) is not list:
+            names = [names,]
+        for name in names:
+            statefulset_map[name.replace("_", "")] = replicas
 
-    async def stop(self, names, wait=True, timeout_seconds=90):
-        await self._start_stop_common(names, 0, wait, timeout_seconds)
+        await self._set_statefulset_replicas(statefulset_map)
 
-    async def restart(self, names, wait=True, timeout_seconds=240):
-        await self.stop(names, wait, timeout_seconds)
-        await self.start(names, wait, timeout_seconds)
+
+    async def start(self, names, wait=True, type="deployment", replicas=1):
+        if type == "deployment":
+            await self._start_stop_deployment_common(names, replicas, wait)
+        elif type == "statefulset":
+            await self._start_stop_statefulset_common(names, replicas, wait)
+
+    async def stop(self, names, wait=True, timeout_seconds=90, type="deployment"):
+        if type == "deployment":
+            await self._start_stop_deployment_common(names, 0, timeout_seconds)
+        elif type == "statefulset":
+            await self._start_stop_statefulset_common(names, 0)
+
+    async def delete_pod(self, pod_name):
+        try:
+            client.CoreV1Api().delete_namespaced_pod(pod_name, self._namespace)    
+        except client.rest.ApiException as e:
+            if e.status == 404:
+                # Pod does not exist
+                raise Exception("{} not found".format(pod_name))
+            else:
+                # Other error
+                raise e
 
     async def list(self, shards=None):
         '''
         Returns a list of all the pods from all the deployments and statefulsets in the following format:
-        {'tutorial': {'available_replicas': 0,
-            'label_selector': 'app=tutorial',
-            'pods': [],
-            'replicas': 0,
-            'type': 'deployment'},
-         'valley': {'available_replicas': 1,
-            'label_selector': 'app=valley',
-            'pods': [('valley-1', True), ('valley-2', False)],
-            'replicas': 2,
-            'type': 'statefulset'},
-         'velocity-17': {'available_replicas': 1,
-            'label_selector': 'app=velocity-17',
-            'pods': [('velocity-17-5f695c955c-r5hgz', True)],
-            'replicas': 1,
-            'type': 'deployment'}}
+        {
+            "ring-2": {
+                "type": "deployment", "running": 0, "ready": 0, "label_selector": "app=ring-2", 
+                "pods": {
+                    "ring-2": {
+                        "phase": "Stopped", "ready": False, "init": True
+                    }
+                }
+            }, "valley": {
+                "type": "statefulset", "running": 0, "ready": 0, "label_selector": "app=valley", 
+                "pods": {
+                    "valley-1": {
+                        "phase": "Running", "ready": False, "init": True
+                    }, "valley-2": {
+                        "phase": "Running", "ready": True, "init": True}
+                    }
+            }
+        }
         '''
         result = {}
+        shards_set = set(shards) if shards is not None else None
                 
         # TODO: Filter by label so only actual shards are returned?
         query = client.AppsV1Api().list_namespaced_deployment(self._namespace)
@@ -121,13 +140,13 @@ class KubernetesManager(object):
                 continue
             data = {}
             data["type"] = "deployment"
-            data["current_replicas"] = deployment.spec.replicas
+            data["running"] = deployment.spec.replicas
             if deployment.status.available_replicas is None:
-                data["available_replicas"] = 0
+                data["ready"] = 0
             else:
-                data["available_replicas"] = deployment.status.available_replicas
-            #labels = deployment.spec.selector.match_labels
-            #data["label_selector"] = ",".join([f"{k}={v}" for k, v in labels.items()])
+                data["ready"] = deployment.status.available_replicas
+            labels = deployment.spec.selector.match_labels
+            data["label_selector"] = ",".join([f"{k}={v}" for k, v in labels.items()])
             data["pods"] = {}
             result[name] = data
 
@@ -138,11 +157,11 @@ class KubernetesManager(object):
                 continue
             data = {}
             data["type"] = "statefulset"
-            data["current_replicas"] = statefulset.spec.replicas
+            data["running"] = statefulset.spec.replicas
             if statefulset.status.available_replicas is None:
-                data["available_replicas"] = 0
+                data["ready"] = 0
             else:
-                data["available_replicas"] = statefulset.status.available_replicas
+                data["ready"] = statefulset.status.available_replicas
             
             labels = statefulset.spec.selector.match_labels
             data["label_selector"] = ",".join([f"{k}={v}" for k, v in labels.items()])
@@ -151,12 +170,23 @@ class KubernetesManager(object):
 
         for item in result:
             if result[item]["type"] == "deployment":
-                # TODO: Edmund - If we don't query the pods directly same as statefulsets we can't tell if the pod is terminating because we don't have the current phase.
-                running = "Running" if result[item]["current_replicas"] == 1 else "Stopped"
-                pod_ready = result[item]["available_replicas"] == 1
+                # For speed, derive the phase and readiness of the pod based on the values from the deployemnt.
+                # Unfortunately the deployment object doesn't give us the phase of the pod so we can't know if it's terminating.
+                # We can infer the other three states: stopped, starting, and started.
+                running = "Running" if result[item]["running"] == 1 else "Stopped"
+                pod_ready = result[item]["ready"] == 1
                 result[item]["pods"][item] = {"phase":running, "ready":pod_ready, "init":True}
                 
             elif result[item]["type"] == "statefulset" and "label_selector" in result[item].keys():
+                all_pods_stopped = result[item]["running"] == 0
+                all_pods_ready = result[item]["ready"] == result[item]["running"]
+                if all_pods_stopped or all_pods_ready:
+                    # If all pods are stopped or all pods are ready, we can infer the phase and readiness of the pods without making individual API calls.
+                    phase = "Stopped" if all_pods_stopped else "Running"
+                    for i in range(result[item]["running"]):
+                        pod_name = f"{item}-{i+1}"
+                        result[item]["pods"][pod_name] = {"phase":phase, "ready":all_pods_ready, "init":True}
+                    continue
                 label_selector = result[item]["label_selector"]
                 pods = client.CoreV1Api().list_namespaced_pod(namespace=self._namespace,label_selector=label_selector)
                 

@@ -36,7 +36,7 @@ from lib_py3.zfs_snapshot_manager import ZFSSnapshotManager
 from lib_py3.common import decode_escapes, int_to_ordinal
 from lib_py3.lockout import LockoutAPI
 from lib_py3.raffle import vote_raffle
-from lib_py3.lib_k8s import KubernetesManager
+from lib_py3.shard_manager import ShardManager
 from lib_py3.lib_sockets import SocketManager
 from lib_py3.redis_scoreboard import RedisRBoard
 from minecraft.world import World
@@ -459,7 +459,8 @@ class AutomationBotInstance(commands.Cog):
             self._permissions = config.PERMISSIONS
             self._debug = False
             self._listening = Listening()
-            self._k8s = KubernetesManager(config.K8S_NAMESPACE)
+            self._k8s_namespace = config.K8S_NAMESPACE
+            self._shardMgr = ShardManager(config.K8S_NAMESPACE, redis_host="redis", redis_port=6379, shard_list=self._shards)
         except KeyError as e:
             sys.exit(f'Config missing key: {e}')
 
@@ -848,7 +849,7 @@ class AutomationBotInstance(commands.Cog):
 
         async with ctx.typing():
             await self.debug(ctx, f"Stopping shards [{','.join(shards)}]...")
-            await self._k8s.stop(shards, wait=wait)
+            await self._shardMgr.stop(shards, wait=wait)
             await self.debug(ctx, f"Stopped shards [{','.join(shards)}]")
 
     async def start(self, ctx: discord.ext.commands.Context, shards, wait=True, owner=None, wait_heartbeat=False):
@@ -864,7 +865,7 @@ class AutomationBotInstance(commands.Cog):
 
         async with ctx.typing():
             await self.debug(ctx, f"Starting shards [{','.join(shards)}]...")
-            k8_task = asyncio.create_task(self._k8s.start(shards, wait=wait))
+            k8_task = asyncio.create_task(self._shardMgr.start(shards, wait=wait))
 
             heartbeat_waiting_set = set(shards) - config.HEARTBEAT_FREE_SHARDS
             if (
@@ -910,7 +911,7 @@ class AutomationBotInstance(commands.Cog):
 
         async with ctx.typing():
             await self.debug(ctx, f"Restarting shards [{','.join(shards)}]...")
-            k8_task = asyncio.create_task(self._k8s.restart(shards, wait=wait))
+            k8_task = asyncio.create_task(self._shardMgr.restart(shards, wait=wait))
 
             heartbeat_waiting_set = set(shards) - config.HEARTBEAT_FREE_SHARDS
             if (
@@ -1198,123 +1199,52 @@ Examples:
 
         Format is
         {
-            "valley-2": {
-                "status": "starting",
-                "reaction": ":arrow_up:",
-                "reaction_order": 1,
-                "last_change": <integer unix timestamp in seconds>,
+            'ring-2': {
+                'pods': {
+                    'ring-2': {
+                        'init': True, 'last_change': 1776293488,
+                        'phase': 'Stopped', 'ready': False,
+                        'state': 'stopped'}},
+                'provisioned': 0, 'ready': 0, 'running': 0,
+                'type': 'deployment'},
+            'valley': {
+                'pods': {
+                    'valley-1': {
+                        'init': False, 'last_change': 1777530260,
+                        'phase': 'Stopped', 'ready': False,
+                        'state': 'stopped'},
+                    'valley-2': {
+                        'init': True, 'last_change': 1777530260,
+                        'phase': 'Running', 'ready': True,
+                        'state': 'started'}},
+                'provisioned': 2, 'ready': 0, 'running': 0,
+                'type': 'statefulset'}
             }
         }
         """
-        tz = timezone.utc
-        shard_states_path = self._persistence_path / 'shard_states'
-        shard_states_path.mkdir(mode=0o775, parents=True, exist_ok=True)
-
-        previous_states = {}
-        for shard_state_path in shard_states_path.iterdir():
-            name = shard_state_path.name
-            if not (shard_state_path.is_file() and name.endswith('.json')):
-                continue
-            name = name[:-5] # Remove .json
-            previous_shard_state = None
-            try:
-                previous_shard_state = json.loads(shard_state_path.read_text(encoding='utf-8-sig'))
-            except Exception:
-                continue
-            previous_states[name] = previous_shard_state
-
-        current_states = {}
-        shards = await self._k8s.list()
-        for name, state in shards.items():
-            prev_status = previous_states.get(name, {}).get('status', None)
-            if state["type"] == "deployment":
-                status = 'error'
-                reaction = ':exclamation:'
-                reaction_order = 99
-                if state["replicas"] == 1 and state["available_replicas"] == 1:
-                    status = 'started'
-                    reaction = ':white_check_mark:'
-                    reaction_order = 0
-                elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                    status = 'starting'
-                    reaction = ':arrow_up:'
-                    reaction_order = 1
-                elif state["replicas"] == 0 and "pod_name" in state:
-                    status = 'stopping'
-                    reaction = ':arrow_down:'
-                    reaction_order = 2
-                elif state["replicas"] == 0 and "pod_name" not in state:
-                    status = 'stopped'
-                    reaction = ':x:'
-                    reaction_order = 3
-
-                if status == prev_status:
-                    current_states[name] = previous_states[name]
-                else:
-                    current_state = {
-                        "status": status,
-                        "reaction": reaction,
-                        "reaction_order": reaction_order,
-                        "last_change": int(datetime.now(tz).timestamp()),
-                    }
-                    current_states[name] = current_state
-                    shard_state_path = shard_states_path / f'{name}.json'
-                    with open(shard_state_path, 'w', encoding='utf-8') as fp:
-                        print(
-                            json.dumps(
-                                current_state,
-                                ensure_ascii=False,
-                                indent=2,
-                                separators=(',', ': ')
-                            ),
-                            file=fp
-                        )
-            elif state["type"] == "statefulset":
-                for pod in state["pods"]:
-                    name, is_ready = pod[0],pod[1]
-                    status = 'error'
+        shards = await self._shardMgr.get_shard_states()
+        for name, data in shards.items():
+            for pod in data["pods"]:
                     reaction = ':exclamation:'
                     reaction_order = 99
-                    if is_ready:
-                        status = 'started'
+                    status = pod["state"]
+                    if status == 'started':
                         reaction = ':white_check_mark:'
                         reaction_order = 0
-                    elif not is_ready:
-                        status = 'starting'
+                    elif status == 'starting':
                         reaction = ':arrow_up:'
                         reaction_order = 1
-                    # elif state["replicas"] == 0 and "pod_name" in state:
-                    #     status = 'stopping'
-                    #     reaction = ':arrow_down:'
-                    #     reaction_order = 2
-                    # elif state["replicas"] == 0 and "pod_name" not in state:
-                    #     status = 'stopped'
-                    #     reaction = ':x:'
-                    #     reaction_order = 3
+                    elif status == 'stopping':
+                        reaction = ':arrow_down:'
+                        reaction_order = 2
+                    elif status == 'stopped':
+                        reaction = ':x:'
+                        reaction_order = 3
 
-                    if status == prev_status:
-                        current_states[name] = previous_states[name]
-                    else:
-                        current_state = {
-                            "status": status,
-                            "reaction": reaction,
-                            "reaction_order": reaction_order,
-                            "last_change": int(datetime.now(tz).timestamp()),
-                        }
-                        current_states[name] = current_state
-                        shard_state_path = shard_states_path / f'{name}.json'
-                        with open(shard_state_path, 'w', encoding='utf-8') as fp:
-                            print(
-                                json.dumps(
-                                    current_state,
-                                    ensure_ascii=False,
-                                    indent=2,
-                                    separators=(',', ': ')
-                                ),
-                                file=fp
-                            )
+                    shards[name]["pods"]["reaction"] = reaction
+                    shards[name]["pods"]["reaction_order"] = reaction_order
 
-        return current_states
+        return shards
 
     async def _get_list_shards_str_status(self):
         """Get a status message formatted string"""
@@ -1734,7 +1664,7 @@ Do not use for debugging quests or other scores that are likely to change often.
             value = commandArgs[2]
             message = f'Set score {objective}={value} via bot'
 
-            ns = self._k8s.namespace
+            ns = self._k8s_namespace
             if ns in ('stage', 'volt'):
                 ns = 'play'
 
@@ -1761,7 +1691,7 @@ Usage:
             await self.help_internal(ctx, ["player shard"], message.author)
             return
 
-        ns = self._k8s.namespace
+        ns = self._k8s_namespace
         if ns in ('stage', 'volt'):
             ns = 'play'
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/shard_utils"), "redis://redis/", ns, *commandArgs], displayOutput=True)
@@ -2429,10 +2359,11 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
 
         # Stop all shards
         await self.display(ctx, "Stopping all shards...")
-        shards = await self._k8s.list()
+        # TODO: Test the new shard manager code here.
+        shards = await self._shardMgr.get_shard_states()
         await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards], owner=message)
         for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
-            if shards[shard.replace('_', '')]['replicas'] != 0:
+            if shards[shard.replace('_', '')]['running'] != 0:
                 await self.display(ctx, f"ERROR: shard {shard} is still running!")
                 await self.display(ctx, message.author.mention)
                 return
@@ -2634,7 +2565,8 @@ old coreprotect data will be removed at the 5 minute mark.
         self.broadcast_command('maintenance on', server_type="proxy")
         await asyncio.sleep(5)
         # TODO: don't hardcode velocity instances here
-        shards = await self._k8s.list()
+        # TODO: Test the new shard manager code here
+        shards = await self._shardMgr.get_shard_states()
         velocityShards = list(filter(lambda x: (x.startswith("velocity")), shards))
         await self.stop(ctx, velocityShards, owner=message)
 
@@ -2647,17 +2579,17 @@ Brings down all play server shards and backs them up in preparation for weekly u
 DELETES DUNGEON CORE PROTECT DATA'''
 
         await self.display(ctx, "Stopping all shards...")
-
-        shards = await self._k8s.list()
+        # TODO: Test the new shard manager code here
+        shards = await self._shardMgr.get_shard_states()
 
         # Stop all shards
         await self.stop(ctx, [shard for shard in self._shards if shard.replace('_', '') in shards], owner=message)
 
         # Fail if any shards are still running
         await self.display(ctx, "Checking that all shards are stopped...")
-        shards = await self._k8s.list()
+        shards = await self._shardMgr.get_shard_states()
         for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
-            if shards[shard.replace('_', '')]['replicas'] != 0:
+            if shards[shard.replace('_', '')]['running'] != 0:
                 await self.display(ctx, f"ERROR: shard {shard!r} is still running!")
                 await self.display(ctx, message.author.mention)
                 return
@@ -2770,10 +2702,11 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
         # Fail if any shards are still running
         if min_phase <= 1:
             await self.display(ctx, "Checking that all shards are stopped...")
-            shards = await self._k8s.list()
+            # TODO: Test the new shard manager code here
+            shards = await self._shardMgr.get_shard_states()
             for shard in [shard for shard in self._shards if shard.replace('_', '') in shards]:
-                if shards[shard.replace('_', '')]['replicas'] != 0:
-                    await self.display(ctx, f"ERROR: shard {shard!r} is still running!")
+                if shards[shard.replace('_', '')]['running'] != 0:
+                    await self.display(ctx, f"ERROR: shard {shard} is still running!")
                     await self.display(ctx, message.author.mention)
                     return
 
@@ -2955,7 +2888,8 @@ Archives the previous stage server contents under 0_PREVIOUS '''
 
         # Stop all shards belonging to this bot instance
         # This will fail if there's a lockout in place, so do this at the beginning
-        shards = await self._k8s.list()
+        # TODO: Test the new shard manager code here
+        shards = await self._shardMgr.get_shard_states()
         await self.display(ctx, f"Stopping shards {', '.join([shard for shard in self._shards if shard in shards])}")
         await self.stop(ctx, [shard for shard in self._shards if shard in shards], owner=message)
 
@@ -3008,7 +2942,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             await task
 
         # Move the newly sync'd shard data from 0_STAGE into where it's supposed to be, and remove 0_STAGE
-        await self.display(ctx, f"Moving pulled {self._k8s.namespace} data into live folder")
+        await self.display(ctx, f"Moving pulled {self._k8s_namespace} data into live folder")
         await self.run(ctx, ["bash", "-c", f"mv {self._server_dir}/0_STAGE/* {self._server_dir}"])
         await self.run(ctx, f"rmdir {self._server_dir}/0_STAGE")
 
@@ -3017,7 +2951,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             # Note that this does indeed need to be after pulling play server shards
             # We were encountering situations where redis's "next available dungeon" instance scores were wrong,
             #   because a player opened a dungeon between the redis transfer and the world transfer
-            await self.display(ctx, f"Stopping {self._k8s.namespace} redis...")
+            await self.display(ctx, f"Stopping {self._k8s_namespace} redis...")
             await self.stop(ctx, "redis", owner=message)
             await self.cd(ctx, f"{self._server_dir}/../redis")
             await self.run(ctx, "mv -f dump.rdb dump.rdb.previous")
@@ -3029,7 +2963,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             await self.display(ctx, "Syncing with current mysql database from the play server...")
             # Don't need to be in this directory exactly, but need to be in a stable directory
             await self.cd(ctx, f"{self._server_dir}")
-            await self.run(ctx, [os.path.join(_top_level, "utility_code/sync_mysql.sh"), self._k8s.namespace], displayOutput=True)
+            await self.run(ctx, [os.path.join(_top_level, "utility_code/sync_mysql.sh"), self._k8s_namespace], displayOutput=True)
 
             # Note that this needs to be fairly long after starting redis to give it time to load
             # Unfortunately, this means we need to add an artificial wait here, since we just pulled redis and can't pull it earlier in the process
@@ -3109,7 +3043,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
                 file=fp
             )
 
-        await self.display(ctx, f"{self._k8s.namespace} server loaded with current play server data")
+        await self.display(ctx, f"{self._k8s_namespace} server loaded with current play server data")
         await self.display(ctx, message.author.mention)
 
     async def stage_receive_data_task(self, ctx: discord.ext.commands.Context, port):
