@@ -62,9 +62,9 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
     scores.insert("TotalLevel".to_string(), CorrectedLevel);
 }
 
-fn fix_aurora_highest_rage(scores: &mut HashMap<String, i32>) {
-    if let Some(highest_score) = scores.get("AuroraRageHighestAchieved") && *highest_score > 100 {
-        scores.insert("AuroraRageHighestAchieved".to_string(), 100);
+fn cap_scores(scores: &mut HashMap<String, i32>, objective: &str, max_score: i32) {
+    if let Some(score) = scores.get(objective) && *score > max_score {
+        scores.insert(objective.to_string(), max_score);
     }
 }
 
@@ -116,7 +116,11 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
 
         fix_total_level(scores);
 
-        fix_aurora_highest_rage(scores);
+        cap_scores(scores, "AuroraRageHighestAchieved", 100);
+        cap_scores(scores, "GalleryMarinaNoirHighGroup", 100);
+        cap_scores(scores, "GalleryMarinaNoirHighSolo", 100);
+        cap_scores(scores, "GallerySanguineHallsHighGroup", 100);
+        cap_scores(scores, "GallerySanguineHallsHighSolo", 100);
     }
 }
 
