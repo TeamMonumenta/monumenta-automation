@@ -62,6 +62,12 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
     scores.insert("TotalLevel".to_string(), CorrectedLevel);
 }
 
+fn cap_scores(scores: &mut HashMap<String, i32>, objective: &str, max_score: i32) {
+    if let Some(score) = scores.get(objective) && *score > max_score {
+        scores.insert(objective.to_string(), max_score);
+    }
+}
+
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     if let Some(scores) = &mut player.scores {
         /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
@@ -109,6 +115,12 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("DCZAccess".to_string(), 0);
 
         fix_total_level(scores);
+
+        cap_scores(scores, "AuroraRageHighestAchieved", 100);
+        cap_scores(scores, "GalleryMarinaNoirHighGroup", 100);
+        cap_scores(scores, "GalleryMarinaNoirHighSolo", 100);
+        cap_scores(scores, "GallerySanguineHallsHighGroup", 100);
+        cap_scores(scores, "GallerySanguineHallsHighSolo", 100);
     }
 }
 
