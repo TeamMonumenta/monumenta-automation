@@ -2804,6 +2804,10 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(ctx, f"rm -rf {self._shards['purgatory']}")
             await self.run(ctx, f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory {self._shards['purgatory']}")
 
+        if min_phase <= 8 and config.COMMON_WEEKLY_UPDATE_TASKS:
+            await self.display(ctx, "Clearing temporary redis values")
+            r.delete('zenithcharmdupecheck')
+
         if min_phase <= 9 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Removing tutorial data")
             await self.run(ctx, os.path.join(_top_level, "rust/bin/redis_remove_data") + " redis://redis/ tutorial:* --confirm")
