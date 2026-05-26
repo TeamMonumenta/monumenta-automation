@@ -265,6 +265,7 @@ if __name__ == '__main__':
         ('config/paper-world-defaults.yml',),
         ('config/monumenta-mixins.yml',),
         ('wepif.yml',),
+        ('plugins/CommandAPI/config.yml',),
         ('plugins/ViaVersion/config.yml',),
         ('plugins/BKCommonLib/config.yml',),
         ('plugins/CoreProtect/config.yml',),
