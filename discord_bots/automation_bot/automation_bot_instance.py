@@ -2806,7 +2806,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 8 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Clearing temporary redis values")
-            r.delete('zenithcharmdupecheck')
+            r.delete('play:zenithcharmdupecheck')
 
         if min_phase <= 9 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Removing tutorial data")
