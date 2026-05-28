@@ -181,8 +181,8 @@
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "rush": {
-        "play" : { "node": "m17", "hugePageGB": 6   , }, # Increased for rush re-release
-        "stage": { "node": "m18", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "shiftingcity": {
