@@ -18,7 +18,7 @@
     "dev4"               : { "build": { "node": "m18", "hugePageMB": 2560, "useHTTPForProbes": false, "useSocketForProbes": false }, },
     "mobs"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
     "dungeon"            : { "build": { "node": "m18", "hugePageGB": 8   , }, },
-    #"futurama"           : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
+    "futurama"           : { "build": { "node": "m18", "hugePageGB": 3   , }, },
     #"test"               : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
     "event"              : { "build": { "node": "m18", "hugePageGB": 3   , }, },
     "monumenta-sdk"      : { "build": { "node": "m18", "hugePageGB": 3   , }, },

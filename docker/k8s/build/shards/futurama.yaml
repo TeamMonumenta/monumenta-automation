@@ -1,0 +1,178 @@
+---
+# Source: Monumenta Java Shard/templates/deployment.yaml
+# Service / network ports
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: futurama
+  namespace: build
+  labels:
+    app: futurama
+    k8s-app: monumenta-metrics
+spec:
+  type: ClusterIP
+  selector:
+    app: futurama
+  ports:
+  # Main minecraft port
+  - name: "25566"
+    port: 25566
+    targetPort: 25566
+  - name: metrics
+    port: 9225
+    targetPort: 9225
+  # - name: jdb
+  #   port: 9000
+  #   targetPort: 9000
+
+---
+
+# Service / external network ports
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: futurama-nodeport
+#   namespace: build
+#   labels:
+#     app: futurama
+# spec:
+#   type: NodePort
+#   #externalTrafficPolicy: Local
+#   selector:
+#     app: futurama
+#   ports:
+#   - name: minecraft
+#     port: 30001
+#     nodePort: 30001
+#     targetPort: 25566
+
+---
+# Source: Monumenta Java Shard/templates/deployment.yaml
+# Deployment / the actual running application
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: futurama
+  namespace: build
+  labels:
+    app: futurama
+spec:
+  strategy:
+    type: Recreate
+  replicas: 0
+  selector:
+    matchLabels:
+      app: futurama
+  template:
+    metadata:
+      labels:
+        app: futurama
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-18
+      volumes:
+        - name: nfs-maps
+          hostPath:
+            path: /nfs/build/maps
+            type: Directory
+        - name: nfs-project-epic
+          hostPath:
+            path: /nfs/build/m18
+            type: Directory
+        - name: nfs-domain-shared
+          hostPath:
+            path: /nfs/3_DOMAIN_SHARED/build
+            type: Directory
+        - name: nfs-shared
+          hostPath:
+            path: /nfs/4_SHARED
+            type: Directory
+        - name: nfs-scratch
+          hostPath:
+            path: /nfs/5_SCRATCH
+            type: Directory
+      terminationGracePeriodSeconds: 90
+      containers:
+      - name: futurama
+        image: "ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-25:latest"
+        tty: true
+        stdin: true
+        ports:
+        - containerPort: 25566
+        # - containerPort: 8000
+        - containerPort: 9225
+        # - containerPort: 9000
+        env:
+        # Set this to however much RAM the shard needs
+        - name: "JAVA_MEM"
+          value: "3072M"
+        - name: "JAVA_JAR"
+          value: "server.jar"
+        - name: "SERVER_DIR"
+          value: "/home/epic/build/m18/futurama"
+        - name: "JAVA_LARGE_PAGES"
+          value: "yes"
+        - name: "NETWORK_NAMESPACE"
+          value: build
+        - name: "NETWORK_RELAY_NAME"
+          value: futurama
+        - name: "NETWORK_RELAY_SERVER_ADDRESS"
+          value: "futurama:25566"
+        - name: "JAVA_ARG"
+          value: "-Dlog4j2.configurationFile=log4j2-shard.xml"
+        - name: "MONUMENTA_IS_PLAY"
+          value: "0"
+        - name: "MONUMENTA_ENABLE_TIME_WARP"
+          value: "1"
+        #readinessProbe:
+        #  httpGet:
+        #    path: /ready
+        #    port: 8000
+        #  initialDelaySeconds: 10
+        #  timeoutSeconds: 5
+        #  periodSeconds: 5
+        #livenessProbe:
+        #  httpGet:
+        #    path: /alive
+        #    port: 8000
+        #  initialDelaySeconds: 360
+        #  timeoutSeconds: 5
+        #  periodSeconds: 10
+        volumeMounts:
+        - name: nfs-project-epic
+          mountPath: /home/epic/build/m18
+        - name: nfs-maps
+          mountPath: /home/epic/maps/dynmap/build
+        - name: nfs-domain-shared
+          mountPath: /home/epic/3_DOMAIN_SHARED
+        - name: nfs-shared
+          mountPath: /home/epic/4_SHARED
+        - name: nfs-scratch
+          mountPath: /home/epic/5_SCRATCH
+        resources:
+          limits:
+            # Set this to 1Gi
+            # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
+            # It should not need much/any...
+            # TEMP: Set to 4GB to avoid OOMkilling the copy_world on blue
+            memory: 4Gi
+            # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
+            # Tried making this 64 extra, low-memory shards still crash with this
+            hugepages-2Mi: 3456Mi
+          requests:
+            # Set this to 64Mi
+            # The shard should not need non-hugepage RAM by default
+            memory: 64Mi
+            # Tried making this 64 extra, low-memory shards still crash with this
+            # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
+            hugepages-2Mi: 3456Mi
