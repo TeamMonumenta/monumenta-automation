@@ -175,6 +175,7 @@ spec:
             port: 8000
           initialDelaySeconds: 360
           timeoutSeconds: 5
+          failureThreshold: 7 # if shard does not respond for 70s (failureThreshold * periodSeconds), kill
           periodSeconds: 10
 {{- else if .Values.useSocketForProbes }}
         readinessProbe:
@@ -188,6 +189,7 @@ spec:
             port: 25566
           initialDelaySeconds: 360
           timeoutSeconds: 5
+          failureThreshold: 7 # if shard does not respond for 70s (failureThreshold * periodSeconds), kill
           periodSeconds: 10
 {{- end }}
         volumeMounts:
