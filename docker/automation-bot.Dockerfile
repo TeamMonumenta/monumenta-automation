@@ -26,7 +26,7 @@ RUN apt update && \
 	add-apt-repository -y ppa:pypy/ppa && \
 	apt update && \
 	apt upgrade -y && \
-	apt install -y --no-install-recommends python3 python3-flask python3-yaml python3-pip python3-setuptools python3-numpy python3-git zip unzip pigz python3-dev libtool curl liblz4-tool netcat-openbsd pypy3 git parallel patch mariadb-client rsync wget bzip2 && \
+	apt install -y --no-install-recommends python3 python3-flask python3-pip python3-setuptools python3-numpy python3-git zip unzip pigz python3-dev libtool curl liblz4-tool netcat-openbsd pypy3 git parallel patch mariadb-client rsync wget bzip2 && \
 	rm -rf /var/lib/apt/lists/* && \
 	pip3 install wheel discord.py kubernetes pika "redis<4.2.0" "bitstring<4.1.0" kanboard git+https://github.com/gentlegiantJGC/mutf8.git && \
 # Install rclone
