@@ -114,10 +114,10 @@ class AutomationBot(commands.Bot):
                 try:
                     channel = self.get_channel(channel_id)
                     self.channels[channel_id] = self.instance
-                    if channel_id not in self.NO_READY_MESSAGE_CHANNELS:
+                    if channel_id not in config.NO_READY_MESSAGE_CHANNELS:
                         await channel.send(config.NAME + " started and now listening.")
-                except Exception:
-                    logging.error("Cannot connect to channel: %s", config.CHANNELS)
+                except Exception as ex:
+                    logging.error("Cannot connect to channel: %s", channel_id, exc_info=ex)
 
             await self.instance.load_raffle_reaction()
 
