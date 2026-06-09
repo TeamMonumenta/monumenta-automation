@@ -3845,6 +3845,11 @@ See `~help get timestamp` for valid time formats
                     if author is not None and target is not None:
                         break
 
+                if target is None:
+                    # Target user is not in the channel anymore - delete reminder file
+                    reminder_file.unlink(missing_ok=True)
+                    continue
+
                 # Ping
                 if author_id == target_id:
                     await self.display(channel, f'{target.mention} - you have a reminder from yourself: {message_link}')
