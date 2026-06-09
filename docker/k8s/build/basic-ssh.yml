@@ -147,6 +147,38 @@ spec:
           hostPath:
             path: /nfs/6_REMOTE_SCRATCH/m18/spark
             type: Directory
+        - name: nfs-DataCollection-play
+          hostPath:
+            path: /nfs/3_DOMAIN_SHARED/play/DataCollection
+            type: Directory
+        - name: nfs-DataCollection-stage
+          hostPath:
+            path: /nfs/3_DOMAIN_SHARED/stage/DataCollection
+            type: Directory
+        - name: nfs-DataCollection-volt
+          hostPath:
+            path: /nfs/3_DOMAIN_SHARED/volt/DataCollection
+            type: Directory
+        - name: nfs-DataCollection-build
+          hostPath:
+            path: /nfs/3_DOMAIN_SHARED/build/DataCollection
+            type: Directory
+        - name: nfs-DepthsStats-play
+          hostPath:
+            path: /nfs/3_DOMAIN_SHARED/play/DepthsStats
+            type: Directory
+        - name: nfs-DepthsStats-stage
+          hostPath:
+            path: /nfs/3_DOMAIN_SHARED/stage/DepthsStats
+            type: Directory
+        - name: nfs-DepthsStats-volt
+          hostPath:
+            path: /nfs/3_DOMAIN_SHARED/volt/DepthsStats
+            type: Directory
+        - name: nfs-DepthsStats-build
+          hostPath:
+            path: /nfs/3_DOMAIN_SHARED/build/DepthsStats
+            type: Directory
         - name: authorized-keys-config
           secret:
             secretName: authorized-keys-config
@@ -256,6 +288,30 @@ spec:
         - name: nfs-spark-m18
           readOnly: true
           mountPath: /home/epic/spark/m18
+        - name: nfs-DataCollection-play
+          readOnly: true
+          mountPath: /home/epic/play/DataCollection
+        - name: nfs-DataCollection-stage
+          readOnly: true
+          mountPath: /home/epic/stage/DataCollection
+        - name: nfs-DataCollection-volt
+          readOnly: true
+          mountPath: /home/epic/volt/DataCollection
+        - name: nfs-DataCollection-build
+          readOnly: true
+          mountPath: /home/epic/build/DataCollection
+        - name: nfs-DepthsStats-play
+          readOnly: true
+          mountPath: /home/epic/play/DepthsStats
+        - name: nfs-DepthsStats-stage
+          readOnly: true
+          mountPath: /home/epic/stage/DepthsStats
+        - name: nfs-DepthsStats-volt
+          readOnly: true
+          mountPath: /home/epic/volt/DepthsStats
+        - name: nfs-DepthsStats-build
+          readOnly: true
+          mountPath: /home/epic/build/DepthsStats
         - name: authorized-keys-config
           mountPath: /home/epic/.ssh/authorized_keys
           subPath: authorized_keys
@@ -283,4 +339,3 @@ spec:
         - name: ssh-host-rsa-key-pub
           mountPath: /etc/ssh/ssh_host_rsa_key.pub
           subPath: ssh_host_rsa_key.pub
-
