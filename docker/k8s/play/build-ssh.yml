@@ -17,6 +17,7 @@ spec:
       labels:
         app: build-ssh
     spec:
+      automountServiceAccountToken: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -27,6 +28,10 @@ spec:
                 values:
                 - monumenta-17
       volumes:
+        - name: run
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Mi
         - name: scriptedquests
           hostPath:
             type: Directory
@@ -39,6 +44,9 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/play/m17/build/logs
+        # Empty overlay used to shadow logs/chat so its contents are not exposed over SFTP.
+        - name: hide-logs-chat
+          emptyDir: {}
         - name: authorized-keys-config
           secret:
             secretName: authorized-keys-config
@@ -49,11 +57,30 @@ spec:
         imagePullPolicy: Always
         tty: false
         stdin: false
+        securityContext:
+          runAsUser: 0                # sshd master must start as root for chroot + privsep
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop: ["ALL"]
+            # NET_BIND_SERVICE: bind :22; SETUID/SETGID: per-session privsep; SYS_CHROOT: ChrootDirectory
+            add: ["NET_BIND_SERVICE", "SETUID", "SETGID", "SYS_CHROOT"]
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
         ports:
         - containerPort: 22
           hostPort: 6622
           hostIP: "15.235.84.119" # The node's external facing IP address
         volumeMounts:
+        - name: run
+          mountPath: /run
         - name: scriptedquests
           mountPath: /home/epic/scriptedquests
         - name: datapacks
@@ -61,8 +88,40 @@ spec:
         - name: logs
           mountPath: /home/epic/logs
           readOnly: true
+        # Mounted after (deeper than) logs, so it shadows the real logs/chat with an empty dir.
+        - name: hide-logs-chat
+          mountPath: /home/epic/logs/chat
+          readOnly: true
         - name: authorized-keys-config
           mountPath: /home/epic/.ssh/authorized_keys
           subPath: authorized_keys
       imagePullSecrets:
       - name: githubcred
+---
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: "build-ssh-firewall"
+  namespace: play
+spec:
+  description: "SFTP file server: inbound SSH only, no egress"
+  endpointSelector:
+    matchLabels:
+      app: build-ssh
+  enableDefaultDeny:
+    # Deny all egress even though no egress allow-rules are listed: the pod
+    # serves files inbound only and must not initiate outbound connections.
+    egress: true
+    ingress: true
+  ingress:
+    # hostPort DNAT arrives with the 'host' identity
+    - fromEntities:
+        - host
+    # Direct pod-IP access from outside the cluster
+    - fromEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "22"
+              protocol: TCP
+  # No egress rules => with enableDefaultDeny.egress all outbound traffic is dropped.
