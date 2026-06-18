@@ -1,3 +1,4 @@
+import glob
 import math
 import os
 import shutil
@@ -274,6 +275,20 @@ class BaseRegion(MutableMapping, NbtPathDebug):
             raise Exception(f"Destination region already exists: {new_path}")
 
         copy_file(self.path, new_path)
+
+        # Copy any external .mcc chunk files belonging to this region
+        src_dir = os.path.dirname(self.path)
+        dst_dir = os.path.dirname(new_path)
+        for mcc_src in glob.glob(os.path.join(src_dir, 'c.*.*.mcc')):
+            mcc_name = os.path.basename(mcc_src)
+            parts = mcc_name.split('.')
+            if len(parts) == 4:
+                try:
+                    cx, cz = int(parts[1]), int(parts[2])
+                    if rx * 32 <= cx <= rx * 32 + 31 and rz * 32 <= cz <= rz * 32 + 31:
+                        copy_file(mcc_src, os.path.join(dst_dir, mcc_name))
+                except ValueError:
+                    pass
 
         # Create the same type region object as the calling class (Region, EntitiesRegion, etc.)
         return type(self)(new_path, rx, rz)
