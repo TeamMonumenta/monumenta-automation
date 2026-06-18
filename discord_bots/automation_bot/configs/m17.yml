@@ -3,6 +3,7 @@ prefix: '~'
 zfs_snapshot_manager:
     host: "zfs-snapshot-manager-m17.kube-system"
     port: 8080
+
 rabbitmq:
     host: "rabbitmq"
     # What name the bot will connect to the socket with. Must be the kubernetes deployment name of this bot
@@ -39,6 +40,11 @@ rabbitmq:
     # Where to post "got stage request messages"
     # Required for ~stage to pull data from this bot
     stage_notify_channel: 467361088460029954
+
+redis_backup_config:
+    worm_file: "/home/epic/play/m18/server_config/redis_initial/key_dump.tgz"
+    scratch_backup_folder: "/home/epic/5_SCRATCH/redis_dumps/play"
+    domain: "play"
 
 k8s_namespace: "play"
 
