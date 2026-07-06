@@ -62,6 +62,18 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
     scores.insert("TotalLevel".to_string(), CorrectedLevel);
 }
 
+fn archive_corridors(scores: &mut HashMap<String, i32>) {
+    if let Some(score) = scores.get("RogEndless") {
+        scores.insert("RogEndlessArchive".to_string(), *score);
+    }
+}
+
+fn cap_corridors(scores: &mut HashMap<String, i32>) {
+    if let Some(score) = scores.get("RogEndless") && *score > 20 {
+        scores.insert("RogEndless".to_string(), 20);
+    }
+}
+
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     if let Some(scores) = &mut player.scores {
         /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
@@ -109,6 +121,8 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("DCZAccess".to_string(), 0);
 
         fix_total_level(scores);
+        archive_corridors(scores);
+        cap_corridors(scores);
     }
 }
 
