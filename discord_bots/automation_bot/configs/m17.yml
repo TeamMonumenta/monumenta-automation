@@ -197,6 +197,7 @@ commands:
     - instances
     - list bots
     - list shards
+    - market ban
     - op
     - player account transfer
     - player find
@@ -252,6 +253,7 @@ permissions:
             - "-testunpriv"
         "@moderator":
             - "@discord manager"
+            - "+market ban"
             - "+verbose"
         "@discord manager":
             - "@team monumenta"

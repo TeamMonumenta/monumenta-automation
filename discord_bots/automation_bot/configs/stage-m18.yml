@@ -153,6 +153,7 @@ commands:
     - lockout check *
     - lockout claim
     - lockout clear
+    - market ban
     - op
     - player account transfer
     - player find
@@ -233,6 +234,7 @@ permissions:
             - "+lockout claim"
             - "+lockout clear"
             - "+lockout"
+            - "+market ban"
             - "+player find"
             - "+player rollback"
             - "+player account transfer"
