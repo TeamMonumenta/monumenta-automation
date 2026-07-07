@@ -1933,7 +1933,7 @@ Usage:
 {cmdPrefix}market ban list [<page number>]
 {cmdPrefix}market ban check <name> [<name 2>] [<name 3> ...]
 {cmdPrefix}market ban perm <name> [<name 2>] [<name 3> ...]
-{cmdPrefix}market ban perm_no_ping <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}market ban no_ping <name> [<name 2>] [<name 3> ...]
 {cmdPrefix}market ban temp <days> <name> [<name 2>] [<name 3> ...]
 {cmdPrefix}market ban unban <name> [<name 2>] [<name 3> ...]
 '''
@@ -1960,7 +1960,7 @@ Usage:
                 set_scores += 1
             await self.display(ctx, f"{set_scores} players permanently banned")
 
-        elif subcommand == "perm_no_ping":
+        elif subcommand == "no_ping":
             if len(commandArgs) < 1:
                 await self.help_internal(ctx, ["market ban"], message.author)
                 return
