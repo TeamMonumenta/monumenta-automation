@@ -33,7 +33,7 @@ _top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 from lib_py3.zfs_snapshot_manager import ZFSSnapshotManager
-from lib_py3.common import decode_escapes, int_to_ordinal
+from lib_py3.common import decode_escapes, get_discord_timestamp, int_to_ordinal
 from lib_py3.lockout import LockoutAPI
 from lib_py3.raffle import vote_raffle
 from lib_py3.lib_k8s import KubernetesManager
@@ -134,6 +134,7 @@ class AutomationBotInstance(commands.Cog):
             "set score": self.action_set_player_scores,
 
             "badname": self.action_bad_name,
+            "market ban": self.action_market_ban,
             "player find": self.action_player_find,
             "player rollback": self.action_player_rollback,
             "player shard": self.action_player_shard,
@@ -686,7 +687,7 @@ class AutomationBotInstance(commands.Cog):
                 except discord.errors.NotFound:
                     msg = None
 
-            modify_time = "Last updated " + self.get_discord_timestamp(now, ":R")
+            modify_time = "Last updated " + get_discord_timestamp(now, ":R")
             formatted_message = f'**{header}** {modify_time}\n{new_message}'
             if len(formatted_message) >= 2000:
                 formatted_message = f'**{header}** {modify_time}\nStatus message character limit exceeded; please wait...'
@@ -1036,7 +1037,7 @@ class AutomationBotInstance(commands.Cog):
 
                 eta = gameplay_event.get("ETA", None)
                 if eta:
-                    eta_timestamp = self.get_discord_timestamp(eta, ":R")
+                    eta_timestamp = get_discord_timestamp(eta, ":R")
                     msg.append(f'{event_name} is starting on {shard} {eta_timestamp}')
                 else:
                     msg.append(f'{event_name} is in progress on {shard}')
@@ -1045,6 +1046,17 @@ class AutomationBotInstance(commands.Cog):
             msg.append("No events are currently in progress")
 
         return "\n".join(msg)
+
+    async def _set_player_score(self, ctx: discord.ext.commands.Context, name: str, objective: str, value: int, displayOutput = False):
+        message = f'Set score {objective}={value} via bot'
+
+        ns = self._k8s.namespace
+        if ns in ('stage', 'volt'):
+            ns = 'play'
+
+        await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, str(value), message], displayOutput=displayOutput)
+        self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
+
 
     async def _get_lockout_message(self):
         msg = []
@@ -1068,8 +1080,8 @@ class AutomationBotInstance(commands.Cog):
             with open(last_stage_update_path, 'r', encoding='utf-8') as fp:
                 stage_data = json.load(fp)
                 unix_timestamp = int(stage_data.get("unix_timestamp", 0))
-                absolute_timestamp = self.get_discord_timestamp(unix_timestamp, ':F')
-                relative_timestamp = self.get_discord_timestamp(unix_timestamp, ':R')
+                absolute_timestamp = get_discord_timestamp(unix_timestamp, ':F')
+                relative_timestamp = get_discord_timestamp(unix_timestamp, ':R')
                 return f"Last sync with play was {absolute_timestamp} ({relative_timestamp})"
         except Exception:
             return "Could not read last stage sync file, despite it existing?"
@@ -1321,7 +1333,7 @@ Examples:
         for _, bucket in sorted(buckets.items()):
             formatted_shards = []
             for last_change, shards_at_timestamp in sorted(bucket["shards"].items()):
-                last_change_formatted = self.get_discord_timestamp(last_change, ':R')
+                last_change_formatted = get_discord_timestamp(last_change, ':R')
                 shards_at_timestamp = ', '.join(shards_at_timestamp)
                 formatted_shards.append(f'{shards_at_timestamp} ({last_change_formatted})')
             msg.append(f'{bucket["reaction"]}: ' + '; '.join(formatted_shards))
@@ -1359,7 +1371,7 @@ Examples:
         msg = []
 
         for name, state in shards.items():
-            msg.append(f'{state["reaction"]} {name} since {self.get_discord_timestamp(state["last_change"], ":R")}')
+            msg.append(f'{state["reaction"]} {name} since {get_discord_timestamp(state["last_change"], ":R")}')
         if not msg:
             msg.append("No shards to list")
 
@@ -1397,8 +1409,8 @@ Examples:
         msg.append(f"Monumenta's local time (UTC{monumenta_timezone:+d})")
         msg.append("The following information is used for daily and weekly events, such as delve bounties, dungeon access, and the season pass. Note that this is not the same as weekly updates, which we use to release new content into the game and provide a fresh copy of the overworlds.")
         msg.append(f'It is currently `{today_format}`')
-        msg.append(f'A new day begins {self.get_discord_timestamp(tomorrow_start, ":R")}')
-        msg.append(f'A new week begins {self.get_discord_timestamp(new_week, ":R")} (every Friday)')
+        msg.append(f'A new day begins {get_discord_timestamp(tomorrow_start, ":R")}')
+        msg.append(f'A new week begins {get_discord_timestamp(new_week, ":R")} (every Friday)')
         return "\n".join(msg)
 
     async def action_list_instances(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
@@ -1711,14 +1723,7 @@ Do not use for debugging quests or other scores that are likely to change often.
             name = commandArgs[0]
             objective = commandArgs[1]
             value = commandArgs[2]
-            message = f'Set score {objective}={value} via bot'
-
-            ns = self._k8s.namespace
-            if ns in ('stage', 'volt'):
-                ns = 'play'
-
-            await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, value, message], displayOutput=len(lines) < 5)
-            self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
+            await self._set_player_score(ctx, name, objective, value, displayOutput=len(lines) < 5)
             setscores += 1
 
         await self.display(ctx, f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)")
@@ -1920,6 +1925,108 @@ Usage:
 
         else:
             await self.help_internal(ctx, ["badname"], message.author)
+
+    async def action_market_ban(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Manage market bans
+
+Usage:
+{cmdPrefix}market ban list [<page number>]
+{cmdPrefix}market ban check <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}market ban perm <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}market ban no_ping <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}market ban temp <days> <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}market ban unban <name> [<name 2>] [<name 3> ...]
+'''
+
+        commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()
+
+        if len(commandArgs) < 1:
+            await self.help_internal(ctx, ["market ban"], message.author)
+            return
+
+        subcommand = commandArgs.pop(0).lower()
+
+        if subcommand in ("list", "check"):
+            await self.run(ctx, [os.path.join(_top_level, "utility_code/view_market_ban.py"), subcommand, *commandArgs], displayOutput=True)
+
+        elif subcommand == "perm":
+            if len(commandArgs) < 1:
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            set_scores = 0
+            for name in commandArgs:
+                await self._set_player_score(ctx, name, "MarketBanned", -1, displayOutput=False)
+                set_scores += 1
+            await self.display(ctx, f"{set_scores} players permanently banned")
+
+        elif subcommand == "no_ping":
+            if len(commandArgs) < 1:
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            set_scores = 0
+            for name in commandArgs:
+                await self._set_player_score(ctx, name, "MarketBanned", -2, displayOutput=False)
+                set_scores += 1
+            await self.display(ctx, f"{set_scores} players permanently banned")
+
+        elif subcommand == "temp":
+            if len(commandArgs) < 2:
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            days = None
+            try:
+                days = int(commandArgs[0])
+            except ValueError:
+                await self.display(ctx, f"Invalid number of days {commandArgs[0]!r}")
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+            commandArgs.pop(0)
+
+            if days < 1:
+                await self.display(ctx, "Number of days must be at least 1")
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            utc_offset = await self.get_utc_offset()
+            tz = timezone(utc_offset)
+            now_utc = datetime.now(timezone.utc)
+            now_monumenta = now_utc.astimezone(tz)
+            epoch_monumenta = datetime(1970, 1, 1, tzinfo=tz)
+            daily_version = (now_monumenta - epoch_monumenta) // timedelta(days=1)
+
+            score = daily_version + days
+            if score >= 2**31:
+                await self.display(ctx, "Cannot temporarily market ban players that far into the future. Chose a lower number of days, or permanently ban them.")
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            today_start = datetime(now_monumenta.year, now_monumenta.month, now_monumenta.day, 0, 0, tzinfo=tz)
+            ban_expiry_utc = today_start.astimezone(timezone.utc) + timedelta(days)
+            discord_timestamp_full = get_discord_timestamp(ban_expiry_utc, ":F")
+            discord_timestamp_relative = get_discord_timestamp(ban_expiry_utc, ":R")
+
+            set_scores = 0
+            for name in commandArgs:
+                await self._set_player_score(ctx, name, "MarketBanned", score, displayOutput=False)
+                set_scores += 1
+            await self.display(ctx, f"{set_scores} players temporarily banned for {days} days, or until {discord_timestamp_full} ({discord_timestamp_relative})")
+
+        elif subcommand == "unban":
+            if len(commandArgs) < 1:
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            set_scores = 0
+            for name in commandArgs:
+                await self._set_player_score(ctx, name, "MarketBanned", 0, displayOutput=False)
+                set_scores += 1
+            await self.display(ctx, f"{set_scores} players unbanned")
+
+        else:
+            await self.help_internal(ctx, ["market ban"], message.author)
 
     async def action_player_find(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Finds player names that match the specified string, case insensitive
@@ -3613,27 +3720,6 @@ Usage:
         tz = timezone.utc
         return datetime.fromtimestamp(unix_timestamp, tz)
 
-    @staticmethod
-    def get_discord_timestamp(datetime_, fmt=":f"):
-        '''Get a Discord timestamp code
-
-Available formats are:
-""   - Default              - "June 24, 2021 3:49 AM"
-":t" - Short time           - "3:49 AM"
-":T" - Long Time            - "3:49:19 AM"
-":d" - Short date           - "06/24/2021"
-":D" - Long Date            - "June 24, 2021"
-":f" - Short full (default) - "June 24, 2021 3:49 AM"
-":F" - Long Full            - "Thursday, June 24, 2021 3:49 AM"
-":R" - Relative             - "2 years ago", "in 5 seconds"
-
-The argument datetime may be a datetime object or a Unix timestamp in seconds (int or float)
-'''
-        unix_timestamp = datetime_
-        if isinstance(datetime_, datetime):
-            unix_timestamp = datetime_.timestamp()
-        return f"<t:{int(unix_timestamp)}{fmt}>"
-
     async def action_get_timestamp(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Converts a human readable time to a Discord timestamp
 
@@ -3659,7 +3745,7 @@ And the first message on the developer server is:
 
         def get_output_line(timestamp, fmt):
             '''Internal method to show timestamp code and its result'''
-            code = self.get_discord_timestamp(timestamp, fmt)
+            code = get_discord_timestamp(timestamp, fmt)
             return f'\n`{code}`: {code}'
 
         output_message = f"**{time_description}:**"
@@ -3734,7 +3820,7 @@ See `~help get timestamp` for valid time formats
 
         selected_time = await self.time_from_description(ctx, time_description)
         selected_unix_time = selected_time.timestamp()
-        discord_timestamp = self.get_discord_timestamp(selected_time, ":R")
+        discord_timestamp = get_discord_timestamp(selected_time, ":R")
 
         # Sanity check - ignore past events
         remaining_seconds = (selected_time - datetime.now(timezone.utc)) / timedelta(seconds=1)
