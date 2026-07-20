@@ -1,0 +1,44 @@
+[MASTER]
+# Keep noise down from venv, caches, etc.
+ignore=.venv,.pytest_cache,build,dist
+ignore-patterns=^\.venv/|^\.pytest_cache/|^build/|^dist/
+jobs=0
+persistent=yes
+
+py-version=3.12
+
+[MESSAGES CONTROL]
+disable=
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    import-outside-toplevel,
+    too-many-arguments,
+    too-many-branches,
+    too-many-instance-attributes,
+    too-many-lines,
+    too-many-locals,
+    too-many-positional-arguments,
+    too-many-return-statements,
+    too-many-statements,
+    too-few-public-methods,
+    too-many-public-methods,
+    line-too-long,
+
+[REPORTS]
+score=yes
+output-format=text
+reports=no
+
+[EXCEPTIONS]
+overgeneral-exceptions=builtins.Exception
+
+[SIMILARITIES]
+min-similarity-lines=4
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=yes
+
+[IMPORTS]
+known-standard-library=
+known-third-party=pydantic,quart,discord,aiohttp,yaml

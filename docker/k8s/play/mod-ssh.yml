@@ -17,6 +17,7 @@ spec:
       labels:
         app: mod-ssh
     spec:
+      automountServiceAccountToken: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -27,6 +28,10 @@ spec:
                 values:
                 - monumenta-17
       volumes:
+        - name: run
+          emptyDir:
+            medium: Memory
+            sizeLimit: 16Mi
         - name: chat-global-filters
           hostPath:
             type: Directory
@@ -53,11 +58,30 @@ spec:
         imagePullPolicy: Always
         tty: false
         stdin: false
+        securityContext:
+          runAsUser: 0                # sshd master must start as root for chroot + privsep
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          seccompProfile:
+            type: RuntimeDefault
+          capabilities:
+            drop: ["ALL"]
+            # NET_BIND_SERVICE: bind :22; SETUID/SETGID: per-session privsep; SYS_CHROOT: ChrootDirectory
+            add: ["NET_BIND_SERVICE", "SETUID", "SETGID", "SYS_CHROOT"]
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
         ports:
         - containerPort: 22
           hostPort: 10022
           hostIP: "15.235.84.119" # The node's external facing IP address
         volumeMounts:
+        - name: run
+          mountPath: /run
         - name: chat-global-filters
           mountPath: /home/epic/global_chat_filters
         - name: chat-help-m17
@@ -70,3 +94,31 @@ spec:
         - name: authorized-keys-config
           mountPath: /home/epic/.ssh/authorized_keys
           subPath: authorized_keys
+---
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: "mod-ssh-firewall"
+  namespace: play
+spec:
+  description: "SFTP file server: inbound SSH only, no egress"
+  endpointSelector:
+    matchLabels:
+      app: mod-ssh
+  enableDefaultDeny:
+    # Deny all egress even though no egress allow-rules are listed: the pod
+    # serves files inbound only and must not initiate outbound connections.
+    egress: true
+    ingress: true
+  ingress:
+    # hostPort DNAT arrives with the 'host' identity
+    - fromEntities:
+        - host
+    # Direct pod-IP access from outside the cluster
+    - fromEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "22"
+              protocol: TCP
+  # No egress rules => with enableDefaultDeny.egress all outbound traffic is dropped.

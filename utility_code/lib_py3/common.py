@@ -1,5 +1,6 @@
 import codecs
 import copy
+from datetime import datetime
 import json
 import os
 import re
@@ -523,4 +524,24 @@ def int_to_ordinal(i):
     if last_char == '3':
         return num + 'rd'
     return num + 'th'
+
+def get_discord_timestamp(datetime_, fmt=":f"):
+    '''Get a Discord timestamp code
+
+Available formats are:
+""   - Default              - "June 24, 2021 3:49 AM"
+":t" - Short time           - "3:49 AM"
+":T" - Long Time            - "3:49:19 AM"
+":d" - Short date           - "06/24/2021"
+":D" - Long Date            - "June 24, 2021"
+":f" - Short full (default) - "June 24, 2021 3:49 AM"
+":F" - Long Full            - "Thursday, June 24, 2021 3:49 AM"
+":R" - Relative             - "2 years ago", "in 5 seconds"
+
+The argument datetime may be a datetime object or a Unix timestamp in seconds (int or float)
+'''
+    unix_timestamp = datetime_
+    if isinstance(datetime_, datetime):
+        unix_timestamp = datetime_.timestamp()
+    return f"<t:{int(unix_timestamp)}{fmt}>"
 

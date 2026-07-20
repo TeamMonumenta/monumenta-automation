@@ -1,0 +1,8 @@
+{
+  "pythonVersion": "3.12",
+  "venvPath": ".",
+  "venv": ".venv",
+  "typeCheckingMode": "strict",
+  "include": ["voting", "main.py", "bot.py"],
+  "reportUnusedFunction": "none"
+}

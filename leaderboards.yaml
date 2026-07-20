@@ -61,6 +61,8 @@
 - GodsporeWins
 - SiriusWins
 - TwistedXWins
+- Aurora
+- AuroraRageHighestAchieved
 # Winter Arena
 - EventWins
 - EventDeaths
@@ -74,6 +76,7 @@
 - DailyCompleted
 - Daily2Completed
 - Daily3Completed
+- DelvesCompleted
 # Races
 - Race00
 - Race01
@@ -178,6 +181,7 @@
 - Ice_Spleef2_MVPWins
 - CoalruptedSierhaven
 - CoalruptedSierhavenMax
+- LifetimeCoalCollected
 # Spirit Minigame
 - SpiritMinigame001
 - SpiritMinigame001MaxScore
@@ -215,3 +219,5 @@
 - UamielWinsUnspoiled
 # Community Missions
 - CommunityHeroLevel
+# Misc
+- AnniversaryGuest

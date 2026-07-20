@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-logger
+  namespace: play
+  labels:
+    app: chat-logger
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-logger
+  template:
+    metadata:
+      labels:
+        app: chat-logger
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-18
+      volumes:
+        - name: chat-logger-logs
+          hostPath:
+            type: Directory
+            path: /nfs/chat-logs/play
+      containers:
+      - name: chat-logger
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-chat-logger:latest
+        imagePullPolicy: Always
+        tty: false
+        stdin: false
+        volumeMounts:
+        - name: chat-logger-logs
+          mountPath: /logs
+        env:
+        # Unique name this logger appears as on the RabbitMQ network.
+        # Should not conflict with any shard name.
+        - name: SHARD_NAME
+          value: chat-logger
+        # RabbitMQ connection string.
+        - name: AMQP_URI
+          value: "amqp://guest:guest@rabbitmq:5672"
+        # Redis connection string for UUID→player name lookups via the uuid2name hash.
+        # Remove this entry to disable Redis and log raw UUIDs instead.
+        - name: REDIS_URI
+          value: "redis://redis:6379"
+        # Uncomment to print raw JSON of each chat message to stderr (for development only).
+        #- name: CHAT_LOGGER_DEBUG
+        #  value: "1"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 32Mi
+          requests:
+            cpu: 10m
+            memory: 16Mi

@@ -1,7 +1,6 @@
 import json
 import os
 import sys
-import yaml
 
 from lib_py3.common import eprint
 from lib_py3.common import get_item_name_from_nbt
@@ -66,7 +65,6 @@ class GlobalRule():
 
     def __init__(self):
         """Local data storage"""
-        pass
 
     def preprocess(self, template, item):
         """Read the unedited item.
@@ -74,11 +72,9 @@ class GlobalRule():
         Return True to abort replacement and changes.
         Make no edits here.
         """
-        pass
 
     def postprocess(self, item):
         """Edit the item with last stored value"""
-        pass
 
     @classmethod
     def recursive_public_subclasses(cls):
@@ -121,12 +117,12 @@ class AbortNoLore(GlobalRule):
     def preprocess(self, template, item):
         # Items with lore are always replaced
         if item.nbt.has_path('tag.display.Lore[0]'):
-            return
+            return None
 
         # Quest dev request to always update written books - if this fails, it's on them
         if item.id == 'minecraft:written_book':
             if not item.nbt.has_path('tag.title'):
-                return
+                return None
 
             # There are specific books that shouldn't be replaced if a player writes their own book with the same title,
             # which would be missing lore text
@@ -137,7 +133,7 @@ class AbortNoLore(GlobalRule):
                 "I Will Do What I Must",
                 "Magic Beyond Control",
             ):
-                return
+                return None
 
         # Items without lore in spawners never get replaced
         #if item.is_in_spawner():
@@ -190,6 +186,36 @@ class PreserveArmorColor(GlobalRule):
 
         # Apply color
         item.tag.at_path('display.color').value = self.color
+
+class PreserveBookGeneration(GlobalRule):
+    name = 'Preserve book generation'
+
+    def __init__(self):
+        super().__init__()
+        self.generation = None
+
+    def preprocess(self, template, item):
+        self.generation = None
+        if item.nbt.has_path('tag.generation'):
+            self.generation = item.tag.at_path('generation').value
+
+    def postprocess(self, item):
+        if item.id != 'minecraft:written_book':
+            return
+
+        if self.generation is None:
+            if item.nbt.has_path('tag.generation'):
+                item.tag.value.pop('generation')
+            return
+
+        # Make sure tag exists first
+        if not item.has_tag():
+            item.tag = nbt.TagCompound({})
+        if not item.tag.has_path('generation'):
+            item.tag.value['generation'] = nbt.TagInt(0)
+
+        # Apply generation
+        item.tag.at_path('generation').value = self.generation
 
 class PreserveDamage(GlobalRule):
     name = 'Preserve damage'
@@ -291,25 +317,6 @@ class PreserveMonumentaPlayerModifications(GlobalRule):
 
         if item.nbt.has_path('tag.Monumenta.PlayerModified') and len(item.nbt.at_path('tag.Monumenta.PlayerModified').value) > 0:
             mark_dirty(item)
-
-class FixSilentKnight(GlobalRule):
-    name = 'Fix Silent Knight'
-
-    def __init__(self):
-        super().__init__()
-
-    def preprocess(self, template, item):
-        pass
-
-    def postprocess(self, item):
-        if item.id != "minecraft:player_head":
-            return
-        if not item.nbt.has_path('tag.display.Name') or get_item_name_from_nbt(item.tag, True) != 'Silent Knight':
-            return
-        if item.nbt.has_path('tag.Monumenta.PlayerModified.Infusions.Festive.Infuser'):
-            festive = item.tag.at_path('Monumenta.PlayerModified.Infusions.Festive')
-            del festive.value['Infuser']
-            festive.value['InfuserNpc'] = nbt.TagString("Gertrude")
 
 class PreserveBlockEntityTag(GlobalRule):
     name = 'Preserve block entity tag'

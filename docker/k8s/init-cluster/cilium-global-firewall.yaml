@@ -35,7 +35,11 @@ spec:
               protocol: TCP
             - port: "9922"    # Admin lxc SSH
               protocol: TCP
-            - port: "8822"    # Build SSH container
+            - port: "8822"    # Build SSH container (docker/k8s/build/basic-ssh.yml)
+              protocol: TCP
+            - port: "6622"    # Play build-ssh SFTP (docker/k8s/play/build-ssh.yml)
+              protocol: TCP
+            - port: "10022"   # Play mod-ssh SFTP (docker/k8s/play/mod-ssh.yml)
               protocol: TCP
             - port: "7722"    # Root SSH
               protocol: TCP

@@ -99,9 +99,15 @@ ignored_reaction_channels:
     # build-admin-notices
     - 1037060429186342932
 
+no_ready_message_channels:
+    # weekly-update-bot (public discord, publicly visible, used for weekly update)
+    - 486019840134610965
+
 channels:
-    # moderation-bot (public discord, moderators + TE only)
+    # moderation-bot (public discord, moderators only)
     - 467361088460029954
+    # devop-bot (public discord, moderators + TE only)
+    - 1512882386508058825
     # weekly-update-bot (public discord, publicly visible, used for weekly update)
     - 486019840134610965
 
@@ -136,7 +142,6 @@ shards:
     guildplots: /home/epic/play/m17/guildplots/
     hexfall: /home/epic/play/m17/hexfall/
     indigo: /home/epic/play/m17/indigo/
-    indigo-2: /home/epic/play/m17/indigo-2/
     isles: /home/epic/play/m17/isles/
     isles-2: /home/epic/play/m17/isles-2/
     isles-3: /home/epic/play/m17/isles-3/
@@ -197,6 +202,7 @@ commands:
     - instances
     - list bots
     - list shards
+    - market ban
     - op
     - player account transfer
     - player find
@@ -252,6 +258,7 @@ permissions:
             - "-testunpriv"
         "@moderator":
             - "@discord manager"
+            - "+market ban"
             - "+verbose"
         "@discord manager":
             - "@team monumenta"

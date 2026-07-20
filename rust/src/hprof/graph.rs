@@ -1,12 +1,11 @@
-use std::{
-    collections::{HashMap, HashSet},
-    rc::Rc,
-};
+use std::collections::VecDeque;
+
+use rustc_hash::{FxHashMap, FxHashSet};
 
 use crate::hprof::id::Id;
 
-pub type IntMap<K, V> = HashMap<K, V>;
-pub type IntSet<K> = HashSet<K>;
+pub type IntMap<K, V> = FxHashMap<K, V>;
+pub type IntSet<K> = FxHashSet<K>;
 
 pub fn clean_graph<T: Id + Ord + Copy>(edges: &mut Vec<(T, T)>) {
     if edges.is_empty() {
@@ -16,30 +15,6 @@ pub fn clean_graph<T: Id + Ord + Copy>(edges: &mut Vec<(T, T)>) {
     edges.sort_unstable();
     edges.dedup();
     edges.shrink_to_fit();
-}
-
-pub struct ConsNode<T>(T, Option<ConsList<T>>);
-pub type ConsList<T> = Rc<ConsNode<T>>;
-
-fn cons<T>(val: T) -> ConsList<T> {
-    Rc::new(ConsNode(val, None))
-}
-
-fn cons_list<T>(val: T, next: ConsList<T>) -> ConsList<T> {
-    Rc::new(ConsNode(val, Some(next)))
-}
-
-pub fn to_vec<T: Clone>(list: &ConsList<T>) -> Vec<T> {
-    let mut out = Vec::new();
-    let mut current: Option<&ConsList<T>> = Some(list);
-
-    while let Some(node_rc) = current {
-        let ConsNode(ref head, ref tail) = **node_rc;
-        out.push(head.clone());
-        current = tail.as_ref();
-    }
-
-    out
 }
 
 pub fn is_reachable<T: Id, U: Fn(T) -> bool>(graph: &[(T, T)], root_pred: U, start_nodes: &[T]) -> Vec<bool> {
@@ -96,68 +71,40 @@ pub fn is_reachable<T: Id, U: Fn(T) -> bool>(graph: &[(T, T)], root_pred: U, sta
     res
 }
 
-pub fn find_paths<T: Id, U: Fn(T) -> bool>(
-    graph: &[(T, T)],
-    root_pred: U,
-    start_nodes: &[T],
-    max_paths: usize,
-) -> Vec<Vec<ConsList<T>>> {
-    let mut reachable: IntMap<T, Vec<ConsList<T>>> = IntMap::default();
-    let mut temp_vis: IntSet<T> = IntSet::default();
+/// BFS shortest path from `start` through back-reference edges to any node matching `root_pred`.
+/// Returns the path as [start, ..., root], or an empty Vec if no path exists.
+pub fn find_shortest_path<T: Id, U: Fn(T) -> bool>(graph: &[(T, T)], root_pred: U, start: T) -> Vec<T> {
+    let mut came_from: IntMap<T, Option<T>> = IntMap::default();
+    let mut queue: VecDeque<T> = VecDeque::new();
 
-    fn dfs<T: Id, U: Fn(T) -> bool>(
-        u: T,
-        graph: &[(T, T)],
-        root_pred: &U,
-        reachable: &mut IntMap<T, Vec<ConsList<T>>>,
-        temp_vis: &mut IntSet<T>,
-        max_paths: usize,
-    ) -> Vec<ConsList<T>> {
-        if let Some(x) = reachable.get(&u) {
-            return x.clone();
-        }
+    came_from.insert(start, None);
+    queue.push_back(start);
 
+    while let Some(u) = queue.pop_front() {
         if root_pred(u) {
-            reachable.insert(u, vec![cons(u)]);
-            return vec![cons(u)];
-        }
-
-        if temp_vis.contains(&u) {
-            return vec![];
-        }
-
-        temp_vis.insert(u);
-
-        let mut found = vec![];
-
-        let mut idx = graph.partition_point(|&(src, _)| src < u);
-
-        while idx < graph.len() && graph[idx].0 == u {
-            for node in dfs(graph[idx].1, graph, root_pred, reachable, temp_vis, max_paths) {
-                found.push(cons_list(u, node));
-                if found.len() >= max_paths {
-                    break;
+            let mut path = Vec::new();
+            let mut cur = u;
+            loop {
+                path.push(cur);
+                match came_from[&cur] {
+                    None => break,
+                    Some(prev) => cur = prev,
                 }
             }
-
-            if found.len() >= max_paths {
-                break;
-            }
-
-            idx += 1;
+            path.reverse();
+            return path;
         }
 
-        temp_vis.remove(&u);
-
-        reachable.insert(u, found.clone());
-
-        found
+        let mut idx = graph.partition_point(|&(src, _)| src < u);
+        while idx < graph.len() && graph[idx].0 == u {
+            let v = graph[idx].1;
+            if !came_from.contains_key(&v) {
+                came_from.insert(v, Some(u));
+                queue.push_back(v);
+            }
+            idx += 1;
+        }
     }
 
-    let mut res = Vec::new();
-    for &s in start_nodes {
-        res.push(dfs(s, graph, &root_pred, &mut reachable, &mut temp_vis, max_paths));
-    }
-
-    res
+    vec![]
 }

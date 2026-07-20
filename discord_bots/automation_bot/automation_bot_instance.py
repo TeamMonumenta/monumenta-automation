@@ -33,7 +33,7 @@ _top_level = os.path.abspath(os.path.join(_file, '../'*_file_depth))
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../../utility_code"))
 from lib_py3.zfs_snapshot_manager import ZFSSnapshotManager
-from lib_py3.common import decode_escapes, int_to_ordinal
+from lib_py3.common import decode_escapes, get_discord_timestamp, int_to_ordinal
 from lib_py3.lockout import LockoutAPI
 from lib_py3.raffle import vote_raffle
 from lib_py3.lib_k8s import KubernetesManager
@@ -134,6 +134,7 @@ class AutomationBotInstance(commands.Cog):
             "set score": self.action_set_player_scores,
 
             "badname": self.action_bad_name,
+            "market ban": self.action_market_ban,
             "player find": self.action_player_find,
             "player rollback": self.action_player_rollback,
             "player shard": self.action_player_shard,
@@ -489,7 +490,7 @@ class AutomationBotInstance(commands.Cog):
         if self.check_permissions(match, message.author):
             await self._commands[match](ctx, match, message)
         else:
-            await ctx.send("Sorry " + message.author.mention + ", you do not have permission to run this command")
+            await self.send_with_retry(ctx, "Sorry " + message.author.mention + ", you do not have permission to run this command")
 
     async def load_raffle_reaction(self):
         """Loads persistent raffle reaction ID"""
@@ -687,7 +688,7 @@ class AutomationBotInstance(commands.Cog):
                 except discord.errors.NotFound:
                     msg = None
 
-            modify_time = "Last updated " + self.get_discord_timestamp(now, ":R")
+            modify_time = "Last updated " + get_discord_timestamp(now, ":R")
             formatted_message = f'**{header}** {modify_time}\n{new_message}'
             if len(formatted_message) >= 2000:
                 formatted_message = f'**{header}** {modify_time}\nStatus message character limit exceeded; please wait...'
@@ -755,17 +756,41 @@ class AutomationBotInstance(commands.Cog):
 
         return result
 
+    @staticmethod
+    async def send_with_retry(
+        ctx: discord.ext.commands.Context,
+        content=None, *, tts=False, embed=None, embeds=None, file=None, files=None, stickers=None,
+        delete_after=None, nonce=None, allowed_mentions=None, reference=None,
+        mention_author=None, view=None, suppress_embeds=False, silent=False, poll=None
+    ):
+        tz = timezone.utc
+        abort_timestamp = datetime.now(tz) + timedelta(minutes=10)
+        attempts = 1
+        while True:
+            try:
+                await ctx.send(
+                    content=content, tts=tts, embed=embed, embeds=embeds, file=file, files=files, stickers=stickers,
+                    delete_after=delete_after, nonce=nonce, allowed_mentions=allowed_mentions, reference=reference,
+                    mention_author=mention_author, view=view, suppress_embeds=suppress_embeds, silent=silent, poll=poll
+                )
+                return
+            except discord.errors.DiscordServerError:
+                if datetime.now(tz) >= abort_timestamp:
+                    raise
+                await asyncio.sleep(min(60, 5 * attempts))
+                attempts += 1
+
     async def display_verbatim(self, ctx: discord.ext.commands.Context, text: str, text_format=""):
         """Respond with verbatim text split into chunks that fit the message size"""
         for chunk in split_string(escape_triple_backtick(text)):
-            await ctx.send("```" + text_format + "\n" + chunk + "\n```")
+            await self.send_with_retry(ctx, "```" + text_format + "\n" + chunk + "\n```")
 
     async def debug(self, ctx: discord.ext.commands.Context, text: str):
         """Log debug text to the console, and if verbose mode is on, respond with it also"""
         logger.debug(text)
         if self._debug:
             for chunk in split_string(text):
-                await ctx.send(chunk)
+                await self.send_with_retry(ctx, chunk)
 
     async def cd(self, ctx: discord.ext.commands.Context, path: str):
         """Changes the bot's current working directory. This affects all commands!"""
@@ -775,7 +800,7 @@ class AutomationBotInstance(commands.Cog):
     async def display(self, ctx: discord.ext.commands.Context, msg: str):
         """Respond with text split into chunks that fit the message size"""
         for chunk in split_string(msg):
-            await ctx.send(chunk)
+            await self.send_with_retry(ctx, chunk)
 
     async def _read_stream(self, queue, stream, process_line, terminator):
         """Reads a stream of text, such as from a pipe, and passes it into a queue one line at a time.
@@ -825,7 +850,7 @@ class AutomationBotInstance(commands.Cog):
 
         stderr = stderr.decode('utf-8')
         if stderr and not suppressStdErr:
-            await ctx.send(f"stderr from command `{cmd}`:")
+            await self.send_with_retry(ctx, f"stderr from command `{cmd}`:")
             await self.display_verbatim(ctx, stderr)
 
         if isinstance(ret, int) and rc != ret:
@@ -1013,7 +1038,7 @@ class AutomationBotInstance(commands.Cog):
 
                 eta = gameplay_event.get("ETA", None)
                 if eta:
-                    eta_timestamp = self.get_discord_timestamp(eta, ":R")
+                    eta_timestamp = get_discord_timestamp(eta, ":R")
                     msg.append(f'{event_name} is starting on {shard} {eta_timestamp}')
                 else:
                     msg.append(f'{event_name} is in progress on {shard}')
@@ -1022,6 +1047,17 @@ class AutomationBotInstance(commands.Cog):
             msg.append("No events are currently in progress")
 
         return "\n".join(msg)
+
+    async def _set_player_score(self, ctx: discord.ext.commands.Context, name: str, objective: str, value: int, displayOutput = False):
+        message = f'Set score {objective}={value} via bot'
+
+        ns = self._k8s.namespace
+        if ns in ('stage', 'volt'):
+            ns = 'play'
+
+        await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, str(value), message], displayOutput=displayOutput)
+        self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
+
 
     async def _get_lockout_message(self):
         msg = []
@@ -1045,9 +1081,9 @@ class AutomationBotInstance(commands.Cog):
             with open(last_stage_update_path, 'r', encoding='utf-8') as fp:
                 stage_data = json.load(fp)
                 unix_timestamp = int(stage_data.get("unix_timestamp", 0))
-                absolute_timestamp = self.get_discord_timestamp(unix_timestamp, ':F')
-                relative_timestamp = self.get_discord_timestamp(unix_timestamp, ':R')
-                return f"Last sync was {absolute_timestamp} ({relative_timestamp})"
+                absolute_timestamp = get_discord_timestamp(unix_timestamp, ':F')
+                relative_timestamp = get_discord_timestamp(unix_timestamp, ':R')
+                return f"Last sync with play was {absolute_timestamp} ({relative_timestamp})"
         except Exception:
             return "Could not read last stage sync file, despite it existing?"
 
@@ -1109,11 +1145,11 @@ class AutomationBotInstance(commands.Cog):
             if helptext is None:
                 helptext = f'''Command {target_command!r} does not exist!'''
 
-        await ctx.send(helptext)
+        await self.send_with_retry(ctx, helptext)
 
     async def action_list_bots(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         '''Lists currently running bots'''
-        await ctx.send('`' + self._name + '`')
+        await self.send_with_retry(ctx, '`' + self._name + '`')
 
     async def action_select_bot(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Make specified bots start listening for commands; unlisted bots stop listening.
@@ -1164,22 +1200,22 @@ Examples:
 
         self._debug = not self._debug
 
-        await ctx.send(f"Verbose messages setting: {self._debug}")
+        await self.send_with_retry(ctx, f"Verbose messages setting: {self._debug}")
 
     async def action_test(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         '''Simple test action that does nothing'''
 
-        await ctx.send("Testing successful!")
+        await self.send_with_retry(ctx, "Testing successful!")
 
     async def action_test_priv(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         '''Test if user has permission to use restricted commands'''
 
-        await ctx.send("You've got the power")
+        await self.send_with_retry(ctx, "You've got the power")
 
     async def action_test_unpriv(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
         '''Test that a restricted command fails for all users'''
 
-        await ctx.send("BUG: You definitely shouldn't have this much power")
+        await self.send_with_retry(ctx, "BUG: You definitely shouldn't have this much power")
 
 
     async def action_list_shards(self, ctx: discord.ext.commands.Context, _, inputMsg: discord.Message):
@@ -1298,7 +1334,7 @@ Examples:
         for _, bucket in sorted(buckets.items()):
             formatted_shards = []
             for last_change, shards_at_timestamp in sorted(bucket["shards"].items()):
-                last_change_formatted = self.get_discord_timestamp(last_change, ':R')
+                last_change_formatted = get_discord_timestamp(last_change, ':R')
                 shards_at_timestamp = ', '.join(shards_at_timestamp)
                 formatted_shards.append(f'{shards_at_timestamp} ({last_change_formatted})')
             msg.append(f'{bucket["reaction"]}: ' + '; '.join(formatted_shards))
@@ -1336,7 +1372,7 @@ Examples:
         msg = []
 
         for name, state in shards.items():
-            msg.append(f'{state["reaction"]} {name} since {self.get_discord_timestamp(state["last_change"], ":R")}')
+            msg.append(f'{state["reaction"]} {name} since {get_discord_timestamp(state["last_change"], ":R")}')
         if not msg:
             msg.append("No shards to list")
 
@@ -1374,8 +1410,8 @@ Examples:
         msg.append(f"Monumenta's local time (UTC{monumenta_timezone:+d})")
         msg.append("The following information is used for daily and weekly events, such as delve bounties, dungeon access, and the season pass. Note that this is not the same as weekly updates, which we use to release new content into the game and provide a fresh copy of the overworlds.")
         msg.append(f'It is currently `{today_format}`')
-        msg.append(f'A new day begins {self.get_discord_timestamp(tomorrow_start, ":R")}')
-        msg.append(f'A new week begins {self.get_discord_timestamp(new_week, ":R")} (every Friday)')
+        msg.append(f'A new day begins {get_discord_timestamp(tomorrow_start, ":R")}')
+        msg.append(f'A new week begins {get_discord_timestamp(new_week, ":R")} (every Friday)')
         return "\n".join(msg)
 
     async def action_list_instances(self, ctx: discord.ext.commands.Context, _, __: discord.Message):
@@ -1429,7 +1465,7 @@ Examples:
         if arg_str == 'bot' and action in (self.stop, self.restart):
             if await self.check_lockout(ctx, message, self._name):
                 return
-            await ctx.send("Restarting bot. Note: This will not update the bot's image")
+            await self.send_with_retry(ctx, "Restarting bot. Note: This will not update the bot's image")
             sys.exit(0)
 
         shards_changed = []
@@ -1688,14 +1724,7 @@ Do not use for debugging quests or other scores that are likely to change often.
             name = commandArgs[0]
             objective = commandArgs[1]
             value = commandArgs[2]
-            message = f'Set score {objective}={value} via bot'
-
-            ns = self._k8s.namespace
-            if ns in ('stage', 'volt'):
-                ns = 'play'
-
-            await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, value, message], displayOutput=len(lines) < 5)
-            self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
+            await self._set_player_score(ctx, name, objective, value, displayOutput=len(lines) < 5)
             setscores += 1
 
         await self.display(ctx, f"{setscores} player scores set both in redis (for offline players) and via broadcast (for online players)")
@@ -1898,6 +1927,108 @@ Usage:
         else:
             await self.help_internal(ctx, ["badname"], message.author)
 
+    async def action_market_ban(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
+        '''Manage market bans
+
+Usage:
+{cmdPrefix}market ban list [<page number>]
+{cmdPrefix}market ban check <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}market ban perm <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}market ban no_ping <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}market ban temp <days> <name> [<name 2>] [<name 3> ...]
+{cmdPrefix}market ban unban <name> [<name 2>] [<name 3> ...]
+'''
+
+        commandArgs = message.content[len(config.PREFIX + cmd) + 1:].split()
+
+        if len(commandArgs) < 1:
+            await self.help_internal(ctx, ["market ban"], message.author)
+            return
+
+        subcommand = commandArgs.pop(0).lower()
+
+        if subcommand in ("list", "check"):
+            await self.run(ctx, [os.path.join(_top_level, "utility_code/view_market_ban.py"), subcommand, *commandArgs], displayOutput=True)
+
+        elif subcommand == "perm":
+            if len(commandArgs) < 1:
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            set_scores = 0
+            for name in commandArgs:
+                await self._set_player_score(ctx, name, "MarketBanned", -1, displayOutput=False)
+                set_scores += 1
+            await self.display(ctx, f"{set_scores} players permanently banned")
+
+        elif subcommand == "no_ping":
+            if len(commandArgs) < 1:
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            set_scores = 0
+            for name in commandArgs:
+                await self._set_player_score(ctx, name, "MarketBanned", -2, displayOutput=False)
+                set_scores += 1
+            await self.display(ctx, f"{set_scores} players permanently banned")
+
+        elif subcommand == "temp":
+            if len(commandArgs) < 2:
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            days = None
+            try:
+                days = int(commandArgs[0])
+            except ValueError:
+                await self.display(ctx, f"Invalid number of days {commandArgs[0]!r}")
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+            commandArgs.pop(0)
+
+            if days < 1:
+                await self.display(ctx, "Number of days must be at least 1")
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            utc_offset = await self.get_utc_offset()
+            tz = timezone(utc_offset)
+            now_utc = datetime.now(timezone.utc)
+            now_monumenta = now_utc.astimezone(tz)
+            epoch_monumenta = datetime(1970, 1, 1, tzinfo=tz)
+            daily_version = (now_monumenta - epoch_monumenta) // timedelta(days=1)
+
+            score = daily_version + days
+            if score >= 2**31:
+                await self.display(ctx, "Cannot temporarily market ban players that far into the future. Chose a lower number of days, or permanently ban them.")
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            today_start = datetime(now_monumenta.year, now_monumenta.month, now_monumenta.day, 0, 0, tzinfo=tz)
+            ban_expiry_utc = today_start.astimezone(timezone.utc) + timedelta(days)
+            discord_timestamp_full = get_discord_timestamp(ban_expiry_utc, ":F")
+            discord_timestamp_relative = get_discord_timestamp(ban_expiry_utc, ":R")
+
+            set_scores = 0
+            for name in commandArgs:
+                await self._set_player_score(ctx, name, "MarketBanned", score, displayOutput=False)
+                set_scores += 1
+            await self.display(ctx, f"{set_scores} players temporarily banned for {days} days, or until {discord_timestamp_full} ({discord_timestamp_relative})")
+
+        elif subcommand == "unban":
+            if len(commandArgs) < 1:
+                await self.help_internal(ctx, ["market ban"], message.author)
+                return
+
+            set_scores = 0
+            for name in commandArgs:
+                await self._set_player_score(ctx, name, "MarketBanned", 0, displayOutput=False)
+                set_scores += 1
+            await self.display(ctx, f"{set_scores} players unbanned")
+
+        else:
+            await self.help_internal(ctx, ["market ban"], message.author)
+
     async def action_player_find(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Finds player names that match the specified string, case insensitive
 
@@ -2059,6 +2190,7 @@ Must be run before starting the update on the play server
 
         tz = timezone.utc
         now = datetime.now(tz)
+        second = timedelta(seconds=1)
         seconds_delay = 60
         stop_time = now + timedelta(seconds=seconds_delay)
         if not skip_replacements:
@@ -2070,6 +2202,7 @@ Must be run before starting the update on the play server
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
             self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
+            self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
         elif not debug:
             self.broadcast_json_msg([
                 "",
@@ -2079,13 +2212,22 @@ Must be run before starting the update on the play server
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
             self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
+            self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
 
         async def await_warning_delay():
             await self.display(ctx, "Giving devs time to wrap up what they're doing")
             remaining_seconds = (stop_time - datetime.now(tz)) / timedelta(seconds=1)
-            if remaining_seconds < 0:
+            if remaining_seconds <= 0:
                 return
-            await asyncio.sleep(remaining_seconds)
+
+            try:
+                async with asyncio.timeout(remaining_seconds):
+                    while True:
+                        await asyncio.sleep(3)
+                        remaining_seconds = (stop_time - datetime.now(tz)) / second
+                        self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
+            except TimeoutError:
+                pass
 
         if not skip_commit:
             repo = git.Repo('/home/epic/project_epic/server_config/data')
@@ -2136,7 +2278,9 @@ Must be run before starting the update on the play server
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/Project_Epic-valley /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/azacor /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/valley/coalrrupted_sierhaven /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/sanctum /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/valley/snowspirit /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/verdant /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/quests /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
 
@@ -2768,6 +2912,10 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             await self.run(ctx, f"rm -rf {self._shards['purgatory']}")
             await self.run(ctx, f"mv /home/epic/5_SCRATCH/tmpreset/TEMPLATE/purgatory {self._shards['purgatory']}")
 
+        if min_phase <= 8 and config.COMMON_WEEKLY_UPDATE_TASKS:
+            await self.display(ctx, "Clearing temporary redis values")
+            r.delete('play:zenithcharmdupecheck')
+
         if min_phase <= 9 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Removing tutorial data")
             await self.run(ctx, os.path.join(_top_level, "rust/bin/redis_remove_data") + " redis://redis/ tutorial:* --confirm")
@@ -2800,6 +2948,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             raffle_results = tempfile.mktemp()
             vote_raffle(raffle_seed, 'redis', raffle_results)
             await self.run(ctx, f"cat {raffle_results}", displayOutput=True)
+            await self.display(ctx, message.author.mention)
 
         # Raffle
         ########################################
@@ -3124,10 +3273,10 @@ Easiest way to get this is putting an item in a chest, and looking at that chest
         if len(files) > 0:
             await self.cd(ctx, "/tmp")
             for fname in files:
-                await ctx.send(fname, file=discord.File(os.path.join(userfolderpath, fname)))
+                await self.send_with_retry(ctx, fname, file=discord.File(os.path.join(userfolderpath, fname)))
             if len(files) > 1:
                 await self.run(ctx, f"zip -r {userfoldername}.zip {userfoldername}")
-                await ctx.send("Zip file containing all loot tables generated by this run:", file=discord.File(os.path.join("/tmp", f"{userfoldername}.zip")))
+                await self.send_with_retry(ctx, "Zip file containing all loot tables generated by this run:", file=discord.File(os.path.join("/tmp", f"{userfoldername}.zip")))
 
         await self.display(ctx, message.author.mention)
 
@@ -3259,7 +3408,7 @@ Syntax:
             await self.cd(ctx, self._shards[shard])
             await self.run(ctx, os.path.join(_top_level, f"utility_code/command_block_update_tool.py --output {scan_results} Project_Epic-{shard} "), displayOutput=True)
             await self.run(ctx, f"mv -f {scan_results} /tmp/{shard}.json")
-            await ctx.send(f"{shard} commands:", file=discord.File(f'/tmp/{shard}.json'))
+            await self.send_with_retry(ctx, f"{shard} commands:", file=discord.File(f'/tmp/{shard}.json'))
 
         await self.display(ctx, message.author.mention)
 
@@ -3572,27 +3721,6 @@ Usage:
         tz = timezone.utc
         return datetime.fromtimestamp(unix_timestamp, tz)
 
-    @staticmethod
-    def get_discord_timestamp(datetime_, fmt=":f"):
-        '''Get a Discord timestamp code
-
-Available formats are:
-""   - Default              - "June 24, 2021 3:49 AM"
-":t" - Short time           - "3:49 AM"
-":T" - Long Time            - "3:49:19 AM"
-":d" - Short date           - "06/24/2021"
-":D" - Long Date            - "June 24, 2021"
-":f" - Short full (default) - "June 24, 2021 3:49 AM"
-":F" - Long Full            - "Thursday, June 24, 2021 3:49 AM"
-":R" - Relative             - "2 years ago", "in 5 seconds"
-
-The argument datetime may be a datetime object or a Unix timestamp in seconds (int or float)
-'''
-        unix_timestamp = datetime_
-        if isinstance(datetime_, datetime):
-            unix_timestamp = datetime_.timestamp()
-        return f"<t:{int(unix_timestamp)}{fmt}>"
-
     async def action_get_timestamp(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Converts a human readable time to a Discord timestamp
 
@@ -3618,7 +3746,7 @@ And the first message on the developer server is:
 
         def get_output_line(timestamp, fmt):
             '''Internal method to show timestamp code and its result'''
-            code = self.get_discord_timestamp(timestamp, fmt)
+            code = get_discord_timestamp(timestamp, fmt)
             return f'\n`{code}`: {code}'
 
         output_message = f"**{time_description}:**"
@@ -3693,7 +3821,7 @@ See `~help get timestamp` for valid time formats
 
         selected_time = await self.time_from_description(ctx, time_description)
         selected_unix_time = selected_time.timestamp()
-        discord_timestamp = self.get_discord_timestamp(selected_time, ":R")
+        discord_timestamp = get_discord_timestamp(selected_time, ":R")
 
         # Sanity check - ignore past events
         remaining_seconds = (selected_time - datetime.now(timezone.utc)) / timedelta(seconds=1)
@@ -3803,6 +3931,11 @@ See `~help get timestamp` for valid time formats
                         target = member
                     if author is not None and target is not None:
                         break
+
+                if target is None:
+                    # Target user is not in the channel anymore - delete reminder file
+                    reminder_file.unlink(missing_ok=True)
+                    continue
 
                 # Ping
                 if author_id == target_id:

@@ -265,6 +265,7 @@ if __name__ == '__main__':
         ('config/paper-world-defaults.yml',),
         ('config/monumenta-mixins.yml',),
         ('wepif.yml',),
+        ('plugins/CommandAPI/config.yml',),
         ('plugins/ViaVersion/config.yml',),
         ('plugins/BKCommonLib/config.yml',),
         ('plugins/CoreProtect/config.yml',),
@@ -292,7 +293,7 @@ if __name__ == '__main__':
     ]
 
     mixins = [
-        ('mods/MonumentaMixins.jar', '../../server_config/mods/MonumentaMixins.jar'),
+        ('mods/monumenta-mixins.jar', '../../server_config/mods/monumenta-mixins.jar'),
         ('server.jar', '../server_config/mixinloader.jar'),
     ]
 
@@ -321,28 +322,35 @@ if __name__ == '__main__':
         ('plugins/AdvancedServerList-Velocity.jar', '../../server_config/plugins/AdvancedServerList-Velocity.jar'),
         ('plugins/advancedserverlist/config.yml', '../../../server_config/data/server_config_template/plugins/AdvancedServerList/config.yml'),
         ('plugins/advancedserverlist/profiles', '../../../server_config/data/server_config_template/plugins/AdvancedServerList/profiles/{}'.format(SERVER_TYPE)),
-        ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
-        ('plugins/litebans/config.yml', '../../../server_config/data/plugins/proxy/litebans/config.yml'),
-        ('plugins/litebans/messages.yml', '../../../server_config/data/plugins/proxy/litebans/messages.yml'),
-        ('plugins/litebans/webhooks.yml', f'../../../server_config/data/plugins/proxy/litebans/{SERVER_TYPE}/webhooks.yml'),
         ('plugins/LuckPerms-Velocity.jar', '../../server_config/plugins/LuckPerms-Velocity.jar'),
         ('plugins/luckperms', '../../server_config/plugins/LuckPerms/{}'.format(SERVER_TYPE)),
         ('plugins/Maintenance-Velocity.jar', '../../server_config/plugins/Maintenance-Velocity.jar'),
         ('plugins/Monumenta.jar', '../../server_config/plugins/Monumenta.jar'),
         # ('plugins/monumenta-velocity/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-velocity/config.yaml'),
+        ('plugins/MonumentaCommon.jar', '../../server_config/plugins/MonumentaCommon.jar'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
         ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
-        ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
-        ('plugins/premiumvanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
         ('plugins/spark-velocity.jar', '../../server_config/plugins/spark-velocity.jar'),
         ('plugins/spark', '/home/epic/5_SCRATCH/spark'),
         #('plugins/ViaVersion.jar', '../../server_config/plugins/ViaVersion.jar'), # needs to be 5.0.0+ since that is when Velocity support was added
         #('plugins/viaversion/config.yml', '../../../server_config/data/server_config_template/plugins/ViaVersion/config.yml'),
         ('plugins/velocity-prometheus-exporter.jar', '../../server_config/plugins/velocity-prometheus-exporter.jar'),
         ('plugins/velocity-prometheus-exporter/config.json', '../../../server_config/data/plugins/proxy/velocity-prometheus-exporter/config.json'),
+    ]
+
+    proxy_litebans = [
+        ('plugins/LiteBans.jar', '../../server_config/plugins/LiteBans.jar'),
+        ('plugins/litebans/config.yml', '../../../server_config/data/plugins/proxy/litebans/config.yml'),
+        ('plugins/litebans/messages.yml', '../../../server_config/data/plugins/proxy/litebans/messages.yml'),
+        ('plugins/litebans/webhooks.yml', f'../../../server_config/data/plugins/proxy/litebans/{SERVER_TYPE}/webhooks.yml'),
+    ]
+
+    proxy_vanish = [
+        ('plugins/PremiumVanish.jar', '../../server_config/plugins/PremiumVanish.jar'),
+        ('plugins/premiumvanish/velocity-config.yml', '../../../server_config/data/plugins/proxy/premiumvanish/velocity-config.yml'),
     ]
 
     proxy_plan = [
@@ -369,6 +377,7 @@ if __name__ == '__main__':
     ]
 
     monumenta = [
+        ('plugins/MonumentaCommon.jar', '../../server_config/plugins/MonumentaCommon.jar'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/MonumentaExceptionReporter.jar', '../../server_config/plugins/MonumentaExceptionReporter.jar'),
         ('plugins/MonumentaWorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
@@ -873,97 +882,15 @@ if __name__ == '__main__':
         ]
 
 
-    # These shards are copies of another shard, using that other shard's name for {servername} replacements
-    copied_shard_config = {
-        "valley-2": "valley",
-        "valley-3": "valley",
-        "isles-2": "isles",
-        "isles-3": "isles",
-        "ring-2": "ring",
-        "ring-3": "ring",
-        "ring-4": "ring",
-        "ring-5": "ring",
-        "ring-6": "ring",
-        "ring-7": "ring",
-        "ring-8": "ring",
-        "ring-9": "ring",
-        "ring-10": "ring",
-        "ring-11": "ring",
-        "ring-12": "ring",
-        "ring-13": "ring",
-        "ring-14": "ring",
-        "ring-15": "ring",
-        "ring-16": "ring",
-        "white-2": "white",
-        "orange-2": "orange",
-        "magenta-2": "magenta",
-        "magenta-3": "magenta",
-        "lightblue-2": "lightblue",
-        "lightblue-3": "lightblue",
-        "yellow-2": "yellow",
-        "yellow-3": "yellow",
-        "willows-2": "willows",
-        "willows-3": "willows",
-        "indigo-2": "indigo",
-        "indigo-3": "indigo",
-        "indigo-4": "indigo",
-        "indigo-5": "indigo",
-        "indigo-6": "indigo",
-        "indigo-7": "indigo",
-        "indigo-8": "indigo",
-        "indigo-9": "indigo",
-        "indigo-10": "indigo",
-        "fortune-2": "fortune",
-        "fortune-3": "fortune",
-        "fortune-4": "fortune",
-        "fortune-5": "fortune",
-        "blue-2": "blue",
-        "blue-3": "blue",
-        "blue-4": "blue",
-        "brown-2": "brown",
-        "brown-3": "brown",
-        "reverie-2": "reverie",
-        "reverie-3": "reverie",
-        "gallery-2": "gallery",
-        "gallery-3": "gallery",
-        "skt-2": "skt",
-        "skt-3": "skt",
-        "depths-2": "depths",
-        "zenith-2": "zenith",
-        "zenith-3": "zenith",
-        "zenith-4": "zenith",
-        "zenith-5": "zenith",
-        "zenith-6": "zenith",
-        "zenith-7": "zenith",
-        "zenith-8": "zenith",
-        "zenith-9": "zenith",
-        "zenith-10": "zenith",
-        "zenith-11": "zenith",
-        "zenith-12": "zenith",
-        "hexfall-2": "hexfall",
-        "hexfall-3": "hexfall",
-        "hexfall-4": "hexfall",
-        "hexfall-5": "hexfall",
-        "hexfall-6": "hexfall",
-        "hexfall-7": "hexfall",
-        "hexfall-8": "hexfall",
-        "hexfall-9": "hexfall",
-        "hexfall-10": "hexfall",
-        "hexfall-11": "hexfall",
-        "hexfall-12": "hexfall",
-        "hexfall-13": "hexfall",
-        "hexfall-14": "hexfall",
-        "hexfall-15": "hexfall",
-        "hexfall-16": "hexfall",
-        "velocity-12": "velocity",
-        "velocity-13": "velocity",
-        "velocity-17": "velocity",
-        "velocity-18": "velocity",
-    }
-
-    for key, copy_of in copied_shard_config.items():
-        config[key] = copy.deepcopy(config[copy_of])
-        config[key]["copy_of"] = copy_of
+    # Shards named <base>-<N> are automatically treated as copies of <base>
+    for server_path in server_list:
+        servername = server_path.name
+        m = re.match(r'^(.+)-(\d+)$', servername)
+        if m:
+            base = m.group(1)
+            if base in config and servername not in config:
+                config[servername] = copy.deepcopy(config[base])
+                config[servername]["copy_of"] = base
 
     # For plugins that should only load on the first instance (not very elegant solution, but it should work)
     config["valley"]["linked"] += dynmap
@@ -981,11 +908,11 @@ if __name__ == '__main__':
         add_config_if_not_set(config, ('spigot.yml', 'tab-complete', '  tab-complete: 9999'))
         add_config_if_not_set(config, ('server.properties', 'white-list', 'white-list=false'))
 
-        # Player analytics plugin only for play server
+        # Some things only for play server
         for key, shard_config in config.items():
             if "purgatory" not in key:
                 if "velocity" in key:
-                    shard_config['linked'] += proxy_plan
+                    shard_config['linked'] += proxy_plan + proxy_vanish + proxy_litebans
                     continue
                 if "build" in key:
                     shard_config['linked'] += plan

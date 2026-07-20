@@ -11,6 +11,8 @@ import sys
 import traceback
 
 from lib_py3.common import eprint
+from minecraft.chunk_format.chunk import Chunk
+from minecraft.player_dat_format.item import Item
 from minecraft.world import World
 
 
@@ -29,7 +31,26 @@ def out_region_iter(region):
     for chunk in region.iter_chunks(min_x=min_x, min_y=min_y, min_z=min_z, max_x=max_x, max_y=max_y, max_z=max_z, autosave=False):
         for block_entity in chunk.recursive_iter_block_entities():
             if block_entity.nbt.has_path('Command'):
-                block = chunk.get_block(block_entity.pos)
+                entry = {}
+                entry['world_path'] = world_path
+                entry['pos'] = block_entity.pos
+                entry['command'] = block_entity.nbt.at_path('Command').value
+
+                if isinstance(chunk, Chunk):
+                    try:
+                        block = chunk.get_block(block_entity.pos)
+                        entry['name'] = block['name']
+                        if 'facing' in block:
+                            entry['facing'] = block['facing']
+                        else:
+                            entry['facing'] = None
+                        if 'conditional' in block:
+                            entry['conditional'] = block['conditional']
+                        else:
+                            entry['conditional'] = None
+                    except KeyError:
+                        eprint(f'Failed to get block at {block_entity.pos!r} in chunk {str(chunk)} of world {world_path}')
+                        raise
 
                 # Check that we're actually exactly within the bounding box (inclusive)
                 bpos = block_entity.pos
@@ -38,23 +59,14 @@ def out_region_iter(region):
                 if bpos[0] > max_x or bpos[1] > max_y or bpos[2] > max_z:
                     continue
 
-                block_name = block['name']
-
-                entry = {}
-                entry['world_path'] = world_path
-                entry['pos'] = block_entity.pos
-                entry['command'] = block_entity.nbt.at_path('Command').value
-                entry['name'] = block_name
                 entry['auto'] = block_entity.nbt.at_path('auto').value
                 entry['powered'] = block_entity.nbt.at_path('powered').value
-                if 'facing' in block:
-                    entry['facing'] = block['facing']
-                else:
-                    entry['facing'] = None
-                if 'conditional' in block:
-                    entry['conditional'] = block['conditional']
-                else:
-                    entry['conditional'] = None
+                if 'name' not in entry:
+                    parent = block_entity.parent
+                    if isinstance(parent, Item):
+                        entry['name'] = parent.id + ' (item)'
+                    else:
+                        entry['name'] = 'unknown/invalid'
 
                 out.append(entry)
 

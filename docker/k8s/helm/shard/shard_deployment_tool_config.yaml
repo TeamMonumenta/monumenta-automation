@@ -18,7 +18,7 @@
     "dev4"               : { "build": { "node": "m18", "hugePageMB": 2560, "useHTTPForProbes": false, "useSocketForProbes": false }, },
     "mobs"               : { "build": { "node": "m18", "hugePageMB": 2560, }, },
     "dungeon"            : { "build": { "node": "m18", "hugePageGB": 8   , }, },
-    #"futurama"           : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
+    "futurama"           : { "build": { "node": "m18", "hugePageGB": 3   , }, },
     #"test"               : { "build": { "node": "m18", "hugePageGB": 3   , }, }, # Re-enable later
     "event"              : { "build": { "node": "m18", "hugePageGB": 3   , }, },
     "monumenta-sdk"      : { "build": { "node": "m18", "hugePageGB": 3   , }, },
@@ -33,19 +33,17 @@
 
     # R1
     "valley": {
-        "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
+        "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4},
         "build": { "node": "m18", "hugePageGB": 6, },
         "stage": { "node": "m18", "hugePageGB": 3, },
         "volt" : { "node": "m18", "hugePageGB": 3, },
     },
     "valley-2": {
-        "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
+        "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4},
         "stage": { "node": "m17", "hugePageGB": 3, },
         "volt" : { "node": "m17", "hugePageGB": 3, },
     },
-    "valley-3": {
-        "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4},
-    },
+    "valley-3": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
 
     # R2
     "isles": {
@@ -80,9 +78,9 @@
     "ring-7":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-8":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-9":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-10":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-11":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-12":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-10": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-11": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
+    "ring-12": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
 
     # Plots
     "plots": {
@@ -105,7 +103,7 @@
 
     # Player build shard
     "build": {
-        "play" : { "node": "m17", "hugePageGB": 3   , "gsheetCredentials": "false" },
+        "play" : { "node": "m17", "hugePageGB": 3   , "gsheetCredentials": "false", "exceptLogIngestDomain": "build" },
         "stage": { "node": "m18", "hugePageMB": 1536, "gsheetCredentials": "false" },
         "volt" : { "node": "m18", "hugePageMB": 1536, "gsheetCredentials": "false" },
     },
@@ -183,8 +181,8 @@
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "rush": {
-        "play" : { "node": "m17", "hugePageGB": 6   , }, # Increased for rush re-release
-        "stage": { "node": "m18", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "shiftingcity": {
@@ -246,7 +244,6 @@
         "stage": { "node": "m18", "hugePageMB": 3072, },
         "volt" : { "node": "m18", "hugePageMB": 3072, },
     },
-    "indigo-2":  { "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4}, },
     "fortune": {
         "play" : { "node": "new", "hugePageGB": 5   , "cpuActiveProcessorCount": 4, },
         "stage": { "node": "m18", "hugePageMB": 3072, },
@@ -276,7 +273,7 @@
 
 # Defaults for each namespace
 "namespace_defaults": {
-    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "8", "cpuReqs": "250m" },
+    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "8", "cpuReqs": "250m", "autoHeapDumpEnabled": "true" },
     "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "4", "cpuReqs": "50m" },
     "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
     "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },

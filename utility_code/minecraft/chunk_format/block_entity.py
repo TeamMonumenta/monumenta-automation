@@ -30,7 +30,7 @@ class BlockEntity(RecursiveMinecraftIterator, NbtPathDebug):
     def _init_multipaths(self, multipaths):
         super()._init_multipaths(multipaths)
         multipaths[Entity] |= frozenset({
-            'Bees[]',
+            'bees[].entity_data',
             'SpawnData',
             'SpawnData.entity',
             'SpawnPotentials[].Entity',

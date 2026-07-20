@@ -21,6 +21,7 @@ rules:
       - "apps"
     resources:
       - deployments
+      - statefulsets
       # TODO: Don't need this?
       - pods
     verbs:

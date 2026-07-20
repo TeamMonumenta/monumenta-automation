@@ -30,9 +30,15 @@ ignored_reaction_channels:
     # rules
     - 704049401588613161
 
+no_ready_message_channels:
+    # weekly-update-bot (public discord, publicly visible, used for weekly update)
+    - 486019840134610965
+
 channels:
-    # moderation-bot (public discord, moderators + TE only)
+    # moderation-bot (public discord, moderators only)
     - 467361088460029954
+    # devop-bot (public discord, moderators + TE only)
+    - 1512882386508058825
     # weekly-update-bot (public discord, publicly visible, used for weekly update)
     - 486019840134610965
 
