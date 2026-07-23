@@ -116,11 +116,12 @@ class LibraryOfSouls():
                 return True
             bad_names.append(name)
 
+        riding_self = False
         if soul_nbt.has_path("Passengers"):
             for passenger in soul_nbt.at_path("Passengers").value:
-                return cls.is_mob_riding_itself(passenger, bad_names)
+                riding_self = riding_self or cls.is_mob_riding_itself(passenger, bad_names)
 
-        return False
+        return riding_self
 
 
     def load_replacements(self, mgr: MobReplacementManager) -> None:
