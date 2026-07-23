@@ -242,20 +242,20 @@ permissions:
         390269554657460226: "@intern"
         # Moderator (Public)
         313067199579422722: "@moderator"
-        # Discord Manager (Public)
-        456928886278848514: "@discord manager"
+        # Dev Op (Public)
+        1514416872408350740: "@dev op"
         # Leads (Public)
-        541004457257861131: "@discord manager"
+        541004457257861131: "@dev op"
 
     groups:
         "@root":
             - "+*"
             - "-testunpriv"
         "@moderator":
-            - "@discord manager"
+            - "@dev op"
             - "+market ban"
             - "+verbose"
-        "@discord manager":
+        "@dev op":
             - "@team monumenta"
             - "+broadcastcommand"
             - "+broadcastminecraftcommand"
