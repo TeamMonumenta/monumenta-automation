@@ -100,12 +100,6 @@ class TaskBot(commands.Bot):
         if message.channel.id == config.DISCUSSION_ID:
             try:
                 await self.db.handle_discussion_message(message)
-            except Exception as e:
-                return
-
-        if message.channel.id == config.DISCUSSION_ID:
-            try:
-                await self.db.handle_discussion_message(message)
             except Exception:
                 return
 

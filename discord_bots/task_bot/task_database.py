@@ -279,7 +279,7 @@ class TaskDatabase(commands.GroupCog, name=config.DESCRIPTOR_SHORT):
 
         return (index, entry)
     
-    async def format_entry(self, index, entry, include_reactions=False, mention_assigned=False):
+    async def format_entry(self, index, entry, include_reactions=False, mention_assigned=False, include_link=False):
         author_name = ""
         user = self.get_user_by_id(entry["author"], allow_empty=True)
         if user is not None:
@@ -306,10 +306,18 @@ class TaskDatabase(commands.GroupCog, name=config.DESCRIPTOR_SHORT):
                 else:
                     assigned_text = '''`Assigned: {}`\n'''.format(user.display_name)
 
+        link = ''
+        if include_link:
+            link = "\nhttps://discord.com/channels/{}/{}/{}".format(
+                config.GUILD_ID,
+                config.CHANNEL_ID,
+                entry["message_id"],
+            )
+
         complexity_emoji = self._complexities[entry["complexity"]]
 
         entry_text = '''`#{} [{} - {}] {}` {}
-{}{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, complexity_emoji, assigned_text, entry["description"], react_text)
+{}{}{}{}'''.format(index, ','.join(entry["labels"]), entry["priority"], author_name, complexity_emoji, assigned_text, entry["description"], react_text, link)
 
         if "close_reason" in entry:
             entry_text = '''~~{}~~
@@ -353,26 +361,34 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
             await msg.add_reaction(reaction)
 
     async def handle_discussion_message(self, message):
-        pattern = re.compile(r"(" + config.DESCRIPTOR_SINGLE + ")-([0-9]+)", re.IGNORECASE)
+        if message.author.bot:
+            return
+
+        pattern = re.compile(r"(" + re.escape(config.DESCRIPTOR_SHORT) + r")-([0-9]+)", re.IGNORECASE)
         matches = pattern.finditer(message.content)
+        list_of_entries = []
         list_of_links = []
         for match in matches:
             if match.group(2) is not None:
                 testIndex = match.group(2)
                 try:
                     index, entry = self.get_entry(testIndex)
-                except Exception as e:
+                except Exception:
                     return
 
                 if "message_id" in entry:
+                    list_of_entries.append((index, entry))
                     list_of_links.append("#" + str(index) + ": https://discord.com/channels/" + str(config.GUILD_ID) + "/" + str(config.CHANNEL_ID) + "/" + str(entry["message_id"]))
         if len(list_of_links) > 0:
-            if (len(list_of_links) > 5):
-                final_list = list_of_links[:5]
+            final_list = list_of_links[:5]
+            if len(list_of_links) > 5:
                 await message.channel.send("Here are the links to the tasks you mentioned, limited to 5 links:\n" + "\n".join(final_list))
+            elif len(list_of_links) == 1:
+                index, entry = list_of_entries[0]
+                entry_text, embed = await self.format_entry(index, entry, include_reactions=True, include_link=True)
+                await message.channel.send(entry_text, embed=embed)
             else:
-                final_list = list_of_links[:5]
-                await message.channel.send("Here are the links to the tasks you mentioned:\n" + "\n".join(final_list))
+                await message.channel.send("\n".join(final_list))
 
 
     ### Report command aliases ###
@@ -705,7 +721,7 @@ __Available Priorities:__
         ################################################################################
 
 
-    async def print_search_results(self, responder, match_entries, limit=15, sort_entries=True, mention_assigned=False, include_reactions=True, ephemeral=False):
+    async def print_search_results(self, responder, match_entries, limit=15, sort_entries=True, mention_assigned=False, include_reactions=True, include_link=False, ephemeral=False):
         """
         Calls responder.send() with matching entries up to limit
         If ephemeral=true, will append epmeheral=true to call
@@ -725,7 +741,7 @@ __Available Priorities:__
             print_entries = print_entries[:limit]
 
         for index, entry in print_entries:
-            entry_text, embed = await self.format_entry(index, entry, include_reactions=include_reactions, mention_assigned=mention_assigned)
+            entry_text, embed = await self.format_entry(index, entry, include_reactions=include_reactions, mention_assigned=mention_assigned, include_link=include_link)
             if ephemeral:
                 await responder.send(entry_text, embed=embed, ephemeral=True)
             else:
@@ -1606,7 +1622,7 @@ Closed     : {}```'''.format(total_open, total_closed)
         try:
             if await self.validate_or_get_posting_channel() == False:
                 raise ValueError("Failed to get posting channel")
-            if not self.has_privilege(2, interaction.user):
+            if not self.has_privilege(1, interaction.user):
                 raise ValueError("You do not have permission to use this command")
 
             index, entry = self.get_entry(index)
@@ -1616,16 +1632,16 @@ Closed     : {}```'''.format(total_open, total_closed)
             if "pending_notification" in entry:
                 entry["pending_notification"] = False
             if "description" in entry:
-                entry["description"] = ""
+                entry["description"] = "redacted"
             if "image" in entry:
-                entry["image"] = ""
+                entry.pop("image")
 
             self.save()
 
             # Update the entry
             await self.send_entry(index, entry)
 
-            await original_msg.edit(content="{proper} #{index} deleted".format(proper=config.DESCRIPTOR_PROPER, index=index))
+            await original_msg.edit(content="{proper} #{index} deleted. You still need to manually delete any messages related to this in other channels.".format(proper=config.DESCRIPTOR_PROPER, index=index))
         except Exception as e:
             await original_msg.edit(content="Error: " + str(e))
             await interaction.channel.send(interaction.user.mention)
