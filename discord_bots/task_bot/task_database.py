@@ -1,5 +1,4 @@
 import discord
-import discord
 import sys
 import os
 import enum
@@ -13,6 +12,21 @@ from common import split_string, get_list_match
 from functools import cmp_to_key
 from discord import app_commands
 from discord.ext import commands
+
+IMAGE_EXTENSIONS = {
+    "image/gif": ".gif",
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+}
+ALLOWED_IMAGE_EXTENSIONS = {".gif", ".jpeg", ".jpg", ".png", ".webp"}
+
+
+def permanent_discord_attachment_url(url):
+    if isinstance(url, str) and url.startswith("https://cdn.discordapp.com/attachments/"):
+        return url.split("?", 1)[0]
+    return url
+
 
 class SuggestionComponents(enum.Enum):
     description = "description"
@@ -28,6 +42,7 @@ class TaskDatabase(commands.GroupCog, name=config.DESCRIPTOR_SHORT):
         self._stopping = False
         try:
             self._channel = None
+            self._storage_channel = None
             self._database_path = os.path.join(config.CONFIG_DIR, config.DATABASE_PATH)
             self._interactive_sessions = []
             self.load()
@@ -198,6 +213,21 @@ class TaskDatabase(commands.GroupCog, name=config.DESCRIPTOR_SHORT):
                 if "complexity" not in entry:
                     entry["complexity"] = "unknown"
                     changed = True
+                if "image" in entry:
+                    if not entry["image"]:
+                        for key in ("image", "image_channel_id", "image_message_id", "image_filename"):
+                            entry.pop(key, None)
+                        changed = True
+                    else:
+                        image_url = permanent_discord_attachment_url(entry["image"])
+                        if image_url != entry["image"]:
+                            entry["image"] = image_url
+                            changed = True
+                else:
+                    for key in ("image_channel_id", "image_message_id", "image_filename"):
+                        if key in entry:
+                            entry.pop(key)
+                            changed = True
 
             if changed:
                 self.save()
@@ -232,6 +262,13 @@ class TaskDatabase(commands.GroupCog, name=config.DESCRIPTOR_SHORT):
                 return False
         else:
             return True
+
+    async def validate_or_get_storage_channel(self):
+        if config.STORAGE_CHANNEL_ID == config.CHANNEL_ID:
+            raise ValueError("Image storage channel must differ from task channel")
+        if self._storage_channel is None:
+            self._storage_channel = await self._bot.fetch_channel(config.STORAGE_CHANNEL_ID)
+        return self._storage_channel is not None
 
     def has_privilege(self, min_privilege, author, index=None):
         priv = 0; # Everyone has this level
@@ -330,6 +367,100 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         return entry_text, embed
 
+    def image_filename(self, index, attachment):
+        content_type = (attachment.content_type or "").split(";", 1)[0].lower()
+        if content_type:
+            extension = IMAGE_EXTENSIONS.get(content_type)
+            if extension is None:
+                raise ValueError("Attachments must be PNG, JPEG, GIF, or WebP images")
+        else:
+            original_extension = os.path.splitext(attachment.filename or "")[1].lower()
+            if original_extension in ALLOWED_IMAGE_EXTENSIONS:
+                extension = ".jpg" if original_extension == ".jpeg" else original_extension
+            else:
+                raise ValueError("Attachments must be PNG, JPEG, GIF, or WebP images")
+
+        return "{}-{}{}".format(config.DESCRIPTOR_SHORT, index, extension)
+
+    @staticmethod
+    def permanent_attachment_url(attachment):
+        # Discord attachment URLs are signed. Passing the parameter-free URL to
+        # an embed lets Discord refresh the signature while the owning message
+        # and its attachment continue to exist.
+        return permanent_discord_attachment_url(attachment.url)
+
+    @staticmethod
+    def image_storage_content(index, entry):
+        parts = [
+            "{}-{}".format(config.DESCRIPTOR_SHORT, index),
+            "author:{}".format(entry["author"]),
+        ]
+        if "message_id" in entry:
+            parts.append("message:{}".format(entry["message_id"]))
+        return " | ".join(parts)
+
+    async def get_image_storage_message(self, entry):
+        channel_id = entry.get("image_channel_id")
+        message_id = entry.get("image_message_id")
+        if channel_id is None or message_id is None:
+            return None
+
+        if channel_id == config.STORAGE_CHANNEL_ID:
+            if not await self.validate_or_get_storage_channel():
+                return None
+            storage_channel = self._storage_channel
+        else:
+            storage_channel = await self._bot.fetch_channel(channel_id)
+
+        try:
+            return await storage_channel.fetch_message(message_id)
+        except discord.errors.NotFound:
+            return None
+
+    async def store_image(self, index, entry, image_attachment):
+        if not await self.validate_or_get_storage_channel():
+            raise ValueError("Failed to get image storage channel")
+
+        filename = self.image_filename(index, image_attachment)
+        image_file = await image_attachment.to_file(filename=filename)
+        content = self.image_storage_content(index, entry)
+        storage_message = await self.get_image_storage_message(entry)
+
+        if storage_message is None:
+            storage_message = await self._storage_channel.send(content, file=image_file)
+        else:
+            storage_message = await storage_message.edit(
+                content=content,
+                attachments=[image_file],
+            )
+
+        if not storage_message.attachments:
+            raise RuntimeError("Discord did not retain the stored task image")
+
+        stored_attachment = storage_message.attachments[-1]
+        entry["image"] = self.permanent_attachment_url(stored_attachment)
+        entry["image_channel_id"] = storage_message.channel.id
+        entry["image_message_id"] = storage_message.id
+        entry["image_filename"] = stored_attachment.filename
+        self.save()
+
+    async def sync_image_storage_content(self, index, entry):
+        storage_message = await self.get_image_storage_message(entry)
+        if storage_message is None:
+            return
+
+        content = self.image_storage_content(index, entry)
+        if storage_message.content != content:
+            await storage_message.edit(content=content)
+
+    async def delete_stored_image(self, entry):
+        storage_message = await self.get_image_storage_message(entry)
+        if storage_message is not None:
+            await storage_message.delete()
+
+        for key in ("image", "image_channel_id", "image_message_id", "image_filename"):
+            entry.pop(key, None)
+
     async def send_entry(self, index, entry):
         # Compute the new entry text
         entry_text, embed = await self.format_entry(index, entry, include_reactions=False)
@@ -346,7 +477,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         if msg is not None:
             # Edit the existing message
-            await msg.edit(content=entry_text, embed=embed)
+            msg = await msg.edit(content=entry_text, embed=embed)
 
         else:
             # Send a new message
@@ -356,6 +487,9 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
 
         if needs_save:
             self.save()
+
+        if "image_message_id" in entry:
+            await self.sync_image_storage_content(index, entry)
 
         for reaction in config.REACTIONS:
             await msg.add_reaction(reaction)
@@ -428,10 +562,7 @@ Closed: {}'''.format(entry_text, entry["close_reason"])
         await interaction.response.defer(thinking=True)
         original_msg = await interaction.original_response()
         try:
-            image = None
-            if attachment is not None:
-                image = attachment.url
-            msg = await self.common_add(interaction.user, interaction.channel, label, description, image)
+            msg = await self.common_add(interaction.user, interaction.channel, label, description, attachment)
             await original_msg.edit(content=msg)
         except Exception as e:
             await original_msg.edit(content="Error: " + str(e))
@@ -452,14 +583,14 @@ You can also attach an image to your message to include it in the {single}
         # Parse the label and description
         labels = part[0].strip()
         suggestion = part[1].strip()
-        image = None
+        image_attachment = None
         for attach in message.attachments:
-            if attach.url:
-                image = attach.url
-        msg = await self.common_add(message.author, message.channel, labels, suggestion, image)
+            image_attachment = attach
+            break
+        msg = await self.common_add(message.author, message.channel, labels, suggestion, image_attachment)
         await self.reply(message, msg)
 
-    async def common_add(self, author, channel, label: str, suggestion: str, attachment: str):
+    async def common_add(self, author, channel, label: str, suggestion: str, attachment=None):
         if await self.validate_or_get_posting_channel() == False:
             raise ValueError("Failed to get posting channel")
         if len(suggestion.split()) < 5:
@@ -491,7 +622,10 @@ You can also attach an image to your message to include it in the {single}
             # Assign the label 'misc' and use the entire input as the description
             good_labels = ["misc"]
 
-        (index, entry) = self.add_entry(suggestion, labels=good_labels, author=author, image=attachment)
+        (index, entry) = self.add_entry(suggestion, labels=good_labels, author=author)
+
+        if attachment is not None:
+            await self.store_image(index, entry, attachment)
 
         # Post this new entry
         await self.send_entry(index, entry)
@@ -514,10 +648,7 @@ You can also attach an image to your message to include it in the {single}
         await interaction.response.defer(thinking=True)
         original_msg = await interaction.original_response()
         try:
-            image = None
-            if attachment is not None:
-                image = attachment.url
-            msg = await self.common_edit(interaction.user, interaction.channel, index, type.value, change, image)
+            msg = await self.common_edit(interaction.user, interaction.channel, index, type.value, change, attachment)
             await original_msg.edit(content=msg)
         except Exception as e:
             await original_msg.edit(content="Error: " + str(e))
@@ -569,18 +700,19 @@ For example:```
 '''.format(prefix=config.PREFIX, single=config.DESCRIPTOR_SINGLE))
         index = part[0].strip()
         type = part[1].strip()
-        change = part[2].strip()
+        change = part[2].strip() if len(part) > 2 else ""
         attachment = None
         for attach in message.attachments:
-            if attach.url:
-                attachment = attach.url
+            attachment = attach
+            break
         msg = await self.common_edit(message.author, message.channel, int(index), type, change, attachment)
         await self.reply(message, msg)
 
-    async def common_edit(self, author, channel, index: int, type: str, change: str, attachment: str):
+    async def common_edit(self, author, channel, index: int, type: str, change: str, attachment=None):
         if await self.validate_or_get_posting_channel() == False:
             raise ValueError("Failed to get posting channel")
         index, entry = self.get_entry(index)
+        change = change or ""
 
         operation = get_list_match(type, ['description', 'label', 'image', 'author', 'priority', 'complexity'])
         if operation is None:
@@ -623,12 +755,8 @@ For example:```
             entry["labels"] = good_labels
 
         elif operation == 'image':
-            image = attachment
-
-            if image is None:
+            if attachment is None:
                 raise ValueError("You need to attach an image")
-
-            entry["image"] = image
 
         elif operation == 'priority':
             if change == "":
@@ -678,6 +806,9 @@ __Available Priorities:__
             entry["pending_notification"] = True
 
         self.save()
+
+        if operation == "image":
+            await self.store_image(index, entry, attachment)
 
         # Update the entry
         await self.send_entry(index, entry)
@@ -1633,8 +1764,7 @@ Closed     : {}```'''.format(total_open, total_closed)
                 entry["pending_notification"] = False
             if "description" in entry:
                 entry["description"] = "redacted"
-            if "image" in entry:
-                entry.pop("image")
+            await self.delete_stored_image(entry)
 
             self.save()
 
@@ -1866,14 +1996,11 @@ To change this, {prefix} notify off'''.format(plural=config.DESCRIPTOR_PLURAL, p
     @app_commands.describe(channel="channel to import from")
     async def slash_import(self, interaction: discord.Interaction, channel: discord.TextChannel):
         if await self.validate_using_bot_channel(interaction, interaction.message) == False:
+            await interaction.response.send_message("Please use the bot channel for this command", ephemeral=True)
             return
         try:
             if not self.has_privilege(4, interaction.user):
                 raise ValueError("You do not have permission to use this command")
-
-            part = args.split(maxsplit=2)
-            if len(part) != 1 or len(part[0].strip()) < 10:
-                raise ValueError("Usage: import #channel".format(config.PREFIX))
 
             import_channel = await self._bot.fetch_channel(channel.id)
             if import_channel is None:
@@ -1882,17 +2009,16 @@ To change this, {prefix} notify off'''.format(plural=config.DESCRIPTOR_PLURAL, p
             await interaction.response.send_message("Import started, this will take some time...")
 
             to_import = []
-            async for msg in self._bot.logs_from(import_channel, limit=1000, reverse=True):
+            async for msg in import_channel.history(limit=1000, oldest_first=True):
                 if not msg.content:
                     continue
 
-                image = None
+                image_attachment = None
                 for attach in msg.attachments:
-                    if attach.url:
-                        image = attach.url
+                    image_attachment = attach
+                    break
 
-
-                created_text = "Created: " + msg.timestamp.strftime("%Y-%m-%d")
+                created_text = "Created: " + msg.created_at.strftime("%Y-%m-%d")
 
                 react_text = ""
                 if msg.reactions:
@@ -1900,18 +2026,21 @@ To change this, {prefix} notify off'''.format(plural=config.DESCRIPTOR_PLURAL, p
                     for react in msg.reactions:
                         react_text += "    {} {}".format(react.emoji, react.count)
 
-                to_import.append((msg.timestamp, msg.content + "\n\n" + created_text + "\n" + react_text, msg.author, image))
+                to_import.append((msg.created_at, msg.content + "\n\n" + created_text + "\n" + react_text, msg.author, image_attachment))
 
             # SORT
             to_import.sort(key=lambda x: x[0])
 
-            for _, content, author, image in to_import:
-                (index, entry) = self.add_entry(content, author=author, image=image)
+            for _, content, author, image_attachment in to_import:
+                (index, entry) = self.add_entry(content, author=author)
+
+                if image_attachment is not None:
+                    await self.store_image(index, entry, image_attachment)
 
                 # Post this new entry
                 await self.send_entry(index, entry)
 
-            await interaction.channel.send("{} entries from channel {} imported successfully".format(len(to_import), part[0]))
+            await interaction.channel.send("{} entries from channel {} imported successfully".format(len(to_import), import_channel.mention))
         except Exception as e:
             await interaction.channel.send("Error: " + str(e))
 
