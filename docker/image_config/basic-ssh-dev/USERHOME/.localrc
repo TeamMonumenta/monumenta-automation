@@ -1,0 +1,27 @@
+# Copies files from data folder to stage
+copytostage() {
+	for shard in /home/epic/stage/m[0-9]*/server_config/data; do
+		for f ; do
+			rel_path=$(realpath --no-symlinks --relative-to="/home/epic/data" "$f")
+			if [[ "foo$rel_path" == "foo" ]] ; then echo "Skipping '$f' - file not found"; continue; fi
+			if [[ "$rel_path" == '.' ]] ; then echo "Skipping '$f' - use the bot instead"; continue; fi
+			if [[ "$rel_path" == ..* ]] ; then echo "Skipping '$f' - file not in expected path"; continue; fi
+			echo "Copying '$f' to '$shard/$rel_path'"
+			"cp" -af "$f" "$shard/$rel_path"
+		done
+	done
+}
+
+# Copies files from data folder to volt
+copytovolt() {
+	for shard in /home/epic/volt/m[0-9]*/server_config/data; do
+		for f ; do
+			rel_path=$(realpath --no-symlinks --relative-to="/home/epic/data" "$f")
+			if [[ "foo$rel_path" == "foo" ]] ; then echo "Skipping '$f' - file not found"; continue; fi
+			if [[ "$rel_path" == '.' ]] ; then echo "Skipping '$f' - use the bot instead"; continue; fi
+			if [[ "$rel_path" == ..* ]] ; then echo "Skipping '$f' - file not in expected path"; continue; fi
+			echo "Copying '$f' to '$shard/$rel_path'"
+			"cp" -af "$f" "$shard/$rel_path"
+		done
+	done
+}
