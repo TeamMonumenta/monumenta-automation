@@ -2557,7 +2557,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
             folders_to_update.remove("server_config")
 
         if not folders_to_update:
-            await self.display(ctx, f"`{self._name}` done. Note that only server_config was updated on this host! You probably want to wait for other bots!")
+            await self.display(ctx, f"`{self._name}` done. Note that only server_config was updated on this host! You probably want to **wait for other bots!**")
             await self.display(ctx, message.author.mention)
             return
 
@@ -2591,7 +2591,7 @@ You can create a bundle with `{cmdPrefix}prepare stage bundle`'''
         await self.display(ctx, "Checking for broken symbolic links...")
         await self.run(ctx, "find . -xtype l", displayOutput=True)
 
-        await self.display(ctx, f"`{self._name}` done. Note that this includes all worlds on overworld shards, and weekly update does not! Make sure you wait for any other bots to finish!")
+        await self.display(ctx, f"`{self._name}` done. Note that this includes all worlds on overworld shards, and weekly update does not! **Make sure you wait for any other bots to finish!**")
         await self.display(ctx, message.author.mention)
 
 
@@ -3041,7 +3041,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             folder_name = self._server_dir.strip("/").split("/")[-1]
             await self.run(ctx, ["tar", f"--exclude={folder_name}/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/{folder_name}_post_reset_{datestr()}.tgz", folder_name])
 
-        await self.display(ctx, f"`{self._name}` done at <t:{int(time.time())}:F>. Please wait for any other bots to finish.")
+        await self.display(ctx, f"`{self._name}` done at <t:{int(time.time())}:F>. **Please wait for any other bots to finish.**")
         await self.display(ctx, message.author.mention)
 
     async def action_stage(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3212,7 +3212,7 @@ Archives the previous stage server contents under 0_PREVIOUS '''
                 file=fp
             )
 
-        await self.display(ctx, f"{self._k8s.namespace} server loaded with current play server data")
+        await self.display(ctx, f"`{self._name}` server loaded with current play server data. **Please wait for any other bots to finish.**")
         await self.display(ctx, message.author.mention)
 
     async def stage_receive_data_task(self, ctx: discord.ext.commands.Context, port):
