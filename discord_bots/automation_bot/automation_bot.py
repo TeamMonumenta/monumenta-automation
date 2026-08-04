@@ -128,6 +128,7 @@ class AutomationBot(commands.Bot):
     @update_avatar_task.before_loop
     async def before_update_avatar_task(self):
         await self.wait_until_ready()  # wait until the bot logs in
+        logging.info("Started update_avatar_task")
 
     @tasks.loop(seconds=5)
     async def shard_status_task(self):
@@ -151,6 +152,7 @@ class AutomationBot(commands.Bot):
     @shard_status_task.before_loop
     async def before_shard_status_task(self):
         await self.wait_until_ready()  # wait until the bot logs in
+        logging.info("Started shard_status_task")
 
     @tasks.loop(seconds=1)
     async def heartbeat_task(self):
@@ -177,6 +179,7 @@ class AutomationBot(commands.Bot):
     @heartbeat_task.before_loop
     async def before_heartbeat_task(self):
         await self.wait_until_ready()  # wait until the bot logs in
+        logging.info("Started heartbeat_task")
 
     @tasks.loop(seconds=1)
     async def reminders_task(self):
@@ -200,6 +203,7 @@ class AutomationBot(commands.Bot):
     @reminders_task.before_loop
     async def before_reminders_task(self):
         await self.wait_until_ready()  # wait until the bot logs in
+        logging.info("Started reminders_task")
 
     async def on_message(self, message):
         """Bot received message"""
