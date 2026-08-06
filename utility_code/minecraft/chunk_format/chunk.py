@@ -200,6 +200,9 @@ class Chunk(BaseChunk):
 
     def yield_wallet_block(self):
         world_path = self.region.get_world_path()
+        if world_path is None:
+            print("Tried to iterate wallet blocks in Chunk={self}, Region={self.region}")
+            return
 
         cx = self.cx
         cz = self.cz
