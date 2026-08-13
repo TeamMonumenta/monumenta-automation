@@ -144,6 +144,9 @@ shards:
     lightblue: /home/epic/play/m17/lightblue/
     lightgray: /home/epic/play/m17/lightgray/
     lime: /home/epic/play/m17/lime/
+    lime-2: /home/epic/play/m17/lime-2/
+    lime-3: /home/epic/play/m17/lime-3/
+    lime-4: /home/epic/play/m17/lime-4/
     magenta: /home/epic/play/m17/magenta/
     orange: /home/epic/play/m17/orange/
     pink: /home/epic/play/m17/pink/
@@ -162,8 +165,6 @@ shards:
     ring-8: /home/epic/play/m17/ring-8/
     ring-9: /home/epic/play/m17/ring-9/
     ring-10: /home/epic/play/m17/ring-10/
-    ring-11: /home/epic/play/m17/ring-11/
-    ring-12: /home/epic/play/m17/ring-12/
     rush: /home/epic/play/m17/rush/
     shiftingcity: /home/epic/play/m17/shiftingcity/
     skt: /home/epic/play/m17/skt/
