@@ -275,8 +275,8 @@
 
 # Memory values copied directly from /proc/meminfo
 "node_info": {
-    "m17":    { "full_name": "monumenta-17",        "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048, "geoDescription": "Canada" },
-    "m18":    { "full_name": "monumenta-18",        "mem_total_kB": 263971944, "huge_pages":  85000, "huge_page_size_kB": 2048, "geoDescription": "France" },
+    "m17":    { "full_name": "monumenta-17",        "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048, "geoDescription": "NA" },
+    "m18":    { "full_name": "monumenta-18",        "mem_total_kB": 263971944, "huge_pages":  85000, "huge_page_size_kB": 2048, "geoDescription": "EU" },
 
     # These are not real hosts and exist purely for planning where to put new shards
     "new":    { "full_name": "monumenta-new",       "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048, "geoDescription": "The Big Bang" },
