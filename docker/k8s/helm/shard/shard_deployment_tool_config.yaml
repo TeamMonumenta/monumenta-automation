@@ -146,10 +146,13 @@
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "lime": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 5   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
+    "lime-2": { "play" : { "node": "m17", "hugePageGB": 5, }, },
+    "lime-3": { "play" : { "node": "m17", "hugePageGB": 5, }, },
+    "lime-4": { "play" : { "node": "m17", "hugePageGB": 5, }, },
     "magenta": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
@@ -229,7 +232,7 @@
     },
 
     "brown": {
-        "play" : { "node": "m17", "hugePageGB": 5   , },
+        "play" : { "node": "m17", "hugePageGB": 7   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
