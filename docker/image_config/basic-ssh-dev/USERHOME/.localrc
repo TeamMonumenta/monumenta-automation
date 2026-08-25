@@ -7,7 +7,11 @@ copytostage() {
 			if [[ "$rel_path" == '.' ]] ; then echo "Skipping '$f' - use the bot instead"; continue; fi
 			if [[ "$rel_path" == ..* ]] ; then echo "Skipping '$f' - file not in expected path"; continue; fi
 			echo "Copying '$f' to '$shard/$rel_path'"
-			"cp" -af "$f" "$shard/$rel_path"
+			if [ -d "$f" ]; then
+			  rsync -a --delete --force "${f%/}/" "$shard/$rel_path"
+		  else
+  			"cp" -af "$f" "$shard/$rel_path"
+			fi
 		done
 	done
 }
@@ -21,7 +25,11 @@ copytovolt() {
 			if [[ "$rel_path" == '.' ]] ; then echo "Skipping '$f' - use the bot instead"; continue; fi
 			if [[ "$rel_path" == ..* ]] ; then echo "Skipping '$f' - file not in expected path"; continue; fi
 			echo "Copying '$f' to '$shard/$rel_path'"
-			"cp" -af "$f" "$shard/$rel_path"
+			if [ -d "$f" ]; then
+			  rsync -a --delete --force "${f%/}/" "$shard/$rel_path"
+		  else
+  			"cp" -af "$f" "$shard/$rel_path"
+			fi
 		done
 	done
 }
