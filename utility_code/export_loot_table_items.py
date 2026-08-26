@@ -141,8 +141,7 @@ out_map = {}
 mgr = LootTableManager()
 mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
 
-for item_type in mgr.item_map:
-    next_map = mgr.item_map[item_type]
+for item_type, next_map in mgr.item_map.items():
     items = {}
     for item_name in next_map:
         item = next_map[item_name]
@@ -179,8 +178,7 @@ load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/isles/
 load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/ring/Project_Epic-ring'), min_x, min_y, min_z, max_x, max_y, max_z)
 
 # Merge this into the out_map, marking things as public if above glowstone or mod if above lapis
-for item_name in items_at_warp_items:
-    item = items_at_warp_items[item_name]
+for item_name, item in items_at_warp_items.items():
     for item_type in item["types"]:
         if item_type in out_map and item_name in out_map[item_type]:
             out_dict = out_map[item_type][item_name]
@@ -204,7 +202,7 @@ for item_type, out_types in sorted(out_map.items()):
         json_out_map[item_type] = item_type_out
 
 
-with open(out_name, 'w') as outfile:
+with open(out_name, 'w', encoding='utf-8') as outfile:
     json.dump(json_out_map, outfile, ensure_ascii=False, sort_keys=False, indent=2, separators=(',', ': '))
 
 # If exporting refined creative inventory files is desired, do so
@@ -213,10 +211,8 @@ if refined_creative_inventory_folder:
     for status in RELEASE_STATUSES[1:]:
         rci_item_releases[status] = []
 
-    for item_id in out_map:
-        for item_name in out_map[item_id]:
-            compendium_details = out_map[item_id][item_name]
-
+    for item_id, compendium_details_for_id in out_map.items():
+        for item_name, compendium_details in compendium_details_for_id.items():
             release_status = compendium_details["release_status"]
             if release_status not in RELEASE_STATUSES:
                 continue
