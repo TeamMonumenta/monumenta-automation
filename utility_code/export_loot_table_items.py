@@ -58,7 +58,9 @@ def load_world_warp_items(items, world, min_x, min_y, min_z, max_x, max_y, max_z
                                     masterwork = item.tag.at_path('Monumenta.Masterwork').value
                                     item_name += f'_m{masterwork}'
 
-                                item_data = items.get(item_name, {})
+                                item_key = (item_name, item.id)
+
+                                item_data = items.get(item_key, {})
 
                                 above_blocks = item_data.get("above_blocks", set())
                                 above_blocks.add(column_y0_type[f"{int(item.pos[0])}-{int(item.pos[2])}"])
@@ -69,11 +71,7 @@ def load_world_warp_items(items, world, min_x, min_y, min_z, max_x, max_y, max_z
                                     print(f'Found {item_name} at: {int(item.pos[0])}, {int(item.pos[1])}, {int(item.pos[2])}')
                                     print(f'It is above: {above_blocks}, in world {world.path}')
 
-                                types = item_data.get("types", set())
-                                types.add(item.id)
-                                item_data["types"] = types
-
-                                items[item_name] = item_data
+                                items[item_key] = item_data
 
 
 def get_tag_safe_rci(text):
@@ -178,17 +176,16 @@ load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/isles/
 load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/ring/Project_Epic-ring'), min_x, min_y, min_z, max_x, max_y, max_z)
 
 # Merge this into the out_map, marking things as public if above glowstone or mod if above lapis
-for item_name, item in items_at_warp_items.items():
-    for item_type in item["types"]:
-        if item_type in out_map and item_name in out_map[item_type]:
-            out_dict = out_map[item_type][item_name]
-            above_blocks = item["above_blocks"]
-            if "minecraft:glowstone" in above_blocks:
-                out_dict["release_status"] = "public"
-            elif "minecraft:lapis_block" in above_blocks:
-                out_dict["release_status"] = "mod"
-            if DEBUG and DEBUG_ITEM_CONTAINS in item_name:
-                print(f'Finally, {item_name} has been declared {out_dict["release_status"]}')
+for (item_name, item_type), item in items_at_warp_items.items():
+    if item_type in out_map and item_name in out_map[item_type]:
+        out_dict = out_map[item_type][item_name]
+        above_blocks = item["above_blocks"]
+        if "minecraft:glowstone" in above_blocks:
+            out_dict["release_status"] = "public"
+        elif "minecraft:lapis_block" in above_blocks:
+            out_dict["release_status"] = "mod"
+        if DEBUG and DEBUG_ITEM_CONTAINS in item_name:
+            print(f'Finally, {item_name} has been declared {out_dict["release_status"]}')
 
 # Filter the actual json output map that gets written based on the release status filter specified on the command line
 json_out_map = {}
