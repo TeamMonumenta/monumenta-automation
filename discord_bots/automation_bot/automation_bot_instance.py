@@ -46,6 +46,12 @@ from automation_bot_lib import datestr, escape_triple_backtick, split_string
 
 config = Config()
 
+# The data repo contains plenty of files with CRLF line endings, and 'git add' warns about
+# every single one of them ("CRLF will be replaced by LF the next time Git touches it").
+# core.safecrlf=false only silences those warnings - it doesn't change how git stores files,
+# and any other warnings/errors from git are still displayed.
+GIT_ADD_ALL = 'git -c core.safecrlf=false add .'
+
 class Listening():
     """Class to keep track of whether a bot is listening to a user or not"""
     def __init__(self):
@@ -2248,11 +2254,11 @@ Must be run before starting the update on the play server
                 return
 
             await self.cd(ctx, '/home/epic/project_epic/server_config/data')
-            await self.run(ctx, 'git add .')
+            await self.run(ctx, GIT_ADD_ALL)
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle pre autoformat", '-s'], ret=[0, 1])
             await self.run(ctx, os.path.join(_top_level, "utility_code/autoformat_cleanup_loot_tables_and_quests.py"), displayOutput=True)
             await self.cd(ctx, '/home/epic/project_epic/server_config/data')
-            await self.run(ctx, 'git add .')
+            await self.run(ctx, GIT_ADD_ALL)
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle post autoformat", '-s'], ret=[0, 1])
 
         if not skip_replacements:
@@ -2261,7 +2267,7 @@ Must be run before starting the update on the play server
 
         if not skip_commit:
             await self.cd(ctx, '/home/epic/project_epic/server_config/data')
-            await self.run(ctx, 'git add .')
+            await self.run(ctx, GIT_ADD_ALL)
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle post replacements", '-s'], ret=[0, 1])
             await self.run(ctx, ['git', 'tag', version])
 
