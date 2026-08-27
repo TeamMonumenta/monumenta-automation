@@ -27,6 +27,9 @@ node_info = tool_config["node_info"]
 # "node" uses abbreviated node names. This is the map back to full names:
 abbrev_node_to_full = {name: node["full_name"] for name, node in node_info.items()}
 
+# "node" geographic location descriptions. To be used in in-game GUIs and such.
+abbrev_node_to_geo_desc = {name: node.get("geoDescription", "Unknown") for name, node in node_info.items()}
+
 # Node memory totals
 for node in node_info.values():
     total_huge_page_size_GB = node["huge_pages"] * node["huge_page_size_kB"] / 1024.0 / 1024.0
@@ -79,6 +82,7 @@ def run_helm_for_shard(namespace, shard):
     node = shard_namespaced["node"]
 
     output_conf["nodeFull"] = abbrev_node_to_full.get(node, f"monumenta-bad-lookup-{node}")
+    output_conf["geoDescription"] = abbrev_node_to_geo_desc.get(node, "Unknown")
     if "hugePageGB" in output_conf:
         output_conf["hugePageMB"] = output_conf["hugePageGB"] * 1024
     if "memGB" in output_conf:
