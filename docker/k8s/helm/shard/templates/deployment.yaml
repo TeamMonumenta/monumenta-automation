@@ -120,6 +120,10 @@ spec:
           value: "yes"
         - name: "NETWORK_NAMESPACE"
           value: {{ .Values.namespace }}
+        - name: "MONUMENTA_NODE"
+          value: {{ .Values.node }}
+        - name: "MONUMENTA_GEO_DESCRIPTION"
+          value: {{ .Values.geoDescription }}
         - name: "NETWORK_RELAY_NAME"
           value: {{ .Values.name }}
         - name: "EXCEPTLOG_INGEST_URL"
