@@ -2433,7 +2433,7 @@ Examples:
                 if run_replacements:
                     await self.display(ctx, f"Running replacements on copied version of {shard}...")
                     args = f" --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}"
-                    await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
+                    await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py") + args)
                     args = f" --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
                     await self.run(ctx, os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
@@ -2454,7 +2454,7 @@ Examples:
             if run_replacements:
                 await self.display(ctx, "Running replacements on copied dungeon masters...")
                 args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon"
-                await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
+                await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py") + args)
                 args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
                 await self.run(ctx, os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
@@ -2477,7 +2477,7 @@ Examples:
                         + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
                 await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py"
                                                  + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
-                                                 + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
+                                                 + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"))
                 await self.run(ctx, os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         await self.display(ctx, "Packaging up stage bundle...")
@@ -3345,7 +3345,7 @@ Syntax:
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
                 await self.run(ctx, ["tar", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", "structures"])
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
-                await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py --schematics structures --structures generated"), displayOutput=True)
+                await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py --schematics structures --structures generated"))
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --structures generated --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
 
@@ -3365,7 +3365,7 @@ Syntax:
                     await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up - change again in case something else changed bot's directory
                     await self.run(ctx, os.path.join(_top_level, f"utility_code/prune_empty_chunks.py {shard}"))
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
-                await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard}"), displayOutput=True)
+                await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard}"))
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_mobs.py --worlds {shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
                 await self.start(ctx, shard, owner=owner)
