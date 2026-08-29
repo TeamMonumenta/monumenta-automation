@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import json
 import os
 import re
@@ -17,6 +18,7 @@ from quarry.types import nbt
 from quarry.types.chunk import BlockArray
 
 
+DEFAULT_SERVER_DIR = '/home/epic/project_epic'
 RE_NOT_RCI_SAFE = re.compile('[^0-9a-z_-]+')
 RELEASE_STATUSES = (
     "public",
@@ -121,11 +123,19 @@ def get_refined_creative_tab_flags(item_tag):
     return result
 
 
-out_name = sys.argv[1]
-refined_creative_inventory_folder = sys.argv[2]
+arg_parser = argparse.ArgumentParser(description="Exports all items in the loot tables, tagged with the release status they are marked with at the /warp items area")
+arg_parser.add_argument('out_name', help='Path of the json file to write the exported items to')
+arg_parser.add_argument('refined_creative_inventory_folder', help='Folder to write refined creative inventory items to; empty to skip')
+arg_parser.add_argument('release_status_filter', nargs='?', help='Optional regex; only items whose release status matches it are exported')
+arg_parser.add_argument('--server-dir', type=Path, default=Path(DEFAULT_SERVER_DIR), help=f'Directory containing server_config and the region worlds (default: {DEFAULT_SERVER_DIR})')
+args = arg_parser.parse_args()
+
+server_dir = args.server_dir
+out_name = args.out_name
+refined_creative_inventory_folder = args.refined_creative_inventory_folder
 release_status_filter = lambda status: True
-if len(sys.argv) == 4:
-    release_status_filter_regex = re.compile(sys.argv[3])
+if args.release_status_filter is not None:
+    release_status_filter_regex = re.compile(args.release_status_filter)
     release_status_filter = lambda status: bool(release_status_filter_regex.search(status))
 
 print(f"Will output the following types of items to {out_name}")
@@ -137,7 +147,7 @@ print("unreleased:", release_status_filter("unreleased"))
 out_map = {}
 
 mgr = LootTableManager()
-mgr.load_loot_tables_subdirectories("/home/epic/project_epic/server_config/data/datapacks")
+mgr.load_loot_tables_subdirectories(f"{server_dir}/server_config/data/datapacks")
 
 for item_type, next_map in mgr.item_map.items():
     items = {}
@@ -148,11 +158,11 @@ for item_type, next_map in mgr.item_map.items():
         if isinstance(item, list):
             for elem in item:
                 if not elem.get("generated", False):
-                    locs.append(elem["file"].replace("/home/epic/project_epic/server_config/", ""))
+                    locs.append(elem["file"].replace(f"{server_dir}/server_config/", ""))
                     nbt_ = elem["nbt"]
         else:
             if not item.get("generated", False):
-                locs.append(item["file"].replace("/home/epic/project_epic/server_config/", ""))
+                locs.append(item["file"].replace(f"{server_dir}/server_config/", ""))
                 nbt_ = item["nbt"]
 
         if nbt_ is not None:
@@ -171,9 +181,9 @@ max_z = 2811
 
 # Scan through warp items in every region and make note of what block each item is above
 items_at_warp_items = {}
-load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/valley/Project_Epic-valley'), min_x, min_y, min_z, max_x, max_y, max_z)
-load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/isles/Project_Epic-isles'), min_x, min_y, min_z, max_x, max_y, max_z)
-load_world_warp_items(items_at_warp_items, World('/home/epic/project_epic/ring/Project_Epic-ring'), min_x, min_y, min_z, max_x, max_y, max_z)
+for region_shard in ('valley', 'isles', 'ring'):
+    region_world = World(server_dir / region_shard / f'Project_Epic-{region_shard}')
+    load_world_warp_items(items_at_warp_items, region_world, min_x, min_y, min_z, max_x, max_y, max_z)
 
 # Merge this into the out_map, marking things as public if above glowstone or mod if above lapis
 for (item_name, item_type), item in items_at_warp_items.items():

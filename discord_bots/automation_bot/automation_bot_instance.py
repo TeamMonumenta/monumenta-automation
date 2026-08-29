@@ -3041,6 +3041,13 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             folder_name = self._server_dir.strip("/").split("/")[-1]
             await self.run(ctx, ["tar", f"--exclude={folder_name}/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/{folder_name}_post_reset_{datestr()}.tgz", folder_name])
 
+        if min_phase <= 27 and config.COMMON_WEEKLY_UPDATE_TASKS:
+            # Exports the items in the loot tables for the wiki/compendium and the refined creative inventory mod
+            await self.display(ctx, "Exporting loot table items...")
+            items_export_dir = f"{self._server_dir}/server_config/data/items"
+            await self.run(ctx, f"mkdir -p {items_export_dir}")
+            await self.run(ctx, os.path.join(_top_level, "utility_code/export_loot_table_items.py") + f" --server-dir {self._server_dir} {items_export_dir}/items-export.json /home/epic/5_SCRATCH/rci")
+
         await self.display(ctx, f"`{self._name}` done at <t:{int(time.time())}:F>. **Please wait for any other bots to finish.**")
         await self.display(ctx, message.author.mention)
 
