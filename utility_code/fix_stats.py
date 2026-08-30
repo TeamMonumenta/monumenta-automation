@@ -25,6 +25,12 @@ def blank_current_line():
     print(BLANK_LINE, end='', flush=False)
 
 
+def fix_signed_32_bit(num):
+    if num < 0:
+        return num + 2**32
+    return num
+
+
 class StatFileManager():
     def __init__(self, root_folder, output_folder):
         if not root_folder.is_dir():
@@ -122,24 +128,26 @@ class StatFileManager():
 
             stat_filename = stat_path.name
             merged_path = self.output_folder / stat_filename
-            if not merged_path.is_file():
-                # Copy the old stats file as-is if we don't have merged stats yet
-                shutil.copy2(stat_path, merged_path)
-                continue
 
-            # Load the previously merged stats
+            # Load the previously merged stats if available, else start from an empty map
             merged_data = {}
-            with open(merged_path, 'r', encoding='utf-8-sig') as fp:
-                merged_data = json.load(fp)
+            if merged_path.is_file():
+                with open(merged_path, 'r', encoding='utf-8') as fp:
+                    merged_data = json.load(fp)
+            else:
+                merged_data["stats"] = {}
+                for key, value in stat_data.items():
+                    if key != "stats":
+                        merged_data[key] = value
 
             # Merge the stats
             for namespace, namespace_data_current in stat_data["stats"].items():
                 if namespace not in merged_data["stats"]:
-                    merged_data["stats"][namespace] = namespace_data_current
-                    continue
+                    merged_data["stats"][namespace] = {}
                 namespace_data_merged = merged_data["stats"][namespace]
 
                 for key, key_value_current in namespace_data_current.items():
+                    key_value_current = fix_signed_32_bit(key_value_current)
                     if key not in namespace_data_merged:
                         namespace_data_merged[key] = key_value_current
                         continue
