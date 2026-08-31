@@ -10,7 +10,7 @@ import uuid
 import copy
 from pathlib import Path
 import yaml
-from lib_py3.common import eprint
+from lib_py3.common import eprint, get_shard_base_name, get_shard_number
 
 MONUMENTA_NAMESPACE = uuid.UUID('444c3990-e4e4-4c28-97c7-a8f6b1f09d30')
 
@@ -880,15 +880,17 @@ if __name__ == '__main__':
         ]
 
 
-    # Shards named <base>-<N> are automatically treated as copies of <base>
+    # Shards named <base>-<N> or <base>-<irl region>-<N> are automatically treated as copies of <base>
     for server_path in server_list:
         servername = server_path.name
-        m = re.match(r'^(.+)-(\d+)$', servername)
-        if m:
-            base = m.group(1)
-            if base in config and servername not in config:
-                config[servername] = copy.deepcopy(config[base])
-                config[servername]["copy_of"] = base
+        base = get_shard_base_name(servername)
+        if base != servername and base in config and servername not in config:
+            config[servername] = copy.deepcopy(config[base])
+            config[servername]["copy_of"] = base
+
+            # If the first instance of an overworld *isn't* named the base name for the overworld, link the dynmap
+            if get_shard_number(servername) == 1:
+                config[servername]["linked"] += dynmap
 
     # For plugins that should only load on the first instance (not very elegant solution, but it should work)
     config["valley"]["linked"] += dynmap

@@ -40,8 +40,11 @@
     },
     "valley-2": {
         "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4},
-        "stage": { "node": "m17", "hugePageGB": 3, },
+        #"stage": { "node": "m17", "hugePageGB": 3, },
         "volt" : { "node": "m17", "hugePageGB": 3, },
+    },
+    "valley-na-2": {
+        "stage": { "node": "m17", "hugePageGB": 3, },
     },
     "valley-3": { "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4}, },
 

@@ -36,7 +36,7 @@ stage_source:
         shards:
             - ring-2
             - server_config
-            - valley-2
+            - valley-na-2
             - velocity-17
             - zenith-2
 
@@ -44,7 +44,7 @@ common_weekly_update_tasks: false
 
 shards:
     ring-2: /home/epic/stage/m17/ring-2/
-    valley-2: /home/epic/stage/m17/valley-2/
+    valley-na-2: /home/epic/stage/m17/valley-na-2/
     velocity-17: /home/epic/stage/m17/velocity-17/
     zenith-2: /home/epic/stage/m17/zenith-2/
 
