@@ -210,6 +210,7 @@ if __name__ == '__main__':
         "shiftingcity": get_dungeon_config("shiftingcity", "DRL2Access"),
         "skt": get_dungeon_config("skt", "DSKTAccess"),
         "indigo": get_dungeon_config("indigo", "DIAccess"),
+        "fortune": get_dungeon_config("fortune", "DWFAccess"),
 
 
         "hexfall": get_dungeon_config("hexfall", "DHFAccess"),

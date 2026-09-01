@@ -51,6 +51,7 @@ stage_source:
             - cyan
             - depths
             - forum
+            - fortune
             - gallery
             - gray
             - guildplots
@@ -86,6 +87,8 @@ stage_source:
             - server_config
             - velocity-18
 
+common_weekly_update_tasks: true
+
 dynmap_dir: /home/epic/stage/maps
 
 shards:
@@ -96,6 +99,7 @@ shards:
     cyan: /home/epic/stage/m18/cyan/
     depths: /home/epic/stage/m18/depths/
     forum: /home/epic/stage/m18/forum/
+    fortune: /home/epic/stage/m18/fortune/
     gallery: /home/epic/stage/m18/gallery/
     gray: /home/epic/stage/m18/gray/
     guildplots: /home/epic/stage/m18/guildplots/

@@ -247,6 +247,15 @@
         "stage": { "node": "m18", "hugePageMB": 3072, },
         "volt" : { "node": "m18", "hugePageMB": 3072, },
     },
+    "fortune": {
+        "play" : { "node": "new", "hugePageGB": 5   , "cpuActiveProcessorCount": 4, },
+        "stage": { "node": "m18", "hugePageMB": 3072, },
+        "volt" : { "node": "m18", "hugePageMB": 3072, },
+    },
+    "fortune-2":  { "play" : { "node": "new", "hugePageGB": 5, "cpuActiveProcessorCount": 4}, },
+    "fortune-3":  { "play" : { "node": "new", "hugePageGB": 5, "cpuActiveProcessorCount": 4}, },
+    "fortune-4":  { "play" : { "node": "new", "hugePageGB": 5, "cpuActiveProcessorCount": 4}, },
+    "fortune-5":  { "play" : { "node": "new", "hugePageGB": 5, "cpuActiveProcessorCount": 4}, },
 
     "skt": {
         "play" : { "node": "m17", "hugePageGB": 4   , },

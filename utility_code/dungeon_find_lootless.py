@@ -404,6 +404,11 @@ dungeons = {
         "container_whitelist":[
         ],
     },
+    "fortune": {
+        "whitelisted_lore_lines":["Architect's Ring : Trophy",],
+        "container_whitelist":[
+        ],
+    },
     "zenith": {
         "container_whitelist":[],
     },
