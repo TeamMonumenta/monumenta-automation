@@ -545,3 +545,33 @@ The argument datetime may be a datetime object or a Unix timestamp in seconds (i
         unix_timestamp = datetime_.timestamp()
     return f"<t:{int(unix_timestamp)}{fmt}>"
 
+SHARD_NAME_REGEX = re.compile(r'([a-z0-9]+)(?:-([a-z]+))?(?:-([0-9]+))?')
+
+def get_shard_base_name(shard: str):
+    """Gets the base/template name for a shard, like 'valley' for 'valley-na-2'"""
+    match = SHARD_NAME_REGEX.fullmatch(shard)
+    if not match:
+        # Shard does not match expected naming convention - return as-is
+        return shard
+
+    return match[1]
+
+def get_shard_geo(shard: str):
+    """Gets the geographic location for a shard if specified, like None for 'valley', or 'na' for 'valley-na-2'"""
+    match = SHARD_NAME_REGEX.fullmatch(shard)
+    if not match:
+        # Shard does not match expected naming convention - return as-is
+        return shard
+
+    return match[2]
+
+def get_shard_number(shard: str):
+    """Gets the number for a shard, like 1 for 'valley', or 2 for 'valley-na-2'"""
+    match = SHARD_NAME_REGEX.fullmatch(shard)
+    if not match:
+        # Shard does not match expected naming convention - return as-is
+        return shard
+
+    number = match[3]
+    return 1 if number is None else number
+
