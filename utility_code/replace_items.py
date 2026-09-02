@@ -167,4 +167,4 @@ if __name__ == '__main__':
 
         timings.nextStep(f"Structures replacements done, {replacements} replacements")
 
-    print("Replaced {} items".format(num_replacements))
+    eprint("Replaced {} items".format(num_replacements))
