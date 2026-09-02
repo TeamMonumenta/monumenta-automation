@@ -1,7 +1,7 @@
 FROM debian:stable
 
 RUN apt-get update && \
-	apt-get install -y git tree ncdu curl wget openssh-server vim
+	apt-get install -y git tree ncdu curl wget openssh-server rsync vim
 
 # Check for mandatory build arguments
 ARG USERNAME
