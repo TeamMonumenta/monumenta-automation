@@ -2326,6 +2326,11 @@ Must be run before starting the update on the play server
         await self.display(ctx, "Sanitizing R3's items area...")
         await self.run(ctx, os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/Project_Epic-ring --pos1 1140,0,2564 --pos2 1275,123,2811")
 
+        # Delete old versions of symlinked plugin/mod jars so they don't pile up and get copied into the bundle
+        await self.display(ctx, "Cleaning up old plugin and mod jars...")
+        await self.run(ctx, os.path.join(_top_level, "utility_code/plugins_symlink_cleanup.py") + " /home/epic/project_epic/server_config/plugins")
+        await self.run(ctx, os.path.join(_top_level, "utility_code/plugins_symlink_cleanup.py") + " /home/epic/project_epic/server_config/mods")
+
         await self.display(ctx, "Copying server_config...")
         await self.run(ctx, "cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
 
