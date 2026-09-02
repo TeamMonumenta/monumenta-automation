@@ -83,6 +83,7 @@ fn main() -> anyhow::Result<()> {
             //debug!("{:x?}", player.playerdata_bytes);
             //debug!("{}", serde_json::to_string(&player.scores.unwrap()).unwrap());
             //debug!("{}", player.advancements.unwrap().to_string_pretty())
+            //debug!("{}", player.stats.unwrap().to_string_pretty())
         }
     }
 
