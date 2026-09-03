@@ -72,7 +72,6 @@
     "ring-5":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-6":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-7":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-8":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
 
     # Plots
     "plots": {
