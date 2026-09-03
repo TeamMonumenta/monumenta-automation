@@ -80,6 +80,8 @@ spec:
           value: velocity-18
         - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
           value: "false"
+        - name: "JAVA_ARG"
+          value: "-Dvelocity.max-plugin-message-payload-size=2100000"
         readinessProbe:
           tcpSocket:
             port: 25566
