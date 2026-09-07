@@ -378,6 +378,7 @@ if __name__ == '__main__':
 
     monumenta = [
         ('plugins/MonumentaCommon.jar', '../../server_config/plugins/MonumentaCommon.jar'),
+        ('plugins/MonumentaCommon/utc_offset.json', '../../../server_config/data/plugins/all/MonumentaCommon/utc_offset.json'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/MonumentaExceptionReporter.jar', '../../server_config/plugins/MonumentaExceptionReporter.jar'),
         ('plugins/MonumentaWorldManagement.jar', '../../server_config/plugins/MonumentaWorldManagement.jar'),
