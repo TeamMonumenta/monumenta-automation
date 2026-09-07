@@ -18,7 +18,11 @@
             "complexity": "easy",
 
             # Optional:
-            "image": None, # Might be None OR not present at all
+            # Parameter-free Discord CDN URL and owning storage message metadata.
+            "image": "https://cdn.discordapp.com/attachments/...",
+            "image_channel_id": 123456789,
+            "image_message_id": 123456789,
+            "image_filename": "bug-42.png",
 
             # If this is present, the item is closed
             "close_reason": "string"
