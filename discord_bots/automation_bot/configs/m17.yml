@@ -25,6 +25,8 @@ rabbitmq:
     death_audit_channel: 1065829191666385047
     # mail-audit-log (play)
     mail_audit_channel: 1257078461609283707
+    # mail-audit-log (play)
+    mod_mail_audit_channel: 1546767673294327828
     # market-audit-log (play)
     market_audit_channel: 1216046605535285258
     # mod-audit-log (play)

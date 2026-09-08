@@ -20,6 +20,8 @@ rabbitmq:
     admin_channel: 1167973644115386459
     # mail-audit-log
     mail_audit_channel: 1291153788161495091
+    # mod-mail-audit-log
+    mod_mail_audit_channel: 1546766415254519838
 
 k8s_namespace: "stage"
 
