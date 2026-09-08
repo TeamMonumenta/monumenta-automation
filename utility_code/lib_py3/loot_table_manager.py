@@ -35,6 +35,11 @@ class LootTableManager():
             "minecraft:red_shulker_box",
             "minecraft:black_shulker_box",
         ),
+        ( # Arrows
+            "minecraft:arrow",
+            "minecraft:spectral_arrow",
+            "minecraft:tipped_arrow",
+        ),
     )
 
     ####################################################################################################
