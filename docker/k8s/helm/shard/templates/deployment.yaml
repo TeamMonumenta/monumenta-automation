@@ -1,3 +1,46 @@
+{{/*
+  Hugepage budget for one shard, in MiB.
+
+  Everything the JVM maps with -XX:+UseLargePages comes out of this budget. On
+  JDK 21 with G1 and 8M regions -Xlog:pagesize=info reports exactly five
+  large-page reservations (the code cache prints as three code heaps, but they
+  are one reservation that CodeCache::initialize_heaps splits up):
+
+    Java heap          hugePageMB       -Xmx == -Xms, fully committed by -XX:+AlwaysPreTouch
+    G1 mark bitmap     hugePageMB / 64  one bit per 8 bytes of heap
+    G1 card table      hugePageMB / 512 one byte per 512 bytes of heap
+    G1 block offsets   hugePageMB / 512 one byte per 512 bytes of heap
+    JIT code cache     codeCacheMB      -XX:ReservedCodeCacheSize, 240M by default on JDK 21
+
+  Regarding code cache: os::can_commit_large_page_memory() is
+  false for hugetlbfs, so HotSpot maps large-page reservations in full when it
+  reserves them instead of committing them on demand - the entire code cache
+  reservation is hugepage backed, whether or not the JIT ever fills it.
+
+  Note that G1's concurrent mark stack is NOT in here - it is normal memory, and
+  it is budgeted in memMB below.
+
+  hugePageHeadroomMB is mostly margin. The card table and block offset table
+  each round up to a whole 2Mi page independently, so the div-by-256 term above
+  can be up to 4Mi light; the rest is safety.
+
+  Two different failure modes make it worth keeping:
+    - Too little here and the JVM faults past the pod's hugetlb limit. The
+      kernel does not OOM-kill for that, it SIGBUSes the faulting thread, so it
+      shows up as a random crash long after startup rather than as an OOMKill.
+      Note the pod's hugetlb cgroup is charged at fault time, so the code cache
+      is only charged as the JIT touches it - but the node's hugepage pool is
+      committed at mmap time, which is why the full reservation belongs in the
+      k8s request.
+    - If the node's pool cannot satisfy the reservation at startup, HotSpot
+      silently falls back to 4Ki pages, which moves up to codeCacheMB of the
+      budget into memMB instead and OOM-kills the pod.
+*/}}
+{{- define "shard.hugePageMB" -}}
+{{- $raw := add .Values.hugePageMB (div .Values.hugePageMB 64) (div .Values.hugePageMB 256) .Values.codeCacheMB .Values.hugePageHeadroomMB -}}
+{{- mul 2 (div (add $raw 1) 2) -}}
+{{- end }}
+
 # Service / network ports
 
 apiVersion: v1
@@ -224,18 +267,22 @@ spec:
           mountPath: /home/epic/5_SCRATCH
         resources:
           limits:
-            # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
-            # This is used for netty IO threads as well as copy_world.py which pregenerates dungeon instances
+            # Hard ceiling on everything the JVM does NOT keep in hugepages: metaspace,
+            # symbol/string tables, thread stacks, Netty direct buffers, G1's C-heap
+            # bookkeeping, JIT compiler arenas, glibc malloc arenas, plugin native memory,
+            # and the pod's kernel memory. Going over this is an OOM kill.
+            # See memMB in values.yaml for the budget behind the number.
             memory: {{ .Values.memMB }}Mi
-            # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
-            # Tried making this 64 extra, low-memory shards still crash with this
-            hugepages-2Mi: {{ add .Values.hugePageMB (div .Values.hugePageMB 16) 192 }}Mi
+            # Java heap + G1 side tables + JIT code cache. See the comment at the top of
+            # this file for the derivation.
+            hugepages-2Mi: {{ include "shard.hugePageMB" . }}Mi
             cpu: {{ .Values.cpuLimits }}
           requests:
-            # Set this to 64Mi
-            # The shard should not need non-hugepage RAM by default
-            memory: 64Mi
-            # Tried making this 64 extra, low-memory shards still crash with this
-            # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: {{ add .Values.hugePageMB (div .Values.hugePageMB 16) 192 }}Mi
+            # What a healthy shard actually occupies. This is what the scheduler packs
+            # nodes with, so it needs to be a realistic steady-state figure rather than a
+            # placeholder - see memRequestMB in values.yaml. Clamped to the limit so
+            # that a per-shard memMB override below the default request stays valid.
+            memory: {{ min .Values.memRequestMB .Values.memMB }}Mi
+            # k8s requires the hugepage request and limit to be equal
+            hugepages-2Mi: {{ include "shard.hugePageMB" . }}Mi
             cpu: {{ .Values.cpuReqs }}

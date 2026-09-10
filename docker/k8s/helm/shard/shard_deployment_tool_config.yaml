@@ -7,6 +7,7 @@
 #   useSocketForProbes
 #   useHTTPForProbes
 #   memGB OR memMB
+#   memRequestMB
 #   cpuReqs
 #   cpuLimits
 #   cpuActiveProcessorCount
@@ -217,7 +218,7 @@
     },
 
     "blue": {
-        "play" : { "node": "m17", "hugePageGB": 5   , "memGB": 4 },
+        "play" : { "node": "m17", "hugePageGB": 5   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
@@ -266,11 +267,15 @@
 }
 
 # Defaults for each namespace
+# memRequestMB is the non-hugepage memory the scheduler reserves for a shard.
+# The values.yaml default (1280) is sized for a play shard with players on it;
+# build/stage/volt shards sit idle most of the time and there are far more of
+# them defined than can run at once, so they reserve less.
 "namespace_defaults": {
     "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "8", "cpuReqs": "250m", "autoHeapDumpEnabled": "true" },
-    "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "4", "cpuReqs": "50m" },
-    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
-    "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
+    "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "4", "cpuReqs": "50m", "memRequestMB": 1024 },
+    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "memRequestMB": 1024 },
+    "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "memRequestMB": 1024 },
 }
 
 # Memory values copied directly from /proc/meminfo
