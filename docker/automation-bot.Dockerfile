@@ -28,7 +28,7 @@ RUN apt update && \
 	apt upgrade -y && \
 	apt install -y --no-install-recommends python3 python3-flask python3-pip python3-setuptools python3-numpy python3-git zip unzip pigz python3-dev libtool curl liblz4-tool netcat-openbsd pypy3 git parallel patch mariadb-client rsync wget bzip2 && \
 	rm -rf /var/lib/apt/lists/* && \
-	pip3 install wheel discord.py kubernetes pika "redis<4.2.0" "bitstring<4.1.0" kanboard git+https://github.com/gentlegiantJGC/mutf8.git && \
+	pip3 install wheel discord.py kubernetes pika "redis<4.2.0" "bitstring<4.1.0" kanboard git+https://github.com/gentlegiantJGC/mutf8.git feedparser && \
 # Install rclone
 	curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && \
 	unzip rclone-current-linux-amd64.zip && \
@@ -48,7 +48,7 @@ RUN apt update && \
 	rm -f pypy3.11-v7.3.20-linux64.tar.bz2 && \
 	ln -s /opt/pypy3.11-v7.3.20-linux64/bin/pypy3 /usr/local/bin/pypy3 && \
 	ln -s /opt/pypy3.11-v7.3.20-linux64/bin/pypy /usr/local/bin/pypy && \
-	pypy3 -m pip install wheel discord.py kubernetes pika "redis<4.2.0" "bitstring<4.1.0" kanboard git+https://github.com/gentlegiantJGC/mutf8.git
+	pypy3 -m pip install wheel discord.py kubernetes pika "redis<4.2.0" "bitstring<4.1.0" kanboard git+https://github.com/gentlegiantJGC/mutf8.git feedparser
 
 # These are included in Debian (and thus Ubuntu) and need to be skipped:
 	#pip3 install -U pyyaml && \

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+from email.utils import parsedate_to_datetime
 import json
 import logging
 import math
@@ -17,7 +18,9 @@ from pathlib import Path
 from pprint import pformat
 from urllib.parse import urlparse
 
+import aiohttp
 import discord
+import feedparser
 import git
 import redis
 import yaml
@@ -720,6 +723,83 @@ class AutomationBotInstance(commands.Cog):
                 ),
                 file=fp
             )
+
+    async def host_rss_tick(self):
+        if self._admin_channel is None:
+            return
+
+        config_path = self._persistence_path / 'host_server_notices.json'
+        if not config_path.is_file():
+            return
+
+        previous_alerts_path = self._persistence_path / 'previous_host_server_notices.json'
+        previous_alerts = set()
+        if previous_alerts_path.is_file():
+            previous_alerts_json = json.loads(previous_alerts_path.read_text(encoding='utf-8-sig'))
+            previous_alerts.update(previous_alerts_json["previous"])
+
+        config = json.loads(config_path.read_text(encoding='utf-8-sig'))
+        role_id = config["role"]
+        keywords = config["keywords"]
+        urls = config["urls"]
+
+        role = self._admin_channel.guild.get_role(role_id)
+
+        status_alerts = []
+        current_alerts = set()
+        for rss_url, rss_description in urls.items():
+            rss = None
+            async with aiohttp.ClientSession(loop=asyncio.get_event_loop()) as session:
+                async with asyncio.timeout(10):
+                    async with session.get(rss_url) as response:
+                        rss = feedparser.parse(await response.text())
+            if rss is None:
+                return
+
+            for entry in rss.entries:
+                entry_time = parsedate_to_datetime(entry.published).timestamp()
+
+                title = entry.title
+                link = entry.link
+                description = entry.description
+                searchable_text = f'{title} {description}'
+
+                matching_keywords = []
+                for keyword, keyword_description in keywords.items():
+                    if keyword in searchable_text:
+                        matching_keywords.append(keyword_description)
+
+                if not matching_keywords:
+                    continue
+
+                affected_str = ', '.join(sorted(matching_keywords))
+                alert_message = f'<t:{int(entry_time)}:F> (<t:{int(entry_time)}:R>) {affected_str} mentioned in [{rss_description}]({link})'
+                status_alerts.append((entry_time, alert_message))
+                current_alerts.add(alert_message)
+
+        new_alerts = current_alerts - previous_alerts
+
+        if new_alerts:
+            displayed_lines = []
+            for _, alert in sorted(status_alerts):
+                displayed_lines.append(alert)
+            if role:
+                displayed_lines.append(role.mention)
+
+            await self._admin_channel.send('\n'.join(displayed_lines))
+
+        if current_alerts != previous_alerts:
+            with open(previous_alerts_path, 'w', encoding='utf-8') as fp:
+                print(
+                    json.dumps(
+                        {"previous": list(current_alerts)},
+                        ensure_ascii=False,
+                        indent=2,
+                        separators=(',', ': ')
+                    ),
+                    file=fp
+                )
+        
 
     # Entry points
     ################################################################################
