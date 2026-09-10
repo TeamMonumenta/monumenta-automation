@@ -17,12 +17,62 @@ imageJbr: "monumenta-java-jbr-shard-21"
 # "monumenta-8", "monumenta-11", etc.
 nodeFull: "monumenta-8"
 
-# Amount of base hugepages memory (hugepages allocated will be a bit more than this)
+# --- Memory ------------------------------------------------------------------
+#
+# A shard's memory sits in two budgets that kubernetes tracks separately, and
+# nothing but the JVM runs in the pod, so both are pure JVM accounting:
+#
+#   hugepages-2Mi  Everything the JVM maps with -XX:+UseLargePages: the Java heap,
+#                  G1's side tables, and the JIT code cache. Running out of these
+#                  SIGBUSes the JVM (a crash, not an OOMKill).
+#   memory         Everything else in the container. Running out is an OOM kill.
+#
+# templates/deployment.yaml has the derivation of the hugepage total.
+
+# Java heap size. Passed to the JVM as -Xmx and -Xms, and the base of the
+# hugepage budget. Keep it a multiple of 8, the G1 region size, so that the heap
+# is not rounded up past what was budgeted for it.
 hugePageMB: 6144
 
-# Amount of overhead memory for other tasks, including instance pregeneration
-# via copy_world.py and netty I/O threads needed per-player
+# JIT code cache: -XX:ReservedCodeCacheSize, which JDK 21 defaults to 240M. All
+# of it is hugepage backed from startup, because hugetlbfs mappings are mapped in
+# full when they are reserved rather than committed on demand. Only change this
+# if the JVM is started with an explicit -XX:ReservedCodeCacheSize.
+codeCacheMB: 240
+
+# Rounding of each hugepage mapping up to a whole 2Mi page, plus safety margin.
+hugePageHeadroomMB: 64
+
+# Non-hugepage memory limit. Budget in MiB, from NMT and -Xlog:pagesize on a
+# JDK 21 Paper server plus the cgroup stats of past OOM kills:
+#    384  metaspace + compressed class space (~5 KiB per loaded class; bare Paper
+#         alone is 122 MiB for 24k classes, and our plugin set multiplies that)
+#     96  symbol and string tables (38 MiB on bare Paper)
+#     48  thread stacks: only touched pages are resident, ~70-180 KiB per thread
+#         measured, at the ~150 threads a shard runs
+#    128  G1 bookkeeping that is not in hugepages. Mostly the concurrent mark
+#         stack: MarkStackSize commits 32 MiB at startup and doubles on marking
+#         overflow up to MarkStackSizeMax, which defaults to 4 GiB. Plus
+#         remembered sets and worker queues, which grow with heap and load.
+#     96  JIT compiler arenas (C2 working memory, transient per compile)
+#    384  Netty direct buffers: 2 * ActiveProcessorCount pooled arenas of 4 MiB
+#         chunks, uncapped (-XX:MaxDirectMemorySize defaults to -Xmx) and they
+#         never shrink once grown
+#    192  plugin native memory (FAWE, CoreProtect, compression, NFS)
+#    192  glibc malloc arenas and fragmentation
+#     64  JVM internals and misc
+#     32  kernel memory charged to the pod (kernel stacks, page tables, sockets);
+#         measured median 13 MiB, p90 15 MiB, max 33 MiB outside thread-leak events
+#  = 1616 of allowance, leaving ~430 MiB of headroom under the limit below
+#
+# Held at 2048 because as of Sep 2026, this is what the server has been running with
+# for multiple years. Not that it shouldn't ever change, but it's a fairly safe limit
+# for now.
 memMB: 2048
+
+# Non-hugepage memory request: what a healthy shard is expected to occupy, and
+# what the scheduler uses to decide how many shards fit on a node.
+memRequestMB: 1280
 
 # Whether performance metrics will be scraped every few seconds or tens of seconds
 fastMetrics: false
