@@ -139,11 +139,6 @@ shards:
     fortune-3: /home/epic/play/m17/fortune-3/
     fortune-4: /home/epic/play/m17/fortune-4/
     fortune-5: /home/epic/play/m17/fortune-5/
-    fortune-6: /home/epic/play/m17/fortune-6/
-    fortune-7: /home/epic/play/m17/fortune-7/
-    fortune-8: /home/epic/play/m17/fortune-8/
-    fortune-9: /home/epic/play/m17/fortune-9/
-    fortune-10: /home/epic/play/m17/fortune-10/
     gallery: /home/epic/play/m17/gallery/
     gray: /home/epic/play/m17/gray/
     guildplots: /home/epic/play/m17/guildplots/
@@ -170,6 +165,8 @@ shards:
     ring-5: /home/epic/play/m17/ring-5/
     ring-6: /home/epic/play/m17/ring-6/
     ring-7: /home/epic/play/m17/ring-7/
+    ring-8: /home/epic/play/m17/ring-8/
+    ring-9: /home/epic/play/m17/ring-9/
     rush: /home/epic/play/m17/rush/
     shiftingcity: /home/epic/play/m17/shiftingcity/
     skt: /home/epic/play/m17/skt/
@@ -177,6 +174,7 @@ shards:
     tutorial: /home/epic/play/m17/tutorial/
     valley: /home/epic/play/m17/valley/
     valley-2: /home/epic/play/m17/valley-2/
+    valley-3: /home/epic/play/m17/valley-3/
     white: /home/epic/play/m17/white/
     willows: /home/epic/play/m17/willows/
     yellow: /home/epic/play/m17/yellow/
