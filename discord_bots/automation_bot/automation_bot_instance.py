@@ -307,6 +307,10 @@ class AutomationBotInstance(commands.Cog):
                                 if message_channel == "Monumenta.Automation.MailAuditLog":
                                     send_message_to_channel(message["data"]["message"], self._mail_audit_channel)
 
+                            if self._mod_mail_audit_channel:
+                                if message_channel == "Monumenta.Automation.ModMailAuditLog":
+                                    send_message_to_channel(message["data"]["message"], self._mod_mail_audit_channel)
+
                             if self._market_audit_channel:
                                 if message_channel == "Monumenta.Automation.MarketAuditLog":
                                     send_message_to_channel(message["data"]["message"], self._market_audit_channel)
@@ -424,6 +428,13 @@ class AutomationBotInstance(commands.Cog):
                         try:
                             self._mail_audit_channel = self._bot.get_channel(conf["mail_audit_channel"])
                             logging.info("Found mail audit channel: %s", conf["mail_audit_channel"])
+                        except Exception:
+                            logging.error("Cannot connect to mail audit channel: %s", conf["mail_audit_channel"])
+                    self._mod_mail_audit_channel = None
+                    if "mail_audit_channel" in conf:
+                        try:
+                            self._mod_mail_audit_channel = self._bot.get_channel(conf["mod_mail_audit_channel"])
+                            logging.info("Found mod mail audit channel: %s", conf["mod_mail_audit_channel"])
                         except Exception:
                             logging.error("Cannot connect to mail audit channel: %s", conf["mail_audit_channel"])
                     self._market_audit_channel = None

@@ -16,10 +16,12 @@ rabbitmq:
 
     # build-mod-alerts
     audit_severe_channel: 1167973755549667410
-    # mail-audit-log
-    mail_audit_channel: 1255928805969891419
     # build-admin-notices
     admin_channel: 1167973800940412988
+    # mail-audit-log
+    mail_audit_channel: 1255928805969891419
+    # mod-mail-audit-log
+    mod_mail_audit_channel: 1546766344245223464
 
 k8s_namespace: "volt"
 
