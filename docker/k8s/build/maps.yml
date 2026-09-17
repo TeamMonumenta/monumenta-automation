@@ -73,6 +73,7 @@ spec:
       labels:
         app: maps
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -90,6 +91,15 @@ spec:
       containers:
       - name: maps
         image: nginx:stable
+        resources:
+          # nginx serving static maps off NFS. 10 days (2026-09-07 to 2026-09-17 UTC):
+          # 30 MiB median, 32 MiB peak RSS; the working set adds reclaimable page cache.
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            cpu: "1"
+            memory: 256Mi
         ports:
         - containerPort: 80
         volumeMounts:

@@ -8,6 +8,7 @@
 #   useHTTPForProbes
 #   memGB OR memMB
 #   memRequestMB
+#   priorityClassName
 #   cpuReqs
 #   cpuLimits
 #   cpuActiveProcessorCount
@@ -26,21 +27,21 @@
 
     # Purgatory
     "purgatory": {
-        "play" : { "node": "m17", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
-        "build": { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
-        "stage": { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
-        "volt" : { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false" },
+        "play" : { "node": "m17", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false", "memRequestMB": 384, },
+        "build": { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false", "memRequestMB": 448, },
+        "stage": { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false", "memRequestMB": 384, },
+        "volt" : { "node": "m18", "hugePageGB": 1, "useSocketForProbes": "true", "useHTTPForProbes": "false", "memRequestMB": 384, },
     },
 
     # R1
     "valley": {
-        "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4},
-        "build": { "node": "m18", "hugePageGB": 6, },
-        "stage": { "node": "m18", "hugePageGB": 3, },
-        "volt" : { "node": "m18", "hugePageGB": 3, },
+        "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4, "memRequestMB": 1856, },
+        "build": { "node": "m18", "hugePageGB": 6, "memRequestMB": 1024, },
+        "stage": { "node": "m18", "hugePageGB": 3, "memRequestMB": 896, },
+        "volt" : { "node": "m18", "hugePageGB": 3, "memRequestMB": 832, },
     },
     "valley-2": {
-        "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4},
+        "play" : { "node": "m17", "hugePageGB": 7, "cpuActiveProcessorCount": 4, "memRequestMB": 1792, },
         "stage": { "node": "m17", "hugePageGB": 3, },
         "volt" : { "node": "m17", "hugePageGB": 3, },
     },
@@ -48,24 +49,24 @@
 
     # R2
     "isles": {
-        "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4},
-        "build": { "node": "m18", "hugePageGB": 6, },
+        "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4, "memRequestMB": 1856, },
+        "build": { "node": "m18", "hugePageGB": 6, "memRequestMB": 1024, },
         "stage": { "node": "m18", "hugePageGB": 4, },
-        "volt" : { "node": "m18", "hugePageGB": 4, },
+        "volt" : { "node": "m18", "hugePageGB": 4, "memRequestMB": 1024, },
     },
     "isles-2": {
-        "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4},
+        "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4, "memRequestMB": 1856, },
     },
 
     # R3
     "ring": {
-        "play":  { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 8, "cpuLimits": "10"}, # usb's experiment
-        "build": { "node": "m18", "hugePageGB": 6, },
-        "stage": { "node": "m18", "hugePageGB": 3, },
-        "volt" : { "node": "m18", "hugePageGB": 3, },
+        "play":  { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 8, "cpuLimits": "10", "memRequestMB": 1920, }, # usb's experiment
+        "build": { "node": "m18", "hugePageGB": 6, "memRequestMB": 1344, },
+        "stage": { "node": "m18", "hugePageGB": 3, "memRequestMB": 960, },
+        "volt" : { "node": "m18", "hugePageGB": 3, "memRequestMB": 1024, },
     },
     "ring-2":  {
-        "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4},
+        "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4, "memRequestMB": 1856, },
         "stage": { "node": "m17", "hugePageGB": 3, },
         "volt" : { "node": "m17", "hugePageGB": 3, },
     },
@@ -79,170 +80,170 @@
 
     # Plots
     "plots": {
-        "play" : { "node": "m17", "hugePageGB": 8, },
+        "play" : { "node": "m17", "hugePageGB": 8, "memRequestMB": 1024, },
         "stage": { "node": "m18", "hugePageGB": 6, },
-        "volt" : { "node": "m18", "hugePageGB": 6, },
+        "volt" : { "node": "m18", "hugePageGB": 6, "memRequestMB": 640, },
     },
 
     "playerplots": {
-        "play":  { "node": "m17", "hugePageGB": 12, },
+        "play":  { "node": "m17", "hugePageGB": 12, "memRequestMB": 1152, },
         "stage": { "node": "m18", "hugePageGB": 4, },
-        "volt" : { "node": "m18", "hugePageGB": 4, },
+        "volt" : { "node": "m18", "hugePageGB": 4, "memRequestMB": 640, },
     },
 
     "guildplots": {
-        "play":  { "node": "m17", "hugePageGB": 12, },
+        "play":  { "node": "m17", "hugePageGB": 12, "memRequestMB": 896, },
         "stage": { "node": "m18", "hugePageGB": 6, },
-        "volt" : { "node": "m18", "hugePageGB": 6, },
+        "volt" : { "node": "m18", "hugePageGB": 6, "memRequestMB": 640, },
     },
 
     # Player build shard
     "build": {
-        "play" : { "node": "m17", "hugePageGB": 3   , "gsheetCredentials": "false", "exceptLogIngestDomain": "build" },
+        "play" : { "node": "m17", "hugePageGB": 3   , "gsheetCredentials": "false", "exceptLogIngestDomain": "build", "memRequestMB": 896, },
         "stage": { "node": "m18", "hugePageMB": 1536, "gsheetCredentials": "false" },
-        "volt" : { "node": "m18", "hugePageMB": 1536, "gsheetCredentials": "false" },
+        "volt" : { "node": "m18", "hugePageMB": 1536, "gsheetCredentials": "false", "memRequestMB": 640, },
     },
 
     # Dungeons
     "cyan": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 704, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "depths": {
-        "play" : { "node": "m17", "hugePageGB": 4   , },
+        "play" : { "node": "m17", "hugePageGB": 4   , "memRequestMB": 704, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "depths-2": { "play" : { "node": "m17", "hugePageGB": 4, }, },
     "forum": {
-        "play" : { "node": "m17", "hugePageGB": 4   , },
+        "play" : { "node": "m17", "hugePageGB": 4   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 2048, },
         "volt" : { "node": "m18", "hugePageMB": 2048, },
     },
     "gray": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "labs": {
-        "play" : { "node": "m17", "hugePageGB": 6   , },
-        "stage": { "node": "m18", "hugePageMB": 1536, },
-        "volt" : { "node": "m18", "hugePageMB": 1536, },
+        "play" : { "node": "m17", "hugePageGB": 6   , "memRequestMB": 704, },
+        "stage": { "node": "m18", "hugePageMB": 1536, "memRequestMB": 704, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, "memRequestMB": 640, },
     },
     "lightblue": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
-        "volt" : { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, "memRequestMB": 640, },
     },
     "lightgray": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "lime": {
-        "play" : { "node": "m17", "hugePageGB": 5   , },
+        "play" : { "node": "m17", "hugePageGB": 5   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "magenta": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "orange": {
-        "play" : { "node": "m17", "hugePageGB": 3, },
+        "play" : { "node": "m17", "hugePageGB": 3, "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "pink": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "purple": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "reverie": {
-        "play" : { "node": "m17", "hugePageGB": 6   , },
+        "play" : { "node": "m17", "hugePageGB": 6   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "corridors": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 832, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "rush": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "shiftingcity": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageGB": 3   , },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "teal": {
-        "play" : { "node": "m17", "hugePageGB": 4   , },
+        "play" : { "node": "m17", "hugePageGB": 4   , "memRequestMB": 832, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "tutorial": {
-        "play" : { "node": "m17", "hugePageGB": 5   , },
-        "stage": { "node": "m18", "hugePageMB": 1536, },
-        "volt" : { "node": "m18", "hugePageMB": 1536, },
+        "play" : { "node": "m17", "hugePageGB": 5   , "memRequestMB": 704, },
+        "stage": { "node": "m18", "hugePageMB": 1536, "memRequestMB": 1024, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, "memRequestMB": 768, },
     },
     "white": {
-        "play" : { "node": "m17", "hugePageGB": 3, },
+        "play" : { "node": "m17", "hugePageGB": 3, "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "willows": {
-        "play" : { "node": "m17", "hugePageGB": 5,    },
+        "play" : { "node": "m17", "hugePageGB": 5, "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "yellow": {
-        "play" : { "node": "m17", "hugePageGB": 5   , },
+        "play" : { "node": "m17", "hugePageGB": 5   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
-        "volt" : { "node": "m18", "hugePageMB": 1536, },
+        "volt" : { "node": "m18", "hugePageMB": 1536, "memRequestMB": 704, },
     },
 
     "gallery": {
-        "play" : { "node": "m17", "hugePageGB": 3   , },
+        "play" : { "node": "m17", "hugePageGB": 3   , "memRequestMB": 960, },
         "stage": { "node": "m18", "hugePageGB": 3   , },
         "volt" : { "node": "m18", "hugePageGB": 3   , },
     },
 
     "blue": {
-        "play" : { "node": "m17", "hugePageGB": 5   , },
+        "play" : { "node": "m17", "hugePageGB": 5   , "memRequestMB": 832, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
 
     "brown": {
-        "play" : { "node": "m17", "hugePageGB": 7   , },
+        "play" : { "node": "m17", "hugePageGB": 7   , "memRequestMB": 768, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
 
     "hexfall": {
-        "play" : { "node": "m17", "hugePageGB": 5   , },
+        "play" : { "node": "m17", "hugePageGB": 5   , "memRequestMB": 1152, },
         "stage": { "node": "m18", "hugePageGB": 3   , },
         "volt" : { "node": "m18", "hugePageGB": 3   , },
     },
     "indigo": {
-        "play" : { "node": "m17", "hugePageGB": 5   , "cpuActiveProcessorCount": 4, },
+        "play" : { "node": "m17", "hugePageGB": 5   , "cpuActiveProcessorCount": 4, "memRequestMB": 1536, },
         "stage": { "node": "m18", "hugePageMB": 3072, },
         "volt" : { "node": "m18", "hugePageMB": 3072, },
     },
     "fortune": {
-        "play" : { "node": "m17", "hugePageGB": 6   , "cpuActiveProcessorCount": 4, },
+        "play" : { "node": "m17", "hugePageGB": 6   , "cpuActiveProcessorCount": 4, "memRequestMB": 1664, },
         "stage": { "node": "m18", "hugePageMB": 3072, },
-        "volt" : { "node": "m18", "hugePageMB": 3072, },
+        "volt" : { "node": "m18", "hugePageMB": 3072, "memRequestMB": 704, },
     },
     "fortune-2":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
     "fortune-3":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
@@ -250,38 +251,48 @@
     "fortune-5":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
 
     "skt": {
-        "play" : { "node": "m17", "hugePageGB": 4   , },
+        "play" : { "node": "m17", "hugePageGB": 4   , "memRequestMB": 832, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "zenith": {
-        "play" : { "node": "m17", "hugePageGB":    4, },
+        "play" : { "node": "m17", "hugePageGB":    4, "memRequestMB": 1088, },
         "stage": { "node": "m18", "hugePageGB":    3, },
         "volt" : { "node": "m18", "hugePageGB":    3, },
     },
     "zenith-2": {
-        "play":  { "node": "m17", "hugePageGB":    4, },
+        "play":  { "node": "m17", "hugePageGB":    4, "memRequestMB": 1024, },
         "stage": { "node": "m17", "hugePageGB":    3, },
         "volt" : { "node": "m17", "hugePageGB":    3, },
     },
 }
 
-# Defaults for each namespace
-# memRequestMB is the non-hugepage memory the scheduler reserves for a shard.
-# The values.yaml default (1280) is sized for a play shard with players on it;
-# build/stage/volt shards sit idle most of the time and there are far more of
-# them defined than can run at once, so they reserve less.
+# Defaults for each namespace memRequestMB is the non-hugepage memory the scheduler
+# reserves for a shard. It is set per shard in shard_config above, from measured working
+# set over 10 days (2026-09-07 to 2026-09-17 UTC); see values.yaml for the rule. The
+# values here apply only to shards with no per-shard entry -- mostly shards that are
+# defined but not currently running, so there is no measurement for them.
+#
+# priorityClassName maps each environment onto the tiers in
+# docker/k8s/priority-classes.yml. This is what lets a play shard preempt a volt shard
+# instead of sitting Pending when m17 is full.
 "namespace_defaults": {
-    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "8", "cpuReqs": "250m", "autoHeapDumpEnabled": "true" },
-    "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "4", "cpuReqs": "50m", "memRequestMB": 1024 },
-    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "memRequestMB": 1024 },
-    "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "memRequestMB": 1024 },
+    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "8", "cpuReqs": "250m", "autoHeapDumpEnabled": "true", "priorityClassName": "monumenta-play" },
+    "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "4", "cpuReqs": "50m", "memRequestMB": 768, "priorityClassName": "monumenta-build" },
+    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "memRequestMB": 768, "priorityClassName": "monumenta-stage" },
+    "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "memRequestMB": 768, "priorityClassName": "monumenta-volt" },
 }
 
 # Memory values copied directly from /proc/meminfo
+#
+# CORRECTED 2026-09-17: m18 huge_pages was 85000 here, but the node reports 68000
+# (132.81 GiB) in its kubernetes capacity. This file was claiming 33 GiB of hugepages
+# that do not exist, so the planning tool would happily place shards that could never be
+# scheduled. m17's 175000 matches the live node. If the boot-time allocation in
+# /etc/default/grub changes, update this too.
 "node_info": {
     "m17":    { "full_name": "monumenta-17",        "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048, "geoDescription": "NA" },
-    "m18":    { "full_name": "monumenta-18",        "mem_total_kB": 263971944, "huge_pages":  85000, "huge_page_size_kB": 2048, "geoDescription": "EU" },
+    "m18":    { "full_name": "monumenta-18",        "mem_total_kB": 263971944, "huge_pages":  68000, "huge_page_size_kB": 2048, "geoDescription": "EU" },
 
     # These are not real hosts and exist purely for planning where to put new shards
     "new":    { "full_name": "monumenta-new",       "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048, "geoDescription": "The Big Bang" },
