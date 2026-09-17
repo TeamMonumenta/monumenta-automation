@@ -17,6 +17,7 @@ spec:
       labels:
         app: mod-ssh
     spec:
+      priorityClassName: monumenta-play
       automountServiceAccountToken: false
       affinity:
         nodeAffinity:

@@ -33,6 +33,11 @@ spec:
             hostPath:
               type: Directory
               path: /nfs/play/advancements
+          # Below the shards on purpose: an hourly export must never preempt live player
+          # capacity, and at a 1536Mi request it is bigger than most play shards. If it
+          # cannot be scheduled it should stay Pending and be noticed, not evict a
+          # shard.
+          priorityClassName: monumenta-play-maint
           containers:
           - name: automation-bot
             image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play

@@ -17,6 +17,7 @@ spec:
       labels:
         pod: cloudflared
     spec:
+      priorityClassName: monumenta-infra
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -34,6 +35,14 @@ spec:
       containers:
         - image: cloudflare/cloudflared:latest
           name: cloudflared
+          resources:
+            # 10 days (2026-09-07 to 2026-09-17 UTC): 32 MiB median, 45 MiB peak RSS.
+            requests:
+              cpu: 50m
+              memory: 96Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
           env:
             # Defines an environment variable for the tunnel token.
             - name: TUNNEL_TOKEN

@@ -96,6 +96,11 @@ spec:
       labels:
         app: {{ .Values.name }}
     spec:
+      # Which tier this shard belongs to. See docker/k8s/priority-classes.yml. Controls
+      # preemption (a play shard can displace a volt shard rather than sitting Pending)
+      # and the kubelet's eviction ordering. It does NOT affect the kernel OOM killer,
+      # which goes by QoS class.
+      priorityClassName: {{ .Values.priorityClassName }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

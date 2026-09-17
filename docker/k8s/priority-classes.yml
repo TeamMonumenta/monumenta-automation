@@ -1,0 +1,139 @@
+# Pod priority classes.
+#
+# Priority does two things, and it is worth being precise about which:
+#
+#   1. Preemption. When a pod cannot be scheduled, the scheduler may evict
+#      lower-priority pods on the node to make room. This is what makes a play
+#      shard able to displace a volt shard instead of sitting Pending.
+#   2. Eviction ordering. Under node memory pressure the kubelet ranks victims
+#      first by whether they exceed their memory request, then by priority.
+#
+# What priority does NOT do: it has no effect on the kernel OOM killer, which ranks by
+# oom_score_adj (derived from QoS class, not from priority). A pod that must survive
+# needs Guaranteed QoS -- requests equal to limits -- which gets oom_score_adj -997.
+# Priority alone will not save it.
+#
+# Ordering here, highest first:
+#   play data       redis and mysql. Redis is the backbone of the distributed
+#                   design; losing it takes down the whole network, so it sits
+#                   above even the play shards.
+#   play            player-facing: shards, proxies, rabbitmq, support pods.
+#   play maint      cron jobs and the redis backup helper. Deliberately BELOW
+#                   the shards: an hourly export must not be able to preempt
+#                   live player capacity, and redisbackup at 28Gi would evict
+#                   roughly fifteen shards if it outranked them.
+#   infra           cluster-wide services that are not tied to one environment:
+#                   web, monitoring, bots. Above preprod because the website and
+#                   metrics stay up even while build/stage/volt are churning.
+#   build           development environment.
+#   stage, volt     preproduction. First to be preempted, by design.
+#
+# Within each preproduction environment its datastores sit one step above its shards, so
+# a memory crunch in stage sheds stage shards before it sheds the stage database and
+# breaks the whole namespace.
+#
+# Values are spaced by 50000 to leave room to insert tiers later. All are well below
+# system-cluster-critical (2000000000) and system-node-critical (2000001000), which are
+# reserved for kubernetes' own components.
+#
+# No class sets globalDefault, so anything without an explicit priorityClassName stays
+# at priority 0 -- below everything here, and first to be preempted.
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-play-data
+value: 1000000
+globalDefault: false
+description: "Play redis and mysql. The most important thing on the cluster."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-play
+value: 900000
+globalDefault: false
+description: "Play shards, proxies and supporting services. Player-facing."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-play-maint
+value: 850000
+globalDefault: false
+description: "Play maintenance jobs and the redis backup helper. Below the shards on purpose: a maintenance task must never preempt live player capacity."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-play-backup
+value: 840000
+globalDefault: false
+description: "play/redisbackup, normally scaled to 0. Large enough to displace many shards if it outranked them, so it does not."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-infra
+value: 800000
+globalDefault: false
+description: "Website, monitoring, bots. Not tied to one environment."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-build-data
+value: 550000
+globalDefault: false
+description: "Build redis, mysql and rabbitmq."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-build
+value: 500000
+globalDefault: false
+description: "Build shards and supporting services. Development environment."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-stage-data
+value: 350000
+globalDefault: false
+description: "Stage redis, mysql and rabbitmq."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-stage
+value: 300000
+globalDefault: false
+description: "Stage shards and supporting services. Preemptible."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-volt-data
+value: 250000
+globalDefault: false
+description: "Volt redis, mysql and rabbitmq."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monumenta-volt
+value: 200000
+globalDefault: false
+description: "Volt shards and supporting services. First to be preempted."

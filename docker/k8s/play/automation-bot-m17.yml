@@ -67,6 +67,7 @@ spec:
       labels:
         app: automation-bot-m17
     spec:
+      priorityClassName: monumenta-play
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -110,6 +111,36 @@ spec:
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
         tty: false
         stdin: false
+        resources:
+          # Bimodal, and the two modes are 200x apart:
+          #   idle       203 MiB median, 226 MiB p99 -- this is ~99% of the time
+          #   maintenance 43.8 GiB peak RSS (45.5 GiB working set) during the
+          #               weekly update window, when the play shards are stopped
+          #               and their memory is free
+          #
+          # So the request describes the idle state (what the scheduler should reserve
+          # permanently) and the limit permits the maintenance spike. This is
+          # deliberately a wide Burstable band: the resulting high oom_score_adj is
+          # correct here. If the node is ever under real pressure while this is
+          # inflated, this is exactly the process that should be killed rather than
+          # redis or a shard.
+          #
+          # 56Gi rather than unlimited so a runaway job cannot take the node down. Sized
+          # against the WORKING SET peak (45.5 GiB), not the RSS peak (43.8 GiB) -- the
+          # cgroup limit acts on working set, so using the RSS number would have left
+          # only 5.5% margin rather than the ~10% intended. The peak also grows with
+          # world size at every content release, and being OOM killed part-way through
+          # rewriting production region files is not a clean abort. Re-measure after big
+          # releases. Deliberately NO cpu limit. This container previously had no
+          # resources block at all, so it could use the whole node. During the
+          # maintenance window m17's 64 cores are otherwise idle and this job is the
+          # only thing running; capping it would directly lengthen the window for no
+          # benefit. The memory limit is what protects the node.
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 56Gi
         volumeMounts:
         - name: nfs-play-m17
           mountPath: /home/epic/play/m17
