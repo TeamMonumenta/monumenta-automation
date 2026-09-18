@@ -41,19 +41,17 @@ fn update_instance_scores(
 
 #[allow(non_snake_case)]
 fn fix_total_level(scores: &mut HashMap<String, i32>) {
+    let Quest03 = *scores.get("Quest03").unwrap_or(&0);
     let White = *scores.get("White").unwrap_or(&0);
-    let Orange = *scores.get("Orange").unwrap_or(&0);
     let Magenta = *scores.get("Magenta").unwrap_or(&0);
-    let LightBlue = *scores.get("LightBlue").unwrap_or(&0);
     let Yellow = *scores.get("Yellow").unwrap_or(&0);
     let Lime = *scores.get("Lime").unwrap_or(&0);
-    let Cyan = *scores.get("Cyan").unwrap_or(&0);
     let LightGray = *scores.get("LightGray").unwrap_or(&0);
-    let CorrectedLevel = 2
+    let Cyan = *scores.get("Cyan").unwrap_or(&0);
+    let CorrectedLevel = 3
+        + if Quest03 == 21 { 1 } else { 0 }
         + if White > 0 { 1 } else { 0 }
-        + if Orange > 0 { 1 } else { 0 }
         + if Magenta > 0 { 1 } else { 0 }
-        + if LightBlue > 0 { 1 } else { 0 }
         + if Yellow > 0 { 1 } else { 0 }
         + if Lime > 0 { 1 } else { 0 }
         + if Cyan > 0 { 1 } else { 0 }
