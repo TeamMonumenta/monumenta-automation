@@ -62,8 +62,6 @@ def get_server_domain(servername):
         return 'playerbuild'
     if servername == 'build2':
         return 'build2'
-    if servername == 'tutorial':
-        return 'tutorial'
     return SERVER_TYPE
 
 
