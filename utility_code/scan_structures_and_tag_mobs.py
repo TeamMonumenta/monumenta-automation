@@ -94,7 +94,8 @@ if __name__ == '__main__':
     mob_counts = {}
     forbidden_ids = ["minecraft:painting", "minecraft:potion", "minecraft:trident", "minecraft:boat",
                      "minecraft:minecart", "minecraft:falling_block", "minecraft:firework_rocket", "minecraft:item_frame", "minecraft:end_crystal",
-                     "minecraft:area_effect_cloud", "minecraft:command", "minecraft:command_block", "minecraft:chain_command_block", "minecraft:repeating_command_block"]
+                     "minecraft:area_effect_cloud", "minecraft:command", "minecraft:command_block", "minecraft:chain_command_block", "minecraft:repeating_command_block",
+                     "minecraft:armor_stand", "minecraft:block_display", "minecraft:item_display", "minecraft:text_display", "minecraft:interaction", "minecraft:marker"]
 
     los = LibraryOfSouls("/home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
     los.clear_tags()
