@@ -17,6 +17,7 @@ DATABASE_PATH = bot_config["database_path"]
 BOT_INPUT_CHANNEL = bot_config["bot_input_channel"]
 CHANNEL_ID = bot_config["channel_id"]
 DISCUSSION_ID = bot_config["discussion_id"]
+STORAGE_CHANNEL_ID = bot_config["storage_channel_id"]
 PREFIX = bot_config["prefix"]
 DESCRIPTOR_SHORT = bot_config["descriptor_short"]
 DESCRIPTOR_SINGLE = bot_config["descriptor_single"]
@@ -26,6 +27,7 @@ USER_PRIVILEGES = bot_config["user_privileges"]
 GROUP_PRIVILEGES = bot_config["group_privileges"]
 REACTIONS = bot_config["reactions"]
 
-KANBOARD = bot_config.get("kanboard", None)
-
 logging.info("\nBot Configuration: %s\n", pformat(bot_config))
+
+#MODMAIL_CHANNEL_ID = bot_config["modmail_channel_id"]
+#MODMAIL_INPUT_CHANNEL_ID = bot_config["modmail_input_channel_id"]
