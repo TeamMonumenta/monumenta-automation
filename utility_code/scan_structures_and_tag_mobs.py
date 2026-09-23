@@ -49,6 +49,12 @@ def process_entity(entity, source_name):
         if soul is not None:
             soul_nbt = nbt.TagCompound.from_mojangson(soul["history"][0]["mojangson"])
             soul_id = soul_nbt.at_path("id").value
+            if soul_nbt.has_path("Tags"):
+                arr = soul_nbt.at_path("Tags").value
+                for tagstring in arr:
+                    if tagstring.value == "bestiary_ignore":
+                        # ignored for bestiary location tagging
+                        return
         if soul is not None and soul_id == entity_id:
             # Already in the library - tag it with the name of the structure for searching
             if "location_names" not in soul:
