@@ -1,4 +1,5 @@
 use crate::advancements::Advancements;
+use crate::stats::Stats;
 use crate::world::World;
 
 use anyhow::{self, bail};
@@ -21,6 +22,7 @@ pub struct Player {
     pub playerdata: Option<nbt::Blob>,
     pub advancements: Option<Advancements>,
     pub scores: Option<HashMap<String, i32>>,
+    pub stats: Option<Stats>,
     pub plugindata: Option<HashMap<String, serde_json::Value>>,
     pub sharddata: Option<HashMap<String, String>>,
     pub remotedata: Option<HashMap<String, String>>,
@@ -31,12 +33,13 @@ impl fmt::Display for Player {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{}: name={}, data={}, advancements={}, scores={}, plugindata={}, sharddata={}, remotedata={}, history={}",
+            "{}: name={}, data={}, advancements={}, scores={}, stats={}, plugindata={}, sharddata={}, remotedata={}, history={}",
             self.uuid,
             if let Some(name) = &self.name { name } else { "?" },
             if self.playerdata.is_some() { "Some" } else { "None" },
             if self.advancements.is_some() { "Some" } else { "None" },
             if self.scores.is_some() { "Some" } else { "None" },
+            if self.stats.is_some() { "Some" } else { "None" },
             if self.plugindata.is_some() { "Some" } else { "None" },
             if self.sharddata.is_some() { "Some" } else { "None" },
             if self.remotedata.is_some() { "Some" } else { "None" },
@@ -49,7 +52,7 @@ impl fmt::Debug for Player {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "{}: history={}\n  name={},\n  data={},\n  advancements={},\n  scores={},\n  plugindata={},\n  sharddata={},\n  remotedata={}",
+            "{}: history={}\n  name={},\n  data={},\n  advancements={},\n  scores={},\n  stats={},\n  plugindata={},\n  sharddata={},\n  remotedata={}",
             self.uuid,
             if let Some(history) = &self.history { history } else { "None" },
             if let Some(name) = &self.name { name } else { "?" },
@@ -60,6 +63,11 @@ impl fmt::Debug for Player {
                 "None".to_string()
             },
             if let Some(scores) = &self.scores { format!("{:?}", scores) } else { "None".to_string() },
+            if let Some(stats) = &self.stats {
+                stats.to_string_pretty()
+            } else {
+                "None".to_string()
+            },
             if let Some(plugindata) = &self.plugindata {
                 format!("{:?}", plugindata)
             } else {
@@ -83,6 +91,7 @@ impl Player {
             playerdata: None,
             advancements: None,
             scores: None,
+            stats: None,
             plugindata: None,
             sharddata: None,
             remotedata: None,
@@ -100,6 +109,7 @@ impl Player {
             playerdata: None,
             advancements: None,
             scores: None,
+            stats: None,
             plugindata: None,
             sharddata: None,
             remotedata: None,
@@ -127,6 +137,7 @@ impl Player {
         self.load_world_player_data(world)?;
         self.load_world_advancements(world)?;
         self.load_world_scores(world)?;
+        self.load_world_stats(world)?;
         self.plugindata = Some(HashMap::new());
         self.update_history(&world.get_name());
         Ok(())
@@ -152,6 +163,11 @@ impl Player {
         }
     }
 
+    pub fn load_world_stats(&mut self, world: &World) -> anyhow::Result<()> {
+        self.stats = Some(Stats::load_from_file(&mut world.get_player_stats_file(&self.uuid)?)?);
+        Ok(())
+    }
+
     pub fn load_redis(&mut self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
         if let Err(err) = self.load_redis_player_data(domain, con) {
             bail!("Failed to load player data for {}: {}", self.uuid.hyphenated(), err);
@@ -161,6 +177,9 @@ impl Player {
         }
         if let Err(err) = self.load_redis_scores(domain, con) {
             bail!("Failed to load scores for {}: {}", self.uuid.hyphenated(), err);
+        }
+        if let Err(err) = self.load_redis_stats(domain, con) {
+            bail!("Failed to load stats for {}: {}", self.uuid.hyphenated(), err);
         }
         if let Err(err) = self.load_redis_plugindata(domain, con) {
             bail!("Failed to load plugindata for {}: {}", self.uuid.hyphenated(), err);
@@ -193,6 +212,13 @@ impl Player {
         let scores: String = con.lindex(format!("{}:playerdata:{}:scores", domain, self.uuid.hyphenated()), 0)?;
         let scores: HashMap<String, i32> = serde_json::from_str(&scores)?;
         self.scores = Some(scores);
+        Ok(())
+    }
+
+    pub fn load_redis_stats(&mut self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
+        let stats: String =
+            con.lindex(format!("{}:playerdata:{}:stats", domain, self.uuid.hyphenated()), 0)?;
+        self.stats = Some(Stats::load_from_string(&stats)?);
         Ok(())
     }
 
@@ -239,6 +265,7 @@ impl Player {
         self.save_redis_player_data(domain, con)?;
         self.save_redis_advancements(domain, con)?;
         self.save_redis_scores(domain, con)?;
+        self.save_redis_stats(domain, con)?;
         self.save_redis_plugindata(domain, con)?;
         self.save_redis_sharddata(domain, con)?;
         self.save_redis_remotedata(domain, con)?;
@@ -256,6 +283,7 @@ impl Player {
         con.ltrim::<_, ()>(format!("{}:playerdata:{}:scores", domain, self.uuid.hyphenated()), 0, count - 1)?;
         con.ltrim::<_, ()>(format!("{}:playerdata:{}:plugins", domain, self.uuid.hyphenated()), 0, count - 1)?;
         con.ltrim::<_, ()>(format!("{}:playerdata:{}:advancements", domain, self.uuid.hyphenated()), 0, count - 1)?;
+        con.ltrim::<_, ()>(format!("{}:playerdata:{}:stats", domain, self.uuid.hyphenated()), 0, count - 1)?;
         con.ltrim::<_, ()>(format!("{}:playerdata:{}:data", domain, self.uuid.hyphenated()), 0, count - 1)?;
         Ok(())
     }
@@ -265,6 +293,7 @@ impl Player {
         con.del::<_, ()>(format!("{}:playerdata:{}:scores", domain, self.uuid.hyphenated()))?;
         con.del::<_, ()>(format!("{}:playerdata:{}:plugins", domain, self.uuid.hyphenated()))?;
         con.del::<_, ()>(format!("{}:playerdata:{}:advancements", domain, self.uuid.hyphenated()))?;
+        con.del::<_, ()>(format!("{}:playerdata:{}:stats", domain, self.uuid.hyphenated()))?;
         con.del::<_, ()>(format!("{}:playerdata:{}:data", domain, self.uuid.hyphenated()))?;
         con.del::<_, ()>(format!("{}:playerdata:{}:sharddata", domain, self.uuid.hyphenated()))?;
         con.del::<_, ()>(format!("{}:playerdata:{}:remotedata", domain, self.uuid.hyphenated()))?;
@@ -283,6 +312,12 @@ impl Player {
                 .unwrap(),
         )?;
         self.save_file_scores(basepath.join(format!("scores/{}.json", uuidstr)).to_str().unwrap())?;
+        self.save_file_stats(
+            basepath
+                .join(format!("stats/{}.json", uuidstr))
+                .to_str()
+                .unwrap(),
+        )?;
         self.save_file_plugindata(basepath.join(format!("plugindata/{}.json", uuidstr)).to_str().unwrap())?;
         self.save_file_sharddata(basepath.join(format!("sharddata/{}.json", uuidstr)).to_str().unwrap())?;
         self.save_file_remotedata(basepath.join(format!("remotedata/{}.json", uuidstr)).to_str().unwrap())?;
@@ -319,6 +354,16 @@ impl Player {
         if let Some(scores) = &self.scores {
             let scores: String = serde_json::to_string(scores)?;
             fs::write(filepath, scores)?;
+        }
+        Ok(())
+    }
+
+    pub fn save_file_stats(&self, filepath: &str) -> anyhow::Result<()> {
+        let path = Path::new(filepath);
+        fs::create_dir_all(path.parent().unwrap().to_str().unwrap())?;
+
+        if let Some(stats) = &self.stats {
+            fs::write(filepath, stats.to_string())?;
         }
         Ok(())
     }
@@ -373,6 +418,7 @@ impl Player {
         self.load_file_player_data(&basepath.join(format!("playerdata/{}.dat", uuidstr)))?;
         self.load_file_advancements(&basepath.join(format!("advancements/{}.json", uuidstr)))?;
         self.load_file_scores(&basepath.join(format!("scores/{}.json", uuidstr)))?;
+        self.load_file_stats(&basepath.join(format!("stats/{}.json", uuidstr)))?;
         self.load_file_plugindata(&basepath.join(format!("plugindata/{}.json", uuidstr)))?;
         self.load_file_sharddata(&basepath.join(format!("sharddata/{}.json", uuidstr)))?;
         self.load_file_remotedata(&basepath.join(format!("remotedata/{}.json", uuidstr)))?;
@@ -417,6 +463,16 @@ impl Player {
         if let Some(scores) = &self.scores {
             let scores: String = serde_json::to_string(scores)?;
             con.lpush::<_, _, ()>(format!("{}:playerdata:{}:scores", domain, self.uuid.hyphenated()), scores)?;
+        }
+        Ok(())
+    }
+
+    fn save_redis_stats(&self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
+        if let Some(stats) = &self.stats {
+            con.lpush::<_, _, ()>(
+                format!("{}:playerdata:{}:stats", domain, self.uuid.hyphenated()),
+                stats.to_string(),
+            )?;
         }
         Ok(())
     }
@@ -474,6 +530,11 @@ impl Player {
         let contents = fs::read_to_string(path)?;
         let scores: HashMap<String, i32> = serde_json::from_str(&contents)?;
         self.scores = Some(scores);
+        Ok(())
+    }
+
+    fn load_file_stats(&mut self, path: &Path) -> anyhow::Result<()> {
+        self.stats = Some(Stats::load_from_file(&mut World::get_file_common(path)?)?);
         Ok(())
     }
 
