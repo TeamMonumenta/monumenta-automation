@@ -13,13 +13,13 @@ from minecraft.world import World
 
 
 IGNORED_SHARD_RE = tuple(re.compile(x) for x in [
-    # Can't have duplicate overworld names
-    'valley-[2-9]',
-    'valley-[1-9][0-9]+',
-    'isles-[2-9]',
-    'isles-[1-9][0-9]+',
-    'ring-[2-9]',
-    'ring-[1-9][0-9]+',
+    # Can't have duplicate overworld names - anything ending in `-1` is fair game, though
+    'valley(?:-[a-z]+)?-[2-9]',
+    'valley(?:-[a-z]+)?-[1-9][0-9]+',
+    'isles(?:-[a-z]+)?-[2-9]',
+    'isles(?:-[a-z]+)?-[1-9][0-9]+',
+    'ring(?:-[a-z]+)?-[2-9]',
+    'ring(?:-[a-z]+)?-[1-9][0-9]+',
 ])
 
 
@@ -120,7 +120,7 @@ def main():
         world = World(world_path)
         level_dat = world.level_dat
         spawn = level_dat.spawn
-        
+
 
         world_plugin_config = None
         world_title = None

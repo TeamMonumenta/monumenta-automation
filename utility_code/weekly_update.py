@@ -11,7 +11,7 @@ import copy
 
 from lib_py3.item_replacement_manager import ItemReplacementManager
 from lib_py3.loot_table_manager import LootTableManager
-from lib_py3.common import eprint, move_folder, copy_folder, move_paths
+from lib_py3.common import eprint, move_folder, copy_folder, move_paths, get_shard_base_name
 from lib_py3.redis_scoreboard import RedisScoreboard
 from lib_py3.timing import Timings
 
@@ -231,12 +231,8 @@ if __name__ == '__main__':
     # Parse additional non-option arguments and copy those configs to the list of servers to update
     config_list = []
     for server in args:
-        shard_name = server
-
-        # This server is a copy of one that is in the config (i.e. its name ends with -#)
         # Set the shard_name to be the base name for that shard (i.e. 'blue' if server was 'blue-5')
-        if server.rfind("-") > 0 and server[:server.rfind("-")] in available_configs:
-            shard_name = server[:server.rfind("-")]
+        shard_name = get_shard_base_name(server)
 
         if shard_name in available_configs:
             if available_configs[shard_name] is not None:
