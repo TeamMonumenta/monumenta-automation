@@ -130,6 +130,11 @@
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
+    "labs-2":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
+    "labs-3":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
+    "labs-4":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
+    "labs-5":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
+
     "lightblue": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
@@ -244,11 +249,6 @@
         "stage": { "node": "m18", "hugePageMB": 3072, },
         "volt" : { "node": "m18", "hugePageMB": 3072, },
     },
-    "fortune-2":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
-    "fortune-3":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
-    "fortune-4":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
-    "fortune-5":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
-
     "skt": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },

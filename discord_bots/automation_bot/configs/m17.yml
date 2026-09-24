@@ -135,10 +135,6 @@ shards:
     depths-2: /home/epic/play/m17/depths-2/
     forum: /home/epic/play/m17/forum/
     fortune: /home/epic/play/m17/fortune/
-    fortune-2: /home/epic/play/m17/fortune-2/
-    fortune-3: /home/epic/play/m17/fortune-3/
-    fortune-4: /home/epic/play/m17/fortune-4/
-    fortune-5: /home/epic/play/m17/fortune-5/
     gallery: /home/epic/play/m17/gallery/
     gray: /home/epic/play/m17/gray/
     guildplots: /home/epic/play/m17/guildplots/
@@ -147,6 +143,10 @@ shards:
     isles: /home/epic/play/m17/isles/
     isles-2: /home/epic/play/m17/isles-2/
     labs: /home/epic/play/m17/labs/
+    labs-2: /home/epic/play/m17/labs-2/
+    labs-3: /home/epic/play/m17/labs-3/
+    labs-4: /home/epic/play/m17/labs-4/
+    labs-5: /home/epic/play/m17/labs-5/
     lightblue: /home/epic/play/m17/lightblue/
     lightgray: /home/epic/play/m17/lightgray/
     lime: /home/epic/play/m17/lime/
