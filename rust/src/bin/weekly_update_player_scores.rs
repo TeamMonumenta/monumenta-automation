@@ -107,6 +107,10 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         scores.insert("AzacorAccess".to_string(), 0);
         scores.insert("DCZAccess".to_string(), 0);
 
+        // Revert me - reset Labs & D0Access scoreboards
+        scores.insert("Labs".to_string(), 0);
+        scores.insert("D0Access".to_string(), 0);
+
         fix_total_level(scores);
     }
 }
