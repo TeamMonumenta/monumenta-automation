@@ -1,21 +1,24 @@
 from datetime import datetime
 from datetime import timedelta
 from pprint import pformat
+import asyncio
 import copy
 import json
 import logging
 import threading
-import time
 import traceback
 import pika
-from pika.exceptions import StreamLostError
 from lib_py3.shard_health import ShardHealth
 
 logger = logging.getLogger(__name__)
 logging.getLogger("pika").setLevel(logging.WARNING)
 
 class SocketManager():
-    """A manager for RabbitMQ sockets"""
+    """A manager for RabbitMQ sockets
+
+    Call close() when done with it, or use it as a context manager (`with` / `async with`) to do so automatically.
+    Long-lived instances that are used for the life of the process do not need to be closed.
+    """
     BROADCAST_EXCHANGE_NAME = "broadcast"
     HEARTBEAT_CHANNEL = "monumentanetworkrelay.heartbeat"
 
@@ -43,6 +46,8 @@ class SocketManager():
         track_heartbeats: if True, keeps track of the last heartbeat from each online server
         """
         # Used only for sending packets to RabbitMQ - receiving will open its own connection
+        # pika connections are not thread safe, so all use of these must hold _send_lock
+        self._send_lock = threading.Lock()
         self._connection = None
         self._channel = None
 
@@ -56,6 +61,10 @@ class SocketManager():
 
         self._remote_heartbeats_lock = threading.Lock()
         self._remote_heartbeats = {}
+
+        # Set by close() to stop the consumer thread and reject further sends
+        self._closed = threading.Event()
+        self.thread = None
 
         logger.setLevel(log_level)
 
@@ -117,13 +126,17 @@ class SocketManager():
 
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
-        while True:
+        while not self._closed.is_set():
             connection = None
             channel = None
             try:
                 # Create the connection
                 connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
                 channel = connection.channel()
+
+                # close() may have been called while connecting
+                if self._closed.is_set():
+                    break
 
                 # Create the exchange for broadcast messages
                 logger.debug("Declaring exchange %s", self.BROADCAST_EXCHANGE_NAME)
@@ -141,39 +154,129 @@ class SocketManager():
                 ## Start consuming messages
                 logger.info("Started rabbitmq message consumer for queue %s", self._queue_name)
                 channel.basic_consume(queue=self._queue_name, on_message_callback=callback)
-                channel.start_consuming()
+
+                # Equivalent to channel.start_consuming(), but checks periodically whether close() was called.
+                # consumer_tags becomes empty if the broker cancels the consumer (e.g. the queue was deleted).
+                while channel.consumer_tags and not self._closed.is_set():
+                    connection.process_data_events(time_limit=1)
+
+                # pika logs the broker's reason when it closes the channel
+                if channel.is_closed:
+                    raise ConnectionError(f"Rabbitmq consumer channel for queue {self._queue_name} was closed")
+                if not self._closed.is_set():
+                    logger.warning("Rabbitmq consumer for queue %s was cancelled", self._queue_name)
             except Exception as e:
                 logger.warning("Rabbitmq consumer thread failed: %s", e)
                 logger.warning(traceback.format_exc())
+            finally:
+                # Always clean up, however consuming ended, so connections aren't leaked across reconnects.
+                # Failures here must not escape, or they would kill this thread and stop reconnecting.
+                try:
+                    if channel is not None and channel.is_open:
+                        channel.close()
+                except Exception:
+                    pass
+                try:
+                    if connection is not None and connection.is_open:
+                        connection.close()
+                except Exception:
+                    pass
 
-                if channel is not None and channel.is_open:
-                    channel.close()
-                if connection is not None and connection.is_open:
-                    connection.close()
-
+            if self._closed.is_set():
+                break
             logger.warning("Attempting to reconnect rabbitmq consumer...")
-            time.sleep(10)
+            # Wait before reconnecting, but wake up immediately if close() is called
+            self._closed.wait(10)
 
 
     def _ensure_channel_open_for_sending(self):
-        """Opens a connection and channel if one doesn't exist or it timed out, reuse channel otherwise"""
-        for retry_count in range(1, 3+1):
-            try:
-                if self._connection is None or self._connection.is_closed:
-                    self._connection = pika.BlockingConnection(pika.ConnectionParameters(host=self._rabbit_host))
+        """Opens a connection and channel if one doesn't exist or it was closed, reuse channel otherwise
 
-                if self._channel is None or self._channel.is_closed:
-                    self._channel = self._connection.channel()
+        Must be called with _send_lock held.
+        """
+        if self._connection is None or self._connection.is_closed:
+            self._channel = None
+            self._connection = pika.BlockingConnection(pika.ConnectionParameters(
+                host=self._rabbit_host,
+                # Fail fast rather than blocking the caller for a long time if rabbitmq is unavailable
+                # (socket_timeout / stack_timeout only cover establishing the connection)
+                connection_attempts=1,
+                socket_timeout=5,
+                stack_timeout=10,
+                # Give up if the broker is refusing publishes (memory/disk alarm) rather than blocking forever
+                blocked_connection_timeout=10,
+            ))
 
-                if self._channel.is_closed:
-                    raise ConnectionError("Failed to send message to rabbitmq despite attempting to reconnect")
+        if self._channel is None or self._channel.is_closed:
+            channel = self._connection.channel()
 
-                break
-            except StreamLostError:
-                if retry_count == 3:
-                    raise
+            # Publisher confirms make basic_publish wait for the broker to accept the message,
+            # so errors (lost connection, missing exchange, etc.) are raised by the send that caused them
+            # rather than surfacing later on an unrelated send. Note that a message sent directly to a
+            # queue that doesn't exist is still accepted and silently dropped, as before.
+            channel.confirm_delivery()
+
+            # The exchange is not durable, so it disappears whenever rabbitmq restarts.
+            # Re-declare it here so sending does not depend on the consumer thread having done so.
+            channel.exchange_declare(self.BROADCAST_EXCHANGE_NAME, exchange_type="fanout")
+
+            self._channel = channel
 
         return self._channel
+
+
+    def _reset_sending_connection(self):
+        """Discards the sending connection so the next send opens a fresh one
+
+        Must be called with _send_lock held.
+        """
+        connection = self._connection
+        self._connection = None
+        self._channel = None
+        if connection is not None and connection.is_open:
+            try:
+                connection.close()
+            except Exception:
+                pass
+
+
+    def close(self):
+        """Closes this SocketManager's connections and stops its consumer thread, if any
+
+        After this, sending raises an exception. Calling close() more than once is harmless.
+        This blocks briefly while connections shut down; use close_async() from async code.
+        """
+        self._closed.set()
+
+        # The consumer thread notices within a second (or once it finishes connecting), then cleans up its connection
+        if self.thread is not None and self.thread is not threading.current_thread():
+            self.thread.join(timeout=15)
+            if self.thread.is_alive():
+                logger.warning("Rabbitmq consumer thread for queue %s did not stop within 15 seconds of close()", self._queue_name)
+
+        with self._send_lock:
+            self._reset_sending_connection()
+
+
+    async def close_async(self):
+        """Same as close(), but runs in a worker thread so it does not block the asyncio event loop"""
+        await asyncio.to_thread(self.close)
+
+
+    def __enter__(self):
+        return self
+
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.close()
+
+
+    async def __aenter__(self):
+        return self
+
+
+    async def __aexit__(self, exc_type, exc_value, exc_traceback):
+        await self.close_async()
 
 
     def send_heartbeat(self):
@@ -182,6 +285,11 @@ class SocketManager():
         This does not need to be called when regularly sending data faster than the heartbeat interval.
         """
         self.send_packet("*", self.HEARTBEAT_CHANNEL, {})
+
+
+    async def send_heartbeat_async(self):
+        """Same as send_heartbeat(), but runs in a worker thread so it does not block the asyncio event loop"""
+        await self.send_packet_async("*", self.HEARTBEAT_CHANNEL, {})
 
 
     def remote_heartbeats(self):
@@ -236,8 +344,6 @@ class SocketManager():
         if heartbeat_data is None:
             heartbeat_data = {}
 
-        channel = self._ensure_channel_open_for_sending()
-
         packet = {
             "data": data,
             "source": self._queue_name,
@@ -272,13 +378,34 @@ class SocketManager():
             exchange = 'broadcast'
             routing_key = ''
 
-        channel.basic_publish(
-            exchange=exchange,
-            routing_key=routing_key,
-            body=encoded,
-            properties=pika.BasicProperties(
-                delivery_mode=2,  # make message persistent
-            )
-        )
+        with self._send_lock:
+            if self._closed.is_set():
+                raise ConnectionError(f"Cannot send rabbitmq message, SocketManager for queue {self._queue_name} is closed")
 
-        channel.close()
+            # If the existing connection has gone bad (rabbitmq restarted, idle connection timed out, etc.),
+            # throw it away and try once more with a fresh one before giving up
+            for attempt in range(2):
+                try:
+                    channel = self._ensure_channel_open_for_sending()
+                    channel.basic_publish(
+                        exchange=exchange,
+                        routing_key=routing_key,
+                        body=encoded,
+                        properties=pika.BasicProperties(
+                            delivery_mode=2,  # make message persistent
+                        )
+                    )
+                    return
+                except Exception as e:
+                    self._reset_sending_connection()
+                    if attempt > 0:
+                        raise
+                    logger.info("Failed to send rabbitmq message, reconnecting: %r", e)
+
+
+    async def send_packet_async(self, destination, operation, data, heartbeat_data=None, online=True):
+        """Same as send_packet(), but runs in a worker thread so it does not block the asyncio event loop
+
+        Still waits for the message to be sent (or fail) before returning, raising the same exceptions as send_packet()
+        """
+        await asyncio.to_thread(self.send_packet, destination, operation, data, heartbeat_data=heartbeat_data, online=online)

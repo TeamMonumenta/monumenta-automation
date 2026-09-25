@@ -14,8 +14,6 @@ import discord
 from discord.ext import commands
 from discord.ext import tasks
 
-import pika
-
 from config import Config
 from automation_bot_lib import split_string
 from automation_bot_instance import AutomationBotInstance
@@ -181,11 +179,12 @@ class AutomationBot(commands.Bot):
             return
 
         try:
-            self.instance._socket.send_heartbeat()
+            await self.instance._socket.send_heartbeat_async()
             self.retry_delays["heartbeat_retry_backoff"] = 1.0
             return
-        except pika.exceptions.StreamLostError as ex:
-            self.rlogger.debug("Heartbeat stream lost, will retry shortly: %s", f"{ex}")
+        except Exception as ex:
+            # Any uncaught exception here would permanently stop this task, so catch everything and retry
+            logging.warning("Failed to send rabbitmq heartbeat, will retry shortly: %r", ex)
 
         self.retry_delays["heartbeat"] = self.retry_delays["heartbeat_retry_backoff"]
         self.retry_delays["heartbeat_retry_backoff"] *= 2.0
