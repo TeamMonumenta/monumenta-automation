@@ -1097,7 +1097,7 @@ class AutomationBotInstance(commands.Cog):
 
         return raffle_seed
 
-    def send_tablist_event(self, event_name, time):
+    async def send_tablist_event(self, event_name, time):
         """Sends an event to display in the tab list"""
         event_data = {
             "shard": config.RABBITMQ["host"],
@@ -1105,20 +1105,20 @@ class AutomationBotInstance(commands.Cog):
             "timeLeft": time,
             "status": "STARTING" if time > 0 else "IN_PROGRESS",
         }
-        self._socket.send_packet("*", "monumenta.eventbroadcast.update", event_data)
+        await self._socket.send_packet_async("*", "monumenta.eventbroadcast.update", event_data)
 
-    def broadcast_command(self, cmd, server_type="minecraft", shard="*"):
+    async def broadcast_command(self, cmd, server_type="minecraft", shard="*"):
         """Broadcasts a command to all servers"""
         data = {
             "command": cmd
         }
         if server_type is not None:
             data["server_type"] = server_type
-        self._socket.send_packet(shard, "monumentanetworkrelay.command", data)
+        await self._socket.send_packet_async(shard, "monumentanetworkrelay.command", data)
 
-    def broadcast_json_msg(self, json_msg):
+    async def broadcast_json_msg(self, json_msg):
         """Broadcasts a command to all servers"""
-        self.broadcast_command("tellraw @a[all_worlds=true] " + json.dumps(json_msg, ensure_ascii=False, separators=(',', ':')))
+        await self.broadcast_command("tellraw @a[all_worlds=true] " + json.dumps(json_msg, ensure_ascii=False, separators=(',', ':')))
 
     async def _gameplay_event_summary(self):
         msg = []
@@ -1153,7 +1153,7 @@ class AutomationBotInstance(commands.Cog):
             ns = 'play'
 
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, str(value), message], displayOutput=displayOutput)
-        self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
+        await self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
 
 
     async def _get_lockout_message(self):
@@ -2291,25 +2291,25 @@ Must be run before starting the update on the play server
         seconds_delay = 60
         stop_time = now + timedelta(seconds=seconds_delay)
         if not skip_replacements:
-            self.broadcast_json_msg([
+            await self.broadcast_json_msg([
                 "",
                 {"text": "[Alert] ", "color":"red"},
                 {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"},
                 {"text": "overworld and dungeon", "color":"red"},
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
-            self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
-            self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+            await self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
         elif not debug:
-            self.broadcast_json_msg([
+            await self.broadcast_json_msg([
                 "",
                 {"text": "[Alert] ", "color":"red"},
                 {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"},
                 {"text": "overworld", "color":"red"},
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
-            self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
-            self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+            await self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
 
         async def await_warning_delay():
             await self.display(ctx, "Giving devs time to wrap up what they're doing")
@@ -2322,7 +2322,7 @@ Must be run before starting the update on the play server
                     while True:
                         await asyncio.sleep(3)
                         remaining_seconds = (stop_time - datetime.now(tz)) / second
-                        self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
+                        await self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
             except TimeoutError:
                 pass
 
@@ -2770,8 +2770,8 @@ old coreprotect data will be removed at the 5 minute mark.
             1,
         ], reverse=True)
 
-        self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
-        self.broadcast_json_msg([
+        await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+        await self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
                                  {"text":"Monumenta is going down at ", "color":"white"},
@@ -2794,9 +2794,9 @@ old coreprotect data will be removed at the 5 minute mark.
             return f"{minutes} minutes"
 
         async def send_broadcast_stop_msg(seconds):
-            self.send_tablist_event("SCHEDULED_MAINTENANCE", seconds)
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", seconds)
             time_left = seconds_to_string(seconds)
-            self.broadcast_json_msg([
+            await self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
                                  {"text":"The Monumenta server is stopping in ", "color":"white"},
@@ -2815,7 +2815,7 @@ old coreprotect data will be removed at the 5 minute mark.
                     while True:
                         await asyncio.sleep(3)
                         remaining_seconds = (stop_time - datetime.now(tz)) / second
-                        self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
+                        await self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
             except TimeoutError:
                 pass
 
@@ -2823,16 +2823,16 @@ old coreprotect data will be removed at the 5 minute mark.
                 await self.display(ctx, "Clearing coreprotect data older than 30 days")
                 for shard in self._shards:
                     if "plots" in shard:
-                        self.broadcast_command('co purge t:180d', shard=shard)
+                        await self.broadcast_command('co purge t:180d', shard=shard)
                     elif shard not in ["build",]:
-                        self.broadcast_command('co purge t:30d', shard=shard)
+                        await self.broadcast_command('co purge t:30d', shard=shard)
             if next_target == 15:
-                self.broadcast_command('save-all')
+                await self.broadcast_command('save-all')
 
             await send_broadcast_stop_msg(next_target)
 
         # Stop velocity (I guess you could uh... run maintenance?)
-        self.broadcast_command('maintenance on', server_type="proxy")
+        await self.broadcast_command('maintenance on', server_type="proxy")
         await asyncio.sleep(5)
         # TODO: don't hardcode velocity instances here
         shards = await self._k8s.list()
@@ -2840,7 +2840,7 @@ old coreprotect data will be removed at the 5 minute mark.
         await self.stop(ctx, velocityShards, owner=message)
 
         await self.display(ctx, message.author.mention)
-        self.send_tablist_event("SCHEDULED_MAINTENANCE", -1)
+        await self.send_tablist_event("SCHEDULED_MAINTENANCE", -1)
 
     async def action_stop_and_backup(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Dangerous!
@@ -3164,7 +3164,6 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             raise Exception("WARNING: bot doesn't have stage source, aborting")
 
         log_level = config.RABBITMQ.get("log_level", 20)
-        play_broker = SocketManager("rabbitmq.play", "stagebot", callback=None, log_level=log_level)
 
         # Stop all shards belonging to this bot instance
         # This will fail if there's a lockout in place, so do this at the beginning
@@ -3186,17 +3185,18 @@ Archives the previous stage server contents under 0_PREVIOUS '''
 
         await asyncio.sleep(15)
 
-        port = 1111
-        for server_name in config.STAGE_SOURCE:
-            server_section = config.STAGE_SOURCE[server_name]
-            stage_msg = {
-                "shards": server_section["shards"],
-                "address": f"{config.RABBITMQ['name']}.{config.K8S_NAMESPACE}",
-                "port": port,
-            }
-            await self.display(ctx, f"Sending request to {server_section['queue_name']} with config {pformat(stage_msg)}")
-            play_broker.send_packet(server_section["queue_name"], "Monumenta.Automation.stage", stage_msg)
-            port += 1
+        async with SocketManager("rabbitmq.play", "stagebot", callback=None, log_level=log_level) as play_broker:
+            port = 1111
+            for server_name in config.STAGE_SOURCE:
+                server_section = config.STAGE_SOURCE[server_name]
+                stage_msg = {
+                    "shards": server_section["shards"],
+                    "address": f"{config.RABBITMQ['name']}.{config.K8S_NAMESPACE}",
+                    "port": port,
+                }
+                await self.display(ctx, f"Sending request to {server_section['queue_name']} with config {pformat(stage_msg)}")
+                await play_broker.send_packet_async(server_section["queue_name"], "Monumenta.Automation.stage", stage_msg)
+                port += 1
 
         await self.display(ctx, "Finished launching copy tasks, waiting for them to complete. This will take a while...")
         for task in tasks:
@@ -3604,7 +3604,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
-        self.broadcast_command(commandArgs, server_type=None)
+        await self.broadcast_command(commandArgs, server_type=None)
 
     async def action_broadcastbungeecommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all bungeecord instances
@@ -3615,7 +3615,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all bungee servers")
-        self.broadcast_command(commandArgs, server_type="bungee")
+        await self.broadcast_command(commandArgs, server_type="bungee")
 
     async def action_broadcastminecraftcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all minecraft instances
@@ -3626,7 +3626,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all minecraft servers")
-        self.broadcast_command(commandArgs)
+        await self.broadcast_command(commandArgs)
 
     async def action_broadcastproxycommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all proxy instances
@@ -3637,7 +3637,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all proxy servers")
-        self.broadcast_command(commandArgs, server_type="proxy")
+        await self.broadcast_command(commandArgs, server_type="proxy")
 
 
     async def action_deop(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3648,7 +3648,7 @@ Syntax:
         commandArgs = "deop " + playerArg
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
-        self.broadcast_command(commandArgs, server_type=None)
+        await self.broadcast_command(commandArgs, server_type=None)
 
 
     async def action_op(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3659,7 +3659,7 @@ Syntax:
         commandArgs = "op " + playerArg
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
-        self.broadcast_command(commandArgs, server_type=None)
+        await self.broadcast_command(commandArgs, server_type=None)
 
 
     async def action_sendcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3700,7 +3700,7 @@ Examples:
 
         await self.display(ctx, f"Broadcasting command {shard_cmd!r} to {shards!r}")
         for shard in shards:
-            self.broadcast_command(shard_cmd, shard=shard)
+            await self.broadcast_command(shard_cmd, shard=shard)
         await self.display(ctx, "Done!")
 
 
