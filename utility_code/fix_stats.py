@@ -22,10 +22,12 @@ IGNORED_PATHS = {
 
 
 def blank_current_line():
+    """Erases the text on the current line so that it can be overwritten"""
     print(BLANK_LINE, end='', flush=False)
 
 
 def fix_signed_32_bit(num):
+    """Returns signed 32-bit numbers as unsigned arbitrary precision integers, assuming they wrapped around as signed 32-bit values no more than once"""
     if num < 0:
         return num + 2**32
     return num
@@ -41,6 +43,7 @@ class StatFileManager():
 
 
     def scan(self):
+        """Scan for player stat files of miscellaneous versions and report the data types for each field in those versions"""
         start_time = datetime.now()
         next_update = start_time
 
@@ -104,6 +107,7 @@ class StatFileManager():
 
 
     def merge(self):
+        """Merge player stat files that are all on the same version"""
         start_time = datetime.now()
         next_update = start_time
 
@@ -136,6 +140,7 @@ class StatFileManager():
                     merged_data = json.load(fp)
             else:
                 merged_data["stats"] = {}
+                merged_data["DataVersion"] = stat_data["DataVersion"]
                 for key, value in stat_data.items():
                     if key != "stats":
                         merged_data[key] = value
@@ -172,6 +177,7 @@ class StatFileManager():
 
 
     def iter_files(self):
+        """Yields the path and parsed contents of every json file in expected stats folders"""
         for stat_folder in self.iter_stat_folders():
             for stat_path in stat_folder.glob('*.json'):
                 try:
@@ -187,6 +193,7 @@ class StatFileManager():
 
 
     def iter_stat_folders(self):
+        """Yields expected stats folders"""
         for stat_folder in sorted(self._root_folder.glob('**/Project_Epic-*/stats')):
             if not stat_folder.is_dir() or any(x in str(stat_folder) for x in IGNORED_PATHS):
                 continue
