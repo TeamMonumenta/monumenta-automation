@@ -33,5 +33,5 @@ pub fn load_configs(dir: &str) -> anyhow::Result<Vec<LeaderboardConfig>> {
         }
     }
 
-    return Ok(res);
+    Ok(res)
 }
