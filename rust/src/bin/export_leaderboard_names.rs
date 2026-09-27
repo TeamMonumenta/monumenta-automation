@@ -1,17 +1,10 @@
-use std::{collections::HashSet, env, fs::File, io};
+use std::{env, fs::File, io};
 
 use log::LevelFilter;
-use serde::{Deserialize, Serialize};
+use monumenta::leaderboards;
+use serde::Serialize;
 use simplelog::{ColorChoice, CombinedLogger, Config, SharedLogger, TermLogger, TerminalMode};
-use walkdir::WalkDir;
 
-#[derive(Deserialize)]
-struct LeaderboardConfig {
-    objective: String,
-    plain_display_name: String,
-    category: Option<String>,
-    release: Option<String>,
-}
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct LeaderboardOut {
@@ -43,30 +36,15 @@ fn main() -> anyhow::Result<()> {
     let output_file = args.remove(0);
 
     // Get all valid json entries in specified config dir.
-    let mut entries: Vec<LeaderboardOut> = Vec::new();
-    let mut seen: HashSet<String> = HashSet::new();
-
-    for entry in WalkDir::new(&lb_config_dir) {
-        let entry = entry?;
-
-        if entry.file_type().is_file() && entry.path().extension().is_some_and(|ext| ext == "json") {
-            let file = File::open(entry.path())?;
-            let cfg: LeaderboardConfig = serde_json::from_reader(io::BufReader::new(file))?;
-
-            // Skip duplicate entries (there shouldn't be any, but just in case)
-            if seen.contains(&cfg.objective) {
-                continue;
-            }
-
-            seen.insert(cfg.objective.clone());
-            entries.push(LeaderboardOut {
-                objective: cfg.objective,
-                display_name: cfg.plain_display_name,
-                category: cfg.category,
-                release: cfg.release,
-            });
-        }
-    }
+    let entries: Vec<LeaderboardOut> = leaderboards::load_configs(&lb_config_dir)?
+        .into_iter()
+        .map(|cfg| LeaderboardOut {
+            objective: cfg.objective,
+            display_name: cfg.plain_display_name,
+            category: cfg.category,
+            release: cfg.release,
+        })
+        .collect();
 
     // Write to output file
     let file = File::create(&output_file)?;
