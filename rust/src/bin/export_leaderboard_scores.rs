@@ -26,6 +26,9 @@ fn main() -> anyhow::Result<()> {
     ) as Box<dyn SharedLogger>])
     .unwrap();
 
+    // TODO: remove timer logs after a couple queries
+    let timer_start = std::time::Instant::now();
+
     let mut args: Vec<String> = env::args().collect();
 
     if args.len() != 5 {
@@ -70,6 +73,13 @@ fn main() -> anyhow::Result<()> {
         serde_json::to_writer_pretty(&mut writer, &scores)?;
         writer.flush()?;
     }
+
+    // TODO: remove timer logs after a couple queries
+    log::info!(
+        "export_leaderboard_scores: successfully exported {} leaderboards in {:.2}s",
+        configs.len(),
+        timer_start.elapsed().as_secs_f64()
+    );
 
     Ok(())
 }
