@@ -69,6 +69,7 @@ spec:
       labels:
         app: automation-bot
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -112,6 +113,17 @@ spec:
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot
         tty: false
         stdin: false
+        resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): 153 MiB median, 2.4 GiB peak RSS
+          # (2.6 GiB working set). Build rebuilds worlds and runs conversions, so the
+          # peak is real but much smaller than the play bot's maintenance-window spike.
+          # 16Gi limit gives room for a large conversion without risking the node.
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: "12"
+            memory: 16Gi
         volumeMounts:
         - name: nfs-data
           mountPath: /home/epic/project_epic
@@ -127,6 +139,3 @@ spec:
           mountPath: /home/epic/5_SCRATCH
         - name: secret-config
           mountPath: /home/epic/.monumenta_bot
-        resources:
-          limits:
-            cpu: "4"

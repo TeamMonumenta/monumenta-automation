@@ -52,6 +52,7 @@ spec:
       labels:
         app: automation-bot-m18
     spec:
+      priorityClassName: monumenta-volt
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -123,7 +124,16 @@ spec:
         - name: secret-config
           mountPath: /home/epic/.monumenta_bot
         resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): ~135 MiB median, 255 MiB peak RSS
+          # (427 MiB working set). The limit is far above that on purpose: this bot runs
+          # the weekly test update, the same class of job that takes play's m17 bot to
+          # ~44 GiB. Nothing that large has been observed here in the 2026-09-07 to
+          # 2026-09-17 UTC window, but the workload is the same shape, so 16Gi is
+          # headroom rather than a measured requirement. Request stays small so it does
+          # not hold capacity while idle, which is ~99% of the time.
           requests:
             cpu: "0"
+            memory: 384Mi
           limits:
             cpu: "12"
+            memory: 16Gi

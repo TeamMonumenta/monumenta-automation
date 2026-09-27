@@ -52,6 +52,7 @@ spec:
       labels:
         app: mysql
     spec:
+      priorityClassName: monumenta-stage-data
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -82,6 +83,12 @@ spec:
         - name: mysql-config
           mountPath: /etc/mysql/conf.d
         resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): ~315 MiB median, 375 MiB peak RSS.
+          # Much smaller than play/mysql because innodb_buffer_pool_size is set to 64M
+          # here and is left at the MariaDB default in play.
+          requests:
+            cpu: 250m
+            memory: 512Mi
           limits:
             memory: 2Gi
             cpu: "2"

@@ -43,6 +43,7 @@ spec:
       labels:
         app: velocity-18
     spec:
+      priorityClassName: monumenta-stage
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -102,8 +103,38 @@ spec:
           mountPath: /home/epic/stage/m18
         resources:
           limits:
-            memory: 1Gi
-            hugepages-2Mi: 704Mi
+            # Non-hugepage memory was 1Gi with a 64Mi request. Measured working set is
+            # 920-1009 MiB -- sitting on the limit -- and both volt proxies show
+            # last-terminated-reason OOMKilled. Raised to 2560Mi.
+            #
+            # Hugepages raised 704Mi -> 826Mi. The formula in
+            # helm/shard/templates/deployment.yaml gives
+            #   JAVA_MEM + JAVA_MEM/64 + JAVA_MEM/256 + 240 + 64
+            #   = 512 + 8 + 2 + 240 + 64 = 826Mi
+            # so 704Mi was 122Mi short of what the JVM maps with -XX:+UseLargePages.
+            #
+            # The 1Gi -> 2560Mi raise is what fixes the OOM kills, on its own: a
+            # Velocity proxy's Netty direct buffers and thread stacks simply need more
+            # than 1 GiB, and the measured 920-1009 MiB was sitting on the old limit.
+            #
+            # UNRESOLVED, and NOT the justification for the raise: there is a plausible
+            # story where the hugepage shortfall contributed, because a JVM that cannot
+            # reserve large pages falls back to 4 KiB ones and that memory then lands in
+            # the `memory` budget instead. The circumstantial evidence is that
+            # build/shards/velocity-18.yml -- same image, same JAVA_MEM 512M, but 1024Mi
+            # of hugepages, above the requirement -- uses 453 MiB of normal memory
+            # against 994 MiB here. The evidence against is that these pods report
+            # OOMKilled, whereas a pod-level hugetlb shortfall charged at fault time
+            # would SIGBUS instead. Which of the two happens depends on whether the
+            # hugetlb cgroup charges at mmap time or fault time, which cannot be
+            # determined without node access. Treat it as unexplained. To settle it on a
+            # node:
+            #   kubectl logs <pod> | grep -i 'large page'
+            #   grep -c 'KernelPageSize:     2048 kB' /proc/<java pid>/smaps
+            cpu: "4"
+            memory: 2560Mi
+            hugepages-2Mi: 826Mi
           requests:
-            memory: 64Mi
-            hugepages-2Mi: 704Mi
+            cpu: "1"
+            memory: 1280Mi
+            hugepages-2Mi: 826Mi

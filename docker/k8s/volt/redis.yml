@@ -33,6 +33,7 @@ spec:
       labels:
         app: redis
     spec:
+      priorityClassName: monumenta-volt-data
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -54,12 +55,37 @@ spec:
         - name: redis-config
           mountPath: /usr/local/etc/redis/
         command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+        resources:
+          # container_memory_rss over 10 days (2026-09-07 to 2026-09-17 UTC):
+          # 5.9 GiB median, 6.1 GiB peak. The request covers the steady state; the
+          # limit is deliberately much larger because these environments are
+          # periodically loaded with a copy of the play dataset for pre-release
+          # testing, which takes them to roughly what play/redis uses (~19 GiB).
+          #
+          # Burstable rather than Guaranteed, unlike play/redis: reserving 20Gi
+          # permanently for a preproduction environment is not a good trade. Be
+          # clear about what that costs -- a Burstable pod requesting 6656Mi on
+          # this node gets oom_score_adj around 945, so if the NODE runs out the
+          # kernel picks this long before anything Guaranteed. The priority
+          # class ranks it above the shards in its own namespace for eviction
+          # and preemption, but priority has no effect on the kernel OOM killer.
+          # This redis is not protected the way play/redis is, and that is the
+          # accepted trade for preproduction.
+          requests:
+            cpu: 500m
+            memory: 6656Mi
+          limits:
+            cpu: "4"
+            memory: 20Gi
       - name: redis-exporter
         image: oliver006/redis_exporter:latest
         resources:
           requests:
             cpu: 100m
-            memory: 100Mi
+            memory: 32Mi
+          limits:
+            cpu: 500m
+            memory: 128Mi
         ports:
         - containerPort: 9121
       volumes:

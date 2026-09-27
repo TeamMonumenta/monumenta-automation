@@ -26,6 +26,10 @@ spec:
   selector:
     matchLabels:
       app: redisbackup
+  # Scaled to 0 in normal operation. This was previously implicit -- there was
+  # no replicas field, so `kubectl apply -f` would create one. Harmless while
+  # the pod had no resources; not harmless now that it asks for 36Gi.
+  replicas: 0
   strategy:
     type: Recreate
   template:
@@ -33,6 +37,7 @@ spec:
       labels:
         app: redisbackup
     spec:
+      priorityClassName: monumenta-play-backup
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -54,6 +59,23 @@ spec:
         - name: redisbackup-config
           mountPath: /usr/local/etc/redis/
         command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+        resources:
+          # Scaled to 0 above. It loads the same dataset as play/redis, so when
+          # it IS scaled up it needs a comparable budget -- around 19 GiB today.
+          # Sizing it means the scheduler refuses to place it when m17 has no
+          # room, instead of admitting it and letting the node run out.
+          #
+          # Priority is monumenta-play-backup, BELOW the play shards, and not
+          # monumenta-play-data. This is a maintenance tool: it must never
+          # preempt live player capacity to schedule itself. At 36Gi against a
+          # play shard's ~1.8Gi request, a higher class would evict on the order
+          # of twenty shards to make room for it.
+          requests:
+            cpu: "2"
+            memory: 36Gi
+          limits:
+            cpu: "2"
+            memory: 36Gi
       volumes:
         - name: redisbackup-persistent-storage
           hostPath:
@@ -340,7 +362,10 @@ data:
     # limit for maxmemory so that there is some free RAM on the system for replica
     # output buffers (but this is not needed if the policy is 'noeviction').
     #
-    # maxmemory <bytes>
+    # Same reasoning as play/redis.yml: bound used_memory below the 36Gi cgroup
+    # limit so this refuses writes rather than being OOM killed, leaving room
+    # for allocator fragmentation and BGSAVE copy-on-write.
+    maxmemory 26gb
 
     # MAXMEMORY POLICY: how Redis will select what to remove when maxmemory
     # is reached. You can select among five behaviors:

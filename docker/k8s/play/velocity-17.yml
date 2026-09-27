@@ -78,6 +78,7 @@ spec:
       labels:
         app: velocity-17
     spec:
+      priorityClassName: monumenta-play
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -151,10 +152,29 @@ spec:
           mountPath: /home/epic/5_SCRATCH
         resources:
           limits:
+            # Non-hugepage memory was 6Gi request AND limit. Measured working set over
+            # 10 days (2026-09-07 to 2026-09-17 UTC) is 860 MiB median, 994 MiB peak --
+            # the 6Gi reservation was holding ~5.1 GiB of m17 that nothing could use.
+            # The Java heap is in hugepages; this budget is only metaspace, thread
+            # stacks, Netty direct buffers and native allocations.
             cpu: "8"
-            memory: 6Gi
-            hugepages-2Mi: 6Gi
+            memory: 3Gi
+            # Hugepages from the formula in helm/shard/templates/deployment.yaml:
+            #   JAVA_MEM + JAVA_MEM/64 + JAVA_MEM/256 + 240 (code cache) + 64
+            # rounded up to an even MiB. JAVA_MEM 5G: 5120 + 80 + 20 + 240 + 64 =
+            # 5524Mi, PLUS 256Mi of deliberate margin = 5780Mi (was 6144Mi).
+            #
+            # The extra 256Mi is not in the shard formula and is specific to the two
+            # play proxies. Every player connects through these, so both down is a total
+            # outage, and a hugepage shortfall does not fail cleanly -- depending on
+            # whether the hugetlb cgroup charges at mmap or at fault time you get either
+            # a silent fallback to 4Ki pages (which pushes memory into the `memory`
+            # budget) or a SIGBUS in a random thread long after startup. Neither is
+            # something to discover in production on a 64Mi margin. For reference, the
+            # JDK 25 image would need +160Mi of code cache on its own, which would have
+            # consumed 2.5x the formula's entire margin.
+            hugepages-2Mi: 5780Mi
           requests:
             cpu: "1"
-            memory: 6Gi
-            hugepages-2Mi: 6Gi
+            memory: 1536Mi
+            hugepages-2Mi: 5780Mi

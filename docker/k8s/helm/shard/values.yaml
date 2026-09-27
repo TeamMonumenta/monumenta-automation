@@ -34,10 +34,20 @@ nodeFull: "monumenta-8"
 # is not rounded up past what was budgeted for it.
 hugePageMB: 6144
 
-# JIT code cache: -XX:ReservedCodeCacheSize, which JDK 21 defaults to 240M. All
-# of it is hugepage backed from startup, because hugetlbfs mappings are mapped in
-# full when they are reserved rather than committed on demand. Only change this
-# if the JVM is started with an explicit -XX:ReservedCodeCacheSize.
+# JIT code cache: -XX:ReservedCodeCacheSize, which JDK 21 defaults to 240M. All of it is
+# hugepage backed from startup, because hugetlbfs mappings are mapped in full when they
+# are reserved rather than committed on demand. Only change this if the JVM is started
+# with an explicit -XX:ReservedCodeCacheSize.
+#
+# WATCH THIS IF THE IMAGE CHANGES (and see the mark bitmap note in
+# templates/deployment.yaml -- the /64 term is JDK 21 specific; JDK 17 and earlier keep
+# two mark bitmaps, so that term becomes /32): docker/monumenta.sh (used by the
+# monumenta-java-shard-21 image, which is what every shard runs today) leaves this at
+# the JDK default. docker/monumenta-25.sh sets -XX:ReservedCodeCacheSize=400M. Moving a
+# shard to a JDK 25 image without changing this to 400 leaves the hugepage budget 160Mi
+# short, and the JVM will quietly fall back to 4 KiB pages for the shortfall -- which
+# moves that memory into the memMB budget below and can turn into an OOM kill instead of
+# an obvious hugepage error.
 codeCacheMB: 240
 
 # Rounding of each hugepage mapping up to a whole 2Mi page, plus safety margin.
@@ -70,9 +80,35 @@ hugePageHeadroomMB: 64
 # for now.
 memMB: 2048
 
-# Non-hugepage memory request: what a healthy shard is expected to occupy, and
-# what the scheduler uses to decide how many shards fit on a node.
-memRequestMB: 1280
+# Non-hugepage memory request: what a healthy shard is expected to occupy, and what the
+# scheduler uses to decide how many shards fit on a node.
+#
+# Set per shard in shard_deployment_tool_config.yaml from
+# container_memory_working_set_bytes over 10 days (2026-09-07 to 2026-09-17 UTC): the
+# p95 for play, the p90 for build/stage/volt, rounded up to the next 64Mi. Re-measure
+# over a fresh window before trusting these again -- the figures predate any change to
+# shard counts, plugin set or player population, and the window deliberately included
+# one weekly maintenance cycle.
+#
+# WHY A HIGH PERCENTILE AND NOT THE MEDIAN. The kubelet's eviction order is
+#     orderedBy(exceedMemoryRequests, priority, memory)
+# (pkg/kubelet/eviction/helpers.go, rankMemoryPressure). The "is this pod over its
+# request" test runs BEFORE priority. So any pod above its request is evicted before any
+# pod below its request, whatever their priority classes say. Requests set at the median
+# would put roughly half the play fleet above its request at any instant, while idle
+# stage/volt shards sat below theirs -- which would evict play shards first and exactly
+# invert the ordering the priority classes exist to create. Play sits at p95 and
+# preproduction at p90 so that play is the tier least likely to be in that first group.
+#
+# The cost of p95 over the median is only ~10 GiB across the whole play fleet, because
+# most shards are small and their p50 and p95 are close together. The expensive shards
+# (ring*, valley*, isles*) are the ones that needed it.
+#
+# This default applies to shards with no per-shard entry -- mostly shards that are
+# defined but were not running during the measurement window, so there is no data for
+# them. It is deliberately above the small-shard p95 rather than at it, because an
+# unmeasured shard is the one most likely to surprise us.
+memRequestMB: 1024
 
 # Whether performance metrics will be scraped every few seconds or tens of seconds
 fastMetrics: false
@@ -94,9 +130,14 @@ cpuLimits: "2"
 # CPU ActiveProcessorCount - number of cpu threads this shard can see
 cpuActiveProcessorCount: 2
 
-# Which domain the shard sends exception reports to
-# This exists solely for the build shard to send exception reports to the build server, everything else should be in the same domain
-# null gets defaulted to the namespace
+# Priority tier, from docker/k8s/priority-classes.yml. Overridden per namespace in
+# shard_deployment_tool_config.yaml so that play shards outrank build, which outranks
+# stage and volt.
+priorityClassName: "monumenta-play"
+
+# Which domain the shard sends exception reports to This exists solely for the build
+# shard to send exception reports to the build server, everything else should be in the
+# same domain null gets defaulted to the namespace
 exceptLogIngestDomain: null
 
 # Whether automated heap dumps are enabled or not when memory is low

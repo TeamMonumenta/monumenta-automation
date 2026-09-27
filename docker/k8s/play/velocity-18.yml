@@ -43,6 +43,7 @@ spec:
       labels:
         app: velocity-18
     spec:
+      priorityClassName: monumenta-play
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -118,10 +119,18 @@ spec:
           mountPath: /home/epic/5_SCRATCH
         resources:
           limits:
+            # Measured working set: 681 MiB median, 817 MiB peak over 10 days
+            # (2026-09-07 to 2026-09-17 UTC).
             cpu: "8"
-            memory: 2608Mi
-            hugepages-2Mi: 4608Mi
+            memory: 2560Mi
+            # Hugepages from the formula in helm/shard/templates/deployment.yaml:
+            #   JAVA_MEM + JAVA_MEM/64 + JAVA_MEM/256 + 240 (code cache) + 64
+            # rounded up to an even MiB. JAVA_MEM 2G: 2048 + 32 + 8 + 240 + 64 = 2392Mi,
+            # PLUS 256Mi of deliberate margin = 2648Mi (was 4608Mi, which was nearly
+            # double what the JVM can actually map). See velocity-17.yml for why the two
+            # play proxies get margin the shards do not.
+            hugepages-2Mi: 2648Mi
           requests:
             cpu: "1"
-            memory: 2608Mi
-            hugepages-2Mi: 4608Mi
+            memory: 1280Mi
+            hugepages-2Mi: 2648Mi

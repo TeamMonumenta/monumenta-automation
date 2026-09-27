@@ -40,6 +40,7 @@ spec:
       labels:
         app: rabbitmq
     spec:
+      priorityClassName: monumenta-build-data
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -66,12 +67,14 @@ spec:
           mountPath: /etc/rabbitmq/conf.d/20-monumenta-custom.conf
           subPath: 20-monumenta-custom.conf
         resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): 132 MiB median, 152 MiB peak RSS.
+          # Request was 64Mi.
+          requests:
+            cpu: 100m
+            memory: 384Mi
           limits:
             cpu: 2
             memory: 1Gi
-          requests:
-            cpu: 100m
-            memory: 64Mi
       volumes:
         - name: rabbitmq-config
           configMap:
