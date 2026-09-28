@@ -8,7 +8,7 @@ pub struct LeaderboardConfig {
     pub objective: String,
     pub plain_display_name: String,
     pub category: Option<String>,
-    pub release: Option<String>,
+    pub hidden: bool,
 }
 
 pub fn load_configs(dir: &str) -> anyhow::Result<Vec<LeaderboardConfig>> {

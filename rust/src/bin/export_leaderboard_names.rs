@@ -11,7 +11,7 @@ struct LeaderboardOut {
     objective: String,
     display_name: String,
     category: Option<String>,
-    release: Option<String>,
+    hidden: bool,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -42,7 +42,7 @@ fn main() -> anyhow::Result<()> {
             objective: cfg.objective,
             display_name: cfg.plain_display_name,
             category: cfg.category,
-            release: cfg.release,
+            hidden: cfg.hidden,
         })
         .collect();
 
