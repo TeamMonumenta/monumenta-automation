@@ -2291,6 +2291,7 @@ Must be run before starting the update on the play server
         seconds_delay = 60
         stop_time = now + timedelta(seconds=seconds_delay)
         if not skip_replacements:
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
             await self.broadcast_json_msg([
                 "",
                 {"text": "[Alert] ", "color":"red"},
@@ -2299,8 +2300,8 @@ Must be run before starting the update on the play server
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
             await self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
-            await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
         elif not debug:
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
             await self.broadcast_json_msg([
                 "",
                 {"text": "[Alert] ", "color":"red"},
@@ -2309,7 +2310,6 @@ Must be run before starting the update on the play server
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
             await self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
-            await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
 
         async def await_warning_delay():
             await self.display(ctx, "Giving devs time to wrap up what they're doing")

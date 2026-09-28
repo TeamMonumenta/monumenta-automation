@@ -170,12 +170,8 @@ class SocketManager():
                 logger.warning(traceback.format_exc())
             finally:
                 # Always clean up, however consuming ended, so connections aren't leaked across reconnects.
+                # Closing the connection also cancels the consumer and closes the channel.
                 # Failures here must not escape, or they would kill this thread and stop reconnecting.
-                try:
-                    if channel is not None and channel.is_open:
-                        channel.close()
-                except Exception:
-                    pass
                 try:
                     if connection is not None and connection.is_open:
                         connection.close()
