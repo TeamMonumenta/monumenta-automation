@@ -3057,7 +3057,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 15 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Refreshing leaderboards")
-            await self.run(ctx, os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
+            await self.run(ctx, os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(self._server_dir, "server_config/data/scriptedquests/leaderboards"))
 
         if min_phase <= 16 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Restarting rabbitmq")
