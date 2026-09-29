@@ -422,6 +422,8 @@ if __name__ == '__main__':
         ('plugins/ScriptedQuests/growables/0_common', '../../../../server_config/data/scriptedquests/growables/common'),
         ('plugins/ScriptedQuests/guis/1_{servername}', '../../../../server_config/data/scriptedquests/guis/{servername}'),
         ('plugins/ScriptedQuests/guis/0_common', '../../../../server_config/data/scriptedquests/guis/common'),
+        ('plugins/ScriptedQuests/leaderboards/1_{servername}', '../../../../server_config/data/scriptedquests/leaderboards/{servername}'),
+        ('plugins/ScriptedQuests/leaderboards/0_common', '../../../../server_config/data/scriptedquests/leaderboards/common'),
         ('plugins/ScriptedQuests/traders/1_{servername}', '../../../../server_config/data/scriptedquests/traders/{servername}'),
         ('plugins/ScriptedQuests/traders/0_common', '../../../../server_config/data/scriptedquests/traders/common'),
         ('plugins/ScriptedQuests/codes/1_{servername}', '../../../../server_config/data/scriptedquests/codes/{servername}'),
