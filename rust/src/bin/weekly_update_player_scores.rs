@@ -61,6 +61,57 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
 }
 
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
+    let scores_to_remove = HashSet::from([
+        "DPSAccess",
+        "DMASAccess",
+        "AzacorAccess",
+        "GodsporeAccess",
+        "DFSAccess",
+        "DVAccess",
+        "DFSFinished",
+        "DVFinished",
+    ]);
+    
+    let dungeon_codes_access = HashMap::from([
+        ("Tutorial", "T"),
+        ("Labs", "0"),
+        ("White", "1"),
+        ("Orange", "2"),
+        ("Magenta", "3"),
+        ("LightBlue", "4"),
+        ("Yellow", "5"),
+        ("Willows", "B1"),
+        ("Reverie", "C"),
+        ("Corridors", "R"),
+        
+        ("Lime", "6"),
+        ("Pink", "7"),
+        ("Gray", "8"),
+        ("LightGray", "9"),
+        ("Cyan", "10"),
+        ("Purple", "11"),
+        ("Teal", "TL"),
+        ("Shifting", "RL2"),
+        ("Forum", "FF"),
+        ("Rush", "RD"),
+        ("Depths", "D"), // it's D and not DD, so it ends up as DDAccess
+        
+        ("Blue", "12"),
+        ("Brown", "13"),
+        ("Indigo", "I"),
+        ("SKT", "SKT"),
+        ("Gallery", "G"),
+        ("Zenith", "CZ"),
+        ("Hexfall", "HF"),
+        ("Fortune", "WF"),
+    ]);
+    
+    let dungeon_Codes_startdate = HashMap::from([
+        ("Willows", "BW"),
+        ("Reverie", "MR"),
+        ("Shifting", "CS"),
+    ]);
+    
     if let Some(scores) = &mut player.scores {
         /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
         update_instance_scores(scores, days_since_epoch, "D0StartDate", 28, &["D0Access", "D0Finished"]);
@@ -101,10 +152,6 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         // Ring scores
         scores.insert("DR3Access".to_string(), 0);
         scores.insert("DGAccess".to_string(), 0);
-        scores.insert("DPSAccess".to_string(), 0);
-        scores.insert("DMASAccess".to_string(), 0);
-        scores.insert("GodsporeAccess".to_string(), 0);
-        scores.insert("AzacorAccess".to_string(), 0);
         scores.insert("DCZAccess".to_string(), 0);
 
         fix_total_level(scores);
