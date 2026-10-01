@@ -33,6 +33,7 @@ spec:
               hostPath:
                 type: Directory
                 path: /nfs/play/leaderboards
+          restartPolicy: Never
           containers:
             - name: automation-bot
               image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
@@ -56,4 +57,3 @@ spec:
                 requests:
                   cpu: 100m
                   memory: 1536Mi
-              restartPolicy: Never
