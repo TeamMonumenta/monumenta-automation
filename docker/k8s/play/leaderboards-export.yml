@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cron-leaderboards-export
+  namespace: play
+  labels:
+    app: cron-leaderboards-export
+spec:
+  # Daily at 5 am server time (around 1.25h after daily restart)
+  schedule: "0 5 * * *"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 600
+      template:
+        spec:
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: In
+                        values:
+                          - monumenta-17
+          volumes:
+            - name: lb-configs
+              hostPath:
+                type: Directory
+                path: /nfs/play/m17/server_config/data/scriptedquests/leaderboards
+            - name: leaderboards
+              hostPath:
+                type: Directory
+                path: /nfs/play/leaderboards
+          containers:
+            - name: automation-bot
+              image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
+              tty: false
+              stdin: false
+              volumeMounts:
+                - name: lb-configs
+                  mountPath: /configs
+                  readOnly: true
+                - name: leaderboards
+                  mountPath: /leaderboards
+              command:
+                - sh
+                - -c
+                - >-
+                  /home/epic/MCEdit-And-Automation/rust/bin/export_leaderboard_names /configs /leaderboards/leaderboards.json && /home/epic/MCEdit-And-Automation/rust/bin/export_leaderboard_scores redis://redis.play/ play /configs /leaderboards/scores
+              resources:
+                limits:
+                  cpu: 250m
+                  memory: 4Gi
+                requests:
+                  cpu: 100m
+                  memory: 1536Mi
+              restartPolicy: Never

@@ -418,6 +418,8 @@ if __name__ == '__main__':
         ('plugins/ScriptedQuests/npcs/0_common', '../../../../server_config/data/scriptedquests/npcs/common'),
         ('plugins/ScriptedQuests/races/1_{servername}', '../../../../server_config/data/scriptedquests/races/{servername}'),
         ('plugins/ScriptedQuests/races/0_common', '../../../../server_config/data/scriptedquests/races/common'),
+        ('plugins/ScriptedQuests/leaderboards/1_{servername}', '../../../../server_config/data/scriptedquests/leaderboards/{servername}'),
+        ('plugins/ScriptedQuests/leaderboards/0_common', '../../../../server_config/data/scriptedquests/leaderboards/common'),
         ('plugins/ScriptedQuests/growables/1_{servername}', '../../../../server_config/data/scriptedquests/growables/{servername}'),
         ('plugins/ScriptedQuests/growables/0_common', '../../../../server_config/data/scriptedquests/growables/common'),
         ('plugins/ScriptedQuests/guis/1_{servername}', '../../../../server_config/data/scriptedquests/guis/{servername}'),
