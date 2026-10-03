@@ -164,7 +164,11 @@ impl Player {
     }
 
     pub fn load_world_stats(&mut self, world: &World) -> anyhow::Result<()> {
-        self.stats = Some(Stats::load_from_file(&mut world.get_player_stats_file(&self.uuid)?)?);
+        // Stats are optional - a world may not have a stats file for every player
+        self.stats = match world.get_player_stats_file(&self.uuid) {
+            Ok(mut file) => Some(Stats::load_from_file(&mut file)?),
+            Err(_) => None,
+        };
         Ok(())
     }
 
@@ -216,9 +220,13 @@ impl Player {
     }
 
     pub fn load_redis_stats(&mut self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
-        let stats: String =
+        // Stats are optional - players who haven't logged in since stats moved to redis have none (nil)
+        let stats: Option<String> =
             con.lindex(format!("{}:playerdata:{}:stats", domain, self.uuid.hyphenated()), 0)?;
-        self.stats = Some(Stats::load_from_string(&stats)?);
+        self.stats = match stats {
+            Some(stats) => Some(Stats::load_from_string(&stats)?),
+            None => None,
+        };
         Ok(())
     }
 
@@ -534,7 +542,12 @@ impl Player {
     }
 
     fn load_file_stats(&mut self, path: &Path) -> anyhow::Result<()> {
-        self.stats = Some(Stats::load_from_file(&mut World::get_file_common(path)?)?);
+        // Stats are optional - save_file_stats() doesn't write a file if the player had none
+        self.stats = if path.is_file() {
+            Some(Stats::load_from_file(&mut World::get_file_common(path)?)?)
+        } else {
+            None
+        };
         Ok(())
     }
 
