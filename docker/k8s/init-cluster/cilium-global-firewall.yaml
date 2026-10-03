@@ -46,16 +46,6 @@ spec:
     # NFS – strictly via vrack
     - fromCIDR:
         - 192.168.30.0/24
-      toPorts:
-        - ports:
-            - port: "111"
-              protocol: TCP
-            - port: "111"
-              protocol: UDP
-            - port: "2049"
-              protocol: TCP
-            - port: "2049"
-              protocol: UDP
     # Admin LXC Containers
     - fromCIDR:
         - 172.31.0.0/16

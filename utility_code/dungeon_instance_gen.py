@@ -210,6 +210,12 @@ if __name__ == '__main__':
                 ],
                 "objective":"DIAccess"
             },
+            "fortune": {
+                "world": [
+                    "fortune",
+                ],
+                "objective":"DWFAccess"
+            },
             "zenith": {
                 "world": [
                     "zenith",

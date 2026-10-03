@@ -16,7 +16,18 @@ from lib_py3.lib_k8s import KubernetesManager
 ONE_SECOND = timedelta(seconds=1)
 
 
-def send_broadcast_time(socket, seconds_left):
+async def try_send_packet(socket, description, destination, operation, data):
+    """Sends a packet, logging rather than raising on failure
+
+    Use this for messages that are nice to have but should not interrupt the restart if rabbitmq is having problems
+    """
+    try:
+        await socket.send_packet_async(destination, operation, data)
+    except Exception:
+        print(f"Failed to {description}: {traceback.format_exc()}", flush=True)
+
+
+async def send_broadcast_time(socket, seconds_left):
     """Broadcasts a restart warning with how much time is remaining to all players"""
     minutes_left, seconds_in_minute = divmod(seconds_left, 60)
     time_left = []
@@ -40,35 +51,35 @@ def send_broadcast_time(socket, seconds_left):
         {"text": time_left if time_left else "now", "color": "red"},
         {"text": ". This helps reduce lag! The server will be down for ~180 seconds."}
     ]
-    send_tablist_event(socket, seconds_left)
-    send_broadcast_message(socket, raw_json_text)
+    await send_tablist_event(socket, seconds_left)
+    await send_broadcast_message(socket, raw_json_text)
 
 
-def send_broadcast_message(socket, raw_json_text):
-    """Broadcasts an arbitrary raw json text message to all players"""
+async def send_broadcast_message(socket, raw_json_text):
+    """Broadcasts an arbitrary raw json text message to all players, logging on failure"""
     command = '''tellraw @a[all_worlds=true] ''' + json.dumps(raw_json_text, ensure_ascii=False, separators=(',', ':'))
-    socket.send_packet("*", "monumentanetworkrelay.command",
-                       {"command": command})
+    await try_send_packet(socket, "broadcast message to players", "*", "monumentanetworkrelay.command",
+                          {"command": command})
 
 
-def send_tablist_event(socket, time):
-    """Sends a daily restart event to display in the tab list"""
+async def send_tablist_event(socket, time):
+    """Sends a daily restart event to display in the tab list, logging on failure"""
     event_data = {
         "shard": "daily_restart",
         "eventName": "DAILY_RESTART",
         "timeLeft": time,
         "status": "STARTING" if time > 0 else "IN_PROGRESS",
     }
-    socket.send_packet("*", "monumenta.eventbroadcast.update", event_data)
+    await try_send_packet(socket, "send tablist event", "*", "monumenta.eventbroadcast.update", event_data)
 
 
-def send_admin_alert(socket, message):
-    """Sends an admin alert seeking help"""
+async def send_admin_alert(socket, message):
+    """Sends an admin alert seeking help, logging on failure"""
     print(message, flush=True)
     event_data = {
         "message": message,
     }
-    socket.send_packet("*", "Monumenta.Automation.AdminNotification", event_data)
+    await try_send_packet(socket, "send admin alert", "*", "Monumenta.Automation.AdminNotification", event_data)
 
 
 def get_shards_by_type(socket, shard_type="minecraft"):
@@ -133,7 +144,7 @@ async def main(socket, k8s):
                     while True:
                         await asyncio.sleep(3)
                         remaining_seconds = (stop_time - datetime.now(tz)) / ONE_SECOND
-                        send_tablist_event(socket, remaining_seconds)
+                        await send_tablist_event(socket, remaining_seconds)
             except TimeoutError:
                 pass
 
@@ -145,27 +156,26 @@ async def main(socket, k8s):
                 # Set all shards to restart the next time they are empty (many will restart immediately) at 5 minutes
                 print("Broadcasting restart-empty command to all shards...", flush=True)
                 stop_task = asyncio.create_task(await_stopped(socket, k8s, pending_stop))
-                socket.send_packet("*", "monumentanetworkrelay.command",
-                                   {"command": 'restart-empty', "server_type": 'minecraft'})
+                await socket.send_packet_async("*", "monumentanetworkrelay.command",
+                                               {"command": 'restart-empty', "server_type": 'minecraft'})
 
-            send_broadcast_time(socket, next_target)
+            await send_broadcast_time(socket, next_target)
 
     except Exception:
-        send_admin_alert(socket, f"Failed to notify players about pending restart: {traceback.format_exc()}")
+        await send_admin_alert(socket, f"Failed to notify players about pending restart: {traceback.format_exc()}")
 
     try:
         # Turn on Maintenance
-        socket.send_packet("*", "monumentanetworkrelay.command",
-                           {"command": 'maintenance on', "server_type": 'proxy'})
+        await socket.send_packet_async("*", "monumentanetworkrelay.command",
+                                       {"command": 'maintenance on', "server_type": 'proxy'})
         # Wait for proxies to process command
         await asyncio.sleep(5)
 
         # Kick anyone with ops who bypassed maintenance
         #### TODO: Disabled for now, just stopping bungee directly. Eventually we may want this back so bungee stays up to tell people why it is down.
         # print("Broadcasting kick @a[all_worlds=true] command to all shards...", flush=True)
-        # socket.send_packet("*", "monumentanetworkrelay.command",
-        #         {"command": 'kick @a[all_worlds=true]'}
-        # )
+        # await socket.send_packet_async("*", "monumentanetworkrelay.command",
+        #                                {"command": 'kick @a[all_worlds=true]'})
 
         # At this point shards that didn't already restart will do so
 
@@ -174,13 +184,13 @@ async def main(socket, k8s):
 
         # Wait for shards to fully stop
         if stop_task is None:
-            send_admin_alert(socket, "stop_task is None for some reason; waiting 2 minutes")
+            await send_admin_alert(socket, "stop_task is None for some reason; waiting 2 minutes")
             await asyncio.sleep(120)
         else:
             print("Awaiting stop_task", flush=True)
             await stop_task
             if pending_stop:
-                send_admin_alert(socket, f"stop_task did not stop everything: {pending_stop}")
+                await send_admin_alert(socket, f"stop_task did not stop everything: {pending_stop}")
             else:
                 print("Done waiting on stop_task", flush=True)
 
@@ -189,17 +199,17 @@ async def main(socket, k8s):
                 async with asyncio.timeout(600):
                     while previous_shards != get_shards_by_type(socket, "minecraft"):
                         await asyncio.sleep(1)
-                        send_tablist_event(socket, 0)
+                        await send_tablist_event(socket, 0)
             except TimeoutError:
                 print("Timed out waiting for shards to start back up; continuing anyway", flush=True)
 
         # Turn maintenance mode back off
-        send_tablist_event(socket, -1)
-        socket.send_packet("*", "monumentanetworkrelay.command",
-                           {"command": 'maintenance off', "server_type": 'proxy'})
+        await send_tablist_event(socket, -1)
+        await socket.send_packet_async("*", "monumentanetworkrelay.command",
+                                       {"command": 'maintenance off', "server_type": 'proxy'})
     except Exception:
-        send_admin_alert(socket, f"Failed to restart the server: {traceback.format_exc()}")
-        send_broadcast_message(socket, [
+        await send_admin_alert(socket, f"Failed to restart the server: {traceback.format_exc()}")
+        await send_broadcast_message(socket, [
             "",
             {"text": "[Alert] ", "color": "red"},
             {"text": "Monumenta has failed to perform its daily restart"}

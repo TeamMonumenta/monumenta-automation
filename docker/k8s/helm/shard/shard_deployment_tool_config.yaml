@@ -7,6 +7,7 @@
 #   useSocketForProbes
 #   useHTTPForProbes
 #   memGB OR memMB
+#   memRequestMB
 #   cpuReqs
 #   cpuLimits
 #   cpuActiveProcessorCount
@@ -55,9 +56,6 @@
     "isles-2": {
         "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4},
     },
-    "isles-3": {
-        "play" : { "node": "m17", "hugePageGB": 5, "cpuActiveProcessorCount": 4},
-    },
 
     # R3
     "ring": {
@@ -78,9 +76,6 @@
     "ring-7":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-8":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
     "ring-9":  { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-10": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-11": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
-    "ring-12": { "play" : { "node": "m17", "hugePageGB": 8, "cpuActiveProcessorCount": 4}, },
 
     # Plots
     "plots": {
@@ -135,6 +130,11 @@
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
+    "labs-2":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
+    "labs-3":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
+    "labs-4":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
+    "labs-5":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
+
     "lightblue": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
@@ -150,9 +150,6 @@
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
-    "lime-2": { "play" : { "node": "m17", "hugePageGB": 5, }, },
-    "lime-3": { "play" : { "node": "m17", "hugePageGB": 5, }, },
-    "lime-4": { "play" : { "node": "m17", "hugePageGB": 5, }, },
     "magenta": {
         "play" : { "node": "m17", "hugePageGB": 3   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
@@ -226,7 +223,7 @@
     },
 
     "blue": {
-        "play" : { "node": "m17", "hugePageGB": 5   , "memGB": 4 },
+        "play" : { "node": "m17", "hugePageGB": 5   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
@@ -247,7 +244,11 @@
         "stage": { "node": "m18", "hugePageMB": 3072, },
         "volt" : { "node": "m18", "hugePageMB": 3072, },
     },
-
+    "fortune": {
+        "play" : { "node": "m17", "hugePageGB": 6   , "cpuActiveProcessorCount": 4, },
+        "stage": { "node": "m18", "hugePageMB": 3072, },
+        "volt" : { "node": "m18", "hugePageMB": 3072, },
+    },
     "skt": {
         "play" : { "node": "m17", "hugePageGB": 4   , },
         "stage": { "node": "m18", "hugePageMB": 1536, },
@@ -266,19 +267,23 @@
 }
 
 # Defaults for each namespace
+# memRequestMB is the non-hugepage memory the scheduler reserves for a shard.
+# The values.yaml default (1280) is sized for a play shard with players on it;
+# build/stage/volt shards sit idle most of the time and there are far more of
+# them defined than can run at once, so they reserve less.
 "namespace_defaults": {
     "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "8", "cpuReqs": "250m", "autoHeapDumpEnabled": "true" },
-    "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "4", "cpuReqs": "50m" },
-    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
-    "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true" },
+    "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "4", "cpuReqs": "50m", "memRequestMB": 1024 },
+    "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "memRequestMB": 1024 },
+    "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "memRequestMB": 1024 },
 }
 
 # Memory values copied directly from /proc/meminfo
 "node_info": {
-    "m17": { "full_name": "monumenta-17", "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048 },
-    "m18": { "full_name": "monumenta-18", "mem_total_kB": 263971944, "huge_pages":  85000, "huge_page_size_kB": 2048 },
+    "m17":    { "full_name": "monumenta-17",        "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048, "geoDescription": "NA" },
+    "m18":    { "full_name": "monumenta-18",        "mem_total_kB": 263971944, "huge_pages":  85000, "huge_page_size_kB": 2048, "geoDescription": "EU" },
 
     # These are not real hosts and exist purely for planning where to put new shards
-    "new": { "full_name": "monumenta-new", "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048 },
-    "delete": { "full_name": "monumenta-delete-me", "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048 },
+    "new":    { "full_name": "monumenta-new",       "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048, "geoDescription": "The Big Bang" },
+    "delete": { "full_name": "monumenta-delete-me", "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048, "geoDescription": "Null Island" },
 }

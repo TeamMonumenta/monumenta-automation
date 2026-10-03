@@ -516,6 +516,9 @@ def int_to_ordinal(i):
     num = str(i)
     if len(num) == 0:
         return num
+    if num[-2:] in ('11', '12', '13'):
+        return num + 'th'
+
     last_char = num[-1]
     if last_char == '1':
         return num + 'st'

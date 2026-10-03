@@ -14,8 +14,6 @@ import discord
 from discord.ext import commands
 from discord.ext import tasks
 
-import pika
-
 from config import Config
 from automation_bot_lib import split_string
 from automation_bot_instance import AutomationBotInstance
@@ -93,6 +91,7 @@ class AutomationBot(commands.Bot):
         self.update_avatar_task.start()
         self.heartbeat_task.start()
         self.shard_status_task.start()
+        self.host_rss_feed_task.start()
         self.reminders_task.start()
 
     async def on_ready(self):
@@ -154,6 +153,21 @@ class AutomationBot(commands.Bot):
         await self.wait_until_ready()  # wait until the bot logs in
         logging.info("Started shard_status_task")
 
+    @tasks.loop(seconds=3600)
+    async def host_rss_feed_task(self):
+        if 'rss' not in self.retry_delays:
+            self.retry_delays['rss'] = 'Ready'
+            return
+        try:
+            await self.instance.host_rss_tick()
+        except Exception as ex:
+            logging.error("An error occurred fetching the host server maintenance RSS feeds", exc_info=ex)
+
+    @host_rss_feed_task.before_loop
+    async def before_host_rss_feed_task(self):
+        await self.wait_until_ready()  # wait until the bot logs in
+        logging.info("Started host_rss_feed_task")
+
     @tasks.loop(seconds=1)
     async def heartbeat_task(self):
         if not (self.instance and self.instance._socket):
@@ -165,11 +179,12 @@ class AutomationBot(commands.Bot):
             return
 
         try:
-            self.instance._socket.send_heartbeat()
+            await self.instance._socket.send_heartbeat_async()
             self.retry_delays["heartbeat_retry_backoff"] = 1.0
             return
-        except pika.exceptions.StreamLostError as ex:
-            self.rlogger.debug("Heartbeat stream lost, will retry shortly: %s", f"{ex}")
+        except Exception as ex:
+            # Any uncaught exception here would permanently stop this task, so catch everything and retry
+            logging.warning("Failed to send rabbitmq heartbeat, will retry shortly: %r", ex)
 
         self.retry_delays["heartbeat"] = self.retry_delays["heartbeat_retry_backoff"]
         self.retry_delays["heartbeat_retry_backoff"] *= 2.0

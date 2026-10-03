@@ -25,6 +25,8 @@ rabbitmq:
     death_audit_channel: 1065829191666385047
     # mail-audit-log (play)
     mail_audit_channel: 1257078461609283707
+    # mail-audit-log (play)
+    mod_mail_audit_channel: 1546767673294327828
     # market-audit-log (play)
     market_audit_channel: 1216046605535285258
     # mod-audit-log (play)
@@ -132,6 +134,7 @@ shards:
     depths: /home/epic/play/m17/depths/
     depths-2: /home/epic/play/m17/depths-2/
     forum: /home/epic/play/m17/forum/
+    fortune: /home/epic/play/m17/fortune/
     gallery: /home/epic/play/m17/gallery/
     gray: /home/epic/play/m17/gray/
     guildplots: /home/epic/play/m17/guildplots/
@@ -139,14 +142,14 @@ shards:
     indigo: /home/epic/play/m17/indigo/
     isles: /home/epic/play/m17/isles/
     isles-2: /home/epic/play/m17/isles-2/
-    isles-3: /home/epic/play/m17/isles-3/
     labs: /home/epic/play/m17/labs/
+    labs-2: /home/epic/play/m17/labs-2/
+    labs-3: /home/epic/play/m17/labs-3/
+    labs-4: /home/epic/play/m17/labs-4/
+    labs-5: /home/epic/play/m17/labs-5/
     lightblue: /home/epic/play/m17/lightblue/
     lightgray: /home/epic/play/m17/lightgray/
     lime: /home/epic/play/m17/lime/
-    lime-2: /home/epic/play/m17/lime-2/
-    lime-3: /home/epic/play/m17/lime-3/
-    lime-4: /home/epic/play/m17/lime-4/
     magenta: /home/epic/play/m17/magenta/
     orange: /home/epic/play/m17/orange/
     pink: /home/epic/play/m17/pink/
@@ -164,7 +167,6 @@ shards:
     ring-7: /home/epic/play/m17/ring-7/
     ring-8: /home/epic/play/m17/ring-8/
     ring-9: /home/epic/play/m17/ring-9/
-    ring-10: /home/epic/play/m17/ring-10/
     rush: /home/epic/play/m17/rush/
     shiftingcity: /home/epic/play/m17/shiftingcity/
     skt: /home/epic/play/m17/skt/

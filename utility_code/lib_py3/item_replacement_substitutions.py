@@ -376,6 +376,9 @@ class SubtituteItems(SubstitutionRule):
 
                 # Remove the Surprise Gift in a Bag from Coalrupted Sierhaven
                 ["minecraft:creeper_spawn_egg", "Surprise Gift in a Bag!", "minecraft:rotten_flesh", "Decayed Item"],
+
+                # Century-Aged Liquor -> dragon breath
+                ["minecraft:glass_bottle", "Century-Aged Liquor", "minecraft:dragon_breath", "Century-Aged Liquor"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution

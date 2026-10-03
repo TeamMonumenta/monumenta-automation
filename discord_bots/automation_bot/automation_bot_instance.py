@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+from email.utils import parsedate_to_datetime
 import json
 import logging
 import math
@@ -17,7 +18,9 @@ from pathlib import Path
 from pprint import pformat
 from urllib.parse import urlparse
 
+import aiohttp
 import discord
+import feedparser
 import git
 import redis
 import yaml
@@ -45,6 +48,12 @@ from config import Config
 from automation_bot_lib import datestr, escape_triple_backtick, split_string
 
 config = Config()
+
+# The data repo contains plenty of files with CRLF line endings, and 'git add' warns about
+# every single one of them ("CRLF will be replaced by LF the next time Git touches it").
+# core.safecrlf=false only silences those warnings - it doesn't change how git stores files,
+# and any other warnings/errors from git are still displayed.
+GIT_ADD_ALL = 'git -c core.safecrlf=false add .'
 
 class Listening():
     """Class to keep track of whether a bot is listening to a user or not"""
@@ -186,6 +195,7 @@ class AutomationBotInstance(commands.Cog):
             "cyan": "D10Access",
             "depths": "DDAccess",
             "forum": "DFFAccess",
+            "fortune": "DWFAccess",
             "gallery": "DGAccess",
             "gray": "D8Access",
             "hexfall": "DHFAccess",
@@ -296,6 +306,10 @@ class AutomationBotInstance(commands.Cog):
                             if self._mail_audit_channel:
                                 if message_channel == "Monumenta.Automation.MailAuditLog":
                                     send_message_to_channel(message["data"]["message"], self._mail_audit_channel)
+
+                            if self._mod_mail_audit_channel:
+                                if message_channel == "Monumenta.Automation.ModMailAuditLog":
+                                    send_message_to_channel(message["data"]["message"], self._mod_mail_audit_channel)
 
                             if self._market_audit_channel:
                                 if message_channel == "Monumenta.Automation.MarketAuditLog":
@@ -414,6 +428,13 @@ class AutomationBotInstance(commands.Cog):
                         try:
                             self._mail_audit_channel = self._bot.get_channel(conf["mail_audit_channel"])
                             logging.info("Found mail audit channel: %s", conf["mail_audit_channel"])
+                        except Exception:
+                            logging.error("Cannot connect to mail audit channel: %s", conf["mail_audit_channel"])
+                    self._mod_mail_audit_channel = None
+                    if "mail_audit_channel" in conf:
+                        try:
+                            self._mod_mail_audit_channel = self._bot.get_channel(conf["mod_mail_audit_channel"])
+                            logging.info("Found mod mail audit channel: %s", conf["mod_mail_audit_channel"])
                         except Exception:
                             logging.error("Cannot connect to mail audit channel: %s", conf["mail_audit_channel"])
                     self._market_audit_channel = None
@@ -714,6 +735,83 @@ class AutomationBotInstance(commands.Cog):
                 file=fp
             )
 
+    async def host_rss_tick(self):
+        if self._admin_channel is None:
+            return
+
+        config_path = self._persistence_path / 'host_server_notices.json'
+        if not config_path.is_file():
+            return
+
+        previous_alerts_path = self._persistence_path / 'previous_host_server_notices.json'
+        previous_alerts = set()
+        if previous_alerts_path.is_file():
+            previous_alerts_json = json.loads(previous_alerts_path.read_text(encoding='utf-8-sig'))
+            previous_alerts.update(previous_alerts_json["previous"])
+
+        config = json.loads(config_path.read_text(encoding='utf-8-sig'))
+        role_id = config["role"]
+        keywords = config["keywords"]
+        urls = config["urls"]
+
+        role = self._admin_channel.guild.get_role(role_id)
+
+        status_alerts = []
+        current_alerts = set()
+        for rss_url, rss_description in urls.items():
+            rss = None
+            async with aiohttp.ClientSession(loop=asyncio.get_event_loop()) as session:
+                async with asyncio.timeout(10):
+                    async with session.get(rss_url) as response:
+                        rss = feedparser.parse(await response.text())
+            if rss is None:
+                return
+
+            for entry in rss.entries:
+                entry_time = parsedate_to_datetime(entry.published).timestamp()
+
+                title = entry.title
+                link = entry.link
+                description = entry.description
+                searchable_text = f'{title} {description}'
+
+                matching_keywords = []
+                for keyword, keyword_description in keywords.items():
+                    if keyword in searchable_text:
+                        matching_keywords.append(keyword_description)
+
+                if not matching_keywords:
+                    continue
+
+                affected_str = ', '.join(sorted(matching_keywords))
+                alert_message = f'<t:{int(entry_time)}:F> (<t:{int(entry_time)}:R>) {affected_str} mentioned in [{rss_description}]({link})'
+                status_alerts.append((entry_time, alert_message))
+                current_alerts.add(alert_message)
+
+        new_alerts = current_alerts - previous_alerts
+
+        if new_alerts:
+            displayed_lines = []
+            for _, alert in sorted(status_alerts):
+                displayed_lines.append(alert)
+            if role:
+                displayed_lines.append(role.mention)
+
+            await self._admin_channel.send('\n'.join(displayed_lines))
+
+        if current_alerts != previous_alerts:
+            with open(previous_alerts_path, 'w', encoding='utf-8') as fp:
+                print(
+                    json.dumps(
+                        {"previous": list(current_alerts)},
+                        ensure_ascii=False,
+                        indent=2,
+                        separators=(',', ': ')
+                    ),
+                    file=fp
+                )
+        
+
     # Entry points
     ################################################################################
 
@@ -999,7 +1097,7 @@ class AutomationBotInstance(commands.Cog):
 
         return raffle_seed
 
-    def send_tablist_event(self, event_name, time):
+    async def send_tablist_event(self, event_name, time):
         """Sends an event to display in the tab list"""
         event_data = {
             "shard": config.RABBITMQ["host"],
@@ -1007,20 +1105,20 @@ class AutomationBotInstance(commands.Cog):
             "timeLeft": time,
             "status": "STARTING" if time > 0 else "IN_PROGRESS",
         }
-        self._socket.send_packet("*", "monumenta.eventbroadcast.update", event_data)
+        await self._socket.send_packet_async("*", "monumenta.eventbroadcast.update", event_data)
 
-    def broadcast_command(self, cmd, server_type="minecraft", shard="*"):
+    async def broadcast_command(self, cmd, server_type="minecraft", shard="*"):
         """Broadcasts a command to all servers"""
         data = {
             "command": cmd
         }
         if server_type is not None:
             data["server_type"] = server_type
-        self._socket.send_packet(shard, "monumentanetworkrelay.command", data)
+        await self._socket.send_packet_async(shard, "monumentanetworkrelay.command", data)
 
-    def broadcast_json_msg(self, json_msg):
+    async def broadcast_json_msg(self, json_msg):
         """Broadcasts a command to all servers"""
-        self.broadcast_command("tellraw @a[all_worlds=true] " + json.dumps(json_msg, ensure_ascii=False, separators=(',', ':')))
+        await self.broadcast_command("tellraw @a[all_worlds=true] " + json.dumps(json_msg, ensure_ascii=False, separators=(',', ':')))
 
     async def _gameplay_event_summary(self):
         msg = []
@@ -1055,7 +1153,7 @@ class AutomationBotInstance(commands.Cog):
             ns = 'play'
 
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, str(value), message], displayOutput=displayOutput)
-        self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
+        await self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
 
 
     async def _get_lockout_message(self):
@@ -2193,25 +2291,25 @@ Must be run before starting the update on the play server
         seconds_delay = 60
         stop_time = now + timedelta(seconds=seconds_delay)
         if not skip_replacements:
-            self.broadcast_json_msg([
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+            await self.broadcast_json_msg([
                 "",
                 {"text": "[Alert] ", "color":"red"},
                 {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"},
                 {"text": "overworld and dungeon", "color":"red"},
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
-            self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
-            self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+            await self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
         elif not debug:
-            self.broadcast_json_msg([
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+            await self.broadcast_json_msg([
                 "",
                 {"text": "[Alert] ", "color":"red"},
                 {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"},
                 {"text": "overworld", "color":"red"},
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
-            self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
-            self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+            await self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
 
         async def await_warning_delay():
             await self.display(ctx, "Giving devs time to wrap up what they're doing")
@@ -2224,7 +2322,7 @@ Must be run before starting the update on the play server
                     while True:
                         await asyncio.sleep(3)
                         remaining_seconds = (stop_time - datetime.now(tz)) / second
-                        self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
+                        await self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
             except TimeoutError:
                 pass
 
@@ -2248,11 +2346,11 @@ Must be run before starting the update on the play server
                 return
 
             await self.cd(ctx, '/home/epic/project_epic/server_config/data')
-            await self.run(ctx, 'git add .')
+            await self.run(ctx, GIT_ADD_ALL)
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle pre autoformat", '-s'], ret=[0, 1])
             await self.run(ctx, os.path.join(_top_level, "utility_code/autoformat_cleanup_loot_tables_and_quests.py"), displayOutput=True)
             await self.cd(ctx, '/home/epic/project_epic/server_config/data')
-            await self.run(ctx, 'git add .')
+            await self.run(ctx, GIT_ADD_ALL)
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle post autoformat", '-s'], ret=[0, 1])
 
         if not skip_replacements:
@@ -2261,7 +2359,7 @@ Must be run before starting the update on the play server
 
         if not skip_commit:
             await self.cd(ctx, '/home/epic/project_epic/server_config/data')
-            await self.run(ctx, 'git add .')
+            await self.run(ctx, GIT_ADD_ALL)
             await self.run(ctx, ['git', 'commit', '-m', "Update bundle post replacements", '-s'], ret=[0, 1])
             await self.run(ctx, ['git', 'tag', version])
 
@@ -2324,6 +2422,11 @@ Must be run before starting the update on the play server
         await self.run(ctx, os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/isles/Project_Epic-isles --pos1 1140,0,2564 --pos2 1275,123,2811")
         await self.display(ctx, "Sanitizing R3's items area...")
         await self.run(ctx, os.path.join(_top_level, "utility_code/sanitize_world.py") + " --world /home/epic/5_SCRATCH/tmpreset/TEMPLATE/ring/Project_Epic-ring --pos1 1140,0,2564 --pos2 1275,123,2811")
+
+        # Delete old versions of symlinked plugin/mod jars so they don't pile up and get copied into the bundle
+        await self.display(ctx, "Cleaning up old plugin and mod jars...")
+        await self.run(ctx, os.path.join(_top_level, "utility_code/plugins_symlink_cleanup.py") + " /home/epic/project_epic/server_config/plugins")
+        await self.run(ctx, os.path.join(_top_level, "utility_code/plugins_symlink_cleanup.py") + " /home/epic/project_epic/server_config/mods")
 
         await self.display(ctx, "Copying server_config...")
         await self.run(ctx, "cp -a /home/epic/project_epic/server_config /home/epic/5_SCRATCH/tmpreset/TEMPLATE/")
@@ -2396,7 +2499,7 @@ Examples:
                 await self.display(ctx, "--skip-replacements specified, will not run replacements on copied worlds")
             elif shard in ("valley", "isles", "ring",):
                 main_shards.append(shard)
-            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "willows", "shiftingcity", "labs", "depths", "corridors", "gallery", "portal", "ruin", "hexfall", "skt", "zenith", "indigo"]:
+            elif shard in ["white", "orange", "magenta", "lightblue", "yellow", "lime", "pink", "gray", "lightgray", "cyan", "purple", "blue", "brown", "green", "red", "black", "teal", "forum", "tutorial", "reverie", "rush", "willows", "shiftingcity", "labs", "depths", "corridors", "gallery", "portal", "ruin", "hexfall", "skt", "zenith", "indigo", "fortune"]:
                 instance_gen_required.append(shard)
             else:
                 await self.display(ctx, f"Unknown shard specified: {shard}; aborting")
@@ -2433,7 +2536,7 @@ Examples:
                 if run_replacements:
                     await self.display(ctx, f"Running replacements on copied version of {shard}...")
                     args = f" --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard}"
-                    await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
+                    await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py") + args)
                     args = f" --worlds /home/epic/5_SCRATCH/tmpstage/TEMPLATE/{shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
                     await self.run(ctx, os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
@@ -2454,7 +2557,7 @@ Examples:
             if run_replacements:
                 await self.display(ctx, "Running replacements on copied dungeon masters...")
                 args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon"
-                await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py") + args, displayOutput=True)
+                await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py") + args)
                 args = " --worlds /home/epic/5_SCRATCH/tmpstage/dungeon --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json"
                 await self.run(ctx, os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
@@ -2477,7 +2580,7 @@ Examples:
                         + " --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
                 await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py"
                                                  + " --schematics /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/structures"
-                                                 + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"), displayOutput=True)
+                                                 + " --structures /home/epic/5_SCRATCH/tmpstage/TEMPLATE/server_config/data/generated"))
                 await self.run(ctx, os.path.join(_top_level, "utility_code/replace_mobs.py") + args, displayOutput=True)
 
         await self.display(ctx, "Packaging up stage bundle...")
@@ -2667,8 +2770,8 @@ old coreprotect data will be removed at the 5 minute mark.
             1,
         ], reverse=True)
 
-        self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
-        self.broadcast_json_msg([
+        await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+        await self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
                                  {"text":"Monumenta is going down at ", "color":"white"},
@@ -2691,9 +2794,9 @@ old coreprotect data will be removed at the 5 minute mark.
             return f"{minutes} minutes"
 
         async def send_broadcast_stop_msg(seconds):
-            self.send_tablist_event("SCHEDULED_MAINTENANCE", seconds)
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", seconds)
             time_left = seconds_to_string(seconds)
-            self.broadcast_json_msg([
+            await self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
                                  {"text":"The Monumenta server is stopping in ", "color":"white"},
@@ -2712,7 +2815,7 @@ old coreprotect data will be removed at the 5 minute mark.
                     while True:
                         await asyncio.sleep(3)
                         remaining_seconds = (stop_time - datetime.now(tz)) / second
-                        self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
+                        await self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
             except TimeoutError:
                 pass
 
@@ -2720,16 +2823,16 @@ old coreprotect data will be removed at the 5 minute mark.
                 await self.display(ctx, "Clearing coreprotect data older than 30 days")
                 for shard in self._shards:
                     if "plots" in shard:
-                        self.broadcast_command('co purge t:180d', shard=shard)
+                        await self.broadcast_command('co purge t:180d', shard=shard)
                     elif shard not in ["build",]:
-                        self.broadcast_command('co purge t:30d', shard=shard)
+                        await self.broadcast_command('co purge t:30d', shard=shard)
             if next_target == 15:
-                self.broadcast_command('save-all')
+                await self.broadcast_command('save-all')
 
             await send_broadcast_stop_msg(next_target)
 
         # Stop velocity (I guess you could uh... run maintenance?)
-        self.broadcast_command('maintenance on', server_type="proxy")
+        await self.broadcast_command('maintenance on', server_type="proxy")
         await asyncio.sleep(5)
         # TODO: don't hardcode velocity instances here
         shards = await self._k8s.list()
@@ -2737,7 +2840,7 @@ old coreprotect data will be removed at the 5 minute mark.
         await self.stop(ctx, velocityShards, owner=message)
 
         await self.display(ctx, message.author.mention)
-        self.send_tablist_event("SCHEDULED_MAINTENANCE", -1)
+        await self.send_tablist_event("SCHEDULED_MAINTENANCE", -1)
 
     async def action_stop_and_backup(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Dangerous!
@@ -2954,7 +3057,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 15 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Refreshing leaderboards")
-            await self.run(ctx, os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
+            await self.run(ctx, os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(self._server_dir, "server_config/data/scriptedquests/leaderboards"))
 
         if min_phase <= 16 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Restarting rabbitmq")
@@ -3041,6 +3144,13 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
             folder_name = self._server_dir.strip("/").split("/")[-1]
             await self.run(ctx, ["tar", f"--exclude={folder_name}/0_PREVIOUS", "-I", "pigz --best", "-cf", f"/home/epic/1_ARCHIVE/{folder_name}_post_reset_{datestr()}.tgz", folder_name])
 
+        if min_phase <= 27 and config.COMMON_WEEKLY_UPDATE_TASKS:
+            # Exports the items in the loot tables for the wiki/compendium and the refined creative inventory mod
+            await self.display(ctx, "Exporting loot table items...")
+            items_export_dir = f"{self._server_dir}/server_config/data/items"
+            await self.run(ctx, f"mkdir -p {items_export_dir}")
+            await self.run(ctx, os.path.join(_top_level, "utility_code/export_loot_table_items.py") + f" --server-dir {self._server_dir} {items_export_dir}/items-export.json /home/epic/5_SCRATCH/rci")
+
         await self.display(ctx, f"`{self._name}` done at <t:{int(time.time())}:F>. **Please wait for any other bots to finish.**")
         await self.display(ctx, message.author.mention)
 
@@ -3054,7 +3164,6 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             raise Exception("WARNING: bot doesn't have stage source, aborting")
 
         log_level = config.RABBITMQ.get("log_level", 20)
-        play_broker = SocketManager("rabbitmq.play", "stagebot", callback=None, log_level=log_level)
 
         # Stop all shards belonging to this bot instance
         # This will fail if there's a lockout in place, so do this at the beginning
@@ -3076,17 +3185,18 @@ Archives the previous stage server contents under 0_PREVIOUS '''
 
         await asyncio.sleep(15)
 
-        port = 1111
-        for server_name in config.STAGE_SOURCE:
-            server_section = config.STAGE_SOURCE[server_name]
-            stage_msg = {
-                "shards": server_section["shards"],
-                "address": f"{config.RABBITMQ['name']}.{config.K8S_NAMESPACE}",
-                "port": port,
-            }
-            await self.display(ctx, f"Sending request to {server_section['queue_name']} with config {pformat(stage_msg)}")
-            play_broker.send_packet(server_section["queue_name"], "Monumenta.Automation.stage", stage_msg)
-            port += 1
+        async with SocketManager("rabbitmq.play", "stagebot", callback=None, log_level=log_level) as play_broker:
+            port = 1111
+            for server_name in config.STAGE_SOURCE:
+                server_section = config.STAGE_SOURCE[server_name]
+                stage_msg = {
+                    "shards": server_section["shards"],
+                    "address": f"{config.RABBITMQ['name']}.{config.K8S_NAMESPACE}",
+                    "port": port,
+                }
+                await self.display(ctx, f"Sending request to {server_section['queue_name']} with config {pformat(stage_msg)}")
+                await play_broker.send_packet_async(server_section["queue_name"], "Monumenta.Automation.stage", stage_msg)
+                port += 1
 
         await self.display(ctx, "Finished launching copy tasks, waiting for them to complete. This will take a while...")
         for task in tasks:
@@ -3345,7 +3455,7 @@ Syntax:
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
                 await self.run(ctx, ["tar", "-I", "pigz --best", "-cf", f"{base_backup_name}.tgz", "structures"])
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
-                await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py --schematics structures --structures generated"), displayOutput=True)
+                await self.run(ctx, os.path.join(_top_level, "utility_code/replace_items.py --schematics structures --structures generated"))
                 await self.cd(ctx, "/home/epic/project_epic/server_config/data")
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_mobs.py --schematics structures --structures generated --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
 
@@ -3365,7 +3475,7 @@ Syntax:
                     await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up - change again in case something else changed bot's directory
                     await self.run(ctx, os.path.join(_top_level, f"utility_code/prune_empty_chunks.py {shard}"))
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
-                await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard}"), displayOutput=True)
+                await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_items.py --worlds {shard}"))
                 await self.cd(ctx, os.path.dirname(self._shards[shard].rstrip('/'))) # One level up
                 await self.run(ctx, os.path.join(_top_level, f"utility_code/replace_mobs.py --worlds {shard} --library-of-souls /home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json --logfile {base_backup_name}_mobs.yml"), displayOutput=True)
                 await self.start(ctx, shard, owner=owner)
@@ -3494,7 +3604,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
-        self.broadcast_command(commandArgs, server_type=None)
+        await self.broadcast_command(commandArgs, server_type=None)
 
     async def action_broadcastbungeecommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all bungeecord instances
@@ -3505,7 +3615,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all bungee servers")
-        self.broadcast_command(commandArgs, server_type="bungee")
+        await self.broadcast_command(commandArgs, server_type="bungee")
 
     async def action_broadcastminecraftcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all minecraft instances
@@ -3516,7 +3626,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all minecraft servers")
-        self.broadcast_command(commandArgs)
+        await self.broadcast_command(commandArgs)
 
     async def action_broadcastproxycommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all proxy instances
@@ -3527,7 +3637,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all proxy servers")
-        self.broadcast_command(commandArgs, server_type="proxy")
+        await self.broadcast_command(commandArgs, server_type="proxy")
 
 
     async def action_deop(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3538,7 +3648,7 @@ Syntax:
         commandArgs = "deop " + playerArg
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
-        self.broadcast_command(commandArgs, server_type=None)
+        await self.broadcast_command(commandArgs, server_type=None)
 
 
     async def action_op(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3549,7 +3659,7 @@ Syntax:
         commandArgs = "op " + playerArg
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
-        self.broadcast_command(commandArgs, server_type=None)
+        await self.broadcast_command(commandArgs, server_type=None)
 
 
     async def action_sendcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3590,7 +3700,7 @@ Examples:
 
         await self.display(ctx, f"Broadcasting command {shard_cmd!r} to {shards!r}")
         for shard in shards:
-            self.broadcast_command(shard_cmd, shard=shard)
+            await self.broadcast_command(shard_cmd, shard=shard)
         await self.display(ctx, "Done!")
 
 
