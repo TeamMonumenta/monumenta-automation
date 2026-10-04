@@ -62,25 +62,22 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
 
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     let scores_to_remove = HashSet::from([
+        // "DFSFinished",
+        // "DVFinished",
+        // "DSRFinished", // all five of these are used for mechs and should really be condensed into one "StrikeChests"
+        // "DPSFinished",
+        // "DMASFinished",
         "DFSAccess",
-        "DFSFinished",
-        "DFSStartDate",
+        "DFSStartDate", // remove from base->functions/lobbies/abandon/sanctum
         "DVAccess",
-        "DVFinished",
         "AzacorAccess",
         "DBMAccess",
         "DSRAccess",
-        "DSRFinished",
-        "DSRLobby",
         "DPSAccess",
-        "DPSFinished",
-        "DPSLobby",
         "DMASAccess",
-        "DMASFinished",
-        "DMASLobby",
         "GodsporeAccess",
-        "CovenAmpAccess",
-        "CovenAmpAccessRing"
+        // "CovenAmpAccess", // hope springs eternal...
+        "CovenAmpAccessRing" // this one can go though
     ]);
 
     let score_types_access = HashSet::from([
@@ -137,20 +134,30 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     let other_score_replacements = HashMap::from([
         ("CurrentPlot", "AccessPlayerplots"),
         ("Guild", "AccessGuildplots"),
+        ("CovenAmpAccess", "AccessAmpedCoven"),
+        ("R1Access", "AccessValleyInstanced"),
+        ("R2Access", "AccessIslesInstanced"),
+        ("DR3Access", "AccessRingInstanced"),
+        ("R1Type", "TypeValleyInstanced"),
+        ("R2Type", "TypeIslesInstanced"),
+        ("R3Type", "TypeRingInstanced"),
     ]);
     
     if let Some(scores) = &mut player.scores {
         for objective in scores_to_remove {
-            scores.remove(objective);
+            let removed = scores.remove(objective);
+            if let Some(_) = removed {
+                println!("removed {}", objective);
+            }
         }
 
         for (dungeon, access_code) in dungeon_codes_access {
             for &score_type in &score_types_access {
                 let old_objective = format!("D{}{}", access_code, score_type);
                 let new_objective = format!("{}{}", score_type, dungeon);
-                println!("{} -> {}", old_objective, new_objective);
                 let score = scores.remove(&old_objective);
                 if let Some(score) = score {
+                    println!("{} -> {}", old_objective, new_objective);
                     scores.insert(new_objective, score);
                 }
             }
@@ -159,18 +166,18 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
             for &score_type in &score_types_startdate {
                 let old_objective = format!("D{}{}", start_date_code, score_type);
                 let new_objective = format!("{}{}", score_type, dungeon);
-                println!("{} -> {}", old_objective, new_objective);
                 let score = scores.remove(&old_objective);
                 if let Some(score) = score {
+                    println!("{} -> {}", old_objective, new_objective);
                     scores.insert(new_objective, score);
                 }
             }
         }
 
         for (old_objective, new_objective) in other_score_replacements {
-            println!("{} -> {}", old_objective, new_objective);
             let score = scores.remove(old_objective);
             if let Some(score) = score {
+                println!("{} -> {}", old_objective, new_objective);
                 scores.insert(new_objective.parse().unwrap(), score);
             }
         }
