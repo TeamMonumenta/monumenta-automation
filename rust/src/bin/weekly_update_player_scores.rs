@@ -82,6 +82,17 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         "CovenAmpAccess",
         "CovenAmpAccessRing"
     ]);
+
+    let score_types_access = HashSet::from([
+        "Access",
+        "Finished",
+    ]);
+
+    let score_types_startdate = HashSet::from([
+        "StartDate",
+        "LastVisit",
+        "Type"
+    ]);
     
     let dungeon_codes_access = HashMap::from([
         ("Tutorial", "T"),
@@ -129,6 +140,41 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     ]);
     
     if let Some(scores) = &mut player.scores {
+        for objective in scores_to_remove {
+            scores.remove(objective);
+        }
+
+        for (dungeon, access_code) in dungeon_codes_access {
+            for &score_type in &score_types_access {
+                let old_objective = format!("D{}{}", access_code, score_type);
+                let new_objective = format!("{}{}", score_type, dungeon);
+                println!("{} -> {}", old_objective, new_objective);
+                let score = scores.remove(&old_objective);
+                if let Some(score) = score {
+                    scores.insert(new_objective, score);
+                }
+            }
+
+            let &start_date_code = dungeon_codes_startdate.get(dungeon).unwrap_or(&access_code);
+            for &score_type in &score_types_startdate {
+                let old_objective = format!("D{}{}", start_date_code, score_type);
+                let new_objective = format!("{}{}", score_type, dungeon);
+                println!("{} -> {}", old_objective, new_objective);
+                let score = scores.remove(&old_objective);
+                if let Some(score) = score {
+                    scores.insert(new_objective, score);
+                }
+            }
+        }
+
+        for (old_objective, new_objective) in other_score_replacements {
+            println!("{} -> {}", old_objective, new_objective);
+            let score = scores.remove(old_objective);
+            if let Some(score) = score {
+                scores.insert(new_objective.parse().unwrap(), score);
+            }
+        }
+
         /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
         update_instance_scores(scores, days_since_epoch, "D0StartDate", 28, &["D0Access", "D0Finished"]);
         update_instance_scores(scores, days_since_epoch, "D1StartDate", 28, &["D1Access", "D1Finished"]);
