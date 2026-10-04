@@ -271,7 +271,6 @@ fn main() -> anyhow::Result<()> {
     let uuids: HashSet<Uuid> = fs::read_dir(Path::new(&basedir).join("playerdata"))?
         .filter_map(|entry| entry.ok())
         .filter(|path| path.path().extension().unwrap() == "dat")
-        .filter(|path| path.path().file_stem().unwrap() == "464b0ec4-9c04-438c-b72c-34a1f2a866ec")
         .map(|path| Uuid::parse_str(path.path().file_stem().unwrap().to_str().unwrap()).unwrap())
         .collect();
 
