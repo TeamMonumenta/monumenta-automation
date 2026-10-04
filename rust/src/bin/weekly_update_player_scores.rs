@@ -62,14 +62,25 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
 
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     let scores_to_remove = HashSet::from([
-        "DPSAccess",
-        "DMASAccess",
-        "AzacorAccess",
-        "GodsporeAccess",
         "DFSAccess",
-        "DVAccess",
         "DFSFinished",
+        "DFSStartDate",
+        "DVAccess",
         "DVFinished",
+        "AzacorAccess",
+        "DBMAccess",
+        "DSRAccess",
+        "DSRFinished",
+        "DSRLobby",
+        "DPSAccess",
+        "DPSFinished",
+        "DPSLobby",
+        "DMASAccess",
+        "DMASFinished",
+        "DMASLobby",
+        "GodsporeAccess",
+        "CovenAmpAccess",
+        "CovenAmpAccessRing"
     ]);
     
     let dungeon_codes_access = HashMap::from([
@@ -99,17 +110,22 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         ("Blue", "12"),
         ("Brown", "13"),
         ("Indigo", "I"),
-        ("SKT", "SKT"),
+        ("SKT", "SKT"), // lol
         ("Gallery", "G"),
         ("Zenith", "CZ"),
         ("Hexfall", "HF"),
         ("Fortune", "WF"),
     ]);
     
-    let dungeon_Codes_startdate = HashMap::from([
+    let dungeon_codes_startdate = HashMap::from([
         ("Willows", "BW"),
         ("Reverie", "MR"),
         ("Shifting", "CS"),
+    ]);
+
+    let other_score_replacements = HashMap::from([
+        ("CurrentPlot", "AccessPlayerplots"),
+        ("Guild", "AccessGuildplots"),
     ]);
     
     if let Some(scores) = &mut player.scores {
