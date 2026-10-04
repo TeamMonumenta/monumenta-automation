@@ -100,7 +100,14 @@ impl Player {
     }
 
     pub fn from_name(name: &str, con: &mut redis::Connection) -> anyhow::Result<Player> {
-        let player_uuid_str: String = con.hget("name2uuid", name)?;
+        let player_uuid_str: String = match con.hget("name2uuid", name) {
+            Ok(player_uuid_str) => {
+                player_uuid_str
+            },
+            _ => {
+                bail!("Could not find matching player UUID for name {}", name);
+            }
+        };
         let uuid = Uuid::parse_str(&player_uuid_str)?;
 
         Ok(Player {
