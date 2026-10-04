@@ -220,7 +220,7 @@ impl Player {
     }
 
     pub fn load_redis_stats(&mut self, domain: &str, con: &mut redis::Connection) -> anyhow::Result<()> {
-        // Stats are optional - players who haven't logged in since stats moved to redis have none (nil)
+        // Stats are optional - players who were wiped or never left the tutorial (pre-2026 update) have none (nil)
         let stats: Option<String> =
             con.lindex(format!("{}:playerdata:{}:stats", domain, self.uuid.hyphenated()), 0)?;
         self.stats = match stats {

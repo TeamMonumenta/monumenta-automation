@@ -53,7 +53,10 @@ def merge_stats(merged_data, stat_data, same_world):
     them together. Time Since stats always take the lowest value.
     """
     for namespace, namespace_data_current in stat_data["stats"].items():
-        namespace_data_merged = merged_data["stats"].setdefault(namespace, {})
+        namespace_data_merged = merged_data["stats"].get(namespace, None)
+        if namespace_data_merged is None:
+            namespace_data_merged = {}
+            merged_data["stats"][namespace] = namespace_data_merged
 
         for key, key_value_current in namespace_data_current.items():
             key_value_current = fix_negative(key_value_current)
