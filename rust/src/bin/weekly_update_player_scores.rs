@@ -79,6 +79,7 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         // "CovenAmpAccess", // hope springs eternal...
         "CovenAmpAccessRing", // this one can go though
         "Marketbanned", // wrong scoreboard, correct is MarketBanned
+        "DS1Access", // legacy sanctum i think? only use is `datapacks/valley/data/monumenta/functions/lobbies/instances_remaining` and `[...]/instances_remaining_continued_1`
     ]);
 
     let score_types_access = HashMap::from([
