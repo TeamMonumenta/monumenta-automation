@@ -157,9 +157,9 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
             for (score_type_old, score_type_new) in &score_types_access {
                 let old_objective = format!("D{}{}", access_code, score_type_old);
                 let new_objective = format!("{}{}", score_type_new, dungeon);
+                println!("{} -> {}", old_objective, new_objective);
                 let score = scores.remove(&old_objective);
                 if let Some(score) = score {
-                    println!("{} -> {}", old_objective, new_objective);
                     scores.insert(new_objective, score);
                 }
             }
@@ -168,18 +168,18 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
             for (score_type_old, score_type_new) in &score_types_startdate {
                 let old_objective = format!("D{}{}", start_date_code, score_type_old);
                 let new_objective = format!("{}{}", score_type_new, dungeon);
+                println!("{} -> {}", old_objective, new_objective);
                 let score = scores.remove(&old_objective);
                 if let Some(score) = score {
-                    println!("{} -> {}", old_objective, new_objective);
                     scores.insert(new_objective, score);
                 }
             }
         }
 
         for (old_objective, new_objective) in other_score_replacements {
+            println!("{} -> {}", old_objective, new_objective);
             let score = scores.remove(old_objective);
             if let Some(score) = score {
-                println!("{} -> {}", old_objective, new_objective);
                 scores.insert(new_objective.parse().unwrap(), score);
             }
         }
