@@ -83,7 +83,7 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     ]);
 
     let score_types_access = HashMap::from([
-        ("Access", "Access"),
+        ("Access", "Instance"),
         ("Finished", "Lootroom"), // "lootroom" misleading for willows, reverie, forum, etc... oh well
     ]);
 
@@ -134,12 +134,12 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
     ]);
 
     let other_score_replacements = HashMap::from([
-        ("CurrentPlot", "AccessPlayerplots"),
-        ("Guild", "AccessGuildplots"),
-        ("CovenAmpAccess", "AccessAmpedCoven"),
-        ("R1Access", "AccessValleyInstanced"),
-        ("R2Access", "AccessIslesInstanced"),
-        ("DR3Access", "AccessRingInstanced"),
+        ("CurrentPlot", "InstancePlayerplots"),
+        ("Guild", "InstanceGuildplots"),
+        ("CovenAmpAccess", "InstanceAmpedCoven"),
+        ("R1Access", "InstanceValleyInstanced"),
+        ("R2Access", "InstanceIslesInstanced"),
+        ("DR3Access", "InstanceRingInstanced"),
         ("R1Type", "TypeValleyInstanced"),
         ("R2Type", "TypeIslesInstanced"),
         ("R3Type", "TypeRingInstanced"),
