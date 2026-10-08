@@ -61,51 +61,171 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
 }
 
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
+    let scores_to_remove = HashSet::from([
+        // "DFSFinished",
+        // "DVFinished",
+        // "DSRFinished", // all five of these are used for mechs and should really be condensed into one "StrikeChests"
+        // "DPSFinished",
+        // "DMASFinished",
+        "DFSAccess",
+        "DFSStartDate", // remove from base->functions/lobbies/abandon/sanctum
+        "DVAccess",
+        "AzacorAccess",
+        "DBMAccess",
+        "DSRAccess",
+        "DPSAccess",
+        "DMASAccess",
+        "GodsporeAccess",
+        // "CovenAmpAccess", // hope springs eternal...
+        "CovenAmpAccessRing", // this one can go though
+        "Marketbanned", // wrong scoreboard, correct is MarketBanned
+        "DS1Access", // legacy sanctum i think? only use is `datapacks/valley/data/monumenta/functions/lobbies/instances_remaining` and `[...]/instances_remaining_continued_1`
+    ]);
+
+    let score_types_access = HashMap::from([
+        ("Access", "Access"),
+        ("Finished", "Lootroom"), // "lootroom" misleading for willows, reverie, forum, etc... oh well
+    ]);
+
+    let score_types_startdate = HashMap::from([
+        ("StartDate", "StartDate"),
+        ("LastVisit", "LastVisit"),
+        ("Type", "Type"), // want to change this but idk what to change to
+    ]);
+    
+    let dungeon_codes_access = HashMap::from([
+        ("Tutorial", "T"),
+        ("Labs", "0"),
+        ("White", "1"),
+        ("Orange", "2"),
+        ("Magenta", "3"),
+        ("LightBlue", "4"),
+        ("Yellow", "5"),
+        ("Willows", "B1"),
+        ("Reverie", "C"),
+        ("Corridors", "R"),
+        
+        ("Lime", "6"),
+        ("Pink", "7"),
+        ("Gray", "8"),
+        ("LightGray", "9"),
+        ("Cyan", "10"),
+        ("Purple", "11"),
+        ("Teal", "TL"),
+        ("Shifting", "RL2"),
+        ("Forum", "FF"),
+        ("Rush", "RD"),
+        ("Depths", "D"), // it's D and not DD, so it ends up as DDAccess
+        
+        ("Blue", "12"),
+        ("Brown", "13"),
+        ("Indigo", "I"),
+        ("SKT", "SKT"), // lol
+        ("Gallery", "G"),
+        ("Zenith", "CZ"),
+        ("Hexfall", "HF"),
+        ("Fortune", "WF"),
+    ]);
+    
+    let dungeon_codes_startdate = HashMap::from([
+        ("Willows", "BW"),
+        ("Reverie", "MR"),
+        ("Shifting", "CS"),
+    ]);
+
+    let other_score_replacements = HashMap::from([
+        ("CurrentPlot", "AccessPlayerplots"),
+        ("Guild", "AccessGuildplots"),
+        ("CovenAmpAccess", "AccessAmpedCoven"),
+        ("R1Access", "AccessValleyInstanced"),
+        ("R2Access", "AccessIslesInstanced"),
+        ("DR3Access", "AccessRingInstanced"),
+        ("R1Type", "TypeValleyInstanced"),
+        ("R2Type", "TypeIslesInstanced"),
+        ("R3Type", "TypeRingInstanced"),
+    ]);
+    
     if let Some(scores) = &mut player.scores {
+        for objective in scores_to_remove {
+            let removed = scores.remove(objective);
+            if let Some(_) = removed {
+                println!("removed {}", objective);
+            }
+        }
+
+        for (dungeon, access_code) in dungeon_codes_access {
+            for (score_type_old, score_type_new) in &score_types_access {
+                let old_objective = format!("D{}{}", access_code, score_type_old);
+                let new_objective = format!("{}{}", score_type_new, dungeon);
+                let score = scores.remove(&old_objective);
+                if let Some(score) = score {
+                    println!("{} -> {}", old_objective, new_objective);
+                    scores.insert(new_objective, score);
+                }
+            }
+
+            let &start_date_code = dungeon_codes_startdate.get(dungeon).unwrap_or(&access_code);
+            for (score_type_old, score_type_new) in &score_types_startdate {
+                let old_objective = format!("D{}{}", start_date_code, score_type_old);
+                let new_objective = format!("{}{}", score_type_new, dungeon);
+                let score = scores.remove(&old_objective);
+                if let Some(score) = score {
+                    println!("{} -> {}", old_objective, new_objective);
+                    scores.insert(new_objective, score);
+                }
+            }
+        }
+
+        for (old_objective, new_objective) in other_score_replacements {
+            let score = scores.remove(old_objective);
+            if let Some(score) = score {
+                println!("{} -> {}", old_objective, new_objective);
+                scores.insert(new_objective.parse().unwrap(), score);
+            }
+        }
+
         /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
-        update_instance_scores(scores, days_since_epoch, "D0StartDate", 28, &["D0Access", "D0Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D1StartDate", 28, &["D1Access", "D1Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D2StartDate", 28, &["D2Access", "D2Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D3StartDate", 28, &["D3Access", "D3Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D4StartDate", 28, &["D4Access", "D4Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D5StartDate", 28, &["D5Access", "D5Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D6StartDate", 28, &["D6Access", "D6Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D7StartDate", 28, &["D7Access", "D7Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D8StartDate", 28, &["D8Access", "D8Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D9StartDate", 28, &["D9Access", "D9Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D10StartDate", 28, &["D10Access", "D10Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D11StartDate", 28, &["D11Access", "D11Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D12StartDate", 28, &["D12Access", "D12Finished"]);
-        update_instance_scores(scores, days_since_epoch, "D13StartDate", 28, &["D13Access", "D13Finished"]);
-        update_instance_scores(scores, days_since_epoch, "DTLStartDate", 28, &["DTLAccess", "DTLFinished"]);
-        update_instance_scores(scores, days_since_epoch, "DMRStartDate", 28, &["DCAccess", "DCFinished"]);
-        update_instance_scores(scores, days_since_epoch, "DBWStartDate", 28, &["DB1Access", "DB1Finished"]);
-        update_instance_scores(scores, days_since_epoch, "DCSStartDate", 28, &["DRL2Access", "DRL2Finished"]);
-        update_instance_scores(scores, days_since_epoch, "DFFStartDate", 28, &["DFFAccess", "DFFFinished"]);
-        update_instance_scores(scores, days_since_epoch, "DHFStartDate", 28, &["DHFAccess", "DHFChests"]);
-        update_instance_scores(scores, days_since_epoch, "DSKTStartDate", 14, &["DSKTAccess", "DSKTChests"]);
-        update_instance_scores(scores, days_since_epoch, "DIStartDate", 28, &["DIAccess", "DIFinished"]);
-        update_instance_scores(scores, days_since_epoch, "DWFStartDate", 28, &["DWFAccess", "DWFFinished"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateLabs", 28, &["AccessLabs", "LootroomLabs"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateWhite", 28, &["AccessWhite", "LootroomWhite"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateOrange", 28, &["AccessOrange", "LootroomOrange"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateMagenta", 28, &["AccessMagenta", "LootroomMagenta"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateLightBlue", 28, &["AccessLightBlue", "LootroomLightBlue"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateYellow", 28, &["AccessYellow", "LootroomYellow"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateWillows", 28, &["AccessWillows", "LootroomWillows"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateReverie", 28, &["AccessReverie", "LootroomReverie"]);
+
+        update_instance_scores(scores, days_since_epoch, "StartDateLime", 28, &["AccessLime", "LootroomLime"]);
+        update_instance_scores(scores, days_since_epoch, "StartDatePink", 28, &["AccessPink", "LootroomPink"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateGray", 28, &["AccessGray", "LootroomGray"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateLightGray", 28, &["AccessLightGray", "LootroomLightGray"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateCyan", 28, &["AccessCyan", "LootroomCyan"]);
+        update_instance_scores(scores, days_since_epoch, "StartDatePurple", 28, &["AccessPurple", "LootroomPurple"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateTeal", 28, &["AccessTeal", "LootroomTeal"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateShifting", 28, &["AccessShifting", "LootroomShifting"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateForum", 28, &["AccessForum", "LootroomForum"]);
+
+        update_instance_scores(scores, days_since_epoch, "StartDateSKT", 14, &["AccessSKT", "LootroomSKT"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateBlue", 28, &["AccessBlue", "LootroomBlue"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateBrown", 28, &["AccessBrown", "LootroomBrown"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateHexfall", 28, &["AccessHexfall", "LootroomHexfall"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateIndigo", 28, &["AccessIndigo", "LootroomIndigo"]);
+        update_instance_scores(scores, days_since_epoch, "StartDateFortune", 28, &["AccessFortune", "LootroomFortune"]);
 
         /* DelveDungeon score also resets as if it was a dungeon score */
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
 
         /* These scores are always reset to 0 */
-        scores.insert("DRAccess".to_string(), 0);
-        scores.insert("DRDAccess".to_string(), 0);
+        scores.remove("AccessCorridors");
+        scores.remove("AccessRush");
         // Sanctum & Verdant
-        scores.insert("R1Access".to_string(), 0);
+        scores.remove("AccessValleyInstanced");
         // Remorse & Mist
-        scores.insert("R2Access".to_string(), 0);
-        scores.insert("DDAccess".to_string(), 0);
+        scores.remove("AccessIslesInstanced");
+        scores.remove("AccessDepths");
         // Ring scores
-        scores.insert("DR3Access".to_string(), 0);
-        scores.insert("DGAccess".to_string(), 0);
-        scores.insert("DPSAccess".to_string(), 0);
-        scores.insert("DMASAccess".to_string(), 0);
-        scores.insert("GodsporeAccess".to_string(), 0);
-        scores.insert("AzacorAccess".to_string(), 0);
-        scores.insert("DCZAccess".to_string(), 0);
+        scores.remove("AccessRingInstanced");
+        scores.remove("AccessGallery");
+        scores.remove("AccessZenith");
 
         fix_total_level(scores);
     }
