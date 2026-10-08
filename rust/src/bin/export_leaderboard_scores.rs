@@ -26,7 +26,6 @@ fn main() -> anyhow::Result<()> {
     ) as Box<dyn SharedLogger>])
     .unwrap();
 
-    // TODO: remove timer logs after a couple queries
     let timer_start = std::time::Instant::now();
 
     let mut args: Vec<String> = env::args().collect();
@@ -58,7 +57,13 @@ fn main() -> anyhow::Result<()> {
         // Get all leaderboard score entries for a given objective
         // Returns [] if the object has no associated zset
         let key = format!("{}:leaderboard:{}", domain, cfg.objective);
-        let entries: Vec<(String, f64)> = con.zrevrange_withscores(&key, 0, -1)?;
+        // Ordering needs to be reverse for non race leaderboards
+        let entries: Vec<(String, f64)> = if cfg.category.as_deref() == Some("Race") {
+            con.zrange_withscores(&key, 0, -1)?
+        } else {
+            con.zrevrange_withscores(&key, 0, -1)?
+        };
+
         let scores: Vec<ScoreEntry> = entries
             .iter()
             .map(|(name, score)| ScoreEntry {
@@ -74,7 +79,6 @@ fn main() -> anyhow::Result<()> {
         writer.flush()?;
     }
 
-    // TODO: remove timer logs after a couple queries
     log::info!(
         "export_leaderboard_scores: successfully exported {} leaderboards in {:.2}s",
         configs.len(),
