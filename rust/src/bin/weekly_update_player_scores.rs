@@ -13,7 +13,7 @@ use uuid::Uuid;
 use monumenta::player::Player;
 
 fn usage() {
-    println!("Usage: weekly_update_players path/to/directory");
+    println!("Usage: weekly_update_player_scores path/to/directory");
 }
 
 fn update_instance_scores(
@@ -200,6 +200,21 @@ fn main() -> anyhow::Result<()> {
             player.plugindata = Some(plugindata);
         }
         */
+
+        /* Update player content data */
+        if let Some(contentdata) = &mut player.contentdata {
+            /* TODO
+
+            Need to combine this with score changes, moving players to the appropriate overworld if
+            their instance expired. RedisSync is getting support for tracking fallback content for this,
+            then we only need to hard-code the fallback content here. That or write something to read the
+            redis-sync config maybe? Certain other content should also move the player to the overworld, such
+            as quest worlds. That said, players in a dungeon that hasn't expired, or a plot, should stay there.
+
+            In the meantime, an empty string defaults the player back to the default world of the shard.
+            */
+            contentdata.set_id("");
+        }
 
         player.save_dir(basedirpath).unwrap();
     });
