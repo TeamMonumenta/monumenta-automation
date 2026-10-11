@@ -61,6 +61,9 @@ fn fix_total_level(scores: &mut HashMap<String, i32>) {
 }
 
 fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
+    /*
+        all of these scores are 100% unused
+     */
     let scores_to_remove = HashSet::from([
         // "DFSFinished",
         // "DVFinished",
@@ -105,45 +108,39 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         ("Reverie", "C"),
         ("Corridors", "R"),
         
-        ("Lime", "6"),
-        ("Pink", "7"),
-        ("Gray", "8"),
-        ("LightGray", "9"),
-        ("Cyan", "10"),
-        ("Purple", "11"),
-        ("Teal", "TL"),
-        ("Shifting", "RL2"),
-        ("Forum", "FF"),
-        ("Rush", "RD"),
-        ("Depths", "D"), // it's D and not DD, so it ends up as DDAccess
-        
-        ("Blue", "12"),
-        ("Brown", "13"),
-        ("Indigo", "I"),
-        ("SKT", "SKT"), // lol
-        ("Gallery", "G"),
-        ("Zenith", "CZ"),
-        ("Hexfall", "HF"),
-        ("Fortune", "WF"),
+        // ("Lime", "6"),
+        // ("Pink", "7"),
+        // ("Gray", "8"),
+        // ("LightGray", "9"),
+        // ("Cyan", "10"),
+        // ("Purple", "11"),
+        // ("Teal", "TL"),
+        // ("Shifting", "RL2"),
+        // ("Forum", "FF"),
+        // ("Rush", "RD"),
+        // ("Depths", "D"), // it's D and not DD, so it ends up as DDAccess
+        //
+        // ("Blue", "12"),
+        // ("Brown", "13"),
+        // ("Indigo", "I"),
+        // ("SKT", "SKT"), // lol
+        // ("Gallery", "G"),
+        // ("Zenith", "CZ"),
+        // ("Hexfall", "HF"),
+        // ("Fortune", "WF"),
     ]);
     
     let dungeon_codes_startdate = HashMap::from([
         ("Willows", "BW"),
         ("Reverie", "MR"),
-        ("Shifting", "CS"),
+        // ("Shifting", "CS"),
     ]);
 
-    let other_score_replacements = HashMap::from([
-        ("CurrentPlot", "InstancePlayerplots"),
-        ("Guild", "InstanceGuildplots"),
-        ("CovenAmpAccess", "InstanceAmpedCoven"),
-        ("R1Access", "InstanceValleyInstanced"),
-        ("R2Access", "InstanceIslesInstanced"),
-        ("DR3Access", "InstanceRingInstanced"),
-        ("R1Type", "TypeValleyInstanced"),
-        ("R2Type", "TypeIslesInstanced"),
-        ("R3Type", "TypeRingInstanced"),
-    ]);
+    // let other_score_replacements = HashMap::from([
+    //     ("CurrentPlot", "InstancePlayerplots"),
+    //     ("Guild", "InstanceGuildplots"),
+    //     ("CovenAmpAccess", "InstanceAmpedCoven"),
+    // ]);
     
     if let Some(scores) = &mut player.scores {
         for objective in scores_to_remove {
@@ -176,13 +173,13 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
             }
         }
 
-        for (old_objective, new_objective) in other_score_replacements {
-            println!("{} -> {}", old_objective, new_objective);
-            let score = scores.remove(old_objective);
-            if let Some(score) = score {
-                scores.insert(new_objective.parse().unwrap(), score);
-            }
-        }
+        // for (old_objective, new_objective) in other_score_replacements {
+        //     println!("{} -> {}", old_objective, new_objective);
+        //     let score = scores.remove(old_objective);
+        //     if let Some(score) = score {
+        //         scores.insert(new_objective.parse().unwrap(), score);
+        //     }
+        // }
 
         /* Reset dungeon scores if their StartDate is more than old enough for them to expire */
         update_instance_scores(scores, days_since_epoch, "StartDateLabs", 28, &["InstanceLabs", "LootroomLabs"]);
@@ -194,38 +191,63 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         update_instance_scores(scores, days_since_epoch, "StartDateWillows", 28, &["InstanceWillows", "LootroomWillows"]);
         update_instance_scores(scores, days_since_epoch, "StartDateReverie", 28, &["InstanceReverie", "LootroomReverie"]);
 
-        update_instance_scores(scores, days_since_epoch, "StartDateLime", 28, &["InstanceLime", "LootroomLime"]);
-        update_instance_scores(scores, days_since_epoch, "StartDatePink", 28, &["InstancePink", "LootroomPink"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateGray", 28, &["InstanceGray", "LootroomGray"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateLightGray", 28, &["InstanceLightGray", "LootroomLightGray"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateCyan", 28, &["InstanceCyan", "LootroomCyan"]);
-        update_instance_scores(scores, days_since_epoch, "StartDatePurple", 28, &["InstancePurple", "LootroomPurple"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateTeal", 28, &["InstanceTeal", "LootroomTeal"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateShifting", 28, &["InstanceShifting", "LootroomShifting"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateForum", 28, &["InstanceForum", "LootroomForum"]);
+        update_instance_scores(scores, days_since_epoch, "D6StartDate", 28, &["D6Access", "D6Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D7StartDate", 28, &["D7Access", "D7Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D8StartDate", 28, &["D8Access", "D8Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D9StartDate", 28, &["D9Access", "D9Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D10StartDate", 28, &["D10Access", "D10Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D11StartDate", 28, &["D11Access", "D11Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D12StartDate", 28, &["D12Access", "D12Finished"]);
+        update_instance_scores(scores, days_since_epoch, "D13StartDate", 28, &["D13Access", "D13Finished"]);
+        update_instance_scores(scores, days_since_epoch, "DTLStartDate", 28, &["DTLAccess", "DTLFinished"]);
+        update_instance_scores(scores, days_since_epoch, "DMRStartDate", 28, &["DCAccess", "DCFinished"]);
+        update_instance_scores(scores, days_since_epoch, "DBWStartDate", 28, &["DB1Access", "DB1Finished"]);
+        update_instance_scores(scores, days_since_epoch, "DCSStartDate", 28, &["DRL2Access", "DRL2Finished"]);
+        update_instance_scores(scores, days_since_epoch, "DFFStartDate", 28, &["DFFAccess", "DFFFinished"]);
+        update_instance_scores(scores, days_since_epoch, "DHFStartDate", 28, &["DHFAccess", "DHFChests"]);
+        update_instance_scores(scores, days_since_epoch, "DSKTStartDate", 14, &["DSKTAccess", "DSKTChests"]);
+        update_instance_scores(scores, days_since_epoch, "DIStartDate", 28, &["DIAccess", "DIFinished"]);
+        update_instance_scores(scores, days_since_epoch, "DWFStartDate", 28, &["DWFAccess", "DWFFinished"]);
 
-        update_instance_scores(scores, days_since_epoch, "StartDateSKT", 14, &["InstanceSKT", "LootroomSKT"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateBlue", 28, &["InstanceBlue", "LootroomBlue"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateBrown", 28, &["InstanceBrown", "LootroomBrown"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateHexfall", 28, &["InstanceHexfall", "LootroomHexfall"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateIndigo", 28, &["InstanceIndigo", "LootroomIndigo"]);
-        update_instance_scores(scores, days_since_epoch, "StartDateFortune", 28, &["InstanceFortune", "LootroomFortune"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateLime", 28, &["InstanceLime", "LootroomLime"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDatePink", 28, &["InstancePink", "LootroomPink"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateGray", 28, &["InstanceGray", "LootroomGray"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateLightGray", 28, &["InstanceLightGray", "LootroomLightGray"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateCyan", 28, &["InstanceCyan", "LootroomCyan"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDatePurple", 28, &["InstancePurple", "LootroomPurple"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateTeal", 28, &["InstanceTeal", "LootroomTeal"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateShifting", 28, &["InstanceShifting", "LootroomShifting"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateForum", 28, &["InstanceForum", "LootroomForum"]);
+        //
+        // update_instance_scores(scores, days_since_epoch, "StartDateSKT", 14, &["InstanceSKT", "LootroomSKT"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateBlue", 28, &["InstanceBlue", "LootroomBlue"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateBrown", 28, &["InstanceBrown", "LootroomBrown"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateHexfall", 28, &["InstanceHexfall", "LootroomHexfall"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateIndigo", 28, &["InstanceIndigo", "LootroomIndigo"]);
+        // update_instance_scores(scores, days_since_epoch, "StartDateFortune", 28, &["InstanceFortune", "LootroomFortune"]);
 
         /* DelveDungeon score also resets as if it was a dungeon score */
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
 
         /* These scores are always reset to 0 */
         scores.remove("InstanceCorridors");
-        scores.remove("InstanceRush");
+        scores.insert("DRDAccess".to_string(), 0);
         // Sanctum & Verdant
-        scores.remove("InstanceValleyInstanced");
+        scores.remove("R1Access"); // we're getting rid of this score entirely
+        scores.remove("InstanceSanctum");
+        scores.remove("InstanceAzacor");
+        scores.remove("InstanceVerdant");
+        scores.remove("InstanceSnowSpirit");
         // Remorse & Mist
-        scores.remove("InstanceIslesInstanced");
-        scores.remove("InstanceDepths");
+        scores.insert("R2Access".to_string(), 0);
+        scores.insert("DDAccess".to_string(), 0);
         // Ring scores
-        scores.remove("InstanceRingInstanced");
-        scores.remove("InstanceGallery");
-        scores.remove("InstanceZenith");
+        scores.insert("DR3Access".to_string(), 0);
+        scores.insert("DGAccess".to_string(), 0);
+        scores.insert("DPSAccess".to_string(), 0);
+        scores.insert("DMASAccess".to_string(), 0);
+        scores.insert("GodsporeAccess".to_string(), 0);
+        scores.insert("DCZAccess".to_string(), 0);
 
         fix_total_level(scores);
     }
