@@ -391,7 +391,7 @@ if __name__ == '__main__':
         ('plugins/Monumenta/DataCollection', '/home/epic/3_DOMAIN_SHARED/DataCollection'),
         ('plugins/Monumenta/DepthsStats', '/home/epic/3_DOMAIN_SHARED/DepthsStats'),
         ('plugins/Monumenta/seasonalevents', '../../../server_config/data/plugins/all/Monumenta/seasonalevents'),
-        ('plugins/Monumenta/tlaxan_crafter', '../../../server_config/data/plugins/tlaxan_crafter'),
+        ('plugins/Monumenta/tlaxan_crafter', '../../../server_config/data/plugins/all/Monumenta/tlaxan_crafter'),
         ('plugins/Monumenta/images', '../../../server_config/data/plugins/all/Monumenta/images'),
         ('plugins/Monumenta/InfinityTower/TowerMobs.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/TowerMobs.json'),
         ('plugins/Monumenta/InfinityTower/InfinityTowerDefault.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityTowerDefault.json'),
