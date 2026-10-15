@@ -301,7 +301,7 @@ class RedisScoreboard(object):
             [
                 {
                     "condition": {
-                        "Objective": "D1Access",
+                        "Objective": "InstanceWhite",
                         "Score": {
                             "min": 1
                         }
@@ -309,7 +309,7 @@ class RedisScoreboard(object):
                     "actions": {
                         "add": [
                             {
-                                "Objective": "D1Access",
+                                "Objective": "InstanceWhite",
                                 "Score": 1000
                             }
                         ]
@@ -317,7 +317,7 @@ class RedisScoreboard(object):
                 },
                 {
                     "condition": {
-                        "Objective": "D1Access",
+                        "Objective": "InstanceWhite",
                         "Score": {
                             "min": 2000
                         }
@@ -325,11 +325,11 @@ class RedisScoreboard(object):
                     "actions": {
                         "set": [
                             {
-                                "Objective": "D1Access",
+                                "Objective": "InstanceWhite",
                                 "Score": 0
                             },
                             {
-                                "Objective": "D1Finished",
+                                "Objective": "LootroomWhite",
                                 "Score": 0
                             }
                         ]
