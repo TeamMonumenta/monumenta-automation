@@ -228,6 +228,12 @@ fn update_player_scores(player: &mut Player, days_since_epoch: i32) {
         update_instance_scores(scores, days_since_epoch, "DelveStartDate", 28, &["DelveDungeon"]);
 
         /* These scores are always reset to 0 */
+        scores.remove("InstanceValley");
+        scores.remove("InstanceIsles");
+        scores.remove("InstanceRing");
+        scores.remove("LastVisitValley");
+        scores.remove("LastVisitIsles");
+        scores.remove("LastVisitRing");
         scores.remove("InstanceCorridors");
         scores.insert("DRDAccess".to_string(), 0);
         // Sanctum & Verdant
