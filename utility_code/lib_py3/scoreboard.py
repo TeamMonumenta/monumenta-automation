@@ -343,7 +343,7 @@ class Scoreboard():
             [
                 {
                     "condition": {
-                        "Objective": "D1Access",
+                        "Objective": "InstanceWhite",
                         "Score": {
                             "min": 1
                         }
@@ -351,7 +351,7 @@ class Scoreboard():
                     "actions": {
                         "add": [
                             {
-                                "Objective": "D1Access",
+                                "Objective": "InstanceWhite",
                                 "Score": 1000
                             }
                         ]
@@ -359,7 +359,7 @@ class Scoreboard():
                 },
                 {
                     "condition": {
-                        "Objective": "D1Access",
+                        "Objective": "InstanceWhite",
                         "Score": {
                             "min": 2000
                         }
@@ -367,11 +367,11 @@ class Scoreboard():
                     "actions": {
                         "set": [
                             {
-                                "Objective": "D1Access",
+                                "Objective": "InstanceWhite",
                                 "Score": 0
                             },
                             {
-                                "Objective": "D1Finished",
+                                "Objective": "LootroomWhite",
                                 "Score": 0
                             }
                         ]
