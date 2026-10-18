@@ -211,6 +211,8 @@ spec:
 {{- if eq .Values.namespace "build" }}
         - name: "FORCE_DISABLE_CONTENT_SORTING"
           value: "1"
+        - name: "DISABLE_WORLD_PREGEN"
+          value: "1"
 {{- end }}
 {{- if .Values.useHTTPForProbes }}
         readinessProbe:
