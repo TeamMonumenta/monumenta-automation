@@ -208,6 +208,10 @@ spec:
 {{- else }}
           value: "1"
 {{- end }}
+{{- if eq .Values.namespace "build" }}
+        - name: "FORCE_DISABLE_CONTENT_SORTING"
+          value: "1"
+{{- end }}
 {{- if .Values.useHTTPForProbes }}
         readinessProbe:
           httpGet:
