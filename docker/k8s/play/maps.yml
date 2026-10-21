@@ -62,6 +62,7 @@ spec:
       labels:
         app: maps
     spec:
+      priorityClassName: monumenta-play
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -81,6 +82,16 @@ spec:
         image: nginx:stable
         ports:
         - containerPort: 80
+        resources:
+          # nginx serving static files off NFS. 10 days (2026-09-07 to 2026-09-17 UTC):
+          # 49 MiB peak RSS, 60 MiB peak working set (the extra is page cache for the
+          # files it serves, which is reclaimable).
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            cpu: "1"
+            memory: 256Mi
         volumeMounts:
         - name: nfs-maps
           mountPath: /usr/share/nginx/html

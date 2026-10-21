@@ -26,8 +26,21 @@ spec:
       labels:
         app: adminer
     spec:
+      # monumenta-build, not monumenta-infra: this is an occasional-use database UI, not
+      # something that should outrank the build environment.
+      priorityClassName: monumenta-build
       containers:
         - name: adminer
           image: adminer:4.6
+          resources:
+            # Occasional-use database web UI. No series in the 2026-09-07 to 2026-09-17
+            # UTC window (rarely running), so this is a conservative guess rather than a
+            # measurement.
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
           ports:
             - containerPort: 8080

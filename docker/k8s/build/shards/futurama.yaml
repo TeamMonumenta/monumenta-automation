@@ -71,6 +71,7 @@ spec:
       labels:
         app: futurama
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -161,18 +162,32 @@ spec:
           mountPath: /home/epic/5_SCRATCH
         resources:
           limits:
-            # Set this to 1Gi
-            # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
-            # It should not need much/any...
-            # TEMP: Set to 4GB to avoid OOMkilling the copy_world on blue
+            # LEFT AT 4Gi ON PURPOSE. The old note said "TEMP: avoid OOMkilling the
+            # copy_world on blue", and copy_world.py moved in-plugin in Sep 2026, so the
+            # original reason is gone. But the only measurement we have of futurama
+            # running -- ~3.8 GiB working set, admittedly from the copy_world era -- is
+            # well above the 2048Mi standard shard limit. Cutting to 2048Mi on the
+            # theory that the in-plugin change fixed it would be choosing a number
+            # against the available data rather than from it. Run it once, measure, then
+            # cut.
             memory: 4Gi
-            # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
-            # Tried making this 64 extra, low-memory shards still crash with this
-            hugepages-2Mi: 3456Mi
+            # Hugepages = JAVA_MEM + JAVA_MEM/64 (G1 mark bitmap)
+            #                     + JAVA_MEM/256 (card table + block offset table)
+            #                     + 240 (JIT code cache, -XX:ReservedCodeCacheSize)
+            #                     + 64  (per-mapping 2Mi rounding and margin)
+            # rounded up to an even MiB. This replaces the old "JAVA_MEM + 192 + 64 per
+            # gigabyte" rule, which had the right shape but the wrong terms -- it only
+            # exceeded the real requirement above ~1.1 GiB of heap, which is why small
+            # shards crashed on it. This file is hand-maintained; keep it in step with
+            # helm/shard/templates/deployment.yaml. JAVA_MEM 3072M: 3072 + 48 + 12 + 240
+            # + 64 = 3436Mi (was 3456Mi).
+            hugepages-2Mi: 3436Mi
           requests:
-            # Set this to 64Mi
-            # The shard should not need non-hugepage RAM by default
-            memory: 64Mi
-            # Tried making this 64 extra, low-memory shards still crash with this
-            # Set this to JAVA_MEM + 192 + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 3456Mi
+            # Was 64Mi. futurama has only ~11 samples in the 10-day window (2026-09-07
+            # to 2026-09-17 UTC) (it is rarely running) with a ~3.8 GiB working set
+            # while up, which is well above the 2048Mi limit -- but that measurement is
+            # from the copy_world era. Starting from the standard build shard request;
+            # if it OOMs after the in-plugin change, measure it again rather than
+            # assuming the old number.
+            memory: 768Mi
+            hugepages-2Mi: 3436Mi

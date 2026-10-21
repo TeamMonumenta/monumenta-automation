@@ -37,6 +37,7 @@ spec:
       labels:
         app: sockettest
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -50,6 +51,14 @@ spec:
       containers:
       - name: sockettest
         image: subfuzion/netcat
+        resources:
+          # A netcat debugging pod. Tiny by construction.
+          requests:
+            cpu: 10m
+            memory: 16Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi
         tty: true
         stdin: true
         ports:

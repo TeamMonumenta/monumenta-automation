@@ -30,9 +30,18 @@ spec:
             hostPath:
               type: Directory
               path: /nfs/build/m18
+          priorityClassName: monumenta-build
           containers:
           - name: cron-automated-tag-los-mobs
             image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot
+            resources:
+              # Walks world data to tag mobs; can touch a lot of region files.
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                cpu: "4"
+                memory: 8Gi
             tty: false
             stdin: false
             args:

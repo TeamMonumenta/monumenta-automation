@@ -32,11 +32,20 @@ spec:
           - name: secret-config
             secret:
               secretName: automated-restart
+          priorityClassName: monumenta-stage
           containers:
           - name: cron-automated-restart
             image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-stage
             tty: false
             stdin: false
+            resources:
+              # Short-lived job that issues restart commands over the bot API.
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                cpu: "2"
+                memory: 1Gi
             args:
             - /home/epic/MCEdit-And-Automation/utility_code/daily_restart.py
             volumeMounts:

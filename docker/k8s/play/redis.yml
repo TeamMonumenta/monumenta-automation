@@ -33,6 +33,7 @@ spec:
       labels:
         app: redis
     spec:
+      priorityClassName: monumenta-play-data
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -54,12 +55,59 @@ spec:
         - name: redis-config
           mountPath: /usr/local/etc/redis/
         command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+        resources:
+          # Guaranteed QoS: requests == limits, on cpu AND memory, on EVERY
+          # container in this pod. That is what gets redis oom_score_adj -997,
+          # so the kernel kills essentially anything else on the node first.
+          # The priority class does not do this -- priority governs scheduler
+          # preemption and kubelet eviction, not the kernel OOM killer.
+          #
+          # Sizing, from container_memory_rss over 10 days (2026-09-07 to 2026-09-17 UTC):
+          #   ~9 GiB   just after the weekly maintenance restart
+          #   +1.45 GiB/day steady growth thereafter
+          #   19.2 GiB observed peak, immediately before the next restart
+          #
+          # 36Gi is 9 + 1.45*14 = 29.3 GiB for a fully missed (14 day)
+          # maintenance window, plus ~6.7 GiB for BGSAVE copy-on-write, whose
+          # pages are charged to this same cgroup.
+          #
+          # READ THIS BEFORE LOWERING IT. Before this change redis had no memory
+          # limit at all and could grow into whatever the node had spare.
+          # requests == limits buys OOM-killer protection but also creates a
+          # hard ceiling that did not previously exist: redis is now killed at
+          # this number however much free memory the node has. That is the
+          # deliberate trade -- a ceiling we choose, at a value we understand,
+          # instead of an unbounded process -- but it means the number has to be
+          # genuinely generous rather than merely sufficient.
+          #
+          # CPU 2 is structural, not an average: redis' command loop is single
+          # threaded, so reaching 2 needs the main thread plus bio threads plus
+          # an RDB fork child at once. (Do not size CPU from the cAdvisor
+          # median. play/mysql averaged 1.14 cores and was still being CFS
+          # throttled at a limit of 3 -- scrape averages cannot see a 100ms
+          # throttle window.)
+          requests:
+            cpu: "2"
+            memory: 36Gi
+          limits:
+            cpu: "2"
+            memory: 36Gi
       - name: redis-exporter
         image: oliver006/redis_exporter:latest
         resources:
+          # Also requests == limits: one Burstable sidecar would drop the whole
+          # pod to Burstable QoS and undo redis' OOM protection above.
+          # Measured ~19 MiB and ~0 cores over 10 days (2026-09-07 to 2026-09-17 UTC);
+          # build/redis.yml sets the same image to 32Mi, 64Mi here because this
+          # one cannot burst. 200m rather than 100m because a hard CPU quota on
+          # the exporter shows up as scrape timeouts, i.e. monitoring gaps on
+          # the component we most need to watch.
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: 200m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 64Mi
         ports:
         - containerPort: 9121
       volumes:
@@ -348,7 +396,30 @@ data:
     # limit for maxmemory so that there is some free RAM on the system for replica
     # output buffers (but this is not needed if the policy is 'noeviction').
     #
-    # maxmemory <bytes>
+    # Busty/Claude 2026-09-17: set below the container memory limit (36Gi) so
+    # redis refuses writes rather than being OOM killed. With "appendonly no"
+    # and "save 900 1" a hard kill can lose up to 15 minutes of writes; hitting
+    # maxmemory instead keeps the process alive and keeps reads working.
+    #
+    # Note the two sides are different units. maxmemory bounds used_memory (what
+    # the allocator handed out); the cgroup limit bounds RSS. The gap between
+    # them is the fragmentation ratio (jemalloc typically 1.1-1.3 under this
+    # churn) PLUS BGSAVE copy-on-write pages, which land in the same cgroup. At
+    # 26gb of used_memory, RSS before any fork is roughly 28-34 GiB -- which is
+    # why the cgroup limit is 36Gi. An earlier draft paired 24gb with a 28Gi
+    # limit, a gap fragmentation alone could have eaten.
+    #
+    # TWO THINGS FOR OPS REVIEW, both deliberate, both worth arguing about:
+    #  1. maxmemory-policy stays at the default "noeviction", so reaching this
+    #     errors on writes rather than dropping keys. allkeys-lru would silently
+    #     discard live game state, which seems worse. But "writes fail" is not
+    #     automatically graceful: a plugin that cannot persist inventory on
+    #     logout may log and move on, losing player data with no crash to alert
+    #     anyone. Whether that beats a restart is a judgement about our plugins.
+    #  2. stop-writes-on-bgsave-error is yes (further down), so a failed BGSAVE
+    #     also halts writes. With maxmemory that is two independent paths to a
+    #     write-refusing redis where there were none.
+    maxmemory 26gb
 
     # MAXMEMORY POLICY: how Redis will select what to remove when maxmemory
     # is reached. You can select among five behaviors:

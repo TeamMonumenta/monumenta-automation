@@ -21,6 +21,7 @@ spec:
       labels:
         app: automation-bot-m18
     spec:
+      priorityClassName: monumenta-play
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -64,6 +65,18 @@ spec:
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
         tty: false
         stdin: false
+        resources:
+          # Unlike the m17 bot this one stays flat: 168 MiB median, 179 MiB peak RSS
+          # over 10 days (2026-09-07 to 2026-09-17 UTC), with no maintenance-window
+          # spike, because the m18 play shards are not rebuilt the same way. Sized
+          # accordingly -- if that ever changes, this will OOM and should be raised to
+          # match m17.
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: "12"
+            memory: 2Gi
         volumeMounts:
         - name: nfs-play-m18
           mountPath: /home/epic/play/m18

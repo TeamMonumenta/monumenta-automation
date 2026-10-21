@@ -17,6 +17,7 @@ spec:
       labels:
         app: chat-logger
     spec:
+      priorityClassName: monumenta-play
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -56,9 +57,13 @@ spec:
         #- name: CHAT_LOGGER_DEBUG
         #  value: "1"
         resources:
-          limits:
-            cpu: 100m
-            memory: 32Mi
+          # Was limit 32Mi / request 16Mi. Measured peak is 31 MiB, i.e. sitting on the
+          # limit, and this container was OOM killed 19 times over 10 days
+          # (2026-09-07 to 2026-09-17 UTC) -- the most-restarted pod in the
+          # cluster. 256Mi costs nothing and stops the restart loop.
           requests:
             cpu: 10m
-            memory: 16Mi
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 256Mi

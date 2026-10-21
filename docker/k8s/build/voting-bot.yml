@@ -44,6 +44,7 @@ spec:
       labels:
         app: voting-bot
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -84,9 +85,12 @@ spec:
               name: voting-bot
               key: discord-token
         resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): 35 MiB median, 37 MiB peak RSS.
+          # Existing values are fine; request raised slightly so it is not
+          # under-counted.
+          requests:
+            cpu: 50m
+            memory: 96Mi
           limits:
             cpu: 250m
             memory: 256Mi
-          requests:
-            cpu: 50m
-            memory: 64Mi

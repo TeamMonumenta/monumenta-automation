@@ -49,6 +49,7 @@ spec:
       labels:
         app: mysql
     spec:
+      priorityClassName: monumenta-play-data
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -79,8 +80,40 @@ spec:
         - name: mysql-config
           mountPath: /etc/mysql/conf.d
         resources:
+          # Guaranteed QoS (requests == limits on cpu and memory) so mysql gets
+          # oom_score_adj -997 and is killed only after nearly everything else. Second
+          # only to redis in importance.
+          #
+          # Memory: container_memory_rss over 10 days (2026-09-07 to 2026-09-17 UTC) is
+          # 16.0 GiB median, 16.5 GiB peak, and remarkably flat -- this is a
+          # steady-state footprint, not a growth curve like redis.
+          #
+          # 26Gi, not the peak+21% (20Gi) an earlier draft used. Like redis, this
+          # container previously had NO memory limit, so this introduces a hard ceiling
+          # that did not exist. And per the note below the footprint is most likely
+          # driven by per-connection buffers against
+          # max_connections = 2000 -- i.e. it scales with connection count,
+          # which is exactly what spikes when the network is having a bad day. Capping a
+          # connection-driven footprint at peak+21% and making it a hard kill is the
+          # wrong order of operations; bound max_connections first, then bring this
+          # down.
+          #
+          # NOTE FOR REVIEW: 16.5 GiB is surprising given no innodb_buffer_pool_size is
+          # set here (MariaDB defaults to 128M), so this is almost certainly
+          # per-connection buffers against max_connections = 2000. Worth a look
+          # independently of this sizing -- if that is trimmed, the limit can come down
+          # a long way.
+          #
+          # CPU: raised from 3 to 6. Measured usage is 1.14 cores median and peaks at
+          # exactly 3.00 -- clipped by the old limit -- and the pod is currently being
+          # CFS throttled (~1.9 throttled periods/sec). 3 was too low; true demand is
+          # unknown but above 3.
+          requests:
+            cpu: "6"
+            memory: 26Gi
           limits:
-            cpu: "3"
+            cpu: "6"
+            memory: 26Gi
       volumes:
         - name: mysql-persistent-storage
           hostPath:

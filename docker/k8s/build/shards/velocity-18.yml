@@ -40,6 +40,7 @@ spec:
       labels:
         app: velocity-18
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -99,10 +100,20 @@ spec:
           mountPath: /home/epic/build/m18
         resources:
           limits:
+            # Measured working set: 398 MiB median, 453 MiB peak over 10 days
+            # (2026-09-07 to 2026-09-17 UTC). Request was 64Mi, which told the scheduler
+            # this pod was free.
+            #
+            # Hugepages 1024Mi -> 826Mi, per the formula in
+            # helm/shard/templates/deployment.yaml:
+            #   JAVA_MEM + JAVA_MEM/64 + JAVA_MEM/256 + 240 + 64
+            #   = 512 + 8 + 2 + 240 + 64 = 826Mi
+            # 1024Mi was above the requirement (unlike stage/volt, which were below it)
+            # so this is a trim, not a fix.
             cpu: 4
             memory: 2Gi
-            hugepages-2Mi: 1024Mi
+            hugepages-2Mi: 826Mi
           requests:
             cpu: 1
-            memory: 64Mi
-            hugepages-2Mi: 1024Mi
+            memory: 768Mi
+            hugepages-2Mi: 826Mi

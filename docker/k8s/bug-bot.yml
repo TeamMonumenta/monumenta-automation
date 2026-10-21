@@ -31,6 +31,7 @@ spec:
       labels:
         app: bug-bot
     spec:
+      priorityClassName: monumenta-infra
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -55,9 +56,11 @@ spec:
           mountPath: /home/epic/.task_bot
         command: ["./discord_bots/task_bot/task_bot.py"]
         resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): 84 MiB median, 84 MiB peak RSS.
+          # Existing values already fit.
+          requests:
+            cpu: 100m
+            memory: 160Mi
           limits:
             cpu: 250m
             memory: 512Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi

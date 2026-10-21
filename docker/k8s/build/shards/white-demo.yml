@@ -62,6 +62,19 @@ spec:
       labels:
         app: white-demo
     spec:
+      priorityClassName: monumenta-build
+      # Added: this deployment hostPath-mounts /nfs/build/m18 and requests hugepages,
+      # but had no nodeAffinity. monumenta-19 has no hugepage pool, so landing there
+      # means Pending forever with a confusing reason.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - monumenta-18
       volumes:
         - name: nfs-project-epic
           hostPath:
@@ -93,15 +106,24 @@ spec:
           mountPath: /home/epic/build/m18
         resources:
           limits:
-            # Set this to 1Gi
-            # This is the hard limit for how much RAM a shard can allocate beyond what it needs for hugepages
-            # It should not need much/any...
-            memory: 1Gi
-            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 1888Mi
+            # Raised 1Gi -> 2048Mi to match every other shard. JAVA_META_MEM is set to
+            # 256M here but nothing passes -XX:MaxMetaspaceSize, so metaspace is not
+            # actually capped at that value.
+            memory: 2048Mi
+            # Hugepages = JAVA_MEM + JAVA_MEM/64 (G1 mark bitmap)
+            #                     + JAVA_MEM/256 (card table + block offset table)
+            #                     + 240 (JIT code cache, -XX:ReservedCodeCacheSize)
+            #                     + 64  (per-mapping 2Mi rounding and margin)
+            # rounded up to an even MiB. This replaces the old "JAVA_MEM + 192 + 64 per
+            # gigabyte" rule, which had the right shape but the wrong terms -- it only
+            # exceeded the real requirement above ~1.1 GiB of heap, which is why small
+            # shards crashed on it. This file is hand-maintained; keep it in step with
+            # helm/shard/templates/deployment.yaml. JAVA_MEM 1536M: 1536 + 24 + 6 + 240
+            # + 64 = 1870Mi (was 1888Mi).
+            hugepages-2Mi: 1870Mi
           requests:
-            # Set this to 64Mi
-            # The shard should not need non-hugepage RAM by default
-            memory: 64Mi
-            # Set this to JAVA_MEM + JAVA_META_MEM + 64 per gigabyte of JAVA_MEM
-            hugepages-2Mi: 1888Mi
+            # Was 64Mi. No measurement in the 2026-09-07 to 2026-09-17 UTC window (not
+            # currently running), so this is the build-namespace default rather than a
+            # measured value.
+            memory: 768Mi
+            hugepages-2Mi: 1870Mi

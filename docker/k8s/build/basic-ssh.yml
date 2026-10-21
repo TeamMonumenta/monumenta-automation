@@ -17,6 +17,7 @@ spec:
       labels:
         app: basic-ssh
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -219,6 +220,17 @@ spec:
       - name: basic-ssh
         image: ghcr.io/teammonumenta/monumenta-automation/monumenta-basic-ssh-dev
         imagePullPolicy: Always
+        resources:
+          # Interactive shell box, so usage is whatever developers run in it: 49 MiB
+          # median but 723 MiB p99 and 892 MiB peak over 10 days (2026-09-07 to
+          # 2026-09-17 UTC). The limit is a guard rail against one person's runaway
+          # process taking down build, not a statement about normal usage.
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: "4"
+            memory: 4Gi
         tty: false
         stdin: false
         ports:

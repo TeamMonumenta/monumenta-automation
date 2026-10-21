@@ -62,6 +62,7 @@ spec:
       labels:
         app: web-files
     spec:
+      priorityClassName: monumenta-infra
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -83,6 +84,15 @@ spec:
       containers:
       - name: web-files
         image: nginx:stable
+        resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): 39 MiB RSS, completely flat. nginx
+          # serving static files.
+          requests:
+            cpu: 10m
+            memory: 96Mi
+          limits:
+            cpu: "1"
+            memory: 256Mi
         ports:
         - containerPort: 80
         volumeMounts:

@@ -33,6 +33,7 @@ spec:
       labels:
         app: redis
     spec:
+      priorityClassName: monumenta-build-data
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -54,12 +55,26 @@ spec:
         - name: redis-config
           mountPath: /usr/local/etc/redis/
         command: [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+        resources:
+          # container_memory_rss over 10 days (2026-09-07 to 2026-09-17 UTC):
+          # 570 MiB median, 579 MiB peak. Flat -- build does not accumulate the way play does. The limit
+          # is ~7x peak so a dataset load does not need an edit, but far below
+          # stage/volt since build is not used for full-scale rehearsals.
+          requests:
+            cpu: 250m
+            memory: 768Mi
+          limits:
+            cpu: "2"
+            memory: 4Gi
       - name: redis-exporter
         image: oliver006/redis_exporter:latest
         resources:
           requests:
             cpu: 100m
-            memory: 100Mi
+            memory: 32Mi
+          limits:
+            cpu: 500m
+            memory: 128Mi
         ports:
         - containerPort: 9121
       volumes:
