@@ -59,7 +59,7 @@ spec:
             path: /nfs/stage/m17
       containers:
       - name: velocity-17
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-25
         tty: true
         stdin: true
         ports:
