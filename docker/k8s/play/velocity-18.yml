@@ -63,7 +63,7 @@ spec:
             path: /nfs/5_SCRATCH
       containers:
       - name: velocity-18
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-25
         tty: true
         stdin: true
         ports:

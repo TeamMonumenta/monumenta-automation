@@ -56,7 +56,7 @@ spec:
             path: /nfs/build/m18
       containers:
       - name: velocity-18
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-25
         tty: true
         stdin: true
         ports:
@@ -99,10 +99,10 @@ spec:
           mountPath: /home/epic/build/m18
         resources:
           limits:
-            cpu: 4
+            cpu: "4"
             memory: 2Gi
             hugepages-2Mi: 1024Mi
           requests:
-            cpu: 1
+            cpu: "1"
             memory: 64Mi
             hugepages-2Mi: 1024Mi
