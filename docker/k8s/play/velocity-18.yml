@@ -78,7 +78,7 @@ spec:
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
-          value: "2G"
+          value: "1G"
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
