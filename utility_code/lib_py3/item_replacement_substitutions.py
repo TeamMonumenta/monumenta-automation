@@ -381,7 +381,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:glass_bottle", "Century-Aged Liquor", "minecraft:dragon_breath", "Century-Aged Liquor"],
             
 
-                # Shaman rework! Again! Skill names are obfuscated for anyone poking around here for spoilers before release :P
+                # Shaman rework! Again!
                 # Only 11 skills have lessers, compared to 13 on old Shaman, so some sets of lessers are being combined.
                 # Additionally, some skills have more or less lessers than before, so are being redistributed.
 
