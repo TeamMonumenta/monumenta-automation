@@ -254,6 +254,14 @@ class AutomationBotInstance(commands.Cog):
                 except Exception:
                     logging.error("Cannot connect to status channel: %s", config.STATUS_CHANNEL)
 
+            self._event_alerts_channel = None
+            if config.EVENT_ALERTS_CHANNEL:
+                try:
+                    self._event_alerts_channel = self._bot.get_channel(config.EVENT_ALERTS_CHANNEL)
+                    logging.info("Found event alerts channel: %s", config.EVENT_ALERTS_CHANNEL)
+                except Exception:
+                    logging.error("Cannot connect to event alerts channel: %s", config.EVENT_ALERTS_CHANNEL)
+
             self._socket = None
             if config.RABBITMQ:
                 try:
@@ -326,42 +334,50 @@ class AutomationBotInstance(commands.Cog):
                                     # Probably hard to fix though
                                     asyncio.run_coroutine_threadsafe(self.stage_data_request(self._stage_notify_channel, message["data"]), loop)
 
-                            if self._status_channel:
+                            if self._status_channel or self._event_alerts_channel:
                                 if message_channel == "monumenta.eventbroadcast.update":
                                     event_data = message.get("data", None)
                                     if event_data is None:
                                         return
 
                                     event_shard = event_data.get("shard", None)
-                                    event_name = event_data.get("eventName", None)
+                                    event_id = event_data.get("eventName", None)
                                     event_time_left = event_data.get("timeLeft", None)
 
                                     if not all([
                                             isinstance(event_shard, str),
-                                            isinstance(event_name, str),
+                                            isinstance(event_id, str),
                                             isinstance(event_time_left, int),
                                     ]):
                                         return
 
-                                    event_map = self._gameplay_events.get(event_name, {})
-                                    self._gameplay_events[event_name] = event_map
+                                    event_map = self._gameplay_events.get(event_id, None)
+                                    if event_map is None:
+                                        event_map = {}
+                                        self._gameplay_events[event_id] = event_map
 
                                     if event_time_left < 0:
                                         if event_shard in event_map:
                                             del event_map[event_shard]
                                         if len(event_map) == 0:
-                                            del self._gameplay_events[event_name]
+                                            del self._gameplay_events[event_id]
                                         return
 
                                     now = datetime.utcnow()
-                                    gameplay_event = event_map.get("event_shard", {
-                                        "shard": event_shard,
-                                        "event_name": event_name,
-                                    })
-                                    event_map[event_shard] = gameplay_event
+                                    gameplay_event = event_map.get(event_shard, None)
+                                    is_new_event = False
+                                    if gameplay_event is None:
+                                        is_new_event = True
+                                        gameplay_event = {
+                                            "shard": event_shard,
+                                            "event_id": event_id,
+                                        }
+                                        event_map[event_shard] = gameplay_event
                                     gameplay_event["last_update"] = now
                                     if event_time_left > 0:
                                         gameplay_event["ETA"] = now + timedelta(seconds=event_time_left)
+                                        if is_new_event:
+                                            asyncio.run_coroutine_threadsafe(self.handle_new_event(gameplay_event), loop)
                                     else:
                                         gameplay_event.pop("ETA", False)
                         except Exception:
@@ -663,6 +679,24 @@ class AutomationBotInstance(commands.Cog):
                 file=fp
             )
 
+
+    def get_event_details(self, event_id):
+        """Gets details about an event (like bosses)"""
+        details_path = self._persistence_path / 'event_details' / f'{event_id}.json'
+        if not details_path.is_file():
+            return {
+                "display_name": '{event_id} (no event details file)'
+            }
+        try:
+            return json.loads(details_path.read_text(encoding='utf-8-sig'))
+        except Exception as ex:
+            logger.warning(f'Failed to load event details - {ex}:')
+            logger.warning(traceback.format_exc())
+            return {
+                "display_name": f'{event_id} (error loading event details)'
+            }
+
+
     async def status_tick(self):
         """Updates bot status message(s) if required and possible"""
 
@@ -734,6 +768,31 @@ class AutomationBotInstance(commands.Cog):
                 ),
                 file=fp
             )
+
+
+    async def handle_new_event(self, gameplay_event):
+        if self._event_alerts_channel is None:
+            return
+
+        event_id = gameplay_event.get("event_id", "UNKNOWN")
+        eta = gameplay_event.get("ETA", None)
+        threshold = datetime.utcnow() + timedelta(minutes=2)
+        if eta is None or eta < threshold:
+            return
+
+        event_details = self.get_event_details(event_id)
+        display_name = event_details.get("display_name", f'{event_id} (no display name provided)')
+        role_id = event_details.get("role", None)
+
+        role_mention = ''
+        if role_id is not None:
+            role = self._event_alerts_channel.guild.get_role(role_id)
+            if role:
+                role_mention = f' {role.mention}'
+
+        formatted_message = f'{display_name} is starting {get_discord_timestamp(eta, ":R")}{role_mention}'
+        await self._event_alerts_channel.send(formatted_message)
+
 
     async def host_rss_tick(self):
         if self._admin_channel is None:
@@ -1097,11 +1156,11 @@ class AutomationBotInstance(commands.Cog):
 
         return raffle_seed
 
-    async def send_tablist_event(self, event_name, time):
+    async def send_tablist_event(self, event_id, time):
         """Sends an event to display in the tab list"""
         event_data = {
             "shard": config.RABBITMQ["host"],
-            "eventName": event_name,
+            "eventName": event_id,
             "timeLeft": time,
             "status": "STARTING" if time > 0 else "IN_PROGRESS",
         }
@@ -1127,18 +1186,21 @@ class AutomationBotInstance(commands.Cog):
         expired_threshhold = now - timedelta(minutes=3)
 
         # Sorting also makes a copy of the collection, allowing entries to be removed
-        for event_name, event_map in sorted(self._gameplay_events.items()):
+        for event_id, event_map in sorted(self._gameplay_events.items()):
             for shard, gameplay_event in sorted(event_map.items()):
                 if gameplay_event["last_update"] < expired_threshhold:
                     event_map.pop(shard, None)
                     continue
 
+                event_details = self.get_event_details(event_id)
+                display_name = event_details.get("display_name", f'{event_id} (no display name provided)')
+
                 eta = gameplay_event.get("ETA", None)
                 if eta:
                     eta_timestamp = get_discord_timestamp(eta, ":R")
-                    msg.append(f'{event_name} is starting on {shard} {eta_timestamp}')
+                    msg.append(f'{display_name} is starting on {shard} {eta_timestamp}')
                 else:
-                    msg.append(f'{event_name} is in progress on {shard}')
+                    msg.append(f'{display_name} is in progress on {shard}')
 
         if not msg:
             msg.append("No events are currently in progress")
