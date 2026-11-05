@@ -73,6 +73,34 @@ def process_plugin_data(plugin_data):
         if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
             num_replacements += 1
 
+    # Jade cosmetic updater
+    for cosmetic in plugin_data.cosmetics():
+        if "name" not in cosmetic:
+            continue
+        match cosmetic["name"]:
+            case "Haunted Scarecrow":
+                cosmetic["ability"] = "Immolating Aura"
+            case "Chroma Cascade":
+                cosmetic["ability"] = "Mending Remedy"
+            case "Abyssal Effigy":
+                cosmetic["ability"] = "Earthen Tremor"
+            case "Profane Chains":
+                cosmetic["ability"] = "Thunderstorm"
+            case "Summoning Rite":
+                 cosmetic["ability"] = "Totem Mastery"
+            case "Prestigious Devastation":
+                cosmetic["name"] = "Prestigious Maul"
+                cosmetic["ability"] = "Sculptor’s Maul"
+            case "Prestigious Totem":
+                cosmetic["name"] = "Prestigious Winds"
+                cosmetic["ability"] = "Tempest’s Call"
+            case "Constellation":
+                cosmetic["ability"] = "Combustion Chain"
+            case "Gay Totem":
+                cosmetic["name"] = "Invi-gay-rate"
+                cosmetic["ability"] = "Invigorate"
+
+
     return num_replacements
 
 
