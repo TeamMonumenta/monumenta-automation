@@ -1,6 +1,5 @@
-
-# NOTE: This depends on the service account stuff already existing that's set up by automation-bot-17.yaml
-# This is just the deployment for the 2nd bot
+# NOTE: This depends on the service account stuff already existing that's set up by automation-bot-common.yaml
+# This is just the deployment for the bot
 
 apiVersion: apps/v1
 kind: Deployment
