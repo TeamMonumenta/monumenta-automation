@@ -379,6 +379,50 @@ class SubtituteItems(SubstitutionRule):
 
                 # Century-Aged Liquor -> dragon breath
                 ["minecraft:glass_bottle", "Century-Aged Liquor", "minecraft:dragon_breath", "Century-Aged Liquor"],
+            
+
+                # Shaman rework! Again!
+                # Only 11 skills have lessers, compared to 13 on old Shaman, so some sets of lessers are being combined.
+                # Additionally, some skills have more or less lessers than before, so are being redistributed.
+
+                # Chain Lightning -> Totemic Projection
+                ["minecraft:blaze_rod", "Lesser Charm of Shocking", "minecraft:slime_ball", "Lesser Projection Charm"],
+                ["minecraft:blaze_rod", "Greater Charm of Shocking", "minecraft:slime_ball", "Greater Projection Charm"],
+                ["minecraft:blaze_rod", "Focused Charm of Shocking", "minecraft:slime_ball", "Focused Projection Charm"],
+                ["minecraft:blaze_rod", "Explosive Charm of Shocking", "minecraft:slime_ball", "Greater Projection Charm"],
+                ["minecraft:blaze_rod", "Swift Charm of Shocking", "minecraft:slime_ball", "Swift Projection Charm"],
+
+                # Spiritual Combos -> Attunement
+                ["minecraft:amethyst_cluster", "Lesser Charm of Crystallization", "minecraft:chain", "Lesser Charm of Binding"],
+                ["minecraft:amethyst_cluster", "Greater Charm of Crystallization", "minecraft:chain", "Greater Charm of Binding"],
+                ["minecraft:amethyst_cluster", "Focused Charm of Crystallization", "minecraft:chain", "Focused Charm of Binding"],
+                ["minecraft:amethyst_cluster", "Distant Charm of Crystallization", "minecraft:chain", "Greater Charm of Binding"],
+
+                # Totemic Consecration -> Tempest's Call
+                ["minecraft:candle", "Lesser Charm of Sanctification", "minecraft:string", "Lesser Charm of Torrents"],
+                ["minecraft:candle", "Greater Charm of Sanctification", "minecraft:string", "Greater Charm of Torrents"],
+                ["minecraft:candle", "Focused Charm of Sanctification", "minecraft:string", "Focused Charm of Torrents"],
+                # this one goes to the next skill instead to even it out
+                ["minecraft:candle", "Swift Charm of Sanctification", "minecraft:ender_eye", "Swift Maelstrom Charm"],
+
+                # Spiritcatcher Orbs -> Cyclone
+                ["minecraft:soul_lantern", "Lesser Spiriting Charm", "minecraft:ender_eye", "Lesser Maelstrom Charm"],
+                ["minecraft:soul_lantern", "Greater Spiriting Charm", "minecraft:ender_eye", "Greater Maelstrom Charm"],
+                ["minecraft:soul_lantern", "Focused Spiriting Charm", "minecraft:ender_eye", "Focused Maelstrom Charm"],
+                ["minecraft:soul_lantern", "Explosive Spiriting Charm", "minecraft:ender_eye", "Explosive Maelstrom Charm"],
+            
+                # Decayed Totem -> Earthen Tremor
+                ["minecraft:coal", "Lesser Charm of Shriveling", "minecraft:podzol", "Lesser Charm of Tremors"],
+                ["minecraft:coal", "Greater Charm of Shriveling", "minecraft:podzol", "Greater Charm of Tremors"],
+                ["minecraft:coal", "Focused Charm of Shriveling", "minecraft:podzol", "Focused Charm of Tremors"],
+                ["minecraft:coal", "Explosive Charm of Shriveling", "minecraft:podzol", "Sedated Charm of Tremors"],
+                ["minecraft:coal", "Swift Charm of Shriveling", "minecraft:podzol", "Greater Charm of Tremors"],
+
+                # excess stuff where the name doesn't change but the number of lessers does
+                ["minecraft:blaze_powder", "Swift Charm of Ignition", "minecraft:blaze_powder", "Greater Charm of Ignition"],
+                ["minecraft:lightning_rod", "Swift Charm of Thundering", "minecraft:lightning_rod", "Greater Charm of Thundering"],
+                ["minecraft:ghast_tear", "Swift Tide Charm", "minecraft:ghast_tear", "Greater Tide Charm"],
+                ["minecraft:fire_charge", "Swift Charm of Destruction", "minecraft:fire_charge", "Greater Charm of Destruction"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
