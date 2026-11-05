@@ -423,6 +423,7 @@ class SubtituteItems(SubstitutionRule):
                 ["minecraft:lightning_rod", "Swift Charm of Thundering", "minecraft:lightning_rod", "Greater Charm of Thundering"],
                 ["minecraft:ghast_tear", "Swift Tide Charm", "minecraft:ghast_tear", "Greater Tide Charm"],
                 ["minecraft:fire_charge", "Swift Charm of Destruction", "minecraft:fire_charge", "Greater Charm of Destruction"],
+                ["minecraft:podzol", "Swift Charm of Tremors", "minecraft:podzol", "Sedated Charm of Tremors"],
         ]:
 
             old_id, old_name, new_id, new_name = substitution
