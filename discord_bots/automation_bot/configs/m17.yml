@@ -116,6 +116,9 @@ channels:
 # server-status (public discord)
 status_channel: 579190910567317514
 
+# looking-for-group (public discord)
+event_alerts: 332798304423378944
+
 cpu_count: -1
 
 server_dir: /home/epic/play/m17
