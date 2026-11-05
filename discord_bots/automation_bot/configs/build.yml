@@ -51,7 +51,6 @@ shards:
     ring: /home/epic/project_epic/ring/
     dungeon: /home/epic/project_epic/dungeon/
     event: /home/epic/project_epic/event/
-    test: /home/epic/project_epic/test/
     velocity-18: /home/epic/project_epic/velocity-18/
 
 heartbeat_free_shards:
