@@ -87,6 +87,10 @@ spec:
           hostPath:
             type: Directory
             path: /nfs/build/m18/futurama/logs
+        - name: nfs-futurama-mods
+          hostPath:
+            type: Directory
+            path: /nfs/build/m18/futurama/mods
         - name: nfs-futurama-plugins
           hostPath:
             type: Directory
@@ -256,6 +260,8 @@ spec:
           mountPath: /home/epic/futurama
         - name: nfs-futurama-logs
           mountPath: /home/epic/futurama_shard_logs
+        - name: nfs-futurama-mods
+          mountPath: /home/epic/futurama_shard_mods
         - name: nfs-futurama-plugins
           mountPath: /home/epic/futurama_shard_plugins
         - name: nfs-mobs-logs
