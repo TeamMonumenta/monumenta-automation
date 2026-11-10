@@ -49,6 +49,7 @@ if __name__ == '__main__':
                 "world": [
                     "white",
                     "whiteexalted",
+                    "whiteremaster",
                 ],
                 "objective":"InstanceWhite"
             },
@@ -90,30 +91,35 @@ if __name__ == '__main__':
             "pink": {
                 "world": [
                     "pink",
+                    "pinkexalted",
                 ],
                 "objective":"D7Access"
             },
             "gray": {
                 "world": [
                     "gray",
+                    "grayexalted",
                 ],
                 "objective":"D8Access"
             },
             "lightgray": {
                 "world": [
                     "lightgray",
+                    "lightgrayexalted",
                 ],
                 "objective":"D9Access"
             },
             "cyan": {
                 "world": [
                     "cyan",
+                    "cyanexalted",
                 ],
                 "objective":"D10Access"
             },
             "purple": {
                 "world": [
                     "purple",
+                    "purpleexalted",
                 ],
                 "objective":"D11Access"
             },
@@ -164,12 +170,14 @@ if __name__ == '__main__':
             "teal": {
                 "world": [
                     "teal",
+                    "tealexalted",
                 ],
                 "objective":"DTLAccess"
             },
             "forum": {
                 "world": [
                     "forum",
+                    "forumexalted",
                 ],
                 "objective":"DFFAccess"
             },
