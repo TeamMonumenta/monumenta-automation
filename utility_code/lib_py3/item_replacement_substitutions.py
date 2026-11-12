@@ -301,7 +301,7 @@ class SubtituteItems(SubstitutionRule):
                 # Weak Shield -> Rusty Shield
                 ["minecraft:shield", "Weak Shield", "minecraft:shield", "Rusty Shield"],
                 # Winter's Bounty golden helm -> golden pants
-                ["minecraft:golden_helmet", "Winter's Bounty", "minecraft:golden_leggings", "Winter's Bounty"],
+                    # removed due to the bot replacing vanity items on mobs for some reason
                 # Swift Spritual Charm -> Swift Spiritual Charm
                 ["minecraft:sunflower", "Swift Spritual Charm", "minecraft:sunflower", "Swift Spiritual Charm"],
                 # Tormented Fragment base item change
