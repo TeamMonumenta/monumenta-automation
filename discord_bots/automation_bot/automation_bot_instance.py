@@ -41,6 +41,7 @@ from lib_py3.lockout import LockoutAPI
 from lib_py3.raffle import vote_raffle
 from lib_py3.lib_k8s import KubernetesManager
 from lib_py3.lib_sockets import SocketManager
+from lib_py3.shard_status import ShardStatusTracker
 from lib_py3.redis_scoreboard import RedisRBoard
 from minecraft.world import World
 
@@ -390,7 +391,7 @@ class AutomationBotInstance(commands.Cog):
                             logger.warning(traceback.format_exc())
 
                     log_level = conf.get("log_level", 20)
-                    self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level, track_heartbeats=(conf.get("track_heartbeats", False)))
+                    self._socket = SocketManager(conf["host"], conf["name"], durable=conf["durable"], callback=(socket_callback if conf["process_messages"] else None), log_level=log_level, track_heartbeats=(conf.get("track_heartbeats", False)), track_remote_players=(conf.get("track_heartbeats", False)))
 
                     # Add commands that require the sockets here!
                     self._commands["broadcastcommand"] = self.action_broadcastcommand
@@ -498,6 +499,7 @@ class AutomationBotInstance(commands.Cog):
             self._debug = False
             self._listening = Listening()
             self._k8s = KubernetesManager(config.K8S_NAMESPACE)
+            self._shard_status = ShardStatusTracker(self._k8s, self._persistence_path / 'shard_states', self._socket)
         except KeyError as e:
             sys.exit(f'Config missing key: {e}')
 
@@ -1389,93 +1391,15 @@ Examples:
 
         await self.display(ctx, msg)
 
-    async def _list_shards_states_internal(self):
-        """Common check for a shard's state for use in the summaries
-
-        Format is
-        {
-            "valley-2": {
-                "status": "starting",
-                "reaction": ":arrow_up:",
-                "reaction_order": 1,
-                "last_change": <integer unix timestamp in seconds>,
-            }
-        }
-        """
-        tz = timezone.utc
-        shard_states_path = self._persistence_path / 'shard_states'
-        shard_states_path.mkdir(mode=0o775, parents=True, exist_ok=True)
-
-        previous_states = {}
-        for shard_state_path in shard_states_path.iterdir():
-            name = shard_state_path.name
-            if not (shard_state_path.is_file() and name.endswith('.json')):
-                continue
-            name = name[:-5] # Remove .json
-            previous_shard_state = None
-            try:
-                previous_shard_state = json.loads(shard_state_path.read_text(encoding='utf-8-sig'))
-            except Exception:
-                continue
-            previous_states[name] = previous_shard_state
-
-        current_states = {}
-        shards = await self._k8s.list()
-        for name, state in shards.items():
-            prev_status = previous_states.get(name, {}).get('status', None)
-            status = 'error'
-            reaction = ':exclamation:'
-            reaction_order = 99
-            if state["replicas"] == 1 and state["available_replicas"] == 1:
-                status = 'started'
-                reaction = ':white_check_mark:'
-                reaction_order = 0
-            elif state["replicas"] == 1 and state["available_replicas"] == 0:
-                status = 'starting'
-                reaction = ':arrow_up:'
-                reaction_order = 1
-            elif state["replicas"] == 0 and "pod_name" in state:
-                status = 'stopping'
-                reaction = ':arrow_down:'
-                reaction_order = 2
-            elif state["replicas"] == 0 and "pod_name" not in state:
-                status = 'stopped'
-                reaction = ':x:'
-                reaction_order = 3
-
-            if status == prev_status:
-                current_states[name] = previous_states[name]
-            else:
-                current_state = {
-                    "status": status,
-                    "reaction": reaction,
-                    "reaction_order": reaction_order,
-                    "last_change": int(datetime.now(tz).timestamp()),
-                }
-                current_states[name] = current_state
-                shard_state_path = shard_states_path / f'{name}.json'
-                with open(shard_state_path, 'w', encoding='utf-8') as fp:
-                    print(
-                        json.dumps(
-                            current_state,
-                            ensure_ascii=False,
-                            indent=2,
-                            separators=(',', ': ')
-                        ),
-                        file=fp
-                    )
-
-        return current_states
-
     async def _get_list_shards_str_status(self):
         """Get a status message formatted string"""
-        shards = await self._list_shards_states_internal()
+        shards = await self._shard_status.snapshot()
 
         buckets = {}
         for name, state in shards.items():
-            reaction = state['reaction']
-            reaction_order = state['reaction_order']
-            last_change = (state['last_change'] // 60) * 60 # Round to the nearest minute
+            reaction = state.reaction
+            reaction_order = state.reaction_order
+            last_change = (state.last_change // 60) * 60 # Round to the nearest minute
 
             if reaction_order not in buckets:
                 buckets[reaction_order] = {
@@ -1502,18 +1426,20 @@ Examples:
 
     async def _get_list_shards_str_summary(self):
         """Get a `~list shard summary` formatted string"""
-        shards = await self._list_shards_states_internal()
+        shards = await self._shard_status.snapshot()
 
         buckets = {}
         for name, state in shards.items():
-            reaction = state['reaction']
-            reaction_order = state['reaction_order']
+            reaction = state.reaction
+            reaction_order = state.reaction_order
 
             if reaction_order not in buckets:
                 buckets[reaction_order] = {
                     "reaction": reaction,
                     "shards": [],
                 }
+            if state.player_count is not None:
+                name = f'{name} ({state.player_count})'
             buckets[reaction_order]["shards"].append(name)
 
         msg = []
@@ -1526,12 +1452,15 @@ Examples:
 
     async def _get_list_shards_str_long(self):
         """Get a `~list shard` formatted string"""
-        shards = await self._list_shards_states_internal()
+        shards = await self._shard_status.snapshot()
 
         msg = []
 
         for name, state in shards.items():
-            msg.append(f'{state["reaction"]} {name} since {get_discord_timestamp(state["last_change"], ":R")}')
+            line = f'{state.reaction} {name} since {get_discord_timestamp(state.last_change, ":R")}'
+            if state.player_count is not None:
+                line += f' - {state.player_count} player{"" if state.player_count == 1 else "s"}'
+            msg.append(line)
         if not msg:
             msg.append("No shards to list")
 
@@ -2896,7 +2825,9 @@ old coreprotect data will be removed at the 5 minute mark.
         # Stop velocity (I guess you could uh... run maintenance?)
         await self.broadcast_command('maintenance on', server_type="proxy")
         await asyncio.sleep(5)
-        # TODO: don't hardcode velocity instances here
+        # TODO: don't hardcode velocity instances here - label k8s deployments with their server type
+        # (minecraft/proxy) and select proxies by that label. Stopped shards send no heartbeats, so their
+        # type can't come from network relay.
         shards = await self._k8s.list()
         velocityShards = list(filter(lambda x: (x.startswith("velocity")), shards))
         await self.stop(ctx, velocityShards, owner=message)

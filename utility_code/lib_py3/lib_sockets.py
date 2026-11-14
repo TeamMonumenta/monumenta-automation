@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 from pprint import pformat
+from concurrent.futures import ThreadPoolExecutor
 import asyncio
 import copy
 import json
@@ -8,6 +9,7 @@ import logging
 import threading
 import traceback
 import pika
+from lib_py3.remote_players import RemotePlayerTracker
 from lib_py3.shard_health import ShardHealth
 
 logger = logging.getLogger(__name__)
@@ -32,7 +34,8 @@ class SocketManager():
         callback=None,
         log_level=20,
         server_type="bot",
-        track_heartbeats=False
+        track_heartbeats=False,
+        track_remote_players=False
     ):
         """SocketManager constructor:
 
@@ -44,6 +47,7 @@ class SocketManager():
         log_level: the log level to use for this SocketManager as defined by the `logging` Python library
         server_type: the server type to advertise to other servers using MonumentaNetworkRelay; used for broadcasting commands
         track_heartbeats: if True, keeps track of the last heartbeat from each online server
+        track_remote_players: if True, keeps track of which players are on which servers; implies track_heartbeats
         """
         # Used only for sending packets to RabbitMQ - receiving will open its own connection
         # pika connections are not thread safe, so all use of these must hold _send_lock
@@ -57,10 +61,20 @@ class SocketManager():
         self._durable_queue = durable
         self._server_type = server_type
         self._heartbeat_threshhold = datetime.min
-        self._track_heartbeats = track_heartbeats
+        # Remote player tracking relies on heartbeats to know when a server's players should be forgotten
+        self._track_heartbeats = track_heartbeats or track_remote_players
 
         self._remote_heartbeats_lock = threading.Lock()
         self._remote_heartbeats = {}
+
+        self._remote_players = None
+        # Refresh requests are sent from here, not the consumer thread, so a slow send can't stall receiving messages
+        self._refresh_executor = None
+        if track_remote_players:
+            self._remote_players = RemotePlayerTracker()
+            # Servers that have been asked to re-broadcast their players; only used by the consumer thread
+            self._remote_player_servers = set()
+            self._refresh_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix=f"{queue_name}-player-refresh")
 
         # Set by close() to stop the consumer thread and reject further sends
         self._closed = threading.Event()
@@ -85,23 +99,27 @@ class SocketManager():
 
                 if self._track_heartbeats:
                     now = datetime.utcnow()
+                    # Servers that stopped sending heartbeats, as of this message
+                    went_offline = []
 
                     try:
                         heartbeat_source = message.get("source", None)
                         heartbeat_data = message.get("pluginData", {}).get("monumentanetworkrelay", None)
-                        if heartbeat_source is not None and heartbeat_data is not None:
-                            if message.get("online", False):
-                                remote_heartbeat_entry = {
-                                    "last_heartbeat": now,
-                                    "heartbeat_data": heartbeat_data,
-                                }
-                                with self._remote_heartbeats_lock:
-                                    self._remote_heartbeats[heartbeat_source] = remote_heartbeat_entry
-
-                            else:
-                                with self._remote_heartbeats_lock:
-                                    if heartbeat_source in self._remote_heartbeats:
-                                        del self._remote_heartbeats[heartbeat_source]
+                        if heartbeat_source is None:
+                            pass
+                        elif message.get("online", None) is False:
+                            # Server is shutting down. Network relay's shutdown message has no pluginData, so don't require it.
+                            with self._remote_heartbeats_lock:
+                                if heartbeat_source in self._remote_heartbeats:
+                                    del self._remote_heartbeats[heartbeat_source]
+                                    went_offline.append(heartbeat_source)
+                        elif heartbeat_data is not None and message.get("online", False):
+                            remote_heartbeat_entry = {
+                                "last_heartbeat": now,
+                                "heartbeat_data": heartbeat_data,
+                            }
+                            with self._remote_heartbeats_lock:
+                                self._remote_heartbeats[heartbeat_source] = remote_heartbeat_entry
                     except Exception:
                         logger.warning("Failed to process remote heartbeat in message: %s", repr(body))
                         logger.warning(traceback.format_exc())
@@ -113,8 +131,19 @@ class SocketManager():
                             for source, full_heartbeat_data in list(self._remote_heartbeats.items()):
                                 if expiry_time >= full_heartbeat_data["last_heartbeat"]:
                                     del self._remote_heartbeats[source]
+                                    went_offline.append(source)
                     except Exception:
                         logger.warning("Failed to remove outdated remote heartbeats: %s", repr(body))
+                        logger.warning(traceback.format_exc())
+
+                    if self._remote_players is not None:
+                        self._update_remote_player_servers(went_offline)
+
+                if self._remote_players is not None and message.get("channel", None) == RemotePlayerTracker.REMOTE_PLAYER_UPDATE_CHANNEL:
+                    try:
+                        self._remote_players.handle_update(message["data"])
+                    except Exception:
+                        logger.warning("Failed to process remote player update: %s", repr(body))
                         logger.warning(traceback.format_exc())
 
                 if self._callback is not None:
@@ -126,6 +155,7 @@ class SocketManager():
 
             channel.basic_ack(delivery_tag=method_frame.delivery_tag)
 
+        has_connected = False
         while not self._closed.is_set():
             connection = None
             channel = None
@@ -155,6 +185,14 @@ class SocketManager():
                 logger.info("Started rabbitmq message consumer for queue %s", self._queue_name)
                 channel.basic_consume(queue=self._queue_name, on_message_callback=callback)
 
+                if has_connected and self._remote_players is not None:
+                    # Player updates may have been missed while disconnected, including players going offline,
+                    # which a refresh alone would never correct. Start over: each server is asked for its players
+                    # again on its next heartbeat, which also confirms it is reachable again.
+                    self._remote_players.clear()
+                    self._remote_player_servers.clear()
+                has_connected = True
+
                 # Equivalent to channel.start_consuming(), but checks periodically whether close() was called.
                 # consumer_tags becomes empty if the broker cancels the consumer (e.g. the queue was deleted).
                 while channel.consumer_tags and not self._closed.is_set():
@@ -183,6 +221,41 @@ class SocketManager():
             logger.warning("Attempting to reconnect rabbitmq consumer...")
             # Wait before reconnecting, but wake up immediately if close() is called
             self._closed.wait(10)
+
+
+    def _update_remote_player_servers(self, went_offline):
+        """Keeps remote player tracking in sync with which servers are online
+
+        Called from the consumer thread for every message. Mirrors RemotePlayerManagerAbstraction's
+        registerServer/unregisterServer.
+        """
+        for source in went_offline:
+            self._remote_players.server_offline(source)
+            self._remote_player_servers.discard(source)
+
+        # Ask servers that are newly sending heartbeats to re-broadcast all of their players.
+        # On startup, this is how the initial player list is built.
+        with self._remote_heartbeats_lock:
+            targets = [
+                source for source, full_heartbeat_data in self._remote_heartbeats.items()
+                if source not in self._remote_player_servers
+                and full_heartbeat_data["heartbeat_data"].get("server-type", "minecraft") in ("minecraft", "proxy")
+            ]
+        self._remote_player_servers.update(targets)
+
+        # Sent from another thread, so a slow send can't stall receiving messages
+        if targets and not self._closed.is_set():
+            self._refresh_executor.submit(self._send_refresh_requests, targets)
+
+
+    def _send_refresh_requests(self, targets):
+        for target in targets:
+            try:
+                self.send_packet(target, RemotePlayerTracker.REMOTE_PLAYER_REFRESH_CHANNEL, {"uuid": "*"},
+                                 ttl_seconds=RemotePlayerTracker.REMOTE_PLAYER_MESSAGE_TTL)
+            except Exception:
+                logger.warning("Failed to request remote players from %s", target)
+                logger.warning(traceback.format_exc())
 
 
     def _ensure_channel_open_for_sending(self):
@@ -250,6 +323,10 @@ class SocketManager():
             if self.thread.is_alive():
                 logger.warning("Rabbitmq consumer thread for queue %s did not stop within 15 seconds of close()", self._queue_name)
 
+        # Pending refresh requests would fail anyway, since sending is rejected after close()
+        if self._refresh_executor is not None:
+            self._refresh_executor.shutdown(wait=False, cancel_futures=True)
+
         with self._send_lock:
             self._reset_sending_connection()
 
@@ -312,6 +389,16 @@ class SocketManager():
             return copy.deepcopy(self._remote_heartbeats.get(source, {}).get("heartbeat_data", {}).get("server-type", "minecraft"))
 
 
+    def remote_player_counts(self):
+        """Get the number of players (including hidden players) on each server
+
+        Servers without players are not included. Returns None if this SocketManager does not track remote players.
+        """
+        if self._remote_players is None:
+            return None
+        return self._remote_players.player_counts()
+
+
     def shard_health_data(self, source):
         """Get the health data for a remote server"""
         json_data = None
@@ -322,7 +409,7 @@ class SocketManager():
         return ShardHealth.zero_health()
 
 
-    def send_packet(self, destination, operation, data, heartbeat_data=None, online=True):
+    def send_packet(self, destination, operation, data, heartbeat_data=None, online=True, ttl_seconds=None):
         """Sends a json packet over RabbitMQ
 
         destination is the server to target, or * for all servers
@@ -330,6 +417,7 @@ class SocketManager():
         data is json data to be processed
         heartbeat_data, if specified, includes information about the sending server
         online, if set to False, specifies the sending server is shutting down
+        ttl_seconds, if specified, discards the message if it is not received within that many seconds
         """
         if destination is None or len(destination) == 0:
             logger.warning("destination can not be None!")
@@ -389,6 +477,7 @@ class SocketManager():
                         body=encoded,
                         properties=pika.BasicProperties(
                             delivery_mode=2,  # make message persistent
+                            expiration=(str(int(ttl_seconds * 1000)) if ttl_seconds is not None else None),
                         )
                     )
                     return
@@ -399,9 +488,9 @@ class SocketManager():
                     logger.info("Failed to send rabbitmq message, reconnecting: %r", e)
 
 
-    async def send_packet_async(self, destination, operation, data, heartbeat_data=None, online=True):
+    async def send_packet_async(self, destination, operation, data, heartbeat_data=None, online=True, ttl_seconds=None):
         """Same as send_packet(), but runs in a worker thread so it does not block the asyncio event loop
 
         Still waits for the message to be sent (or fail) before returning, raising the same exceptions as send_packet()
         """
-        await asyncio.to_thread(self.send_packet, destination, operation, data, heartbeat_data=heartbeat_data, online=online)
+        await asyncio.to_thread(self.send_packet, destination, operation, data, heartbeat_data=heartbeat_data, online=online, ttl_seconds=ttl_seconds)
