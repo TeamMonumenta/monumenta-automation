@@ -1454,15 +1454,21 @@ Examples:
         """Get a `~list shard` formatted string"""
         shards = await self._shard_status.snapshot()
 
-        msg = []
+        if not shards:
+            return "No shards to list"
 
+        # Table layout: the name and player count are in inline code (monospace, spaces preserved),
+        # padded to a consistent width so the columns line up
+        counts = {name: ('-' if state.player_count is None else str(state.player_count)) for name, state in shards.items()}
+        name_width = max(len(name) for name in shards)
+        count_width = max(len(count) for count in counts.values())
+
+        msg = []
         for name, state in shards.items():
-            line = f'{state.reaction} {name} since {get_discord_timestamp(state.last_change, ":R")}'
-            if state.player_count is not None:
-                line += f' - {state.player_count} player{"" if state.player_count == 1 else "s"}'
-            msg.append(line)
-        if not msg:
-            msg.append("No shards to list")
+            msg.append(
+                f'{state.reaction} `{name:<{name_width}} {counts[name]:>{count_width}}` players'
+                f' since {get_discord_timestamp(state.last_change, ":R")}'
+            )
 
         return "\n".join(msg)
 
