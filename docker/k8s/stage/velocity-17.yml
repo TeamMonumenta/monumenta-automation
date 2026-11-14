@@ -83,6 +83,10 @@ spec:
           value: monumenta.whitelist.beta
         - name: "NETWORK_RELAY_NAME"
           value: velocity-17
+        - name: "EXCEPTLOG_INGEST_URL"
+          value: "http://exception-logger.stage/ingest"
+        - name: "EXCEPTLOG_SERVER_NAME"
+          value: velocity-17
         - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
           value: "false"
         readinessProbe:

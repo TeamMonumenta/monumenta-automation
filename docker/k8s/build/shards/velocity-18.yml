@@ -78,6 +78,10 @@ spec:
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
           value: velocity-18
+        - name: "EXCEPTLOG_INGEST_URL"
+          value: "http://exception-logger.build/ingest"
+        - name: "EXCEPTLOG_SERVER_NAME"
+          value: velocity-18
         - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
           value: "false"
         - name: "JAVA_ARG"

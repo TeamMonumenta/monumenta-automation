@@ -328,6 +328,7 @@ if __name__ == '__main__':
         ('plugins/MonumentaCommon.jar', '../../server_config/plugins/MonumentaCommon.jar'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
+        ('plugins/MonumentaExceptionReporter.jar', '../../server_config/plugins/MonumentaExceptionReporter.jar'),
         ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
