@@ -91,6 +91,10 @@ spec:
           value: "-Dlog4j2.configurationFile=log4j2-velocity.xml"
         - name: "NETWORK_RELAY_NAME"
           value: velocity-18
+        - name: "EXCEPTLOG_INGEST_URL"
+          value: "http://exception-logger.play/ingest"
+        - name: "EXCEPTLOG_SERVER_NAME"
+          value: velocity-18
         - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
           value: "true"
         - name: "PLAN_SERVER_ID"
