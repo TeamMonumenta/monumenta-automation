@@ -40,13 +40,6 @@ spec:
           containers:
           - name: cron-automated-restart
             image: docker.pkg.github.com/teammonumenta/monumenta-automation/monumenta-automation-bot
-            resources:
-              requests:
-                cpu: 100m
-                memory: 256Mi
-              limits:
-                cpu: "2"
-                memory: 2Gi
             tty: false
             stdin: false
             args:

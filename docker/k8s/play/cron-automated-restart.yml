@@ -38,14 +38,6 @@ spec:
             image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
             tty: false
             stdin: false
-            resources:
-              # Short-lived job that issues restart commands. 218 MiB peak.
-              requests:
-                cpu: 100m
-                memory: 256Mi
-              limits:
-                cpu: "2"
-                memory: 1Gi
             args:
             - /home/epic/MCEdit-And-Automation/utility_code/daily_restart.py
             volumeMounts:
