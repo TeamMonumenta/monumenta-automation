@@ -80,6 +80,9 @@ spec:
       containers:
       - name: maven
         image: ghcr.io/dzikoysk/reposilite
+        env:
+        - name: JAVA_TOOL_OPTIONS
+          value: "-XX:-UseBASE64Intrinsics"
         ports:
         - containerPort: 8080
         volumeMounts:
