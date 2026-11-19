@@ -62,8 +62,6 @@ def get_server_domain(servername):
         return 'playerbuild'
     if servername == 'build2':
         return 'build2'
-    if servername == 'tutorial':
-        return 'tutorial'
     return SERVER_TYPE
 
 
@@ -330,6 +328,7 @@ if __name__ == '__main__':
         ('plugins/MonumentaCommon.jar', '../../server_config/plugins/MonumentaCommon.jar'),
         ('plugins/MonumentaNetworkRelay.jar', '../../server_config/plugins/MonumentaNetworkRelay.jar'),
         ('plugins/monumenta-network-relay/config.yaml', '../../../server_config/data/plugins/proxy/monumenta-network-relay/config.yaml'),
+        ('plugins/MonumentaExceptionReporter.jar', '../../server_config/plugins/MonumentaExceptionReporter.jar'),
         ('plugins/MonumentaRedisSync.jar', '../../server_config/plugins/MonumentaRedisSync.jar'),
         ('plugins/nuvotifier.jar', '../../server_config/plugins/nuvotifier.jar'),
         ('plugins/nuvotifier', '../../server_config/data/plugins/proxy/nuvotifier'),
@@ -393,6 +392,7 @@ if __name__ == '__main__':
         ('plugins/Monumenta/DataCollection', '/home/epic/3_DOMAIN_SHARED/DataCollection'),
         ('plugins/Monumenta/DepthsStats', '/home/epic/3_DOMAIN_SHARED/DepthsStats'),
         ('plugins/Monumenta/seasonalevents', '../../../server_config/data/plugins/all/Monumenta/seasonalevents'),
+        ('plugins/Monumenta/tlaxan_crafter', '../../../server_config/data/plugins/all/Monumenta/tlaxan_crafter'),
         ('plugins/Monumenta/images', '../../../server_config/data/plugins/all/Monumenta/images'),
         ('plugins/Monumenta/InfinityTower/TowerMobs.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/TowerMobs.json'),
         ('plugins/Monumenta/InfinityTower/InfinityTowerDefault.json', '../../../../server_config/data/plugins/valley/Monumenta/InfinityTower/InfinityTowerDefault.json'),
@@ -420,6 +420,8 @@ if __name__ == '__main__':
         ('plugins/ScriptedQuests/npcs/0_common', '../../../../server_config/data/scriptedquests/npcs/common'),
         ('plugins/ScriptedQuests/races/1_{servername}', '../../../../server_config/data/scriptedquests/races/{servername}'),
         ('plugins/ScriptedQuests/races/0_common', '../../../../server_config/data/scriptedquests/races/common'),
+        ('plugins/ScriptedQuests/leaderboards/1_{servername}', '../../../../server_config/data/scriptedquests/leaderboards/{servername}'),
+        ('plugins/ScriptedQuests/leaderboards/0_common', '../../../../server_config/data/scriptedquests/leaderboards/common'),
         ('plugins/ScriptedQuests/growables/1_{servername}', '../../../../server_config/data/scriptedquests/growables/{servername}'),
         ('plugins/ScriptedQuests/growables/0_common', '../../../../server_config/data/scriptedquests/growables/common'),
         ('plugins/ScriptedQuests/guis/1_{servername}', '../../../../server_config/data/scriptedquests/guis/{servername}'),
@@ -633,6 +635,7 @@ if __name__ == '__main__':
                 ('spigot.yml', 'tab-complete', '  tab-complete: 0'),
                 ('server.properties', 'difficulty', 'difficulty=peaceful'),
                 ('server.properties', 'gamemode', 'gamemode=creative'),
+                ('plugins/MonumentaRedisSync/config.yml', 'content_arguments_restricted:', 'content_arguments_restricted: true'),
                 ('plugins/MonumentaNetworkRelay/config.yml', 'broadcast-command-sending-enabled', 'broadcast-command-sending-enabled: false'),
                 ('plugins/FastAsyncWorldEdit/config-legacy.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),
                 ('plugins/FastAsyncWorldEdit/worldedit-config.yml', "wand-item:", "wand-item: minecraft:diamond_axe"),

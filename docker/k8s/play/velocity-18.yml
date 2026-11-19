@@ -64,7 +64,7 @@ spec:
             path: /nfs/5_SCRATCH
       containers:
       - name: velocity-18
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-25
         tty: true
         stdin: true
         ports:
@@ -79,7 +79,7 @@ spec:
         - containerPort: 9225
         env:
         - name: "JAVA_MEM"
-          value: "2G"
+          value: "1G"
         - name: "JAVA_META_MEM"
           value: "256M"
         - name: "JAVA_JAR"
@@ -91,6 +91,10 @@ spec:
         - name: "JAVA_ARG"
           value: "-Dlog4j2.configurationFile=log4j2-velocity.xml"
         - name: "NETWORK_RELAY_NAME"
+          value: velocity-18
+        - name: "EXCEPTLOG_INGEST_URL"
+          value: "http://exception-logger.play/ingest"
+        - name: "EXCEPTLOG_SERVER_NAME"
           value: velocity-18
         - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
           value: "true"

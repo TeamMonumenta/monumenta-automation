@@ -168,6 +168,9 @@ sub = [
     ("The Vedha's Sentinels", match_name('Obaria\'s Sentinels', match_id('minecraft:pillager'))),
     ("The Vedha's Sentinels", match_name('Obaria\'s Sentinels', match_id('minecraft:pillager'))),
     ("Xeno, Shattered Scallawag", match_name('Xeno, Shattered Scalllawag', match_id('minecraft:wither_skeleton'))),
+
+    # Labs mob has two names for some reason
+    ("Alchemical Arbalest", match_name('Alchemical Arbolist', match_id('minecraft:pillager'))),
 ]
 
 def usage():

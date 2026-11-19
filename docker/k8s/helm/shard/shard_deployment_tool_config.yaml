@@ -127,7 +127,7 @@
         "volt" : { "node": "m18", "hugePageMB": 1536, },
     },
     "labs": {
-        "play" : { "node": "m17", "hugePageGB": 6   , "memRequestMB": 704, },
+        "play" : { "node": "m17", "hugePageGB": 4   , "memRequestMB": 704, },
         "stage": { "node": "m18", "hugePageMB": 1536, "memRequestMB": 704, },
         "volt" : { "node": "m18", "hugePageMB": 1536, "memRequestMB": 640, },
     },
@@ -245,11 +245,6 @@
         "stage": { "node": "m18", "hugePageMB": 3072, },
         "volt" : { "node": "m18", "hugePageMB": 3072, "memRequestMB": 704, },
     },
-    "fortune-2":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
-    "fortune-3":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
-    "fortune-4":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
-    "fortune-5":  { "play" : { "node": "m17", "hugePageGB": 6, "cpuActiveProcessorCount": 4}, },
-
     "skt": {
         "play" : { "node": "m17", "hugePageGB": 4   , "memRequestMB": 832, },
         "stage": { "node": "m18", "hugePageMB": 1536, },
@@ -293,6 +288,7 @@
 "node_info": {
     "m17":    { "full_name": "monumenta-17",        "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048, "geoDescription": "NA" },
     "m18":    { "full_name": "monumenta-18",        "mem_total_kB": 263971944, "huge_pages":  68000, "huge_page_size_kB": 2048, "geoDescription": "EU" },
+    "m19":    { "full_name": "monumenta-19",        "mem_total_kB":  65604120, "huge_pages":  20000, "huge_page_size_kB": 2048, "geoDescription": "SEA" },
 
     # These are not real hosts and exist purely for planning where to put new shards
     "new":    { "full_name": "monumenta-new",       "mem_total_kB": 528044716, "huge_pages": 175000, "huge_page_size_kB": 2048, "geoDescription": "The Big Bang" },

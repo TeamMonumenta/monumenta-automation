@@ -57,7 +57,7 @@ spec:
             path: /nfs/build/m18
       containers:
       - name: velocity-18
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-25
         tty: true
         stdin: true
         ports:
@@ -78,6 +78,10 @@ spec:
         - name: "JAVA_LARGE_PAGES"
           value: "yes"
         - name: "NETWORK_RELAY_NAME"
+          value: velocity-18
+        - name: "EXCEPTLOG_INGEST_URL"
+          value: "http://exception-logger.build/ingest"
+        - name: "EXCEPTLOG_SERVER_NAME"
           value: velocity-18
         - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
           value: "false"
@@ -110,10 +114,10 @@ spec:
             #   = 512 + 8 + 2 + 240 + 64 = 826Mi
             # 1024Mi was above the requirement (unlike stage/volt, which were below it)
             # so this is a trim, not a fix.
-            cpu: 4
+            cpu: "4"
             memory: 2Gi
             hugepages-2Mi: 826Mi
           requests:
-            cpu: 1
+            cpu: "1"
             memory: 768Mi
             hugepages-2Mi: 826Mi

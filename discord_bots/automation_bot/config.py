@@ -58,6 +58,7 @@ class Config():
         self.CHANNELS = bot_config["channels"]
         self.NO_READY_MESSAGE_CHANNELS = bot_config.get("no_ready_message_channels", [])
         self.STATUS_CHANNEL = bot_config.get("status_channel", None)
+        self.EVENT_ALERTS_CHANNEL = bot_config.get("event_alerts", None)
         self.SERVER_DIR = bot_config["server_dir"]
         self.SHARDS = bot_config["shards"]
         self.HEARTBEAT_FREE_SHARDS = set(bot_config.get("heartbeat_free_shards", []))

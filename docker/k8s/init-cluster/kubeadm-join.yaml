@@ -1,0 +1,12 @@
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    # apiServerEndpoint: "192.168.30.17:6443"
+    token: abcdef.xxx # put `token` from kubeadm token create --print-join-command
+    caCertHashes:
+      - "sha256:xxx" # put `discovery-token-ca-cert-hash` from kubeadm token create --print-join-command here
+nodeRegistration:
+  kubeletExtraArgs:
+  - name: "node-ip"
+    value: 192.168.30.12,fd00:e91c:b3a7::12

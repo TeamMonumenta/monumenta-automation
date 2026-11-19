@@ -1,4 +1,4 @@
-use monumenta::player::Player;
+use monumenta::{leaderboards, player::Player};
 
 use log::warn;
 use redis::Commands;
@@ -8,7 +8,7 @@ use uuid::Uuid;
 use std::env;
 
 fn usage() {
-    println!("Usage: leaderboard_update_redis 'redis://127.0.0.1/' <domain> leaderboards.yaml");
+    println!("Usage: leaderboard_update_redis 'redis://127.0.0.1/' <domain> <lb-config-dir>");
 }
 
 fn update_player_leaderboards(
@@ -55,10 +55,12 @@ fn main() -> anyhow::Result<()> {
 
     let domain = args.remove(0);
 
-    // Get and read leaderboards yaml
-    let leaderboards = args.remove(0);
-    let leaderboards = std::fs::File::open(leaderboards)?;
-    let leaderboards: Vec<String> = serde_norway::from_reader(leaderboards)?;
+    // Get and read leaderboard config files
+    let leaderboard_config_dir = args.remove(0);
+    let leaderboards: Vec<String> = leaderboards::load_configs(&leaderboard_config_dir)?
+        .into_iter()
+        .map(|cfg| cfg.objective)
+        .collect();
 
     println!("Updating leaderboards:");
     for leaderboard in leaderboards.iter() {

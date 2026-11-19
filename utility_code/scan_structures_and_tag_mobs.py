@@ -49,6 +49,12 @@ def process_entity(entity, source_name):
         if soul is not None:
             soul_nbt = nbt.TagCompound.from_mojangson(soul["history"][0]["mojangson"])
             soul_id = soul_nbt.at_path("id").value
+            if soul_nbt.has_path("Tags"):
+                arr = soul_nbt.at_path("Tags").value
+                for tagstring in arr:
+                    if tagstring.value == "bestiary_ignore":
+                        # ignored for bestiary location tagging
+                        return
         if soul is not None and soul_id == entity_id:
             # Already in the library - tag it with the name of the structure for searching
             if "location_names" not in soul:
@@ -94,7 +100,8 @@ if __name__ == '__main__':
     mob_counts = {}
     forbidden_ids = ["minecraft:painting", "minecraft:potion", "minecraft:trident", "minecraft:boat",
                      "minecraft:minecart", "minecraft:falling_block", "minecraft:firework_rocket", "minecraft:item_frame", "minecraft:end_crystal",
-                     "minecraft:area_effect_cloud", "minecraft:command", "minecraft:command_block", "minecraft:chain_command_block", "minecraft:repeating_command_block"]
+                     "minecraft:area_effect_cloud", "minecraft:command", "minecraft:command_block", "minecraft:chain_command_block", "minecraft:repeating_command_block",
+                     "minecraft:armor_stand", "minecraft:block_display", "minecraft:item_display", "minecraft:text_display", "minecraft:interaction", "minecraft:marker"]
 
     los = LibraryOfSouls("/home/epic/project_epic/server_config/data/plugins/all/LibraryOfSouls/souls_database.json")
     los.clear_tags()

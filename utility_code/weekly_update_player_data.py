@@ -73,6 +73,16 @@ def process_plugin_data(plugin_data):
         if item_replace_manager.replace_item(item, debug_path=item.get_path_str()):
             num_replacements += 1
 
+    # Jade cosmetic updater
+    for cosmetic in plugin_data.cosmetics():
+        if "name" not in cosmetic:
+            continue
+        match cosmetic["name"]:
+            case "Prestigious Maul":
+                cosmetic["ability"] = "Sculptor's Maul"
+            case "Prestigious Winds":
+                cosmetic["ability"] = "Tempest's Call"
+
     return num_replacements
 
 

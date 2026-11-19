@@ -43,42 +43,43 @@ if __name__ == '__main__':
                 "world": [
                     "labs",
                 ],
-                "objective":"D0Access"
+                "objective":"InstanceLabs"
             },
             "white": {
                 "world": [
                     "white",
                     "whiteexalted",
+                    "whiteremaster",
                 ],
-                "objective":"D1Access"
+                "objective":"InstanceWhite"
             },
             "orange": {
                 "world": [
                     "orange",
                     "orangeexalted",
                 ],
-                "objective":"D2Access"
+                "objective":"InstanceOrange"
             },
             "magenta": {
                 "world": [
                     "magenta",
                     "magentaexalted",
                 ],
-                "objective":"D3Access"
+                "objective":"InstanceMagenta"
             },
             "lightblue": {
                 "world": [
                     "lightblue",
                     "lightblueexalted",
                 ],
-                "objective":"D4Access"
+                "objective":"InstanceLightBlue"
             },
             "yellow": {
                 "world": [
                     "yellow",
                     "yellowexalted",
                 ],
-                "objective":"D5Access"
+                "objective":"InstanceYellow"
             },
             "lime": {
                 "world": [
@@ -90,30 +91,35 @@ if __name__ == '__main__':
             "pink": {
                 "world": [
                     "pink",
+                    "pinkexalted",
                 ],
                 "objective":"D7Access"
             },
             "gray": {
                 "world": [
                     "gray",
+                    "grayexalted",
                 ],
                 "objective":"D8Access"
             },
             "lightgray": {
                 "world": [
                     "lightgray",
+                    "lightgrayexalted",
                 ],
                 "objective":"D9Access"
             },
             "cyan": {
                 "world": [
                     "cyan",
+                    "cyanexalted",
                 ],
                 "objective":"D10Access"
             },
             "purple": {
                 "world": [
                     "purple",
+                    "purpleexalted",
                 ],
                 "objective":"D11Access"
             },
@@ -134,26 +140,26 @@ if __name__ == '__main__':
                     "willows",
                     "willowsexalted",
                 ],
-                "objective":"DB1Access"
+                "objective":"InstanceWillows"
             },
             "corridors": {
                 "world": [
                     "corridors",
                 ],
-                "objective":"DRAccess"
+                "objective":"InstanceCorridors"
             },
             "reverie": {
                 "world": [
                     "reverie",
                     "reverieexalted",
                 ],
-                "objective":"DCAccess"
+                "objective":"InstanceReverie"
             },
             "tutorial": {
                 "world": [
                     "tutorial",
                 ],
-                "objective":"DTAccess"
+                "objective":"InstanceTutorial"
             },
             "shiftingcity": {
                 "world": [
@@ -164,12 +170,14 @@ if __name__ == '__main__':
             "teal": {
                 "world": [
                     "teal",
+                    "tealexalted",
                 ],
                 "objective":"DTLAccess"
             },
             "forum": {
                 "world": [
                     "forum",
+                    "forumexalted",
                 ],
                 "objective":"DFFAccess"
             },

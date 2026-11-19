@@ -191,7 +191,7 @@ class AutomationBotInstance(commands.Cog):
         self._dungeons = {
             "blue": "D12Access",
             "brown": "D13Access",
-            "corridors": "DRAccess",
+            "corridors": "InstanceCorridors",
             "cyan": "D10Access",
             "depths": "DDAccess",
             "forum": "DFFAccess",
@@ -200,25 +200,25 @@ class AutomationBotInstance(commands.Cog):
             "gray": "D8Access",
             "hexfall": "DHFAccess",
             "indigo": "DIAccess",
-            "labs": "D0Access",
-            "lightblue": "D4Access",
+            "labs": "InstanceLabs",
+            "lightblue": "InstanceLightBlue",
             "lightgray": "D9Access",
             "lime": "D6Access",
-            "magenta": "D3Access",
-            "orange": "D2Access",
+            "magenta": "InstanceMagenta",
+            "orange": "InstanceOrange",
             "pink": "D7Access",
             "portal": "DPSAccess",
             "purple": "D11Access",
-            "reverie": "DCAccess",
+            "reverie": "InstanceReverie",
             "rush": "DRDAccess",
             "ruin": "DMASAccess",
             "shiftingcity": "DRL2Access",
             "skt": "DSKTAccess",
             "teal": "DTLAccess",
-            "tutorial": "DTAccess",
-            "white": "D1Access",
-            "willows": "DB1Access",
-            "yellow": "D5Access",
+            "tutorial": "InstanceTutorial",
+            "white": "InstanceWhite",
+            "willows": "InstanceWillows",
+            "yellow": "InstanceYellow",
             "zenith": "DCZAccess",
         }
 
@@ -253,6 +253,14 @@ class AutomationBotInstance(commands.Cog):
                     logging.info("Found status channel: %s", config.STATUS_CHANNEL)
                 except Exception:
                     logging.error("Cannot connect to status channel: %s", config.STATUS_CHANNEL)
+
+            self._event_alerts_channel = None
+            if config.EVENT_ALERTS_CHANNEL:
+                try:
+                    self._event_alerts_channel = self._bot.get_channel(config.EVENT_ALERTS_CHANNEL)
+                    logging.info("Found event alerts channel: %s", config.EVENT_ALERTS_CHANNEL)
+                except Exception:
+                    logging.error("Cannot connect to event alerts channel: %s", config.EVENT_ALERTS_CHANNEL)
 
             self._socket = None
             if config.RABBITMQ:
@@ -326,42 +334,50 @@ class AutomationBotInstance(commands.Cog):
                                     # Probably hard to fix though
                                     asyncio.run_coroutine_threadsafe(self.stage_data_request(self._stage_notify_channel, message["data"]), loop)
 
-                            if self._status_channel:
+                            if self._status_channel or self._event_alerts_channel:
                                 if message_channel == "monumenta.eventbroadcast.update":
                                     event_data = message.get("data", None)
                                     if event_data is None:
                                         return
 
                                     event_shard = event_data.get("shard", None)
-                                    event_name = event_data.get("eventName", None)
+                                    event_id = event_data.get("eventName", None)
                                     event_time_left = event_data.get("timeLeft", None)
 
                                     if not all([
                                             isinstance(event_shard, str),
-                                            isinstance(event_name, str),
+                                            isinstance(event_id, str),
                                             isinstance(event_time_left, int),
                                     ]):
                                         return
 
-                                    event_map = self._gameplay_events.get(event_name, {})
-                                    self._gameplay_events[event_name] = event_map
+                                    event_map = self._gameplay_events.get(event_id, None)
+                                    if event_map is None:
+                                        event_map = {}
+                                        self._gameplay_events[event_id] = event_map
 
                                     if event_time_left < 0:
                                         if event_shard in event_map:
                                             del event_map[event_shard]
                                         if len(event_map) == 0:
-                                            del self._gameplay_events[event_name]
+                                            del self._gameplay_events[event_id]
                                         return
 
                                     now = datetime.utcnow()
-                                    gameplay_event = event_map.get("event_shard", {
-                                        "shard": event_shard,
-                                        "event_name": event_name,
-                                    })
-                                    event_map[event_shard] = gameplay_event
+                                    gameplay_event = event_map.get(event_shard, None)
+                                    is_new_event = False
+                                    if gameplay_event is None:
+                                        is_new_event = True
+                                        gameplay_event = {
+                                            "shard": event_shard,
+                                            "event_id": event_id,
+                                        }
+                                        event_map[event_shard] = gameplay_event
                                     gameplay_event["last_update"] = now
                                     if event_time_left > 0:
                                         gameplay_event["ETA"] = now + timedelta(seconds=event_time_left)
+                                        if is_new_event:
+                                            asyncio.run_coroutine_threadsafe(self.handle_new_event(gameplay_event), loop)
                                     else:
                                         gameplay_event.pop("ETA", False)
                         except Exception:
@@ -663,6 +679,24 @@ class AutomationBotInstance(commands.Cog):
                 file=fp
             )
 
+
+    def get_event_details(self, event_id):
+        """Gets details about an event (like bosses)"""
+        details_path = self._persistence_path / 'event_details' / f'{event_id}.json'
+        if not details_path.is_file():
+            return {
+                "display_name": '{event_id} (no event details file)'
+            }
+        try:
+            return json.loads(details_path.read_text(encoding='utf-8-sig'))
+        except Exception as ex:
+            logger.warning(f'Failed to load event details - {ex}:')
+            logger.warning(traceback.format_exc())
+            return {
+                "display_name": f'{event_id} (error loading event details)'
+            }
+
+
     async def status_tick(self):
         """Updates bot status message(s) if required and possible"""
 
@@ -734,6 +768,31 @@ class AutomationBotInstance(commands.Cog):
                 ),
                 file=fp
             )
+
+
+    async def handle_new_event(self, gameplay_event):
+        if self._event_alerts_channel is None:
+            return
+
+        event_id = gameplay_event.get("event_id", "UNKNOWN")
+        eta = gameplay_event.get("ETA", None)
+        threshold = datetime.utcnow() + timedelta(minutes=2)
+        if eta is None or eta < threshold:
+            return
+
+        event_details = self.get_event_details(event_id)
+        display_name = event_details.get("display_name", f'{event_id} (no display name provided)')
+        role_id = event_details.get("role", None)
+
+        role_mention = ''
+        if role_id is not None:
+            role = self._event_alerts_channel.guild.get_role(role_id)
+            if role:
+                role_mention = f' {role.mention}'
+
+        formatted_message = f'{display_name} is starting {get_discord_timestamp(eta, ":R")}{role_mention}'
+        await self._event_alerts_channel.send(formatted_message)
+
 
     async def host_rss_tick(self):
         if self._admin_channel is None:
@@ -1097,28 +1156,28 @@ class AutomationBotInstance(commands.Cog):
 
         return raffle_seed
 
-    def send_tablist_event(self, event_name, time):
+    async def send_tablist_event(self, event_id, time):
         """Sends an event to display in the tab list"""
         event_data = {
             "shard": config.RABBITMQ["host"],
-            "eventName": event_name,
+            "eventName": event_id,
             "timeLeft": time,
             "status": "STARTING" if time > 0 else "IN_PROGRESS",
         }
-        self._socket.send_packet("*", "monumenta.eventbroadcast.update", event_data)
+        await self._socket.send_packet_async("*", "monumenta.eventbroadcast.update", event_data)
 
-    def broadcast_command(self, cmd, server_type="minecraft", shard="*"):
+    async def broadcast_command(self, cmd, server_type="minecraft", shard="*"):
         """Broadcasts a command to all servers"""
         data = {
             "command": cmd
         }
         if server_type is not None:
             data["server_type"] = server_type
-        self._socket.send_packet(shard, "monumentanetworkrelay.command", data)
+        await self._socket.send_packet_async(shard, "monumentanetworkrelay.command", data)
 
-    def broadcast_json_msg(self, json_msg):
+    async def broadcast_json_msg(self, json_msg):
         """Broadcasts a command to all servers"""
-        self.broadcast_command("tellraw @a[all_worlds=true] " + json.dumps(json_msg, ensure_ascii=False, separators=(',', ':')))
+        await self.broadcast_command("tellraw @a[all_worlds=true] " + json.dumps(json_msg, ensure_ascii=False, separators=(',', ':')))
 
     async def _gameplay_event_summary(self):
         msg = []
@@ -1127,18 +1186,21 @@ class AutomationBotInstance(commands.Cog):
         expired_threshhold = now - timedelta(minutes=3)
 
         # Sorting also makes a copy of the collection, allowing entries to be removed
-        for event_name, event_map in sorted(self._gameplay_events.items()):
+        for event_id, event_map in sorted(self._gameplay_events.items()):
             for shard, gameplay_event in sorted(event_map.items()):
                 if gameplay_event["last_update"] < expired_threshhold:
                     event_map.pop(shard, None)
                     continue
 
+                event_details = self.get_event_details(event_id)
+                display_name = event_details.get("display_name", f'{event_id} (no display name provided)')
+
                 eta = gameplay_event.get("ETA", None)
                 if eta:
                     eta_timestamp = get_discord_timestamp(eta, ":R")
-                    msg.append(f'{event_name} is starting on {shard} {eta_timestamp}')
+                    msg.append(f'{display_name} is starting on {shard} {eta_timestamp}')
                 else:
-                    msg.append(f'{event_name} is in progress on {shard}')
+                    msg.append(f'{display_name} is in progress on {shard}')
 
         if not msg:
             msg.append("No events are currently in progress")
@@ -1153,7 +1215,7 @@ class AutomationBotInstance(commands.Cog):
             ns = 'play'
 
         await self.run(ctx, [os.path.join(_top_level, "rust/bin/redis_set_offline_player_score"), "redis://redis/", ns, name, objective, str(value), message], displayOutput=displayOutput)
-        self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
+        await self.broadcast_command(f"execute if entity {name} run scoreboard players set {name} {objective} {value}")
 
 
     async def _get_lockout_message(self):
@@ -2291,25 +2353,25 @@ Must be run before starting the update on the play server
         seconds_delay = 60
         stop_time = now + timedelta(seconds=seconds_delay)
         if not skip_replacements:
-            self.broadcast_json_msg([
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+            await self.broadcast_json_msg([
                 "",
                 {"text": "[Alert] ", "color":"red"},
                 {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"},
                 {"text": "overworld and dungeon", "color":"red"},
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
-            self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
-            self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+            await self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
         elif not debug:
-            self.broadcast_json_msg([
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+            await self.broadcast_json_msg([
                 "",
                 {"text": "[Alert] ", "color":"red"},
                 {"text": f"We're preparing an update bundle in {seconds_delay} seconds. The ", "color":"white"},
                 {"text": "overworld", "color":"red"},
                 {"text": " shards will be stopped temporarily. Other shards remain available.", "color":"white"},
             ])
-            self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
-            self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+            await self.broadcast_command("execute as @a[all_worlds=true] at @s run playsounds @s @s master sound minecraft:entity.ravager.celebrate 1.0 2.0 1")
 
         async def await_warning_delay():
             await self.display(ctx, "Giving devs time to wrap up what they're doing")
@@ -2322,7 +2384,7 @@ Must be run before starting the update on the play server
                     while True:
                         await asyncio.sleep(3)
                         remaining_seconds = (stop_time - datetime.now(tz)) / second
-                        self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
+                        await self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
             except TimeoutError:
                 pass
 
@@ -2375,7 +2437,7 @@ Must be run before starting the update on the play server
         await self.run(ctx, "mkdir -p /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/Project_Epic-valley /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/azacor /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
-        await self.run(ctx, "cp -a /home/epic/project_epic/valley/coalrrupted_sierhaven /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
+        await self.run(ctx, "cp -a /home/epic/project_epic/valley/koal /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/sanctum /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/snowspirit /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
         await self.run(ctx, "cp -a /home/epic/project_epic/valley/verdant /home/epic/5_SCRATCH/tmpreset/TEMPLATE/valley/")
@@ -2770,8 +2832,8 @@ old coreprotect data will be removed at the 5 minute mark.
             1,
         ], reverse=True)
 
-        self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
-        self.broadcast_json_msg([
+        await self.send_tablist_event("SCHEDULED_MAINTENANCE", ((stop_time - now) / second) // 1)
+        await self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
                                  {"text":"Monumenta is going down at ", "color":"white"},
@@ -2794,9 +2856,9 @@ old coreprotect data will be removed at the 5 minute mark.
             return f"{minutes} minutes"
 
         async def send_broadcast_stop_msg(seconds):
-            self.send_tablist_event("SCHEDULED_MAINTENANCE", seconds)
+            await self.send_tablist_event("SCHEDULED_MAINTENANCE", seconds)
             time_left = seconds_to_string(seconds)
-            self.broadcast_json_msg([
+            await self.broadcast_json_msg([
                                  "",
                                  {"text":"[Alert] ", "color":"red"},
                                  {"text":"The Monumenta server is stopping in ", "color":"white"},
@@ -2815,7 +2877,7 @@ old coreprotect data will be removed at the 5 minute mark.
                     while True:
                         await asyncio.sleep(3)
                         remaining_seconds = (stop_time - datetime.now(tz)) / second
-                        self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
+                        await self.send_tablist_event("SCHEDULED_MAINTENANCE", remaining_seconds)
             except TimeoutError:
                 pass
 
@@ -2823,16 +2885,16 @@ old coreprotect data will be removed at the 5 minute mark.
                 await self.display(ctx, "Clearing coreprotect data older than 30 days")
                 for shard in self._shards:
                     if "plots" in shard:
-                        self.broadcast_command('co purge t:180d', shard=shard)
+                        await self.broadcast_command('co purge t:180d', shard=shard)
                     elif shard not in ["build",]:
-                        self.broadcast_command('co purge t:30d', shard=shard)
+                        await self.broadcast_command('co purge t:30d', shard=shard)
             if next_target == 15:
-                self.broadcast_command('save-all')
+                await self.broadcast_command('save-all')
 
             await send_broadcast_stop_msg(next_target)
 
         # Stop velocity (I guess you could uh... run maintenance?)
-        self.broadcast_command('maintenance on', server_type="proxy")
+        await self.broadcast_command('maintenance on', server_type="proxy")
         await asyncio.sleep(5)
         # TODO: don't hardcode velocity instances here
         shards = await self._k8s.list()
@@ -2840,7 +2902,7 @@ old coreprotect data will be removed at the 5 minute mark.
         await self.stop(ctx, velocityShards, owner=message)
 
         await self.display(ctx, message.author.mention)
-        self.send_tablist_event("SCHEDULED_MAINTENANCE", -1)
+        await self.send_tablist_event("SCHEDULED_MAINTENANCE", -1)
 
     async def action_stop_and_backup(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Dangerous!
@@ -3057,7 +3119,7 @@ Performs the weekly update on the play server. Requires StopAndBackupAction.'''
 
         if min_phase <= 15 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Refreshing leaderboards")
-            await self.run(ctx, os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(_top_level, "leaderboards.yaml"))
+            await self.run(ctx, os.path.join(_top_level, "rust/bin/leaderboard_update_redis") + " redis://redis/ play " + os.path.join(self._server_dir, "server_config/data/scriptedquests/leaderboards"))
 
         if min_phase <= 16 and config.COMMON_WEEKLY_UPDATE_TASKS:
             await self.display(ctx, "Restarting rabbitmq")
@@ -3164,7 +3226,6 @@ Archives the previous stage server contents under 0_PREVIOUS '''
             raise Exception("WARNING: bot doesn't have stage source, aborting")
 
         log_level = config.RABBITMQ.get("log_level", 20)
-        play_broker = SocketManager("rabbitmq.play", "stagebot", callback=None, log_level=log_level)
 
         # Stop all shards belonging to this bot instance
         # This will fail if there's a lockout in place, so do this at the beginning
@@ -3186,17 +3247,18 @@ Archives the previous stage server contents under 0_PREVIOUS '''
 
         await asyncio.sleep(15)
 
-        port = 1111
-        for server_name in config.STAGE_SOURCE:
-            server_section = config.STAGE_SOURCE[server_name]
-            stage_msg = {
-                "shards": server_section["shards"],
-                "address": f"{config.RABBITMQ['name']}.{config.K8S_NAMESPACE}",
-                "port": port,
-            }
-            await self.display(ctx, f"Sending request to {server_section['queue_name']} with config {pformat(stage_msg)}")
-            play_broker.send_packet(server_section["queue_name"], "Monumenta.Automation.stage", stage_msg)
-            port += 1
+        async with SocketManager("rabbitmq.play", "stagebot", callback=None, log_level=log_level) as play_broker:
+            port = 1111
+            for server_name in config.STAGE_SOURCE:
+                server_section = config.STAGE_SOURCE[server_name]
+                stage_msg = {
+                    "shards": server_section["shards"],
+                    "address": f"{config.RABBITMQ['name']}.{config.K8S_NAMESPACE}",
+                    "port": port,
+                }
+                await self.display(ctx, f"Sending request to {server_section['queue_name']} with config {pformat(stage_msg)}")
+                await play_broker.send_packet_async(server_section["queue_name"], "Monumenta.Automation.stage", stage_msg)
+                port += 1
 
         await self.display(ctx, "Finished launching copy tasks, waiting for them to complete. This will take a while...")
         for task in tasks:
@@ -3604,7 +3666,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
-        self.broadcast_command(commandArgs, server_type=None)
+        await self.broadcast_command(commandArgs, server_type=None)
 
     async def action_broadcastbungeecommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all bungeecord instances
@@ -3615,7 +3677,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all bungee servers")
-        self.broadcast_command(commandArgs, server_type="bungee")
+        await self.broadcast_command(commandArgs, server_type="bungee")
 
     async def action_broadcastminecraftcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all minecraft instances
@@ -3626,7 +3688,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all minecraft servers")
-        self.broadcast_command(commandArgs)
+        await self.broadcast_command(commandArgs)
 
     async def action_broadcastproxycommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
         '''Sends a command to all proxy instances
@@ -3637,7 +3699,7 @@ Syntax:
             commandArgs = commandArgs[1:]
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all proxy servers")
-        self.broadcast_command(commandArgs, server_type="proxy")
+        await self.broadcast_command(commandArgs, server_type="proxy")
 
 
     async def action_deop(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3648,7 +3710,7 @@ Syntax:
         commandArgs = "deop " + playerArg
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
-        self.broadcast_command(commandArgs, server_type=None)
+        await self.broadcast_command(commandArgs, server_type=None)
 
 
     async def action_op(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3659,7 +3721,7 @@ Syntax:
         commandArgs = "op " + playerArg
 
         await self.display(ctx, f"Broadcasting command {commandArgs!r} to all servers")
-        self.broadcast_command(commandArgs, server_type=None)
+        await self.broadcast_command(commandArgs, server_type=None)
 
 
     async def action_sendcommand(self, ctx: discord.ext.commands.Context, cmd, message: discord.Message):
@@ -3700,7 +3762,7 @@ Examples:
 
         await self.display(ctx, f"Broadcasting command {shard_cmd!r} to {shards!r}")
         for shard in shards:
-            self.broadcast_command(shard_cmd, shard=shard)
+            await self.broadcast_command(shard_cmd, shard=shard)
         await self.display(ctx, "Done!")
 
 

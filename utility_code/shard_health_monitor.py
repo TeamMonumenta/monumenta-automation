@@ -114,7 +114,11 @@ class ShardHealthMonitorDisplay(Display):
     async def run(self) -> None:
         self.init_colors()
         self.socket = SocketManager(self.host, self.queue_name, durable=False, callback=self.socket_callback, track_heartbeats=True)
-        self.socket.send_heartbeat()
+        try:
+            await self.socket.send_heartbeat_async()
+        except Exception:
+            # Not required to display shard health; the consumer thread will keep trying to connect
+            pass
         await super().run()
 
 

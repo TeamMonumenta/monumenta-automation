@@ -60,7 +60,7 @@ spec:
             path: /nfs/volt/m17
       containers:
       - name: velocity-17
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-21
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-java-shard-25
         tty: true
         stdin: true
         ports:
@@ -83,6 +83,10 @@ spec:
         - name: "MONUMENTA_WHITELIST"
           value: monumenta.whitelist.beta
         - name: "NETWORK_RELAY_NAME"
+          value: velocity-17
+        - name: "EXCEPTLOG_INGEST_URL"
+          value: "http://exception-logger.volt/ingest"
+        - name: "EXCEPTLOG_SERVER_NAME"
           value: velocity-17
         - name: "ALLOW_PACKETS_PUBLICIZE_CONTENT"
           value: "false"

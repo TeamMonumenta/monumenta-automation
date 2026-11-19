@@ -38,6 +38,9 @@ channels:
 # volt-status (dev discord)
 status_channel: 1193446138062327878
 
+# volt-event-alerts (dev discord)
+event_alerts: 1567034848689000479
+
 server_dir: /home/epic/volt/m18
 
 cpu_count: 12
@@ -144,7 +147,6 @@ commands:
     - broadcastcommand op
     - broadcastminecraftcommand
     - broadcastproxycommand
-    - debug
     - deop
     - fetch update bundle
     - gen server config
@@ -175,7 +177,6 @@ commands:
     - select
     - sendcommand
     - set score
-    - skill info
     - stage
     - start
     - stop
@@ -219,7 +220,6 @@ permissions:
         "@intern":
             - "@moderator"
             - "+apply stage bundle"
-            - "+debug"
             - "+fetch update bundle"
             - "+gen server config"
             - "+get errors"
