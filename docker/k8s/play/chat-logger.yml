@@ -48,7 +48,7 @@ spec:
         # RabbitMQ connection string.
         - name: AMQP_URI
           value: "amqp://guest:guest@rabbitmq:5672"
-        # Redis connection string for UUID→player name lookups via the uuid2name hash.
+        # Redis connection string for UUID->player name lookups via the uuid2name hash.
         # Remove this entry to disable Redis and log raw UUIDs instead.
         - name: REDIS_URI
           value: "redis://redis:6379"

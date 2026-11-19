@@ -587,7 +587,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
     };
 
     // Returns T::NULL (0) when a special class wasn't found in the heap dump, which makes every
-    // comparison against it false — effectively disabling that detection path gracefully.
+    // comparison against it false - effectively disabling that detection path gracefully.
     let get_class_id = |id: ClassNames| class_ids[id as usize].get().copied().unwrap_or(T::NULL);
 
     eprintln!("parsing heap dump");
@@ -712,7 +712,7 @@ fn do_read_prof<'a, T: Id>(file: &'a [u8], min_leaked: usize, min_pattern_leaked
             "warning: neither CraftScheduler nor CraftAsyncScheduler was found in the heap dump"
         );
         eprintln!(
-            "         no leak root sources can be identified — all paths-to-root will be empty"
+            "         no leak root sources can be identified - all paths-to-root will be empty"
         );
         eprintln!("         the class name mappings may be out of date (currently target v1_20_R3)");
     }

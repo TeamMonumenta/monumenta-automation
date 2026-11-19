@@ -43,7 +43,7 @@ spec:
               protocol: TCP
             - port: "7722"    # Root SSH
               protocol: TCP
-    # NFS – strictly via vrack
+    # NFS - strictly via vrack
     - fromCIDR:
         - 192.168.30.0/24
     # Admin LXC Containers

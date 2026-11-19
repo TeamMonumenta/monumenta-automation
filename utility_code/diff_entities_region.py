@@ -87,7 +87,7 @@ def load_entities(path):
                 collisions.append(key)
             entities[key] = (entity.nbt, uid_str)
     if collisions:
-        print(f"  WARNING: {len(collisions)} duplicate position keys in {path} — those entities may not match correctly", file=sys.stderr)
+        print(f"  WARNING: {len(collisions)} duplicate position keys in {path} - those entities may not match correctly", file=sys.stderr)
     return entities
 
 
