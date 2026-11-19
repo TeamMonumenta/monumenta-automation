@@ -1,7 +1,7 @@
 #!/usr/bin/env pypy3
 
 """
-redis_schema.py — Reverse-engineer the Monumenta Redis keyspace schema.
+redis_schema.py - Reverse-engineer the Monumenta Redis keyspace schema.
 
 Scans all keys, collapses high-cardinality segments (UUIDs, numeric IDs,
 bungee instance IDs, leaderboard names, etc.) into placeholders, and prints
@@ -20,7 +20,7 @@ from collections import defaultdict
 import redis
 
 # ---------------------------------------------------------------------------
-# Segment classifiers — order matters, first match wins
+# Segment classifiers - order matters, first match wins
 # ---------------------------------------------------------------------------
 
 UUID_RE = re.compile(

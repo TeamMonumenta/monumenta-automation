@@ -19,7 +19,7 @@ def _load_vote_map(raw: Any) -> dict[str, list[str]]:
     if not raw:
         return {}
     if isinstance(raw, list):
-        # Old format: plain list of user ID strings → convert to dict with empty role lists
+        # Old format: plain list of user ID strings -> convert to dict with empty role lists
         return {str(uid): [] for uid in cast(list[Any], raw)}
     # New format: {user_id: [role_name, ...]}
     return {
@@ -39,7 +39,7 @@ class VoteData:
     concluded: bool
     concluded_by: Optional[str]
     concluded_at: Optional[int]
-    # Maps voter user ID → list of logged role names at time of vote.
+    # Maps voter user ID -> list of logged role names at time of vote.
     # An empty list means the user had none of the configured logged_role_ids.
     thumbsup: dict[str, list[str]] = field(default_factory=_vote_map)
     thumbsdown: dict[str, list[str]] = field(default_factory=_vote_map)
