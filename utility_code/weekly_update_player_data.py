@@ -78,11 +78,9 @@ def process_plugin_data(plugin_data):
         if "name" not in cosmetic:
             continue
         match cosmetic["name"]:
-            case "Prestigious Devastation":
-                cosmetic["name"] = "Prestigious Maul"
+            case "Prestigious Maul":
                 cosmetic["ability"] = "Sculptor's Maul"
-            case "Prestigious Totem":
-                cosmetic["name"] = "Prestigious Winds"
+            case "Prestigious Winds":
                 cosmetic["ability"] = "Tempest's Call"
 
     return num_replacements
