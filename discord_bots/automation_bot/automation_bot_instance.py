@@ -1438,15 +1438,14 @@ Examples:
                     "reaction": reaction,
                     "shards": [],
                 }
-            if state.player_count is not None:
-                name = f'{name} ({state.player_count})'
             buckets[reaction_order]["shards"].append(name)
 
         msg = []
         if len(shards) <= 0:
             msg.append("No shards to list")
         for _, bucket in sorted(buckets.items()):
-            msg.append(f'{bucket["reaction"]}: ' + ', '.join(bucket["shards"]))
+            # Shard names only, separated by two spaces, so the list can be pasted into ~start/~stop
+            msg.append(f'{bucket["reaction"]}: ' + '  '.join(bucket["shards"]))
 
         return "\n".join(msg)
 
