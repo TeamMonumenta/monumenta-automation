@@ -71,6 +71,7 @@ spec:
       labels:
         app: futurama
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

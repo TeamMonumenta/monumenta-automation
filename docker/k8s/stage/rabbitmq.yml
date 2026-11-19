@@ -40,6 +40,7 @@ spec:
       labels:
         app: rabbitmq
     spec:
+      priorityClassName: monumenta-stage-data
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -66,7 +67,13 @@ spec:
           mountPath: /etc/rabbitmq/conf.d/20-monumenta-custom.conf
           subPath: 20-monumenta-custom.conf
         resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): peak 135 MiB RSS. Limit kept at 1Gi
+          # for queue backlog headroom during an outage.
+          requests:
+            cpu: 100m
+            memory: 384Mi
           limits:
+            cpu: "2"
             memory: 1Gi
       volumes:
         - name: rabbitmq-config

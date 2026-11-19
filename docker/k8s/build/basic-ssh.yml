@@ -17,6 +17,7 @@ spec:
       labels:
         app: basic-ssh
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

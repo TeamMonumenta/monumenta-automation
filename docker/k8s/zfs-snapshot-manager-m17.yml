@@ -47,6 +47,7 @@ spec:
       labels:
         app: zfs-snapshot-manager-m17
     spec:
+      priorityClassName: monumenta-infra
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -82,6 +83,13 @@ spec:
         - name: zfs-device
           mountPath: /dev/zfs
         resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): 2 MiB RSS. It shells out to the zfs
+          # CLI, so the real work happens in the kernel rather than in this process. The
+          # pre-existing 100Mi limit is already ~50x measured usage; only the request is
+          # new.
+          requests:
+            cpu: 10m
+            memory: 32Mi
           limits:
             cpu: "0.5"
             memory: 100Mi

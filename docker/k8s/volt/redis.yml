@@ -33,6 +33,7 @@ spec:
       labels:
         app: redis
     spec:
+      priorityClassName: monumenta-volt-data
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

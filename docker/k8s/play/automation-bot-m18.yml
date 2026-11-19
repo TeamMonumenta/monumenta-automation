@@ -20,6 +20,7 @@ spec:
       labels:
         app: automation-bot-m18
     spec:
+      priorityClassName: monumenta-play
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

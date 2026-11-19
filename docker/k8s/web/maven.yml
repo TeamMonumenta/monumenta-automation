@@ -63,6 +63,7 @@ spec:
        labels:
          app: maven
     spec:
+      priorityClassName: monumenta-infra
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -80,6 +81,15 @@ spec:
       containers:
       - name: maven
         image: ghcr.io/dzikoysk/reposilite
+        resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): 460 MiB median, 475 MiB peak RSS. A
+          # JVM, so the limit needs room above peak for heap growth and metaspace.
+          requests:
+            cpu: 100m
+            memory: 640Mi
+          limits:
+            cpu: "2"
+            memory: 1536Mi
         ports:
         - containerPort: 8080
         volumeMounts:

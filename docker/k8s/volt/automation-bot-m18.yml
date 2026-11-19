@@ -52,6 +52,7 @@ spec:
       labels:
         app: automation-bot-m18
     spec:
+      priorityClassName: monumenta-volt
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

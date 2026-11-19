@@ -43,6 +43,7 @@ spec:
       labels:
         app: velocity-17
     spec:
+      priorityClassName: monumenta-stage
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

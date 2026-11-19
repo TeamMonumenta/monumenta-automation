@@ -33,6 +33,7 @@ spec:
       labels:
         app: redis
     spec:
+      priorityClassName: monumenta-stage-data
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

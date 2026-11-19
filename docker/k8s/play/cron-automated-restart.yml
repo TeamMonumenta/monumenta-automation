@@ -32,6 +32,7 @@ spec:
           - name: secret-config
             secret:
               secretName: automated-restart
+          priorityClassName: monumenta-play-maint
           containers:
           - name: cron-automated-restart
             image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play

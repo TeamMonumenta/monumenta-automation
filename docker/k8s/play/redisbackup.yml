@@ -33,6 +33,7 @@ spec:
       labels:
         app: redisbackup
     spec:
+      priorityClassName: monumenta-play-backup
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

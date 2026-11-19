@@ -117,6 +117,7 @@ spec:
       labels:
         app: kanboard
     spec:
+      priorityClassName: monumenta-infra
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -164,11 +165,15 @@ spec:
         - name: kanboard-ssl
           mountPath: /etc/nginx/ssl
         resources:
-          limits:
-            cpu: 250m
-            memory: 768Mi
-            hugepages-2Mi: 256Mi
+          # NOTE FOR REVIEW: this previously requested hugepages-2Mi: 256Mi. Removed.
+          # Kanboard is PHP behind nginx -- there is no JVM here and nothing that maps
+          # large pages, so that reservation could only ever have consumed 256Mi of the
+          # hugepage pool (which is >90% full on m17) without being usable. This
+          # deployment is not currently running, so the removal has no immediate effect;
+          # if it turns out something here really does want hugepages, put it back.
           requests:
             cpu: 100m
             memory: 512Mi
-            hugepages-2Mi: 256Mi
+          limits:
+            cpu: 250m
+            memory: 768Mi

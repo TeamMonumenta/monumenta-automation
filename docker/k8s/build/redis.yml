@@ -33,6 +33,7 @@ spec:
       labels:
         app: redis
     spec:
+      priorityClassName: monumenta-build-data
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

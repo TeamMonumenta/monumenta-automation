@@ -26,6 +26,9 @@ spec:
       labels:
         app: adminer
     spec:
+      # monumenta-build, not monumenta-infra: this is an occasional-use database UI, not
+      # something that should outrank the build environment.
+      priorityClassName: monumenta-build
       containers:
         - name: adminer
           image: adminer:4.6

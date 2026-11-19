@@ -43,6 +43,7 @@ spec:
       labels:
         app: velocity-18
     spec:
+      priorityClassName: monumenta-volt
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

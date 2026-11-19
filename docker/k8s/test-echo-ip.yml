@@ -65,9 +65,18 @@ spec:
       labels:
         app: test-echo-ip
     spec:
+      priorityClassName: monumenta-infra
       containers:
       - name: test-echo-ip
         image: nginx:stable
+        resources:
+          # Trivial nginx echo endpoint.
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
         ports:
         - containerPort: 80
         volumeMounts:

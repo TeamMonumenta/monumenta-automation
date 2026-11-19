@@ -48,6 +48,7 @@ spec:
       labels:
         app: automation-bot-m17
     spec:
+      priorityClassName: monumenta-stage
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

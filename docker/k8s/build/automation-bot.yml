@@ -69,6 +69,7 @@ spec:
       labels:
         app: automation-bot
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

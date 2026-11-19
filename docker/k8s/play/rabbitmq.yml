@@ -40,6 +40,7 @@ spec:
       labels:
         app: rabbitmq
     spec:
+      priorityClassName: monumenta-play
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

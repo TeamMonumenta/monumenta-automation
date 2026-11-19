@@ -17,6 +17,7 @@ spec:
       labels:
         app: chat-logger
     spec:
+      priorityClassName: monumenta-build
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -56,9 +57,12 @@ spec:
         #- name: CHAT_LOGGER_DEBUG
         #  value: "1"
         resources:
-          limits:
-            cpu: 100m
-            memory: 32Mi
+          # Raised from 32Mi for the same reason as play/chat-logger.yml: the play copy
+          # was OOM killed 19 times in the 2026-09-07 to 2026-09-17 UTC window sitting
+          # on that limit.
           requests:
             cpu: 10m
-            memory: 16Mi
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 256Mi

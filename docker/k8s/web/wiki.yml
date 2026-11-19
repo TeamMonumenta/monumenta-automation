@@ -114,6 +114,7 @@ spec:
       labels:
         app: wiki
     spec:
+      priorityClassName: monumenta-infra
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -152,8 +153,16 @@ spec:
           mountPath: /wiki/config.yml
           subPath: config.yml
         resources:
+          # 10 days (2026-09-07 to 2026-09-17 UTC): 123 MiB median, 166 MiB peak RSS for
+          # the pod as a whole (wiki-js plus wiki-db). cAdvisor gives us the pod total,
+          # not a per-container split, so both containers get the same allowance rather
+          # than a guessed ratio.
+          requests:
+            cpu: 100m
+            memory: 192Mi
           limits:
-            cpu: 200m
+            cpu: 500m
+            memory: 768Mi
       - name: wiki-db
         image: postgres:11
         env:
@@ -173,8 +182,16 @@ spec:
           mountPath: /usr/share/postgresql/postgresql.conf.sample
           subPath: postgresql.conf.sample
         resources:
+          # The wiki-postgres-hugepages-config mount sets huge_pages = off, which is
+          # correct: postgres defaults to "try", and on these nodes that would have it
+          # quietly consuming pages from a pool that is reserved for the JVMs. No
+          # hugepages-2Mi request is needed here.
+          requests:
+            cpu: 100m
+            memory: 192Mi
           limits:
-            cpu: 200m
+            cpu: 500m
+            memory: 768Mi
       volumes:
         - name: wiki-persistent-storage
           hostPath:
