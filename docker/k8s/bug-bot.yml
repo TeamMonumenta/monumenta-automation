@@ -1,4 +1,39 @@
-# Webhook port for kanboard
+# The bug task bot: Discord bot plus the network API (taskctl) on port 8080.
+# Code and docs: discord_bots/task_bot/
+#
+# Data lives in /nfs/task-bot/bugs: config.yml (same file the old bot used), tasks.db
+# (SQLite), backups/ and images/ (saved copies of every entry's images, some GB). tasks.db
+# must exist before the first start (README, "Cutover").
+#
+# Two API listeners: 8080 for people (Discord users' tokens), behind the ingress, and 8081,
+# reachable only inside the cluster, which is the only one that accepts service tokens
+# (the game plugin on the shards: http://bug-bot.default.svc.cluster.local:8081).
+#
+# The Discord token is read from a secret instead of config.yml's `login`:
+#   kubectl create secret generic bug-bot --from-literal=discord-token='TOKEN'
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bug-bot
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - bugs-api.playmonumenta.com
+  rules:
+  - host: bugs-api.playmonumenta.com
+    http:
+      paths:
+        - pathType: Prefix
+          path: "/api/"
+          backend:
+            service:
+              name: bug-bot
+              port:
+                number: 80
+
+---
 
 apiVersion: v1
 kind: Service
@@ -6,10 +41,14 @@ metadata:
   name: bug-bot
 spec:
   ports:
-  - port: 5000
+  - name: api
+    port: 80
+    targetPort: 8080
+  - name: internal
+    port: 8081
+    targetPort: 8081
   selector:
     app: bug-bot
-
 
 ---
 
@@ -20,6 +59,7 @@ metadata:
   labels:
     app: bug-bot
 spec:
+  # Never two at once: both would answer every command
   strategy:
     type: Recreate
   replicas: 1
@@ -47,17 +87,41 @@ spec:
             path: /nfs/task-bot/bugs
       containers:
       - name: bug-bot
-        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-automation-bot-play
+        image: ghcr.io/teammonumenta/monumenta-automation/monumenta-task-bot:latest
         tty: false
         stdin: false
         volumeMounts:
         - name: bug-bot-storage
-          mountPath: /home/epic/.task_bot
-        command: ["./discord_bots/task_bot/task_bot.py"]
+          mountPath: /data
+        env:
+        - name: TASK_HOME
+          value: /data
+        - name: DISCORD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: bug-bot
+              key: discord-token
+        ports:
+        - containerPort: 8080
+        - containerPort: 8081
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          periodSeconds: 30
+        # The API shares the event loop with the bot, so this restarts a stuck loop too
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 60
+          timeoutSeconds: 10
+          failureThreshold: 5
         resources:
           limits:
-            cpu: 250m
+            cpu: 500m
             memory: 512Mi
           requests:
             cpu: 100m
-            memory: 128Mi
+            memory: 192Mi

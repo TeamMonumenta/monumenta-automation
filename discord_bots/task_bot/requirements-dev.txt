@@ -1,0 +1,5 @@
+pytest
+pylint
+pyright
+types-PyYAML
+pytest-asyncio

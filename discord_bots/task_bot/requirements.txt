@@ -1,0 +1,4 @@
+discord.py==2.7.1
+quart==0.20.0
+pyyaml==6.0.3
+matplotlib==3.11.2

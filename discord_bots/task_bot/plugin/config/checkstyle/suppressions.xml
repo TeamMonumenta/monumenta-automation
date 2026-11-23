@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+	"-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+	"https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+	<!-- EventPayload uses plain field names matching JSON keys for Gson serialization -->
+	<suppress files=".*[\\/]EventPayload\.java"
+			  checks="MemberName"
+			  message=".*Member name.*must match pattern.*"/>
+</suppressions>

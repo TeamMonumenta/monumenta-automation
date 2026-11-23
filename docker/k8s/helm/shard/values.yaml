@@ -102,3 +102,11 @@ exceptLogIngestDomain: null
 # Whether automated heap dumps are enabled or not when memory is low
 # Set to anything other than "false" to enable
 autoHeapDumpEnabled: "false"
+
+# In-game reporting to the task bots (bug reports, suggestions): space separated
+# instance names, e.g. "bug" or "bug suggestion" (not commas: shard_deployment_tool
+# passes every value through one comma separated --set). Empty turns it off; only play
+# shards should report into the real trackers. Tokens come from the
+# task-bot-tokens secret (keys named after the instances); see
+# discord_bots/task_bot/plugin/README.md.
+taskBotInstances: ""
