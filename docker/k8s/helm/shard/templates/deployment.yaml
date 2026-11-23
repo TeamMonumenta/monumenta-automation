@@ -173,6 +173,27 @@ spec:
           value: "http://exception-logger.{{ .Values.exceptLogIngestDomain | default .Values.namespace }}/ingest"
         - name: "EXCEPTLOG_SERVER_NAME"
           value: {{ .Values.name }}
+{{- if .Values.taskBotInstances }}
+        # In-game bug reports (discord_bots/task_bot/plugin). Each instance's API is the
+        # task bot's in-cluster service; its token is a service token kept in the
+        # task-bot-tokens secret of this namespace (optional: no secret, no reporting).
+        - name: "TASKBOT_INSTANCES"
+          value: {{ .Values.taskBotInstances | quote }}
+        - name: "TASKBOT_SERVER_NAME"
+          value: {{ .Values.name }}
+{{- range (splitList " " .Values.taskBotInstances) }}
+{{- if trim . }}
+        - name: "TASKBOT_{{ upper (trim .) }}_URL"
+          value: "http://{{ trim . }}-bot.default.svc.cluster.local:8081"
+        - name: "TASKBOT_{{ upper (trim .) }}_TOKEN"
+          valueFrom:
+            secretKeyRef:
+              name: task-bot-tokens
+              key: {{ trim . }}
+              optional: true
+{{- end }}
+{{- end }}
+{{- end }}
         - name: "HEAPLOG_INGEST_URL"
           value: "http://heap-logger.default.svc.cluster.local:8081/ingest"
         - name: "HEAPLOG_AUTO_DUMP"

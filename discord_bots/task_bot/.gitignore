@@ -1,1 +1,7 @@
-task_home
+.venv/
+__pycache__/
+.pytest_cache/
+*.db
+*.db-wal
+*.db-shm
+task_home/

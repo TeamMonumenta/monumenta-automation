@@ -1,0 +1,9 @@
+{
+  "pythonVersion": "3.12",
+  "venvPath": ".",
+  "venv": ".venv",
+  "typeCheckingMode": "strict",
+  "include": ["taskbot", "main.py", "cli"],
+  "reportUnusedFunction": "none",
+  "reportMissingTypeStubs": "none"
+}

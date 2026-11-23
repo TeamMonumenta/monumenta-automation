@@ -267,7 +267,8 @@
 # build/stage/volt shards sit idle most of the time and there are far more of
 # them defined than can run at once, so they reserve less.
 "namespace_defaults": {
-    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "8", "cpuReqs": "250m", "autoHeapDumpEnabled": "true" },
+    # taskBotInstances: in-game bug/suggestion reporting; off until the task-bot-tokens secret exists
+    "play" : { "gsheetCredentials": "true" , "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "8", "cpuReqs": "250m", "autoHeapDumpEnabled": "true", "taskBotInstances": "bug suggestion" },
     "build": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "cpuActiveProcessorCount": 2, "cpuLimits": "4", "cpuReqs": "50m", "memRequestMB": 1024 },
     "stage": { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "memRequestMB": 1024 },
     "volt" : { "gsheetCredentials": "false", "fastMetrics": "false", "maps": "true", "memRequestMB": 1024 },

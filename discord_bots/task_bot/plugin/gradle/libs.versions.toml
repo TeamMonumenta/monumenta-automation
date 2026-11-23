@@ -1,0 +1,8 @@
+[versions]
+gson = "2.10.1"
+commandapi = "9.4.1"
+junit = "5.9.3"
+
+[libraries]
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+commandapi = { module = "dev.jorel:commandapi-bukkit-core", version.ref = "commandapi" }
