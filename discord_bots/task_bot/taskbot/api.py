@@ -233,6 +233,15 @@ def create_app(service: TaskService, directory: Directory, charts: ChartRenderer
             raise ApiError(400, f"{key} must be a string")
         return value
 
+    def value_field(data: dict[str, Any], key: str) -> str:
+        """A field that must have a value when given: a non-empty string (or a number)."""
+        value = data.get(key)
+        if isinstance(value, int) and not isinstance(value, bool):
+            return str(value)
+        if not isinstance(value, str) or not value.strip():
+            raise ApiError(400, f"{key} must be a non-empty string")
+        return value.strip()
+
     def labels_field(data: dict[str, Any]) -> list[str]:
         raw: Any = data.get("labels")
         if raw is None:
@@ -391,7 +400,9 @@ def create_app(service: TaskService, directory: Directory, charts: ChartRenderer
             author_mc_uuid=player_param("me" if (request.args.get("author") == "me" and me.mc_uuid)
                                         else request.args.get("author_player"), me),
             closed_by=user_param(request.args.get("closed_by"), me),
-            terms=[t for t in request.args.get("q", "").split() if t],
+            terms=request.args.get("q", "").split(),
+            reason_terms=request.args.get("reason_contains", "").split(),
+            idle_since=_int_param("idle_since"),
             created_after=_int_param("created_after"), created_before=_int_param("created_before"),
             closed_after=_int_param("closed_after"), closed_before=_int_param("closed_before"),
             reaction=request.args.get("reaction") or None,
@@ -461,11 +472,12 @@ def create_app(service: TaskService, directory: Directory, charts: ChartRenderer
                 raise ApiError(400, "labels must not be empty")
             ops.append(("label", labels))
         if "priority" in data:
-            ops.append(("priority", match_vocab("priority", str(data["priority"]), PRIORITIES)))
+            ops.append(("priority", match_vocab("priority", value_field(data, "priority"), PRIORITIES)))
         if "complexity" in data:
-            ops.append(("complexity", match_vocab("complexity", str(data["complexity"]), list(COMPLEXITIES))))
+            ops.append(("complexity", match_vocab("complexity", value_field(data, "complexity"),
+                                                  list(COMPLEXITIES))))
         if "author" in data:
-            author = user_param(str(data["author"]), me, must_exist=True)
+            author = user_param(value_field(data, "author"), me, must_exist=True)
             assert author is not None
             ops.append(("author", author))
         return await mutated(service.edit_many(me, entry, ops))

@@ -129,7 +129,14 @@ def test_edit_history_activity(server: Server) -> None:
     run(server, LEAD, "add", DESC + " again")
     assert run(server, TEAM, "dupe", "2", "--of", "1")[1] == "Bug #2 closed as a duplicate of #1\n"
     _, out, _ = run(server, TEAM, "history", "1")
-    assert "priority N/A -> High" in out and "[api]" in out
+    assert "priority N/A -> High" in out and "[api]" in out and not out.startswith("#")
+    # Several ids (or - for stdin): each line names its entry, a blank line between entries,
+    # and a missing one is reported without stopping the rest
+    code, out, err = run(server, TEAM, "history", "-", stdin="2\n99\n1\n")
+    blocks = out.split("\n\n")
+    assert code == 1 and "#99" in err and len(blocks) == 2
+    assert blocks[0].startswith("#2 ") and blocks[1].startswith("#1 ")
+    assert all(line.startswith("#1 ") for line in blocks[1].splitlines())
     _, out, _ = run(server, TEAM, "activity", "--kind", "closed")
     assert "#2" in out and "closed as duplicate" in out
 
@@ -169,7 +176,64 @@ def test_bad_token_and_unreachable(server: Server) -> None:
 def test_parse_time() -> None:
     assert taskctl.parse_time("7d", now=1_000_000) == 1_000_000 - 7 * 86400
     assert taskctl.parse_time("12h", now=100_000) == 100_000 - 12 * 3600
+    assert taskctl.parse_time("30min", now=100_000) == 100_000 - 30 * 60
+    assert taskctl.parse_time("2mo", now=10_000_000) == 10_000_000 - 60 * 86400
+    with pytest.raises(SystemExit, match="minutes or months"):
+        taskctl.parse_time("30m")
     assert taskctl.parse_time("1700000000") == 1_700_000_000
     assert taskctl.parse_time(None) is None
     with pytest.raises(SystemExit):
         taskctl.parse_time("yesterday")
+
+
+def test_single_id_commands_refuse_several() -> None:
+    assert taskctl.read_id("#12") == 12
+    with pytest.raises(SystemExit, match="takes one id"):
+        taskctl.read_id("5,6")
+
+
+class _FakeEvents:
+    """Stands in for Client: serves events newest first, at most `cap` per call."""
+
+    def __init__(self, count: int, cap: int = taskctl.EVENTS_PAGE):
+        self.ids = list(range(count, 0, -1))
+        self.cap = cap
+        self.calls: list[tuple[int, Any]] = []
+
+    def call(self, method: str, path: str, query: dict[str, Any]) -> dict[str, Any]:
+        assert (method, path) == ("GET", "/api/events")
+        self.calls.append((query["limit"], query["before_id"]))
+        below = [i for i in self.ids if query["before_id"] is None or i < query["before_id"]]
+        return {"events": [{"id": i} for i in below[:min(query["limit"], self.cap)]]}
+
+
+def _activity(fake: _FakeEvents, limit: int) -> list[int]:
+    out = io.StringIO()
+    with redirect_stdout(out):
+        args = taskctl.build_parser().parse_args(["activity", "-n", str(limit), "--json"])
+        taskctl.cmd_activity(fake, args)  # type: ignore[arg-type]
+    return [json.loads(line)["id"] for line in out.getvalue().splitlines()]
+
+
+def test_activity_pages_with_before_id() -> None:
+    # -n 0: every event, each page below the previous one's lowest id, stopping on a short page
+    fake = _FakeEvents(2500)
+    assert _activity(fake, 0) == list(range(1, 2501))
+    assert fake.calls == [(1000, None), (1000, 1501), (1000, 501)]
+    # An exact multiple of the page size needs one more (empty) call to know it's the end
+    fake = _FakeEvents(2000)
+    assert len(_activity(fake, 0)) == 2000 and fake.calls[-1] == (1000, 1)
+    # -n above the cap fetches only as many as asked, and stops without an extra call
+    fake = _FakeEvents(5000)
+    assert _activity(fake, 1500) == list(range(3501, 5001))
+    assert fake.calls == [(1000, None), (500, 4001)]
+    # A server that ignored before_id would serve the same page forever: stop after the repeat
+    fake = _FakeEvents(3000)
+    fake.call = lambda method, path, query: (  # type: ignore[method-assign]
+        fake.calls.append((query["limit"], query["before_id"])),
+        {"events": [{"id": i} for i in range(3000, 2000, -1)]})[1]
+    assert len(_activity(fake, 0)) == 1000
+    assert fake.calls == [(1000, None), (1000, 2001)]
+    # Under the cap it is one call, as before
+    fake = _FakeEvents(50)
+    assert _activity(fake, 200) == list(range(1, 51)) and fake.calls == [(200, None)]

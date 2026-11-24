@@ -37,6 +37,16 @@ class PluginConfigTest {
 	}
 
 	@Test
+	void malformedUrlDisablesOnlyThatInstance() {
+		PluginConfig c = PluginConfig.fromEnv(Map.of("TASKBOT_INSTANCES", "bug suggestion",
+			"TASKBOT_BUG_URL", "bug bot:8081", "TASKBOT_BUG_TOKEN", "t",
+			"TASKBOT_SUGGESTION_URL", "http://b", "TASKBOT_SUGGESTION_TOKEN", "u"));
+		assertEquals(1, c.instances().size());
+		assertEquals("suggestion", c.instances().get(0).command());
+		assertTrue(c.problems().stream().anyMatch(p -> p.contains("TASKBOT_BUG_URL")), c.problems().toString());
+	}
+
+	@Test
 	void nothingConfiguredMeansOffAndBadNumbersFallBack() {
 		PluginConfig c = PluginConfig.fromEnv(Map.of());
 		assertTrue(c.instances().isEmpty());

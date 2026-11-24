@@ -9,6 +9,10 @@ reachable only inside the cluster and accepting only service tokens. The
 curl -H "Authorization: Bearer $TASKCTL_TOKEN" 'https://bugs-api.playmonumenta.com/api/entries?label=quest&limit=5'
 ```
 
+The public hostnames are behind Cloudflare, which refuses some default client signatures
+(Python's `urllib` among them) with a 403 reading "error code: 1010"; send a
+`User-Agent` of your own, as `taskctl` does.
+
 ## Access
 
 Every route except `GET /api/health` needs `Authorization: Bearer <token>`. Bug reports can
@@ -127,10 +131,16 @@ Events about users (`assigned`, `unassigned`, `author`) also carry `old_user` an
 
 Calls that change an entry return the updated entry. They go through the same code as the
 Discord commands, so the tracking channel message is updated within a few seconds, and a
-line such as `Combustible fixed bugs #123, #125 (API)` is posted to the feed channel, so
-that channel stays a complete log of changes. Lines are gathered for a minute, so a bulk
-change makes only a few. Changes from the game plugin (service tokens) end in `(in game)`,
-and slash commands, whose replies only their user sees, get the same lines with `(/bug)`.
+line saying what changed, such as `Combustible rejected bug #123: can't reproduce`, is
+posted to the feed channel, so that channel stays a complete log of changes. Lines are
+gathered for a minute, and the same change to several entries shares one (`Combustible
+fixed bugs #123, #125: Fixed`), so a bulk change makes only a few. Appends show the whole
+description as it now reads. An entry redacted or purged before its lines go out has its
+text (reasons, notes, descriptions) left out of them. Lines already posted are not changed
+by a later redaction: they name the entry, and are deleted by hand like the reporter's own
+messages. Changes from the game plugin (service tokens) and slash commands, whose replies
+only their user sees, get the same lines. The lines don't say where a change came from,
+which doesn't matter to readers; the entry's history has it.
 
 ### `GET /api/entries` parameters
 
@@ -143,6 +153,8 @@ and slash commands, whose replies only their user sees, get the same lines with 
 | `author_player` | a Minecraft player's uuid or name, or `me` for a request made for a player |
 | `assignee` | user id, name prefix, `me`, `any` or `none` |
 | `q` | words that must all appear in the description (case-insensitive) |
+| `reason_contains` | the same, for the close reason |
+| `idle_since` | epoch seconds: only entries with no event since then (any change or creation; `send_notifications` telling the author doesn't count) |
 | `reaction` | only entries with this reaction, most first |
 | `created_after`, `created_before`, `closed_after`, `closed_before` | epoch seconds |
 | `sort` | `id` (default), `priority` (the bot's priority x complexity order), `created`, `updated`, `closed` |

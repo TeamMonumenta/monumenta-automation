@@ -16,6 +16,7 @@ A token is printed once; only its hash is stored.
 import argparse
 import datetime
 import hashlib
+import os
 import re
 import secrets
 import sys
@@ -88,6 +89,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     args = parser.parse_args(argv)
 
     db_file = args.db or config_mod.load().db_file
+    if not os.path.exists(db_file):
+        # Opening would create an empty database, and the token would go into it unseen
+        sys.exit(f"No database at {db_file}")
     store = TaskStore.open(db_file)
     service = TaskService(store, config_mod.InstanceConfig())
     try:

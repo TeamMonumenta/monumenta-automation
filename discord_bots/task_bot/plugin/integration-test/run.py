@@ -195,6 +195,8 @@ def main() -> int:
                 break
             except OSError:
                 time.sleep(0.1)
+        else:
+            raise RuntimeError(f"the task bot API on {info['url']} never answered")
         print(f"task bot API on {info['url']}")
 
         # 2. Paper with CommandAPI and the plugin
@@ -300,7 +302,8 @@ def main() -> int:
         checks.check(tb.wait_chat(PLAYER, r"#1 updated", m) is not None, "the author can append to their own",
                      tb.chat_since(PLAYER, m))
         m = tb.cmd(MOD, "bug report item the mod also found a broken door in town")
-        tb.wait_chat(MOD, r"filed", m)
+        checks.check(tb.wait_chat(MOD, r"filed", m) is not None, "a second player can report",
+                     tb.chat_since(MOD, m))
         m = tb.cmd(PLAYER, "bug reject 2 not my report")
         checks.check(tb.wait_chat(PLAYER, r"do not have permission to reject #2", m) is not None,
                      "the server refuses rejecting someone else's report (own-only permission)",

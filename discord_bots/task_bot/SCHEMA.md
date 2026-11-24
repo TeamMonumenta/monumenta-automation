@@ -67,7 +67,8 @@ as inactive.
 
 ## events
 
-Append-only history: `entry_id, at, actor_id, kind, old_value, new_value, reason, source,
+The history, added to and never edited except by redaction (which blanks the text, below)
+and purge (which deletes the entry): `entry_id, at, actor_id, kind, old_value, new_value, reason, source,
 source_ref`. Values are text, JSON for lists. `source` is `discord`, `api`, `legacy`
 (written by the import), `backfill` (recovered from the old feed channel by
 `taskbot.feed.apply`) or `system`. `source_ref` is the Discord message id of the command

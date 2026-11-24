@@ -10,7 +10,7 @@ the line listing an entry's duplicates.
 
 Needs the production snapshot: set TASKBOT_LEGACY_SNAPSHOT to a directory with
 bugs/bug_reports.json and suggestions/suggestions.json (default
-~/NO_SNAPSHOT/busty-snapshot). Skipped when it or git is unavailable.
+~/NO_SNAPSHOT/taskbot-cutover-2026-11-22, the final JSON at launch). Skipped when it or git is unavailable.
 """
 
 import asyncio
@@ -35,7 +35,7 @@ from taskbot.vocab import COMPLEXITIES, PRIORITIES
 
 LEGACY_COMMIT = "ea622b8b"
 LEGACY_DIR = "discord_bots/task_bot"
-SNAPSHOT = os.environ.get("TASKBOT_LEGACY_SNAPSHOT", os.path.expanduser("~/NO_SNAPSHOT/busty-snapshot"))
+SNAPSHOT = os.environ.get("TASKBOT_LEGACY_SNAPSHOT", os.path.expanduser("~/NO_SNAPSHOT/taskbot-cutover-2026-11-22"))
 INSTANCES = [
     ("bug", "bugs/bug_reports.json", "~bug"),
     ("suggestion", "suggestions/suggestions.json", "~suggestion"),

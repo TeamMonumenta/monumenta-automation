@@ -1,5 +1,6 @@
 """Text commands, end to end against the fake Discord pieces."""
 
+import sqlite3
 from collections import Counter
 from typing import Optional
 
@@ -188,6 +189,13 @@ async def test_dupe(h: Harness) -> None:
     e = h.store.get(2)
     assert e is not None and e.resolution == "duplicate" and e.duplicate_of == 1
     assert e.close_reason == "Duplicate of #1: same thing"
+    # A note that already names the original is the whole reason; one naming another entry isn't
+    for note, reason in (("Dupe of 1", "Dupe of 1"), ("Combined into #1", "Combined into #1"),
+                         ("dupe of 3", "Duplicate of #1: dupe of 3"), ("", "Duplicate of #1")):
+        await h.say(HELPER, "~bug unfix 2")
+        await h.say(HELPER, f"~bug dupe 2 1 {note}".strip())
+        e = h.store.get(2)
+        assert e is not None and e.close_reason == reason and e.duplicate_of == 1, note
     assert await h.say(TEAM, "~bug dupe 1 1") == ["Bug #1 can not be a duplicate of itself"]
     assert await h.say(BOB, "~bug dupe 1 2") == ["You do not have permission to mark as duplicate #1"]
 
@@ -199,6 +207,15 @@ async def test_dupe(h: Harness) -> None:
     ("~bug reject 2 dupe of 999", "duplicate", None, "Bug #2 closed as a duplicate"),   # no such entry
     ("~bug reject 2 dupe of #2", "duplicate", None, "Bug #2 closed as a duplicate"),    # itself
     ("~bug reject 2 works as intended in 1.20", "rejected", None, "Bug #2 rejected"),
+    # Mid-sentence, "same as" is a duplicate only when a number follows
+    ("~bug reject 2 leaving it working the same as vanilla", "rejected", None, "Bug #2 rejected"),
+    ("~bug reject 2 fix should be the same as #1", "duplicate", 1, "Bug #2 closed as a duplicate of #1"),
+    ("~bug reject 2 same as the other one", "duplicate", None, "Bug #2 closed as a duplicate"),
+    ("~bug reject 2 this is the same as issue #1", "duplicate", 1, "Bug #2 closed as a duplicate of #1"),
+    ("~bug reject 2 see, same as: #1", "duplicate", 1, "Bug #2 closed as a duplicate of #1"),
+    ("~bug reject 2 same cooldown, the same as 1s for the rest", "rejected", None, "Bug #2 rejected"),
+    ("~bug reject 2 it works the same as the other 1 mob", "rejected", None, "Bug #2 rejected"),
+    ("~bug reject 2 behaves the same as 1.20", "rejected", None, "Bug #2 rejected"),
     ("~bug fix 2 fixed, dupe of 1", "duplicate", 1, "Bug #2 closed as a duplicate of #1"),
     ("~bug fix 2 dupe, fixed in the patch", "fixed", None, "Bug #2 marked as fixed"),  # no original named
 ])
@@ -533,3 +550,14 @@ async def test_long_entries_fit_in_one_message(h: Harness) -> None:
     assert e is not None and e.is_closed
     text = h.handler.render(e, include_reactions=True)
     assert len(text) <= 2000 and text.endswith("because")
+
+
+async def test_failed_commit_leaves_no_transaction_open(h: Harness) -> None:
+    # A deferred foreign key violation makes COMMIT itself fail, which leaves SQLite's
+    # transaction open unless the store rolls it back
+    with pytest.raises(sqlite3.IntegrityError):
+        with h.store.transaction():
+            h.store.conn.execute("PRAGMA defer_foreign_keys = ON")
+            h.store.conn.execute("INSERT INTO entry_labels(entry_id, label, position) VALUES (999, 'quest', 0)")
+    assert not h.store.conn.in_transaction
+    assert await h.add(ALICE, "quest " + DESC) == 1

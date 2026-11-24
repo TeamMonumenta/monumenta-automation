@@ -25,7 +25,7 @@ Here you can find the automation bot and the task bot.
 
 The automation bot allows moderators and developers to start and stop shards, run weekly updates, moderate player scores, copy the play server to the stage server for testing, etc.
 
-The task bot manages the bug reports and suggestions channels, and is backed by a Kanboard server behind the scenes.
+The task bot tracks bug reports and suggestions in their Discord channels, with an API and an in-game plugin; see `discord_bots/task_bot/README.md`.
 
 ## docker
 

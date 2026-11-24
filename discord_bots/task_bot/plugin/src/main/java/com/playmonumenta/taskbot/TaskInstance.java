@@ -69,10 +69,6 @@ public class TaskInstance {
 		return mCommand;
 	}
 
-	public ApiClient api() {
-		return mApi;
-	}
-
 	public InstanceInfo info() {
 		return mInfo;
 	}

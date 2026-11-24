@@ -2,8 +2,9 @@
 
 `dupe` is newer than the habit of rejecting with "dupe of #123", so `fix` and `reject`
 read the reason and close as a duplicate when it says so. The patterns were tuned on the
-old feed channels' closes; the cutover code (`taskbot/inference.py`) has its own copy,
-which goes when that code is deleted.
+old feed channels' closes. The cutover code (`taskbot/inference.py`) has its own copy as it
+was at cutover, which counted any "same as" and so took a few comparisons for duplicates;
+it goes when that code is deleted.
 """
 
 import re
@@ -13,7 +14,11 @@ _DUPLICATE_RE = re.compile(
     r"^\s*(dupe?|duplicate|merged|merging|combined|combining|double posted|repeat|"
     r"already reported|same (issue )?as)\b"
     r"|\b((dupe?|dub|duplicate) of|merged (into|with)|combined (into|with)|tracked by|"
-    r"same issue as|same as)\b",
+    r"same issue as)\b"
+    # Mid-sentence, a bare "same as" is usually a comparison ("works the same as vanilla"),
+    # so it counts only when an entry number follows: right after it ("same as 2360"), or a
+    # few words on with a # ("same as issue #55")
+    r"|\bsame as(?:[\s:]*#?\d{1,6}\b(?!\.\d)|(?:[\s:(,/.+-]+[a-z']+){0,3}[\s:(,/.+-]+#\d)",
     re.IGNORECASE,
 )
 # The original's number: after "into" (`combined 6048 & 6007 into 6114`), else after the

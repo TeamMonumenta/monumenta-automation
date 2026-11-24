@@ -72,7 +72,9 @@ class Client:
             if pairs:
                 url += "?" + urllib.parse.urlencode(pairs)
         data = json.dumps(body).encode("utf-8") if body is not None else None
-        headers: dict[str, str] = {}
+        # Cloudflare in front of the public API refuses urllib's default User-Agent
+        # ("error code: 1010")
+        headers: dict[str, str] = {"User-Agent": "taskctl"}
         if data is not None:
             headers["Content-Type"] = "application/json"
         if self.token:
@@ -83,13 +85,17 @@ class Client:
                 return resp.read(), resp.headers.get_content_type()
         except urllib.error.HTTPError as e:
             message = f"HTTP {e.code}"
+            raw_body = e.read()
             try:
-                payload = json.loads(e.read())
+                payload = json.loads(raw_body)
                 if isinstance(payload, dict) and "error" in payload:
                     message = str(cast(dict[str, Any], payload)["error"])
             except (ValueError, TypeError):
-                # Not one of our JSON errors: probably not a task bot at all
+                # Not one of our JSON errors: a proxy in the way, or not a task bot at all
+                snippet = " ".join(raw_body[:200].decode("utf-8", "replace").split())
                 message += f" from {self.base_url} (is TASKCTL_URL a task bot API?)"
+                if snippet:
+                    message += f": {snippet}"
             if e.code == 401 and not self.token:
                 message += " (set TASKCTL_TOKEN)"
             raise ApiError(message, e.code) from e
@@ -116,12 +122,14 @@ class Client:
 # Parsing helpers
 # ---------------------------------------------------------------------------
 
-_REL_RE = re.compile(r"^(\d+)([hdwmy])$")
-_REL_SECONDS = {"h": 3600, "d": 86400, "w": 7 * 86400, "m": 30 * 86400, "y": 365 * 86400}
+# A bare "m" could be minutes or months (chart periods use it for months), so it takes neither
+_REL_RE = re.compile(r"^(\d+)(min|h|d|w|mo|y)$")
+_REL_SECONDS = {"min": 60, "h": 3600, "d": 86400, "w": 7 * 86400, "mo": 30 * 86400, "y": 365 * 86400}
 
 
 def parse_time(value: Optional[str], now: Optional[float] = None) -> Optional[int]:
-    """'7d' / '12h' / '2w' ago, an ISO date or datetime (local time), or epoch seconds."""
+    """'30min' / '12h' / '7d' / '2w' / '6mo' / '1y' ago, an ISO date or datetime (local
+    time), or epoch seconds."""
     if value is None or value == "":
         return None
     now = now if now is not None else datetime.datetime.now().timestamp()
@@ -130,10 +138,12 @@ def parse_time(value: Optional[str], now: Optional[float] = None) -> Optional[in
         return int(now - int(m.group(1)) * _REL_SECONDS[m.group(2)])
     if value.isdigit():
         return int(value)
+    if re.match(r"^\d+m$", value.strip().lower()):
+        raise SystemExit(f"taskctl: {value!r} could be minutes or months; use {value[:-1]}min or {value[:-1]}mo")
     try:
         return int(datetime.datetime.fromisoformat(value).timestamp())
     except ValueError:
-        raise SystemExit(f"taskctl: can't understand time {value!r} (use 7d, 12h, 2026-01-31 ...)") from None
+        raise SystemExit(f"taskctl: can't understand time {value!r} (use 30min, 12h, 7d, 6mo, 2026-01-31 ...)") from None
 
 
 def read_ids(args: list[str]) -> list[int]:
@@ -158,6 +168,14 @@ def read_ids(args: list[str]) -> list[int]:
     if not ids:
         raise SystemExit("taskctl: no ids given")
     return ids
+
+
+def read_id(arg: str) -> int:
+    """One entry number, for commands that act on a single entry."""
+    ids = read_ids([arg])
+    if len(ids) > 1:
+        raise SystemExit(f"taskctl: this command takes one id, not {arg!r}")
+    return ids[0]
 
 
 def fmt_time(ts: Optional[int], with_time: bool = False) -> str:
@@ -224,7 +242,6 @@ def entry_block(e: dict[str, Any], proper: str) -> str:
 
 def event_line(ev: dict[str, Any], with_entry: bool = False) -> str:
     when = fmt_time(ev.get("at"), True) if ev.get("at") else "(before tracking)"
-    reason = str(ev.get("reason") or "")
     if ev["kind"] == "created" and ev.get("source") == "legacy" and ev.get("at"):
         # The feed didn't see it created, so the time is an estimate: show the day only
         when = fmt_time(ev["at"])
@@ -240,8 +257,6 @@ def event_line(ev: dict[str, Any], with_entry: bool = False) -> str:
         what = "appended: " + one_line(str(ev["new"]), 80)
     elif ev["kind"] == "assigned":
         what = f"assigned to {user_name(ev.get('new_user'))}"
-    elif ev["kind"] == "closed" and ev.get("source") == "legacy" and not ev.get("at"):
-        what = f"closed as {ev.get('new')} (inferred)" + (f": {one_line(reason, 80)}" if reason else "")
     src = {"discord": "", "legacy": " [imported]"}.get(str(ev.get("source")), f" [{ev.get('source')}]")
     prefix = f"#{ev['entry_id']:<6} " if with_entry else ""
     return f"{prefix}{when:<17} {who:<20} {what}{src}"
@@ -278,7 +293,8 @@ def _list_query(a: argparse.Namespace) -> dict[str, Any]:
         "complexity": ",".join(a.complexity or []), "resolution": ",".join(a.resolution or []),
         "author": a.author, "author_player": a.author_player, "assignee": a.assignee,
         "closed_by": a.closed_by,
-        "q": " ".join(a.q or []),
+        "q": " ".join(a.q or []), "reason_contains": " ".join(a.reason_contains or []),
+        "idle_since": parse_time(a.idle),
         "reaction": a.reaction,
         "created_after": parse_time(a.created_after), "created_before": parse_time(a.created_before),
         "closed_after": parse_time(a.closed_after), "closed_before": parse_time(a.closed_before),
@@ -358,23 +374,32 @@ def cmd_get(c: Client, a: argparse.Namespace) -> int:
 
 
 def cmd_history(c: Client, a: argparse.Namespace) -> int:
-    resp = c.call("GET", f"/api/entries/{read_ids([a.id])[0]}/events")
-    if a.json:
-        for ev in resp["events"]:
-            print_json(ev)
-    else:
-        for ev in resp["events"]:
-            print(event_line(ev))
-    return 0
+    ids = read_ids(a.ids)
+    # With several entries each line names its entry, and a blank line separates them
+    several = len(ids) > 1
+    first = [True]
+
+    def show(n: int) -> None:
+        events: list[dict[str, Any]] = c.call("GET", f"/api/entries/{n}/events")["events"]
+        if a.json:
+            for ev in events:
+                print_json(ev)
+            return
+        if several and not first[0]:
+            print()
+        first[0] = False
+        for ev in events:
+            print(event_line(ev, with_entry=several))
+    return _for_each(c, ids, show)
 
 
 def cmd_redacted(c: Client, a: argparse.Namespace) -> int:
-    print_json(c.call("GET", f"/api/entries/{read_ids([a.id])[0]}/redacted"))
+    print_json(c.call("GET", f"/api/entries/{read_id(a.id)}/redacted"))
     return 0
 
 
 def cmd_images(c: Client, a: argparse.Namespace) -> int:
-    n = read_ids([a.id])[0]
+    n = read_id(a.id)
     images: list[dict[str, Any]] = c.call("GET", f"/api/entries/{n}/images")["images"]
     if a.json:
         for im in images:
@@ -401,11 +426,32 @@ def cmd_images(c: Client, a: argparse.Namespace) -> int:
     return 0
 
 
+# The most events the server returns per call (MAX_LIMIT in taskbot/api.py)
+EVENTS_PAGE = 1000
+
+
 def cmd_activity(c: Client, a: argparse.Namespace) -> int:
-    resp = c.call("GET", "/api/events", query={
-        "since": parse_time(a.since), "kind": ",".join(a.kind or []), "actor": a.actor,
-        "limit": a.limit})
-    events = list(reversed(resp["events"]))
+    # Events come newest first; each further page asks for those below the lowest id so far,
+    # until a short page says there are no more
+    query = {"since": parse_time(a.since), "kind": ",".join(a.kind or []), "actor": a.actor}
+    events: list[dict[str, Any]] = []
+    remaining = a.limit if a.limit > 0 else None
+    before_id: Optional[int] = None
+    while remaining is None or remaining > 0:
+        page = EVENTS_PAGE if remaining is None else min(EVENTS_PAGE, remaining)
+        resp = c.call("GET", "/api/events", query={**query, "limit": page, "before_id": before_id})
+        batch = cast(list[dict[str, Any]], resp["events"])
+        if before_id is not None:
+            # Only what is below the last page: a server that ignored before_id would
+            # otherwise repeat pages forever
+            batch = [ev for ev in batch if int(ev["id"]) < before_id]
+        events.extend(batch)
+        if remaining is not None:
+            remaining -= len(batch)
+        if len(batch) < page:
+            break
+        before_id = min(int(ev["id"]) for ev in batch)
+    events.reverse()
     for ev in events:
         if a.json:
             print_json(ev)
@@ -436,13 +482,13 @@ def cmd_edit(c: Client, a: argparse.Namespace) -> int:
             body[key] = value
     if not body:
         raise SystemExit("taskctl: nothing to change (--description, --labels, --priority, --complexity, --author)")
-    e = c.call("PATCH", f"/api/entries/{read_ids([a.id])[0]}", body=body)
+    e = c.call("PATCH", f"/api/entries/{read_id(a.id)}", body=body)
     _show_result(c, a, e, "updated")
     return 0
 
 
 def cmd_append(c: Client, a: argparse.Namespace) -> int:
-    e = c.call("POST", f"/api/entries/{read_ids([a.id])[0]}/append", body={"text": " ".join(a.text)})
+    e = c.call("POST", f"/api/entries/{read_id(a.id)}/append", body={"text": " ".join(a.text)})
     _show_result(c, a, e, "updated")
     return 0
 
@@ -472,7 +518,7 @@ cmd_unassign = _simple("unassign", "unassigned")
 
 
 def cmd_dupe(c: Client, a: argparse.Namespace) -> int:
-    of = read_ids([a.of])[0]
+    of = read_id(a.of)
 
     def act(n: int) -> None:
         e = c.call("POST", f"/api/entries/{n}/dupe", body={"of": of, "note": a.note or "",
@@ -591,6 +637,8 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--assignee", help="user id, name prefix, 'me', 'any' or 'none'")
     sp.add_argument("--closed-by", help="user id, name prefix, or 'me'")
     sp.add_argument("-q", action="append", help="words that must all appear in the description (repeatable)")
+    sp.add_argument("--reason-contains", action="append", help="words that must all appear in the close reason (repeatable)")
+    sp.add_argument("--idle", metavar="WHEN", help="no change since then (1y, 2026-01-31, ...)")
     sp.add_argument("--reaction", help="only entries with this reaction, most reacted first")
     for flag in ("created-after", "created-before", "closed-after", "closed-before"):
         sp.add_argument(f"--{flag}", metavar="WHEN", help="7d, 12h, 2026-01-31, ...")
@@ -606,14 +654,14 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("ids", nargs="+", help="ids, or - for stdin")
     sp.add_argument("--text", action="store_true", help="print as Discord shows it")
 
-    sp = add("history", cmd_history, "who changed an entry and when")
-    sp.add_argument("id")
+    sp = add("history", cmd_history, "who changed entries and when")
+    sp.add_argument("ids", nargs="+", help="ids, or - for stdin")
 
     sp = add("activity", cmd_activity, "recent changes across all entries")
     sp.add_argument("--since", default="7d", help="default %(default)s")
     sp.add_argument("--kind", action="append", help="created, closed, reopened, assigned, ... (repeatable)")
     sp.add_argument("--actor", help="user id, name prefix, or 'me'")
-    sp.add_argument("-n", "--limit", type=int, default=200)
+    sp.add_argument("-n", "--limit", type=int, default=200, help="0 for all (default %(default)s)")
 
     sp = add("add", cmd_add, "create an entry as yourself")
     sp.add_argument("-l", "--label", action="append")

@@ -13,10 +13,11 @@ import aiohttp
 import discord
 import pytest
 
-from conftest import ALICE, HELPER, TEAM, Harness
-from taskbot.bot import ChannelResponder, Notice, TaskBot, notice_lines
+from conftest import ALICE, BOB, HELPER, LEAD, TEAM, Harness
+from taskbot.bot import ChannelResponder, Notice, TaskBot, notice_lines, without_hidden_text
 from taskbot.slash import _Form, register_slash_commands
 from taskbot.models import Actor
+from taskbot.service import Change
 
 
 def _not_found() -> discord.NotFound:
@@ -154,7 +155,10 @@ async def test_api_changes_are_published_and_noted_in_the_feed(h: Harness,
     h.service.append(game, entry, "more detail from the game")
     # Only API changes get a feed line; Discord commands already show in the feed
     assert notice_lines(b._notices, h.config) == [  # pylint: disable=protected-access
-        "user2001 created bug #1 (API)", "user1002 fixed bug #1 (API)", "Alex appended bug #1 (in game)"]
+        "user2001 created bug #1 [quest]: a report with enough words",
+        "user1002 fixed bug #1: Fixed",
+        "Alex appended to bug #1, which now reads:\n"
+        "> a report with enough words\n> more detail from the game"]
     # ... and the API's change is published like any other
     assert 1 in h.store.dirty_entry_ids()
     await b.sync_entry(1)
@@ -307,9 +311,12 @@ async def test_slash_commands_are_the_text_commands(h: Harness, slash: TaskBot) 
     await _slash(b, "bug", "redacted").callback(alice, number=1)
     assert alice.sent[-1] == "You do not have permission to use this command"
 
-    # Their replies are private, so their changes get a line in the feed, as API changes do
-    assert notice_lines(b._notices, h.config) == [  # pylint: disable=protected-access
-        "Team edited priority bug #1 (/bug)", "Team fixed bug #1 (/bug)", "Team redacted bug #1 (/bug)"]
+    # Their replies are private, so their changes get a line in the feed, as API changes do.
+    # The entry was redacted before the notices went out, so its close reason is left out.
+    notices = without_hidden_text(b._notices, h.store)  # pylint: disable=protected-access
+    assert notice_lines(notices, h.config) == [
+        "Team set the priority of bug #1 to High", "Team fixed bug #1",
+        "Team redacted bug #1"]
 
     # Commands that reply with nothing still answer the deferred interaction
     await _slash(b, "bug", "notify").callback(alice, setting="off")
@@ -317,19 +324,86 @@ async def test_slash_commands_are_the_text_commands(h: Harness, slash: TaskBot) 
 
 
 def test_notices_are_grouped(h: Harness) -> None:
-    notices = [Notice("Ann", "fixed", "API", 3), Notice("Ann", "edited priority", "API", 3),
-               Notice("Ann", "fixed", "API", 5), Notice("Bo", "fixed", "/bug", 4),
-               Notice("Ann", "fixed", "API", 5)]
+    notices = [Notice("Ann", "fixed", 3, text="Fixed"),
+               Notice("Ann", "edited priority", 3, "High"),
+               Notice("Ann", "fixed", 5, text="Fixed"), Notice("Bo", "fixed", 4, text="Fixed"),
+               Notice("Ann", "fixed", 5, text="Fixed")]
     assert notice_lines(notices, h.config) == [
-        "Ann fixed bug #3 (API)", "Ann edited priority bug #3 (API)", "Ann fixed bug #5 (API)",
-        "Bo fixed bug #4 (/bug)", "Ann fixed bug #5 (API)"]
-    # Runs group, and order is kept: fixed, reopened, fixed again reads that way
-    run = [Notice("Ann", "fixed", "API", i) for i in range(1, 4)]
-    assert notice_lines(run + [Notice("Ann", "reopened", "API", 1), Notice("Ann", "fixed", "API", 1)],
-                        h.config) == ["Ann fixed bugs #1, #2, #3 (API)", "Ann reopened bug #1 (API)",
-                                      "Ann fixed bug #1 (API)"]
-    bulk = notice_lines([Notice("Ann", "fixed", "API", i) for i in range(120)], h.config)
+        "Ann fixed bug #3: Fixed", "Ann set the priority of bug #3 to High",
+        "Ann fixed bug #5: Fixed", "Bo fixed bug #4: Fixed", "Ann fixed bug #5: Fixed"]
+    # Runs of the same change group, and order is kept: fixed, reopened, fixed again reads that way
+    run = [Notice("Ann", "fixed", i, text="Fixed") for i in range(1, 4)]
+    assert notice_lines(run + [Notice("Ann", "reopened", 1, "fixed"),
+                               Notice("Ann", "fixed", 1, text="Fixed")], h.config) == [
+        "Ann fixed bugs #1, #2, #3: Fixed", "Ann reopened bug #1 (was closed as fixed)",
+        "Ann fixed bug #1: Fixed"]
+    # Different reasons don't group; the same labels do
+    assert notice_lines([Notice("Ann", "rejected", 1, text="can't reproduce"),
+                         Notice("Ann", "rejected", 2, text="intended"),
+                         Notice("Ann", "edited label", 3, "quest, boss"),
+                         Notice("Ann", "edited label", 4, "quest, boss")], h.config) == [
+        "Ann rejected bug #1: can't reproduce", "Ann rejected bug #2: intended",
+        "Ann set the labels of bugs #3, #4 to quest, boss"]
+    bulk = notice_lines([Notice("Ann", "fixed", i, text="Fixed") for i in range(120)], h.config)
     assert len(bulk) == 3 and all(len(line) < 1000 for line in bulk)
+
+
+def test_notices_say_what_changed(h: Harness) -> None:
+    api = _actor(TEAM, 2, source="api")
+    service = h.service
+    seen: list[Change] = []
+    service.listeners.append(seen.append)
+    one = service.add(_actor(ALICE, 0), "the quest npc refuses to talk", ["quest", "mob"])
+    two = service.add(_actor(ALICE, 0), "the boss fight is broken somehow", ["boss", "mob"])
+    three = service.add(_actor(ALICE, 0), "the boss fight is broken again", ["boss"])
+    service.edit_many(api, one, [("priority", "High"), ("complexity", "hard"), ("label", ["quest"]),
+                                 ("description", "the quest npc won't talk\nat night")])
+    service.edit(api, one, "author", BOB)
+    service.assign(api, one, BOB)
+    service.unassign(api, one)
+    service.dupe(api, three, two)
+    service.reopen(api, three)
+    service.dupe(api, three, two, "same boss, more detail")
+    service.reject(api, two, "dupe of #999")      # a duplicate, but no such entry to link
+    service.remove_label(_actor(LEAD, 3, source="api"), "mob")
+    notices = [Notice("Ann", c.action, c.entry_id, c.value, c.text) for c in seen[3:]]
+    assert notice_lines(notices, h.config) == [
+        "Ann set the priority of bug #1 to High",
+        "Ann set the complexity of bug #1 to hard",
+        "Ann set the labels of bug #1 to quest",
+        "Ann edited the description of bug #1:\n> the quest npc won't talk\n> at night",
+        f"Ann set the author of bug #1 to <@{BOB}>",
+        f"Ann assigned bug #1 to <@{BOB}>",
+        f"Ann unassigned bug #1 from <@{BOB}>",
+        "Ann marked bug #3 as a duplicate of #2",
+        "Ann reopened bug #3 (was closed as duplicate)",
+        "Ann marked bug #3 as a duplicate of #2: same boss, more detail",
+        "Ann closed bug #2 as a duplicate: dupe of #999",
+        "Ann removed the label mob from bug #2",
+    ]
+    # Several entries marked duplicates of one original share a line
+    assert notice_lines([Notice("Ann", "duped", i, "2") for i in (5, 6)], h.config) == [
+        "Ann marked bugs #5, #6 as duplicates of #2"]
+    assert notice_lines([Notice("Ann", "edited image", 1, "0"),
+                         Notice("Ann", "edited image", 2, "2")], h.config) == [
+        "Ann changed the images of bug #1 (now none)", "Ann changed the images of bug #2 (now 2 images)"]
+    # dellabel: one line for all the entries it changed
+    assert notice_lines([Notice("Ann", "removed label", i, "mob") for i in (7, 8)], h.config) == [
+        "Ann removed the label mob from bugs #7, #8"]
+
+
+def test_notices_leave_out_text_of_entries_redacted_or_purged_since(h: Harness) -> None:
+    lead = _actor(LEAD, 3, source="api")
+    entries = [h.service.add(_actor(ALICE, 0), f"exploit number {i} goes like this", ["misc"])
+               for i in range(3)]
+    notices = [Notice("Ann", "fixed", e.id, text="patched the dupe glitch") for e in entries]
+    h.service.redact(lead, entries[0])
+    h.service.purge(lead, entries[1])
+    assert notice_lines(without_hidden_text(notices, h.store), h.config) == [
+        "Ann fixed bugs #1, #2", "Ann fixed bug #3: patched the dupe glitch"]
+    # Values that aren't anyone's writing stay
+    kept = without_hidden_text([Notice("Ann", "edited priority", entries[0].id, "High")], h.store)
+    assert notice_lines(kept, h.config) == ["Ann set the priority of bug #1 to High"]
 
 
 async def test_notices_wait_out_an_outage(bot: tuple[TaskBot, FakeChannel],
@@ -348,13 +422,13 @@ async def test_notices_wait_out_an_outage(bot: tuple[TaskBot, FakeChannel],
         sent.append(content)
     channel = Feed()
     monkeypatch.setattr(b, "get_channel", lambda _id: channel)
-    b._notices = [Notice("Ann", "fixed", "API", 3)]  # pylint: disable=protected-access
+    b._notices = [Notice("Ann", "fixed", 3)]  # pylint: disable=protected-access
     monkeypatch.setattr(channel, "send", down)
     await b._flush_notices()  # pylint: disable=protected-access
-    b._notices.append(Notice("Ann", "fixed", "API", 4))  # pylint: disable=protected-access
+    b._notices.append(Notice("Ann", "fixed", 4))  # pylint: disable=protected-access
     monkeypatch.setattr(channel, "send", up)
     await b._flush_notices()  # pylint: disable=protected-access
-    assert sent == ["Changes made outside this channel:\nAnn fixed bugs #3, #4 (API)"]
+    assert sent == ["Changes made outside this channel:\nAnn fixed bugs #3, #4"]
 
 
 async def test_slash_commands_sync_only_when_needed(bot: tuple[TaskBot, FakeChannel],

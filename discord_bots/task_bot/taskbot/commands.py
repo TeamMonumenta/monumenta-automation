@@ -582,10 +582,9 @@ For example:```
         elif operation == "priority":
             if len(part) < 3:
                 raise UserError(PRIORITY_HELP)
-            priorities = PRIORITIES
-            priority = get_list_match(part[2].strip().lower(), priorities)
+            priority = get_list_match(part[2].strip().lower(), PRIORITIES)
             if priority is None:
-                raise UserError(f"Priority must be one of: [{','.join(priorities)}]")
+                raise UserError(f"Priority must be one of: [{','.join(PRIORITIES)}]")
             value = priority
         else:
             complexities = list(COMPLEXITIES)

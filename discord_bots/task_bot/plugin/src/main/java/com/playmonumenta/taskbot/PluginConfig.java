@@ -3,6 +3,8 @@
 
 package com.playmonumenta.taskbot;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,13 +63,29 @@ public record PluginConfig(List<Instance> instances, String serverName, int repo
 				problems.add("instance '" + command + "' is disabled: " + key + "_URL and " + key + "_TOKEN are both needed");
 				continue;
 			}
-			instances.add(new Instance(command, url.replaceAll("/+$", ""), token));
+			url = url.replaceAll("/+$", "");
+			if (!isHttpUrl(url)) {
+				problems.add("instance '" + command + "' is disabled: " + key + "_URL '" + url + "' is not an http(s) URL");
+				continue;
+			}
+			instances.add(new Instance(command, url, token));
 		}
 		String serverName = or(env.get("TASKBOT_SERVER_NAME"), or(env.get("NETWORK_RELAY_NAME"),
 			or(env.get("EXCEPTLOG_SERVER_NAME"), or(env.get("HOSTNAME"), "unknown"))));
 		return new PluginConfig(Collections.unmodifiableList(instances), serverName,
 			intOr(env.get("TASKBOT_REPORT_COOLDOWN_SECONDS"), 60, problems),
 			Collections.unmodifiableList(problems));
+	}
+
+	/** The HTTP client refuses anything else, and would do it while building each request. */
+	private static boolean isHttpUrl(String url) {
+		try {
+			URI uri = new URI(url);
+			String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
+			return ("http".equals(scheme) || "https".equals(scheme)) && uri.getHost() != null;
+		} catch (URISyntaxException e) {
+			return false;
+		}
 	}
 
 	private static @Nullable String blankToNull(@Nullable String value) {

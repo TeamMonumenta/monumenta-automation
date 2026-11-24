@@ -80,10 +80,12 @@ class EntryQuery:
     author_mc_uuid: Optional[str] = None
     closed_by: Optional[int] = None
     terms: list[str] = field(default_factory=list[str])             # all must be substrings
+    reason_terms: list[str] = field(default_factory=list[str])      # of the close reason
     created_after: Optional[int] = None
     created_before: Optional[int] = None
     closed_after: Optional[int] = None
     closed_before: Optional[int] = None
+    idle_since: Optional[int] = None           # no event at or after this time
     reaction: Optional[str] = None             # only entries with this reaction, most first
     sort: str = "id"
     descending: bool = False
@@ -249,12 +251,19 @@ class TaskStore(PlayerStore):
             yield
         except BaseException:
             self._tx_depth -= 1
-            if self._tx_depth == 0:
-                self.conn.execute("ROLLBACK")
+            if self._tx_depth == 0 and self.conn.in_transaction:
+                self.conn.execute("ROLLBACK")   # SQLite may have rolled back already
             raise
         self._tx_depth -= 1
         if self._tx_depth == 0:
-            self.conn.execute("COMMIT")
+            try:
+                self.conn.execute("COMMIT")
+            except BaseException:
+                # A failed COMMIT (disk full, I/O error) can leave the transaction open,
+                # and every later BEGIN would then fail
+                if self.conn.in_transaction:
+                    self.conn.execute("ROLLBACK")
+                raise
 
     # ------------------------------------------------------------------
     # Meta
@@ -439,9 +448,15 @@ class TaskStore(PlayerStore):
         if q.closed_by is not None:
             clauses.append("e.closed_by = ?")
             params.append(q.closed_by)
-        for term in q.terms:
-            clauses.append("instr(pylower(e.description), ?) > 0")
-            params.append(term.lower())
+        for column, terms in (("description", q.terms), ("close_reason", q.reason_terms)):
+            for term in terms:
+                clauses.append(f"instr(pylower(coalesce(e.{column}, '')), ?) > 0")
+                params.append(term.lower())
+        if q.idle_since is not None:
+            # `notified` (send_notifications telling the author) is not a change
+            clauses.append("NOT EXISTS (SELECT 1 FROM events v WHERE v.entry_id = e.id AND v.at >= ? "
+                           "AND v.kind != 'notified')")
+            params.append(q.idle_since)
         for column, op, value in (("created_at", ">=", q.created_after),
                                   ("created_at", "<", q.created_before),
                                   ("closed_at", ">=", q.closed_after),

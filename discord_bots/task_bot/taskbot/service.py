@@ -103,6 +103,11 @@ class Change:
     entry_id: int
     actor: Actor
     action: str        # e.g. 'created', 'fixed', 'edited priority'
+    # What changed, for the feed channel's notices: `value` is short and never secret (a
+    # priority, labels, an original's number, a user mention), `text` is what people wrote
+    # (a close reason, a dupe note, a description), which redaction hides
+    value: str = ""
+    text: str = ""
 
 
 class TaskService:
@@ -205,8 +210,8 @@ class TaskService:
         """Old rule: the author's own changes clear the pending notification, others set it."""
         return not self.is_author(actor, entry)
 
-    def _changed(self, entry_id: int, actor: Actor, action: str) -> None:
-        change = Change(entry_id, actor, action)
+    def _changed(self, entry_id: int, actor: Actor, action: str, value: str = "", text: str = "") -> None:
+        change = Change(entry_id, actor, action, value, text)
         if self._held is not None:
             self._held.append(change)
             return
@@ -280,7 +285,7 @@ class TaskService:
             self._event(index, "created", actor, new=description)
             for section, data in (context or {}).items():
                 self.store.add_context(index, section, data, self._context_source(actor), now)
-        self._changed(index, actor, "created")
+        self._changed(index, actor, "created", ", ".join(labels), description)
         return entry
 
     # ------------------------------------------------------------------
@@ -358,8 +363,21 @@ class TaskService:
             fields["updated_at"] = entry.updated_at = self.now()
             self.store.update(entry.id, **fields)
             self.store.mark_dirty(entry.id)
-        self._changed(entry.id, actor, f"edited {operation}")
+        self._changed(entry.id, actor, f"edited {operation}", *self._edit_detail(entry, operation))
         return entry
+
+    @staticmethod
+    def _edit_detail(entry: Entry, operation: str) -> tuple[str, str]:
+        """(value, text) of an edited entry, for its Change."""
+        if operation == "description":
+            return "", entry.description
+        if operation == "label":
+            return ", ".join(entry.labels), ""
+        if operation == "image":
+            return str(len(entry.images)), ""
+        if operation == "author":
+            return f"<@{entry.author_id}>", ""
+        return (entry.priority if operation == "priority" else entry.complexity), ""
 
     @staticmethod
     def _unchanged(entry: Entry, operation: str, value: object) -> bool:
@@ -399,7 +417,7 @@ class TaskService:
                               pending_notification=entry.pending_notification,
                               updated_at=entry.updated_at)
             self.store.mark_dirty(entry.id)
-        self._changed(entry.id, actor, "appended")
+        self._changed(entry.id, actor, "appended", text=description)
         return entry
 
     # ------------------------------------------------------------------
@@ -445,7 +463,15 @@ class TaskService:
                 pending_notification=entry.pending_notification, updated_at=now)
             self.store.mark_dirty(entry.id)
             self._originals_changed(old_original, duplicate_of)
-        self._changed(entry.id, actor, {FIXED: "fixed", REJECTED: "rejected"}.get(resolution, "duped"))
+        if resolution == DUPLICATE:
+            # `dupe` writes "Duplicate of #N: note"; the notice names the original itself
+            generated = f"Duplicate of #{duplicate_of}"
+            note = reason
+            if reason == generated or reason.startswith(generated + ":"):
+                note = reason[len(generated) + 1:].strip()
+            self._changed(entry.id, actor, "duped", str(duplicate_of or ""), note)
+        else:
+            self._changed(entry.id, actor, {FIXED: "fixed", REJECTED: "rejected"}[resolution], text=reason)
         return entry
 
     def _originals_changed(self, *originals: Optional[int]) -> None:
@@ -485,9 +511,13 @@ class TaskService:
     def dupe(self, actor: Actor, entry: Entry, original: Entry, note: str = "") -> Entry:
         if original.id == entry.id:
             raise UserError(f"{self.proper} #{entry.id} can not be a duplicate of itself")
-        reason = f"Duplicate of #{original.id}"
-        if note.strip():
-            reason += f": {note.strip()}"
+        # A note that already names the original ("Dupe of 123", "Combined into 123") is the
+        # whole reason, as the team writes them; any other note follows the generated one
+        note = note.strip()
+        if note and duplicates.says_duplicate(note) and duplicates.duplicate_target(note) == original.id:
+            reason = note
+        else:
+            reason = f"Duplicate of #{original.id}" + (f": {note}" if note else "")
         return self.close(actor, entry, DUPLICATE, reason, duplicate_of=original.id,
                           verb="mark as duplicate")
 
@@ -497,6 +527,7 @@ class TaskService:
         if not entry.is_closed:
             raise Conflict(f"{self.proper} #{entry.id} is not closed")
         old_original = entry.duplicate_of
+        old_resolution = entry.resolution or ""
         with self.store.transaction():
             self._event(entry.id, "reopened", actor, old=entry.resolution,
                         reason=None if entry.redacted else entry.close_reason)
@@ -516,7 +547,7 @@ class TaskService:
                 pending_notification=entry.pending_notification, updated_at=entry.updated_at)
             self.store.mark_dirty(entry.id)
             self._originals_changed(old_original)
-        self._changed(entry.id, actor, "reopened")
+        self._changed(entry.id, actor, "reopened", old_resolution)
         return entry
 
     # ------------------------------------------------------------------
@@ -690,7 +721,7 @@ class TaskService:
             entry.updated_at = self.now()
             self.store.update(entry.id, assignee_id=assignee_id, updated_at=entry.updated_at)
             self.store.mark_dirty(entry.id)
-        self._changed(entry.id, actor, "assigned")
+        self._changed(entry.id, actor, "assigned", f"<@{assignee_id}>")
         return entry
 
     def unassign(self, actor: Actor, entry: Entry) -> Entry:
@@ -698,13 +729,14 @@ class TaskService:
         self.require_team(actor)
         if entry.assignee_id is None:
             raise Conflict(f"{self.proper} #{entry.id} is already unassigned")
+        previous = entry.assignee_id
         with self.store.transaction():
             self._event(entry.id, "unassigned", actor, old=entry.assignee_id)
             entry.assignee_id = None
             entry.updated_at = self.now()
             self.store.update(entry.id, assignee_id=None, updated_at=entry.updated_at)
             self.store.mark_dirty(entry.id)
-        self._changed(entry.id, actor, "unassigned")
+        self._changed(entry.id, actor, "unassigned", f"<@{previous}>")
         return entry
 
     # ------------------------------------------------------------------
@@ -749,7 +781,7 @@ class TaskService:
                     self.store.mark_dirty(entry.id)
                 changed.append(entry.id)
         for entry_id in changed:
-            self._changed(entry_id, actor, "edited label")
+            self._changed(entry_id, actor, "removed label", match)
         return match, changed
 
     # ------------------------------------------------------------------
@@ -763,11 +795,6 @@ class TaskService:
             self.store.set_player_notifications(actor.mc_uuid, enabled)
         else:
             self.store.set_notifications_disabled(actor.id, not enabled)
-
-    def actor_notifications_enabled(self, actor: Actor) -> bool:
-        if actor.mc_uuid:
-            return self.store.player_notifications(actor.mc_uuid)
-        return self.notifications_enabled(actor.id)
 
     # ------------------------------------------------------------------
     # Context (in-game location, player state, ...): team-only data

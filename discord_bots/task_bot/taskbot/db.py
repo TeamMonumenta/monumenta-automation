@@ -115,7 +115,8 @@ CREATE TABLE image_files (
     PRIMARY KEY (entry_id, url)
 );
 
--- Append-only history. See SCHEMA.md for the kinds and their values.
+-- The history, in id order. Only redaction (which blanks text) and purge (which deletes the
+-- entry) change it. See SCHEMA.md for the kinds and their values.
 CREATE TABLE events (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     entry_id      INTEGER NOT NULL REFERENCES entries(id) ON DELETE CASCADE,

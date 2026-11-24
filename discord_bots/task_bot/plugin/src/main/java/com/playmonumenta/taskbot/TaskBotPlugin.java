@@ -58,7 +58,7 @@ public class TaskBotPlugin extends JavaPlugin implements Listener {
 				});
 				return;
 			}
-			long delay = Math.min(600, 15L << Math.min(attempt, 5));
+			long delay = Math.min(600, 15L << Math.min(attempt, 6));
 			getLogger().warning("/" + instance.command() + ": can't reach the tracker yet ("
 				+ ApiClient.unwrap(err).getMessage() + "), retrying in " + delay + "s");
 			Bukkit.getScheduler().runTaskLater(this, () -> loadInfoAndRegister(instance, attempt + 1), delay * 20L);

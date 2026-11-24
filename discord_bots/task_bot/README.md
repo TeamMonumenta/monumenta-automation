@@ -20,12 +20,12 @@ replies (`~bug f 123`, `~bug search quest hi`, interactive `isearch` sessions, .
 
 | Command | What it does |
 |---|---|
-| `~bug dupe <n> <original> [note]` | Closes n as a duplicate of the original, linking them. Same permission as `reject`. Also works inside interactive sessions. |
+| `~bug dupe <n> <original> [note]` | Closes n as a duplicate of the original, linking them. The reason is "Duplicate of #original", followed by the note if there is one; a note that already names the original ("Dupe of 123", "Combined into 123") is the reason by itself. Same permission as `reject`. Also works inside interactive sessions. |
 | `~bug reject <n> dupe of <original>` | People rejected duplicates this way before `dupe` existed, so `reject` and `fix` read the reason: one that says duplicate ("dupe of #123", "same issue as 123") closes as a duplicate, linked to the original when the reason names an entry that exists. `fix` does so only when an original is named. The reason is kept as typed, and the reply says it was closed as a duplicate. The same applies through slash commands, the API and in game. |
 | `~bug history <n>` | Who changed an entry and when. |
 | `~bug cstats [days] [minimum]` | Who closed the most entries, split into fixed / rejected / duplicate. Authors closing their own entries are counted separately. Overall (no days, or 0) lists only people with at least 20 closes, since most closers have a handful; a minimum overrides that. |
 | `~bug chart [name] [options]` | Posts a chart (backlog, intake, closes, closers, age, labels). Without a name, lists them. Options pick the period (`90d`, `2y`, `all`) and the bucket (`week`, `month`). The backlog is stacked by complexity, or by priority with `priority`, and a label name limits it to entries with that label (`backlog plugin`). Intake is split by label (each entry under its first label other than misc), closes and closers by resolution. |
-| `~bug redact <n>` | Hides an entry's text, close reason, images and the text in its history from everyone but the team (replaces `delete`, which now only points here). Anything added to a redacted entry afterwards (an edit, an append, a close reason) shows as usual until it is redacted again. Level 1. |
+| `~bug redact <n>` | Hides an entry's text, close reason, images and the text in its history from everyone but the team (replaces `delete`, which now only points here). Anything added to a redacted entry afterwards (an edit, an append, a close reason) shows as usual until it is redacted again. Messages already in the feed channel that quote the entry (the reporter's own, and the bot's change lines) have to be deleted by hand. Level 1. |
 | `~bug purge <n>` | Leads: deletes an entry for good, with its history, saved images and anything redacted. Asks for `purge <n> confirm`. |
 | `~bug reupload <n>` | Team: posts the saved copies of an entry's images in the feed channel and shows those from then on, for when Discord has lost an image (its message was deleted). Never for a redacted entry. |
 | `/bug <command>` | Slash versions of the commands, replying only to whoever uses them (see "Slash commands" below). |
@@ -92,9 +92,9 @@ refuses what was typed, the reply gives the text back to copy. A form left open 
 than an hour, or across a restart of the bot, can't be sent.
 
 Since nobody else sees the replies, changes made with slash commands get a line in the
-feed channel (`Combustible fixed bug #12 (/bug)`), as API changes do, so the channel stays
-a complete log. The bot registers the commands with Discord when it starts, only when they
-have changed, so `~bug sync` is no longer needed.
+feed channel saying what changed (`Combustible fixed bug #12: works now`), as API
+changes do, so the channel stays a complete log. The bot registers the commands with
+Discord when it starts, only when they have changed, so `~bug sync` is no longer needed.
 
 ## Images
 
@@ -125,10 +125,12 @@ rest.
 The saved copies are kept through image edits and redaction, and deleted with the entry
 by `purge`. The team gets them back with `taskctl images <n>` (or the API), sees a
 redacted entry's privately in `/bug redacted`, and can have a lost image posted again with
-`reupload`. Nothing the bot posts in a channel ever comes from a redacted entry: posting a
-saved image checks that first, and redacting an entry deletes the bot's own copies of its
-images from the feed channel (the reporter's original messages still have to be deleted
-by hand, as before). The bot remembers each of those messages until Discord confirms it is
+`reupload`. Nothing the bot posts in a channel after a redaction comes from the redacted
+entry: posting a saved image checks that first, and redacting an entry deletes the bot's
+own copies of its images from the feed channel. What was posted before stays and has to be
+deleted by hand, as before: the reporter's original messages, and the feed channel's lines
+for changes made outside it (a new report's or an append's description, close reasons),
+which name the entry. The bot remembers each of those messages until Discord confirms it is
 deleted, and tries again on every pass of the save loop, so a failed delete, a restart or
 a redaction during an upload can't leave one behind.
 

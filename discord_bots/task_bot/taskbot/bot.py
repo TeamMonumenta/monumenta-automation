@@ -19,7 +19,7 @@ import json
 import logging
 import os
 import sqlite3
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from collections.abc import Sequence
 from typing import Any, Optional
 
@@ -37,7 +37,8 @@ from .images import is_ephemeral
 from .models import Actor, Image, ImageFile, Member, Reaction
 from .service import Change, TaskService, UserError, compute_privilege
 from .slash import register_slash_commands
-from .store import url_expiry
+from .stats import resolution_name
+from .store import TaskStore, url_expiry
 
 logger = logging.getLogger(__name__)
 
@@ -447,14 +448,11 @@ class TaskBot(dcommands.Bot):
             self._background(self._delete_redacted_image_messages())
         # API and slash command replies aren't seen in the feed channel, so their changes
         # get a line there and the channel stays a complete log of changes
-        ref = change.actor.source_ref or ""
-        if change.actor.source == "api":
-            # Service tokens are the game plugin's (source_ref "<request> service:<name>")
-            via: Optional[str] = "in game" if " service:" in ref else "API"
-        else:
-            via = f"/{self.config.descriptor_single}" if ref.startswith(SLASH_REF_PREFIX) else None
-        if via is not None:
-            self._notices.append(Notice(change.actor.name, change.action, via, change.entry_id))
+        # (the game plugin's changes come through the API). Where a change came from
+        # doesn't matter to readers, so the line doesn't say.
+        if change.actor.source == "api" or (change.actor.source_ref or "").startswith(SLASH_REF_PREFIX):
+            self._notices.append(Notice(change.actor.name, change.action, change.entry_id,
+                                        change.value, change.text))
 
     async def _notice_loop(self) -> None:
         """Gather notices of API and slash command changes into a few feed-channel messages."""
@@ -470,6 +468,7 @@ class TaskBot(dcommands.Bot):
         channel = self.get_channel(self.config.bot_input_channel)
         if not isinstance(channel, discord.abc.Messageable):
             return
+        pending = without_hidden_text(pending, self.store)
         chunks = split_string("Changes made outside this channel:\n" + "\n".join(notice_lines(pending, self.config)))
         try:
             for chunk in chunks:
@@ -804,37 +803,90 @@ class TaskBot(dcommands.Bot):
             os.remove(os.path.join(backup_dir, old))
         logger.info("Backed up database to %s", target)
 
-    # ------------------------------------------------------------------
-    # Slash commands
-    # ------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class Notice:
-    """A change made where the feed channel doesn't see it (the API, slash commands)."""
+    """A change made where the feed channel doesn't see it (the API, slash commands), with
+    what changed (`Change.value` and `Change.text`)."""
     actor: str
     action: str
-    via: str
     entry_id: int
+    value: str = ""
+    text: str = ""
+
+
+def without_hidden_text(notices: Sequence[Notice], store: TaskStore) -> list[Notice]:
+    """Notices wait up to a minute, so an entry may have been redacted or purged since: what
+    people wrote about it (a reason, a description) is then left out of every notice."""
+    hidden: dict[int, bool] = {}
+    out: list[Notice] = []
+    for n in notices:
+        if n.text:
+            if n.entry_id not in hidden:
+                entry = store.get(n.entry_id)
+                hidden[n.entry_id] = entry is None or entry.redacted
+            if hidden[n.entry_id]:
+                n = replace(n, text="")
+        out.append(n)
+    return out
+
+
+def _notice_phrase(n: Notice, entries: str, count: int, config: InstanceConfig) -> str:
+    """What the actor did, around `entries` ("bug #3", "bugs #3, #5")."""
+    action, value = n.action, n.value
+    field = action[len("edited "):] if action.startswith("edited ") else ""
+    if action == "created":
+        phrase = f"created {entries}" + (f" [{value}]" if value else "")
+    elif action == "duped":
+        what = "a duplicate" if count == 1 else "duplicates"
+        phrase = f"marked {entries} as {what} of #{value}" if value else f"closed {entries} as {what}"
+    elif action == "reopened":
+        phrase = f"reopened {entries}" + (f" (was closed as {resolution_name(config, value)})" if value else "")
+    elif action == "appended":
+        phrase = f"appended to {entries}" + (", which now reads" if n.text else "")
+    elif action in ("assigned", "unassigned"):
+        phrase = f"{action} {entries}" + (f" {'to' if action == 'assigned' else 'from'} {value}" if value else "")
+    elif action == "removed label":
+        phrase = f"removed the label {value} from {entries}"
+    elif field == "description":
+        phrase = f"edited the description of {entries}"
+    elif field == "image":
+        phrase = f"changed the images of {entries} (now {f'{value} images' if value not in ('', '0') else 'none'})"
+    elif field:
+        phrase = f"set the {'labels' if field == 'label' else field} of {entries} to {value}"
+    else:
+        phrase = f"{action} {entries}"   # fixed, rejected, redacted, purged
+    return phrase
 
 
 def notice_lines(notices: Sequence[Notice], config: InstanceConfig, max_ids: int = 50) -> list[str]:
-    """Runs of the same actor and action become one line, in order, so a fix then a reopen
-    still reads that way: `Combustible fixed bugs #1, #2, #5 (API)`. At most `max_ids` per
-    line, so a bulk change splits at line ends rather than inside a number."""
-    runs: list[tuple[tuple[str, str, str], list[int]]] = []
+    """One line per change, saying what changed: `Combustible rejected bug #12: can't
+    reproduce`. Runs of the same change to several entries (same actor, action and
+    detail, such as a bulk fix with the default reason) share a line, in order, so a fix
+    then a reopen still reads that way. At most `max_ids` per line, so a bulk change splits
+    at line ends rather than inside a number. Text over several lines (a description) is
+    quoted below its line."""
+    runs: list[tuple[Notice, list[int]]] = []
     for n in notices:
-        key = (n.actor, n.action, n.via)
+        key = replace(n, entry_id=0)
         if not runs or runs[-1][0] != key:
             runs.append((key, []))
         if n.entry_id not in runs[-1][1]:
             runs[-1][1].append(n.entry_id)
     lines: list[str] = []
-    for (actor, action, via), ids in runs:
+    for n, ids in runs:
         for start in range(0, len(ids), max_ids):
             part = ids[start:start + max_ids]
-            lines.append(f"{actor} {action} "
-                         f"{config.descriptor_single if len(part) == 1 else config.descriptor_plural} "
-                         f"{', '.join(f'#{i}' for i in part)} ({via})")
+            entries = (f"{config.descriptor_single if len(part) == 1 else config.descriptor_plural} "
+                       f"{', '.join(f'#{i}' for i in part)}")
+            head = f"{n.actor} {_notice_phrase(n, entries, len(part), config)}"
+            text = n.text.strip()
+            if not text:
+                lines.append(head)
+            elif len(text.splitlines()) > 1:
+                lines.append(f"{head}:\n" + "\n".join(f"> {line}" for line in text.splitlines()))
+            else:
+                lines.append(f"{head}: {text}")
     return lines
 
 

@@ -40,7 +40,7 @@ the right kind to give a script or an agent that only reads.
 taskctl info                      what the server tracks, who you are (alias: whoami)
 taskctl list [filters]            entries, open by default (alias: ls)
 taskctl get <id>... [--text]      full entries; --text prints them as Discord shows them
-taskctl history <id>              who changed an entry and when
+taskctl history <id>...           who changed entries and when
 taskctl activity [--since 7d]     recent changes everywhere [--kind closed] [--actor me]
 taskctl add [-l label] TEXT...    file an entry as yourself
 taskctl edit <id> -p PRIORITY -c COMPLEXITY -l a,b -d TEXT --author U
@@ -60,9 +60,16 @@ taskctl chart [name] [options] [-o FILE]
 open|closed|all`, `-l/--label` (repeatable, all must match), `-p/--priority`,
 `-c/--complexity`, `-r/--resolution` (any may match), `--author`, `--assignee`,
 `--closed-by` (user id, name prefix or `me`; assignee also takes `any`/`none`), `-q` words
-in the description, `--reaction`, `--created-after/--created-before/--closed-after/
---closed-before` (`7d`, `12h`, `2026-01-31`, ...),
+in the description, `--reason-contains` words in the close reason, `--reaction`,
+`--created-after/--created-before/--closed-after/--closed-before` and `--idle` (no change
+at all since then; `30min`, `12h`, `7d`, `2w`, `6mo`, `1y`, `2026-01-31`, ...),
 `--sort id|priority|created|updated|closed`, `--desc`, `-n/--limit` (default 50, `0` for all).
+
+`activity` shows the newest events matching its filters, oldest first: `--since` (default
+`7d`; `--since ""` for no limit, which also includes the few imported events with no
+time), `--kind` (repeatable), `--actor`, and `-n/--limit` (default 200, `0` for all). It
+fetches pages of 1,000 as needed, so `--since 10y --actor me --kind priority -n 0 --json`
+gives every priority you ever set.
 
 ## Composing
 
@@ -75,6 +82,12 @@ taskctl list -l quest -p high --ids | taskctl get -
 
 # Close a batch found by a description search
 taskctl list -q "spawner" -q "lag" --ids | taskctl fix - --reason "Fixed by the spawner rework"
+
+# Open bugs nothing has happened to in a year, oldest first
+taskctl list --idle 1y
+
+# Was this fixed once already?
+taskctl list --status closed --reason-contains "soul" --reason-contains "rework"
 
 # What did I close this week?
 taskctl list --status closed --closed-by me --closed-after 7d

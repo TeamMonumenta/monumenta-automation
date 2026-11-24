@@ -114,6 +114,33 @@ async def test_create_list_get(api: Api) -> None:
     assert status == 404 and body == {"error": "Bug #99 not found"}
 
 
+async def test_list_by_close_reason_and_idle(api: Api) -> None:
+    for i in range(3):
+        await api.h.add(ALICE, f"{DESC} number {i}")
+    start = api.h.clock.now
+    api.h.clock.advance(86400)
+    await api.call("POST", "/api/entries/1/fix", json={"reason": "Fixed in the Quest Rework"})
+    await api.call("POST", "/api/entries/2/reject", json={"reason": "working as intended"})
+
+    async def ids(**query: Any) -> list[int]:
+        status, body = await api.call("GET", "/api/entries", status="all", **query)
+        assert status == 200, body
+        return [e["id"] for e in body["entries"]]
+
+    # Every word, case-insensitively, in the close reason; open entries have none
+    assert await ids(reason_contains="quest REWORK") == [1]
+    assert await ids(reason_contains="quest intended") == []
+    # Idle: no event at or after the time, creation included
+    assert await ids(idle_since=start + 1) == [3]
+    assert await ids(idle_since=start + 86400 + 1) == [1, 2, 3]
+    assert await ids(idle_since=start - 1) == []
+    # Telling the author (send_notifications) isn't a change
+    entry = api.h.store.get(3)
+    assert entry is not None
+    api.h.service.mark_notified(api.h.actor(TEAM), entry)
+    assert await ids(idle_since=start + 1) == [3]
+
+
 async def test_privileges_match_discord(api: Api) -> None:
     await api.h.add(ALICE, "quest " + DESC)
     status, body = await api.call("PATCH", "/api/entries/1", user=TEAM,
@@ -207,6 +234,10 @@ async def test_stored_users_must_exist(api: Api) -> None:
     await api.call("POST", "/api/entries", json={"description": DESC})
     status, body = await api.call("PATCH", "/api/entries/1", user=TEAM, json={"author": "999"})
     assert status == 400 and "not found" in body["error"]
+    for field in ("author", "priority", "complexity"):
+        for empty in ("", " ", None, [], True):
+            status, body = await api.call("PATCH", "/api/entries/1", user=TEAM, json={field: empty})
+            assert status == 400 and f"{field} must be" in body["error"], (field, empty)
     status, _ = await api.call("POST", "/api/entries/1/assign", user=TEAM, json={"user": "0"})
     assert status == 400
     # Filters still accept ids of users Discord doesn't know (old authors who left)

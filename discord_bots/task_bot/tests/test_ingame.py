@@ -2,6 +2,7 @@
 
 from typing import Any, Optional
 
+import os
 import pytest
 from quart import Quart
 
@@ -230,6 +231,11 @@ def test_tokens_cli(h: Harness, capsys: pytest.CaptureFixture[str]) -> None:
     assert tokens.main(["--db", db, "create", "Bad Name"]) == 1
     tokens.main(["--db", db, "revoke", "shards-play"])
     assert "Revoked 1" in capsys.readouterr().out
+    # A mistyped path is refused, not created with the token in it
+    typo = db + ".typo"
+    with pytest.raises(SystemExit, match="No database"):
+        tokens.main(["--db", typo, "create", "shards-play"])
+    assert not os.path.exists(typo)
 
 
 async def test_service_tokens_refused_outside_the_cluster(h: Harness, game: Game) -> None:
