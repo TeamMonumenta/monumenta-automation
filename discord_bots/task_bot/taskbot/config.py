@@ -4,14 +4,12 @@ The bug and suggestion deployments run the same code; everything that differs
 between them lives in this file's inputs.
 """
 
-import logging
 import os
 from dataclasses import dataclass, field
 from typing import Any, Optional
 
 import yaml
 
-logger = logging.getLogger(__name__)
 
 # The cluster-only API listener, the only one that accepts service tokens (the game plugin).
 # Fixed, since the shards' configuration names it.
@@ -79,8 +77,7 @@ def _int_keyed(raw: Any) -> dict[int, int]:
 
 
 def from_dict(data: dict[str, Any], config_dir: str = ".") -> InstanceConfig:
-    """Build a config from parsed YAML. Unknown keys (such as the old bot's `kanboard` and
-    `database_path`) are ignored."""
+    """Build a config from parsed YAML. Unknown keys are ignored."""
     cfg = InstanceConfig(
         login=str(data.get("login", "")),
         application_id=int(data.get("application_id", 0)),
@@ -107,9 +104,6 @@ def from_dict(data: dict[str, Any], config_dir: str = ".") -> InstanceConfig:
     # A token in the environment (from a Kubernetes secret) wins over config.yml
     if os.environ.get("DISCORD_TOKEN"):
         cfg.login = os.environ["DISCORD_TOKEN"]
-    for key in ("kanboard", "database_path"):
-        if key in data:
-            logger.info("Ignoring the old bot's %r config key", key)
     return cfg
 
 

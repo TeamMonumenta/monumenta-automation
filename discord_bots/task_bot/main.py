@@ -24,13 +24,13 @@ logger = logging.getLogger("taskbot")
 def open_store(cfg: config_mod.InstanceConfig) -> TaskStore:
     db_file = cfg.db_file
     if not os.path.exists(db_file):
-        sys.exit(f"No database at {db_file}. Create it first: `python -m taskbot.legacy import` "
-                 "(cutover) or `python -m taskbot.db init` (a new, empty tracker).")
+        sys.exit(f"No database at {db_file}. For a new, empty tracker, create one first with "
+                 "`python -m taskbot.db init`.")
     store = TaskStore.open(db_file)
     if store.is_empty():
         store.close()
-        sys.exit(f"{db_file} has no entries and no numbering, which is what an import that "
-                 "failed part way leaves behind. Delete it and create it again.")
+        sys.exit(f"{db_file} has no entries and no numbering, which is what an interrupted "
+                 "`taskbot.db init` leaves behind. Delete it and create it again.")
     return store
 
 

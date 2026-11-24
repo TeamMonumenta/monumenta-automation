@@ -799,14 +799,9 @@ Available complexities: {complexities}'''.format(
         if not args or " " in args:
             raise UserError(f"Usage: {self.prefix} rsearch <:reaction:>")
         entries = self.store.query(EntryQuery(status="open", reaction=args))
-        loading = self.store.count_unchecked_reactions()
-        note = (f"Reaction counts are still being loaded from Discord ({loading} messages to go); "
-                "results are incomplete until then.") if loading else ""
         if not entries:
-            raise UserError(f"No entries with reaction {args!r}" + (f"\n{note}" if note else ""))
+            raise UserError(f"No entries with reaction {args!r}")
         await self.print_search_results(responder, entries, sort_entries=False)
-        if note:
-            await responder.send(note)
 
     # ------------------------------------------------------------------
     # Labels

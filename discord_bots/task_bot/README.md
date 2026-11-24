@@ -36,14 +36,13 @@ replies (`~bug f 123`, `~bug search quest hi`, interactive `isearch` sessions, .
 
 Other differences, all deliberate:
 
-- Every change is recorded with who made it and when, so closer statistics and history
-  exist from cutover on. Closes are recorded as fixed, rejected or duplicate rather than
-  only free text.
+- Every change is recorded with who made it and when, so there are closer statistics and
+  a history (recovered back to 2019 for older entries; see "Imported history"). Closes
+  are recorded as fixed, rejected or duplicate rather than only free text.
 - An entry that others were closed as duplicates of lists them on a line after its
   description (`Duplicates: #12, #40`) in the tracking channel and in replies, and
   `taskctl` shows them too. The line is left out when the message would go over Discord's
-  2000 characters. At the first start after the cutover the bot edits the tracking
-  messages of the originals to add it (a few hundred edits, which take some minutes).
+  2000 characters.
 - `edit <n> author <user>` works (it was a stub).
 - `~bug` alone shows the same commands to everyone; team members get one more line
   pointing to `~bug help team`, which lists the team's, leads' and owner's commands.
@@ -115,12 +114,10 @@ it shows them, so tracking messages keep their images. Two cases still lose them
 
 So the bot also saves every image to disk, in `images/<entry>/<attachment id>-<name>` next
 to the database, recorded in `image_files`. It saves new images within moments, and works
-through any without a copy in the background, 50 at a time, newest entries first. That is
-also how the images of an imported database get saved (an estimated 7 GB for both
-instances, over a few hours at the first start). An image Discord no longer has is
-recorded as lost and not tried again. Other failures are retried an hour later per failure
-(at most a day), after every image not yet tried, so a few bad links can't hold up the
-rest.
+through any without a copy in the background, 50 at a time, newest entries first. An
+image Discord no longer has is recorded as lost and not tried again. Other failures are
+retried an hour later per failure (at most a day), after every image not yet tried, so a
+few bad links can't hold up the rest.
 
 The saved copies are kept through image edits and redaction, and deleted with the entry
 by `purge`. The team gets them back with `taskctl images <n>` (or the API), sees a
@@ -152,13 +149,11 @@ a redaction during an upload can't leave one behind.
 | `taskbot/models.py` | Plain data objects shared by the layers. |
 | `taskbot/duplicates.py` | Whether a `fix` or `reject` reason says the entry is a duplicate, and of what. |
 | `taskbot/images.py` | Saved copies of images on disk (see "Images"). |
-| `taskbot/legacy.py`, `taskbot/inference.py` | Import of the old JSON file at cutover; close-reason classification and creation-time estimation. |
 | `taskbot/api.py` | Quart `/api/*` routes, user and service token authentication. |
 | `taskbot/identity.py` | Whether a Discord user or Minecraft player is a given entry's author; where a future account link plugs in. |
 | `taskbot/tokens.py` | `python -m taskbot.tokens`: service tokens for the game plugin. |
 | `taskbot/bot.py` | The discord.py side: message routing, the tracking channel publisher, image links, reactions, backups. |
 | `taskbot/slash.py` | The slash commands, their private replies and forms (over the same command handler). |
-| `taskbot/feed/` | Downloads the old bots' feed channels and replays them into a history of events (see below). |
 | `cli/taskctl.py` | Stdlib-only API client. |
 | `plugin/` | The Paper plugin for in-game reports (Java, its own build and tests). |
 
@@ -168,12 +163,12 @@ runs against fakes in `tests/`.
 ## Configuration
 
 `$TASK_HOME/config.yml` (default `~/.task_bot/config.yml`), the same file the old bot
-read. Existing keys keep their meaning; `kanboard` and `database_path` are ignored. New,
+read. Existing keys keep their meaning, and keys the bot doesn't use are ignored. New,
 all optional:
 
 | Key | Default | Meaning |
 |---|---|---|
-| `db_path` | `tasks.db` | SQLite file, relative to the config directory. It must exist; see "Cutover" below. |
+| `db_path` | `tasks.db` | SQLite file, relative to the config directory. It must exist; see "Deployment" below. |
 | `api_port` | `8080` | Port for `/api/*`, for people (behind the ingress). The cluster-only port for service tokens (the game plugin) is always 8081. |
 | `api_public_url` | | Public base URL, shown when someone creates a token. |
 | `api_token_default_ttl_hours` | `720` | Token lifetime when `/... api_token create` gets no `lifetime_days`. |
@@ -190,11 +185,8 @@ make venv     # create .venv with runtime and dev dependencies
 make test     # pylint, pyright (strict) and pytest
 ```
 
-The tests in `tests/test_legacy_compat.py` load the original bot's code from git and
-compare its rendering, search and stats output with the new code on the production
-data. They need a copy of the production JSON files (set `TASKBOT_LEGACY_SNAPSHOT` to a
-directory with `bugs/bug_reports.json` and `suggestions/suggestions.json`) and skip
-without one.
+The rendering the old bot's users know is pinned by golden replies in
+`tests/test_commands.py`, and the abbreviations by `tests/test_matching.py`.
 
 To try the bot against real Discord, point `TASK_HOME` at a directory with a `config.yml`
 for a test guild and run `.venv/bin/python main.py`.
@@ -202,7 +194,7 @@ for a test guild and run `.venv/bin/python main.py`.
 ## Deployment
 
 The image is built from this directory (`./docker_build_and_push.sh`) and deployed by
-`docker/k8s/bug-bot.yml` and `suggestion-bot.yml`. Each mounts its old data directory
+`docker/k8s/bug-bot.yml` and `suggestion-bot.yml`. Each mounts its data directory
 (`/nfs/task-bot/bugs`, `/nfs/task-bot/suggestions`) at `/data`, reads the Discord token
 from a secret, and exposes the API on port 8080 behind an ingress and on port 8081 inside
 the cluster for the game plugin.
@@ -212,8 +204,8 @@ are copies, so text removed with `purge` stays in them until they age out (a wee
 
 The bot never creates its database: on start it opens `tasks.db` and refuses to run if it
 is missing, rather than begin an empty tracker numbered from #1 over the existing
-messages. At cutover the database comes from the import below; for a new instance or a
-test guild, `python -m taskbot.db init tasks.db` makes an empty one.
+messages. For a new instance or a test guild, `python -m taskbot.db init tasks.db` makes
+an empty one.
 
 The database is SQLite in WAL mode, which needs a local filesystem. `/nfs/task-bot` on
 monumenta-17 is a local ZFS dataset mounted into the pod with hostPath, which is fine;
@@ -229,110 +221,41 @@ them), and `send_notifications` queues a chat notice for them instead of a ping,
 next time they join a shard. Setup:
 [plugin/README.md](plugin/README.md).
 
-### Cutover
+## Imported history
 
-The cutover is one-way: once the new bot is live, the old one doesn't run again.
+Entries from before the rewrite's launch on 2026-11-23 came from the old bot, which kept
+only each entry's final state, in a JSON file: no times and no closers. At the cutover
+that file was imported, and the old feed channels (`bug-reports-bot-feed`,
+`suggestions-bot-feed`), which hold every command since April 2019 and the bot's reply to
+it, were replayed over it to recover who did what and when. The code that did this was
+removed once the launch had settled; it is in the git history. What it left in the
+database:
 
-1. Scale the old deployment to zero and wait for it to stop. Two bots logged in with the
-   same token would both answer every command.
-2. Build `tasks.db` from the old JSON and the old feed channel's history (see "Mining the
-   old feed channels" below): catch up the download, replay it, `python -m
-   taskbot.legacy import` the JSON (which is never modified) and `python -m
-   taskbot.feed.apply` the replay. The import writes the classification of every old
-   close reason next to the database as `tasks.db.classification.txt`, for review.
-3. Put `tasks.db` where the bot looks for it (`db_path` in `config.yml`) and deploy the
-   new bot. It registers its slash commands with Discord on its first start.
-
-`legacy.py`, `inference.py`, `taskbot/feed/` and their tests (`tests/test_legacy.py`,
-`tests/test_legacy_compat.py`, `tests/test_feed_*.py`) only matter until the cutover is
-done, and can be deleted after it. The rendering the old bot's users know is also pinned
-by golden replies in `tests/test_commands.py`, which stay.
-
-Reaction counts aren't in the old JSON. After the import the bot reads them from each
-tracking message, a few a second, so `rsearch` is complete after roughly 15 minutes
-for bugs and 25 for suggestions; until then it says so.
-
-The old JSON carries over entries, labels, priorities, complexities, assignees, images,
-notification settings and tracking messages, but no times and no closers. The import
-guesses each close's resolution from its reason and estimates creation times; the feed
-replay (next section) then supplies exact times, closers and resolutions for nearly
-everything.
-
-Creation times are estimated from the Discord ids attached to each entry (its tracking
-message and image attachments), which are timestamps; entry numbers grow with time, so
-the earliest of those ids at or after an entry bounds its creation time. The first 487
-suggestions were imported from an older channel with their original dates in the text,
-and those dates are used. Entries newer than the last Discord id the JSON holds (none, in
-practice) take the time of the entry before them. After the replay about 1,200 estimates
-remain: on the November 2026 data, 99.7% of bug and 96% of suggestion estimates were
-within a day of the time the feed knows. The exception is bugs below about #720, imported
-on 2019-04-20 from older channels before the feed began: their dates only mean "on or
-before", and may be weeks or months late. Nothing marks which times are estimates beyond
-the history, where an imported creation shows only its day.
-
-### Mining the old feed channels
-
-The old bots never stored who did what or when. Their command channels
-(`bug-reports-bot-feed`, `suggestions-bot-feed`) hold every command since April 2019 and
-the bot's reply to it. `taskbot.feed` recovers that history in three steps: two that only
-read and write local files, and one that writes it into a freshly imported database.
-
-`taskbot.feed.download` copies a channel to a JSON-lines file, one message per line
-exactly as Discord's REST API returns it, oldest first. It uses the old bot's token and
-channel from its `config.yml` (the token is never printed) and plain HTTP only, so it
-doesn't disturb the bot running with the same token; it paces itself and stops after a
-few rate-limit refusals rather than push on. Running it again continues after the newest
-saved message, so the same command catches up just before the cutover. The bug channel
-(about 527k messages) takes about 90 minutes, the suggestion channel about 50.
-
-```bash
-python -m taskbot.feed.download --config bugs/config.yml feed/bugs.jsonl
-python -m taskbot.feed.replay --prefix '~bug' --snapshot bugs/bug_reports.json \
-    feed/bugs.jsonl feed/bugs.events.jsonl feed/bugs.report.txt
-python -m taskbot.legacy import bugs/bug_reports.json tasks.db
-python -m taskbot.feed.apply tasks.db feed/bugs.events.jsonl
-```
-
-`taskbot.feed.replay` lets the bot's replies decide what happened (`Bug #12 marked as
-fixed` means entry 12 was fixed then) and parses the commands only to find out who caused
-each reply. It mirrors the old bot's handling closely enough for that: the command list
-as it stood on each date (abbreviations resolve differently as commands were added),
-interactive sessions where the owner types `f` or `e p l` against whichever entry the
-session is showing, and the entry render the bot posted after each change, which gives
-the old and new values. Each event records how it was attributed: `matched`;
-`matched_loose` (the command was edited afterwards, and the bot acted on the original
-text); `author_from_json` (a creation whose command was deleted, so the author comes from
-the JSON and the time from the reply); `deleted_account` (Discord shows all deleted
-accounts as one user, so the actor is unknown); or `unmatched` (the command is gone, the
-time is still exact).
-
-`taskbot.feed.apply` only accepts a database straight out of the import, so it runs during
-the cutover, after the old bot has stopped (to redo it, import again). It also refuses
-events that don't look like they belong with the database: when most creations in the feed
-aren't by the entry's author (the other tracker's feed), or when the feed and the JSON end
-at different entries (a download not caught up, or an older JSON); `--force` applies
-anyway. For each entry the feed covers it replaces the import's placeholder events with
-the real history, and sets the exact creation time and, when the feed's last close is the
-one the JSON ended with, the close time, the closer and the resolution. The resolution is
-what the closer chose at the time (`fix` or `reject`), with rejects whose reason says
-duplicate counted as duplicates (and fixes whose reason names the original, "dupe of
-2360"), rather than the import's guess from the text; 8% of bug and 10% of suggestion
-closes change. Redacted entries get their history without the text. Author, assignee,
-labels and the other current values stay as imported.
-
-The report compares the result with a copy of the old JSON. On the November 2026 data, the
-replay finds the exact close reason for 98% of closed bugs and 99% of closed suggestions,
-and the closer for 99% and 97% of those respectively. The rest were closed without a feed
-command: the first ~700 bugs were imported on 2019-04-20 and closed outside the channel,
-and some later ones through Kanboard. Those get their creation time as the close time, so
-every closed entry has one and statistics don't carry the gap forever; their closer stays
-unknown. The few whose feed close doesn't match the JSON get the time of their last event
-in the feed instead. Those entries were really open for a while, so the backlog slightly
-undercounts the early years (by at most a few hundred), and the closes chart counts them
-in their creation month.
-
-Some of the old bot's habits the replay has to know: it ignored edited messages; replies
-can carry a Discord id a moment earlier than their command; for a while it posted every
-reply twice; `~b` was accepted as the prefix until 2019-09-26; close reasons were
-lowercased until 2019-05-11; and its copy of a close reason turns custom emoji it
-couldn't use into `:name:`.
+- Events with `source` `backfill` come from the feed channels and have exact times.
+  Events with `source` `legacy` come from the JSON alone, for what the feed didn't show:
+  `created` and `closed` events at estimated times, of which `history` shows only the
+  day, with no closer on the `closed` ones, and `redacted` events with no time or actor
+  (`history` says "before the new bot").
+- The replay found the exact close for 98% of closed bugs and 99% of closed suggestions,
+  and the closer for 99% and 97% of those. The rest were closed without a feed command:
+  the first ~700 bugs were imported on 2019-04-20 and closed outside the channel, and some
+  later ones through Kanboard. Their close time is their creation time (or, for those
+  whose feed close didn't match the JSON, the time of their last event in the feed), so
+  every closed entry has one and statistics don't carry the gap forever; their closer is
+  unknown. Those entries were really open for a while, so the backlog slightly undercounts
+  the early years (by at most a few hundred), and the closes chart counts them in their
+  creation month.
+- A resolution is what the closer chose at the time, `fix` or `reject`, with rejects whose
+  reason says duplicate counted as duplicates (and fixes whose reason names the original,
+  "dupe of 2360"). Where the feed doesn't show the close, it was guessed from the close
+  reason's text.
+- About 1,200 creation times the feed doesn't show were estimated from the Discord ids
+  attached to each entry (its tracking message and image attachments), since entry numbers
+  grow with time. Checked against the entries whose time the feed does show, 99.7% of bug
+  and 96% of suggestion estimates were within a day. The first 487 suggestions take their
+  creation date from the text an older import wrote into them. The creation times of bugs
+  below about #720, imported on 2019-04-20 from older channels before the feed began,
+  only mean "on or before", and may be weeks or months late.
+- Before `redact` existed, people redacted an entry by editing its description to
+  "redacted". Such entries are marked redacted, and those that had an image have it
+  hidden in `redacted_content`, with `redacted_at` 0.

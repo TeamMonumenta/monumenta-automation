@@ -102,4 +102,5 @@ closed them.
 
 `--json` on any command prints the raw API objects, one per line, for `jq` and scripts.
 Commands that act on several ids keep going when one fails, print the failures on
-stderr, and exit non-zero. Times print in your local timezone.
+stderr, and exit non-zero. Times print in your local timezone, except the days of imported
+events, which are in UTC as the bot shows them.

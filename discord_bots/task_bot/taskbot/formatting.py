@@ -133,9 +133,6 @@ def describe_event(ev: Event, names: NameLookup,
     k = ev.kind
     if k == "created":
         what = "created"
-        if ev.source == "legacy":
-            # The feed didn't see it created, so the time is an estimate: show the day only
-            when = fmt_date(ev.at)
     elif k == "closed":
         what = f"closed as **{resolution_name(ev.new_value or '')}**"
         if ev.reason:
@@ -145,7 +142,7 @@ def describe_event(ev: Event, names: NameLookup,
     elif k in ("priority", "complexity", "labels"):
         show = _json_list if k == "labels" else str
         if ev.new_value is None:
-            # Only from the feed replay, which can't always tell the value
+            # Only in backfill events: the old bot's replies didn't always show the value
             what = f"changed the {k}"
         elif ev.old_value is None:
             what = f"set {k} to {show(ev.new_value)}"
@@ -169,8 +166,10 @@ def describe_event(ev: Event, names: NameLookup,
         what = "notified the author"
     else:
         what = k
-    if ev.at is None and ev.source == "legacy" and k != "created":
-        when = "before the new bot"
+    if ev.source == "legacy":
+        # Imported, for what the old feed channel didn't show: the time is an estimate
+        # (README, "Imported history"), so only the day, or unknown
+        when = fmt_date(ev.at) if ev.at is not None else "before the new bot"
     return f"{when} **{actor}** {what}{via}"
 
 

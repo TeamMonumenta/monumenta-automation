@@ -3,7 +3,7 @@
   "venvPath": ".",
   "venv": ".venv",
   "typeCheckingMode": "strict",
-  "include": ["taskbot", "main.py", "cli"],
+  "include": ["taskbot", "main.py", "cli", "plugin/integration-test/api_server.py"],
   "reportUnusedFunction": "none",
   "reportMissingTypeStubs": "none"
 }

@@ -96,10 +96,15 @@ async def test_deleted_message_of_open_entry_is_reposted(h: Harness, bot: tuple[
     b, channel = bot
     e = h.service.add(_actor(ALICE, 0), "a report with enough words", ["quest"])
     await b.sync_entry(e.id)
+    h.store.adjust_reaction(e.id, "👍", 3)
     channel.messages.clear()
     await b.sync_entry(e.id)
     entry = h.store.get(e.id)
     assert channel.sends == 2 and entry is not None and entry.message_id in channel.messages
+    # The new message starts with no reactions, and counts as read
+    assert h.store.reactions(e.id) == []
+    assert h.store.conn.execute("SELECT reactions_checked_at FROM entries WHERE id = ?",
+                                (e.id,)).fetchone()[0] is not None
 
 
 async def test_closed_entries_are_not_reposted(h: Harness, bot: tuple[TaskBot, FakeChannel]) -> None:

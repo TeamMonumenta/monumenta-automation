@@ -65,8 +65,10 @@ async def main() -> None:
         def __init__(self) -> None:
             self.texts: list[str] = []
 
-        async def send(self, text: str, *, images: Any = (), file: Optional[OutFile] = None,
-                       mentions: Any = ()) -> None:  # pylint: disable=unused-argument
+        # Stands in for a Responder, so it takes the same arguments
+        async def send(  # pylint: disable=unused-argument
+                self, text: str, *, images: Any = (), file: Optional[OutFile] = None,
+                mentions: Any = ()) -> None:
             self.texts.append(text)
 
     @app.post("/test/notify")
@@ -74,7 +76,8 @@ async def main() -> None:
         replies = Replies()
         await handler.cmd_send_notifications(
             IncomingMessage(content="", author_id=1, author_name="team", privilege=2), "", replies)
-        players = {e.author_mc_uuid for e in store.all_entries() if e.author_mc_uuid}
+        players = [str(r[0]) for r in store.conn.execute(
+            "SELECT DISTINCT author_mc_uuid FROM entries WHERE author_mc_uuid IS NOT NULL")]
         queued = sum(len(store.pending_notices(uuid)) for uuid in players)
         return jsonify({"queued": queued, "replies": replies.texts})
 

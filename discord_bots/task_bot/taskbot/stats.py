@@ -1,8 +1,8 @@
 """Statistics and time series, shared by text commands, charts and the API.
 
-Every closed entry has a close time: the cutover fills in the ones the old bot never
-recorded (taskbot.feed.apply). Closers are only known for closes made through this
-version of the bot or recovered from the old feed channel; the rest are counted as
+Every closed entry has a close time: the cutover estimated the ones the old bot never
+recorded (README, "Imported history"). Closers are only known for closes made through
+this version of the bot or recovered from the old feed channel; the rest are counted as
 "unknown" rather than guessed.
 """
 

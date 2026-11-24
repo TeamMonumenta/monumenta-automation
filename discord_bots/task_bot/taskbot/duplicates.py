@@ -2,9 +2,7 @@
 
 `dupe` is newer than the habit of rejecting with "dupe of #123", so `fix` and `reject`
 read the reason and close as a duplicate when it says so. The patterns were tuned on the
-old feed channels' closes. The cutover code (`taskbot/inference.py`) has its own copy as it
-was at cutover, which counted any "same as" and so took a few comparisons for duplicates;
-it goes when that code is deleted.
+old feed channels' closes.
 """
 
 import re

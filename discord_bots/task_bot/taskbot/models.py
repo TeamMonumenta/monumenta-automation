@@ -94,7 +94,7 @@ class Actor:
     id: int
     name: str
     privilege: int
-    source: str = "discord"           # 'discord' | 'api' | 'system'
+    source: str = "discord"           # 'discord' | 'api'
     source_ref: Optional[str] = None  # e.g. the Discord message id of the command
     read_only: bool = False           # API tokens minted with the read scope
     # A Minecraft player acting through a service (the game plugin); id is then 0
@@ -105,9 +105,6 @@ class Actor:
     @property
     def is_service(self) -> bool:
         return self.service is not None
-
-
-SYSTEM_ACTOR = Actor(id=0, name="system", privilege=4, source="system")
 
 
 @dataclass

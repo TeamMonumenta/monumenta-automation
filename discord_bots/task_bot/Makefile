@@ -32,5 +32,4 @@ help:
 	@echo "  test        Run lint, typecheck, and pytest (stops at first failure)"
 	@echo "  lint        Run pylint"
 	@echo "  typecheck   Run pyright (strict)"
-	@echo "  pytest      Run pytest (the legacy differential tests need the production"
-	@echo "              snapshot; see tests/test_legacy_compat.py)"
+	@echo "  pytest      Run pytest"

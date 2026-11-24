@@ -97,7 +97,7 @@ way, since tokens travel in a header.
 | `GET` | `/api/entries` | See query parameters below. |
 | `GET` | `/api/entries/<id>` | One entry. `?text=1` adds `text`, the entry exactly as Discord shows it. |
 | `GET` | `/api/entries/<id>/events` | Its history, oldest first. |
-| `GET` | `/api/events` | Recent changes across all entries, newest first: `since`, `until`, `kind` (comma separated), `actor`, `limit` (<= 1000, default 100), `before_id` for paging. |
+| `GET` | `/api/events` | Recent changes across all entries, newest first (by event id, which for events imported from the old bot is not time order): `since`, `until`, `kind` (comma separated), `actor`, `limit` (<= 1000, default 100), `before_id` for paging. |
 | `POST` | `/api/entries` | `{"description", "labels"?, "context"?}`. Created as the caller (a Discord user, or a player through a service token); `context` (named sections of JSON, at most 32 and 10 MB) only from services and the team. The same checks as `add`: at least 5 words, at most 1600 characters, no pings, known labels (none means `misc`). `201`. |
 | `PATCH` | `/api/entries/<id>` | Any of `description`, `labels` (list or comma separated), `priority`, `complexity`, `author`. Permission is checked for every field before anything changes: description and labels need ownership or level 1, the rest level 2. |
 | `POST` | `/api/entries/<id>/append` | `{"text"}` |
@@ -118,7 +118,7 @@ way, since tokens travel in a header.
 | `GET` | `/api/users?q=` | Resolve a name prefix or id to a user, with Discord's "multiple users match" error. |
 | `GET` | `/api/stats` | Open/closed counts, open by priority x complexity and by label, closed by resolution. |
 | `GET` | `/api/stats/authors` | Top reporters: `limit`. |
-| `GET` | `/api/stats/closers` | Top closers: `days`, `limit`. Also `self_closes` (authors closing their own) and `unknown_closer` (legacy closes). |
+| `GET` | `/api/stats/closers` | Top closers: `days`, `limit`. Also `self_closes` (authors closing their own) and `unknown_closer` (closes with no recorded closer, all of them imported). |
 | `GET` | `/api/charts` | Available charts. |
 | `GET` | `/api/charts/<name>.png` | The chart image; `options` takes the same words as `~bug chart` (`2y priority`). |
 | `GET` | `/api/charts/<name>.json` | The data behind the chart: `kind` (`timeseries`, `bar`, `hbar`, `hbar_stacked`), `title`, `notes`, `colors` (series name to color) and either `times` (Unix seconds; bucket starts, except the backlog's, which are the instants counted, the last being now) with `series` and `stacked` (`area`, `bars` or absent), or `categories` with `values` or `series`. |
@@ -169,7 +169,8 @@ resolution_name, close_reason, closed_at, closed_by, duplicate_of, duplicates, a
 assignee, created_at, updated_at, redacted, pending_notification, link, images,
 reactions`. `duplicates` lists the entries closed as duplicates of this one, oldest first.
 `closed_at` is set on every closed entry; for old closes the feed doesn't cover, it is the
-creation time (see the README, "Cutover"). `created_at` is the best known time; for bugs
+creation time, or for some the time of their last event in the feed (see the README,
+"Imported history"). `created_at` is the best known time; for bugs
 below about #720 it only means "on or before" (see the README).
 
 ### Context

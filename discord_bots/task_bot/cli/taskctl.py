@@ -241,10 +241,11 @@ def entry_block(e: dict[str, Any], proper: str) -> str:
 
 
 def event_line(ev: dict[str, Any], with_entry: bool = False) -> str:
-    when = fmt_time(ev.get("at"), True) if ev.get("at") else "(before tracking)"
-    if ev["kind"] == "created" and ev.get("source") == "legacy" and ev.get("at"):
-        # The feed didn't see it created, so the time is an estimate: show the day only
-        when = fmt_time(ev["at"])
+    when = fmt_time(ev.get("at"), True) if ev.get("at") else "(before new bot)"
+    if ev.get("source") == "legacy" and ev.get("at"):
+        # Imported, and the time is an estimate (README, "Imported history"): the day only,
+        # in UTC as the bot shows it
+        when = datetime.datetime.fromtimestamp(ev["at"], datetime.timezone.utc).strftime("%Y-%m-%d")
     who = user_name(ev.get("actor")) if ev.get("actor") else "?"
     what = ev["kind"]
     if ev["kind"] == "closed":

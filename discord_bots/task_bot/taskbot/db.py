@@ -5,8 +5,20 @@ moves the database from version i to i+1 and runs in one transaction, so a
 crash mid-migration leaves the previous version intact. See SCHEMA.md for
 what each table is for.
 
-The bot never creates its database. Make one with the legacy import (at
-cutover), or an empty one for a new instance or a test guild:
+Version 1 (_SCHEMA_V1) is the schema the production databases were created
+with at launch, so it never changes: tests/test_db.py fails if it does. A
+schema change is a new function at the end of _MIGRATIONS that turns a
+database at the previous version into the new one, statement by statement
+with conn.execute (executescript() would commit the transaction part way).
+Migrations run with foreign keys off, so the usual way to change a table
+SQLite can't ALTER (create the new table, copy the rows, drop the old one,
+rename, then create the table's indexes again, since dropping it drops them)
+doesn't cascade-delete the rows that point at it; foreign keys are checked
+before the migration commits. Every migration is also run over a
+populated version 1 database by the tests.
+
+The bot never creates its database. Make an empty one for a new instance or a
+test guild with:
 
     python -m taskbot.db init <tasks.db>
 """
@@ -17,7 +29,7 @@ import sqlite3
 import sys
 from typing import Callable, Optional
 
-_SCHEMA = """
+_SCHEMA_V1 = """
 CREATE TABLE meta (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
@@ -29,7 +41,7 @@ CREATE TABLE meta (
 CREATE TABLE labels (
     name     TEXT PRIMARY KEY,
     position INTEGER NOT NULL,
-    -- 0 once removed with `dellabel`, or for labels only found on legacy entries.
+    -- 0 once removed with `dellabel`, or for labels only found on imported entries.
     -- Inactive labels are not offered or matched, but old entries keep rendering them.
     active   INTEGER NOT NULL DEFAULT 1
 );
@@ -120,7 +132,7 @@ CREATE TABLE image_files (
 CREATE TABLE events (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
     entry_id      INTEGER NOT NULL REFERENCES entries(id) ON DELETE CASCADE,
-    at            INTEGER,          -- NULL when unknown (old closes)
+    at            INTEGER,          -- NULL when unknown (imported redactions)
     actor_id      INTEGER,          -- NULL when unknown, or an in-game actor
     actor_mc_uuid TEXT,
     kind          TEXT NOT NULL,
@@ -218,15 +230,16 @@ def _split_sql(script: str) -> list[str]:
     return [s.strip() for s in "\n".join(lines).split(";") if s.strip()]
 
 
-def _create(conn: sqlite3.Connection) -> None:
+def _create_v1(conn: sqlite3.Connection) -> None:
     # Statement by statement: executescript() would commit the migration's transaction.
-    for stmt in _split_sql(_SCHEMA):
+    for stmt in _split_sql(_SCHEMA_V1):
         conn.execute(stmt)
 
 
-# Each entry moves the database from version i to i+1; the first creates it.
+# Each entry moves the database from version i to i+1; the first creates it. Never edit
+# or remove one: databases at every version may exist.
 _MIGRATIONS: list[Callable[[sqlite3.Connection], None]] = [
-    _create,
+    _create_v1,
 ]
 
 SCHEMA_VERSION = len(_MIGRATIONS)
@@ -237,30 +250,63 @@ def connect(path: str) -> sqlite3.Connection:
     # The bot uses it from the event loop's thread only; the taskctl tests serve the API
     # from another thread
     conn = sqlite3.connect(path, check_same_thread=False, isolation_level=None)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL")
+    try:
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA synchronous=NORMAL")
+        # Redaction must not leave the removed text in free pages
+        conn.execute("PRAGMA secure_delete=ON")
+        conn.execute("PRAGMA foreign_keys=OFF")   # the default, but migrate() depends on it
+        migrate(conn)
+    except BaseException:
+        conn.close()
+        raise
     conn.execute("PRAGMA foreign_keys=ON")
-    conn.execute("PRAGMA synchronous=NORMAL")
-    # Redaction must not leave the removed text in free pages
-    conn.execute("PRAGMA secure_delete=ON")
-    migrate(conn)
     return conn
 
 
 def migrate(conn: sqlite3.Connection) -> None:
-    version = int(conn.execute("PRAGMA user_version").fetchone()[0])
-    if version > SCHEMA_VERSION:
-        raise RuntimeError(
-            f"Database schema version {version} is newer than this code ({SCHEMA_VERSION})")
+    """Bring the database up to SCHEMA_VERSION. Call it with foreign keys off (the
+    pragma can't change inside a transaction); connect() turns them on afterwards."""
+    def check(version: int) -> int:
+        if version > SCHEMA_VERSION:
+            raise RuntimeError(
+                f"Database schema version {version} is newer than this code ({SCHEMA_VERSION})")
+        return version
+
+    version = check(int(conn.execute("PRAGMA user_version").fetchone()[0]))
+    if version < SCHEMA_VERSION and conn.execute("PRAGMA foreign_keys").fetchone()[0]:
+        # Rebuilding a table would cascade-delete every row pointing at it, and the check
+        # afterwards would find no orphans left to complain about
+        raise RuntimeError("migrate() needs foreign keys off")
     while version < SCHEMA_VERSION:
         conn.execute("BEGIN IMMEDIATE")
         try:
-            _MIGRATIONS[version](conn)
+            # Read again under the write lock: another process may have migrated meanwhile
+            version = check(int(conn.execute("PRAGMA user_version").fetchone()[0]))
+            if version == SCHEMA_VERSION:
+                conn.execute("COMMIT")
+                break
+            part_way = (f"Migration to version {version + 1} committed part way "
+                        "(executescript?); the database may be half migrated")
+            try:
+                _MIGRATIONS[version](conn)
+            except Exception as e:
+                if not conn.in_transaction:
+                    raise RuntimeError(part_way) from e
+                raise
+            if not conn.in_transaction:
+                raise RuntimeError(part_way)
+            broken = conn.execute("PRAGMA foreign_key_check").fetchall()
+            if broken:
+                raise RuntimeError(f"Migration to version {version + 1} broke foreign keys: "
+                                   f"{[tuple(r) for r in broken[:5]]}")
             version += 1
             conn.execute(f"PRAGMA user_version = {version}")
             conn.execute("COMMIT")
         except BaseException:
-            conn.execute("ROLLBACK")
+            if conn.in_transaction:
+                conn.execute("ROLLBACK")
             raise
 
 

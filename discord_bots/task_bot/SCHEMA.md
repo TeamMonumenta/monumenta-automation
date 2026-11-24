@@ -3,8 +3,11 @@
 One SQLite database per instance (`tasks.db`), in WAL mode with `secure_delete` on so
 purged text doesn't linger in free pages. The schema version is `PRAGMA user_version`
 (currently 1); `taskbot/db.py` holds the DDL and applies migrations in order, each in one
-transaction. The bot never creates the database: the legacy import does at cutover, and
-`python -m taskbot.db init` makes an empty one.
+transaction. Version 1 is what the production databases were created with, so it never
+changes; a schema change is a new migration (the docstring of `taskbot/db.py` says how).
+The bot never creates the database; `python -m taskbot.db init` makes an empty one.
+Production data from before 2026-11-23 was imported from the old bot at the cutover
+(README, "Imported history"), which explains the `legacy` and `backfill` rows below.
 Times are epoch seconds; Discord ids are stored as integers.
 
 ## entries
@@ -18,9 +21,9 @@ number is kept in `meta.next_index` rather than derived from `MAX(id)`.
 | `status` | `open` or `closed`. |
 | `resolution` | NULL while open; `fixed`, `rejected` or `duplicate`. |
 | `close_reason` | The text shown after "Closed:". |
-| `closed_at`, `closed_by` | Set when an entry is closed. For legacy closes the old feed channel doesn't cover, `closed_at` is the creation time (the cutover's estimate, so statistics have no gap) and `closed_by` is NULL. |
+| `closed_at`, `closed_by` | Set when an entry is closed. For imported closes the old feed channel doesn't cover, `closed_at` is the creation time (or, for some, the time of their last event in the feed: the cutover's estimate, so statistics have no gap) and `closed_by` is NULL. |
 | `author_mc_uuid`, `closed_by_mc_uuid` | For in-game activity: the Minecraft player who filed or closed the entry (`author_id` / `closed_by` are then 0 / NULL). |
-| `duplicate_of` | The original, for duplicates (recovered from legacy reasons like "dupe of 123" when that number exists). |
+| `duplicate_of` | The original, for duplicates (for imported entries, recovered from reasons like "dupe of 123" when that number exists). |
 | `assignee_id` | Current assignee. |
 | `redacted` | 1 after `redact`. Separate from the resolution, so redacting a fixed entry doesn't hide the fix from statistics. |
 | `message_id` | The tracking channel message; NULL when there is none. `prune` clears it as it deletes the message, publishing clears it when the message has gone, and the reaction sweep (which re-reads every tracking message in turn) clears it for closed entries whose message has disappeared and reposts open ones. |
@@ -57,27 +60,28 @@ opt-outs.
 Priorities and complexities are the same fixed lists for every instance, in
 `taskbot/vocab.py`, since they have never changed. Labels differ between the bug and
 suggestion instances and change with `addlabel` / `dellabel`, so they are a table,
-`labels(name, position, active)`, filled from the old JSON at import (always including
-`misc`, the label of entries filed without one). Order matters for all three:
+`labels(name, position, active)`, always including `misc`, the label of entries filed
+without one. Order matters for all three:
 abbreviations are matched in this order, and `stats` prints rows in it. `dellabel` sets
 `active = 0` (and removes the label from every entry, as before) so old history still
 makes sense; `addlabel` of a removed label re-activates it at the end. Labels found on
-legacy entries but not in the label list (the 78 bugs labeled `suggestion`) are imported
-as inactive.
+imported entries but not in the old bot's label list (the 78 bugs labeled `suggestion`)
+are inactive.
 
 ## events
 
 The history, added to and never edited except by redaction (which blanks the text, below)
-and purge (which deletes the entry): `entry_id, at, actor_id, kind, old_value, new_value, reason, source,
-source_ref`. Values are text, JSON for lists. `source` is `discord`, `api`, `legacy`
-(written by the import), `backfill` (recovered from the old feed channel by
-`taskbot.feed.apply`) or `system`. `source_ref` is the Discord message id of the command
-(for `backfill`, the bot's reply when the command message was deleted),
-`interaction:<id>` for a slash command, or `api:<request id>`.
+and purge (which deletes the entry): `entry_id, at, actor_id, kind, old_value, new_value,
+reason, source, source_ref`. Values are text, JSON for lists. `source` is `discord`,
+`api`, `legacy` (imported from the old bot's JSON at the cutover), `backfill` (recovered
+from the old feed channel at the cutover); the schema also allows `system`, which nothing
+writes. `source_ref` is the Discord message id of the command (for `backfill`, the bot's
+reply when the command message was deleted), `interaction:<id>` for a slash command, or
+`api:<request id>`.
 
 | kind | old -> new |
 |---|---|
-| `created` | new: description (NULL for imported entries) |
+| `created` | new: description (NULL in `legacy` events, some `backfill` ones, and after redaction) |
 | `description`, `priority`, `complexity`, `author` | previous -> new value |
 | `labels`, `image` | previous -> new list |
 | `appended` | new: appended text |
@@ -86,11 +90,13 @@ source_ref`. Values are text, JSON for lists. `source` is `discord`, `api`, `leg
 | `assigned`, `unassigned` | previous -> new assignee (`unassigned` with reason `closed` when a close dropped it) |
 | `redacted`, `notified` | |
 
-Imported entries get a `created` event (at the estimated time), and `closed`, `assigned`
-and `redacted` events with no time or actor. Where the old feed channel covers an entry,
-`taskbot.feed.apply` replaces those with its full history (`source='backfill'`), in time
-order; the import's events remain only for what the feed doesn't show. Nothing depends on
-where an event came from.
+Imported entries got a `created` event at the estimated time and, when closed or
+redacted, a `closed` event at the estimated close time with no actor and a `redacted`
+event with no time or actor, all `source='legacy'`. Where the old feed channel covered an
+entry, its full history replaced those (`source='backfill'`), in time order; `legacy`
+events remain only for what the feed didn't show. Event ids follow the order events were
+written, so the imported ones don't follow time order. Only how history is shown
+(`history`, taskctl) depends on where an event came from.
 
 Redaction moves the text out of sight rather than destroying it: the description, close
 reason, images and the values and reasons of the entry's earlier events are copied to

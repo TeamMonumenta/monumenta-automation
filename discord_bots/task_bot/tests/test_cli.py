@@ -192,6 +192,19 @@ def test_single_id_commands_refuse_several() -> None:
         taskctl.read_id("5,6")
 
 
+def test_event_line_shows_only_the_day_for_imported_times() -> None:
+    created = {"kind": "created", "at": 1_500_000_000, "actor": None, "source": "legacy"}
+    closed = {"kind": "closed", "at": 1_600_000_000, "actor": None, "source": "legacy", "new": "fixed"}
+    redacted = {"kind": "redacted", "at": None, "actor": None, "source": "legacy"}
+    exact = {"kind": "closed", "at": 1_600_000_000, "actor": None, "source": "backfill", "new": "fixed"}
+    # Day only (UTC, as the bot shows it), padded to the width of a full time
+    assert taskctl.event_line(created).startswith("2017-07-14" + " " * 8)
+    assert taskctl.event_line(closed).startswith("2020-09-13" + " " * 8)
+    assert taskctl.event_line(redacted).startswith("(before new bot)  ")
+    assert taskctl.event_line(exact).startswith(taskctl.fmt_time(1_600_000_000, True))
+    assert taskctl.event_line(closed).endswith("[imported]") and exact["source"] in taskctl.event_line(exact)
+
+
 class _FakeEvents:
     """Stands in for Client: serves events newest first, at most `cap` per call."""
 

@@ -3,7 +3,7 @@
 #
 # Data lives in /nfs/task-bot/suggestions: config.yml (same file the old bot used), tasks.db
 # (SQLite), backups/ and images/ (saved copies of every entry's images, some GB). tasks.db
-# must exist before the first start (README, "Cutover").
+# must exist before the first start (README, "Deployment").
 #
 # Two API listeners: 8080 for people (Discord users' tokens), behind the ingress, and 8081,
 # reachable only inside the cluster, which is the only one that accepts service tokens

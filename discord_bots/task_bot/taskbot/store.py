@@ -43,7 +43,8 @@ def url_expiry(url: str) -> Optional[int]:
     return int(m.group(1), 16) if m else None
 
 
-# redacted_at of images the legacy import hid (entries redacted by editing the description)
+# redacted_at of images hidden at cutover: the old bot's users redacted by editing the
+# description to "redacted", and the import moved such entries' images into redacted_content
 LEGACY_REDACTION = 0
 
 
@@ -328,17 +329,11 @@ class TaskStore(PlayerStore):
                 "ON CONFLICT(name) DO UPDATE SET active = 1, position = excluded.position",
                 (name, pos))
 
-    def add_inactive_label(self, name: str) -> None:
-        pos = int(self.conn.execute(
-            "SELECT COALESCE(MAX(position), -1) + 1 FROM labels").fetchone()[0])
-        self.conn.execute(
-            "INSERT OR IGNORE INTO labels(name, position, active) VALUES (?, ?, 0)", (name, pos))
-
     def deactivate_label(self, name: str) -> None:
         self.conn.execute("UPDATE labels SET active = 0 WHERE name = ?", (name,))
 
     def set_label_list(self, labels: Sequence[str]) -> None:
-        """Replace the instance's labels (for a new database or an import)."""
+        """Replace the instance's labels."""
         with self.transaction():
             self.conn.execute("DELETE FROM labels")
             self.conn.executemany("INSERT INTO labels(name, position) VALUES (?, ?)",
@@ -365,9 +360,6 @@ class TaskStore(PlayerStore):
             for entry in self._load(f"WHERE e.id IN ({marks})", chunk):
                 found[entry.id] = entry
         return [found[i] for i in ids if i in found]
-
-    def all_entries(self) -> list[Entry]:
-        return self._load("", [])
 
     def _load(self, where: str, params: Sequence[Any], order: str = "ORDER BY e.id") -> list[Entry]:
         rows = self.conn.execute(
@@ -832,12 +824,6 @@ class TaskStore(PlayerStore):
     def mark_reactions_checked(self, entry_id: int) -> None:
         self.conn.execute("UPDATE entries SET reactions_checked_at = ? WHERE id = ?",
                           (int(time.time()), entry_id))
-
-    def count_unchecked_reactions(self) -> int:
-        """Tracked messages whose reactions have never been read (e.g. right after migration)."""
-        return int(self.conn.execute(
-            "SELECT COUNT(*) FROM entries WHERE message_id IS NOT NULL "
-            "AND reactions_checked_at IS NULL").fetchone()[0])
 
     def remove_reaction(self, entry_id: int, emoji: str) -> None:
         self.conn.execute("DELETE FROM reactions WHERE entry_id = ? AND emoji = ?", (entry_id, emoji))

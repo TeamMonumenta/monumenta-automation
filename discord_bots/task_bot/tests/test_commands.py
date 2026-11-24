@@ -359,13 +359,8 @@ async def test_rsearch_reads_reaction_table(h: Harness) -> None:
     for _ in range(4):
         h.store.adjust_reaction(3, "👍", 1)
     replies = await h.say(BOB, "~bug rsearch 👍")
-    # #2 and #3 only have live reaction events so far, never a full read: say so
-    assert replies[-1].startswith("Reaction counts are still being loaded from Discord (2 messages")
-    replies = replies[:-1]
     assert [r.split("]")[0] for r in replies] == ["`#3 [quest - N/A", "`#1 [quest - N/A", "`#2 [quest - N/A"]
     assert replies[0].endswith("👍 4    ")
-    for entry_id in (2, 3):
-        h.store.mark_reactions_checked(entry_id)
     assert await h.say(BOB, "~bug rsearch 🎉") == ["No entries with reaction '🎉'"]
 
 
@@ -494,6 +489,23 @@ async def test_history(h: Harness) -> None:
     assert text.startswith("History of bug #1:")
     assert "**Alice** created" in text and "set priority N/A -> High" in text
     assert "closed as **fixed**: done" in text
+
+
+async def test_history_of_imported_events(h: Harness) -> None:
+    """The cutover wrote `legacy` events with estimated or unknown times and `backfill`
+    events from the old feed channel with exact ones; production still has them."""
+    await h.add(ALICE, "quest " + DESC)
+    h.store.add_event(1, "created", at=1_500_000_000, actor_id=ALICE, source="legacy")
+    h.store.add_event(1, "priority", at=1_550_000_000, actor_id=TEAM, source="backfill", old="N/A", new="High")
+    h.store.add_event(1, "closed", at=1_600_000_000, actor_id=None, source="legacy", new="fixed", reason="Fixed")
+    h.store.add_event(1, "redacted", at=None, actor_id=None, source="legacy")
+    lines = (await h.say(TEAM, "~bug history 1"))[0].splitlines()
+    assert lines[-4:] == [
+        "- 2017-07-14 **Alice** created (imported)",
+        "- <t:1550000000:f> **Teammate** set priority N/A -> High (via backfill)",
+        "- 2020-09-13 **unknown** closed as **fixed**: Fixed (imported)",
+        "- before the new bot **unknown** redacted (imported)",
+    ]
 
 
 async def test_roulette(h: Harness) -> None:

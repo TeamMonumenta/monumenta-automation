@@ -46,7 +46,6 @@ PUBLISH_INTERVAL = 5        # seconds between passes over unpublished entries
 PUBLISH_BACKOFF = (30, 900)  # seconds to wait after Discord fails, doubling up to the cap
 LOOP_RESTART_DELAY = 60     # seconds before a background loop that crashed starts again
 REACTION_SWEEP_INTERVAL = 20  # seconds between reconciling one tracking message
-REACTION_CATCHUP_INTERVAL = 0.2  # ... while some messages have never been read (after migration)
 NOTICE_FLUSH_INTERVAL = 60   # slow, so a bulk change through the API is a few lines
 URL_REFRESH_MARGIN = 3600   # refresh signed URLs expiring within this many seconds
 MAX_EMBEDS = 10
@@ -359,6 +358,9 @@ class TaskBot(dcommands.Bot):
                     await msg.delete()
                     return
                 self.service.set_message_id(entry_id, msg.id)
+                # A new message has no reactions: drop any counted on one that vanished, and
+                # the sweep needn't read it soon. The bot's own arrive as reaction events.
+                self.store.set_reactions(entry_id, [])
             if msg is not None:
                 mine = {str(r.emoji) for r in msg.reactions if getattr(r, "me", False)}
                 for reaction in self.config.reactions:
@@ -550,9 +552,9 @@ class TaskBot(dcommands.Bot):
         return True
 
     async def _save_loop(self) -> None:
-        """Save every image without a copy on disk: new ones as they arrive, and at the
-        first start everything imported, a batch at a time. Each pass also deletes any of
-        the bot's image messages that redaction left behind."""
+        """Save every image without a copy on disk: new ones as they arrive, and any others
+        (such as those of a database restored without its images) a batch at a time. Each pass also
+        deletes any of the bot's image messages that redaction left behind."""
         await self.wait_until_ready()
         while not self.is_closed():
             self._save_wakeup.clear()
@@ -741,8 +743,7 @@ class TaskBot(dcommands.Bot):
         """Slowly re-read every tracking message's reactions, catching events missed while offline."""
         await self.wait_until_ready()
         while not self.is_closed():
-            catching_up = self.store.count_unchecked_reactions() > 0
-            await asyncio.sleep(REACTION_CATCHUP_INTERVAL if catching_up else REACTION_SWEEP_INTERVAL)
+            await asyncio.sleep(REACTION_SWEEP_INTERVAL)
             channel = self._tracking_channel()
             if channel is None:
                 continue
