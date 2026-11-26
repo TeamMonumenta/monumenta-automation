@@ -86,42 +86,42 @@ if __name__ == '__main__':
                     "lime",
                     "limeexalted",
                 ],
-                "objective":"D6Access"
+                "objective":"InstanceLime"
             },
             "pink": {
                 "world": [
                     "pink",
                     "pinkexalted",
                 ],
-                "objective":"D7Access"
+                "objective":"InstancePink"
             },
             "gray": {
                 "world": [
                     "gray",
                     "grayexalted",
                 ],
-                "objective":"D8Access"
+                "objective":"InstanceGray"
             },
             "lightgray": {
                 "world": [
                     "lightgray",
                     "lightgrayexalted",
                 ],
-                "objective":"D9Access"
+                "objective":"InstanceLightGray"
             },
             "cyan": {
                 "world": [
                     "cyan",
                     "cyanexalted",
                 ],
-                "objective":"D10Access"
+                "objective":"InstanceCyan"
             },
             "purple": {
                 "world": [
                     "purple",
                     "purpleexalted",
                 ],
-                "objective":"D11Access"
+                "objective":"InstancePurple"
             },
             "blue": {
                 "world": [
@@ -165,33 +165,33 @@ if __name__ == '__main__':
                 "world": [
                     "shiftingcity",
                 ],
-                "objective":"DRL2Access"
+                "objective":"InstanceShifting"
             },
             "teal": {
                 "world": [
                     "teal",
                     "tealexalted",
                 ],
-                "objective":"DTLAccess"
+                "objective":"InstanceTeal"
             },
             "forum": {
                 "world": [
                     "forum",
                     "forumexalted",
                 ],
-                "objective":"DFFAccess"
+                "objective":"InstanceForum"
             },
             "rush": {
                 "world": [
                     "rush",
                 ],
-                "objective":"DRDAccess"
+                "objective":"InstanceRush"
             },
             "depths": {
                 "world": [
                     "depths",
                 ],
-                "objective":"DDAccess"
+                "objective":"InstanceDepths"
             },
             "gallery": {
                 "world": [
