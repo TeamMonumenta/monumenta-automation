@@ -7,6 +7,30 @@ on:
         required: false
         type: string
         default: '.'
+      gradle-args:
+        description: Extra arguments for Gradle, relative to working-directory (e.g. -PmonumentaPluginsDir=monumenta-plugins/plugins)
+        required: false
+        type: string
+        default: ''
+      extra-repository:
+        description: Another repository the build needs (e.g. TeamMonumenta/monumenta-plugins), checked out at extra-path
+        required: false
+        type: string
+        default: ''
+      extra-ref:
+        description: Branch, tag or commit of extra-repository (default its default branch)
+        required: false
+        type: string
+        default: ''
+      extra-path:
+        description: Where to check out extra-repository, relative to this repository's root; required with extra-repository
+        required: false
+        type: string
+        default: ''
+    secrets:
+      EXTRA_REPOSITORY_SSH_KEY:
+        description: Read-only deploy key for extra-repository, when it is private
+        required: false
 # Jobs
 jobs:
   reviewdog:
@@ -16,10 +40,24 @@ jobs:
       pull-requests: write
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Check extra-path
+      if: inputs.extra-repository != '' && inputs.extra-path == ''
+      run: |
+        echo "extra-repository needs an extra-path; checking it out at the root would replace this repository"
+        exit 1
+    - name: Checkout ${{ inputs.extra-repository }}
+      if: inputs.extra-repository != ''
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: ${{ inputs.extra-repository }}
+        ref: ${{ inputs.extra-ref }}
+        ssh-key: ${{ secrets.EXTRA_REPOSITORY_SSH_KEY }}
+        persist-credentials: false
+        path: ${{ inputs.extra-path }}
     # Set up JDK
     - name: Set up JDK 21
-      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+      uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
       with:
         distribution: temurin
         java-version: '21'
@@ -30,41 +68,58 @@ jobs:
         git config --global user.email "Monumenta.CI@NotARealEmail.com"
     # Cache gradle dependencies
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+      uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
     # Reviewdog
     - name: Setup reviewdog
-      uses: reviewdog/action-setup@d8edfce3dd5e1ec6978745e801f9c50b5ef80252 # 1.4.0
+      uses: reviewdog/action-setup@d8a7baabd7f3e8544ee4dbde3ee41d0011c3a93f # v1.5.0
       with:
-        reviewdog_version: v0.21.0
+        reviewdog_version: v0.21.3
     # Reviewdog stuff...
     - name: Build and report style/pmd/warnings
       working-directory: ${{ inputs.working-directory }}
       env:
         REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GRADLE_ARGS: ${{ inputs.gradle-args }}
+        EXTRA_PATH: ${{ inputs.extra-path }}
       run: |
-        set -o pipefail
-        ./gradlew build --console=plain 2>&1 | tee compile.log
-        set +o pipefail
+        # Every check reports even when an earlier one finds something. The step fails at the end if the build failed
+        # or any check found something in the files the pull request changes.
+        set +e
+        ./gradlew build --console=plain $GRADLE_ARGS 2>&1 | tee compile.log
+        status=${PIPESTATUS[0]}
 
-        # compiler warnings
-        cat compile.log | reviewdog -efm="%W%f:%l: warning: %m" -efm="%+C%[ %\t]%.%#" -efm="%-Z%[%^ %\t]%.%#" -efm="%f:%l:%[ %\t]%#%m" -name="Javac" -level=error -fail-level=error -reporter=github-pr-review -filter-mode=file
+        # Compiler errors and warnings, Error Prone and NullAway included. The patterns need javac's own "error:" or
+        # "warning:", so that the other tools' lines in the log (PMD prints "file:line:<tab>rule:<tab>message") don't match.
+        reviewdog -efm="%E%f:%l: error: %m" -efm="%W%f:%l: warning: %m" -efm="%+C%[ %\t]%.%#" -efm="%-Z%[%^ %\t]%.%#" \
+          -name="Javac" -fail-level=warning -reporter=github-pr-review -filter-mode=file < compile.log || status=1
 
-        # Allow the * globs below to match 0 files without throwing an error
-        # The indentation on the below loops is flat to conform to this yaml file - they won't work indented
-        shopt -s nullglob
-
-        # checkstyle
-        for xml in */build/reports/checkstyle/main.xml build/reports/checkstyle/main.xml; do
-        if [ -f "$xml" ]; then
-        xmldirname="${xml%%/*}"
-        cat "$xml" | reviewdog -f=checkstyle -name="Checkstyle $xmldirname" -level=error -fail-level=error -reporter=github-pr-review -filter-mode=file
+        # Reports of every project that wrote one, at any depth, but not those of the extra checkout. A subproject's
+        # findings are named after its directory ("Checkstyle paper"), the root project's after the tool alone.
+        prune=()
+        extra="${EXTRA_PATH#./}"
+        extra="${extra%/}"
+        if [ -n "$extra" ]; then
+          prune=(-path "$GITHUB_WORKSPACE/$extra" -prune -o)
         fi
-        done
+        reports() {
+          find "$PWD" "${prune[@]}" -path "*/build/reports/$1/main.xml" -print | sort
+        }
+        project_of() {
+          local project="${1#"$PWD"/}"
+          project="${project%build/reports/*}"
+          echo "${project%/}"
+        }
 
-        # pmd
-        for xml in */build/reports/pmd/main.xml build/reports/pmd/main.xml; do
-        if [ -f "$xml" ]; then
-        xmldirname="${xml%%/*}"
-        cat "$xml" | reviewdog -efm='%+P<file name="%f">' -efm='%W<violation beginline="%l%.%#begincolumn="%c%.%#' -efm='%-C<%.%#' -efm='%+C%.%#' -efm='%-Q' -name="PMD $xmldirname" -level=error -fail-level=error -reporter=github-pr-review -filter-mode=file
-        fi
-        done
+        while IFS= read -r xml; do
+          project="$(project_of "$xml")"
+          reviewdog -f=checkstyle -name="Checkstyle${project:+ $project}" \
+            -fail-level=warning -reporter=github-pr-review -filter-mode=file < "$xml" || status=1
+        done < <(reports checkstyle)
+
+        while IFS= read -r xml; do
+          project="$(project_of "$xml")"
+          reviewdog -efm='%+P<file name="%f">' -efm='%W<violation beginline="%l%.%#begincolumn="%c%.%#' -efm='%-C<%.%#' -efm='%+C%.%#' -efm='%-Q' \
+            -name="PMD${project:+ $project}" -fail-level=warning -reporter=github-pr-review -filter-mode=file < "$xml" || status=1
+        done < <(reports pmd)
+
+        exit $status
