@@ -399,6 +399,7 @@ if __name__ == '__main__':
         ('plugins/Monumenta/properties/CommonProperties.json', '../../../../server_config/data/plugins/all/Monumenta/properties/CommonProperties.json'),
         ('plugins/Monumenta/properties/LocalProperties.json', '../../../../server_config/data/plugins/{servername}/Monumenta/properties/LocalProperties.json'),
         ('plugins/MonumentaWarps.jar', '../../server_config/plugins/MonumentaWarps.jar'),
+        ('plugins/MonumentaRunestones.jar', '../../server_config/plugins/MonumentaRunestones.jar'),
         ('plugins/ChestSort.jar', '../../server_config/plugins/ChestSort.jar'),
         ('plugins/ChestSort/categories', '../../../server_config/data/plugins/all/ChestSort/categories'),
         ('plugins/HolographicDisplays.jar', '../../server_config/plugins/HolographicDisplays.jar'),
