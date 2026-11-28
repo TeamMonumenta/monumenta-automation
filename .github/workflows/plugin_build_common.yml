@@ -7,6 +7,30 @@ on:
         required: false
         type: string
         default: '.'
+      gradle-args:
+        description: Extra arguments for Gradle, relative to working-directory (e.g. -PmonumentaPluginsDir=monumenta-plugins/plugins)
+        required: false
+        type: string
+        default: ''
+      extra-repository:
+        description: Another repository the build needs (e.g. TeamMonumenta/monumenta-plugins), checked out at extra-path
+        required: false
+        type: string
+        default: ''
+      extra-ref:
+        description: Branch, tag or commit of extra-repository (default its default branch)
+        required: false
+        type: string
+        default: ''
+      extra-path:
+        description: Where to check out extra-repository, relative to this repository's root; required with extra-repository
+        required: false
+        type: string
+        default: ''
+    secrets:
+      EXTRA_REPOSITORY_SSH_KEY:
+        description: Read-only deploy key for extra-repository, when it is private
+        required: false
 # Jobs
 jobs:
   build:
@@ -15,12 +39,26 @@ jobs:
       contents: read
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         fetch-depth: 0
+    - name: Check extra-path
+      if: inputs.extra-repository != '' && inputs.extra-path == ''
+      run: |
+        echo "extra-repository needs an extra-path; checking it out at the root would replace this repository"
+        exit 1
+    - name: Checkout ${{ inputs.extra-repository }}
+      if: inputs.extra-repository != ''
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: ${{ inputs.extra-repository }}
+        ref: ${{ inputs.extra-ref }}
+        ssh-key: ${{ secrets.EXTRA_REPOSITORY_SSH_KEY }}
+        persist-credentials: false
+        path: ${{ inputs.extra-path }}
     # Set up JDK
     - name: Set up JDK 21
-      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
+      uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
       with:
         distribution: temurin
         java-version: '21'
@@ -31,9 +69,11 @@ jobs:
           git config --global user.email "Monumenta.CI@NotARealEmail.com"
     # Cache gradle dependencies
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
+      uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
     # Run build
     - name: Build project
       working-directory: ${{ inputs.working-directory }}
+      env:
+        GRADLE_ARGS: ${{ inputs.gradle-args }}
       run: |
-        ./gradlew build
+        ./gradlew build $GRADLE_ARGS
