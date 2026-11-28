@@ -27,6 +27,11 @@ on:
         required: false
         type: string
         default: ''
+      filter-mode:
+        description: Which findings to comment on and fail for - file (anywhere in a changed file) or added (changed lines only, for repositories with many old warnings)
+        required: false
+        type: string
+        default: file
     secrets:
       EXTRA_REPOSITORY_SSH_KEY:
         description: Read-only deploy key for extra-repository, when it is private
@@ -81,6 +86,7 @@ jobs:
         REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GRADLE_ARGS: ${{ inputs.gradle-args }}
         EXTRA_PATH: ${{ inputs.extra-path }}
+        FILTER_MODE: ${{ inputs.filter-mode }}
       run: |
         # Every check reports even when an earlier one finds something. The step fails at the end if the build failed
         # or any check found something in the files the pull request changes.
@@ -91,7 +97,7 @@ jobs:
         # Compiler errors and warnings, Error Prone and NullAway included. The patterns need javac's own "error:" or
         # "warning:", so that the other tools' lines in the log (PMD prints "file:line:<tab>rule:<tab>message") don't match.
         reviewdog -efm="%E%f:%l: error: %m" -efm="%W%f:%l: warning: %m" -efm="%+C%[ %\t]%.%#" -efm="%-Z%[%^ %\t]%.%#" \
-          -name="Javac" -fail-level=warning -reporter=github-pr-review -filter-mode=file < compile.log || status=1
+          -name="Javac" -fail-level=warning -reporter=github-pr-review -filter-mode="$FILTER_MODE" < compile.log || status=1
 
         # Reports of every project that wrote one, at any depth, but not those of the extra checkout. A subproject's
         # findings are named after its directory ("Checkstyle paper"), the root project's after the tool alone.
@@ -113,13 +119,13 @@ jobs:
         while IFS= read -r xml; do
           project="$(project_of "$xml")"
           reviewdog -f=checkstyle -name="Checkstyle${project:+ $project}" \
-            -fail-level=warning -reporter=github-pr-review -filter-mode=file < "$xml" || status=1
+            -fail-level=warning -reporter=github-pr-review -filter-mode="$FILTER_MODE" < "$xml" || status=1
         done < <(reports checkstyle)
 
         while IFS= read -r xml; do
           project="$(project_of "$xml")"
           reviewdog -efm='%+P<file name="%f">' -efm='%W<violation beginline="%l%.%#begincolumn="%c%.%#' -efm='%-C<%.%#' -efm='%+C%.%#' -efm='%-Q' \
-            -name="PMD${project:+ $project}" -fail-level=warning -reporter=github-pr-review -filter-mode=file < "$xml" || status=1
+            -name="PMD${project:+ $project}" -fail-level=warning -reporter=github-pr-review -filter-mode="$FILTER_MODE" < "$xml" || status=1
         done < <(reports pmd)
 
         exit $status
